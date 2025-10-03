@@ -1,0 +1,137 @@
+Assembling...
+00000000 @START+0:                        nop   
+00000001 @START+1:                        move  sp,-1
+00000002 @START+2:                        jump  u,@IO_ASM_END
+00000003 @PUTS+0:                         push  r1
+00000004 @PUTS+1:                         load  r1,sf,3
+00000005 @PUTS+2:                         move  r0,1
+00000006 @PUTS+3:                         int   205
+00000007 @PUTS+4:                         pop   r1
+00000008 @PUTS+5:                         ret   
+00000009 @FPUTS+0:                        push  r1
+0000000a @FPUTS+1:                        load  r1,sf,4
+0000000b @FPUTS+2:                        load  r0,sf,3
+0000000c @FPUTS+3:                        int   205
+0000000d @FPUTS+4:                        pop   r1
+0000000e @FPUTS+5:                        ret   
+0000000f @PUTC+0:                         load  r0,sf,3
+00000010 @PUTC+1:                         out   0,1,r0
+00000011 @PUTC+2:                         ret   
+00000012 @FPUTC+0:                        push  r1
+00000013 @FPUTC+1:                        load  r0,sf,3
+00000014 @FPUTC+2:                        load  r1,sf,4
+00000015 @FPUTC+3:                        out   0,r0,r1
+00000016 @FPUTC+4:                        pop   r1
+00000017 @FPUTC+5:                        ret   
+00000018 @PUT_INT+0:                      push  r1
+00000019 @PUT_INT+1:                      push  r2
+0000001a @PUT_INT+2:                      move  r0,1
+0000001b @PUT_INT+3:                      load  r1,sf,3
+0000001c @PUT_INT+4:                      load  r2,sf,4
+0000001d @PUT_INT+5:                      int   201
+0000001e @PUT_INT+6:                      pop   r2
+0000001f @PUT_INT+7:                      pop   r1
+00000020 @PUT_INT+8:                      ret   
+00000021 @FPUT_INT+0:                     push  r1
+00000022 @FPUT_INT+1:                     push  r2
+00000023 @FPUT_INT+2:                     load  r0,sf,3
+00000024 @FPUT_INT+3:                     load  r1,sf,4
+00000025 @FPUT_INT+4:                     load  r2,sf,5
+00000026 @FPUT_INT+5:                     int   201
+00000027 @FPUT_INT+6:                     pop   r2
+00000028 @FPUT_INT+7:                     pop   r1
+00000029 @FPUT_INT+8:                     ret   
+0000002a @PUT_DEC+0:                      push  r1
+0000002b @PUT_DEC+1:                      move  r0,1
+0000002c @PUT_DEC+2:                      load  r1,sf,3
+0000002d @PUT_DEC+3:                      int   202
+0000002e @PUT_DEC+4:                      pop   r1
+0000002f @PUT_DEC+5:                      ret   
+00000030 @FPUT_DEC+0:                     push  r1
+00000031 @FPUT_DEC+1:                     load  r0,sf,3
+00000032 @FPUT_DEC+2:                     load  r1,sf,4
+00000033 @FPUT_DEC+3:                     int   202
+00000034 @FPUT_DEC+4:                     pop   r1
+00000035 @FPUT_DEC+5:                     ret   
+00000036 @PUT_HEX+0:                      push  r1
+00000037 @PUT_HEX+1:                      move  r0,1
+00000038 @PUT_HEX+2:                      load  r1,sf,3
+00000039 @PUT_HEX+3:                      int   203
+0000003a @PUT_HEX+4:                      pop   r1
+0000003b @PUT_HEX+5:                      ret   
+0000003c @FPUT_HEX+0:                     push  r1
+0000003d @FPUT_HEX+1:                     load  r0,sf,3
+0000003e @FPUT_HEX+2:                     load  r1,sf,4
+0000003f @FPUT_HEX+3:                     int   203
+00000040 @FPUT_HEX+4:                     pop   r1
+00000041 @FPUT_HEX+5:                     ret   
+00000042 @PUT_FP+0:                       move  r0,1
+00000043 @PUT_FP+1:                       load  f0,sf,3
+00000044 @PUT_FP+2:                       int   204
+00000045 @PUT_FP+3:                       ret   
+00000046 @FPUT_FP+0:                      load  r0,sf,3
+00000047 @FPUT_FP+1:                      load  f0,sf,4
+00000048 @FPUT_FP+2:                      int   204
+00000049 @FPUT_FP+3:                      ret   
+0000004a @PUT_NL+0:                       move  r0,10
+0000004b @PUT_NL+1:                       out   1,1,r0
+0000004c @PUT_NL+2:                       ret   
+0000004d @FPUT_NL+0:                      push  r28
+0000004e @FPUT_NL+1:                      load  r28,sf,3
+0000004f @FPUT_NL+2:                      move  r0,10
+00000050 @FPUT_NL+3:                      out   1,r28,r0
+00000051 @FPUT_NL+4:                      pop   r28
+00000052 @FPUT_NL+5:                      ret   
+00000053 @FPRINTF+0:                      int   211
+00000054 @FPRINTF+1:                      ret   
+00000055 @IO_ASM_END+0:                   nop   
+00000056 @PROGRAM_START+0:                move  r1,3261963
+00000057 @PROGRAM_START+1:                load  r2,@CONST_INT
+00000058 @PROGRAM_START+2:                move  r3,3261963
+00000059 @PROGRAM_START+3:                load  r4,@CONST_INT
+0000005a @PROGRAM_START+4:                load  f1,@__1
+0000005b @PROGRAM_START+5:                load  f2,@CONST_FP
+0000005c @PROGRAM_START+6:                load  f3,@__1
+0000005d @PROGRAM_START+7:                load  f4,@CONST_FP
+0000005e @PROGRAM_START+8:                push  169
+0000005f @PROGRAM_START+9:                call  u,@putc
+00000060 @PROGRAM_START+10:               add   sp,1
+00000061 @PROGRAM_START+11:               push  @__2
+00000062 @PROGRAM_START+12:               call  u,@puts
+00000063 @PROGRAM_START+13:               add   sp,1
+00000064 @PROGRAM_START+14:               call  u,@put_nl
+00000065 @PROGRAM_START+15:               push  @CONST_STR
+00000066 @PROGRAM_START+16:               call  u,@puts
+00000067 @PROGRAM_START+17:               add   sp,1
+00000068 @PROGRAM_START+18:               load  r1,@CONST_CHAR
+00000069 @PROGRAM_START+19:               push  r1
+0000006a @PROGRAM_START+20:               call  u,@putc
+0000006b @PROGRAM_START+21:               add   sp,1
+0000006c @PROGRAM_START+22:               call  u,@put_nl
+0000006d @PROGRAM_START+23:               clear r1
+0000006e @PROGRAM_START+24:               move  r2,@INT_ARRAY
+0000006f @PROGRAM_START+25:               load  r3,@INT_ARRAY,-1
+00000070 @PROGRAM_START+26:               jump  u,@END_LOOP1
+00000071 @LOOP1+0:                        load  r4,r2,r1
+00000072 @LOOP1+1:                        add   r1,1
+00000073 @END_LOOP1+0:                    cmp   r1,r3
+00000074 @END_LOOP1+1:                    jump  nz,@LOOP1
+00000075 @END_LOOP1+2:                    move  r2,@FP_ARRAY
+00000076 @END_LOOP1+3:                    load  f0,r2,0
+00000077 @END_LOOP1+4:                    load  f0,r2,1
+00000078 @END_LOOP1+5:                    load  f0,r2,2
+00000079 @END_LOOP1+6:                    load  f0,r2,3
+0000007a @END_LOOP1+7:                    load  f0,r2,4
+0000007b @END_LOOP1+8:                    stop  
+0000007c @END_LOOP1+9:                    stop  
+0000007d @CONST_INT+0:                    dci   0x146 (326)
+0000007e @CONST_FP+0:                     dcf   0x400921cac083126f (3.1415)
+0000007f @CONST_CHAR+0:                   dcc   0x263a ('☺')
+00000080 @CONST_STR+-1:                   dcs   13,"Hello, Rich!\0"
+0000008e @INT_ARRAY+-1:                   dca   8,0x1,0x1,0x2,0x3,0x5,0x8,0xd,0x15
+00000097 @FP_ARRAY+-1:                    dca   5,0x3ff0000000000000,0x3ff999999999999a,0x4004000000000000,0x4010000000000000,0x4019333333333333
+0000009d @__1+0:                          dcf   0x400921fb54442d18 (3.141592653589793)
+0000009e @__2+-1:                         dcs   25,"2022,All,rights,reserved\0"
+Saved 184 words!
+
+Assembly Complete

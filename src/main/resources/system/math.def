@@ -1,0 +1,44 @@
+#define	PI					3.14159265358979323846
+#define	NATURAL_LOG_BASE	2.71828182845904523536
+
+#define	iPI			100
+#define	iE			101
+
+#define iABS_FP		102
+#define iABS		103
+#define iCEIL		104
+#define iFLOOR		105
+#define iROUND		106
+
+#define iSQRT		107
+#define iEXP		108
+#define iLOG		109
+#define iPOW		110
+
+#define iREMAINDER	111
+#define iMAX_FP		112
+#define iMIN_FP		113
+#define iMAX		114
+#define iMIN		115
+#define iRANDOM		116
+#define iRAND		117
+
+#define iTO_DEGREES	118
+#define iTO_RADIANS	119
+#define iSIN		120
+#define iCOS		121
+#define iTAN		122
+#define iASIN		123
+#define iACOS		124
+#define iATAN		125
+#define iATAN2		126
+
+#def_macro	MIN(a, b)
+	cmp		${a}, ${b}
+	move	lt, r0, ${a}, ${b}
+#end_macro
+
+#def_macro	MAX(a, b)
+	cmp		${a}, ${b}
+	move	gt, r0, ${a}, ${b}
+#end_macro

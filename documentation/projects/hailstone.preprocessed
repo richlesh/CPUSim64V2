@@ -1,0 +1,542 @@
+	mov	SP,-1
+	jump	@IO_ASM_END
+puts:
+	push	r1
+	load	r1,sf,3
+	mov	r0,1
+	int	205
+	pop	r1
+	return
+fputs:
+	push	r1
+	load	r1,sf,4
+	load	r0,sf,3
+	int	205
+	pop	r1
+	return
+putline:
+	push	r1
+	load	r1,sf,3
+	mov	r0,1
+	int	205
+	out	1,1,'\n'
+	pop	r1
+	return
+fputline:
+	push	r28
+	push	r1
+	load	r1,sf,4
+	load	r28,sf,3
+	move	r0,r28
+	int	205
+	out	1,r28,'\n'
+	pop	r1
+	pop	r28
+	return
+putc:
+	load	r0,sf,3
+	out	0,1,r0
+	return
+fputc:
+	push	r1
+	load	r0,sf,3
+	load	r1,sf,4
+	out	0,r0,r1
+	pop	r1
+	return
+put_int:
+	push	r1
+	push	r2
+	move	r0,1
+	load	r1,sf,3
+	load	r2,sf,4
+	int	201
+	pop	r2
+	pop	r1
+	return
+fput_int:
+	push	r1
+	push	r2
+	load	r0,sf,3
+	load	r1,sf,4
+	load	r2,sf,5
+	int	201
+	pop	r2
+	pop	r1
+	return
+put_dec:
+	push	r1
+	move	r0,1
+	load	r1,sf,3
+	int	202
+	pop	r1
+	return
+fput_dec:
+	push	r1
+	load	r0,sf,3
+	load	r1,sf,4
+	int	202
+	pop	r1
+	return
+put_hex:
+	push	r1
+	push	r2
+	move	r0,1
+	load	r1,sf,3
+	move	r2,-1
+	int	203
+	pop	r2
+	pop	r1
+	return
+put_hex_size:
+	push	r1
+	push	r2
+	move	r0,1
+	load	r1,sf,3
+	load	r2,sf,4
+	int	203
+	pop	r2
+	pop	r1
+	return
+fput_hex:
+	push	r1
+	load	r0,sf,3
+	load	r1,sf,4
+	int	203
+	pop	r1
+	return
+fput_hex_size:
+	push	r1
+	push	r2
+	load	r0,sf,3
+	load	r1,sf,4
+	load	r2,sf,5
+	int	203
+	pop	r2
+	pop	r1
+	return
+put_fp:
+	mov	r0,1
+	ld	f0,sf,3
+	int	204
+	return
+fput_fp:
+	ld	r0,sf,3
+	ld	f0,sf,4
+	int	204
+	return
+put_nl:
+	out	0,1,'\n'
+	return
+fput_nl:
+	push	r28
+	ld	r28,sf,3
+	out	0,r28,'\n'
+	pop	r28
+	return
+fprintf:
+	int	211
+	return
+cond_fprintf:
+	int	212
+	return
+debug:
+	return
+cond_debug:
+	return
+fatal:
+	load	r0,sf,3
+	push	"\nFATAL: "
+	push	r0
+	call	fputs
+	add	SP,2
+	int	211
+	move	r0,0
+	int	30
+	return
+cond_fatal:
+	load	r0,sf,3
+	jump	z,@_b6aae5a7_COND298_ELSE
+	load	r0,sf,4
+	push	"\nFATAL: "
+	push	r0
+	call	fputs
+	add	SP,2
+	int	212
+	move	r0,0
+	int	30
+_b6aae5a7_COND298_ELSE:
+_b6aae5a7_COND298_END:
+	return
+__FGETLINE_BUFFER:
+	dci	0
+fgetline:
+	push	r24
+	push	r25
+	push	r26
+	push	r27
+	push	r28
+	push	r1
+	load	r24,sf,3
+	load	r28,__FGETLINE_BUFFER
+	cmp	r28,0
+	jump	nz,@_5f488524_COND318_ELSE
+	move	r0,128
+	int	20
+	move	r28,r0
+_5f488524_COND318_ELSE:
+_5f488524_COND318_END:
+	cmp	r28,0
+	jump	z,@_5f488524_COND323_ELSE
+	load	r27,r28,-1
+	sub	r27,1
+	clear	r25
+	in	r26,0,r24
+	jump	@_5f488524_LOOP328_COND
+_5f488524_LOOP328:
+	cmp	r26,'\n'
+	jump	nz,@_5f488524_COND329_ELSE
+	jump	@_5f488524_LOOP328_END
+_5f488524_COND329_ELSE:
+_5f488524_COND329_END:
+	cmp	r25,r27
+	jump	n,@_5f488524_COND332_ELSE
+	move	r1,r27
+	add	r1,128
+	move	r0,r28
+	int	21
+	move	r28,r0
+	cmp	r28,0
+	jump	nz,@_5f488524_COND338_ELSE
+	jump	@_5f488524_LOOP328_END
+_5f488524_COND338_ELSE:
+_5f488524_COND338_END:
+	load	r27,r28,-1
+	sub	r27,1
+_5f488524_COND332_ELSE:
+_5f488524_COND332_END:
+	store	r26,r28,r25
+	add	r25,1
+	in	r26,0,r24
+_5f488524_LOOP328_COND:
+	cmp	r26,-1
+	jump	ne,@_5f488524_LOOP328
+_5f488524_LOOP328_END:
+	cmp	r28,0
+	jump	z,@_5f488524_COND348_ELSE
+	store	0,r28,r25
+_5f488524_COND348_ELSE:
+_5f488524_COND348_END:
+_5f488524_COND323_ELSE:
+_5f488524_COND323_END:
+	store	r28,__FGETLINE_BUFFER
+	cmp	r26,-1
+	move	eq,r0,-1,0
+	move	r1,r0
+	cmp	r25,0
+	move	eq,r0,-1,0
+	and	r0,r1
+	move	nz,r0,0,r28
+	pop	r1
+	pop	r28
+	pop	r27
+	pop	r26
+	pop	r25
+	pop	r24
+	return
+_PORT_MAP:
+	dca	256
+openTextFile:
+	push	r24
+	push	r25
+	push	r26
+	push	r27
+	push	r28
+	push	r1
+	load	r28,sf,3
+	load	r27,sf,4
+	move	r26,3
+	load	r25,_PORT_MAP,-1
+	jump	@_5877f0b3_FIND_PORT_END
+_5877f0b3_FIND_PORT:
+	load	r0,_PORT_MAP,r26
+	jump	z,@_5877f0b3_FOUND_PORT
+	add	r26,1
+_5877f0b3_FIND_PORT_END:
+	cmp	r26,r25
+	jump	lt,@_5877f0b3_FIND_PORT
+	move	r0,-1
+	jump	@_5877f0b3_FINIS
+_5877f0b3_FOUND_PORT:
+	move	r24,r26
+	cmp	r27,0
+	jump	nz,@_5877f0b3_NOT_READ_MODE
+	move	r0,r24
+	move	r1,r28
+	int	220
+	move	r0,r24
+	store	-1,_PORT_MAP,r24
+	jump	@_5877f0b3_FINIS
+_5877f0b3_NOT_READ_MODE:
+	cmp	r27,1
+	jump	nz,@_5877f0b3_NOT_WRITE_MODE
+	move	r0,r24
+	move	r1,r28
+	int	221
+	move	r0,r24
+	store	-1,_PORT_MAP,r24
+	jump	@_5877f0b3_FINIS
+_5877f0b3_NOT_WRITE_MODE:
+	cmp	r27,2
+	jump	nz,@_5877f0b3_NOT_APPEND_MODE
+	move	r0,r24
+	move	r1,r28
+	int	222
+	move	r0,r24
+	store	-1,_PORT_MAP,r24
+	jump	@_5877f0b3_FINIS
+_5877f0b3_NOT_APPEND_MODE:
+	move	r0,-1
+_5877f0b3_FINIS:
+	pop	r1
+	pop	r28
+	pop	r27
+	pop	r26
+	pop	r25
+	pop	r24
+	return
+openRawFile:
+	push	r24
+	push	r25
+	push	r26
+	push	r27
+	push	r28
+	push	r1
+	load	r28,sf,3
+	load	r27,sf,4
+	move	r26,3
+	load	r25,_PORT_MAP,-1
+	jump	@_2eff781a_FIND_PORT_END
+_2eff781a_FIND_PORT:
+	load	r0,_PORT_MAP,r26
+	jump	z,@_2eff781a_FOUND_PORT
+	add	r26,1
+_2eff781a_FIND_PORT_END:
+	cmp	r26,r25
+	jump	lt,@_2eff781a_FIND_PORT
+	move	r0,-1
+	jump	@_2eff781a_FINIS
+_2eff781a_FOUND_PORT:
+	move	r24,r26
+	cmp	r27,0
+	jump	nz,@_2eff781a_NOT_READ_MODE
+	move	r0,r24
+	move	r1,r28
+	int	223
+	move	r0,r24
+	store	-1,_PORT_MAP,r24
+	jump	@_2eff781a_FINIS
+_2eff781a_NOT_READ_MODE:
+	cmp	r27,1
+	jump	nz,@_2eff781a_NOT_WRITE_MODE
+	move	r0,r24
+	move	r1,r28
+	int	224
+	move	r0,r24
+	store	-1,_PORT_MAP,r24
+	jump	@_2eff781a_FINIS
+_2eff781a_NOT_WRITE_MODE:
+	cmp	r27,2
+	jump	nz,@_2eff781a_NOT_APPEND_MODE
+	move	r0,r24
+	move	r1,r28
+	int	225
+	move	r0,r24
+	store	-1,_PORT_MAP,r24
+	jump	@_2eff781a_FINIS
+_2eff781a_NOT_APPEND_MODE:
+	move	r0,-1
+_2eff781a_FINIS:
+	pop	r1
+	pop	r28
+	pop	r27
+	pop	r26
+	pop	r25
+	pop	r24
+	return
+closeFile:
+	load	r0,sf,3
+	store	0,_PORT_MAP,r0
+	int	226
+	return
+flush:
+	load	r0,sf,3
+	int	227
+	return
+deleteFile:
+	load	r0,sf,3
+	int	228
+	return
+makeDirectory:
+	load	r0,sf,3
+	int	229
+	return
+deleteDirectory:
+	load	r0,sf,3
+	int	230
+	return
+isDirectory:
+	load	r0,sf,3
+	int	231
+	return
+isFile:
+	load	r0,sf,3
+	int	232
+	return
+fileExists:
+	load	r0,sf,3
+	int	233
+	return
+listFiles:
+	load	r0,sf,3
+	int	234
+	return
+tempDirectory:
+	load	r0,sf,3
+	int	235
+	return
+tempFile:
+	load	r0,sf,3
+	load	r1,sf,4
+	int	236
+	return
+copy_text_file:
+	push	r26
+	push	r27
+	push	r28
+	load	r27,sf,3
+	load	r26,sf,4
+	push	r27
+	call	fgetline
+	add	SP,1
+	move	r28,r0
+	jump	@_eac83904_LOOP538_COND
+_eac83904_LOOP538:
+	push	r28
+	push	r26
+	call	fputs
+	add	SP,2
+	push	r26
+	call	fput_nl
+	add	SP,1
+	push	r27
+	call	fgetline
+	add	SP,1
+	move	r28,r0
+_eac83904_LOOP538_COND:
+	cmp	r28,0
+	jump	ne,@_eac83904_LOOP538
+_eac83904_LOOP538_END:
+	pop	r28
+	pop	r27
+	pop	r26
+	return
+copy_raw_file:
+	push	r26
+	push	r27
+	push	r28
+	load	r27,sf,3
+	load	r26,sf,4
+	in	r28,1,r27
+	jump	@_50d9e4bd_LOOP551_COND
+_50d9e4bd_LOOP551:
+	out	1,r26,r28
+	in	r28,1,r27
+_50d9e4bd_LOOP551_COND:
+	cmp	r28,-1
+	jump	ne,@_50d9e4bd_LOOP551
+_50d9e4bd_LOOP551_END:
+	pop	r28
+	pop	r27
+	pop	r26
+	return
+IO_ASM_END:
+	nop
+	call	main
+	int	30
+main:
+	push	r27
+	push	r28
+	int	24
+	move	r27,r0
+	cmp	r27,2
+	jump	lt,@_3305b9_GET_ARGS_FAILED
+_3305b9_GET_ARGS:
+	move	r0,1
+	int	23
+	int	304
+	push	r0
+	call	compute_hailstone
+	add	SP,1
+	push	r0
+	call	put_dec
+	add	SP,1
+	call	put_nl
+	move	r0,0
+	jump	@_3305b9_MAIN_END
+_3305b9_GET_ARGS_FAILED:
+	mov	r28,1
+	jump	@_3305b9_LOOP28_COND
+_3305b9_LOOP28:
+	push	r28
+	call	compute_hailstone
+	add	SP,1
+	push	r0
+	push	r28
+	push	"%d: %d\n"
+	push	1
+	call	fprintf
+	add	SP,4
+_3305b9_LOOP28_CONTINUE:
+	add	r28,1
+_3305b9_LOOP28_COND:
+	cmp	r28,30
+	jump	le,@_3305b9_LOOP28
+_3305b9_LOOP28_END:
+	move	r0,0
+_3305b9_MAIN_END:
+	pop	r28
+	pop	r27
+	return
+compute_hailstone:
+	push	r27
+	push	r28
+	load	r28,sf,3
+	cmp	r28,1
+	jump	p,@_a4ac01_COND49_ELSE
+	move	r0,1
+	jump	@_a4ac01_COND49_END
+_a4ac01_COND49_ELSE:
+	and	r27,r28,0x1
+	cmp	r27,0
+	jump	nz,@_a4ac01_COND53_ELSE
+	div	r28,2
+	push	r28
+	call	compute_hailstone
+	add	SP,1
+	add	r0,1
+	jump	@_a4ac01_COND53_END
+_a4ac01_COND53_ELSE:
+	mult	r28,3
+	add	r28,1
+	push	r28
+	call	compute_hailstone
+	add	SP,1
+	add	r0,1
+_a4ac01_COND53_END:
+_a4ac01_COND49_END:
+	pop	r28
+	pop	r27
+	return
+	stop
+	stop

@@ -1,0 +1,20 @@
+> run.sh example016 326
+Input:326
+iPARSE_INT+1:327
+iPARSE_DEC+1:327
+iPARSE_HEX+1:0x327
+iPARSE_FP+1:327
+
+
+> run.sh example016 3.1415
+Input:3.1415
+iPARSE_INT+1:4
+iPARSE_DEC+1:4
+iPARSE_HEX+1:0x4
+iPARSE_FP+1:4.14150000000000062527760746888816356658935546875
+
+
+> run.sh example016 abcd
+Input:abcd
+iPARSE_INT+1:
+FATAL: stol: no conversion

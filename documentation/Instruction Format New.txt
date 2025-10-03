@@ -1,0 +1,266 @@
+CPU Registers
+R  29 64-Bit Integer General Purpose Registers
+F  32 64-Bit IEEE Floating Point Registers
+SP 64-Bit Integer Stack Pointer
+SF 64-Bit Integer Stack Frame Pointer
+PC 64-Bit Integer Program Counter
+SR 64-Bit Integer Status Register
+
+
+Programmer's Model of the Virtual CPU
+
+    +-----------+      +-----------+      +-----------+
+SR  |  64-bits  |  R00 |  64-bits  |  F00 |  64-bits  |
+    +-----------+      +-----------+      +-----------+
+                   R01 |  64-bits  |  F01 |  64-bits  |
+                       +-----------+	  +-----------+
+                   R02 |  64-bits  |  F02 |  64-bits  |
+                       +-----------+	  +-----------+
+                             .                   .
+                             .                   .
+                             .                   .
+                       +-----------+	  +-----------+
+                   R28 |  64-bits  |  F28 |  64-bits  |
+                       +-----------+	  +-----------+
+                   SF  |  64-bits  |  F29 |  64-bits  |
+                       +-----------+	  +-----------+
+                   SP  |  64-bits  |  F30 |  64-bits  |
+                       +-----------+	  +-----------+
+                   PC  |  64-bits  |  F31 |  64-bits  |
+                       +-----------+	  +-----------+
+
+Register References
+R		Integer in R0-R28
+A		Address in R0-R28 (R29 = SF, R30 = SP, R31 = PC)
+F		Float in F0-F31
+X		R or F
+Y		A or F
+O		R or C
+Q		A, F or C
+SF		Stack Frame	R29
+SP		Stack Pointer	R30
+PC		Program Counter	R31
+SR		Status Register PZSO
+		P Parity	1-odd		0-even
+		Z Zero		1-zero		0-not zero
+		S Signed	1-neg		0-not negative
+		O Overflow	1-overflow	0-no overflow
+
+Constants
+Z		4-bit condition code used for JUMP or CALL or port number 0-15 for IN and OUT
+B		8-bit signed integer
+C0		12-bit unsigned integer
+C1		56-bit signed integer
+C2		42-bit signed integer
+C3		28-bit signed integer
+K		64-bit signed integer
+E		64-bit IEEE float
+P		64-bit Absolute unsigned address
+
+Instruction Modes
+
+Type	Operands
+ 0		FF
+ 0		FFF
+ 0		N
+ 0		R
+ 0		RR
+ 0		RRR
+ 0		RRRR
+ 0		RX
+ 0		X
+ 0		XA
+ 0		XAR
+ 0		XX
+ 0		XXX
+ 0		XXXX
+ 0		ZA
+ 0		ZR
+ 0		ZAR
+ 0		ZX
+ 1		C
+ 2		YC
+ 2		ZC
+ 3		XXC
+ 3		ZXC
+ 3		ZCC
+
+X0		E
+X0		FE
+X0		K
+X0		P
+X0		RE
+X0		RK
+X0		RP
+X0		XP
+X0		XPR
+X0		XAC
+X0		ZE
+X0		ZK
+X0		ZP
+X0		ZPR
+X0		ZRC
+XA		XPC
+XA		ZPC
+
+Type 0 Standard Instruction Format (4 Args)
+Modes: N, [YZ], [YZ][YZ], [YZ][YZ][YZ], [YZ][YZ][YZ][YZ]
+
+64: ttiiiiii aabbccdd 00000000 00001111 11111111 22222222 22223333 33333333
+
+tt		Instruction Type	[0-3]
+iiiiii	Instruction Code	[0-63]
+aa		Operand 0 Type		[0 NONE, 1 CONST, 2 REG, 3 FP]
+bb		Operand 1 Type		[0 NONE, 1 CONST, 2 REG, 3 FP]
+cc		Operand 2 Type		[0 NONE, 1 CONST, 2 REG, 3 FP]
+dd		Operand 3 Type		[0 NONE, 1 CONST, 2 REG, 3 FP]
+0000	Operand 0 Value		[0,4095]
+1111	Operand 1 Value		[0,4095]
+2222	Operand 2 Value		[0,4095]
+3333	Operand 3 Value		[0,4095]
+
+Type 1 Single Constant Instruction Format (1 Arg)
+Modes: C1
+
+64: ttiiiiii 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+
+tt		Instruction Type	[0-3]
+iiiiii	Instruction Code	[0-63]
+0000	Operand 0 Value		[-36028797018963960,36028797018963959]
+
+Type 2 Register/Constant Instruction Format (2 Args)
+Modes: [YZ]C2
+
+64: ttiiiiii aa000000 00000011 11111111 11111111 11111111 11111111 11111111
+
+tt		Instruction Type	[0-3]
+iiiiii	Instruction Code	[0-63]
+aa		Operand 0 Type		[1 CONST, 2 REG, 3 FP]
+0000	Operand 0 Value		[0,4095]
+1111	Operand 1 Value		[-2199023255552,2199023255551]
+
+Type 3 Cond. Code/Register/Constant Instruction Format (3 Args)
+Modes: [YZ][YZ]C3
+
+64: ttiiiiii aabb0000 00000000 11111111 11112222 22222222 22222222 22222222
+
+tt		Instruction Type	[0-3]
+iiiiii	Instruction Code	[0-63]
+aa		Operand 0 Type		[1 CONST, 2 REG, 3 FP]
+bb		Operand 1 Type		[1 CONST, 2 REG]
+0000	Operand 0 Value		[0,4095]
+1111	Operand 1 Value		[0,4095]
+2222	Operand 2 Value		[-134217728,134217727]
+
+
+Condition Code
+0	u	Unconditional
+1	z	Zero
+2	nz	Not Zero
+3	n	Negative
+4	p	Positive
+5	nn	Not Negative
+6	np	Not Positive
+7	o	Overflow
+8	no	No Overflow
+9	pe	Even Parity
+10	po	Odd Parity
+
+
+Instructions
+
+Miscellaneous
+NOP performs no function except when CPU is run in debug mode.
+ 0	NOP				N										No-Op
+ 0	DEBUG			N,Y,YY,YYY,YYYY							Display contents of up to four specific registers or CPU State if N
+? 0	DUMP			AC,CC	(if C is neg, walkHeap)			Dump memory from starting address for number of words
+															Heap walker starting at arg0 if arg1 is negative.
+Register Load/Store Instructions
+ 1	CLEAR			N,X,XX,XXX,XXXX							Clear all registers or up to four specific registers
+ 2	MOVE			YY,YC,AAR,AAC,ACA,ZYQQ					// X <- Y
+ 3	LOAD			YC,YA,YAC,YCA,YCC,YAR					// Y <- ADDR
+ 4	STORE			QC,QA,QAC,QCA,QCC,QAR					// Q -> ADDR
+ 5	POP				N,Y
+ 6	PUSH			Y,C
+
+Control Instructions
+ 7	JMP				A,C,AC,AR,ZA,ZC,ZAC,ZCA,ZCC,ZAR
+ 8 	CALL			A,C,AC,AR,ZA,ZC,ZAC,ZCA,ZCC,ZAR
+ 9	RETURN			N
+10	INTERRUPT		R,C
+11	STOP			N
+
+Arithmetic Instructions
+12	NEGATE			X
+13	ADD				AR,FX,YC,AAR,FFX,AAC,FFC
+14	SUBTRACT		AR,FX,YC,RAA,FFX,AAC,FFC
+15	MULTIPLY		RR,FX,XC,RRR,FFX,RRC,FFC
+16	DIVIDE			RR,FX,XC,RRR,FFX,RRC,FFC,RRRR
+16	RECIP			F
+
+Logical Instructions
+17	COMPL			R
+18	AND				RR,RC,RRR,RRC
+19	OR				RR,RC,RRR,RRC
+20	XOR				RR,RC,RRR,RRC
+21	TEST			X
+22	CMP				AA,AC,FF
+
+Shift Operations
+23	LSHIFT			RR,RC,RRR,RRC
+24	RSHIFT			RR,RC,RRR,RRC
+25	ARSHIFT			RR,RC,RRR,RRC
+26	LROTATE			RR,RC,RRR,RRC
+27	RROTATE			RR,RC,RRR,RRC
+
+I/O Operations
+28	IN				XZZ,XRR,XRZ,XZR		register, Size [0|1|2|4|8] 0=CHAR, Port 0-15
+29	OUT				ZZQ,RRQ,RZQ,ZRQ		Size [0|1|2|4|8] 0=CHAR, Port 0-15, value
+30	PACK			RR,RRR,RRRR				Result put in OP0 for RR and RRRR
+31	PACK64			RR,RRR,RRRR				Result put in OP0 for RR and RRRR
+32	UNPACK			RR,RRRR				Source is in OP0
+33	UNPACK64		RR,RRR,RRRR				Source is in OP0
+34	CAS				RRAO,CCAO,RCAO,CRAO
+35	ENDIAN			RR,RC,CR,CC
+
+Interrupts
+	RESTORE
+	SAVE
+
+Assembler Instructions
+DCI		Declare Constant 64-Bit Integer
+DCF		Declare Constant 64-Bit Float
+DCB		Declare Array of Bytes (byte count + packed words)
+DCW		Declare Array of Words (word count + int, fp, char)
+DCS		Declare Constant String UTF-8 (Allocates one word per character with leading count plus trailing null)
+DCA		1 Arg. - Declare an array of the specified size (with leading count) initialized to zero.
+DCA		2 Arg. or more - Declare Constant Array of Words (Allocates specified words with leading count)
+
+Preprocessor Instructions (underscores optional and case insensitive)
+#define		Define an integer or FP constant
+#undef		Undefine a symbol
+#include	Include another source file
+#call		Call to stack-based function
+#def_func	Declare header of a stack-based function. Arguments declare the formal parameters
+#end_func	Declare footer (including implied return in r0 or f0) of a stack-based function.
+#return		Return an integer in R0
+#freturn	Return a FP in F0
+#var		Declare an alias for registers and push them to save the old values.  Arguments are the names to be used for r1,r2,r3,etc.  Can only be used once in a stack-based function and must be used before #fvar.
+#fvar		Declare an alias for FP registers and push them to save the old values.  Arguments are the names to be used for f1,f2,f3,etc.  Can only be used once in a stack-based function and must be used after #var.
+#svar		Push a 0 onto the stack and declare its stack frame relative address as the supplied aliases.  Arguments are the names to be used for int1,int2,int3,etc.  Must be declared before #var and #fvar register variables.
+#gvar		Push a 0 onto the stack and declare its absolute address as the supplied alias.  Arguments are the names to be used for int1,int2,int3,etc.  Must be declared before any function calls change SF.
+#if_def		Declare begining of conditional assembly block if symbol is defined
+#if_ndef	Declare beginning of conditional assembly block if symbol is not defined
+#else		Declare beginning of alternate block for conditional assembly
+#end_if		Declare end of conditional assembly block or alternate block
+#def_macro	Declare begining of a substitution macro.  Arguments declare the formal substitution parameters.
+#end_macro	Declare end of a substitution macro
+#error		Declare an assembly error that will terminate the assembly process.
+#abort		Declare an end to the current assembly file.  Does not terminate the entire process.
+#info		Prints the text to the console during assembly.  Can use ${variable}
+##			Preprocessor concatenation
+
+Standard Preprocessor Defines
+_32_bit		Defined as 1 if using 32-bit architecture
+_64_bit		Defined as 1 if using 64-bit architecture
+

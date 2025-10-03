@@ -1,0 +1,110 @@
+#define iINT_MIN		1
+#define iINT_MAX		2
+#define iFLOAT_MIN		3
+#define iFLOAT_LOWEST	4
+#define iFLOAT_MAX		5
+#define iNEGATIVE_INFINITY	6
+#define iPOSITIVE_INFINITY	7
+#define iNAN			8
+
+#define	iCYCLES			10
+#define	iCLOCK			11
+#define	iSAVE			12
+#define	iSAVE_FP		13
+#define	iRESTORE		14
+#define	iRESTORE_FP		15
+#define iPrintCPUState	16
+
+#define	iALLOC			20
+#define	iREALLOC		21
+#define	iFREE			22
+#define	iARGS			23
+#define	iARGC			24
+#define iMEMMOVE		25
+#define iMEMCLEAR		26
+
+#define	iEXIT			30
+#define iSYSTEM			31
+#define	iFORK			32
+#define	iWAIT			33
+#define	iWAIT_PID		34
+#define	iTHREAD			35
+#define	iJOIN_THREAD	36
+#define	iSLEEP			37
+#define	iGET_PID		38
+#define	iGET_NUM_CORES	39
+
+#define	TRUE	-1
+#define	FALSE	0
+
+#def_macro	TO_BOOLEAN(x)
+	test	${x}
+	move	z, r0, FALSE, TRUE
+#end_macro
+
+#def_macro	TO_NOT_BOOLEAN(x)
+	test	${x}
+	move	z, r0, TRUE, FALSE
+#end_macro
+
+#def_macro	COMPARE(x, op, y)
+	cmp		${x}, ${y}
+	move	op, r0, TRUE, FALSE
+#end_macro
+
+#def_macro	COMPARE_RANGE(low, op1, x, op2, high)
+	push	r1
+	COMPARE(low, op1, x)
+	move	r1, r0
+	COMPARE(x, op2, high)
+	and		r0, r1
+	pop		r1
+	test	r0
+#end_macro
+
+#def_macro	ALLOC(size)
+	move	r0, ${size}
+	int		iALLOC
+#end_macro
+
+#def_macro	REALLOC(addr, size)
+	move	r0, ${addr}
+	push	r1
+	move	r1, ${size}
+	int		iREALLOC
+	pop		r1
+#end_macro
+
+#def_macro	FREE2(a, offset)
+	move	r0, ${a}[${offset}]
+	int		iFREE
+#end_macro
+
+#def_macro	FREE(a)
+	move	r0, ${a}
+	int		iFREE
+#end_macro
+
+#def_macro	MEMMOVE(dest, src, size)
+	push	r2
+	push	r1
+	move	r0, ${dest}
+	move	r1, ${src}
+	move	r2, ${size}
+	int		iMEMMOVE
+	pop		r1
+	pop		r2
+#end_macro
+
+#def_macro	MEMCLEAR(dest, size)
+	push	r1
+	move	r0, ${dest}
+	move	r1, ${size}
+	int		iMEMCLEAR
+	pop		r1
+#end_macro
+
+#def_macro	SLEEP(delay_in_milliseconds)
+	move	r0, ${delay_in_milliseconds}
+	int		iSLEEP
+#end_macro

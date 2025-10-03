@@ -1,0 +1,247 @@
+// Generated from LiteralSubstitution.g4 by ANTLR 4.13.2
+package cloud.lesh.CPUSim64v2;
+import org.antlr.v4.runtime.Lexer;
+import org.antlr.v4.runtime.CharStream;
+import org.antlr.v4.runtime.Token;
+import org.antlr.v4.runtime.TokenStream;
+import org.antlr.v4.runtime.*;
+import org.antlr.v4.runtime.atn.*;
+import org.antlr.v4.runtime.dfa.DFA;
+import org.antlr.v4.runtime.misc.*;
+
+@SuppressWarnings({"all", "warnings", "unchecked", "unused", "cast", "CheckReturnValue", "this-escape"})
+public class LiteralSubstitutionLexer extends Lexer {
+	static { RuntimeMetaData.checkVersion("4.13.2", RuntimeMetaData.VERSION); }
+
+	protected static final DFA[] _decisionToDFA;
+	protected static final PredictionContextCache _sharedContextCache =
+		new PredictionContextCache();
+	public static final int
+		DIRECTIVE_LINE=1, STRING=2, CHARLIT=3, FLOAT=4, NEWLINE=5, OTHER=6;
+	public static String[] channelNames = {
+		"DEFAULT_TOKEN_CHANNEL", "HIDDEN"
+	};
+
+	public static String[] modeNames = {
+		"DEFAULT_MODE"
+	};
+
+	private static String[] makeRuleNames() {
+		return new String[] {
+			"DIRECTIVE_LINE", "STRING", "CHARLIT", "ESC", "HEX", "FLOAT", "NEWLINE", 
+			"OTHER", "DIGITS", "SP", "LABEL"
+		};
+	}
+	public static final String[] ruleNames = makeRuleNames();
+
+	private static String[] makeLiteralNames() {
+		return new String[] {
+		};
+	}
+	private static final String[] _LITERAL_NAMES = makeLiteralNames();
+	private static String[] makeSymbolicNames() {
+		return new String[] {
+			null, "DIRECTIVE_LINE", "STRING", "CHARLIT", "FLOAT", "NEWLINE", "OTHER"
+		};
+	}
+	private static final String[] _SYMBOLIC_NAMES = makeSymbolicNames();
+	public static final Vocabulary VOCABULARY = new VocabularyImpl(_LITERAL_NAMES, _SYMBOLIC_NAMES);
+
+	/**
+	 * @deprecated Use {@link #VOCABULARY} instead.
+	 */
+	@Deprecated
+	public static final String[] tokenNames;
+	static {
+		tokenNames = new String[_SYMBOLIC_NAMES.length];
+		for (int i = 0; i < tokenNames.length; i++) {
+			tokenNames[i] = VOCABULARY.getLiteralName(i);
+			if (tokenNames[i] == null) {
+				tokenNames[i] = VOCABULARY.getSymbolicName(i);
+			}
+
+			if (tokenNames[i] == null) {
+				tokenNames[i] = "<INVALID>";
+			}
+		}
+	}
+
+	@Override
+	@Deprecated
+	public String[] getTokenNames() {
+		return tokenNames;
+	}
+
+	@Override
+
+	public Vocabulary getVocabulary() {
+		return VOCABULARY;
+	}
+
+
+	public LiteralSubstitutionLexer(CharStream input) {
+		super(input);
+		_interp = new LexerATNSimulator(this,_ATN,_decisionToDFA,_sharedContextCache);
+	}
+
+	@Override
+	public String getGrammarFileName() { return "LiteralSubstitution.g4"; }
+
+	@Override
+	public String[] getRuleNames() { return ruleNames; }
+
+	@Override
+	public String getSerializedATN() { return _serializedATN; }
+
+	@Override
+	public String[] getChannelNames() { return channelNames; }
+
+	@Override
+	public String[] getModeNames() { return modeNames; }
+
+	@Override
+	public ATN getATN() { return _ATN; }
+
+	@Override
+	public boolean sempred(RuleContext _localctx, int ruleIndex, int predIndex) {
+		switch (ruleIndex) {
+		case 0:
+			return DIRECTIVE_LINE_sempred((RuleContext)_localctx, predIndex);
+		}
+		return true;
+	}
+	private boolean DIRECTIVE_LINE_sempred(RuleContext _localctx, int predIndex) {
+		switch (predIndex) {
+		case 0:
+			return getCharPositionInLine()==0;
+		case 1:
+			return getCharPositionInLine()==0;
+		}
+		return true;
+	}
+
+	public static final String _serializedATN =
+		"\u0004\u0000\u0006\u00ae\u0006\uffff\uffff\u0002\u0000\u0007\u0000\u0002"+
+		"\u0001\u0007\u0001\u0002\u0002\u0007\u0002\u0002\u0003\u0007\u0003\u0002"+
+		"\u0004\u0007\u0004\u0002\u0005\u0007\u0005\u0002\u0006\u0007\u0006\u0002"+
+		"\u0007\u0007\u0007\u0002\b\u0007\b\u0002\t\u0007\t\u0002\n\u0007\n\u0001"+
+		"\u0000\u0001\u0000\u0005\u0000\u001a\b\u0000\n\u0000\f\u0000\u001d\t\u0000"+
+		"\u0001\u0000\u0003\u0000 \b\u0000\u0001\u0000\u0005\u0000#\b\u0000\n\u0000"+
+		"\f\u0000&\t\u0000\u0001\u0000\u0001\u0000\u0001\u0000\u0001\u0000\u0001"+
+		"\u0000\u0004\u0000-\b\u0000\u000b\u0000\f\u0000.\u0001\u0000\u0005\u0000"+
+		"2\b\u0000\n\u0000\f\u00005\t\u0000\u0001\u0000\u0001\u0000\u0005\u0000"+
+		"9\b\u0000\n\u0000\f\u0000<\t\u0000\u0001\u0000\u0001\u0000\u0001\u0000"+
+		"\u0001\u0000\u0001\u0000\u0001\u0000\u0004\u0000D\b\u0000\u000b\u0000"+
+		"\f\u0000E\u0001\u0000\u0005\u0000I\b\u0000\n\u0000\f\u0000L\t\u0000\u0003"+
+		"\u0000N\b\u0000\u0001\u0001\u0001\u0001\u0001\u0001\u0005\u0001S\b\u0001"+
+		"\n\u0001\f\u0001V\t\u0001\u0001\u0001\u0001\u0001\u0001\u0002\u0001\u0002"+
+		"\u0001\u0002\u0003\u0002]\b\u0002\u0001\u0002\u0001\u0002\u0001\u0003"+
+		"\u0001\u0003\u0001\u0003\u0001\u0003\u0001\u0003\u0001\u0003\u0001\u0003"+
+		"\u0001\u0003\u0001\u0003\u0003\u0003j\b\u0003\u0001\u0004\u0001\u0004"+
+		"\u0001\u0005\u0003\u0005o\b\u0005\u0001\u0005\u0001\u0005\u0001\u0005"+
+		"\u0005\u0005t\b\u0005\n\u0005\f\u0005w\t\u0005\u0001\u0005\u0001\u0005"+
+		"\u0003\u0005{\b\u0005\u0001\u0005\u0003\u0005~\b\u0005\u0001\u0005\u0003"+
+		"\u0005\u0081\b\u0005\u0001\u0005\u0001\u0005\u0001\u0005\u0001\u0005\u0003"+
+		"\u0005\u0087\b\u0005\u0001\u0005\u0003\u0005\u008a\b\u0005\u0001\u0005"+
+		"\u0003\u0005\u008d\b\u0005\u0001\u0005\u0001\u0005\u0001\u0005\u0003\u0005"+
+		"\u0092\b\u0005\u0001\u0005\u0001\u0005\u0003\u0005\u0096\b\u0005\u0001"+
+		"\u0006\u0003\u0006\u0099\b\u0006\u0001\u0006\u0001\u0006\u0001\u0007\u0001"+
+		"\u0007\u0001\b\u0004\b\u00a0\b\b\u000b\b\f\b\u00a1\u0001\t\u0001\t\u0001"+
+		"\n\u0001\n\u0005\n\u00a8\b\n\n\n\f\n\u00ab\t\n\u0001\n\u0001\n\u0000\u0000"+
+		"\u000b\u0001\u0001\u0003\u0002\u0005\u0003\u0007\u0000\t\u0000\u000b\u0004"+
+		"\r\u0005\u000f\u0006\u0011\u0000\u0013\u0000\u0015\u0000\u0001\u0000\u0012"+
+		"\u0002\u0000DDdd\u0002\u0000CCcc\u0006\u0000FFSSWWffssww\u0002\u0000\n"+
+		"\n\r\r\u0002\u0000LLll\u0002\u0000IIii\u0002\u0000NNnn\u0002\u0000EEe"+
+		"e\u0004\u0000\n\n\r\r\"\"\\\\\u0004\u0000\n\n\r\r\'\'\\\\\t\u0000\"\""+
+		"\'\'00\\\\bbffnnrrtt\u0002\u0000UUuu\u0003\u000009AFaf\u0002\u0000++-"+
+		"-\u0001\u000009\u0002\u0000\t\t  \u0003\u0000AZ__az\u0004\u000009AZ__"+
+		"az\u00c3\u0000\u0001\u0001\u0000\u0000\u0000\u0000\u0003\u0001\u0000\u0000"+
+		"\u0000\u0000\u0005\u0001\u0000\u0000\u0000\u0000\u000b\u0001\u0000\u0000"+
+		"\u0000\u0000\r\u0001\u0000\u0000\u0000\u0000\u000f\u0001\u0000\u0000\u0000"+
+		"\u0001M\u0001\u0000\u0000\u0000\u0003O\u0001\u0000\u0000\u0000\u0005Y"+
+		"\u0001\u0000\u0000\u0000\u0007i\u0001\u0000\u0000\u0000\tk\u0001\u0000"+
+		"\u0000\u0000\u000b\u0095\u0001\u0000\u0000\u0000\r\u0098\u0001\u0000\u0000"+
+		"\u0000\u000f\u009c\u0001\u0000\u0000\u0000\u0011\u009f\u0001\u0000\u0000"+
+		"\u0000\u0013\u00a3\u0001\u0000\u0000\u0000\u0015\u00a5\u0001\u0000\u0000"+
+		"\u0000\u0017\u001b\u0004\u0000\u0000\u0000\u0018\u001a\u0003\u0013\t\u0000"+
+		"\u0019\u0018\u0001\u0000\u0000\u0000\u001a\u001d\u0001\u0000\u0000\u0000"+
+		"\u001b\u0019\u0001\u0000\u0000\u0000\u001b\u001c\u0001\u0000\u0000\u0000"+
+		"\u001c\u001f\u0001\u0000\u0000\u0000\u001d\u001b\u0001\u0000\u0000\u0000"+
+		"\u001e \u0003\u0015\n\u0000\u001f\u001e\u0001\u0000\u0000\u0000\u001f"+
+		" \u0001\u0000\u0000\u0000 $\u0001\u0000\u0000\u0000!#\u0003\u0013\t\u0000"+
+		"\"!\u0001\u0000\u0000\u0000#&\u0001\u0000\u0000\u0000$\"\u0001\u0000\u0000"+
+		"\u0000$%\u0001\u0000\u0000\u0000%\'\u0001\u0000\u0000\u0000&$\u0001\u0000"+
+		"\u0000\u0000\'(\u0005.\u0000\u0000()\u0007\u0000\u0000\u0000)*\u0007\u0001"+
+		"\u0000\u0000*,\u0007\u0002\u0000\u0000+-\u0003\u0013\t\u0000,+\u0001\u0000"+
+		"\u0000\u0000-.\u0001\u0000\u0000\u0000.,\u0001\u0000\u0000\u0000./\u0001"+
+		"\u0000\u0000\u0000/3\u0001\u0000\u0000\u000002\b\u0003\u0000\u000010\u0001"+
+		"\u0000\u0000\u000025\u0001\u0000\u0000\u000031\u0001\u0000\u0000\u0000"+
+		"34\u0001\u0000\u0000\u00004N\u0001\u0000\u0000\u000053\u0001\u0000\u0000"+
+		"\u00006:\u0004\u0000\u0001\u000079\u0003\u0013\t\u000087\u0001\u0000\u0000"+
+		"\u00009<\u0001\u0000\u0000\u0000:8\u0001\u0000\u0000\u0000:;\u0001\u0000"+
+		"\u0000\u0000;=\u0001\u0000\u0000\u0000<:\u0001\u0000\u0000\u0000=>\u0005"+
+		".\u0000\u0000>?\u0007\u0004\u0000\u0000?@\u0007\u0005\u0000\u0000@A\u0007"+
+		"\u0006\u0000\u0000AC\u0007\u0007\u0000\u0000BD\u0003\u0013\t\u0000CB\u0001"+
+		"\u0000\u0000\u0000DE\u0001\u0000\u0000\u0000EC\u0001\u0000\u0000\u0000"+
+		"EF\u0001\u0000\u0000\u0000FJ\u0001\u0000\u0000\u0000GI\b\u0003\u0000\u0000"+
+		"HG\u0001\u0000\u0000\u0000IL\u0001\u0000\u0000\u0000JH\u0001\u0000\u0000"+
+		"\u0000JK\u0001\u0000\u0000\u0000KN\u0001\u0000\u0000\u0000LJ\u0001\u0000"+
+		"\u0000\u0000M\u0017\u0001\u0000\u0000\u0000M6\u0001\u0000\u0000\u0000"+
+		"N\u0002\u0001\u0000\u0000\u0000OT\u0005\"\u0000\u0000PS\u0003\u0007\u0003"+
+		"\u0000QS\b\b\u0000\u0000RP\u0001\u0000\u0000\u0000RQ\u0001\u0000\u0000"+
+		"\u0000SV\u0001\u0000\u0000\u0000TR\u0001\u0000\u0000\u0000TU\u0001\u0000"+
+		"\u0000\u0000UW\u0001\u0000\u0000\u0000VT\u0001\u0000\u0000\u0000WX\u0005"+
+		"\"\u0000\u0000X\u0004\u0001\u0000\u0000\u0000Y\\\u0005\'\u0000\u0000Z"+
+		"]\u0003\u0007\u0003\u0000[]\b\t\u0000\u0000\\Z\u0001\u0000\u0000\u0000"+
+		"\\[\u0001\u0000\u0000\u0000]^\u0001\u0000\u0000\u0000^_\u0005\'\u0000"+
+		"\u0000_\u0006\u0001\u0000\u0000\u0000`a\u0005\\\u0000\u0000aj\u0007\n"+
+		"\u0000\u0000bc\u0005\\\u0000\u0000cd\u0007\u000b\u0000\u0000de\u0003\t"+
+		"\u0004\u0000ef\u0003\t\u0004\u0000fg\u0003\t\u0004\u0000gh\u0003\t\u0004"+
+		"\u0000hj\u0001\u0000\u0000\u0000i`\u0001\u0000\u0000\u0000ib\u0001\u0000"+
+		"\u0000\u0000j\b\u0001\u0000\u0000\u0000kl\u0007\f\u0000\u0000l\n\u0001"+
+		"\u0000\u0000\u0000mo\u0005-\u0000\u0000nm\u0001\u0000\u0000\u0000no\u0001"+
+		"\u0000\u0000\u0000op\u0001\u0000\u0000\u0000pq\u0003\u0011\b\u0000qu\u0005"+
+		".\u0000\u0000rt\u0003\u0011\b\u0000sr\u0001\u0000\u0000\u0000tw\u0001"+
+		"\u0000\u0000\u0000us\u0001\u0000\u0000\u0000uv\u0001\u0000\u0000\u0000"+
+		"v}\u0001\u0000\u0000\u0000wu\u0001\u0000\u0000\u0000xz\u0007\u0007\u0000"+
+		"\u0000y{\u0007\r\u0000\u0000zy\u0001\u0000\u0000\u0000z{\u0001\u0000\u0000"+
+		"\u0000{|\u0001\u0000\u0000\u0000|~\u0003\u0011\b\u0000}x\u0001\u0000\u0000"+
+		"\u0000}~\u0001\u0000\u0000\u0000~\u0096\u0001\u0000\u0000\u0000\u007f"+
+		"\u0081\u0005-\u0000\u0000\u0080\u007f\u0001\u0000\u0000\u0000\u0080\u0081"+
+		"\u0001\u0000\u0000\u0000\u0081\u0082\u0001\u0000\u0000\u0000\u0082\u0083"+
+		"\u0005.\u0000\u0000\u0083\u0089\u0003\u0011\b\u0000\u0084\u0086\u0007"+
+		"\u0007\u0000\u0000\u0085\u0087\u0007\r\u0000\u0000\u0086\u0085\u0001\u0000"+
+		"\u0000\u0000\u0086\u0087\u0001\u0000\u0000\u0000\u0087\u0088\u0001\u0000"+
+		"\u0000\u0000\u0088\u008a\u0003\u0011\b\u0000\u0089\u0084\u0001\u0000\u0000"+
+		"\u0000\u0089\u008a\u0001\u0000\u0000\u0000\u008a\u0096\u0001\u0000\u0000"+
+		"\u0000\u008b\u008d\u0005-\u0000\u0000\u008c\u008b\u0001\u0000\u0000\u0000"+
+		"\u008c\u008d\u0001\u0000\u0000\u0000\u008d\u008e\u0001\u0000\u0000\u0000"+
+		"\u008e\u008f\u0003\u0011\b\u0000\u008f\u0091\u0007\u0007\u0000\u0000\u0090"+
+		"\u0092\u0007\r\u0000\u0000\u0091\u0090\u0001\u0000\u0000\u0000\u0091\u0092"+
+		"\u0001\u0000\u0000\u0000\u0092\u0093\u0001\u0000\u0000\u0000\u0093\u0094"+
+		"\u0003\u0011\b\u0000\u0094\u0096\u0001\u0000\u0000\u0000\u0095n\u0001"+
+		"\u0000\u0000\u0000\u0095\u0080\u0001\u0000\u0000\u0000\u0095\u008c\u0001"+
+		"\u0000\u0000\u0000\u0096\f\u0001\u0000\u0000\u0000\u0097\u0099\u0005\r"+
+		"\u0000\u0000\u0098\u0097\u0001\u0000\u0000\u0000\u0098\u0099\u0001\u0000"+
+		"\u0000\u0000\u0099\u009a\u0001\u0000\u0000\u0000\u009a\u009b\u0005\n\u0000"+
+		"\u0000\u009b\u000e\u0001\u0000\u0000\u0000\u009c\u009d\t\u0000\u0000\u0000"+
+		"\u009d\u0010\u0001\u0000\u0000\u0000\u009e\u00a0\u0007\u000e\u0000\u0000"+
+		"\u009f\u009e\u0001\u0000\u0000\u0000\u00a0\u00a1\u0001\u0000\u0000\u0000"+
+		"\u00a1\u009f\u0001\u0000\u0000\u0000\u00a1\u00a2\u0001\u0000\u0000\u0000"+
+		"\u00a2\u0012\u0001\u0000\u0000\u0000\u00a3\u00a4\u0007\u000f\u0000\u0000"+
+		"\u00a4\u0014\u0001\u0000\u0000\u0000\u00a5\u00a9\u0007\u0010\u0000\u0000"+
+		"\u00a6\u00a8\u0007\u0011\u0000\u0000\u00a7\u00a6\u0001\u0000\u0000\u0000"+
+		"\u00a8\u00ab\u0001\u0000\u0000\u0000\u00a9\u00a7\u0001\u0000\u0000\u0000"+
+		"\u00a9\u00aa\u0001\u0000\u0000\u0000\u00aa\u00ac\u0001\u0000\u0000\u0000"+
+		"\u00ab\u00a9\u0001\u0000\u0000\u0000\u00ac\u00ad\u0005:\u0000\u0000\u00ad"+
+		"\u0016\u0001\u0000\u0000\u0000\u001b\u0000\u001b\u001f$.3:EJMRT\\inuz"+
+		"}\u0080\u0086\u0089\u008c\u0091\u0095\u0098\u00a1\u00a9\u0000";
+	public static final ATN _ATN =
+		new ATNDeserializer().deserialize(_serializedATN.toCharArray());
+	static {
+		_decisionToDFA = new DFA[_ATN.getNumberOfDecisions()];
+		for (int i = 0; i < _ATN.getNumberOfDecisions(); i++) {
+			_decisionToDFA[i] = new DFA(_ATN.getDecisionState(i), i);
+		}
+	}
+}

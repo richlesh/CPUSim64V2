@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>CPUSim64 Software Interrupts</title>
+	<meta name="description" content="Interrupt Documentation for CPUSim64">
+	<link rel="canonical" href="https://www.lesh.cloud/cpusim64/Interrupt_Reference.html">
+	<meta name="robots" content="max-image-preview:large">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="generator" content="BBEdit 14.6">
+	<meta name="author" content="Richard Lesh">
+	<link rel="stylesheet" type="text/css" href="styles.css">
+</head>
+<body>
+<h1>CPUSim64 Software Interrupts</h1>
+<p>The CPUSim64 comes with many functions defined as part of its operating system.  These functions are accessed via software interrupts.  To access the defines that give symbolic names to the interrupt values you must include the appropriate system include file.</p>
+<p>Input to interrupt functions is passed through known registers. Output is usually in either <code>r0</code> or <code>f0</code> if the function returns a value.</p>
+<p class="note">When invoking interrupts, there is no guarantee that the operands will not be modified or that registers <code>r0</code> or <code>f0</code> will not be modified.</p>
+
+	<h3>&lt;system/io.def&gt;</h3>
+	<p></p>
+<table class="instruction">
+    <colgroup><col span="2" class="instruction">
+    	<col style="width:20%"><col></colgroup>
+	<thead>
+<tr><th>Interrupt</th><th>Pneumonic</th><th>Input Registers</th><th>Operation</th></tr>
+	</thead>
+	<tbody>
+		<tr><td>200</td><td>iPUT_NL</td><td>r0: output port</td><td>Outputs the newline character(s) to the output port.</td></tr>
+		<tr><td>201</td><td>iPUT_INT</td><td>r0: output port<br>r1: output value<br>r2: base</td><td>Converts the output value to a string using the specified base and outputs it to the specified port.</td></tr>
+		<tr><td>202</td><td>iPUT_DEC</td><td>r0: output port<br>r1: output value</td><td>Converts the output value to a string using base 10 and outputs it to the specified port.</td></tr>
+		<tr><td>203</td><td>iPUT_HEX</td><td>r0: output port<br>r1: output value</td><td>Converts the output value to a string using base 16 and outputs it to the specified port.</td></tr>
+		<tr><td>204</td><td>iPUT_FP</td><td>r0: output port<br>f0: output value</td><td>Converts the output value to a string and outputs it to the specified port.</td></tr>
+		<tr><td>205</td><td>iPUTS</td><td>r0: output port<br>r1: output string address</td><td>Outputs a string to the specified port.</td></tr>
+		<tr><td>206</td><td>iGET_INT</td><td>r0: input port<br>r1: base</td><td>Gets string from the specified port and converts it to an integer using base.</td></tr>
+		<tr><td>207</td><td>iGET_DEC</td><td>r0: input port</td><td>Gets string from the specified port and converts it to an integer using base 10.</td></tr>
+		<tr><td>208</td><td>iGET_HEX</td><td>r0: input port</td><td>Gets string from the specified port and converts it to an integer using base 16.</td></tr>
+		<tr><td>209</td><td>iGET_FP</td><td>r0: input port</td><td>Gets string from the specified port and converts it to floating point.</td></tr>
+		<tr><td>210</td><td>iGETS</td><td>r0: input port<br>r1: buffer to hold string</td><td>Gets string from the specified port.  r1 will change if buffer is realloced to a larger size.</td></tr>
+		<tr><td>211</td><td>iPRINTF</td><td>Arg1: port<br>Arg2: format string address<br>Arg3: first value<br>Arg4: second value<br>...</td><td>Stack-based interrupt that implements C-style printf().  Arguments are pushed in reverse order onto the stack.  Return address and stack frame are expected to be pushed last which means this interrupt should only be used inside a called function like fprintf().</td></tr>
+		<tr><td>220</td><td>iOPEN_FILE_READ</td><td>r0: port (3-15)<br>r1: filepath string</td><td>Opens the file for text reading.</td></tr>
+		<tr><td>221</td><td>iOPEN_FILE_WRITE</td><td>r0: port (3-15)<br>r1: filepath string</td><td>Opens the file for test writing.</td></tr>
+		<tr><td>222</td><td>iOPEN_FILE_APPEND</td><td>r0: port (3-15)<br>r1: filepath string</td><td>Opens the file for text append.</td></tr>
+		<tr><td>223</td><td>iOPEN_RAW_FILE_READ</td><td>r0: port (3-15)<br>r1: filepath string</td><td>Opens the file for raw read.</td></tr>
+		<tr><td>224</td><td>iOPEN_RAW_FILE_WRITE</td><td>r0: port (3-15)<br>r1: filepath string</td><td>Opens the file for raw write.</td></tr>
+		<tr><td>225</td><td>iOPEN_RAW_FILE_APPEND</td><td>r0: port (3-15)<br>r1: filepath string</td><td>Opens the file for raw append.</td></tr>
+		<tr><td>226</td><td>iCLOSE_FILE</td><td>r0: port</td><td>Closes the file on port.</td></tr>
+		<tr><td>227</td><td>iFLUSH</td><td>r0: port</td><td>Flushes output to the file on port.</td></tr>
+		<tr><td>228</td><td>iDELETE_FILE</td><td>r0: filepath string</td><td>Deletes the file specified.  Returns TRUE if successful./td></tr>
+		<tr><td>229</td><td>iMAKE_DIR</td><td>r0: path string</td><td>Creates the specified directory.  Returns TRUE if successful./td></tr>
+		<tr><td>230</td><td>iDELETE_DIR</td><td>r0: path string</td><td>Deletes the specified directory.  Must be empty.  Returns TRUE if successful./td></tr>
+		<tr><td>231</td><td>iIS_DIR</td><td>r0: filepath string</td><td>Returns true if the specified filepath belongs to a directory.</td></tr>
+		<tr><td>232</td><td>iIS_FILE</td><td>r0: filepath string</td><td>Returns true if the specified filepath belongs to a file.</td></tr>
+		<tr><td>233</td><td>iFILE_EXISTS</td><td>r0: filepath string</td><td>Returns true if the specified filepath exists as a file or directory.</td></tr>
+		<tr><td>234</td><td>iFILES</td><td>r0: path string</td><td>Returns an array of strings containing the files/dirs residing in the path specified.</td></tr>
+		<tr><td>235</td><td>iTEMP_DIR</td><td>r0: prefix string</td><td>Returns an heap allocated string containing the name of a randomly generated tempory directory.  Returns null on error.</td></tr>
+		<tr><td>236</td><td>iTEMP_FILE</td><td>r0: prefix string<br>r1: extension string</td><td>Returns an heap allocated string containing the name of a randomly generated tempory filepath.  Returns null on error.</td></tr>
+	</tbody>
+</table>
+
+	<h3>&lt;system/math.def&gt;</h3>
+	<p></p>
+<table class="instruction">
+    <colgroup><col span="2" class="instruction">
+    	<col style="width:20%"><col></colgroup>
+	<thead>
+<tr><th>Interrupt</th><th>Pneumonic</th><th>Input Registers</th><th>Operation</th></tr>
+	</thead>
+	<tbody>
+		<tr><td>100</td><td>iPI</td><td>none</td><td>Returns the floating point constant π.</td></tr>
+		<tr><td>101</td><td>iE</td><td>none</td><td>Returns the floating point constant base of the natural logarithm.</td></tr>
+		<tr><td>102</td><td>iABS_FP</td><td>f0: value</td><td>Returns the absolute value of the floating point value.</td></tr>
+		<tr><td>103</td><td>iABS</td><td>r0: value</td><td>Returns the absolute value of the integer value.</td></tr>
+		<tr><td>104</td><td>iCEIL</td><td>f0: value</td><td>Returns the smallest whole number greater than or equal to value.</td></tr>
+		<tr><td>105</td><td>iFLOOR</td><td>f0: value</td><td>Returns the largest whole number less than or equal to value.</td></tr>
+		<tr><td>106</td><td>iROUND</td><td>f0: value</td><td>Returns the nearest whole number to value.</td></tr>
+		<tr><td>107</td><td>iSQRT</td><td>f0: value</td><td>Returns the square root of value.</td></tr>
+		<tr><td>108</td><td>iEXP</td><td>f0: value</td><td>Returns e<sup>value</sup>.</td></tr>
+		<tr><td>109</td><td>iLOG</td><td>f0: value</td><td>Returns the natural logarithm of value.</td></tr>
+		<tr><td>110</td><td>iPOW</td><td>f0: base<br>f1: exponent</td><td>Returns base<sup>exponent</sub></td></tr>
+		<tr><td>111</td><td>iREMAINDER</td><td>f0: num<br>f1: denom</td><td>Returns the fractional portion of num / denom.</td></tr>
+		<tr><td>112</td><td>iMAX_FP</td><td>f0: value<br>f1: value</td><td>Returns the larger of the two floating point values.</td></tr>
+		<tr><td>113</td><td>iMIN_FP</td><td>f0: value<br>f1: value</td><td>Returns the smaller of the two floating point values.</td></tr>
+		<tr><td>114</td><td>iMAX</td><td>r0: value<br>r1: value</td><td>Returns the larger of the two integer values.</td></tr>
+		<tr><td>115</td><td>iMIN</td><td>r0: value<br>r1: value</td><td>Returns the larger of the two integer values.</td></tr>
+		<tr><td>116</td><td>iRANDOM</td><td>none</td><td>Returns a pseudorandom floating point greater than or equal to 0.0 and less than 1.0.</td></tr>
+		<tr><td>117</td><td>iRAND</td><td>r0: lower<br>r1: upper</td><td>Returns a uniformly distributed random integer on the interval [lower,upper]</td></tr>
+		<tr><td>118</td><td>iTO_DEGREES</td><td>f0: value</td><td>Returns value converted from radians to degrees.</td></tr>
+		<tr><td>119</td><td>iTO_RADIANS</td><td>f0: value</td><td>Returns value converted from degrees to radians.</td></tr>
+		<tr><td>120</td><td>iSIN</td><td>f0: value in radians</td><td>Returns sin(value).</td></tr>
+		<tr><td>121</td><td>iCOS</td><td>f0: value in radians</td><td>Returns cos(value).</td></tr>
+		<tr><td>122</td><td>iTAN</td><td>f0: value in radians</td><td>Returns tan(value).</td></tr>
+		<tr><td>123</td><td>iASIN</td><td>f0: value</td><td>Returns arcsin(value) in radians.</td></tr>
+		<tr><td>124</td><td>iACOS</td><td>f0: value</td><td>Returns arccos(value) in radians.</td></tr>
+		<tr><td>126</td><td>iATAN</td><td>f0: value</td><td>Returns arctan(value) in radians.</td></tr>
+		<tr><td>125</td><td>iATAN2</td><td>f0: num<br>f1: denom</td><td>Returns arctan(num/denom) in radians even if denom is 0.</td></tr>
+	</tbody>
+</table>
+
+	<h3>&lt;system/string.def&gt;</h3>
+	<p></p>
+<table class="instruction">
+    <colgroup><col span="2" class="instruction">
+    	<col style="width:20%"><col></colgroup>
+	<thead>
+<tr><th>Interrupt</th><th>Pneumonic</th><th>Input Registers</th><th>Operation</th></tr>
+	</thead>
+	<tbody>
+		<tr><td>301</td><td>iFMT_DEC</td><td>r0: value</td><td>Formats the integer value in decimal as a heap allocated string.</td></tr>
+		<tr><td>302</td><td>iFMT_HEX</td><td>r0: value</td><td>Formats the integer value in hexdecimal as a heap allocated string.</td></tr>
+		<tr><td>303</td><td>iFMT_FLOAT</td><td>f0: value</td><td>Formats the floating point value as a heap allocated string.</td></tr>
+		<tr><td>304</td><td>iPARSE_INT</td><td>r0: string address</td><td>Parses a string as decimal, hexadecimal (0x or # prefix) or octal (0 prefix) integer.</td></tr>
+		<tr><td>305</td><td>iPARSE_DEC</td><td>r0: string address</td><td>Parses a string as a decimal integer.</td></tr>
+		<tr><td>306</td><td>iPARSE_HEX</td><td>r0: string address</td><td>Parses a string as a hexadecimal integer.</td></tr>
+		<tr><td>307</td><td>iPARSE_FLOAT</td><td>r0: string address</td><td>Parses a string as a floating point value.</td></tr>
+		<tr><td>308</td><td>iSPRINTF</td><td>Arg1: port<br>Arg2: format string address<br>Arg3: first value<br>Arg4: second value<br>...</td><td>Stack-based interrupt that implements C-style printf().  Arguments are pushed in reverse order onto the stack.  Return address and stack frame are expected to be pushed last which means this interrupt should only be used inside a called function like sprintf().</td></tr>
+		<tr><td>309</td><td>iTO_LOWER</td><td>r0: character</td><td>Returns the lowercase version of the character.</td></tr>
+		<tr><td>310</td><td>iTO_UPPER</td><td>r0: character</td><td>Returns the uppercase version of the character.</td></tr>
+		<tr><td>311</td><td>iTO_LOWER_STR</td><td>r0: string address</td><td>Returns lowercase version of string as a heap allocated string.</td></tr>
+		<tr><td>312</td><td>iTO_UPPER_STR</td><td>r0: string address</td><td>Returns uppercase version of string as a heap allocated string.</td></tr>
+		<tr><td>313</td><td>iSUBSTRING_SEARCH</td><td>r0: string to search<br>r1: string to find</td><td>Searches a string for the specified substring and returns the index into the string if found or -1 if not found.</td></tr>
+		<tr><td>314</td><td>iLAST_SUBSTRING_SEARCH</td><td>r0: string to search<br>r1: string to find</td><td>Searches a string from the end for the specified substring and returns the index into the string if found or -1 if not found.</td></tr>
+		<tr><td>315</td><td>iMATCHES</td><td>r0: string to search<br>r1: regex to find</td><td>Searches a string for the specified regular expression and returns TRUE if found or FALSE if not found.</td></tr>
+		<tr><td>316</td><td>iREPLACE_FIRST</td><td>r0: string to search<br>r1: regex to find<br>r2: replacement string</td><td>Searches a string for the specified regular expression and returns the heap allocated string that has the first occurance replaced by the replacement string.</td></tr>
+		<tr><td>317</td><td>iREPLACE_ALL</td><td>r0: string to search<br>r1: regex to find<br>r2: replacement string</td><td>Searches a string for the specified regular expression and returns the heap allocated string that has all the occurances replaced by the replacement string.</td></tr>
+		<tr><td>318</td><td>iSPLIT</td><td>r0: string to split<br>r1: split regex<br>r2: limit</td><td>Splits the string using the regex returning an array of strings capped with maximum elements specified by limit.  If limit is -1 the splitting is not capped.</td></tr>
+	</tbody>
+</table>
+
+	<h3>&lt;system/system.def&gt;</h3>
+	<p></p>
+<table class="instruction">
+    <colgroup><col span="2" class="instruction">
+    	<col style="width:20%"><col></colgroup>
+	<thead>
+<tr><th>Interrupt</th><th>Pneumonic</th><th>Input Registers</th><th>Operation</th></tr>
+	</thead>
+	<tbody>
+		<tr><td>1</td><td>iINT_MIN</td><td>none</td><td>Returns largest negative integer.</td></tr>
+		<tr><td>2</td><td>iINT_MAX</td><td>none</td><td>Returns largest negative positive integer.</td></tr>
+		<tr><td>3</td><td>iFLOAT_MIN</td><td>none</td><td>Returns smallest floating point value greater than 0.</td></tr>
+		<tr><td>4</td><td>iFLOAT_MAX</td><td>none</td><td>Returns largest floating point value.</td></tr>
+		<tr><td>5</td><td>iNEGATIVE_INFINITY</td><td>none</td><td>Returns negative infinity.</td></tr>
+		<tr><td>6</td><td>iPOSITIVE_INFINITY</td><td>none</td><td>Returns positive infinity.</td></tr>
+		<tr><td>7</td><td>iNAN</td><td>none</td><td>Returns Not A Number.</td></tr>
+		<tr><td>10</td><td>iCYCLES</td><td>none</td><td>Returns user CPU time in cycles.</td></tr>
+		<tr><td>11</td><td>iCLOCK</td><td>none</td><td>Returns current execution time in ns.</td></tr>
+		<tr><td>12</td><td>iSAVE</td><td>r1: #</td><td>Saves r#-r28 on the stack.</td></tr>
+		<tr><td>13</td><td>iSAVE_FP</td><td>r1: #</td><td>Saves f#-f31 on the stack.</td></tr>
+		<tr><td>14</td><td>iRESTORE</td><td>r1: #</td><td>Restores r#-r28 from the stack.</td></tr>
+		<tr><td>15</td><td>iRESTORE_FP</td><td>r1: #</td><td>Restores f#-f31 from the stack.</td></tr>
+		<tr><td>16</td><td>iPrintCPUState</td><td>none</td><td>Prints a diagram of the current CPU state and stack.</td></tr>
+		<tr><td>20</td><td>iALLOC</td><td>r0: allocation size</td><td>Returns a heap allocated block address.</td></tr>
+		<tr><td>21</td><td>iREALLOC</td><td>r0: allocation address<br>r1: new allocation size</td><td>Returns a new heap allocated block with data copied from the passed allocation address.  The original allocation address is freed if it is in the heap.</td></tr>
+		<tr><td>22</td><td>iFREE</td><td>r0: allocation address</td><td>Returns the heap allocated block address to the free list.</td></tr>
+		<tr><td>23</td><td>iARGC</td><td>none</td><td>Returns the number of command line arguments.</td></tr>
+		<tr><td>24</td><td>iARGS</td><td>r0: argument index</td><td>Returns address of of the command line argument specified by index or null.  Index 0 returns the program name.</td></tr>
+		<tr><td>25</td><td>iMEMMOVE</td><td>r0: dest address<br>r1: src address<br>r3: length</td><td>Moves contents of memory from src to dest.  Can handle overlapping memory blocks.</td></tr>
+		<tr><td>30</td><td>iEXIT</td><td>r0: exit code</td><td>Exits process with specified code.</td></tr>
+		<tr><td>31</td><td>iSYSTEM</td><td>r0: string address</td><td>Executes the system command contained in the string.  Returns the exit code of the command.</td></tr>
+		<tr><td>32</td><td>iFORK</td><td></td><td></td></tr>
+		<tr><td>33</td><td>iWAIT</td><td></td><td></td></tr>
+		<tr><td>34</td><td>iWAIT_PID</td><td></td><td></td></tr>
+		<tr><td>35</td><td>iTHREAD</td><td></td><td></td></tr>
+		<tr><td>36</td><td>iWAIT_THREAD</td><td></td><td></td></tr>
+		<tr><td>37</td><td>iSLEEP</td><td>r0: delay in ms</td><td>Pauses execution for the specified milliseconds.</td></tr>
+	</tbody>
+</table>
+
+<footer>
+<p><a href="Architecture.html">Architecture</a> |
+<a href="Programmer_Guide.html">Programmer Guide</a> |
+<a href="Instruction_Set_Reference.html">Instruction Set Reference</a> |
+<a href="Interrupt_Reference.html">Software Interrupt Reference</a> |
+<a href="http://www.pureprogrammer.org">Pure Programmer</a></p>
+<p><a href="https://twitter.com/share" class="twitter-share-button" data-size="large" data-related="richlesh">Tweet</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+<a href="https://twitter.com/richlesh" class="twitter-follow-button" data-show-count="false" data-size="large">Follow @richlesh</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script></p>
+
+<form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
+<input type="hidden" name="cmd" value="_s-xclick">
+<input type="hidden" name="hosted_button_id" value="P2877VYMJ3G64">
+<input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif" name="submit" alt="PayPal - The safer, easier way to pay online!">
+<img alt="" style="border:0;" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
+</form>
+<address>&copy;2022 Richard Lesh.  All rights reserved.</address>
+</footer>
+</body>
+</html>

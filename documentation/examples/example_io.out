@@ -1,0 +1,27 @@
+> run.sh example_io
+IO Interrupts Tests
+
+101000110
+326
+146
+Small buffer:      a73 (10)
+What is your quest? coconuts and shrubbery
+Final buffer:      a80 (52)
+What is your favorite binary number? 11001100
+What is your favorite decimal number? 326
+What is your favorite hexadecimal number? abcdef
+What is your favorite floating point number? 3
+Hello : 146 3.14159
+326
+326
+623
+326
+326
+3.141592653589793115997963468544185161590576171875
+Created temp directory: /var/folders/88/l95m54ns7zxbwvq3q7015g880000gn/T/
+Dir exists: -1
+Deleted temp directory: -1
+Dir exists: 0
+
+FATAL: Runtime Error in example_io.obj.gz => 00000077: int    211
+Error: Illegal memory load from 00000000!

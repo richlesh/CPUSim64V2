@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>CPUSim64 Programmer Guide</title>
+	<meta name="description" content="Documentation for CPUSim64">
+	<link rel="canonical" href="https://www.lesh.cloud/cpusim64/Programmer_Guide.html">
+	<meta name="robots" content="max-image-preview:large">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="generator" content="BBEdit 14.6">
+	<meta name="author" content="Richard Lesh">
+	<link rel="stylesheet" type="text/css" href="styles.css">
+	<script src="js/jquery-3.6.1.min.js"></script>
+	<script>
+		var basepath = window.location.href;
+		var basepath = basepath.substring(0, basepath.lastIndexOf('/'));
+		function loadfile(name, destID) {
+			var pos = name.lastIndexOf("_");
+			var filename = name.substring(0,pos)+"."+name.substring(pos+1);
+			$.ajax({
+				url: "examples/" + filename,
+				success: function( result ) {
+					$("#"+destID).text(result);
+				}
+			});
+		}
+		var files = [];
+		function register(filename) {
+			files.push(filename);
+		}
+		function processFiles() {
+			for (let x in files) {
+				let filename = files[x];
+				const regex = /([a-z]*)(.*)_(.*)/i;
+				const found = filename.match(regex);
+				let program = found[1].charAt(0).toUpperCase() + found[1].slice(1) + " " + found[2];
+				let actual_filename = found[1]+found[2]+"."+found[3];
+				let type = found[3];
+				let text = "N/A";
+				switch (type) {
+					case "asm":
+					case "disasm":
+						text = "<div class='listingheader'>"+actual_filename+"</div><div class='listing' id='"+filename+"_content'></div>"
+						break;
+					case "out":
+						text = "<details><summary>"+program+" Output</summary><div class='console' id='"+filename+"_content'></div></details>"
+						break;
+				}
+				$("#"+filename).html(text);
+				loadfile(filename, filename+"_content");
+			}
+		}
+</script>
+</head>
+<body onload="javascript:processFiles()">
+<h1>CPUSim64 Programmer Guide</h1>
+<h2>Introduction</h2>
+<p>The CPUSim64 code consists of an assembler and an emulator.  Assembly language files are plain text files that can create with any programming editor.  Do not use a word processor like Word or Pages as these do not save their files as plain text.  Then you use the assembler to compile your assembly language source files into CPUSim64 machine code object files.  These object files can then be run with the CPUSim64 emulator.  Both of these programs are written in Java so they themselves run on the Java VM (virtual machine).</p>
+<figure><img alt="Memory Model Diagram" src="images/compile_execution_model.png" style="width:50%;height:50%"><figcaption>Development Model Diagram</figcaption></figure>
+<h2>Installation</h2>
+<p>CPUSim64 is composed of Java classes in jar files located in the lib folder of the distribution and script files in the main directory that you can use to run the assembler and emulator in different modes.  Download the <a href="CPUSim64.zip">CPUSim64.zip</a> file and expand it to a location of your choice.  For this guide we will assume that you expand the ZIP archive in your Documents dirctory.</p>
+<p>You are required to install Java JDK 17 on your system and make sure that the Java JDK bin directory is in your system's PATH ejvironment variable.  Type the following in your terminal window to see if Java is installed correctly.</p>
+<div class="console">&gt; <b>java --version</b>
+java 17.0.5 2022-10-18 LTS
+Java(TM) SE Runtime Environment (build 17.0.5+9-LTS-191)
+Java HotSpot(TM) 64-Bit Server VM (build 17.0.5+9-LTS-191, mixed mode, sharing)
+</div>
+<p>If you don't see the Java version printed, check your install and PATH variable.  Also it can be handy to put the location of your CPUSim64 directory in the path variable as well.  Then you can execute the CPUSim64 scripts from any directory.</p>
+<div class="note">TODO Explain how to set PATH environment variable.</div>
+<p>Once you have Java and CPUSim64 installed, you can test it out using a the very small program listed below.  Use a text editor to enter the text of the program then save it as example001.asm.</p>
+<div id="example001_asm"></div>
+<script>register("example001_asm")</script>
+<p>Our simple program only has three instructions.  The <code>NOP</code> instruction is called a No-Op because it doesn't do anything but take up one CPU cycle.  The <code>STOP</code> instruction tells the CPU to stop executing your program and return to the command line.  At the very end of all your programs you must place two <code>STOP</code> instructions as this tells the assembler to stop compiling instructions.</p>
+<p>Once the program source file is saved you can run the assembler to compile your assembly language program into CPUSim64 machine code.  This is done with the compile.sh (or compile.bat for Windows) script.  Using the terminal window, navigate to the directory where your source file is saved.  Then run the compile script by typing the script filename followed by the name of your source file.  Do not include the ".asm" extension as that is assumed by the script.  You should see output similar to the output below.</p>
+<div class="console">&gt; <b>compile.sh example001</b></div>
+<div id="example001c_out"></div>
+<script>register("example001c_out")</script>
+<p>The program will compile your assembly language source file and create a machine lanugage object file with an ".obj.gz" extension.  It will print how many words were compiled from your source when it is complete.  If there are errors, they will be displayed.  The symbols used and the labels used in your source will be listed.</p>
+<p>To run the program use the run.sh (or run.bat for Windows) script name followed by the base name of your program source file.  Like the compile script, the run script will first compile your source into an object file.  It does this in a quiet mode so you don't get the same verbose output as the compile script.  Then the run script will execute your object file on the CPUSim64 emulator.  It will print statistics related to your program before it runs such as code size, heap size and maximum stack size.  Then your program will run.  After it runs, the message "System Halted!" will be printed and statistics related to the run will be printed such as the number of user CPU cycles used, the wall clock time it took to execut and the return code from your program.
+<div class="console">&gt; <b>run.sh example001</b></div>
+<div id="example001r_out"></div>
+<script>register("example001r_out")</script>
+<p>If your program doesn't work as expected you can run it in debug mode using the debug.sh (or debug.bat for Windows) script name followed by the base name of your program source file.  Like the run script your program will be compiled and run, but this time the assembler and emulator will be run in debug mode.  The assembler will print out your source program as it understands it, complete with addresses and symbolic addresses.  You can use this as a reference when you are debugging and can also use it to make sure that the assembler generates the instructions that you expect.  When the CPUSim64 emulator runs your program in debug mode it will print out the entire state of the emulated CPU everytime it encounters a <code>NOP</code> instruction.  It will also print the final state of the CPU when your program ends.</p>
+<div class="console">&gt; <b>debug.sh example001</b></div>
+<div id="example001d_out"></div>
+<script>register("example001d_out")</script>
+
+<p>For more information about how your program runs, you can debug your program in trace mode with trace.sh (or trace.bat for Windows) script name followed by the base name of your program source file.  In this mode, each instruction will be printed as it is executed.</p>
+<div class="console">&gt; <b>trace.sh example001</b></div>
+<div id="example001t_out"></div>
+<script>register("example001t_out")</script>
+
+<h2>Comments</h2>
+<p>Because assembly language can be hard to read, it is important to put plenty of documentation in your source code in the form of comments.  A comment line starts with two slashes (<code>//</code>) and causes the line to be ignored by the assembler.  You can also put comments using double slashes at the end of instruction lines which causes everything from the double slashes to the end of the line to be ignored.  It is good practice to put a documentation block at the beginning of the program, functions or other important units of code to explain what the code is supposed to do when it works properly.  This way someone (perhaps yourself six months from now) can debug errant code because the documentation will tell them what the correct operation should be.</p>
+<div id="example002_asm"></div>
+<script>register("example002_asm")</script>
+
+<h2>Move Operations</h2>
+<p>One of the most basic operations available is to move a constant into either an integer register or a floating point register.  This is done with the <code>MOVE</code> operation.  It can take two arguments, the first is the destination register and the second is the constant to move into the register.  Constants can be 16-bit Unicode character constants, integer constants (in decimal or hexadecimal), or floating point constants.  Characters constants are formed using a single character in single quotes.  It is also possible to use special escape sequences for special characters and Unicode characters whose codepoint is known.  The special characters are as follows:</p>
+<dl>
+	<dt><code>'\0'</code></dt><dd>NULL Character, codepoint 0</dd>
+	<dt><code>'\b'</code></dt><dd>Backspace Character, codepoint 8</dd>
+	<dt><code>'\t'</code></dt><dd>Tab Character, codepoint 9</dd>
+	<dt><code>'\n'</code></dt><dd>New Line Character, codepoint 10</dd>
+	<dt><code>'\f'</code></dt><dd>Form Feed Character, codepoint 12</dd>
+	<dt><code>'\r'</code></dt><dd>Carriage Return Character, codepoint 13</dd>
+	<dt><code>'\"'</code></dt><dd>Double Quote, codepoint 34</dd>
+	<dt><code>'\''</code></dt><dd>Single Quote, codepoint 39</dd>
+	<dt><code>'\\'</code></dt><dd>Backslash, codepoint 92</dd>
+</dl>
+<p>Given the Unicode codepoint you can also specify a character using the escape sequence of the form <code>\uxxxx</code> where 'xxxx' is the four hexadecimal digit value for the codepoint.</p>
+<p>Integer constants can be positive or negative.  They can be in decimal format or hexadecimal format.  Hexadecimal constants are always preceeded by <code>Ox</code>.</p>
+<p>Floating point constants can be positive or negative.  They are written using floating point notation (a decimal point is required) of up to 16 decimal significant digits.  They can also be written using scientific notation such as 1.23e10 or 3.456e-20.</p>
+<div id="example003_asm"></div>
+<script>register("example003_asm")</script>
+<div id="example003_out"></div>
+<script>register("example003_out")</script>
+
+<div class="note">CPUSim64 stores the constants to move inside the 64-bit instruction.  It turns out that very large integers can not fit inside the the instruction so they are instead stored in the data segement at the end of your code.  A <code>LOAD</code> instruction is substituted for your <code>MOVE</code> instruction to load it into the register by the assembler.  This same process applies to all floating point <code>MOVE</code> instructions that specify constants since the 64-bit floating point constant can not fit inside the <code>MOVE</code> instruction.</div>
+<p>You can also use the <code>MOVE</code> instruction to move data from one general purpose register to another or from one floating point register to another.  You can also use it to move data between general purpose registers and floating point registers.</p>
+<div id="example004_asm"></div>
+<script>register("example004_asm")</script>
+<div id="example004_out"></div>
+<script>register("example004_out")</script>
+
+<h2>Debugging</h2>
+<p>When run using the debug script as in the above example, the entire CPU state is printed when the program completes.  That way you can confirm the results of your program.  But if you are only interested in viewing a few registers at a time during the execution of your program, you can use the <code>DEBUG</code> instruction to display 1-4 registers at a time.  The nice thing about the <code>DEBUG</code> is that it only gets compiled into your code when you use the <code>--debug</code> option on the assembler as is the case in the debug script.  Likewise if your code was compiled with debug instructions turned on, they are only acted upon when the CPUSim64 emulator is run with the <code>--debug</code> option, as is likewise the case with the debug script.  If you run your program without the <code>--debug</code> option on the emulator, debug is off and the <code>DEBUG</code> instructions are treated as <code>NOP</code> instructions.</p>
+<p>If you want to display the entire CPU state at some time during the execution of your program in addition to at the end use the instruction <code>int iPrintCPUState</code>.  Unfortunately this uses a system interrupt and is not automatically disabled by the debug settings.  You will have to remove it own your own when you no longer need it.  You will also need to include the system definition file <code>&lt;system/system.def&gt;</code> as well for this to work.</p>
+<div id="example005_asm"></div>
+<script>register("example005_asm")</script>
+<div id="example005_out"></div>
+<script>register("example005_out")</script>
+<h2>Arithmetic</h2>
+<p>Arithmetic operations are available to perform addition, subtraction, multiplication and division on integer or floating point registers.  There are a variety of arguments that can be supplied.  There are two forms of two operand operations.  The first form takes two register operands, the first operand is the destination and the second is the value to apply to it based on the arithmetic operation and stores the result in the first operand.  The second form takes a register operand and an integer literal.  Like the first form, it applies the literal second operand to the first and stores the result in the first.</p>
+<div id="example006_asm"></div>
+<script>register("example006_asm")</script>
+<div id="example006_out"></div>
+<script>register("example006_out")</script> 
+<p>The arithmetic operators also have a three operand form.  There are four forms for three operands: </p>
+<ul>
+<li><code>op GP_reg, GP_reg, GP_reg</code></li>
+<li><code>op FP_reg, FP_reg, FP_reg</code></li>
+<li><code>op GP_reg, GP_reg, int_literal</code></li>
+<li><code>op FP_reg, FP_reg, int_literal</code></li>
+</ul>
+<p>What all these forms have in common is that they apply the operation to the second and third operands and store the result in the first operand.  For example:</p>
+<div id="example007_asm"></div>
+<script>register("example007_asm")</script>
+<div id="example007_out"></div>
+<script>register("example007_out")</script> 
+<p>In addition to the <code>divide</code> operations we have seen so far, there is an additional form that takes four general purpose registers.  This version divides the third operand by the fourth then places the integer quotient in the first operand and the remainder in the second.</p>
+<div id="example008_asm"></div>
+<script>register("example008_asm")</script>
+<div id="example008_out"></div>
+<script>register("example008_out")</script> 
+<p>Finally there are two arithmetic operations that take just a single operand: negation and reciprocal.  The <code>negate</code> operation takes a general purpose or floating point register, negates it then stores it back into the register.  The <code>recip</code> operation takes a floating point register, computes its reciprocal then stores it back into the register.</p>
+<div id="example009_asm"></div>
+<script>register("example009_asm")</script>
+<div id="example009_out"></div>
+<script>register("example009_out")</script> 
+<h2>Loops</h2>
+<p>We can make control structures such as loops using the <code>JUMP</code> instruction.  The <code>JUMP</code> instruction can branch unconditionally or based on the condition of one of the bits in the status register (SR).  We can make the equivalent of DO WHILE/WEND and DO/WHILE loops as illustrated below.</p>
+<div id="example010_asm"></div>
+<script>register("example010_asm")</script>
+<div id="example010_out"></div>
+<script>register("example010_out")</script> 
+<div class="note">When we use a <code>JUMP</code> instruction we must always supply an address as the last operand.  It can either be a general purpose register with an address in it or an address literal.  Address literals are symbols that may with an '@' character.  If the address literal is prefixed with the '@' character it means that the label is within the function currently being defined.  Address literals without the '@' character refer to global labels outside the function being defined.  The literal must match a label somewhere else in the code.  Labels are symbols that end with a colon (':').</div>
+<h2>Compare and Test</h2>
+<p>Two instructions that can be helpful when writing loops are <code>COMPARE</code> and <code>TEST</code>.</p>
+<p><code>COMPARE</code> takes two operands and subtracts them, setting the status register bits according to the computed difference.  If the two operands are equal, the Z (zero) status bit will be true.  Likewise it will be false (not zero) if they are not equal.  When the status register is printed by the <code>DEBUG</code> instruction the zerio bit will be a capital Z if it is set (true) and a lowercase z if it is not set (false).  The condition codes we use in the <code>JUMP</code> instruction are 'z' if set and 'nz' if not set, corresponding to 'is zero' and 'is not zero' respectively.  You may also use the condition 'eq' for 'z' or 'ne' for 'nz'.</p>
+<p>The <code>TEST</code> instruction simply tests the single operand supplied, setting the status registers based on the attributes of the operand.  It is essentially equivalent to comparing the operand to zero.</p>
+<div id="example011_asm"></div>
+<script>register("example011_asm")</script>
+<div id="example011_out"></div>
+<script>register("example011_out")</script>
+<p>The table below describes some of the condition codes that can be used with the <code>JUMP</code> instruction after a <code>MOVE</code>, <code>COMPARE</code> or <code>TEST</code>.</p>
+<table>
+	<tr><th>Condition Code</th><th>SR Bit Checked</th><th>Relational Equivalent</th></tr>
+	<tr><td>u</td><td>unconditional</td><td></td></tr>
+	<tr><td>z or eq</td><td>zero</td><td>op0 == op1</td></tr>
+	<tr><td>nz or ne</td><td>not zero</td><td>op0 != op1</td></tr>
+	<tr><td>n or lt</td><td>negative</td><td>op0 &lt; op1</td></tr>
+	<tr><td>p or gt</td><td>positive</td><td>op0 &gt; op1</td></tr>
+	<tr><td>nn or ge</td><td>not negative</td><td>op0 &gt;= op1</td></tr>
+	<tr><td>np or le</td><td>not positive</td><td>op0 &lt;= op1</td></tr>
+</table>
+<h2>Logical Operators</h2>
+<p>We have a number of bitwise logical operators that can be used for Boolean arithmetic.  These operators can also be used for simple logical testing if we restrict our use of -1 and 0 for operand values.  This allows us to represent TRUE as -1 (all bits set) and FALSE as 0 (no bits set).  The binary logical operators are <code>AND</code>, <code>OR</code> and <code>XOR</code>.  There is one operator that takes a single argument, the <code>COMPLIMENT</code> operator (also known as logical <code>NOT</code>)  The following example illustrates this use of the logical operators to print out truth tables.<p>
+<div id="example012_asm"></div>
+<script>register("example012_asm")</script>
+<div id="example012_out"></div>
+<script>register("example012_out")</script> 
+<p class="note">This last example makes use of console output functions to print the truth tables and format the values.  We will talk about console output later in this document.</p>
+<h2>Named Constants</h2>
+<p>Using symbolic names for literal values helps with the readability of our programs.  It also helps eliminate mistakes caused by repeated typing of the same literal value.  With symbolic constants we get the added benefit that if we misspell the symbolic constant, we should get a compile error.  Unlike mistyping a literal value is often just a different and wrong legal literal value.</p>
+<p>One way to create symbolic constants is to use a preprocessor directive <code>#define</code>.  The preprocessor directives define simple text substitutions that happen on our code before it is compiled.  We have been using one such directive <code>#include</code> to add in code from another file,  The <code>#define</code> directive establishes a simple substitution between a symbolic name and a numeric literal (integer or floating point).  When ever the symbolic name is used in our code, the corresponding literal value is substituted just as if we had typed it into the code ourselves.  When we use <code>#define</code> we often use all upper case symbols to help reminds us where text substitutions are occuring in our code.</p>
+<p>The other mechanism for creating named constants is to declare a constant in memory at the end of our code.  This is done with the <code>DCI</code> or <code>DCF</code> compiler directives to store an integer or floating point value.  There are also <code>DCC</code> and <code>DCS</code> directives for storing a character or string respectively.</p>
+<div id="example013_asm"></div>
+<script>register("example013_asm")</script>
+<div id="example013_out"></div>
+<script>register("example013_out")</script> 
+<div id="example013_disasm"></div>
+<script>register("example013_disasm")</script>
+<p>Using named constants we can refactor the truth tables program to be more readable and avoid redundancies thus reducing the chances of typing errors.  Symbols for <code>TRUE</code> and <code>FALSE</code> are defined in <code>&lt;system/system.def&gt;</code>.  We use a DCS constant for the formatting strings to <code>fprintf()</code>.</p>
+<div id="example012b_asm"></div>
+<script>register("example012b_asm")</script>
+
+<h2>Arrays</h2>
+<p>To access elements of an array all you need is the base address of the array and an offset to the element.  When you create an array with <code>DCA</code> you should give it a label which will be the base address of the array.  Depending on whether the array has integer elements or floating point elements  you can use one of the load instruction of the form:</p>
+<p class="listing">load	r0, BASE_ADDR[offset]</p>
+<p class="listing">load	f0, BASE_ADDR[offset]</p>
+<p>The offset can be a literal integer or the value in an integer register.  Valid offsets are zero through the size of the array minus one.  You can also use the special offset -1 to get the size of the array.</p>
+<h2>Console Output</h2>
+<p>If you include the system header file <code>&lt;system/io.asm&gt;</code> you will gain access to a number of helpful functions for performing output to the console.</p>
+<table>
+	<tr><th>Function</th><th>Description</th></tr>
+	<tr><td>puts(str)</td><td>Prints a string</td></tr>
+	<tr><td>putc(value)</td><td>Prints a character</td></tr>
+	<tr><td>put_int(value, base)</td><td>Prints an integer using supplied base</td></tr>
+	<tr><td>put_dec(value)</td><td>Prints an integer in base 10</td></tr>
+	<tr><td>put_hex(value)</td><td>Prints an integer in base 16</td></tr>
+	<tr><td>put_fp(value)</td><td>Prints a floating point</td></tr>
+	<tr><td>put_nl()</td><td>Prints a new line</td></tr>
+	<tr><td>fprintf(STDOUT, fmt, values...)</td><td>Uses a format string to print variable number of value</td></tr>
+</table>
+<p>Because these functions pass arguments on the stack, you use the <code>#call</code> directive when you wish to call them.  All arguments should be either integer or floating point registers as appropriate to the call.  The arguments will then be pushed onto the stack and the function call made.</p>
+<div id="example014_asm"></div>
+<script>register("example014_asm")</script>
+<div id="example014_out"></div>
+<script>register("example014_out")</script> 
+<h2>Command Line Arguments</h2>
+<p>When writing command line programs it is often necessary to pass in arguments to the program on the command line.  There are two system level interrupts that we can invoke.  One will give us the count of items on the command line and the other can be used to get each item on the command line.  Items on the command line are strings and are separated by spaces.  For example:</p>
+<p class="console">&gt; <b>run.sh example015 326 Hello 3.1415</b></p>
+<p>Interrupts are operating system level functions that are executed via the software interrupt mechanism of the cpu invoked with the <code>INT</code> instruction.  Interrupt instructions take a single integer operand to identify the system level function to execute.  Interrupts use a register passing convention.  If the interrupt requires an input argument it is expected in <code>r0</code> or <code>f0</code>.  Likewise a value can be returned from the interrupt in <code>r0</code> or <code>f0</code>.  Symbols for the various interrupt codes available are defined in the system definition files.  You must include the appropriate file to gain access to the definitions.  For the command line argument interrupts we will need to include <code>&lt;system/system.def&gt;</code>.</p>
+<div id="example015_asm"></div>
+<script>register("example015_asm")</script>
+<div id="example015_out"></div>
+<script>register("example015_out")</script>
+<p class="note">The first command line argument in element zero of ARGS is always the name of the program file that is running.</p>
+<h2>Converting Strings to Numbers</h2>
+<p>Often we will want to take command line arguments (which are strings) and convert them to integers or floating point numbers so that we can do calculations with them.  In the <code>&lt;system/string.def&gt;</code> definition file we have some interrupt codes defined to help us with that.</p>
+<table>
+	<tr><th>Function</th><th>Description</th></tr>
+	<tr><td>iPARSE_INT</td><td>Converts string at <code>r0</code> to integer in <code>r0</code><br>Accepts both decimal and hexadecimal with the '0x' prefix</td></tr>
+	<tr><td>iPARSE_DEC</td><td>Converts decimal string at <code>r0</code> to integer in <code>r0</code></td></tr>
+	<tr><td>iPARSE_HEX</td><td>Converts hexadecimal string at <code>r0</code> to integer in <code>r0</code></td></tr>
+	<tr><td>iPARSE_FLOAT</td><td>Converts FP string at <code>r0</code> to floating point in <code>f0</code></td></tr>
+</table>
+<div id="example016_asm"></div>
+<script>register("example016_asm")</script>
+<div id="example016_out"></div>
+<script>register("example016_out")</script>
+<p class="note">If these parsing functions can not make any sense of the string passed in <code>r0</code>, they will return zero.</p>
+<h2>Conditional Control</h2>
+<p>Conditional execution of code is acoomplished using the <code>JUMP</code> instruction.  We can compose an IF/THEN construct using one <code>JUMP</code> or an IF/THEN/ELSE construct using two <code>JUMP</code> instructions.  For example if we look at the number of command line argumnents passed to the program we can branch based on whether there are any or not.  If we compare the result of interrupt iARGC to 2 we will know that there aren't any command line arguments if the result of the comparison is less than.  In pseudocode we would have:</p>
+<div class="listing">if argc &lt; 2 then
+	print no arguments
+end if</div>
+<p>Because we want to use a <code>JUMP</code> instruction to branch around the code in the THEN part of the IF, we actually jump on the opposite test.  Since greater or equal is the opposite of less than, we shall jump around if argc ≥ 2.  See the example code for how this is implemented.</p>
+<p>If we want to implement an IF/THEN/ELSE we need two <code>JUMP</code> instructions.  Again comparing to the result of interrupt iARGC we can print one message if there are no arguments and a different message if there are arguments.  The pseudocode for this is as follows:</p>
+<div class="listing">if argc ≥ 2 then
+	print the number of arguments
+else
+	print no arguments
+end if</div>
+<p>If argc &lt; 2 we need to jump around the THEN statements.  The THEN statements likewise need to jump around the ELSE statements so the THEN section must end with a <code>JUMP</code> to the end of the IF/THEN/ELSE.</p>
+<div id="example017_asm"></div>
+<script>register("example017_asm")</script>
+<div id="example017_out"></div>
+<script>register("example017_out")</script>
+
+<h2>Macros</h2>
+<p>Often we need to repeat code or similar code multiple times.  If the code follows a pattern with just a few elements that differ we can write a macro substitution that can be used to implement the code more easily and correctly.</p>
+<p>Macro substitutions are setup with the <code>#def_macro</code> preprocessor directive.  Using this directive we specifiy the name of the macro and its arguments in parenthesis.  Following that we provide the statements we want to be substituted when the macro is used in our code.  In the substitution code we can use the macro variables by using the special syntax <code>${varname}</code>.  Each time such a special variable symbol is used, it is replaced by the text supplied for that variable when the macro is used.</p>
+<div id="example018_asm"></div>
+<script>register("example018_asm")</script>
+<div id="example018_out"></div>
+<script>register("example018_out")</script>
+<p>This next example uses macros with three arguments to compute the minimum and the maximum of two integers inline.</p>
+<div id="example019_asm"></div>
+<script>register("example019_asm")</script>
+<div id="example019_out"></div>
+<script>register("example019_out")</script>
+<p>You can make these two macros even more compact (two instructions each) by using a special form of the <code>MOVE</code> instruction that takes a <code>SR</code> just like the <code>JUMP</code> instruction does.  If the condition is true, it moves the third operand into the second.  If the condition is false, it moves the fourth operand into the second.  This is called a conditional move.</p>
+<div id="example019b_asm"></div>
+<script>register("example019b_asm")</script>
+
+<h2>Register-based Functions</h2>
+<p>We can better organize our code and make it easier to understand by breaking it up into separate functions that do one thing well.  We can then call our functions from many places in our code eliminating the redundancy inherent in using macros.</p>
+<p>The basic form of function in assembly language uses register-based calling conventions.  This means that the inputs to a function are expected to be in specific registers, typically, <code>r0</code>, <code>r1</code>, etc for integer arguments or addresses and <code>f0</code>, <code>f1</code>, etc. for floating point.  By convention, functions are allowed to destroy the contents of <code>r0</code> and/or <code>f0</code>.  In fact these are the two registers in which a function might return a value.  But if the function uses any other registers it is expected that it will <code>PUSH</code> the values of the registers it uses onto the stack to save them and restore them with <code>POP</code> when it ends.</p>
+<p>Register-based functions are started with a unique label which gives the function its name.  The function must use a <code>RETURN</code> statement at the end of its code to return to the calling code.</p>
+<p>The calling code sets up the required registers then issues a <code>CALL</code> instruction with the address of the function.  The <code>CALL</code> instruction can also take a <code>SR</code> condition like the <code>JUMP</code> instruction does to make the <code>CALL</code> conditional.</p>
+<p>Functions can be defined before or after the code that calls them, but functions generally are not to be declared inside other functions.</p>
+<p>In the following example we take our minimum and maximum macros and turn them into register-based functions.</p>
+<div id="example020_asm"></div>
+<script>register("example020_asm")</script>
+<div id="example020_out"></div>
+<script>register("example020_out")</script>
+
+<h2>Stack-based Functions</h2>
+<p>Stack-based calling conventions give us some advantges over register calling conventions.  First they manage all the <code>PUSH</code> and <code>POP</code> instructions necessary to use registers other then <code>r0</code> or <code>f0</code>.  They also allow us to give symbolic names to arguments and other registers, making our code easier to read.</p>
+<p>Stack-based functions are defined using the preprocessor declaration <code>#DEF_FUNC</code> and stack-based functions are called with the preprocessor declaration <code>#CALL</code>.</p>
+<p>At the beginning of your function you can use one <code>#SVAR</code> directive to declare additional stack named variables.  You will have to use <code>LOAD</code> and <code>STORE</code> to access these variables.  That can be followed by one <code>#VAR</code> directive to declare all your integer or address register named variables.  These register variables can be used direvtly by instructions and can be changed with <code>MOVE</code>.  That in turn can be followed by one <code>#FVAR</code> to declare all you floating point register named variables.</p>
+<p>To return a value simply put it in <code>r0</code> or <code>f0</code>.  You can also use the <code>#RETURN</code> or <code>#FRETURN</code> which take a register and move it into <code>r0</code> or <code>f0</code> respectively.</p>
+<p>Below is our min/max example using stack-based functions.  There is also a sum function for summing a floating point array.</p>
+<div id="example021_asm"></div>
+<script>register("example021_asm")</script>
+<div id="example021_out"></div>
+<script>register("example021_out")</script>
+<p>We can even turn our main code into a function and simply call it from the start of our program then exit with a return value returned by main.</p>
+<div id="example021b_asm"></div>
+<script>register("example021b_asm")</script>
+
+<h2>Heap Dynamic Memory Allocation</h2>
+<p>Our programs have access to a whole region of memory called the heap.  Our programs can dynamically allocate blocks from the heap as they are running.  When we are done with an allocated block we must release or "free" it.  In this way we can manage the memory in the heap.</p>
+<p>As an example, say we want to allocate enough memory to hold 100 integers.  We can do this issue the software interrupt <code>iALLOC</code> with the size of the block we want to allocate in <code>r0</code>.  It will return the address of the allocated block in <code>r0</code> or <code>0</code> if there is an error.</p>
+<div id="example022_asm"></div>
+<script>register("example022_asm")</script>
+<div id="example022_out"></div>
+<script>register("example022_out")</script>
+<p class="note">For small allocations the <code>iALLOC</code> may allocate a slightly larger block so that there are consistent size blocks in the help which helps when blocks are freed an can be reused.  The allocated size is stored in the word right before the address returned by <code>iALLOC</code>.</p>
+
+<h2>String Functions</h2>
+<p>There are a number of functions for operating on strings.  Strings are simply an array of Unicode codepoints terminated with the null character (0 or '\0').  Strings are either statically allocated using a <code>DCS</code> assembler directive and stored in the code segment or they are dynamically allocated in the heap using interrupt <code>iALLOC</code>.  It is important to free strings when you don't need them any longer to free up memory in the heap.</p>
+<div id="example_string_asm"></div>
+<script>register("example_string_asm")</script>
+<div id="example_string_out"></div>
+<script>register("example_string_out")</script>
+
+<h2>Math Functions</h2>
+<p>Math functions are available for most of the standard math functionality on floating point values.  There are also some functions for generating random numbers which is helpful in simulations and games.</p>
+<div id="example_math_asm"></div>
+<script>register("example_math_asm")</script>
+<div id="example_math_out"></div>
+<script>register("example_math_out")</script>
+
+<footer>
+<p><a href="Architecture.html">Architecture</a> |
+<a href="Programmer_Guide.html">Programmer Guide</a> |
+<a href="Instruction_Set_Reference.html">Instruction Set Reference</a> |
+<a href="Interrupt_Reference.html">Software Interrupt Reference</a> |
+<a href="http://www.pureprogrammer.org">Pure Programmer</a></p>
+<p><a href="https://twitter.com/share" class="twitter-share-button" data-size="large" data-related="richlesh">Tweet</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+<a href="https://twitter.com/richlesh" class="twitter-follow-button" data-show-count="false" data-size="large">Follow @richlesh</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script></p>
+
+<form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
+<input type="hidden" name="cmd" value="_s-xclick">
+<input type="hidden" name="hosted_button_id" value="P2877VYMJ3G64">
+<input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif" name="submit" alt="PayPal - The safer, easier way to pay online!">
+<img alt="" style="border:0;" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
+</form>
+<address>&copy;2022 Richard Lesh.  All rights reserved.</address>
+</footer>
+</body>
+</html>

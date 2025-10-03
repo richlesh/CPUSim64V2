@@ -1,0 +1,10 @@
+> run.sh example021 5 12
+Min: 5
+Max: 12
+FPArray Sum: 16.5
+
+
+> run.sh example021 8 -3
+Min: -3
+Max: 8
+FPArray Sum: 16.5

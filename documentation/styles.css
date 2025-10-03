@@ -1,0 +1,345 @@
+@font-face {
+    font-family: 'DejaVu Sans';
+    src: local('DejaVu Sans Bold Oblique'), local('DejaVuSans-BoldOblique'),
+        url('fonts/DejaVu/DejaVuSans-BoldOblique.woff2') format('woff2'),
+        url('fonts/DejaVu/DejaVuSans-BoldOblique.woff') format('woff');
+    font-weight: bold;
+    font-style: italic;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'DejaVu Sans';
+    src: local('DejaVu Sans Bold'), local('DejaVuSans-Bold'),
+        url('fonts/DejaVu/DejaVuSans-Bold.woff2') format('woff2'),
+        url('fonts/DejaVu/DejaVuSans-Bold.woff') format('woff');
+    font-weight: bold;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'DejaVu Sans';
+    src: local('DejaVu Sans Oblique'), local('DejaVuSans-Oblique'),
+        url('fonts/DejaVu/DejaVuSans-Oblique.woff2') format('woff2'),
+        url('fonts/DejaVu/DejaVuSans-Oblique.woff') format('woff');
+    font-weight: normal;
+    font-style: italic;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'DejaVu Sans';
+    src: local('DejaVu Sans'), local('DejaVuSans'),
+        url('fonts/DejaVu/DejaVuSans.woff2') format('woff2'),
+        url('fonts/DejaVu/DejaVuSans.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'DejaVu Serif';
+    src: local('DejaVu Serif Italic'), local('DejaVuSerif-Italic'),
+        url('fonts/DejaVu/DejaVuSerif-Italic.woff2') format('woff2'),
+        url('fonts/DejaVu/DejaVuSerif-Italic.woff') format('woff');
+    font-weight: normal;
+    font-style: italic;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'DejaVu Serif';
+    src: local('DejaVu Serif Bold Italic'), local('DejaVuSerif-BoldItalic'),
+        url('fonts/DejaVu/DejaVuSerif-BoldItalic.woff2') format('woff2'),
+        url('fonts/DejaVu/DejaVuSerif-BoldItalic.woff') format('woff');
+    font-weight: bold;
+    font-style: italic;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'DejaVu Serif';
+    src: local('DejaVu Serif'), local('DejaVuSerif'),
+        url('fonts/DejaVu/DejaVuSerif.woff2') format('woff2'),
+        url('fonts/DejaVu/DejaVuSerif.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'DejaVu Serif';
+    src: local('DejaVu Serif Bold'), local('DejaVuSerif-Bold'),
+        url('fonts/DejaVu/DejaVuSerif-Bold.woff2') format('woff2'),
+        url('fonts/DejaVu/DejaVuSerif-Bold.woff') format('woff');
+    font-weight: bold;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'JetBrains Mono';
+    src: local('JetBrains Mono Bold'), local('JetBrainsMono-Bold'),
+        url('fonts/JetBrainsMono/JetBrainsMono-Bold.woff2') format('woff2'),
+        url('fonts/JetBrainsMono/JetBrainsMono-Bold.woff') format('woff');
+    font-weight: bold;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'JetBrains Mono';
+    src: local('JetBrains Mono Bold Italic'), local('JetBrainsMono-BoldItalic'),
+        url('fonts/JetBrainsMono/JetBrainsMono-BoldItalic.woff2') format('woff2'),
+        url('fonts/JetBrainsMono/JetBrainsMono-BoldItalic.woff') format('woff');
+    font-weight: bold;
+    font-style: italic;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'JetBrains Mono';
+    src: local('JetBrains Mono Italic'), local('JetBrainsMono-Italic'),
+        url('fonts/JetBrainsMono/JetBrainsMono-Italic.woff2') format('woff2'),
+        url('fonts/JetBrainsMono/JetBrainsMono-Italic.woff') format('woff');
+    font-weight: normal;
+    font-style: italic;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'JetBrains Mono';
+    src: local('JetBrains Mono Regular'), local('JetBrainsMono-Regular'),
+        url('fonts/JetBrainsMono/JetBrainsMono-Regular.woff2') format('woff2'),
+        url('fonts/JetBrainsMono/JetBrainsMono-Regular.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'JetBrains Mono NL';
+    src: local('JetBrains Mono NL Bold Italic'), local('JetBrainsMonoNL-BoldItalic'),
+        url('fonts/JetBrainsMono/JetBrainsMonoNL-BoldItalic.woff2') format('woff2'),
+        url('fonts/JetBrainsMono/JetBrainsMonoNL-BoldItalic.woff') format('woff');
+    font-weight: bold;
+    font-style: italic;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'JetBrains Mono NL';
+    src: local('JetBrains Mono NL Bold'), local('JetBrainsMonoNL-Bold'),
+        url('fonts/JetBrainsMono/JetBrainsMonoNL-Bold.woff2') format('woff2'),
+        url('fonts/JetBrainsMono/JetBrainsMonoNL-Bold.woff') format('woff');
+    font-weight: bold;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'JetBrains Mono NL';
+    src: local('JetBrains Mono NL Italic'), local('JetBrainsMonoNL-Italic'),
+        url('fonts/JetBrainsMono/JetBrainsMonoNL-Italic.woff2') format('woff2'),
+        url('fonts/JetBrainsMono/JetBrainsMonoNL-Italic.woff') format('woff');
+    font-weight: normal;
+    font-style: italic;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'JetBrains Mono NL';
+    src: local('JetBrains Mono NL Regular'), local('JetBrainsMonoNL-Regular'),
+        url('fonts/JetBrainsMono/JetBrainsMonoNL-Regular.woff2') format('woff2'),
+        url('fonts/JetBrainsMono/JetBrainsMonoNL-Regular.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+
+h1,h2,h3,h4,h5,h6 {
+	font-family: "DejaVu Sans", Helvetica, sans-serif;
+	color: #021EAA;
+}
+
+h1 {
+	text-align: center;
+}
+
+body {
+	font-family: "DejaVu Serif", "Times New Roman", serif;
+	margin: 2% 4% 2% 4%;
+}
+
+.center {
+	text-align: center;
+}
+
+code, .code {
+	font-family: "JetBrains Mono NL", monospace;
+	color: #0000cc;
+	background-color: #eeeeee;
+	tab-size: 4;
+	-o-tab-size: 4;
+	-moz-tab-size: 4;
+}
+
+.console {
+	font-family: "JetBrains Mono NL", monospace;
+	font-size: 12px;
+	line-height: 125%;
+	text-align: left;
+	white-space: pre-wrap;
+	word-wrap: break-word;
+    overflow-wrap: break-word;
+	tab-size: 8;
+	-o-tab-size: 8;
+	-moz-tab-size: 8;
+	border: 2px solid grey;
+	background: black;
+	color: #00dd00;
+	margin: 1em 0;
+	padding: 0.5em 1em;
+}
+
+.console b {
+	color: white;
+	font-weight: bold;
+}
+
+.note::before {
+	content: "Note: ";
+	font-weight: bold;
+}
+
+.note
+{
+	background-color: #FFFFBB;
+	padding: 1em;
+	margin: 1em 0;
+	border: 2px solid black;
+	clear: both;
+}
+
+figcaption
+{
+	text-align: center;
+	font-family: "DejaVu Sans", Helvetica, sans-serif;
+	font-size: 14pt;
+	font-style: italic;
+	font-weight: bold;
+	color: #021EAA;
+	margin: 4px 0;
+}
+
+.listingheader {
+	font-family: "JetBrains Mono NL", monospace;
+	background-color: #176FBC;
+	color: white;
+	font-size: 12px;
+	text-align: left;
+	margin: 1em 0 0 0;
+	padding: 0.5em;
+	border-width: 2px 2px 0 2px;
+	border-color: #888;
+	border-style: solid;
+}
+
+.listing {
+	font-family: "JetBrains Mono NL", monospace;
+	font-size: 12px;
+	text-align: left;
+	white-space: pre-wrap;
+	word-wrap: break-word;
+    overflow-wrap: break-word;
+	tab-size: 4;
+	-o-tab-size: 4;
+	-moz-tab-size: 4;
+	border: 2px solid grey;
+	margin: 0 0 1em 0;
+	padding: 0.5em 1em;
+	background: white;
+	tab-size: 4;
+	-o-tab-size: 4;
+	-moz-tab-size: 4;
+}
+
+figure {
+	text-align: center;
+	margin: 0 auto;
+	padding: 0em;
+}
+
+figure img {
+	border: 2px solid gray;
+}
+
+footer {
+	text-align: center;
+}
+
+summary {
+	font-family: "DejaVu Sans", Helvetica, sans-serif;
+	font-size: 10pt;
+	color: #021EAA;
+}
+
+dl {
+	font-family: "DejaVu Sans", Helvetica, sans-serif;
+	margin: 1em 5em;
+	display: grid;
+	grid-template-columns: max-content auto;
+	gap: 10px 15px;
+}
+
+dt {
+	grid-column: 1;
+}
+
+dd
+{
+	grid-column: 2;
+	margin: 0;
+	padding: 0;
+}
+
+table {
+	font-family: "DejaVu Sans", Helvetica, sans-serif;
+	margin: 1em auto;
+	border: 1pt #021EAA solid;
+	border-collapse: collapse;
+}
+
+table caption {
+	font-size: 18pt;
+	font-weight: bold;
+	text-align: left;
+	color: #021EAA;
+	margin: 0.5em 0;
+}
+
+.instruction {
+	font-family: "JetBrains Mono", monospace;
+}
+
+table.instruction {
+	width: 100%;
+}
+
+col.instruction {
+	width: 15%;
+}
+
+th,td {
+	padding: 6pt;
+	border: 1pt #021EAA solid;
+}
+
+th {
+	color: white;
+	background-color: #021EAA;
+}
+
+tr:nth-child(even) { background-color: #BCD1F0; }

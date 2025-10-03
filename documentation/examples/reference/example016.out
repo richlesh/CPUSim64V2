@@ -1,0 +1,22 @@
+> run.sh example016 326
+Input:326
+iPARSE_INT+1:327
+iPARSE_DEC+1:327
+iPARSE_HEX+1:0x327
+iPARSE_FP+1:327.0
+
+
+> run.sh example016 3.1415
+Input:3.1415
+iPARSE_INT+1:1
+iPARSE_DEC+1:1
+iPARSE_HEX+1:0x1
+iPARSE_FP+1:4.141500000000001
+
+
+> run.sh example016 abcd
+Input:abcd
+iPARSE_INT+1:1
+iPARSE_DEC+1:1
+iPARSE_HEX+1:0xabce
+iPARSE_FP+1:1.0

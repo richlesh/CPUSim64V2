@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>CPUSim64 Architecture</title>
+	<meta name="description" content="Architecture for the CPUSim64 CPU Simulator">
+	<link rel="canonical" href="https://www.lesh.cloud/cpusim64/Architecture.html">
+	<meta name="robots" content="max-image-preview:large">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="generator" content="BBEdit 14.6">
+	<meta name="author" content="Richard Lesh">
+	<link rel="stylesheet" type="text/css" href="styles.css">
+</head>
+<body>
+<h1>CPUSim64 Architecture</h1>
+<h2>Overview</h2>
+<p>CPUSim64 is an emulation of a simple 64-bit microprocessor.  All instructions are 64-bit as are all CPU registers.  Memory access is done using 64-bit at a time.  It is a Load/Store architecture which means that only the load, store, push and pop instructions interact with memory.  All other instructions operate on registers.</p>
+<h2>CPU Model</h2>
+<p>The CPUSim64 CPU has 32 64-bit integer registers that can be used for signed integers or addresses in memory.  It also has 32 64-bit floating point registers that can only be used for IEE 754 floating point values.  It also has a special status register used to indicate attributes of the last value loaded or computed.</p>
+<p>All of the floating point registers can be used in user programs.  None ar reserved.  Three of the integer registers are reserved for CPU operation leaving 29 integer registers for use in user programs.  The three reserved integer registers are:</p>
+<ul>
+	<li>SF = R29</li>
+	<li>SP = R30</li>
+	<li>PC = R31</li>
+</ul>
+<figure><figcaption>CPU Model Diagram</figcaption><img alt="CPU Model Diagram" src="images/CPU_Model.png" style="width:25%;height:25%"></figure>
+
+<h3>Program Counter (PC)</h3>
+<p>The program counter register is used by the CPU to keep track of the next instruction to execute.  Each CPU cycle, the instruction in the memory address stored in the PC is loaded, decoded and executed.  Then the PC is incremented to point to the next instruction.  Control instructions like the JMP, CALL, RETURN and INTERRUPT instructions can modify the SP to an arbitrary value.</p>
+<h3>Stack Pointer (SP)</h3>
+<p>The stack is a region of memory used by the CPU for temporary values.  The stack pointer register is used to keep track of where the top of the stack is located in memory.  The stack pointer will be modified by the PUSH, POP, CALL and RETURN instructions.</p>
+<h3>Stack Frame (SF)</h3>
+<p>When making function calls local variables are often created on the stack.  The stack frame keeps track of where the stack pointer was when the function started so that all local variables can be easily removed from the stack before the function returns.</p>
+<h2>Memory Model</h2>
+<p>There are three regions of memory used by programs run by the CPU.  They are Code, Heap and Stack.</p>
+<h3>Code Region</h3>
+<p>Your assembled machine code for your user program is loaded into memory for the CPU to execute.  It is loaded into the code region of memory.  This code region starts at address 0x1 and ends at the beginning of the heap.  Not only are machine instructions stored in the code region, but also any floating point or string literals defined in your program.  It is condsidered an error to modifiy code or data in the code region.</p>
+<h3>Heap</h3>
+<p>The heap is the region of memory where blocks of memory can be dynamically be allocated for use by your program.  Typically arrays or other complex data structures would be allocated in the heap.  The heap begins at the end of the code region and ends at the maximum size allocated for the stack.</p>
+<h3>Stack</h3>
+<p>The stack is a region of memory used by the CPU and user programs for temporary storage.  It is a last-in/first-out (LIFO) data structure.  The stack resembles a stack of plates where the last plate put on the stack is the first one taken off.  The stack starts at the top of available memory 0xFFFFFFFFFFFF and grows down toward the heap.  It is considered an error if you allow the stack to grow so much that it overwrites some of the heap.  This is known as a stack/heap collision.</p>
+<p>The SP register always points to the next free location on the stack.  The SP should always point to a memory location between the stack base at the top of memory and the stack limit.  The SF points to the location of the SP when the latest function call was invoked.  It points to the beginning of function local variables and should always be between the stack base and the SP.</p>
+<p>The diagram below illustrates an example of the layout of memory assuming that 0x10000 (or 65,536) 64-bit words are available to your application.  Unlike many CPUs that address memory byte-by-byte, CPUSim64 can only access memory as 64-bit words.  This simplifies memory addressing removing the limits other processors have that they can only load on word boundaries every eight bytes, i.e. eight addresses.  In CPUSim64 there is no need to multiply all our address locations by eight to get a valid address.
+<figure><figcaption>Memory Model Diagram</figcaption><img alt="Memory Model Diagram" src="images/Memory_Model.png" style="width:25%;height:25%"></figure>
+<div class="note">Each 64-byte value in memory has an unique integer address.  Usually addresses are written in <a href="https://en.wikipedia.org/wiki/Hexadecimal">hexadecimal</a> form to differentiate them from other ordinary integers.</div>
+
+<div class="console"><b>&gt;</b> assembler.sh test
+<b>&gt;</b> run.sh test
+</div>
+
+<div class="listingheader">test.asm</div>
+<div class="listing">		mov R0, R2
+tst R1
+</div>
+
+
+
+<footer>
+<p><a href="Architecture.html">Architecture</a> |
+<a href="Programmer_Guide.html">Programmer Guide</a> |
+<a href="Instruction_Set_Reference.html">Instruction Set Reference</a> |
+<a href="Interrupt_Reference.html">Software Interrupt Reference</a> |
+<a href="http://www.pureprogrammer.org">Pure Programmer</a></p>
+<p><a href="https://twitter.com/share" class="twitter-share-button" data-size="large" data-related="richlesh">Tweet</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+<a href="https://twitter.com/richlesh" class="twitter-follow-button" data-show-count="false" data-size="large">Follow @richlesh</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script></p>
+
+<form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
+<input type="hidden" name="cmd" value="_s-xclick">
+<input type="hidden" name="hosted_button_id" value="P2877VYMJ3G64">
+<input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif" name="submit" alt="PayPal - The safer, easier way to pay online!">
+<img alt="" style="border:0;" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
+</form>
+<address>&copy;2022 Richard Lesh.  All rights reserved.</address>
+</footer>
+</body>
+</html>

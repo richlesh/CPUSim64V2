@@ -1,0 +1,8 @@
+> run.sh example020 5 12
+Min: 5
+Max: 12
+
+
+> run.sh example020 8 -3
+Min: -3
+Max: 8

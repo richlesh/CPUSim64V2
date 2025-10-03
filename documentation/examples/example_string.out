@@ -1,0 +1,78 @@
+> run.sh example_string
+strlen("Hello, world!"): 13
+strlen("Hello"): 5
+strlen("Hello, world!!!..."): 18
+strcmp("Hello, world!","Hello, world!"): 0
+strcmp("Hello, world!","Hello"): 44
+strcmp("Hello, world!","Hello, world!!!..."): -33
+strcmp("Hello, world!","Hello, Rich!"): 37
+strcmp("Hello","Hello, world!"): -44
+strcmp("Hello, world!!!...","Hello, world!"): 33
+strcmp("Hello, Rich!","Hello, world!"): -37
+stricmp("Hello, world!","Hello, world!"): 0
+stricmp("Hello","HELLO"): 0
+stricmp("Hello, world!","Hello, Rich!"): 5
+strStartsWith("Hello","Hello, world!"): 0
+strStartsWith("Hello, world!","Hello"): -1
+strStartsWith("Hello, world!","Hello, world!!!..."): 0
+strStartsWith("Hello, world!!!...","Hello, world!"): -1
+strStartsWith("Hello, world!","Hello, Rich!"): 0
+strEndsWith("Hello, world!","Hello"): 0
+strEndsWith("Hello","Hello, world!"): 0
+strEndsWith("Hello, world!","world!"): -1
+strHashCode(""): 0
+strHashCode("Hello, world!"): 8ff0d600
+strHashCode("Hello"): 42628b2
+strHashCode("Hello, world!!!..."): 13252800
+strHashCode("Hello, Rich!"): e1901000
+strIndexOf("Hello, world!",' '): 6
+strIndexOf("Hello, world!",'H'): 0
+strIndexOf("Hello, world!",'w'): 7
+strIndexOf("Hello, world!",'!'): 12
+strIndexOfFromIndex("Hello, world!",'l',1): 2
+strIndexOfFromIndex("Hello, world!",'l',3): 3
+strIndexOfFromIndex("Hello, world!",'o',0): 4
+strIndexOfFromIndex("Hello, world!",'o',7): 8
+strIndexOfFromIndex("Hello, world!",'o',13): -1
+strIndexOfFromIndex("Hello, world!",'z',4): -1
+strIndexOfSubstring("Hello, world!","Hello"): 0
+strIndexOfSubstring("Hello, world!","world!"): 7
+strIndexOfSubstring("Hello, world!","HELLO"): -1
+strIndexOfSubstringFromIndex("Hello, world!","Hello",0): 0
+strIndexOfSubstringFromIndex("Hello, world!","world!",8): -1
+strIndexOfSubstringFromIndex("Hello, world!!!...","!!",5): 12
+strIndexOfSubstringFromIndex("Hello, world!!!...","!!",13): 13
+strIndexOfSubstringFromIndex("Hello","Hello, world!!!...",5): -1
+strLastIndexOf("Hello, world!",' '): 6
+strLastIndexOf("Hello, world!",'H'): 0
+strLastIndexOf("Hello, world!",'l'): 10
+strLastIndexOf("Hello, world!",'!'): 12
+strLastIndexOf("Hello, world!",'z'): -1
+strLastIndexOfFromIndex("Hello, world!",'l',10): 10
+strLastIndexOfFromIndex("Hello, world!",'l',9): 3
+strLastIndexOfFromIndex("Hello, world!",'o',10): 8
+strLastIndexOfFromIndex("Hello, world!",'o',8): 8
+strLastIndexOfFromIndex("Hello, world!",'o',6): 4
+strLastIndexOfFromIndex("Hello, world!",'z',4): -1
+strLastIndexOfSubstring("Hello, world!","Hello"): 0
+strLastIndexOfSubstring("Hello, world!!!...","world!"): 7
+strLastIndexOfSubstring("Hello, world!","HELLO"): -1
+strLastIndexOfSubstringFromIndex("Hello, world!","Hello",10): 0
+strLastIndexOfSubstringFromIndex("Hello, world!!!...","world!",13): 7
+strLastIndexOfSubstringFromIndex("Hello, world!!!...","!!",14): 13
+strLastIndexOfSubstringFromIndex("Hello, world!!!...","!!",13): 13
+strLastIndexOfSubstringFromIndex("Hello, world!!!...","!!",12): 12
+strLastIndexOfSubstringFromIndex("Hello","Hello, world!!!...",5): -1
+substring("Hello, world!!!...",0,5): "Hello"
+substring("Hello, Rich!",7,11): "Rich"
+substring("Hello, Rich!",-3,27): "Hello, Rich!"
+substring("Hello, Rich!",27,0): ""
+substringToEnd("Hello, world!!!...",7): "world!!!..."
+substringToEnd("Hello, world!!!...",27): ""
+substringToEnd("Hello, world!!!...",-3): "Hello, world!!!..."
+strcat("Hello","world!"): "Helloworld!"
+strReplace("Hello, world!",'l','L'): "HeLLo, worLd!"
+strReplace("Hello, world!!!...",'!','?'): "Hello, world???..."
+strMatches
+FATAL: Runtime Error in example_string.obj.gz => 000003f9: int    350
+Error: Illegal interrupt 350!

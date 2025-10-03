@@ -1,0 +1,96 @@
+#define	iPUT_NL				200
+#define	iPUT_INT			201
+#define	iPUT_DEC			202
+#define	iPUT_HEX			203
+#define	iPUT_FP				204
+#define	iPUTS				205
+
+#define	iGET_INT			206
+#define	iGET_DEC			207
+#define	iGET_HEX			208
+#define	iGET_FP				209
+#define	iGETS				210
+
+#define	iPRINTF				211
+#define	iCOND_PRINTF		212
+
+#define	iOPEN_FILE_READ			220
+#define	iOPEN_FILE_WRITE		221
+#define	iOPEN_FILE_APPEND		222
+#define	iOPEN_RAW_FILE_READ		223
+#define	iOPEN_RAW_FILE_WRITE	224
+#define	iOPEN_RAW_FILE_APPEND	225
+#define	iCLOSE_FILE				226
+#define	iFLUSH					227
+#define	iDELETE_FILE			228
+#define	iMAKE_DIR				229
+#define	iDELETE_DIR				230
+#define	iIS_DIR					231
+#define	iIS_FILE				232
+#define	iFILE_EXISTS			233
+#define	iFILES					234
+#define	iTEMP_DIR				235
+#define	iTEMP_FILE				236
+
+#define	CHAR	0
+#define	BYTE	1
+#define	SHORT	2
+#define	WORD	4
+#define	SINGLE	4
+#define	DWORD	8
+#define	LONG	8
+#define	DOUBLE	8
+
+#define	STDIN	0
+#define	STDOUT	1
+#define	STDERR	2
+
+#define	READ_MODE	0
+#define	WRITE_MODE	1
+#define	APPEND_MODE	2
+
+#def_macro	IN0(register,port)
+	in	${register},CHAR,${port}
+#end_macro
+#define	INC		IN0
+#def_macro	IN1(register,port)
+	in	${register},BYTE,${port}
+#end_macro
+#define	INB		IN1
+#def_macro	IN2(register,port)
+	in	${register},SHORT,${port}
+#end_macro
+#define INS		IN2
+#def_macro	IN4(register,port)
+	in	${register},WORD,${port}
+#end_macro
+#define	INW		IN4
+#def_macro	IN8(register,port)
+	in	${register},LONG,${port}
+#end_macro
+#define	INL		IN8
+
+#def_macro	PUTC(v)
+	out		CHAR,STDOUT,${v}
+#end_macro
+
+#def_macro	OUT0(register,port)
+	out	CHAR,${port},${register}
+#end_macro
+#define	OUTC	OUT0
+#def_macro	OUT1(register,port)
+	out	BYTE,${port},${register}
+#end_macro
+#define	OUTB	OUT1
+#def_macro	OUT2(register,port)
+	out	SHORT,${port},${register}
+#end_macro
+#define	OUTS	OUT2
+#def_macro	OUT4(register,port)
+	out	WORD,${port},${register}
+#end_macro
+#define	OUTW	OUT4
+#def_macro	OUT8(register,port)
+	out	LONG,${port},${register}
+#end_macro
+#define	OUTL	OUT8

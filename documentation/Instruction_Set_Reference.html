@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>CPUSim64 Instruction Set</title>
+	<meta name="description" content="Instruction Set Documentation for CPUSim64">
+	<link rel="canonical" href="https://www.lesh.cloud/cpusim64/Instruction_Set_Reference.html">
+	<meta name="robots" content="max-image-preview:large">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="generator" content="BBEdit 14.6">
+	<meta name="author" content="Richard Lesh">
+	<link rel="stylesheet" type="text/css" href="styles.css">
+</head>
+<body>
+<h1>CPUSim64 Instruction Set</h1>
+<p>The CPUSim64 instruction set has 32 instructions that operate on the 29 general purpose integer registers, 32 floating point registers, stack frame pointer, stack pointer, program counter and status register.  Each instruction can have multiple numbers and types of operands as described in this document.</p>
+<p>In the Operation columns below the description of the operation will use the operands in the same order that they appear in the Operands column.  The <code class="instruction">&lt;-</code> or <code class="instruction">-&gt;</code> symbols show the direction of data movement.  For all but the <code>STORE</code> instructions the direction is into the first argument.  If a register is listed such as <code>A</code> it means that the value in the register is used.  If a register is listed in square brackets such as <code>[A]</code> it means that the value of <code>A</code> is taken as an address and the contents in that address are used.  This is known as a memory reference.  You will only see this in the Register Load/Store Instructions.</p>
+<p>Because some instructions operate on integer registers or floating point registers and because some instructions support integer literals of differing sizes, the following table lists the symbols used in the Operands and Operation columns</p>
+<table>
+	<caption>Register Refernce Symbols</caption>
+	<tr><th>Symbol</th><th>Description</th></tr>
+	<tr>
+		<td>R</td><td>Integer in r0-r28</td>
+	</tr>
+	<tr>
+		<td>A</td><td>Address in r0-r28, SF, SP or PC</td>
+	</tr>
+	<tr>
+		<td>F</td><td>Float in f0-f31</td>
+	</tr>
+	<tr>
+		<td>X</td><td>R or F</td>
+	</tr>
+	<tr>
+		<td>Y</td><td>A or F</td>
+	</tr>
+	<tr>
+		<td>O</td><td>R or C</td>
+	</tr>
+	<tr>
+		<td>Q</td><td>A, F or C</td>
+	</tr>
+	<tr>
+		<td>SF</td><td>Stack Frame</td>
+	</tr>
+	<tr>
+		<td>SP</td><td>Stack Pointer</td>
+	</tr>
+	<tr>
+		<td>PC</td><td>Program Counter</td>
+	</tr>
+	<tr>
+		<td>SR</td><td>Status Register (PZSO)</td>
+	</tr>
+</table>
+
+<table>
+	<caption>Integer Literal Symbols</caption>
+	<tr><th>Symbol</th><th>Description</th></tr>
+	<tr>
+		<td>Z</td><td>4-bit condition code used for JUMP<br>or CALL or port number 0-15 for IN and OUT</td>
+	</tr>
+	<tr>
+		<td>B</td><td>8-bit signed integer</td>
+	</tr>
+	<tr>
+		<td>C0</td><td>12-bit signed integer</td>
+	</tr>
+	<tr>
+		<td>C1</td><td>56-bit signed integer</td>
+	</tr>
+	<tr>
+		<td>C2</td><td>42-bit signed integer</td>
+	</tr>
+	<tr>
+		<td>C3</td><td>28-bit signed integer</td>
+	</tr>
+	<tr>
+		<td>K</td><td>64-bit signed integer</td>
+	</tr>
+	<tr>
+		<td>E</td><td>64-bit IEEE float</td>
+	</tr>
+	<tr>
+		<td>P</td><td>64-bit Absolute unsigned address</td>
+	</tr>
+</table>
+
+	<h3>No-op/Debug</h3>
+	<p>Does nothing but take up a CPU cycle.  If debugging is turn on for the virtual CPU, then debugging information is printed.</p>
+<table class="instruction">
+    <colgroup><col span="3" class="instruction"><col></colgroup>
+	<thead>
+		<tr><th>Opcode</th><th>Pneumonic</th><th>Operands</th><th>Operation</th></tr>
+	</thead>
+	<tbody>
+		<tr><td>0</td><td>NOP</td><td>N</td><td>Does nothing</td></tr>
+		<tr><td>0</td><td>DEBUG</td><td>Y<br>YY</td><td>Prints contents of 1-4 registers if debugging is enabled.</td></tr>
+		<tr><td>0</td><td>DEBUG</td><td>AC<br>CC</td><td>Dump memory from starting address for number of words	(walk heap if operand 2 is neg)</td></tr>
+	</tbody>
+</table>
+
+<h2>Register Load/Store Instructions</h2>
+
+	<h3>Clear</h3>
+	<p>Used to move zero into registers.</p>
+<table class="instruction">
+    <colgroup><col span="3" class="instruction"><col></colgroup>
+	<thead>
+		<tr><th>Opcode</th><th>Pneumonic</th><th>Operands</th><th>Operation</th></tr>
+	</thead>
+	<tbody>
+		<tr><td>1</td><td>CLEAR</td><td>N<br>X<br>XX<br>XXX<br>XXXX</td><td>Clear all registers or 1-4 specific registers.</td></tr>
+	</tbody>
+</table>
+
+	<h3>Move (Register-to-Register)</h3>
+	<p><code>MOVE</code> is used to move data between registers.  Conditional version moves the third operand into the destination register if the condition is met otherwise it moves the fourth operand.</p>
+<table class="instruction">
+    <colgroup><col span="3" class="instruction"><col></colgroup>
+	<thead>
+		<tr><th>Opcode</th><th>Pneumonic</th><th>Operands</th><th>Operation</th></tr>
+	</thead>
+	<tbody>
+		<tr><td>2</td><td>MOVE</td><td>YY<br>YC<br>AAR<br>AAC<br>ACA<br>ZYQQ</td>
+		<td>Y<sub>1</sub> &lt;- Y<sub>2</sub><br>Y &lt;- C<br>A<sub>1</sub> &lt;- A<sub>2</sub> + R<br>A<sub>1</sub> &lt;- A<sub>2</sub> + C<br>A<sub>1</sub> &lt;- C + A<sub>2</sub><br>if Z, Y &lt;- Q<sub>1</sub> else Y &lt;- Q<sub>2</sub></td></tr>
+	</tbody>
+</table>
+
+	<h3>Load (Memory-to-Register)</h3>
+	<p><code>LOAD</code> is used to move data from memory into registers.</p>
+<table class="instruction">
+    <colgroup><col span="3" class="instruction"><col></colgroup>
+	<thead>
+		<tr><th>Opcode</th><th>Pneumonic</th><th>Operands</th><th>Operation</th></tr>
+	</thead>
+	<tbody>
+		<tr><td>3</td><td>LOAD</td><td>YC<br>YA<br>YAC<br>YCA<br>YCC<br>YAR</td>
+		<td>Y &lt;- [C]<br>Y &lt;- [A]<br>Y &lt;- [A + C]<br>Y &lt;- [C + A]<br>Y &lt;- [C + C]<br>Y &lt;- [A + R]</td></tr>
+	</tbody>
+</table>
+
+	<h3>Store (Register-to-Memory)</h3>
+	<p><code>STORE</code> is used to move data from registers into memory.</p>
+<table class="instruction">
+    <colgroup><col span="3" class="instruction"><col></colgroup>
+	<thead>
+		<tr><th>Opcode</th><th>Pneumonic</th><th>Operands</th><th>Operation</th></tr>
+	</thead>
+	<tbody>
+		<tr><td>4</td><td>STORE</td><td>QC<br>QA<br>QAC<br>QCA<br>QCC<br>QAR</td>
+		<td>Q -&gt; [C]<br>Q -&gt; [A]<br>Q -&gt; [A + C]<br>Q -&gt; [C + A]<br>Q -&gt; [C + C]<br>Q -&gt; [A + R]</td></tr>
+	</tbody>
+</table>
+
+	<h3>Pop</h3>
+	<p>This instruction moves the <code>SP</code> register up by one and then pulls the value now pointed to by the <code>SP</code>.</p>
+<table class="instruction">
+    <colgroup><col span="3" class="instruction"><col></colgroup>
+	<thead>
+		<tr><th>Opcode</th><th>Pneumonic</th><th>Operands</th><th>Operation</th></tr>
+	</thead>
+	<tbody>
+		<tr><td>5</td><td>POP</td><td>N<br>Y</td><td>SP = SP + 1; discard &lt;- [SP]<br>SP = SP + 1; Y &lt;- [SP]</td></tr>
+	</tbody>
+</table>
+
+	<h3>Push</h3>
+	<p>This instruction pushes the operand onto the stack at the current value of the <code>SP</code>.  It then moves the <code>SP</code> down by one.</p>
+<table class="instruction">
+    <colgroup><col span="3" class="instruction"><col></colgroup>
+	<thead>
+		<tr><th>Opcode</th><th>Pneumonic</th><th>Operands</th><th>Operation</th></tr>
+	</thead>
+	<tbody>
+		<tr><td>6</td><td>PUSH</td><td>Y<br>C</td><td>Y -&gt; [SP]; SP = SP - 1<br>C -&gt; [SP]; SP = SP - 1</td></tr>
+	</tbody>
+</table>
+
+<h2>Control Instructions</h2>
+
+	<h3>Jump</h3>
+	<p>The <code>JUMP</code> instruction branches control to the address specified by the operands.  The conditional forms only branch if the <code>SR</code> condition specified is true.</p>
+<table class="instruction">
+    <colgroup><col span="3" class="instruction"><col></colgroup>
+	<thead>
+		<tr><th>Opcode</th><th>Pneumonic</th><th>Operands</th><th>Operation</th></tr>
+	</thead>
+	<tbody>
+		<tr><td>7</td><td>JUMP</td><td>A<br>C<br>AC<br>AR<br>ZA<br>ZC<br>ZAC<br>ZCA<br>ZCC<br>ZAR</td><td>PC &lt;- A<br>PC &lt;- C<br>PC &lt;- A + C<br>PC &lt;- A + R<br>if Z, PC &lt;- A<br>if Z, PC &lt;- C<br>if Z, PC &lt;- A + C<br>if Z, PC &lt;- C + A<br>if Z, PC &lt;- C + C<br>if Z, PC &lt;- A + R</td></tr>
+	</tbody>
+</table>
+
+	<h3>Call</h3>
+	<p>Before the operation listed in the table, all <code>CALL</code> instructions first perform the following actions: Push SP + 1 (Return Address), Push SF (Old Stack Frame) then set SF to SP.</p>
+	<pre class="instruction">PC + 1 -&gt; [SP]; SP = SP - 1
+SF -&gt; [SP]; SP = SP - 1
+SF &lt;- SP</pre>
+<table class="instruction">
+    <colgroup><col span="3" class="instruction"><col></colgroup>
+	<thead>
+		<tr><th>Opcode</th><th>Pneumonic</th><th>Operands</th><th>Operation</th></tr>
+	</thead>
+	<tbody>
+		<tr><td>8</td><td>CALL</td><td>A<br>C<br>AC<br>AR<br>ZA<br>ZC<br>ZAC<br>ZCA<br>ZCC<br>ZAR</td><td>PC &lt;- A<br>PC &lt;- C<br>PC &lt;- A + C<br>PC &lt;- A + R<br>if Z, PC &lt;- A<br>if Z, PC &lt;- C<br>if Z, PC &lt;- A + C<br>if Z, PC &lt;- C + A<br>if Z, PC &lt;- C + C<br>if Z, PC &lt;- A + R</td></tr>
+	</tbody>
+</table>
+
+<h3>Return</h3>
+<p>Returns from a <code>CALL</code>.  <code>RETURN</code> resets the SP back to the SF which is where the SP was when the <code>CALL</code> started. Then pops the <code>SF</code> off the stack.  Then pops the return address off the stack.</p>
+<table class="instruction">
+    <colgroup><col span="3" class="instruction"><col></colgroup>
+	<thead>
+		<tr><th>Opcode</th><th>Pneumonic</th><th>Operands</th><th>Operation</th></tr>
+	</thead>
+	<tbody>
+		<tr><td>9</td><td>RETURN</td><td>N</td><td>SP &lt;- SF<br>SP = SP + 1; SF &lt;- [SP]<br>SP = SP + 1; PC &lt;- [SP]</td></tr>
+	</tbody>
+</table>
+
+	<h3>Interrupt</h3>
+	<p>The <code>INTERRUPT</code> instruction invokes the software interrupt specified by its integer argument.  This effectively calls the operating system function associated with the interrupt and then returns.</p>
+<table class="instruction">
+    <colgroup><col span="3" class="instruction"><col></colgroup>
+	<thead>
+		<tr><th>Opcode</th><th>Pneumonic</th><th>Operands</th><th>Operation</th></tr>
+	</thead>
+	<tbody>
+		<tr><td>10</td><td>INTERRUPT</td><td>R<br>C<br>ZR<br>ZC</td><td>See <a href="Interrupt_Reference.html">List of Software Interrupts</a></td></tr>
+	</tbody>
+</table>
+
+	<h3>Stop</h3>
+	<p><code>STOP</code> halts execution of the virtual CPU.</p>
+<table class="instruction">
+    <colgroup><col span="3" class="instruction"><col></colgroup>
+	<thead>
+		<tr><th>Opcode</th><th>Pneumonic</th><th>Operands</th><th>Operation</th></tr>
+	</thead>
+	<tbody>
+		<tr><td>11</td><td>STOP</td><td>N</td><td></td></tr>
+	</tbody>
+</table>
+
+<h2>Arithmetic Instructions</h2>
+
+	<h3>Negate</h3>
+	<p></p>
+<table class="instruction">
+    <colgroup><col span="3" class="instruction"><col></colgroup>
+	<thead>
+		<tr><th>Opcode</th><th>Pneumonic</th><th>Operands</th><th>Operation</th></tr>
+	</thead>
+	<tbody>
+		<tr><td>12</td><td>NEG</td><td>X</td><td>X &lt;- -X</td></tr>
+	</tbody>
+</table>
+
+	<h3>Addition</h3>
+	<p></p>
+<table class="instruction">
+    <colgroup><col span="3" class="instruction"><col></colgroup>
+	<thead>
+		<tr><th>Opcode</th><th>Pneumonic</th><th>Operands</th><th>Operation</th></tr>
+	</thead>
+	<tbody>
+		<tr><td>13</td><td>ADD</td><td style="line-height: 1.5em;">AR<br>FX<br>YC<br>AAR<br>FFX<br>AAC<br>FFC<br>ACA<br>FCF</td><td>A<sub>1</sub> &lt;- A<sub>1</sub> + R<br>F<sub>1</sub> &lt;- F<sub>1</sub> + X<br>Y<sub>1</sub> &lt;- Y<sub>1</sub> + C<br>A<sub>1</sub> &lt;- A<sub>2</sub> + R<br>F<sub>1</sub> &lt;- F<sub>2</sub> + X<br>A<sub>1</sub> &lt;- A<sub>2</sub> + C<br>F<sub>1</sub> &lt;- F<sub>2</sub> + C<br>A<sub>1</sub> &lt;- C + A<sub>2</sub><br>F<sub>1</sub> &lt;- C + F<sub>2</sub></td></tr>
+	</tbody>
+</table>
+
+	<h3>Subtraction</h3>
+	<p></p>
+<table class="instruction">
+    <colgroup><col span="3" class="instruction"><col></colgroup>
+	<thead>
+		<tr><th>Opcode</th><th>Pneumonic</th><th>Operands</th><th>Operation</th></tr>
+	</thead>
+	<tbody>
+		<tr><td>14</td><td>SUB</td><td style="line-height: 1.5em;">AR<br>FX<br>YC<br>AAR<br>FFX<br>AAC<br>FFC<br>ACA<br>FCF</td><td>A<sub>1</sub> &lt;- A<sub>1</sub> - R<br>F<sub>1</sub> &lt;- F<sub>1</sub> - X<br>Y<sub>1</sub> &lt;- Y<sub>1</sub> - C<br>A<sub>1</sub> &lt;- A<sub>2</sub> - R<br>F<sub>1</sub> &lt;- F<sub>2</sub> - X<br>A<sub>1</sub> &lt;- A<sub>2</sub> - C<br>F<sub>1</sub> &lt;- F<sub>2</sub> - C<br>A<sub>1</sub> &lt;- C - A<sub>2</sub><br>F<sub>1</sub> &lt;- C - F<sub>2</sub></td></tr>
+	</tbody>
+</table>
+
+	<h3>Multiplication</h3>
+	<p></p>
+<table class="instruction">
+    <colgroup><col span="3" class="instruction"><col></colgroup>
+	<thead>
+		<tr><th>Opcode</th><th>Pneumonic</th><th>Operands</th><th>Operation</th></tr>
+	</thead>
+	<tbody>
+		<tr><td>15</td><td>MULT</td><td style="line-height: 1.5em;">RR<br>FX<br>XC<br>RRR<br>FFX<br>RRC<br>FFC<br>RCR<br>FCF</td><td>R<sub>1</sub> &lt;- R<sub>1</sub> * R<sub>2</sub><br>F<sub>1</sub> &lt;- F<sub>1</sub> * X<br>X<sub>1</sub> &lt;- X<sub>1</sub> * C<br>R<sub>1</sub> &lt;- R<sub>2</sub> * R<sub>3</sub><br>F<sub>1</sub> &lt;- F<sub>2</sub> * X<br>R<sub>1</sub> &lt;- R<sub>2</sub> * C<br>F<sub>1</sub> &lt;- F<sub>2</sub> * C<br>R<sub>1</sub> &lt;- C * R<sub>2</sub><br>F<sub>1</sub> &lt;- C * F<sub>2</sub></td></tr>
+	</tbody>
+</table>
+
+	<h3>Division</h3>
+	<p></p>
+<table class="instruction">
+    <colgroup><col span="3" class="instruction"><col></colgroup>
+	<thead>
+		<tr><th>Opcode</th><th>Pneumonic</th><th>Operands</th><th>Operation</th></tr>
+	</thead>
+	<tbody>
+		<tr><td>16</td><td>DIV</td><td style="line-height: 1.5em;">RR<br>FX<br>XC<br>RRR<br>FFX<br>RRC<br>FFC<br>RCR<br>FCF<br>RRRR<br>RRRC</td><td>R<sub>1</sub> &lt;- R<sub>1</sub> / R<br>F<sub>1</sub> &lt;- F<sub>1</sub> / X<br>X<sub>1</sub> &lt;- X<sub>1</sub> / C<br>R<sub>1</sub> &lt;- R<sub>2</sub> / R<br>F<sub>1</sub> &lt;- F<sub>2</sub> / X<br>R<sub>1</sub> &lt;- R<sub>2</sub> / C<br>F<sub>1</sub> &lt;- F<sub>2</sub> / C<br>R<sub>1</sub> &lt;- C / R<sub>2</sub><br>F<sub>1</sub> &lt;- C / F<sub>2</sub><br>R<sub>1</sub> &lt;- R<sub>3</sub> / R<sub>4</sub>; R<sub>2</sub> &lt;- R<sub>3</sub> % R<sub>4</sub><br>R<sub>1</sub> &lt;- R<sub>3</sub> / C; R<sub>2</sub> &lt;- R<sub>3</sub> % C</sub></td></tr>
+		<tr><td>16</td><td>RECIP</td><td>F</td><td>F &lt;- 1 / F</td></tr>
+	</tbody>
+</table>
+
+<h2>Logical and Conditional Instructions</h2>
+
+	<h3>Complement</h3>
+	<p></p>
+<table class="instruction">
+    <colgroup><col span="3" class="instruction"><col></colgroup>
+	<thead>
+		<tr><th>Opcode</th><th>Pneumonic</th><th>Operands</th><th>Operation</th></tr>
+	</thead>
+	<tbody>
+		<tr><td>17</td><td>COMPL</td><td>R</td><td>R &lt;- ~R</td></tr>
+	</tbody>
+</table>
+
+	<h3>Bitwise AND</h3>
+	<p></p>
+<table class="instruction">
+    <colgroup><col span="3" class="instruction"><col></colgroup>
+	<thead>
+		<tr><th>Opcode</th><th>Pneumonic</th><th>Operands</th><th>Operation</th></tr>
+	</thead>
+	<tbody>
+		<tr><td>18</td><td>AND</td><td style="line-height: 1.5em;">RR<br>RC<br>RRR<br>RRC</td><td>R<sub>1</sub> &lt;- R<sub>1</sub> & R<sub>2</sub><br>R<sub>1</sub> &lt;- R<sub>1</sub> & C<br>R<sub>1</sub> &lt;- R<sub>2</sub> & R<sub>3</sub><br>R<sub>1</sub> &lt;- R<sub>2</sub> & C</td></tr>
+	</tbody>
+</table>
+
+	<h3>Bitwise OR</h3>
+	<p></p>
+<table class="instruction">
+    <colgroup><col span="3" class="instruction"><col></colgroup>
+	<thead>
+		<tr><th>Opcode</th><th>Pneumonic</th><th>Operands</th><th>Operation</th></tr>
+	</thead>
+	<tbody>
+		<tr><td>19</td><td>OR</td><td style="line-height: 1.5em;">RR<br>RC<br>RRR<br>RRC</td><td>R<sub>1</sub> &lt;- R<sub>1</sub> | R<sub>2</sub><br>R<sub>1</sub> &lt;- R<sub>1</sub> | C<br>R<sub>1</sub> &lt;- R<sub>2</sub> | R<sub>3</sub><br>R<sub>1</sub> &lt;- R<sub>2</sub> | C</td></tr>
+	</tbody>
+</table>
+
+	<h3>Bitwise XOR</h3>
+	<p></p>
+<table class="instruction">
+    <colgroup><col span="3" class="instruction"><col></colgroup>
+	<thead>
+		<tr><th>Opcode</th><th>Pneumonic</th><th>Operands</th><th>Operation</th></tr>
+	</thead>
+	<tbody>
+		<tr><td>20</td><td>XOR</td><td style="line-height: 1.5em;">RR<br>RC<br>RRR<br>RRC</td><td>R<sub>1</sub> &lt;- R<sub>1</sub> ^ R<sub>2</sub><br>R<sub>1</sub> &lt;- R<sub>1</sub> ^ C<br>R<sub>1</sub> &lt;- R<sub>2</sub> ^ R<sub>3</sub><br>R<sub>1</sub> &lt;- R<sub>2</sub> ^ C</td></tr>
+	</tbody>
+</table>
+
+	<h3>Test</h3>
+	<p></p>
+<table class="instruction">
+    <colgroup><col span="3" class="instruction"><col></colgroup>
+	<thead>
+		<tr><th>Opcode</th><th>Pneumonic</th><th>Operands</th><th>Operation</th></tr>
+	</thead>
+	<tbody>
+		<tr><td>21</td><td>TEST</td><td>X</td><td>Sets SR based on X</td></tr>
+	</tbody>
+</table>
+
+	<h3>Compare</h3>
+	<p></p>
+<table class="instruction">
+    <colgroup><col span="3" class="instruction"><col></colgroup>
+	<thead>
+		<tr><th>Opcode</th><th>Pneumonic</th><th>Operands</th><th>Operation</th></tr>
+	</thead>
+	<tbody>
+		<tr><td>22</td><td>CMP</td><td style="line-height: 1.5em;">AA<br>AC<br>FF</td><td>Sets SR based on A<sub>1</sub> - A<sub>2</sub><br>Sets SR based on A - C<br>Sets SR based on F<sub>1</sub> - F<sub>2</sub></td></tr>
+	</tbody>
+</table>
+
+<h2>Shift Instructions</h2>
+
+	<h3>Logical & Arithmetic Left Shift</h3>
+	<p>Shifts the bits in the integer register to the left.  Zero bit(s) is always shifted in on the right.  These can be used for either logical or arithmetic left shift.  Arithmetic left shift is equivalent to multiplying by powers of 2, i.e x &lt;&lt; 1 is equivalent to x * 2, x &lt;&lt; 2 is equivalent to x * 4, x &lt;&lt; 3 is equivalent to x * 8, etc.</p>
+<table class="instruction">
+    <colgroup><col span="3" class="instruction"><col></colgroup>
+	<thead>
+		<tr><th>Opcode</th><th>Pneumonic</th><th>Operands</th><th>Operation</th></tr>
+	</thead>
+	<tbody>
+		<tr><td>23</td><td>LSHIFT</td><td style="line-height: 1.5em;">RR<br>RC<br>RRR<br>RRC</td><td>R<sub>1</sub> &lt;- R<sub>1</sub> &lt;&lt; R<sub>2</sub><br>R<sub>1</sub> &lt;- R<sub>1</sub> &lt;&lt; C<br>R<sub>1</sub> &lt;- R<sub>2</sub> &lt;&lt; R<sub>3</sub><br>R<sub>1</sub> &lt;- R<sub>2</sub> &lt;&lt; C</td></tr>
+	</tbody>
+</table>
+
+	<h3>Logical Right Shift</h3>
+	<p>Shifts the bits in the integer register to the right.  Zero bit(s) is always shifted in on the left.</p>
+<table class="instruction">
+    <colgroup><col span="3" class="instruction"><col></colgroup>
+	<thead>
+		<tr><th>Opcode</th><th>Pneumonic</th><th>Operands</th><th>Operation</th></tr>
+	</thead>
+	<tbody>
+		<tr><td>24</td><td>RSHIFT</td><td style="line-height: 1.5em;">RR<br>RC<br>RRR<br>RRC</td><td>R<sub>1</sub> &lt;- R<sub>1</sub> &gt;&gt; R<sub>2</sub><br>R<sub>1</sub> &lt;- R<sub>1</sub> &gt;&gt; C<br>R<sub>1</sub> &lt;- R<sub>2</sub> &gt;&gt; R<sub>3</sub><br>R<sub>1</sub> &lt;- R<sub>2</sub> &gt;&gt; C</td></tr>
+	</tbody>
+</table>
+
+	<h3>Arithmetic Right Shift</h3>
+	<p>Shifts the bits in the integer register to the right.  Sign bit(s) is always shifted in on the right.  This results in the equivalent of dividing a signed integer by powers of 2.</p>
+<table class="instruction">
+    <colgroup><col span="3" class="instruction"><col></colgroup>
+	<thead>
+		<tr><th>Opcode</th><th>Pneumonic</th><th>Operands</th><th>Operation</th></tr>
+	</thead>
+	<tbody>
+		<tr><td>25</td><td>ARSHIFT</td><td style="line-height: 1.5em;">RR<br>RC<br>RRR<br>RRC</td><td>R<sub>1</sub> &lt;- R<sub>1</sub> &gt;&gt; R<sub>2</sub><br>R<sub>1</sub> &lt;- R<sub>1</sub> &gt;&gt; C<br>R<sub>1</sub> &lt;- R<sub>2</sub> &gt;&gt; R<sub>3</sub><br>R<sub>1</sub> &lt;- R<sub>2</sub> &gt;&gt; C</td></tr>
+	</tbody>
+</table>
+
+	<h3>Left Rotate</h3>
+	<p>Shifts the bits in the integer register to the left.  The high bit that is shifted off is shifted in on the right.</p>
+<table class="instruction">
+    <colgroup><col span="3" class="instruction"><col></colgroup>
+	<thead>
+		<tr><th>Opcode</th><th>Pneumonic</th><th>Operands</th><th>Operation</th></tr>
+	</thead>
+	<tbody>
+		<tr><td>26</td><td>LROTATE</td><td style="line-height: 1.5em;">RR<br>RC<br>RRR<br>RRC</td><td>R<sub>1</sub> &lt;- R<sub>1</sub> &lt;&lt; R<sub>2</sub><br>R<sub>1</sub> &lt;- R<sub>1</sub> &lt;&lt; C<br>R<sub>1</sub> &lt;- R<sub>2</sub> &lt;&lt; R<sub>3</sub><br>R<sub>1</sub> &lt;- R<sub>2</sub> &lt;&lt; C</td></tr>
+	</tbody>
+</table>
+
+	<h3>Right Rotate</h3>
+	<p>Shifts the bits in the integer register to the right.  The low bit that is shifted off is shifted in on the left.</p>
+<table class="instruction">
+    <colgroup><col span="3" class="instruction"><col></colgroup>
+	<thead>
+		<tr><th>Opcode</th><th>Pneumonic</th><th>Operands</th><th>Operation</th></tr>
+	</thead>
+	<tbody>
+		<tr><td>27</td><td>RROTATE</td><td style="line-height: 1.5em;">RR<br>RC<br>RRR<br>RRC</td><td>R<sub>1</sub> &lt;- R<sub>1</sub> &gt;&gt; R<sub>2</sub><br>R<sub>1</sub> &lt;- R<sub>1</sub> &gt;&gt; C<br>R<sub>1</sub> &lt;- R<sub>2</sub> &gt;&gt; R<sub>3</sub><br>R<sub>1</sub> &lt;- R<sub>2</sub> &gt;&gt; C</td></tr>
+	</tbody>
+</table>
+
+<h2>I/O Instructions</h2>
+<p>Input and output instructions read/write a specified number of bytes to a port which can be a stream to the console if STDIN, STDOUT or STDERR are used for the port or to a file that has been opened.</p>
+<p>I/O sizes are specified in <code>&lt;system/io.def&gt;</code> using the following symbols.</p>
+<table>
+	<tr><th>Symbol</th><th>Size</th></tr>
+	<tr>
+		<td>CHAR</td> <td>0</td>
+	</tr>
+	<tr>
+		<td>BYTE</td> <td>1</td>
+	</tr>
+	<tr>
+		<td>SHORT</td> <td>2</td>
+	</tr>
+	<tr>
+		<td>WORD</td> <td>4</td>
+	</tr>
+	<tr>
+		<td>SINGLE</td> <td>4</td>
+	</tr>
+	<tr>
+		<td>DWORD</td> <td>8</td>
+	</tr>
+	<tr>
+		<td>LONG</td> <td>8</td>
+	</tr>
+	<tr>
+		<td>DOUBLE</td> <td>8</td>
+	</tr>
+</table>
+
+	<h3>Input</h3>
+	<p>If the number of bytes requested can not be read, then status register bit for Overflow will be set.</p>
+<table class="instruction">
+    <colgroup><col span="3" class="instruction"><col></colgroup>
+	<thead>
+		<tr><th>Opcode</th><th>Pneumonic</th><th>Operands</th><th>Operation</th></tr>
+	</thead>
+	<tbody>
+		<tr><td>28</td><td>IN</td><td style="line-height: 1.5em;">XZZ<br>XRR<br>XRZ<br>XZR</td><td>X &lt;- Read Z<sub>1</sub> bytes from port Z<sub>2</sub><br>X &lt;- Read R<sub>1</sub> bytes from port R<sub>2</sub><br>X &lt;- Read R bytes from port Z<br>X &lt;- Read Z bytes from port R</td></tr>
+	</tbody>
+</table>
+
+	<h3>Output</h3>
+	<p></p>
+<table class="instruction">
+    <colgroup><col span="3" class="instruction"><col></colgroup>
+	<thead>
+		<tr><th>Opcode</th><th>Pneumonic</th><th>Operands</th><th>Operation</th></tr>
+	</thead>
+	<tbody>
+		<tr><td>29</td><td>OUT</td><td style="line-height: 1.5em;">QZZ<br>QRR<br>QRZ<br>QZR</td><td>Write Z<sub>1</sub> bytes to port Z<sub>2</sub> &lt;- Q<br>Write R<sub>1</sub> bytes to port R<sub>2</sub> &lt;- Q<br>Write R bytes to port Z &lt;- Q<br>Write Z bytes to port R &lt;- Q</td></tr>
+	</tbody>
+</table>
+
+	<h3>Pack</h3>
+	<p></p>
+<table class="instruction">
+    <colgroup><col span="3" class="instruction"><col></colgroup>
+	<thead>
+		<tr><th>Opcode</th><th>Pneumonic</th><th>Operands</th><th>Operation</th></tr>
+	</thead>
+	<tbody>
+		<tr><td>30</td><td>PACK</td><td style="line-height: 1.5em;">RR<br>RRRR</td><td>Combines two 16-bit values and stores the resulting low 32-bits  into R<sub>1</sub>.  Most significant bits are in R<sub>1</sub>.<br>R<sub>1</sub> &lt;- R<sub>1</sub>R<sub>2</sub><br>Combines four 8-bit values and stores the resulting low 32-bits into R<sub>1</sub>.  Most significant bits are in R<sub>1</sub>.<br>R<sub>1</sub> &lt;- R<sub>1</sub>R<sub>2</sub>R<sub>3</sub>R<sub>4</sub></td></tr>
+	</tbody>
+</table>
+
+	<h3>Pack64</h3>
+	<p></p>
+<table class="instruction">
+    <colgroup><col span="3" class="instruction"><col></colgroup>
+	<thead>
+		<tr><th>Opcode</th><th>Pneumonic</th><th>Operands</th><th>Operation</th></tr>
+	</thead>
+	<tbody>
+		<tr><td>31</td><td>PACK64</td><td style="line-height: 1.5em;">RR<br>RRRR</td><td>Combines two 32-bit values and stores the resulting 64-bits  into R<sub>1</sub>.  Most significant bits are in R<sub>1</sub>.<br>R<sub>1</sub> &lt;- R<sub>1</sub>R<sub>2</sub><br>Combines four 16-bit values and stores the resulting 64-bits into R<sub>1</sub>.  Most significant bits are in R<sub>1</sub>.<br>R<sub>1</sub> &lt;- R<sub>1</sub>R<sub>2</sub>R<sub>3</sub>R<sub>4</sub></td></tr>
+	</tbody>
+</table>
+
+	<h3>Unpack</h3>
+	<p></p>
+<table class="instruction">
+    <colgroup><col span="3" class="instruction"><col></colgroup>
+	<thead>
+		<tr><th>Opcode</th><th>Pneumonic</th><th>Operands</th><th>Operation</th></tr>
+	</thead>
+	<tbody>
+		<tr><td>32</td><td>UNPACK</td><td style="line-height: 1.5em;">RR<br>RRRR</td><td>Breaks low 32-bits of R<sub>1</sub> into two 16-bit values and stores the results across both registers.  Most significant bits are in R<sub>1</sub>.<br>R<sub>1</sub> -&gt; R<sub>1</sub>R<sub>2</sub><br>Breaks low 32-bits of R<sub>1</sub> into four 8-bit values and stores the results across all four registers.  Most significant bits are in R<sub>1</sub>.<br>R<sub>1</sub> -&gt; R<sub>1</sub>R<sub>2</sub>R<sub>3</sub>R<sub>4</sub></td></tr>
+	</tbody>
+</table>
+
+	<h3>Unpack64</h3>
+	<p></p>
+<table class="instruction">
+    <colgroup><col span="3" class="instruction"><col></colgroup>
+	<thead>
+		<tr><th>Opcode</th><th>Pneumonic</th><th>Operands</th><th>Operation</th></tr>
+	</thead>
+	<tbody>
+		<tr><td>33</td><td>UNPACK64</td><td style="line-height: 1.5em;">RR<br>RRRR</td><td>Breaks R<sub>1</sub> into two 32-bit values and stores the results across both registers.  Most significant bits are in R<sub>1</sub>.<br>R<sub>1</sub> -&gt; R<sub>1</sub>R<sub>2</sub><br>Breaks R<sub>1</sub> into four 16-bit values and stores the results across all four registers.  Most significant bits are in R<sub>1</sub>.<br>R<sub>1</sub> -&gt; R<sub>1</sub>R<sub>2</sub>R<sub>3</sub>R<sub>4</sub></td></tr>
+	</tbody>
+</table>
+
+	<h3>Compare and Set</h3>
+	<p>Performs atomic set of a memory location.  Only if the current value of the memory location matches the old value does it then set it to the new value.  Sets status register bit Overflow if successful.</p>
+<table class="instruction">
+    <colgroup><col span="3" class="instruction"><col></colgroup>
+	<thead>
+		<tr><th>Opcode</th><th>Pneumonic</th><th>Operands</th><th>Operation</th></tr>
+	</thead>
+	<tbody>
+		<tr><td>34</td><td>CAS</td><td style="line-height: 1.5em;">RRAO<br>CCAO<br>RCAO<br>CRAO</td><td>Atomic compare and swap<br>First operand is old value<br>Second operand is new value<br>Remaining arguments are address + offset.  </td></tr>
+	</tbody>
+</table>
+
+	<h3>Endian Mode</h3>
+	<p></p>
+<table class="instruction">
+    <colgroup><col span="3" class="instruction"><col></colgroup>
+	<thead>
+		<tr><th>Opcode</th><th>Pneumonic</th><th>Operands</th><th>Operation</th></tr>
+	</thead>
+	<tbody>
+		<tr><td>35</td><td>ENDIAN</td><td style="line-height: 1.5em;">RR<br>RZ<br>ZR<br>ZZ</td><td>Sets I/O Port endian mode to big-endian or little-endian<br>First operand is port [0-15]<br>Second operand is mode (TRUE for big-endian, FALSE for little-endian)</td></tr>
+	</tbody>
+</table>
+
+	<h2>Save/Restore Registers</h2>
+	<h3>Save Registers</h3>
+	<p></p>
+<table class="instruction">
+    <colgroup><col span="3" class="instruction"><col></colgroup>
+	<thead>
+		<tr><th>Opcode</th><th>Pneumonic</th><th>Operands</th><th>Operation</th></tr>
+	</thead>
+	<tbody>
+		<tr><td>36</td><td>Save</td><td style="line-height: 1.5em;">RR<br />FF</td><td>Saves registers R<sub>1</sub> through R<sub>2</sub> to the stack.<br />Saves registers F<sub>1</sub> through F<sub>2</sub> to the stack.</td></tr>
+	</tbody>
+</table>
+	<h3>Restore Registers</h3>
+	<p></p>
+<table class="instruction">
+    <colgroup><col span="3" class="instruction"><col></colgroup>
+	<thead>
+		<tr><th>Opcode</th><th>Pneumonic</th><th>Operands</th><th>Operation</th></tr>
+	</thead>
+	<tbody>
+		<tr><td>37</td><td>Restore</td><td style="line-height: 1.5em;">RR<br />FF</td><td>Restores registers R<sub>1</sub> through R<sub>2</sub> from the stack.<br />Restores registers F<sub>1</sub> through F<sub>2</sub> from the stack.</td></tr>
+	</tbody>
+</table>
+<footer>
+<p><a href="Architecture.html">Architecture</a> |
+<a href="Programmer_Guide.html">Programmer Guide</a> |
+<a href="Instruction_Set_Reference.html">Instruction Set Reference</a> |
+<a href="Interrupt_Reference.html">Software Interrupt Reference</a> |
+<a href="http://www.pureprogrammer.org">Pure Programmer</a></p>
+<p><a href="https://twitter.com/share" class="twitter-share-button" data-size="large" data-related="richlesh">Tweet</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+<a href="https://twitter.com/richlesh" class="twitter-follow-button" data-show-count="false" data-size="large">Follow @richlesh</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script></p>
+
+<form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
+<input type="hidden" name="cmd" value="_s-xclick">
+<input type="hidden" name="hosted_button_id" value="P2877VYMJ3G64">
+<input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif" name="submit" alt="PayPal - The safer, easier way to pay online!">
+<img alt="" style="border:0;" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
+</form>
+<address>&copy;2022 Richard Lesh.  All rights reserved.</address>
+</footer>
+</body>
+</html>

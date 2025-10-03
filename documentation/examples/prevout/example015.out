@@ -1,0 +1,6 @@
+> run.sh example015 326 Hello 3.14
+Number of command line arguments: 4
+0:example015.obj.gz
+1:326
+2:Hello
+3:3.14

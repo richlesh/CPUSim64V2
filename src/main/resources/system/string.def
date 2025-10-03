@@ -1,0 +1,30 @@
+#define	iFMT_DEC			301
+#define	iFMT_HEX			302
+#define	iFMT_FLOAT			303
+#define	iPARSE_INT			304
+#define	iPARSE_DEC			305
+#define	iPARSE_HEX			306
+#define	iPARSE_FLOAT		307
+#define	iSPRINTF			308
+#define	iTO_LOWER			309
+#define	iTO_UPPER			310
+#define	iTO_LOWER_STR		311
+#define	iTO_UPPER_STR		312
+#define iSUBSTRING			313
+#define	iPREFIX				314
+#define iSUFFIX				315
+#define iCHAR_SEARCH		316
+#define iLAST_CHAR_SEARCH	317
+#define iSUBSTRING_SEARCH	318
+#define iLAST_SUBSTRING_SEARCH	319
+
+#define	iMATCHES			350
+#define	iREPLACE_FIRST		351
+#define iREPLACE_ALL		352
+#define	iSPLIT				353
+#define	iJOIN				354
+
+#defmacro	TO_INT(x)
+	move	r0, ${x}
+	int		iPARSE_INT
+#endmacro
