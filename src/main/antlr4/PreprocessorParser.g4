@@ -17,7 +17,7 @@ preproc
 
 // Any line that does not start with '#' is passed through as code
 codeLine
-  : IDENT NL
+  : IDENT NL				// for Pnuemonics without arguments like STOP
   | CODE_TEXT? NL
   ;
 

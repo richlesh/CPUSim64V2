@@ -547,7 +547,14 @@ public class PreprocessorVisitor extends PreprocessorParserBaseVisitor<Void> {
 			} else {
 				replacement = lookupVar(ident);
 				// No replacement
-				if (replacement == null) continue;
+				if (replacement == null) {
+					if (ident.equals("__FILE__"))
+						replacement = filename;
+					else if (ident.equals("__LINE__"))
+						replacement = String.valueOf(line);
+					else
+						continue;
+				}
 			}
 			// Escape backslashes and dollars for appendReplacement
 			replacement = replacement.replace("\\", "\\\\").replace("$", "\\$");

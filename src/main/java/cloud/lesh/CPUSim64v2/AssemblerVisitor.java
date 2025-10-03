@@ -1,17 +1,9 @@
 package cloud.lesh.CPUSim64v2;
 
-import org.antlr.v4.runtime.BaseErrorListener;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
-import org.antlr.v4.runtime.Lexer;
-import org.antlr.v4.runtime.LexerNoViableAltException;
-import org.antlr.v4.runtime.Parser;
-import org.antlr.v4.runtime.Recognizer;
-import org.antlr.v4.runtime.RecognitionException;
 import org.antlr.v4.runtime.Token;
-import org.antlr.v4.runtime.TokenStream;
-import org.antlr.v4.runtime.misc.Interval;
 import org.antlr.v4.runtime.tree.ParseTree;
 
 import org.apache.commons.lang3.StringEscapeUtils;
@@ -80,10 +72,10 @@ public class AssemblerVisitor extends CPUSim64v2BaseVisitor<Void> implements Has
 	// NOTE: Your diagram labels bytes as 00/11/22/33; using 12-bit operand slots fits the 0..4095 (12-bit) range you gave for 64-bit.
 	private long encType0(int opcode, int a, int b, int c, int d, int v0, int v1, int v2, int v3) {
 		long w = 0;
-		v0 = (int)fitSigned(v0, 12);
-		v1 = (int)fitSigned(v1, 12);
-		v2 = (int)fitSigned(v2, 12);
-		v3 = (int)fitSigned(v3, 12);
+		v0 = (int) fitSigned(v0, 12);
+		v1 = (int) fitSigned(v1, 12);
+		v2 = (int) fitSigned(v2, 12);
+		v3 = (int) fitSigned(v3, 12);
 		w |= ((long) TT_STD & 0x3L) << 62;
 		w |= ((long) opcode & 0x3FL) << 56;
 		long types = ((a & 3) << 6) | ((b & 3) << 4) | ((c & 3) << 2) | (d & 3);
@@ -117,7 +109,7 @@ public class AssemblerVisitor extends CPUSim64v2BaseVisitor<Void> implements Has
 	//   [41: 0] imm42 (two’s complement)
 	private long encType2RC2(int opcode, int aType, int op0, long imm42) {
 		long w = 0;
-		op0 = (int)fitSigned(op0, 12);
+		op0 = (int) fitSigned(op0, 12);
 		imm42 = fitSigned(imm42, 42);
 		w |= ((long) TT_YC2 & 0x3L) << 62;
 		w |= ((long) opcode & 0x3FL) << 56;
@@ -137,9 +129,9 @@ public class AssemblerVisitor extends CPUSim64v2BaseVisitor<Void> implements Has
 	//   [27: 0] imm28 (two’s complement)
 	private long encType3ZZC3(int opcode, int aType, int op0, int bType, int op1, int imm28) {
 		long w = 0;
-		op0 = (int)fitSigned(op0, 12);
-		op1 = (int)fitSigned(op1, 12);
-		imm28 = (int)fitSigned(imm28, 28);
+		op0 = (int) fitSigned(op0, 12);
+		op1 = (int) fitSigned(op1, 12);
+		imm28 = (int) fitSigned(imm28, 28);
 		w |= ((long) TT_YYC3 & 0x3L) << 62;
 		w |= ((long) opcode & 0x3FL) << 56;
 		w |= ((long) (aType & 0x3)) << 54;
@@ -392,16 +384,16 @@ public class AssemblerVisitor extends CPUSim64v2BaseVisitor<Void> implements Has
 						: aIndexFromToken(y.aOperand().start);
 				if (i == 0) {
 					a = t;
-					v0 = (int) fitSigned(v, C0_BITS);
+					v0 = v;
 				} else if (i == 1) {
 					b = t;
-					v1 = (int) fitSigned(v, C0_BITS);
+					v1 = v;
 				} else if (i == 2) {
 					c = t;
-					v2 = (int) fitSigned(v, C0_BITS);
+					v2 = v;
 				} else {
 					d = t;
-					v3 = (int) fitSigned(v, C0_BITS);
+					v3 = v;
 				}
 			}
 			out.add(encType0(Opcode.DEBUG.code, a, b, c, d, v0, v1, v2, v3));
@@ -415,10 +407,10 @@ public class AssemblerVisitor extends CPUSim64v2BaseVisitor<Void> implements Has
 			if (ctx.aOperand() != null) {
 				op0 = aIndexFromToken(ctx.aOperand().start);
 				out.add(encType0(Opcode.DEBUG.code, aType, OT_CONST, OT_NONE, OT_NONE,
-						op0, (int)fitSigned(cnt, C0_BITS), 0, 0));
+						op0, (int)cnt, 0, 0));
 			} else if (ctx.aLiteral() != null) {
-				k = (int)parseIntLike(ctx.aLiteral().getText());
-				out.add(encType2RC2(Opcode.DEBUG.code, OT_CONST, (int)fitSigned(cnt, C0_BITS), fitSigned(k, C2_BITS)));
+				k = parseIntLike(ctx.aLiteral().getText());
+				out.add(encType2RC2(Opcode.DEBUG.code, OT_CONST, (int)cnt, k));
 			} else {
 				throw new AssemblerException("DEBUG with C literal needs A or R operand");
 			}
@@ -442,16 +434,16 @@ public class AssemblerVisitor extends CPUSim64v2BaseVisitor<Void> implements Has
 					: regIndex(x.rOperand().REG_R().getText());
 			if (i == 0) {
 				a = t;
-				v0 = (int) fitSigned(v, C0_BITS);
+				v0 = v;
 			} else if (i == 1) {
 				b = t;
-				v1 = (int) fitSigned(v, C0_BITS);
+				v1 = v;
 			} else if (i == 2) {
 				c = t;
-				v2 = (int) fitSigned(v, C0_BITS);
+				v2 = v;
 			} else {
 				d = t;
-				v3 = (int) fitSigned(v, C0_BITS);
+				v3 = v;
 			}
 		}
 		long w = encType0(Opcode.CLEAR.code, a, b, c, d, v0, v1, v2, v3);
@@ -486,7 +478,7 @@ public class AssemblerVisitor extends CPUSim64v2BaseVisitor<Void> implements Has
 				v2 = aIndexFromToken(q1.aOperand().start);
 			} else {
 				c = OT_CONST;
-				v2 = (int) fitSigned(parseIntLike(q1.cLiteral().getText()), C0_BITS);
+				v2 = (int)parseIntLike(q1.cLiteral().getText());
 			}
 
 			CPUSim64v2Parser.QOperandContext q2 = ctx.qOperand(1);
@@ -498,7 +490,7 @@ public class AssemblerVisitor extends CPUSim64v2BaseVisitor<Void> implements Has
 				v3 = aIndexFromToken(q2.aOperand().start);
 			} else {
 				d = OT_CONST;
-				v3 = (int) fitSigned(parseIntLike(q2.cLiteral().getText()), C0_BITS);
+				v3 = (int)parseIntLike(q2.cLiteral().getText());
 			}
 			out.add(encType0(Opcode.MOVE.code, a, b, c, d, v0, v1, v2, v3));
 		} else if (ctx.yOperand().size() == 2) {
@@ -522,9 +514,9 @@ public class AssemblerVisitor extends CPUSim64v2BaseVisitor<Void> implements Has
 					: aIndexFromToken(y.aOperand().start);
 			b = OT_CONST;
 			if (ctx.cLiteral().CHARLIT() != null)
-				k = fitSigned(parseCharLiteral(ctx.cLiteral().CHARLIT().getText()), C2_BITS);
+				k =parseCharLiteral(ctx.cLiteral().CHARLIT().getText());
 			else
-				k = fitSigned(parseIntLike(ctx.cLiteral().getText()), C2_BITS);
+				k =parseIntLike(ctx.cLiteral().getText());
 			out.add(encType2RC2(Opcode.MOVE.code, a, v0, k));
 		} else if (ctx.aOperand(0) != null && ctx.aOperand(1) != null && ctx.rOperand() != null) {
 			// AAR
@@ -542,14 +534,14 @@ public class AssemblerVisitor extends CPUSim64v2BaseVisitor<Void> implements Has
 			b = OT_REG;
 			v1 = aIndexFromToken(ctx.aOperand(1).start);
 			c = OT_CONST;
-			v2 = (int) fitSigned(parseIntLike(ctx.aLiteral().getText()), C3_BITS);
+			v2 = (int)parseIntLike(ctx.aLiteral().getText());
 			out.add(encType3ZZC3(Opcode.MOVE.code, a, v0, b, v1, v2));
 		} else if (ctx.aOperand().size() == 2 && ctx.aLiteral() != null) {
 			// ACA
 			a = OT_REG;
 			v0 = aIndexFromToken(ctx.aOperand(0).start);
 			c = OT_CONST;
-			v2 = (int) fitSigned(parseIntLike(ctx.aLiteral().getText()), C0_BITS);
+			v2 = (int)parseIntLike(ctx.aLiteral().getText());
 			b = OT_REG;
 			v1 = aIndexFromToken(ctx.aOperand(1).start);
 			out.add(encType3ZZC3(Opcode.MOVE.code, a, v0, b, v1, v2));
@@ -572,7 +564,7 @@ public class AssemblerVisitor extends CPUSim64v2BaseVisitor<Void> implements Has
 		long k;
 
 		if (ctx.memC() != null) {                  // Y[C]
-			k = fitSigned(parseIntLike(ctx.memC().aLiteral().getText()), C2_BITS);
+			k =parseIntLike(ctx.memC().aLiteral().getText());
 			out.add(encType2RC2(Opcode.LOAD.code, aType, v0, k));
 		} else if (ctx.memA() != null) {           // Y[A]
 			bType = OT_REG;
@@ -581,10 +573,10 @@ public class AssemblerVisitor extends CPUSim64v2BaseVisitor<Void> implements Has
 		} else if (ctx.memAplusC() != null) {      // Y[A+C]
 			bType = OT_REG;
 			v1 = aIndexFromToken(ctx.memAplusC().aOperand().start);
-			v2 = (int) fitSigned(parseIntLike(ctx.memAplusC().cLiteral().getText()), C3_BITS);
+			v2 = (int)parseIntLike(ctx.memAplusC().cLiteral().getText());
 			out.add(encType3ZZC3(Opcode.LOAD.code, aType, v0, bType, v1, v2));
 		} else if (ctx.memCplusA() != null) {      // Y[C+A]
-			v1 = (int) fitSigned(parseIntLike(ctx.memCplusA().cLiteral().getText()), C3_BITS);
+			v1 = (int)parseIntLike(ctx.memCplusA().cLiteral().getText());
 			cType = OT_REG;
 			v2 = aIndexFromToken(ctx.memCplusA().aOperand().start);
 			out.add(encType3ZZC3(Opcode.LOAD.code, aType, v0, cType, v2, v1));
@@ -593,11 +585,11 @@ public class AssemblerVisitor extends CPUSim64v2BaseVisitor<Void> implements Has
 			long c2 = parseIntLike(ctx.memCplusC().cLiteral().getText());
 			bType = OT_CONST;
 			if (fitsIn(c2, C0_BITS, true)) {
-				v1 = (int) fitSigned(c2, C0_BITS);
-				out.add(encType3ZZC3(Opcode.LOAD.code, aType, v0, bType, v1, (int) fitSigned(c1, C3_BITS)));
+				v1 = (int)c2;
+				out.add(encType3ZZC3(Opcode.LOAD.code, aType, v0, bType, v1, (int)c1));
 			} else if (fitsIn(c1, C0_BITS, true)) {
-				v1 = (int) fitSigned(c1, C0_BITS);
-				out.add(encType3ZZC3(Opcode.LOAD.code, aType, v0, bType, v1, (int) fitSigned(c2, C3_BITS)));
+				v1 = (int)c1;
+				out.add(encType3ZZC3(Opcode.LOAD.code, aType, v0, bType, v1, (int)c2));
 			} else {
 				throw new AssemblerException("LOAD [C+C] requires one constant to fit in 12 bits");
 			}
@@ -626,7 +618,7 @@ public class AssemblerVisitor extends CPUSim64v2BaseVisitor<Void> implements Has
 			v0 = aIndexFromToken(q.aOperand().start);
 		} else {
 			aType = OT_CONST;
-			v0 = (int) fitSigned(parseIntLike(q.cLiteral().getText()), C0_BITS);
+			v0 = (int)parseIntLike(q.cLiteral().getText());
 		}
 
 		int bType = OT_NONE, cType = OT_NONE, dType = OT_NONE;
@@ -634,7 +626,7 @@ public class AssemblerVisitor extends CPUSim64v2BaseVisitor<Void> implements Has
 		long k;
 
 		if (ctx.memC() != null) {                  // [C]
-			k = fitSigned(parseIntLike(ctx.memC().aLiteral().getText()), C2_BITS);
+			k =parseIntLike(ctx.memC().aLiteral().getText());
 			out.add(encType2RC2(Opcode.STORE.code, aType, v0, k));
 		} else if (ctx.memA() != null) {           // [A]
 			bType = OT_REG;
@@ -643,23 +635,23 @@ public class AssemblerVisitor extends CPUSim64v2BaseVisitor<Void> implements Has
 		} else if (ctx.memAplusC() != null) {      // [A+C]
 			bType = OT_REG;
 			v1 = aIndexFromToken(ctx.memAplusC().aOperand().start);
-			v2 = (int) fitSigned(parseIntLike(ctx.memAplusC().cLiteral().getText()), C3_BITS);
+			v2 = (int)parseIntLike(ctx.memAplusC().cLiteral().getText());
 			out.add(encType3ZZC3(Opcode.STORE.code, aType, v0, bType, v1, v2));
 		} else if (ctx.memCplusA() != null) {      // [C+A]
-			v1 = (int) fitSigned(parseIntLike(ctx.memCplusA().cLiteral().getText()), C3_BITS);
+			v1 = (int)parseIntLike(ctx.memCplusA().cLiteral().getText());
 			cType = OT_REG;
 			v2 = aIndexFromToken(ctx.memCplusA().aOperand().start);
 			out.add(encType3ZZC3(Opcode.STORE.code, aType, v0, cType, v2, v1));
 		} else if (ctx.memCplusC() != null) {      // [C+C]
-			long c1 = parseIntLike(ctx.memCplusC().aLiteral().getText());
-			long c2 = parseIntLike(ctx.memCplusC().cLiteral().getText());
+			long c1 = (int)parseIntLike(ctx.memCplusC().aLiteral().getText());
+			long c2 = (int)parseIntLike(ctx.memCplusC().cLiteral().getText());
 			bType = OT_CONST;
 			if (fitsIn(c2, C0_BITS, true)) {
-				v1 = (int) fitSigned(c2, C0_BITS);
-				out.add(encType3ZZC3(Opcode.STORE.code, aType, v0, bType, v1, (int) fitSigned(c1, C3_BITS)));
+				v1 = (int)c2;
+				out.add(encType3ZZC3(Opcode.STORE.code, aType, v0, bType, v1, (int)c1));
 			} else if (fitsIn(c1, C0_BITS, true)) {
-				v1 = (int) fitSigned(c1, C0_BITS);
-				out.add(encType3ZZC3(Opcode.STORE.code, aType, v0, bType, v1, (int) fitSigned(c2, C3_BITS)));
+				v1 = (int)c1;
+				out.add(encType3ZZC3(Opcode.STORE.code, aType, v0, bType, v1, (int)c2));
 			} else {
 				throw new AssemblerException("LOAD [C+C] requires one constant to fit in 12 bits");
 			}
@@ -685,7 +677,7 @@ public class AssemblerVisitor extends CPUSim64v2BaseVisitor<Void> implements Has
 			int t = isFp ? OT_FP : OT_REG;
 			int v = isFp ? fpIndex(y.fOperand().REG_F().getText())
 					: aIndexFromToken(y.aOperand().start);
-			out.add(encType0(Opcode.POP.code, t, OT_NONE, OT_NONE, OT_NONE, (int) fitSigned(v, C0_BITS), 0, 0, 0));
+			out.add(encType0(Opcode.POP.code, t, OT_NONE, OT_NONE, OT_NONE, v, 0, 0, 0));
 		}
 		return null;
 	}
@@ -701,7 +693,7 @@ public class AssemblerVisitor extends CPUSim64v2BaseVisitor<Void> implements Has
 					: aIndexFromToken(y.aOperand().start);
 			out.add(encType0(Opcode.PUSH.code, aType, OT_NONE, OT_NONE, OT_NONE, v0, 0, 0, 0));
 		} else {
-			long k = fitSigned(parseIntLike(ctx.cLiteral().getText()), C1_BITS);
+			long k =parseIntLike(ctx.cLiteral().getText());
 			out.add(encType1C1(Opcode.PUSH.code, k));
 		}
 		return null;
@@ -728,7 +720,7 @@ public class AssemblerVisitor extends CPUSim64v2BaseVisitor<Void> implements Has
 				v0 = aIndexFromToken(ctx.aOperand().start);
 				out.add(encType0(opc.code, aType, OT_NONE, OT_NONE, OT_NONE, v0, 0, 0, 0));
 			} else {
-				long k = fitSigned(parseIntLike(ctx.cLiteral(0).getText()), C1_BITS);
+				long k =parseIntLike(ctx.cLiteral(0).getText());
 				out.add(encType1C1(opc.code, k));
 			}
 			return null;
@@ -754,13 +746,13 @@ public class AssemblerVisitor extends CPUSim64v2BaseVisitor<Void> implements Has
 			out.add(encType0(opc.code, aType, bType, OT_NONE, OT_NONE, v0, v1, 0, 0));
 		} else if (!hasA && nC == 1 && !hasR) {
 			// ZC
-			imm42 = fitSigned(parseIntLike(ctx.cLiteral(0).getText()), C2_BITS);
+			imm42 =parseIntLike(ctx.cLiteral(0).getText());
 			out.add(encType2RC2(opc.code, aType, v0, imm42));
 		} else if (hasA && nC == 1 && !hasR) {
 			// ZAC or ZCA → encode A in op1, C in imm28 (signed 28)
 			bType = OT_REG;
 			v1 = aIndexFromToken(ctx.aOperand().start);
-			imm28 = (int) fitSigned(parseIntLike(ctx.cLiteral(0).getText()), C3_BITS);
+			imm28 = (int)parseIntLike(ctx.cLiteral(0).getText());
 			out.add(encType3ZZC3(opc.code, aType, v0, bType, v1, imm28));
 		} else if (!hasA && nC == 2 && !hasR) {
 			// ZCC → first C in op1 (12-bit), second C in imm28 (signed 28)
@@ -768,12 +760,12 @@ public class AssemblerVisitor extends CPUSim64v2BaseVisitor<Void> implements Has
 			long c2 = parseIntLike(ctx.cLiteral(1).getText());
 			if (fitsIn(c1, C0_BITS, true)) {
 				bType = OT_CONST;
-				v1 = (int) fitSigned(c1, C0_BITS);
-				imm28 = (int) fitSigned(c2, C3_BITS);
+				v1 = (int)c1;
+				imm28 = (int)c2;
 			} else if (fitsIn(c2, C0_BITS, true)) {
 				bType = OT_CONST;
-				v1 = (int) fitSigned(c2, C0_BITS);
-				imm28 = (int) fitSigned(c1, C3_BITS);
+				v1 = (int)c2;
+				imm28 = (int)c1;
 			} else {
 				throw new AssemblerException("JUMP ZCC requires one constant to fit in 12 bits");
 			}
@@ -809,7 +801,7 @@ public class AssemblerVisitor extends CPUSim64v2BaseVisitor<Void> implements Has
 			v0 = parseIntLike(ctx.cLiteral().getText());
 			if (fitsIn(v0, C0_BITS, false)) {
 				aType = OT_CONST;
-				v0 = fitSigned(v0, C0_BITS);
+				v0 =v0;
 				out.add(encType0(Opcode.INTERRUPT.code, aType, OT_NONE, OT_NONE, OT_NONE, (int) v0, 0, 0, 0));
 			} else {
 				out.add(encType1C1(Opcode.INTERRUPT.code, v0));
@@ -845,7 +837,7 @@ public class AssemblerVisitor extends CPUSim64v2BaseVisitor<Void> implements Has
 			throw new IllegalStateException("NEG: xOperand is neither rOperand nor fOperand");
 		}
 
-		out.add(encType0(Opcode.NEGATE.code, aType, OT_NONE, OT_NONE, OT_NONE, (int) fitSigned(v0, C0_BITS), 0, 0, 0
+		out.add(encType0(Opcode.NEGATE.code, aType, OT_NONE, OT_NONE, OT_NONE, v0, 0, 0, 0
 		));
 		return null;
 	}
@@ -895,7 +887,7 @@ public class AssemblerVisitor extends CPUSim64v2BaseVisitor<Void> implements Has
 			v0 = yIsFp
 					? fpIndex(ctx.yOperand().fOperand().getStart().getText())
 					: aIndexFromToken(ctx.yOperand().aOperand().start);
-			k = fitSigned(parseIntLike(ctx.cLiteral().getText()), C2_BITS);
+			k =parseIntLike(ctx.cLiteral().getText());
 			out.add(encType2RC2(opc.code, a, v0, k));
 		}
 		// AAR (A, A, R)
@@ -929,7 +921,7 @@ public class AssemblerVisitor extends CPUSim64v2BaseVisitor<Void> implements Has
 			v0 = aIndexFromToken(ctx.aOperand(0).start);
 			b = OT_REG;
 			v1 = aIndexFromToken(ctx.aOperand(1).start);
-			v2 = (int) fitSigned(parseIntLike(ctx.cLiteral().getText()), C3_BITS);
+			v2 = (int)parseIntLike(ctx.cLiteral().getText());
 			out.add(encType3ZZC3(opc.code, a, v0, b, v1, v2));
 		}
 		// FFC vs FCF (nF==2, nC==1)
@@ -938,7 +930,7 @@ public class AssemblerVisitor extends CPUSim64v2BaseVisitor<Void> implements Has
 			v0 = fpIndex(ctx.fOperand(0).getStart().getText());
 			b = OT_FP;
 			v1 = fpIndex(ctx.fOperand(1).getStart().getText());
-			v2 = (int) fitSigned(parseIntLike(ctx.cLiteral().getText()), C3_BITS);
+			v2 = (int)parseIntLike(ctx.cLiteral().getText());
 			out.add(encType3ZZC3(opc.code, a, v0, b, v1, v2));
 		} else {
 			throw new AssemblerException("Unhandled " + opc.name() + " form");
@@ -990,7 +982,7 @@ public class AssemblerVisitor extends CPUSim64v2BaseVisitor<Void> implements Has
 			c = OT_REG;
 			v2 = regIndex(ctx.rOperand(2).getStart().getText());
 			d = OT_CONST;
-			v3 = (int) fitSigned(parseIntLike(ctx.cLiteral().getText()), C0_BITS);
+			v3 = (int)parseIntLike(ctx.cLiteral().getText());
 			out.add(encType0(Opcode.DIVIDE.code, a, b, c, d, v0, v1, v2, v3)); // use Opcode.DIV if that's your enum
 		} else {
 			visitArithmeticModes(Opcode.DIVIDE, ctx.arithmeticModes());
@@ -1016,7 +1008,7 @@ public class AssemblerVisitor extends CPUSim64v2BaseVisitor<Void> implements Has
 		// COMPL R
 		int v0 = regIndex(ctx.rOperand().REG_R().getText());
 		out.add(encType0(Opcode.COMPL.code, OT_REG, OT_NONE, OT_NONE, OT_NONE,
-				(int) fitSigned(v0, C0_BITS), 0, 0, 0));
+				v0, 0, 0, 0));
 		return null;
 	}
 
@@ -1034,7 +1026,7 @@ public class AssemblerVisitor extends CPUSim64v2BaseVisitor<Void> implements Has
 		} else if (ctx.rOperand().size() == 1 && ctx.cLiteral() != null) {
 			// RC
 			b = OT_CONST;
-			k = fitSigned(parseIntLike(ctx.cLiteral().getText()), C2_BITS);
+			k =parseIntLike(ctx.cLiteral().getText());
 			out.add(encType2RC2(opc.code, a, v0, k));
 		} else if (ctx.rOperand().size() == 3 && ctx.cLiteral() == null) {
 			// RRR
@@ -1047,7 +1039,7 @@ public class AssemblerVisitor extends CPUSim64v2BaseVisitor<Void> implements Has
 			// RRC
 			b = OT_REG;
 			v1 = regIndex(ctx.rOperand(1).REG_R().getText());
-			v2 = (int)fitSigned(parseIntLike(ctx.cLiteral().getText()), C3_BITS);
+			v2 = (int)parseIntLike(ctx.cLiteral().getText());
 			out.add(encType3ZZC3(opc.code, a, v0, b, v1, v2));
 		}
 		return null;
@@ -1079,7 +1071,7 @@ public class AssemblerVisitor extends CPUSim64v2BaseVisitor<Void> implements Has
 		if (x.fOperand()!=null) { a=OT_FP; v0=fpIndex(x.fOperand().REG_F().getText()); }
 		else if (x.rOperand()!=null) { a=OT_REG; v0=regIndex(x.rOperand().REG_R().getText()); }
 		out.add(encType0(Opcode.TEST.code, a, OT_NONE, OT_NONE, OT_NONE,
-				(int)fitSigned(v0, C0_BITS), 0, 0, 0));
+				v0, 0, 0, 0));
 		return null;
 	}
 
@@ -1097,7 +1089,7 @@ public class AssemblerVisitor extends CPUSim64v2BaseVisitor<Void> implements Has
 		} else if (ctx.aOperand()!=null && ctx.cLiteral()!=null) {
 			// AC
 			a=OT_REG;   v0=aIndexFromToken(ctx.aOperand(0).start);
-			k = fitSigned(parseIntLike(ctx.cLiteral().getText()), C2_BITS);
+			k =parseIntLike(ctx.cLiteral().getText());
 			out.add(encType2RC2(Opcode.CMP.code, a, v0, k));
 		} else {
 			// FF
@@ -1155,7 +1147,7 @@ public class AssemblerVisitor extends CPUSim64v2BaseVisitor<Void> implements Has
 		if (ctx.rOperand().size() >= 2) { b=OT_REG; v1=regIndex(ctx.rOperand(1).REG_R().getText()); }
 		if (ctx.rOperand().size() >= 3) { c=OT_REG; v2=regIndex(ctx.rOperand(2).REG_R().getText()); }
 		if (ctx.rOperand().size() >= 4) { d=OT_REG; v3=regIndex(ctx.rOperand(3).REG_R().getText()); }
-		out.add(encType0(Opcode.PACK.code, a,b,c,d, (int)fitSigned(v0, C0_BITS), (int)fitSigned(v1, C0_BITS), (int)fitSigned(v2, C0_BITS), (int)fitSigned(v3, C0_BITS)));
+		out.add(encType0(Opcode.PACK.code, a,b,c,d, v0, v1, v2, v3));
 		return null;
 	}
 
@@ -1166,7 +1158,7 @@ public class AssemblerVisitor extends CPUSim64v2BaseVisitor<Void> implements Has
 		if (ctx.rOperand().size() >= 2) { b=OT_REG; v1=regIndex(ctx.rOperand(1).REG_R().getText()); }
 		if (ctx.rOperand().size() >= 3) { c=OT_REG; v2=regIndex(ctx.rOperand(2).REG_R().getText()); }
 		if (ctx.rOperand().size() >= 4) { d=OT_REG; v3=regIndex(ctx.rOperand(3).REG_R().getText()); }
-		out.add(encType0(Opcode.PACK64.code, a,b,c,d, (int)fitSigned(v0, C0_BITS), (int)fitSigned(v1, C0_BITS), (int)fitSigned(v2, C0_BITS), (int)fitSigned(v3, C0_BITS)));
+		out.add(encType0(Opcode.PACK64.code, a,b,c,d, v0, v1, v2, v3));
 		return null;
 	}
 
@@ -1215,20 +1207,20 @@ public class AssemblerVisitor extends CPUSim64v2BaseVisitor<Void> implements Has
 				ctx.getChild(3) instanceof CPUSim64v2Parser.CLiteralContext) {
 			// CCAO
 			a = OT_CONST; b = OT_CONST;
-			v0 = (int)fitSigned(parseIntLike(ctx.cLiteral(0).getText()), C0_BITS);
-			v1 = (int)fitSigned(parseIntLike(ctx.cLiteral(1).getText()), C0_BITS);
+			v0 = (int)parseIntLike(ctx.cLiteral(0).getText());
+			v1 = (int)parseIntLike(ctx.cLiteral(1).getText());
 		} else if (ctx.getChild(1) instanceof CPUSim64v2Parser.ROperandContext &&
 				ctx.getChild(3) instanceof CPUSim64v2Parser.CLiteralContext) {
 			// RCAO
 			a = OT_REG; b = OT_CONST;
 			v0 = regIndex(ctx.rOperand(0).REG_R().getText());
-			v1 = (int)fitSigned(parseIntLike(ctx.cLiteral(0).getText()), C0_BITS);
+			v1 = (int)parseIntLike(ctx.cLiteral(0).getText());
 		} else if (ctx.getChild(1) instanceof CPUSim64v2Parser.CLiteralContext &&
 				ctx.getChild(3) instanceof CPUSim64v2Parser.ROperandContext) {
 			// CRAO
 			a = OT_CONST; b = OT_REG;
-			v0 = (int)fitSigned(parseIntLike(ctx.cLiteral(0).getText()), C0_BITS);
-			v1 = regIndex(ctx.rOperand(0).REG_R().getText());
+			v0 = (int)parseIntLike(ctx.cLiteral(0).getText());
+			v1 = (int)regIndex(ctx.rOperand(0).REG_R().getText());
 		} else {
 			throw new AssemblerException("CAS invalid operand types");
 		}
@@ -1237,9 +1229,13 @@ public class AssemblerVisitor extends CPUSim64v2BaseVisitor<Void> implements Has
 		c=OT_REG; v2=aIndexFromToken(ctx.aOperand().start);
 
 		// op3: O (R or C)
-		if (ctx.oOperand().rOperand()!=null) { d=OT_REG; v3=regIndex(ctx.oOperand().rOperand().REG_R().getText()); }
-		else                                 { d=OT_CONST; v3=(int)fitSigned(parseIntLike(ctx.oOperand().cLiteral().getText()), C0_BITS); }
-
+		if (ctx.oOperand().rOperand()!=null) {
+			d=OT_REG;
+			v3=regIndex(ctx.oOperand().rOperand().REG_R().getText());
+		} else{
+			d=OT_CONST;
+			v3=(int)parseIntLike(ctx.oOperand().cLiteral().getText());
+		}
 		out.add(encType0(Opcode.CAS.code, a,b,c,d, v0, v1, v2, v3));
 		return null;
 	}
@@ -1264,19 +1260,19 @@ public class AssemblerVisitor extends CPUSim64v2BaseVisitor<Void> implements Has
 				ctx.getChild(3) instanceof CPUSim64v2Parser.ZPortContext) {
 			// ZZ
 			a = OT_CONST; b = OT_CONST;
-			v0 = (int)fitSigned(parseIntLike(ctx.zPort(0).getText()), C0_BITS);
-			v1 = (int)fitSigned(parseIntLike(ctx.zPort(1).getText()), C0_BITS);
+			v0 = (int)parseIntLike(ctx.zPort(0).getText());
+			v1 = (int)parseIntLike(ctx.zPort(1).getText());
 		} else if (ctx.getChild(1) instanceof CPUSim64v2Parser.ROperandContext &&
 				ctx.getChild(3) instanceof CPUSim64v2Parser.ZPortContext) {
 			// RZ
 			a = OT_REG; b = OT_CONST;
-			v0 = regIndex(ctx.rOperand(0).REG_R().getText());
-			v1 = (int)fitSigned(parseIntLike(ctx.zPort(0).getText()), C0_BITS);
+			v0 = (int)regIndex(ctx.rOperand(0).REG_R().getText());
+			v1 = (int)parseIntLike(ctx.zPort(0).getText());
 		} else if (ctx.getChild(1) instanceof CPUSim64v2Parser.ZPortContext &&
 				ctx.getChild(3) instanceof CPUSim64v2Parser.ROperandContext) {
 			// ZR
 			a = OT_CONST; b = OT_REG;
-			v0 = (int)fitSigned(parseIntLike(ctx.zPort(0).getText()), C0_BITS);
+			v0 = (int)parseIntLike(ctx.zPort(0).getText());
 			v1 = regIndex(ctx.rOperand(0).REG_R().getText());
 		} else {
 			throw new AssemblerException("ENDIAN invalid operand types");
@@ -1308,19 +1304,19 @@ public class AssemblerVisitor extends CPUSim64v2BaseVisitor<Void> implements Has
 				ctx.getChild(5) instanceof CPUSim64v2Parser.ZPortContext) {
 			// XZZ
 			b = OT_CONST; c = OT_CONST;
-			v1 = (int)fitSigned(parseIntLike(ctx.zPort(0).getText()), C0_BITS);
-			v2 = (int)fitSigned(parseIntLike(ctx.zPort(1).getText()), C0_BITS);
+			v1 = (int)parseIntLike(ctx.zPort(0).getText());
+			v2 = (int)parseIntLike(ctx.zPort(1).getText());
 		} else if (ctx.getChild(3) instanceof CPUSim64v2Parser.ROperandContext &&
 				ctx.getChild(5) instanceof CPUSim64v2Parser.ZPortContext) {
 			// XRZ
 			b = OT_REG; c = OT_CONST;
 			v1 = regIndex(ctx.rOperand(0).REG_R().getText());
-			v2 = (int)fitSigned(parseIntLike(ctx.zPort(0).getText()), C0_BITS);
+			v2 = (int)parseIntLike(ctx.zPort(0).getText());
 		} else if (ctx.getChild(3) instanceof CPUSim64v2Parser.ZPortContext &&
 				ctx.getChild(5) instanceof CPUSim64v2Parser.ROperandContext) {
 			// XZR
 			b = OT_CONST; c = OT_REG;
-			v1 = (int)fitSigned(parseIntLike(ctx.zPort(0).getText()), C0_BITS);
+			v1 = (int)parseIntLike(ctx.zPort(0).getText());
 			v2 = regIndex(ctx.rOperand(0).REG_R().getText());
 		} else {
 			throw new AssemblerException("IN invalid operand types");
@@ -1339,8 +1335,13 @@ public class AssemblerVisitor extends CPUSim64v2BaseVisitor<Void> implements Has
 		boolean isFP = (ctx.qOperand().fOperand()!=null);
 		boolean isREG = (ctx.qOperand().aOperand()!=null);
 		if (isFP) { a=OT_FP; v0=fpIndex(ctx.qOperand().fOperand().REG_F().getText()); }
-		else if (isREG) { a=OT_REG; v0=aIndexFromToken(ctx.qOperand().aOperand().start); }
-		else      { a=OT_CONST; v0=(int)fitSigned(parseIntLike(ctx.qOperand().cLiteral().getText()), C0_BITS); }
+		else if (isREG) {
+			a = OT_REG;
+			v0 = aIndexFromToken(ctx.qOperand().aOperand().start);
+		} else {
+			a = OT_CONST;
+			v0 = (int)parseIntLike(ctx.qOperand().cLiteral().getText());
+		}
 
 		if (ctx.children.size()<3) throw new AssemblerException("IN missing operands");
 		if (ctx.getChild(3) instanceof CPUSim64v2Parser.ROperandContext &&
@@ -1353,19 +1354,19 @@ public class AssemblerVisitor extends CPUSim64v2BaseVisitor<Void> implements Has
 				ctx.getChild(5) instanceof CPUSim64v2Parser.ZPortContext) {
 			// XZZ
 			b = OT_CONST; c = OT_CONST;
-			v1 = (int)fitSigned(parseIntLike(ctx.zPort(0).getText()), C0_BITS);
-			v2 = (int)fitSigned(parseIntLike(ctx.zPort(1).getText()), C0_BITS);
+			v1 = (int)parseIntLike(ctx.zPort(0).getText());
+			v2 = (int)parseIntLike(ctx.zPort(1).getText());
 		} else if (ctx.getChild(3) instanceof CPUSim64v2Parser.ROperandContext &&
 				ctx.getChild(5) instanceof CPUSim64v2Parser.ZPortContext) {
 			// XRZ
 			b = OT_REG; c = OT_CONST;
 			v1 = regIndex(ctx.rOperand(0).REG_R().getText());
-			v2 = (int)fitSigned(parseIntLike(ctx.zPort(0).getText()), C0_BITS);
+			v2 = (int)parseIntLike(ctx.zPort(0).getText());
 		} else if (ctx.getChild(3) instanceof CPUSim64v2Parser.ZPortContext &&
 				ctx.getChild(5) instanceof CPUSim64v2Parser.ROperandContext) {
 			// XZR
 			b = OT_CONST; c = OT_REG;
-			v1 = (int)fitSigned(parseIntLike(ctx.zPort(0).getText()), C0_BITS);
+			v1 = (int)parseIntLike(ctx.zPort(0).getText());
 			v2 = regIndex(ctx.rOperand(0).REG_R().getText());
 		} else {
 			throw new AssemblerException("OUT invalid operand types");
