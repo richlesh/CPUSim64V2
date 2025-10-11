@@ -2,7 +2,11 @@ package cloud.lesh.CPUSim64v2;
 
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.VarHandle;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.concurrent.RecursiveAction;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.stream.Collectors;
 
 /**
  * Minimal but functional CPUSim64v2 simulator.
@@ -34,12 +38,18 @@ import java.util.*;
 public class Simulator {
 
 	public class CPUException extends RuntimeException {
-		CPUException(String msg) { super(String.format("PC:0x%08X -> ", R[R_PC]) + msg); }
+		CPUException(String msg) {
+			super(String.format("PC:0x%08X -> ", R[R_PC]) + msg);
+		}
+		CPUException(String msg, Object... args) {
+			super(String.format("PC:0x%08X -> " + msg, R[R_PC], args));
+		}
 	}
 
 	// ===== CPU STATE =====
 	public static final int GPR_COUNT = 32;  // We store R0..R31 (R29=SF, R30=SP, R31=PC)
 	public static final int FPR_COUNT = 32;
+	public static final int NUM_PORTS = 255;
 
 	// Index aliases
 	public static final int R_SF = 29;
@@ -53,18 +63,29 @@ public class Simulator {
 	public static final int SR_O = 1 << 3; // Overflow
 
 	// Memory (word-addressed). Adjust size as needed.
-	final long[] mem;
-	final VarHandle atomicMem;
-	long heapStart = 0;
+	long[] mem;
+	long[] stack;
+	VarHandle atomicMem;
+	long heapStart = 0;		// End of code / beginning of free heap
+	long heapLimit = 0;		// End of free heap / max stack limit
+	long stackSize = 2048;	// Maximum stack size
+	long stackBase = 0;		// Maximum memory address / stack base
+	private long heapList;	// Linked list of all heap blocks (alloc and free)
+	private LinkedList<Long> freeList;	// Linked list of free blocks
 
 	// Integer and floating-point register files
-	final long[] R = new long[GPR_COUNT];     // R0..R31 (R29=SF, R30=SP, R31=PC, SR kept separate)
-	final double[] F = new double[FPR_COUNT]; // F0..F31
+	long[] R = new long[GPR_COUNT];     // R0..R31 (R29=SF, R30=SP, R31=PC, SR kept separate)
+	double[] F = new double[FPR_COUNT]; // F0..F31
 	long SR = 0;
 
 	// Execution controls
 	private boolean running = false;
 	private boolean debug = false;
+	private long pid;
+	private static AtomicLong nextPID = new AtomicLong(0);
+	private Vector<Simulator> childCPUs = new Vector<>();
+	private ChildProcess process = null;	// If this is a child what is its process object.
+	private ChildThread thread = null;
 
 	private InterruptHandler interruptHandler;
 
@@ -103,10 +124,61 @@ public class Simulator {
 	}
 
 	public Simulator(int memoryWords, String[] args) {
+		this(memoryWords, memoryWords / 10, args);
+	}
+
+	public Simulator(int memoryWords, int stackSize, String[] args) {
+		pid = nextPID.getAndIncrement();
 		this.mem = new long[memoryWords];
+		this.stack = new long[stackSize];
+		this.stackSize = stackSize;
+		heapLimit = memoryWords;
+		stackBase = memoryWords + stackSize;
 		atomicMem = MethodHandles.arrayElementVarHandle(long[].class);
 		interruptHandler = new StdInterruptHandler(this);
+		PortHandler ph = new StdIOPortHandler(this);
+		setPortHandler(0, ph);
+		setPortHandler(1, ph);
+		setPortHandler(2, ph);
 		this.args = args;
+	}
+
+	public Simulator(Simulator cloneMe, boolean makeProcess) throws CPUException {
+		pid = nextPID.getAndIncrement();
+
+		startClock = cloneMe.startClock;
+		totalSystemTime = cloneMe.totalSystemTime;
+		cycles = cloneMe.cycles;
+		args = cloneMe.args;
+		R = cloneMe.R.clone();
+		F = cloneMe.F.clone();
+		ports = (HashMap<Integer, PortHandler>)(cloneMe.ports.clone());
+		interruptHandler = new StdInterruptHandler(this);
+
+		try {
+			stackBase = cloneMe.stackBase;
+			stackSize = cloneMe.stackSize;
+			heapLimit = cloneMe.heapLimit;
+			heapStart = cloneMe.heapStart;
+			if (makeProcess) {	// for processes
+				freeList = (LinkedList<Long>)cloneMe.freeList.clone();
+				mem = cloneMe.mem.clone();
+				atomicMem = MethodHandles.arrayElementVarHandle(long[].class);
+			} else {			// for threads
+				freeList = cloneMe.freeList;
+				mem = cloneMe.mem;
+				stack = new long[(int)stackSize];
+				atomicMem = cloneMe.atomicMem;
+			}
+			for (var i : ports.keySet()) {
+				if (ports.get(i) != null) {
+					ports.put(i, ports.get(i).duplicate(this));
+				}
+			}
+		} catch (OutOfMemoryError ex) {
+			int memoryMax = (int)(stackSize + heapLimit);
+			throw new CPUException("Stack plus Heap size of " + memoryMax + " words is too large for child process!");
+		}
 	}
 
 	// ===== PROGRAM LOADING =====
@@ -115,9 +187,15 @@ public class Simulator {
 			mem[Math.toIntExact(loadAddr + i)] = words[i];
 		}
 		R[R_PC] = loadAddr;
-		R[R_SP] = mem.length - 1;
+		R[R_SP] = stackBase - 1;
 		R[R_SF] = R[R_SP];
 		heapStart = words.length + loadAddr;
+		memWrite(heapStart, -1L);						//prev
+		memWrite(heapStart + 1, -1L);					//next
+		memWrite(heapStart + 2, heapStart - heapLimit);	//block size (neg for free block)
+		heapList = heapStart;
+		freeList = new LinkedList<Long>();
+		freeList.push(heapList);
 	}
 
 	public void loadProgram(List<Long> words, long loadAddr) {
@@ -125,11 +203,18 @@ public class Simulator {
 			mem[Math.toIntExact(loadAddr + i)] = words.get(i);
 		}
 		R[R_PC] = loadAddr;
-		R[R_SP] = mem.length - 1;
+		R[R_SP] = stackBase - 1;
 		R[R_SF] = R[R_SP];
 		heapStart = words.size() + loadAddr;
+		memWrite(heapStart, -1L);						//prev
+		memWrite(heapStart + 1, -1L);					//next
+		memWrite(heapStart + 2, heapStart - heapLimit);	//block size (neg for free block)
+		heapList = heapStart;
+		freeList = new LinkedList<Long>();
+		freeList.push(heapList);
 	}
 
+	private static String[] condition = {"u","z","nz","n","p","nn","np","o","no","pe","po"};
 	// ===== FETCH/DECODE =====
 	public final static class Decoded {
 		public int tt; int op;
@@ -151,6 +236,10 @@ public class Simulator {
 					d.v1 = (int)((w >>> 24) & 0xFFF);
 					d.v2 = (int)((w >>> 12) & 0xFFF);
 					d.v3 = (int)(w & 0xFFF);
+					if (isConstKind(d.a)) d.v0 = (int)signExtend(d.v0, 12);
+					if (isConstKind(d.b)) d.v1 = (int)signExtend(d.v1, 12);
+					if (isConstKind(d.c)) d.v2 = (int)signExtend(d.v2, 12);
+					if (isConstKind(d.d)) d.v3 = (int)signExtend(d.v3, 12);
 				}
 				case 1 -> {
 					long imm = w & ((1L << 56) - 1);
@@ -261,24 +350,42 @@ public class Simulator {
 					}
 					break;
 				case 1:
-					v0 = Long.toString(c1);
+					if (getOpCode() == Opcode.JUMP.code ||
+						getOpCode() == Opcode.CALL.code)
+						v0 = "0x" + Long.toString(c1, 16);
+					else
+						v0 = Long.toString(c1);
 					buffer.append(v0);
 					break;
 				case 2:
 					v0 = get(0);
+					if (a == 1 && (getOpCode() == Opcode.JUMP.code ||
+							getOpCode() == Opcode.CALL.code))
+						v0 = condition[this.v0];
 					buffer.append(v0);
 					buffer.append(", ");
-					v1 = Long.toString(c2);
+					if (getOpCode() == Opcode.JUMP.code ||
+							getOpCode() == Opcode.CALL.code)
+						v1 = "0x" + Long.toString(c2, 16);
+					else
+						v1 = Long.toString(c2);
 					buffer.append(v1);
 					break;
 				case 3:
 					v0 = get(0);
+					if (a == 1 && (getOpCode() == Opcode.JUMP.code ||
+							getOpCode() == Opcode.CALL.code))
+						v0 = condition[this.v0];
 					buffer.append(v0);
 					buffer.append(", ");
 					v1 = get(1);
 					buffer.append(v1);
 					buffer.append(", ");
-					v2 = Integer.toString(c3);
+					if (getOpCode() == Opcode.JUMP.code ||
+							getOpCode() == Opcode.CALL.code)
+						v2 = "0x" + Long.toString(c3, 16);
+					else
+						v2 = Integer.toString(c3);
 					buffer.append(v2);
 					break;
 			}
@@ -372,7 +479,12 @@ public class Simulator {
 	public long memRead(long addr) {
 		long val = 0;
 		try {
-			val = mem[Math.toIntExact(addr)];
+			int a = Math.toIntExact(addr);
+			if (a < heapLimit)
+				val = mem[a];
+			else
+				val = stack[a - (int)heapLimit];
+			++cycles;
 		} catch (Exception ex) {
 			throw new CPUException("Illegal memory access at " + addr);
 		}
@@ -381,7 +493,12 @@ public class Simulator {
 
 	public void memWrite(long addr, long val) {
 		try {
-			mem[Math.toIntExact(addr)] = val;
+			int a = Math.toIntExact(addr);
+			if (a < heapLimit)
+				mem[a] = val;
+			else
+				stack[a - (int)heapLimit] = val;
+			++cycles;
 		} catch (Exception ex) {
 			throw new CPUException("Illegal memory access at " + addr);
 		}
@@ -484,7 +601,7 @@ public class Simulator {
 
 		while (running) {
 			long pc = R[R_PC];
-			long instr = memRead(pc);
+			long instr = memRead(pc); // This increments cycles by 1
 			R[R_PC] = pc + 1;
 
 			Decoded d = Decoded.decode(instr);
@@ -816,6 +933,7 @@ public class Simulator {
 		}
 		memWrite(R[R_SP], val);
 		R[R_SP] = R[R_SP] - 1;
+		if (R[R_SP] < heapLimit) throw new CPUException("Stack/Heap collision");
 	}
 
 	// ---- 7: JUMP ----
@@ -912,6 +1030,7 @@ public class Simulator {
 		R[R_SP] = R[R_SF];
 		R[R_SP] = R[R_SP] + 1; R[R_SF] = memRead(R[R_SP]);
 		R[R_SP] = R[R_SP] + 1; R[R_PC] = memRead(R[R_SP]);
+		if (R[R_PC] < 0) exit((int)R[R_PC]);
 	}
 
 	// ---- 10: INTERRUPT ----
@@ -926,11 +1045,11 @@ public class Simulator {
 		} else if (d.tt == 0) {
 			// R, ZR,
 			int count = d.getArgCount();
-			if (count == 1 && isRegKind(d.a)) {
-				code = getR(d.a, d.v0);
-			} else if (count == 2 && isRegKind(d.b)) {
+			if (count == 1 && isOKind(d.a)) {
+				code = getO(d.a, d.v0);
+			} else if (count == 2 && isOKind(d.b)) {
 				if (testCond(getConst(d.a, d.v0)))
-					code = getR(d.b, d.v1);
+					code = getO(d.b, d.v1);
 				else code = 0;
 			}
 		}
@@ -1473,14 +1592,7 @@ public class Simulator {
 				var ph = getPortHandler(port);
 				if (ph == null)
 					throw new CPUException("OUT port " + port + " handler not set");
-				byte[] b = new byte[8];
-				for (int i = 7; i >= 0; --i) {
-					b[i] = (byte)(val & 0xFF);
-					val >>= 8;
-				}
-				for (int i = 8 - bytes; i < 8; ++i) {
-					ph.write(b[i]);
-				}
+				ph.write(val, bytes);
 				return;
 			}
 		}
@@ -1501,20 +1613,7 @@ public class Simulator {
 				var ph = getPortHandler(port);
 				if (ph == null)
 					throw new CPUException("IN port " + port + " handler not set");
-				byte[] b = {0,0,0,0,0,0,0,0} ;
-				for (int i = 8 - bytes; i < 8; ++i) {
-					int j = ph.read();
-					if (j == -1) {
-						setFlags(0, true);
-						return;
-					}
-					b[i] = (byte)j;
-				}
-				long val = 0;
-				for (int i = bytes; i > 0; --i) {
-					val <<= 8;
-					val |= ((long)b[8 - i]) & 0xFFL;
-				}
+				long val = ph.read(bytes);
 				setY(d.a, d.v0, val);
 				return;
 			}
@@ -1628,9 +1727,19 @@ public class Simulator {
 		throw new CPUException("CAS form not implemented");
 	}
 
-	private void opENDIAN(Decoded d) { }
+	private void opENDIAN(Decoded d) {
+		if (d.tt == 0) {
+			int count = d.getArgCount();
+			if (count != 2)
+				throw new CPUException("ENDIAN must have two arguments");
+			boolean littleEndian = getO(d.b, d.v1) == 0 ? false : true;
+			var ph = getPortHandler((int)getO(d.a, d.v0));
+			if (ph != null)
+				ph.setEndian(littleEndian);
+		}
+	}
 
-	private void opSAVE(Decoded d) {
+	public void opSAVE(Decoded d) {
 		if (d.tt == 0) {
 			int count = d.getArgCount();
 			if (count == 1 || count == 2) {
@@ -1652,7 +1761,7 @@ public class Simulator {
 		throw new CPUException("SAVE form not implemented");
 	}
 
-	private void opRESTORE(Decoded d) {
+	public void opRESTORE(Decoded d) {
 		if (d.tt == 0) {
 			int count = d.getArgCount();
 			if (count == 1 || count == 2) {
@@ -1675,6 +1784,19 @@ public class Simulator {
 	}
 
 	// ====== PUBLIC CONTROLS ======
+	public long getPID() {return pid;}
+	public Vector<Long> getChildPIDs() {
+		return childCPUs.stream().map(x -> x.getPID()).collect(Collectors.toCollection(Vector::new));
+	}
+	public Simulator getChildCPU(int pid) {
+		for (var child : childCPUs) {
+			if (child.getPID() == pid)
+				return child;
+		}
+		return null;
+	}
+	public ChildProcess getProcess() {return process;}
+	public ChildThread getThread() {return thread;}
 	// Return elapsed clock time
 	public long getClock(){return System.nanoTime()-startClock;}
 	// Return CPU cycles elapsed
@@ -1716,99 +1838,388 @@ public class Simulator {
 		return Double.longBitsToDouble(memRead(R[R_SP]));
 	}
 
-	public void store(long addr, long val) {
-		if (addr < heapStart || addr >= mem.length)
-			throw new CPUException("Memory access error: " + addr);
-		mem[(int)addr] = val;
+	// Pointer to the first free block in the heap.  The free list is composed of a
+	// linked list of allocation blocks in the heap.  Allocation blocks are preceded by
+	// a list data structure containing three codewords ==> PREV:NEXT:SIZE:DATA....
+	// The PREV pointer contains the address of the prior block in the free list or 0x0.
+	// The NEXT pointer contains the address of the next block in the free list or 0x0.
+	// The SIZE word contains the size of the DATA portion of the block.
+	// SIZE < 0 indicates a free block, whereas SIZE > 0 indicates an allocated block.
+	// The remaining SIZE words comprise the DATA portion of the block.
+	// Pointers are actually offsets into the heap array.  The physical address for
+	// a pointer is really p + codeLimit.  Pointers to a block always point to the
+	// beginning of the block so PREV is p + 0, NEXT is p + 1, SIZE is p + 2 and
+	// the data begins as p + 3
+
+// Block structure
+// prev:next:size:data....
+// prev or next == -1 for null link
+// size block where < 0 for free block, size > 0 for alloc block
+// size includes the three word header
+// Pointers are actually offsets into the heap array so their
+
+	private static long[] fibonacci = {8, 13, 21, 34, 55, 89, 144, 233, 377, 610, 987, 1597, 2584,
+			4181, 6765, 10946, 17711, 28657, 46368, 75025, 121393, 196418, 317811, 514229, 832040,
+			1346269, 2178309, 3524578, 5702887, 9227465, 14930352, 24157817, 39088169, 63245986,
+			102334155, 165580141, 267914296, 433494437, 701408733, 1134903170, 1836311903};
+	private static long fibonacciSize(long size)
+	{
+		int i;
+		for (i = 0; i < fibonacci.length && fibonacci[i] < size; ++i) { /* nop */ }
+		return i == fibonacci.length ? size : fibonacci[i];
 	}
 
-	public long load(long addr) {
-		if (addr < heapStart || addr >= mem.length)
-			throw new CPUException("Memory access error: " + addr);
-		return mem[(int)addr];
-	}
-
-	public long alloc(long size) {
+	public long alloc(long requestedWords) throws CPUException {
 		long start = System.nanoTime();
-		// todo
+		if (freeList.isEmpty()) return 0L;
+		long p = 0;
+		boolean found = false;
+		synchronized(mem) {
+			if (requestedWords < 1 || requestedWords > Integer.MAX_VALUE - 3)
+				throw new CPUException("Illegal memory allocation: " + requestedWords);
+			long numWords = requestedWords;
+			numWords = fibonacciSize(numWords + 3);
+
+			//Utils.debug("Allocating %d (%d) words...",requested_words,num_words);
+			// find free block big enough
+			for (Iterator<Long> it = freeList.iterator(); it.hasNext(); ) {
+				p = it.next();
+				long size = memRead(p + 2);
+				if (size < 0 && -size >= numWords) {
+					if (-size - numWords < fibonacci[0]) {					// Just use existing block if excess is smaller than smallest possible block
+						memWrite(p + 2, -size);								// Update size to reflect block is allocated
+						it.remove();
+						found = true;
+						break;
+					} else {												// Split block into 1 alloc and 1 free
+						long new_p = p + numWords;							// Point to new block
+						memWrite(new_p, p);									// set new free block's prev pointer
+						memWrite(new_p + 1, memRead(p + 1));				// set new free block's next pointer
+						memWrite(new_p + 2, size + numWords);				// calc new free block size
+						memWrite(p + 1, new_p);
+						memWrite(p + 2, numWords);
+						it.remove();
+						freeList.push(new_p);
+						found = true;
+						break;
+					}
+				}
+			}
+		}
 		long stop = System.nanoTime();
 		totalSystemTime += stop - start;
-		return 0;
+		return found ? p + 3 : 0;
 	}
 
-	public long realloc(long orig, long newSize) {
+	public long realloc(long oldAddr, long newSize) {
 		long start = System.nanoTime();
-		// todo
+		//if (!validAllocation(oldAddr)) throw new CPUException("realloc() argument is invalid!");
+		long newAddr = oldAddr;
+		long oldSize = memRead(oldAddr - 1) ;				// old size
+		newSize = fibonacciSize(newSize + 3);
+		if (oldSize < newSize) {
+			newAddr = alloc(newSize - 3);						// new address
+			if (newAddr != 0) {
+				memmove(newAddr, oldAddr, oldSize - 3);
+				free(oldAddr);
+			}
+		} else if (oldSize > newSize) {						// trim
+			newAddr = alloc(newSize - 3);						// new address
+			if (newAddr != 0) {
+				memmove(newAddr, oldAddr, newSize - 3);
+				free(oldAddr);
+			}
+		}
+		//if (!validAllocation(newAddr)) throw new CPUException("realloc() result is invalid!");
+//walkHeap(0);
 		long stop = System.nanoTime();
 		totalSystemTime += stop - start;
-		return 0;
+		return newAddr;
 	}
 
-	public void free(long block) {
+	// combines block at p with next block if both free
+	private void combineBlocks(long p) {
+		if (p <= 0) { return; }							// Don't free null (0)
+		long size = memRead(p + 2);
+		if (size >= 0) return;							// block is not free
+		long prev = memRead(p);
+		long next = memRead(p + 1);
+		if (next > 0 ) {								// check for end of list
+			long nextSize = memRead(next + 2);
+			if (nextSize < 0) {							// confirm next block is free
+				memWrite(p + 2, nextSize + size);		// calc joined size
+				long next_next = memRead(next + 1);
+				memWrite(p + 1, next_next);			    // assume next block's next pointer
+				if (next_next > 0)
+					memWrite(next_next, p);				// set new next block's prev pointer to p
+				memWrite(next, -1);           			// invalidate old next's prev pointer
+				memWrite(next + 1, -1);           		// invalidate old next's next pointer
+				memWrite(next + 2, 0);           		// invalidate old next's size
+				freeList.remove(next);
+			}
+		}
+	}
+
+	public void free(long address) {
 		long start = System.nanoTime();
-		// todo
+		synchronized(mem) {
+//Utils.debug("Freeing @"+ADDRESS.format(address));
+			//if (!validAllocation(address)) throw new CPUException("free() argument is invalid!");
+			long p = address - 3;
+			if (p <= 0) { return; }								// Don't free null (0)
+
+			// Negate size to indicate free block in heap list
+			long size = memRead(p + 2);
+			if (size > 0) memWrite(p + 2, -size);
+			else return;
+
+			// Add to free list
+			freeList.push(p);
+
+			// Combine with next block if free
+			combineBlocks(p);
+			// Combine with previous block if free
+			combineBlocks(memRead(p));
+
+//			if (!validAllocation(prev+3+codeLimit)) throw new CPUException("free() low block is invalid!");
+//			if (!validAllocation(next+3+codeLimit)) throw new CPUException("free() high block is invalid!");
+		}
 		long stop = System.nanoTime();
 		totalSystemTime += stop - start;
 	}
 
-	public void memmove(long src, long dest, long size) {
+	public long countHeapBlocks(boolean countAlloc, boolean countFree) {
+		long p = heapStart;
+		long numAlloc = 0;
+		long numFree = 0;
+		while (p > 0) {
+			if (memRead(p + 2) < 0)
+				++numFree;
+			else
+				++numAlloc;
+			p = memRead(p + 1);
+		}
+		if (countAlloc && countFree)
+			return numAlloc + numFree;
+		else if (countAlloc)
+			return numAlloc;
+		else if (countFree)
+			return numFree;
+		else return 0;
+	}
+
+	public long countHeapSize(boolean countAlloc, boolean countFree) {
+		long p = heapStart;
+		long numAlloc = 0;
+		long numFree = 0;
+		while (p > 0) {
+			long size = memRead(p + 2);
+			if (size < 0)
+				numFree += -size;
+			else
+				numAlloc += size;
+			p = memRead(p + 1);
+		}
+		if (countAlloc && countFree)
+			return numAlloc + numFree;
+		else if (countAlloc)
+			return numAlloc;
+		else if (countFree)
+			return numFree;
+		else return 0;
+	}
+
+	public void memmove(long dest, long src, long size) {
 		long start = System.nanoTime();
-		// todo
+		if (dest < 0 || dest > mem.length) throw new CPUException("Illegal memmove dest argument!");
+		if (src < 0 || src > mem.length) throw new CPUException("Illegal memmove src argument!");
+		if (src + size > mem.length || dest + size > mem.length) throw new CPUException("Illegal memmove size argument!");
+		System.arraycopy(mem, (int)src, mem, (int)dest, (int)size);
 		long stop = System.nanoTime();
 		totalSystemTime += stop - start;
 	}
 
 	public void memclear(long src, long size) {
 		long start = System.nanoTime();
-		// todo
+		if (src < 0 || src > mem.length) throw new CPUException("Illegal memclear src argument!");
+		if (src + size > mem.length) throw new CPUException("Illegal memclear size argument!");
+		Arrays.fill(mem, (int)src, (int)(src + size), 0L);
 		long stop = System.nanoTime();
 		totalSystemTime += stop - start;
 	}
 
 	public long allocString(String s) {
-		// todo
-		return 0;
+		return allocString(s, 0);
+	}
+
+	public long allocString(String s, long allocBuffer) {
+		byte[] utf8 = s.getBytes(StandardCharsets.UTF_8);
+		long neededWords = (utf8.length + 7) / 8 + 1;
+		long result;
+		if (allocBuffer == 0) {
+			result = alloc(neededWords);
+		} else if (memRead(allocBuffer - 1) - 3 >= neededWords) {
+			result = allocBuffer;
+		} else {
+			free(allocBuffer);
+			result = alloc(neededWords);
+		}
+		if (result != 0) {
+			long p = result;
+			memWrite(p++, (long) utf8.length);
+			long buffer = 0;
+			int index = 7;
+			for (var c : utf8) {
+				buffer |= (c & 0xFFL) << (index * 8);
+				--index;
+				if (index < 0) {
+					memWrite(p++, buffer);
+					buffer = 0;
+					index = 7;
+				}
+			}
+			if (index != 7) {
+				memWrite(p, buffer);
+			}
+		}
+		return result;
 	}
 
 	public String convertString(long addr) {
-		// todo
-		return "";
+		if (addr < 0) throw new CPUException("Illegal string address");
+		long byteCount = memRead(addr++);
+		if (byteCount < 0 || byteCount > (long)Integer.MAX_VALUE)
+			throw new CPUException("Invalid UTF-8 byte count: " + byteCount);
+
+		byte[] bytes = new byte[(int) byteCount];
+		int outIndex = 0;
+
+		// unpack bytes from each subsequent long
+		for (; outIndex < byteCount; ++addr) {
+			long w = memRead(addr);
+			for (int b = 7; b >= 0 && outIndex < byteCount; --b) {
+				bytes[outIndex++] = (byte)((w >> (b * 8)) & 0xFF);
+			}
+		}
+		return new String(bytes, StandardCharsets.UTF_8);
 	}
 
-	public int fork() {
-		// todo
-		return 0;
+	public static class ChildProcess extends RecursiveAction {
+		Simulator cpu;
+		Simulator parentCPU;
+
+		public ChildProcess(Simulator cpu, Simulator parent) {
+			this.cpu = cpu;
+			this.cpu.process = this;
+			parentCPU = parent;
+		}
+
+		@Override
+		protected void compute() {
+			try {
+				cpu.run();
+			} catch (Exception ex) {
+				throw ex;
+			}
+		}
 	}
 
-	public void waitAll() {
-		// todo
+	public long fork() throws CPUException
+	{
+		Simulator childCPU;
+		try {
+			childCPU = new Simulator(this, true);
+			childCPU.setR(R_PC, childCPU.getR(R_PC) + 1);
+			childCPU.setR(0, 0);
+			ChildProcess child = new ChildProcess(childCPU, this);
+			synchronized (childCPUs) {
+				childCPUs.add(childCPU);
+			}
+			child.fork();
+			return childCPU.getPID();
+		} catch (Exception ex) {
+//			throw new CPUException("Child process creation failed! %s", ex.getMessage());
+			return -1;
+		}
+	}
+
+	public void waitAll() throws CPUException {
+		Vector<Long> pids = getChildPIDs();
+		for (var pid : pids) {
+			waitPID(pid);
+		}
 	}
 
 	public void waitPID(long pid) {
-		// todo
+		Simulator childCPU = getChildCPU((int)pid);
+		if (childCPU != null) {
+			Simulator.ChildProcess p = childCPU.getProcess();
+			if (p != null) {
+				p.join();
+				synchronized (childCPUs) {
+					childCPUs.remove(childCPU);
+				}
+			}
+		}
 	}
 
-	public static Simulator getChildCPU(long pid) {
-		// todo
-		return null;
+	public static class ChildThread extends Thread {
+		Simulator cpu;
+
+		public ChildThread(Simulator cpu) {
+			this.cpu = cpu;
+			this.cpu.thread = this;
+		}
+
+		@Override
+		public void run() {
+			try {
+				cpu.run();
+			} catch (Exception ex) {
+//				throw new CPUException("Child thread run failed! %s", ex.getMessage());
+			}
+		}
 	}
 
-	public long getProcess() {
-		// todo
-		return 0;
+	public long thread(long function, long data) throws CPUException
+	{
+		Simulator childCPU;
+		try {
+			childCPU = new Simulator(this, false);
+			childCPU.push(data);
+			childCPU.push(-1);					// push return address, -1 exits
+			childCPU.push(childCPU.getR(R_SF));	// push old stack frame so it can be restored on return
+			childCPU.setR(R_SF, childCPU.getR(R_SP));// set new stack frame for call
+			childCPU.setR(R_PC, function);
+			ChildThread child = new ChildThread(childCPU);
+			synchronized (childCPUs) {
+				childCPUs.add(childCPU);
+			}
+			child.start();
+			return childCPU.getPID();
+		} catch (Exception ex) {
+//			throw new CPUException("Child thread creation failed! %s", ex.getMessage());
+		}
+		return -1;
 	}
 
-	public long thread(long func, long data) {
-		// todo
-		return 0;
+	public void joinThread(long pid) {
+		Simulator childCPU = getChildCPU((int)getR(0));
+		if (childCPU != null) {
+			Simulator.ChildThread t = childCPU.getThread();
+			if (t != null) {
+				try {
+					t.join();
+				} catch (InterruptedException e) {
+				}
+				synchronized (childCPUs) {
+					childCPUs.remove(childCPU);
+				}
+			}
+		}
 	}
 
-	public long getPID() {
-		// todo
-		return 0;
-	}
-
-	private Map<Integer, PortHandler> ports = new HashMap<>();
+	private HashMap<Integer, PortHandler> ports = new HashMap<>();
 	public PortHandler getPortHandler(int port) {
 		return ports.get(port);
 	}
@@ -1823,12 +2234,12 @@ public class Simulator {
 	}
 
 	public void printCPUState() {
-		System.out.printf("\n\nCPU State    SR: %s\n", formatSR());
+		System.out.printf("\nCPU State    SR: %s\n", formatSR());
 		System.out.printf(fmtHeading,(Object[])cpuLabels);
-		int stack_base=(int)R[R_SP]+FPR_COUNT;
-		if (stack_base>=mem.length) stack_base=mem.length - 1;
-		for (int i=0;i<FPR_COUNT;++i) {
-			if (i>=R_SF) System.out.printf(fmtCPUAlt,registers[i],R[i],registersFP[i],F[i]);
+		int stack_base = (int)R[R_SP] + FPR_COUNT;
+		if (stack_base >= stackBase) stack_base = (int)stackBase - 1;
+		for (int i = 0; i < FPR_COUNT; ++i) {
+			if (i >= R_SF) System.out.printf(fmtCPUAlt,registers[i],R[i],registersFP[i],F[i]);
 			else System.out.printf(fmtCPU,registers[i],R[i],R[i],registersFP[i],F[i]);
 			if (stack_base - i > R[R_SP]) {
 				long v = memRead(stack_base - i);

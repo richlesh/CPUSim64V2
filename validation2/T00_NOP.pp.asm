@@ -1,13 +1,12 @@
-.LINE "T00_NOP.asm", 12
-SETUP: stop
-stop
-move	r0,-1
- move	r1,1
+.LINE «T00_NOP.asm», 12
+SETUP:
+	move	r0,-1
+	move	r1,1
 	move	r2,2
 	move	r3,3
 	move	r4,4
 	move	r5,5
-.LINE "T00_NOP.asm", 22
+.LINE «T00_NOP.asm», 21
 	move	r6,6
 	move	r7,7
 	move	r8,8
@@ -31,7 +30,7 @@ move	r0,-1
 	move	r26,26
 	move	r27,27
 	move	r28,28
-.LINE "T00_NOP.asm", 46
+.LINE «T00_NOP.asm», 45
 	move	f0,-1
 	move	f1,1
 	move	f2,2
@@ -64,18 +63,18 @@ move	r0,-1
 	move	f29,29
 	move	f30,30
 	move	f31,31
-.LINE "T00_NOP.asm", 79
+.LINE «T00_NOP.asm», 78
 	push	1
 	push	2
 	push	3
 	nop
-nop
+	debug
 DEBUG_4:
 	debug	r0,r4,r8,r12
 	debug	r16,r20,r24,r28
 	debug	f0,f4,f8,f12
 	debug	f16,f20,f24,f28
-.LINE "T00_NOP.asm", 90
+.LINE «T00_NOP.asm», 89
 DEBUG_3:
 	debug	r1,r5,r9
 	debug	r13,r17,r21
@@ -83,7 +82,7 @@ DEBUG_3:
 	debug	f1,f5,f9
 	debug	f13,f17,f21
 	debug	f25,f29,f29
-.LINE "T00_NOP.asm", 98
+.LINE «T00_NOP.asm», 97
 DEBUG_2:
 	debug	r2,r6
 	debug	r10,r14
@@ -93,7 +92,7 @@ DEBUG_2:
 	debug	f10,f14
 	debug	f18,f22
 	debug	f26,f30
-.LINE "T00_NOP.asm", 108
+.LINE «T00_NOP.asm», 107
 DEBUG_1:
 	debug	r3
 	debug	r7
@@ -110,7 +109,7 @@ DEBUG_1:
 	debug	f23
 	debug	f27
 	debug	f31
-.LINE "T00_NOP.asm", 125
+.LINE «T00_NOP.asm», 124
 STACK_TEST:
 	push	SF
 	move	SF,SP
@@ -143,14 +142,14 @@ STACK_TEST:
 	push	30
 	push	31
 	push	32
-.LINE "T00_NOP.asm", 158
+.LINE «T00_NOP.asm», 157
 	debug
-.LINE "T00_NOP.asm", 160
+.LINE «T00_NOP.asm», 159
 	push	33
 	push	34
-.LINE "T00_NOP.asm", 163
+.LINE «T00_NOP.asm», 162
 	debug
-.LINE "T00_NOP.asm", 165
+.LINE «T00_NOP.asm», 164
 TEST_DUMP:
 	debug	SETUP,4
 	debug	__HEAP_START__,4
@@ -161,14 +160,14 @@ TEST_DUMP:
 	neg	r0
 	move	r0,__HEAP_START__
 	debug	r0,4
-.LINE "T00_NOP.asm", 176
+.LINE «T00_NOP.asm», 175
 TEST_HEAP_WALK:
 	debug	__HEAP_START__,-1
 	debug	r0,-1
-.LINE "T00_NOP.asm", 180
+.LINE «T00_NOP.asm», 179
 	move	SP,SF
 	pop		SF
-.LINE "T00_NOP.asm", 183
+.LINE «T00_NOP.asm», 182
 END:
 	stop
 	stop

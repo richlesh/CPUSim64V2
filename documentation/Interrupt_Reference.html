@@ -29,29 +29,32 @@
 		<tr><td>200</td><td>iPUT_NL</td><td>r0: output port</td><td>Outputs the newline character(s) to the output port.</td></tr>
 		<tr><td>201</td><td>iPUT_INT</td><td>r0: output port<br>r1: output value<br>r2: base</td><td>Converts the output value to a string using the specified base and outputs it to the specified port.</td></tr>
 		<tr><td>202</td><td>iPUT_DEC</td><td>r0: output port<br>r1: output value</td><td>Converts the output value to a string using base 10 and outputs it to the specified port.</td></tr>
-		<tr><td>203</td><td>iPUT_HEX</td><td>r0: output port<br>r1: output value</td><td>Converts the output value to a string using base 16 and outputs it to the specified port.</td></tr>
-		<tr><td>204</td><td>iPUT_FP</td><td>r0: output port<br>f0: output value</td><td>Converts the output value to a string and outputs it to the specified port.</td></tr>
+		<tr><td>203</td><td>iPUT_HEX</td><td>r0: output port<br>r1: output value<br>r2: pad size</td><td>Converts the output value to a string using base 16 and outputs it to the specified port padded with zeros to the pad size.</td></tr>
+		<tr><td>204</td><td>iPUT_FP</td><td>r0: output port<br>r1: precision<br>f0: output value</td><td>Converts the output value to a string and outputs it to the specified port using the specified precision.</td></tr>
 		<tr><td>205</td><td>iPUTS</td><td>r0: output port<br>r1: output string address</td><td>Outputs a string to the specified port.</td></tr>
-		<tr><td>206</td><td>iGET_INT</td><td>r0: input port<br>r1: base</td><td>Gets string from the specified port and converts it to an integer using base.</td></tr>
-		<tr><td>207</td><td>iGET_DEC</td><td>r0: input port</td><td>Gets string from the specified port and converts it to an integer using base 10.</td></tr>
-		<tr><td>208</td><td>iGET_HEX</td><td>r0: input port</td><td>Gets string from the specified port and converts it to an integer using base 16.</td></tr>
-		<tr><td>209</td><td>iGET_FP</td><td>r0: input port</td><td>Gets string from the specified port and converts it to floating point.</td></tr>
-		<tr><td>210</td><td>iGETS</td><td>r0: input port<br>r1: buffer to hold string</td><td>Gets string from the specified port.  r1 will change if buffer is realloced to a larger size.</td></tr>
-		<tr><td>211</td><td>iPRINTF</td><td>Arg1: port<br>Arg2: format string address<br>Arg3: first value<br>Arg4: second value<br>...</td><td>Stack-based interrupt that implements C-style printf().  Arguments are pushed in reverse order onto the stack.  Return address and stack frame are expected to be pushed last which means this interrupt should only be used inside a called function like fprintf().</td></tr>
-		<tr><td>220</td><td>iOPEN_FILE_READ</td><td>r0: port (3-15)<br>r1: filepath string</td><td>Opens the file for text reading.</td></tr>
-		<tr><td>221</td><td>iOPEN_FILE_WRITE</td><td>r0: port (3-15)<br>r1: filepath string</td><td>Opens the file for test writing.</td></tr>
-		<tr><td>222</td><td>iOPEN_FILE_APPEND</td><td>r0: port (3-15)<br>r1: filepath string</td><td>Opens the file for text append.</td></tr>
-		<tr><td>223</td><td>iOPEN_RAW_FILE_READ</td><td>r0: port (3-15)<br>r1: filepath string</td><td>Opens the file for raw read.</td></tr>
-		<tr><td>224</td><td>iOPEN_RAW_FILE_WRITE</td><td>r0: port (3-15)<br>r1: filepath string</td><td>Opens the file for raw write.</td></tr>
-		<tr><td>225</td><td>iOPEN_RAW_FILE_APPEND</td><td>r0: port (3-15)<br>r1: filepath string</td><td>Opens the file for raw append.</td></tr>
+		<tr><td>206</td><td>iPUT_LINE</td><td>r0: output port<br>r1: output string address</td><td>Outputs a string to the specified port and adds a newline.</td></tr>
+		<tr><td>207</td><td>iGET_INT</td><td>r0: input port<br>r1: base</td><td>Gets string from the specified port and converts it to an integer using base.</td></tr>
+		<tr><td>208</td><td>iGET_DEC</td><td>r0: input port</td><td>Gets string from the specified port and converts it to an integer using base 10.</td></tr>
+		<tr><td>209</td><td>iGET_HEX</td><td>r0: input port</td><td>Gets string from the specified port and converts it to an integer using base 16.</td></tr>
+		<tr><td>210</td><td>iGET_FP</td><td>r0: input port</td><td>Gets string from the specified port and converts it to floating point.</td></tr>
+		<tr><td>211</td><td>iGETS</td><td>r0: input port<br>r1: buffer to hold string (from iALLOC)</td><td>Gets string from the specified port.  r1 will change if buffer is realloced to a larger size.  If R1 is 0 then an allocation from the heap will be made to store the string. R0 will be -1 on EOF or the length of the string read.</td></tr>
+		<tr><td>212</td><td>iGET_LINE</td><td>r0: input port<br>r1: buffer to hold string (from iALLOC)</td><td>Gets a line from the specified port.  r1 will change if buffer is realloced to a larger size.  If R1 is 0 then an allocation from the heap will be made to store the string.  The newline is removed from the resultant string.  R0 will be -1 on EOF or the length of the string read.</td></tr>
+		<tr><td>213</td><td>iPRINTF</td><td>Arg1: port<br>Arg2: format string address<br>Arg3: first value<br>Arg4: second value<br>...</td><td>Stack-based interrupt that implements C-style printf().  Arguments are pushed in reverse order onto the stack.  Return address and stack frame are expected to be pushed last which means this interrupt should only be used inside a called function like fprintf().</td></tr>
+		<tr><td>214</td><td>iCOND_PRINTF</td><td>Arg1: condition code<br>Arg2: port<br>Arg3: format string address<br>Arg4: first value<br>Arg4: second value<br>...</td><td>Stack-based interrupt that implements C-style printf().  Arguments are pushed in reverse order onto the stack.  Return address and stack frame are expected to be pushed last which means this interrupt should only be used inside a called function like fprintf().</td></tr>
+		<tr><td>220</td><td>iOPEN_FILE_READ</td><td>r0: port (3-255)<br>r1: filepath string</td><td>Opens the file for text reading. Returns FALSE in R0 on error. TRUE on success.</td></tr>
+		<tr><td>221</td><td>iOPEN_FILE_WRITE</td><td>r0: port (3-255)<br>r1: filepath string</td><td>Opens the file for text writing. Returns FALSE in R0 on error. TRUE on success.</td></tr>
+		<tr><td>222</td><td>iOPEN_FILE_APPEND</td><td>r0: port (3-255)<br>r1: filepath string</td><td>Opens the file for text append. Returns FALSE in R0 on error. TRUE on success.</td></tr>
+		<tr><td>223</td><td>iOPEN_RAW_FILE_READ</td><td>r0: port (3-255)<br>r1: filepath string</td><td>Opens the file for raw read. Returns FALSE in R0 on error. TRUE on success.</td></tr>
+		<tr><td>224</td><td>iOPEN_RAW_FILE_WRITE</td><td>r0: port (3-255)<br>r1: filepath string</td><td>Opens the file for raw write. Returns FALSE in R0 on error. TRUE on success.</td></tr>
+		<tr><td>225</td><td>iOPEN_RAW_FILE_APPEND</td><td>r0: port (3-255)<br>r1: filepath string</td><td>Opens the file for raw append. Returns FALSE in R0 on error. TRUE on success.</td></tr>
 		<tr><td>226</td><td>iCLOSE_FILE</td><td>r0: port</td><td>Closes the file on port.</td></tr>
 		<tr><td>227</td><td>iFLUSH</td><td>r0: port</td><td>Flushes output to the file on port.</td></tr>
-		<tr><td>228</td><td>iDELETE_FILE</td><td>r0: filepath string</td><td>Deletes the file specified.  Returns TRUE if successful./td></tr>
-		<tr><td>229</td><td>iMAKE_DIR</td><td>r0: path string</td><td>Creates the specified directory.  Returns TRUE if successful./td></tr>
-		<tr><td>230</td><td>iDELETE_DIR</td><td>r0: path string</td><td>Deletes the specified directory.  Must be empty.  Returns TRUE if successful./td></tr>
-		<tr><td>231</td><td>iIS_DIR</td><td>r0: filepath string</td><td>Returns true if the specified filepath belongs to a directory.</td></tr>
-		<tr><td>232</td><td>iIS_FILE</td><td>r0: filepath string</td><td>Returns true if the specified filepath belongs to a file.</td></tr>
-		<tr><td>233</td><td>iFILE_EXISTS</td><td>r0: filepath string</td><td>Returns true if the specified filepath exists as a file or directory.</td></tr>
+		<tr><td>228</td><td>iDELETE_FILE</td><td>r0: filepath string</td><td>Deletes the file specified. Returns FALSE in R0 on error. TRUE on success.</td></tr>
+		<tr><td>229</td><td>iMAKE_DIR</td><td>r0: path string</td><td>Creates the specified directory. Returns FALSE in R0 on error. TRUE on success.</td></tr>
+		<tr><td>230</td><td>iDELETE_DIR</td><td>r0: path string</td><td>Deletes the specified directory.  Must be empty.  Returns FALSE in R0 on error. TRUE on success.</td></tr>
+		<tr><td>231</td><td>iIS_DIR</td><td>r0: filepath string</td><td>Returns TRUE in R0 if the specified filepath belongs to a directory.</td></tr>
+		<tr><td>232</td><td>iIS_FILE</td><td>r0: filepath string</td><td>Returns TRUE in R0 if the specified filepath belongs to a file.</td></tr>
+		<tr><td>233</td><td>iFILE_EXISTS</td><td>r0: filepath string</td><td>Returns TRUE in R0 if the specified filepath exists as a file or directory.</td></tr>
 		<tr><td>234</td><td>iFILES</td><td>r0: path string</td><td>Returns an array of strings containing the files/dirs residing in the path specified.</td></tr>
 		<tr><td>235</td><td>iTEMP_DIR</td><td>r0: prefix string</td><td>Returns an heap allocated string containing the name of a randomly generated tempory directory.  Returns null on error.</td></tr>
 		<tr><td>236</td><td>iTEMP_FILE</td><td>r0: prefix string<br>r1: extension string</td><td>Returns an heap allocated string containing the name of a randomly generated tempory filepath.  Returns null on error.</td></tr>
@@ -114,16 +117,25 @@
 		<tr><td>306</td><td>iPARSE_HEX</td><td>r0: string address</td><td>Parses a string as a hexadecimal integer.</td></tr>
 		<tr><td>307</td><td>iPARSE_FLOAT</td><td>r0: string address</td><td>Parses a string as a floating point value.</td></tr>
 		<tr><td>308</td><td>iSPRINTF</td><td>Arg1: port<br>Arg2: format string address<br>Arg3: first value<br>Arg4: second value<br>...</td><td>Stack-based interrupt that implements C-style printf().  Arguments are pushed in reverse order onto the stack.  Return address and stack frame are expected to be pushed last which means this interrupt should only be used inside a called function like sprintf().</td></tr>
-		<tr><td>309</td><td>iTO_LOWER</td><td>r0: character</td><td>Returns the lowercase version of the character.</td></tr>
-		<tr><td>310</td><td>iTO_UPPER</td><td>r0: character</td><td>Returns the uppercase version of the character.</td></tr>
-		<tr><td>311</td><td>iTO_LOWER_STR</td><td>r0: string address</td><td>Returns lowercase version of string as a heap allocated string.</td></tr>
-		<tr><td>312</td><td>iTO_UPPER_STR</td><td>r0: string address</td><td>Returns uppercase version of string as a heap allocated string.</td></tr>
-		<tr><td>313</td><td>iSUBSTRING_SEARCH</td><td>r0: string to search<br>r1: string to find</td><td>Searches a string for the specified substring and returns the index into the string if found or -1 if not found.</td></tr>
-		<tr><td>314</td><td>iLAST_SUBSTRING_SEARCH</td><td>r0: string to search<br>r1: string to find</td><td>Searches a string from the end for the specified substring and returns the index into the string if found or -1 if not found.</td></tr>
-		<tr><td>315</td><td>iMATCHES</td><td>r0: string to search<br>r1: regex to find</td><td>Searches a string for the specified regular expression and returns TRUE if found or FALSE if not found.</td></tr>
-		<tr><td>316</td><td>iREPLACE_FIRST</td><td>r0: string to search<br>r1: regex to find<br>r2: replacement string</td><td>Searches a string for the specified regular expression and returns the heap allocated string that has the first occurance replaced by the replacement string.</td></tr>
-		<tr><td>317</td><td>iREPLACE_ALL</td><td>r0: string to search<br>r1: regex to find<br>r2: replacement string</td><td>Searches a string for the specified regular expression and returns the heap allocated string that has all the occurances replaced by the replacement string.</td></tr>
-		<tr><td>318</td><td>iSPLIT</td><td>r0: string to split<br>r1: split regex<br>r2: limit</td><td>Splits the string using the regex returning an array of strings capped with maximum elements specified by limit.  If limit is -1 the splitting is not capped.</td></tr>
+		<tr><td>309</td><td>iFORMAT</td><td>Arg1: port<br>Arg2: format string address<br>Arg3: first value<br>Arg4: second value<br>...</td><td>Stack-based interrupt that implements C-style printf().  Arguments are pushed in reverse order onto the stack.  Return address and stack frame are expected to be pushed last which means this interrupt should only be used inside a called function like fprintf().</td></tr>
+		<tr><td>310</td><td>iTO_LOWER</td><td>r0: character</td><td>Returns the lowercase version of the character.</td></tr>
+		<tr><td>311</td><td>iTO_UPPER</td><td>r0: character</td><td>Returns the uppercase version of the character.</td></tr>
+		<tr><td>312</td><td>iTO_LOWER_STR</td><td>r0: string address</td><td>Returns lowercase version of string as a heap allocated string.</td></tr>
+		<tr><td>313</td><td>iTO_UPPER_STR</td><td>r0: string address</td><td>Returns uppercase version of string as a heap allocated string.</td></tr>
+		<tr><td>314</td><td>iSTRCMP</td><td>r0: string 1<br>r1: string 2</td><td>Compares string 1 to string 2 and returns 0 if equal, -1 if string 1 is less than string 2, and +1 if string 1 is greater than string 2.</td></tr>
+		<tr><td>315</td><td>iSUBSTRING</td><td></td><td></td></tr>
+		<tr><td>316</td><td>iPREFIX</td><td></td><td></td></tr>
+		<tr><td>317</td><td>iSUFFIX</td><td></td><td></td></tr>
+		<tr><td>318</td><td>iCHAR_SEARCH</td><td></td><td></td></tr>
+		<tr><td>319</td><td>iLAST_CHAR_SEARCH</td><td></td><td></td></tr>
+		<tr><td>320</td><td>iSUBSTRING_SEARCH</td><td>r0: string to search<br>r1: string to find</td><td>Searches a string for the specified substring and returns the index into the string if found or -1 if not found.</td></tr>
+		<tr><td>321</td><td>iLAST_SUBSTRING_SEARCH</td><td>r0: string to search<br>r1: string to find</td><td>Searches a string from the end for the specified substring and returns the index into the string if found or -1 if not found.</td></tr>
+		<tr><td>350</td><td>iMATCHES</td><td>r0: string to search<br>r1: regex to find</td><td>Searches a string for the specified regular expression and returns TRUE if found or FALSE if not found.</td></tr>
+		<tr><td>351</td><td>iREPLACE_FIRST</td><td>r0: string to search<br>r1: regex to find<br>r2: replacement string</td><td>Searches a string for the specified regular expression and returns the heap allocated string that has the first occurance replaced by the replacement string.</td></tr>
+		<tr><td>352</td><td>iREPLACE_ALL</td><td>r0: string to search<br>r1: regex to find<br>r2: replacement string</td><td>Searches a string for the specified regular expression and returns the heap allocated string that has all the occurances replaced by the replacement string.</td></tr>
+		<tr><td>353</td><td>iSPLIT</td><td>r0: string to split<br>r1: split regex<br>r2: limit</td><td>Splits the string using the regex returning an array of strings capped with maximum elements specified by limit.  If limit is -1 the splitting is not capped.</td></tr>
+		<tr><td>354</td><td>iJOIN</td><td></td><td></td></tr>
+		<tr><td>355</td><td>iSTRCAT</td><td>r0: string 1<br>r1: string 2<br>r2: buffer or 0</td><td></td></tr>
 	</tbody>
 </table>
 
@@ -138,32 +150,40 @@
 	<tbody>
 		<tr><td>1</td><td>iINT_MIN</td><td>none</td><td>Returns largest negative integer.</td></tr>
 		<tr><td>2</td><td>iINT_MAX</td><td>none</td><td>Returns largest negative positive integer.</td></tr>
-		<tr><td>3</td><td>iFLOAT_MIN</td><td>none</td><td>Returns smallest floating point value greater than 0.</td></tr>
-		<tr><td>4</td><td>iFLOAT_MAX</td><td>none</td><td>Returns largest floating point value.</td></tr>
-		<tr><td>5</td><td>iNEGATIVE_INFINITY</td><td>none</td><td>Returns negative infinity.</td></tr>
-		<tr><td>6</td><td>iPOSITIVE_INFINITY</td><td>none</td><td>Returns positive infinity.</td></tr>
-		<tr><td>7</td><td>iNAN</td><td>none</td><td>Returns Not A Number.</td></tr>
+		<tr><td>3</td><td>iFLOAT_MIN</td><td>none</td><td>Returns most negative floating point value.</td></tr>
+		<tr><td>4</td><td>iFLOAT_LOWEST</td><td>none</td><td>Returns smallest floating point value greater than 0.</td></tr>
+		<tr><td>5</td><td>iFLOAT_MAX</td><td>none</td><td>Returns largest poitive floating point value.</td></tr>
+		<tr><td>6</td><td>iNEGATIVE_INFINITY</td><td>none</td><td>Returns negative infinity.</td></tr>
+		<tr><td>7</td><td>iPOSITIVE_INFINITY</td><td>none</td><td>Returns positive infinity.</td></tr>
+		<tr><td>8</td><td>iNAN</td><td>none</td><td>Returns Not A Number.</td></tr>
 		<tr><td>10</td><td>iCYCLES</td><td>none</td><td>Returns user CPU time in cycles.</td></tr>
 		<tr><td>11</td><td>iCLOCK</td><td>none</td><td>Returns current execution time in ns.</td></tr>
-		<tr><td>12</td><td>iSAVE</td><td>r1: #</td><td>Saves r#-r28 on the stack.</td></tr>
-		<tr><td>13</td><td>iSAVE_FP</td><td>r1: #</td><td>Saves f#-f31 on the stack.</td></tr>
-		<tr><td>14</td><td>iRESTORE</td><td>r1: #</td><td>Restores r#-r28 from the stack.</td></tr>
-		<tr><td>15</td><td>iRESTORE_FP</td><td>r1: #</td><td>Restores f#-f31 from the stack.</td></tr>
+		<tr><td>12</td><td>iSAVE</td><td>none</td><td>Saves r0-r28 on the stack.</td></tr>
+		<tr><td>13</td><td>iSAVE_FP</td><td>none</td><td>Saves f0-f31 on the stack.</td></tr>
+		<tr><td>14</td><td>iRESTORE</td><td>none</td><td>Restores r0-r28 from the stack.</td></tr>
+		<tr><td>15</td><td>iRESTORE_FP</td><td>none</td><td>Restores f0-f31 from the stack.</td></tr>
 		<tr><td>16</td><td>iPrintCPUState</td><td>none</td><td>Prints a diagram of the current CPU state and stack.</td></tr>
 		<tr><td>20</td><td>iALLOC</td><td>r0: allocation size</td><td>Returns a heap allocated block address.</td></tr>
 		<tr><td>21</td><td>iREALLOC</td><td>r0: allocation address<br>r1: new allocation size</td><td>Returns a new heap allocated block with data copied from the passed allocation address.  The original allocation address is freed if it is in the heap.</td></tr>
 		<tr><td>22</td><td>iFREE</td><td>r0: allocation address</td><td>Returns the heap allocated block address to the free list.</td></tr>
-		<tr><td>23</td><td>iARGC</td><td>none</td><td>Returns the number of command line arguments.</td></tr>
-		<tr><td>24</td><td>iARGS</td><td>r0: argument index</td><td>Returns address of of the command line argument specified by index or null.  Index 0 returns the program name.</td></tr>
-		<tr><td>25</td><td>iMEMMOVE</td><td>r0: dest address<br>r1: src address<br>r3: length</td><td>Moves contents of memory from src to dest.  Can handle overlapping memory blocks.</td></tr>
-		<tr><td>30</td><td>iEXIT</td><td>r0: exit code</td><td>Exits process with specified code.</td></tr>
-		<tr><td>31</td><td>iSYSTEM</td><td>r0: string address</td><td>Executes the system command contained in the string.  Returns the exit code of the command.</td></tr>
-		<tr><td>32</td><td>iFORK</td><td></td><td></td></tr>
-		<tr><td>33</td><td>iWAIT</td><td></td><td></td></tr>
-		<tr><td>34</td><td>iWAIT_PID</td><td></td><td></td></tr>
-		<tr><td>35</td><td>iTHREAD</td><td></td><td></td></tr>
-		<tr><td>36</td><td>iWAIT_THREAD</td><td></td><td></td></tr>
-		<tr><td>37</td><td>iSLEEP</td><td>r0: delay in ms</td><td>Pauses execution for the specified milliseconds.</td></tr>
+		<tr><td>23</td><td>iMEMMOVE</td><td>r0: dest address<br>r1: src address<br>r2: length</td><td>Moves contents of memory from src to dest.  Can handle overlapping memory blocks.</td></tr>
+		<tr><td>24</td><td>iMEMCLEAR</td><td>r0: dest address<br>r2: length</td><td>Clears contents of memory from dest for r1 words.</td></tr>
+		<tr><td>25</td><td>iALLOC_COUNT</td><td>none</td><td>Returns a count of heap allocated blocks.</td></tr>
+		<tr><td>26</td><td>iFREE_COUNT</td><td>none</td><td>Returns a count of heap free blocks.</td></tr>
+		<tr><td>27</td><td>iALLOC_SIZE</td><td>none</td><td>Returns total size of heap allocated blocks.</td></tr>
+		<tr><td>28</td><td>iFREE_SIZE</td><td>none</td><td>Returns total size of heap free blocks.</td></tr>
+		<tr><td>30</td><td>iARGC</td><td>none</td><td>Returns the number of command line arguments.</td></tr>
+		<tr><td>31</td><td>iARGS</td><td>r0: argument index</td><td>Returns address of of the command line argument specified by index or null.  Index 0 returns the program name.</td></tr>
+		<tr><td>32</td><td>iEXIT</td><td>r0: exit code</td><td>Exits process with specified code.</td></tr>
+		<tr><td>33</td><td>iSYSTEM</td><td>r0: string address</td><td>Executes the system command contained in the string.  Returns the exit code of the command.</td></tr>
+		<tr><td>34</td><td>iGET_PID</td><td>none</td><td>Returns user process ID.</td></tr>
+		<tr><td>35</td><td>iGET_NUM_CORES</td><td>none</td><td>Returns user number of CPU cores.</td></tr>
+		<tr><td>36</td><td>iFORK</td><td>none</td><td>Unix-style process fork.  Zero is returned to the child process and positive PID of the child is returned to the parent.  If the fork fails, -1 is returned.</td></tr>
+		<tr><td>37</td><td>iWAIT</td><td></td><td>Waits for all child processes to complete.</td></tr>
+		<tr><td>38</td><td>iWAIT_PID</td><td>r0: PID</td><td>Waits for the child process with PID to complete.</td></tr>
+		<tr><td>39</td><td>iTHREAD</td><td>r0: function, r1: data</td><td>Starts a thread running the function passed in r0 and the data in r1. Returns the PID of the thread in r0.</td></tr>
+		<tr><td>40</td><td>iJOIN_THREAD</td><td>r0: PID</td><td>Waits for the thread with PID to complete.</td></tr>
+		<tr><td>41</td><td>iSLEEP</td><td>r0: delay in ms</td><td>Pauses execution for the specified milliseconds.</td></tr>
 	</tbody>
 </table>
 

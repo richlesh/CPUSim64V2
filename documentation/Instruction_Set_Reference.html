@@ -58,7 +58,7 @@
 	<caption>Integer Literal Symbols</caption>
 	<tr><th>Symbol</th><th>Description</th></tr>
 	<tr>
-		<td>Z</td><td>4-bit condition code used for JUMP<br>or CALL or port number 0-15 for IN and OUT</td>
+		<td>Z</td><td>4-bit condition code used for JUMP<br>or CALL or port number 0-255 for IN and OUT</td>
 	</tr>
 	<tr>
 		<td>B</td><td>8-bit signed integer</td>
@@ -564,7 +564,7 @@ SF &lt;- SP</pre>
 		<tr><th>Opcode</th><th>Pneumonic</th><th>Operands</th><th>Operation</th></tr>
 	</thead>
 	<tbody>
-		<tr><td>35</td><td>ENDIAN</td><td style="line-height: 1.5em;">RR<br>RZ<br>ZR<br>ZZ</td><td>Sets I/O Port endian mode to big-endian or little-endian<br>First operand is port [0-15]<br>Second operand is mode (TRUE for big-endian, FALSE for little-endian)</td></tr>
+		<tr><td>35</td><td>ENDIAN</td><td style="line-height: 1.5em;">RR<br>RZ<br>ZR<br>ZZ</td><td>Sets I/O Port endian mode to big-endian or little-endian<br>First operand is port [0-255]<br>Second operand is mode (TRUE for little-endian, FALSE for big-endian)</td></tr>
 	</tbody>
 </table>
 

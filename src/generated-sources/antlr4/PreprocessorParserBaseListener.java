@@ -101,6 +101,18 @@ public class PreprocessorParserBaseListener implements PreprocessorParserListene
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterMacroDir(PreprocessorParser.MacroDirContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitMacroDir(PreprocessorParser.MacroDirContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterArgList(PreprocessorParser.ArgListContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -137,6 +149,18 @@ public class PreprocessorParserBaseListener implements PreprocessorParserListene
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterDefMacroDir(PreprocessorParser.DefMacroDirContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitDefMacroDir(PreprocessorParser.DefMacroDirContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterParamList(PreprocessorParser.ParamListContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -144,6 +168,18 @@ public class PreprocessorParserBaseListener implements PreprocessorParserListene
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitParamList(PreprocessorParser.ParamListContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterCodeLineOrDirective(PreprocessorParser.CodeLineOrDirectiveContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitCodeLineOrDirective(PreprocessorParser.CodeLineOrDirectiveContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

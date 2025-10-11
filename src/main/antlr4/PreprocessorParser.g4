@@ -29,6 +29,8 @@ directive
   | undefDir
   | callDir
   | defFuncDir
+  | defMacroDir
+  | macroDir
   | svarDir
   | varDir
   | fvarDir
@@ -57,12 +59,18 @@ callDir
   : PP_CALL IDENT LPAREN ( argList )? RPAREN NL
   ;
 
+/* #macro macroName '(' argList? ')' */
+macroDir
+  : PP_MACRO IDENT LPAREN ( argList )? RPAREN NL
+  ;
+
 argList
   : callArg ( COMMA callArg )*
   ;
 
 callArg
   : literal
+  | PLACEHOLDER
   | IDENT
   | REG_R
   | REG_F
@@ -71,12 +79,23 @@ callArg
 /* #def_func name '(' paramList? ')' ... #end_func */
 defFuncDir
   : PP_DEF_FUNC IDENT LPAREN ( paramList )? RPAREN NL
-      ( directive | codeLine )*
+      ( codeLineOrDirective )*
     PP_END_FUNC NL
+  ;
+
+/* #def_macro name '(' paramList? ')' ... #end_macro */
+defMacroDir
+  : PP_DEF_MACRO IDENT LPAREN ( paramList )? RPAREN NL
+      ( codeLineOrDirective )*
+    PP_END_MACRO NL
   ;
 
 paramList
   : IDENT ( COMMA IDENT )*
+  ;
+
+codeLineOrDirective
+  : directive | codeLine
   ;
 
 /* #svar a, b, c      (stack variables / aliases) */

@@ -1,10 +1,10 @@
 package cloud.lesh.CPUSim64v2;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-import java.util.List;
-import java.util.stream.Collectors;
 import java.nio.file.Path;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -112,9 +112,9 @@ public class AssemblerVisitorTest {
 		String src = """
 			START:
 			LOAD R1, 0x1234[]
-			LOAD F1, 0x1234[0]
+			LOAD F1, 0x1234[]
 			LOAD R1, R2[]
-			LOAD F1, R2[0]
+			LOAD F1, R2[]
 			LOAD R1,R2[0x1234]
 			LOAD F1,R2[0x1234]
 			LOAD R1,0x1234[R2]
@@ -152,11 +152,11 @@ public class AssemblerVisitorTest {
 		String src = """
 			START:
 			STORE R1, 0x1234[]
-			STORE F1, 0x1234[0]
+			STORE F1, 0x1234[]
 			STORE 3, 0x1234[]
 		
 			STORE R1, R2[]
-			STORE F1, R2[0]
+			STORE F1, R2[]
 			STORE 3, R2[]
 
 			STORE R1,R2[0x1234]
@@ -1078,6 +1078,32 @@ public class AssemblerVisitorTest {
 	}
 
 	@Test
+	void testDCA() {
+		String src = """
+			START:
+			.DCA 5
+			.DCA 10
+			.DCA 100
+			.DCA 1
+			FINIS:
+			""";
+		LabelVisitor labelVisitor = new LabelVisitor();
+		String noLabels = labelVisitor.gatherLabels(src);
+		var asm = new AssemblerVisitor(labelVisitor.getLabelMap());
+		asm.assemble(noLabels);
+		List<Long> words = asm.result();
+		assertEquals(120, words.size());
+		int i = 0;
+		assertEquals(5, words.get(i));
+		i += 6;
+		assertEquals(10, words.get(i));
+		i += 11;
+		assertEquals(100, words.get(i));
+		i += 101;
+		assertEquals(1, words.get(i));
+	}
+
+	@Test
 	void testDCB() {
 		String src = """
 			START:
@@ -1138,11 +1164,6 @@ public class AssemblerVisitorTest {
 		assertEquals(0xC005BF0A87427F01L, words.get(i++));
 		assertEquals(0, words.get(i++));
 		assertEquals(4, words.get(i++));
-//		assertEquals('a', words.get(i++));
-//		assertEquals('\n', words.get(i++));
-//		assertEquals('é', words.get(i++));
-//		assertEquals('\u1234', words.get(i++));
-//		assertEquals(i, labelVisitor.getLabelMap().get("FINIS") - labelVisitor.getLabelMap().get("START"));
 	}
 
 	@Test
@@ -1168,5 +1189,39 @@ public class AssemblerVisitorTest {
 		assertEquals(8, words.get(i++));
 		assertEquals(0x27225C0A08E188B4L, words.get(i++));
 		assertEquals(i, labelVisitor.getLabelMap().get("FINIS") - labelVisitor.getLabelMap().get("START"));
+	}
+
+	@Test
+	void testBlock() {
+		String src = """
+			START:
+			#DEF_MACRO block(x)
+			.block block_label_{}
+				move	r0, 10
+			$LABEL:
+				sub		r0, 1
+				cmp		r0, ${x}
+				jump	z, $LABEL
+			.block_end
+			#END_MACRO
+			#MACRO block(4)
+			#MACRO block(8)
+			#MACRO block(2)
+			FINIS:
+			""";
+		var loader = new IncludeLoader(Path.of("."));
+		String preprocessed = PreprocessorVisitor.preprocessText("Test.asm", src, loader);
+		LabelVisitor labelVisitor = new LabelVisitor();
+		String noLabels = labelVisitor.gatherLabels(preprocessed);
+		var asm = new AssemblerVisitor(labelVisitor.getLabelMap());
+		asm.assemble(noLabels);
+		List<Long> words = asm.result();
+		assertEquals(12, words.size());
+		assertEquals(0x8740040000000001L, words.get(3));
+		assertEquals(0x8740040000000005L, words.get(7));
+		assertEquals(0x8740040000000009L, words.get(11));
+		assertEquals(1, labelVisitor.getLabelMap().get("BLOCK_LABEL_1$LABEL"));
+		assertEquals(5, labelVisitor.getLabelMap().get("BLOCK_LABEL_2$LABEL"));
+		assertEquals(9, labelVisitor.getLabelMap().get("BLOCK_LABEL_3$LABEL"));
 	}
 }

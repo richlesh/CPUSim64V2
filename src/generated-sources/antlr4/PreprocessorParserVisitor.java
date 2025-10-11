@@ -53,6 +53,12 @@ public interface PreprocessorParserVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitCallDir(PreprocessorParser.CallDirContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link PreprocessorParser#macroDir}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitMacroDir(PreprocessorParser.MacroDirContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link PreprocessorParser#argList}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -71,11 +77,23 @@ public interface PreprocessorParserVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitDefFuncDir(PreprocessorParser.DefFuncDirContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link PreprocessorParser#defMacroDir}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitDefMacroDir(PreprocessorParser.DefMacroDirContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link PreprocessorParser#paramList}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitParamList(PreprocessorParser.ParamListContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link PreprocessorParser#codeLineOrDirective}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitCodeLineOrDirective(PreprocessorParser.CodeLineOrDirectiveContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link PreprocessorParser#svarDir}.
 	 * @param ctx the parse tree

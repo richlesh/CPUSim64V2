@@ -23,14 +23,13 @@ directive
   | LINE FILENAMELIT ','? INTLIT			# LINE_Directive
   | LINE_BEGIN FILENAMELIT ','? INTLIT		# LINE_BEGIN_Directive
   | LINE_END								# LINE_END_Directive
-  | BLOCK_BEGIN (IDENT | BLOCK_IDENT)		# BLOCK_BEGIN_Directive
+  | BLOCK_BEGIN IDENT						# BLOCK_BEGIN_Directive
   | BLOCK_END IDENT?						# BLOCK_END_Directive
   ;
 
 dataDirective
   : DCI (INTLIT | HEXLIT)					// integers
   | DCF FLOATLIT							// floats
-  | DCA (INTLIT | HEXLIT)					// Declared array
   | DCB (byteList)							// 8-bit bytes(s)
   | DCC (byteList)							// 16-bit chars(s)
   | DCS STRINGLIT							// strings
@@ -369,8 +368,8 @@ memRef
   : memC | memA | memAplusC | memCplusA | memCplusC | memAplusR
   ;
 
-memC       : '@'? aLiteral ('[' ']')? ;
-memA       : '@'? aOperand ('[' ']')? ;
+memC       : '@'? aLiteral ('[' '0'? ']')? ;
+memA       : '@'? aOperand ('[' '0'? ']')? ;
 memAplusC  : '@'? aOperand ('+' | ',' | '[') cLiteral ']'? ;
 memCplusA  : '@'? cLiteral ('+' | ',' | '[') aOperand ']'? ;
 memCplusC  : '@'? aLiteral ('+' | ',' | '[') cLiteral ']'? ;
@@ -451,7 +450,7 @@ HEXLIT
   ;
 
 INTLIT
-  : '-'? [0-9]+
+  : '0' '0' | '-'? [0-9]+
   ;
 
 FLOATLIT
@@ -481,15 +480,13 @@ fragment ESC
 fragment HEX : [0-9A-Fa-f];
 
 /* Identifiers (labels/symbols) */
-IDENT : [\p{L}_$] [\p{L}\p{Nd}_$]* ;
-BLOCK_IDENT : [\p{L}_] [\p{L}\p{Nd}_{}]* ;
+IDENT : [A-Za-z_$] [A-Za-z0-9_$]* ;
 
 /* Data directives */
 DCI : '.' [dD][cC][iI] ;
 DCF : '.' [dD][cC][fF] ;
-DCA : '.' [dD][cC][aA] ;
 DCB : '.' [dD][cC][bB] ;
-DCC : '.' [dD][cC][cC] ;		// Don't use
+DCC : '.' [dD][cC][cC] ;
 DCW : '.' [dD][cC][wW] ;
 DCS : '.' [dD][cC][sS] ;
 ORG : '.' [oO][rR][gG] ;

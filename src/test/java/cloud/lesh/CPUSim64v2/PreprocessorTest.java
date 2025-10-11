@@ -57,23 +57,16 @@ class PreprocessorTest {
 			SUB R1, R1, 1
 			""";
 		var loader = new IncludeLoader(Path.of("."));
-		assertThrows(IllegalArgumentException.class, () -> PreprocessorVisitor.preprocessText("Test.asm", src, loader));
+		assertThrows(PreprocessorVisitor.PreprocessorException.class, () -> PreprocessorVisitor.preprocessText("Test.asm", src, loader));
 	}
 
 	@Test
 	void testIncludeBad2() {
 		String src = """
-			#include src/test/resources/include_bad.asm
-			""";
-		String expected = """
-			.LINE «TEST.ASM», 1
-			MOV R0, 1
-			MOV R1, 2
-			ADD R0, R0, R1
-			SUB R1, R1, 1
+			#include 'src/test/resources/include_bad.asm'
 			""";
 		var loader = new IncludeLoader(Path.of("."));
-		assertThrows(IllegalArgumentException.class, () -> PreprocessorVisitor.preprocessText("Test.asm", src, loader));
+		assertThrows(PreprocessorVisitor.PreprocessorException.class, () -> PreprocessorVisitor.preprocessText("Test.asm", src, loader));
 	}
 
 	@Test
@@ -334,8 +327,6 @@ class PreprocessorTest {
 			PUSH 0
 			ADD SP, -3
 			.LINE_BEGIN «TEST.ASM», 4
-			RESTORE F32, F31
-			RESTORE R29, R28
 			ADD SP, 4
 			RETURN
 			.BLOCK_END MYFUNC
@@ -362,9 +353,7 @@ class PreprocessorTest {
 			PUSH R28
 			SAVE R26, R28
 			.LINE_BEGIN «TEST.ASM», 4
-			RESTORE F32, F31
 			RESTORE R25, R28
-			ADD SP, 0
 			RETURN
 			.BLOCK_END MYFUNC
 			.LINE_END
@@ -391,8 +380,6 @@ class PreprocessorTest {
 			SAVE F29, F31
 			.LINE_BEGIN «TEST.ASM», 4
 			RESTORE F28, F31
-			RESTORE R29, R28
-			ADD SP, 0
 			RETURN
 			.BLOCK_END MYFUNC
 			.LINE_END
@@ -401,4 +388,64 @@ class PreprocessorTest {
 		String preprocessed = PreprocessorVisitor.preprocessText("Test.asm", src, loader);
 		assertEquals(expected, preprocessed.toUpperCase());
 	}
+
+	@Test
+	void testMacro() {
+		String src = """
+			START:
+			#define iPUT_DEC 202
+			#def_macro put_dec(i)
+				move R1, ${i}
+				move R0, 1
+				#macro putter()
+			#end_macro
+			#def_macro print3(i)
+				#macro put_dec(${i})
+				move r0, ${i}
+				add r0, 1
+				#macro put_dec(r0)
+				move r0, ${i}
+				add r0, 2
+				#macro put_dec(r0)
+			#end_macro
+			#def_macro putter()
+				int iPUT_DEC
+			#end_macro
+			MAIN:
+				#macro print_dec(3)
+				#macro print3(4)
+				stop
+				stop
+			FINIS:
+		""";
+		String expected = """
+			.LINE «TEST.ASM», 1
+			START:
+			.LINE «TEST.ASM», 20
+			MAIN:
+			.LINE_BEGIN «TEST.ASM», 22
+			MOVE R1, 4
+			MOVE R0, 1
+			INT 202
+			MOVE R0, 4
+			ADD R0, 1
+			MOVE R1, R0
+			MOVE R0, 1
+			INT 202
+			MOVE R0, 4
+			ADD R0, 2
+			MOVE R1, R0
+			MOVE R0, 1
+			INT 202
+			.LINE_END
+			.LINE «TEST.ASM», 23
+			STOP
+			STOP
+			FINIS:
+			""";
+		var loader = new IncludeLoader(Path.of("."));
+		String preprocessed = PreprocessorVisitor.preprocessText("Test.asm", src, loader);
+		assertEquals(expected, preprocessed.toUpperCase());
+	}
+
 }

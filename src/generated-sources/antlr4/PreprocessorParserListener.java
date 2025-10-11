@@ -78,6 +78,16 @@ public interface PreprocessorParserListener extends ParseTreeListener {
 	 */
 	void exitCallDir(PreprocessorParser.CallDirContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link PreprocessorParser#macroDir}.
+	 * @param ctx the parse tree
+	 */
+	void enterMacroDir(PreprocessorParser.MacroDirContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link PreprocessorParser#macroDir}.
+	 * @param ctx the parse tree
+	 */
+	void exitMacroDir(PreprocessorParser.MacroDirContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link PreprocessorParser#argList}.
 	 * @param ctx the parse tree
 	 */
@@ -108,6 +118,16 @@ public interface PreprocessorParserListener extends ParseTreeListener {
 	 */
 	void exitDefFuncDir(PreprocessorParser.DefFuncDirContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link PreprocessorParser#defMacroDir}.
+	 * @param ctx the parse tree
+	 */
+	void enterDefMacroDir(PreprocessorParser.DefMacroDirContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link PreprocessorParser#defMacroDir}.
+	 * @param ctx the parse tree
+	 */
+	void exitDefMacroDir(PreprocessorParser.DefMacroDirContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link PreprocessorParser#paramList}.
 	 * @param ctx the parse tree
 	 */
@@ -117,6 +137,16 @@ public interface PreprocessorParserListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitParamList(PreprocessorParser.ParamListContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link PreprocessorParser#codeLineOrDirective}.
+	 * @param ctx the parse tree
+	 */
+	void enterCodeLineOrDirective(PreprocessorParser.CodeLineOrDirectiveContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link PreprocessorParser#codeLineOrDirective}.
+	 * @param ctx the parse tree
+	 */
+	void exitCodeLineOrDirective(PreprocessorParser.CodeLineOrDirectiveContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link PreprocessorParser#svarDir}.
 	 * @param ctx the parse tree

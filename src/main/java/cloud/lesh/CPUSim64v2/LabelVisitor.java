@@ -17,6 +17,7 @@ public class LabelVisitor extends CPUSim64v2BaseVisitor<Void> implements HasLoca
 	private final Set<String> definedLabels = new HashSet<>();
 	private final Stack<String> blockNames = new Stack<>();
 	private long currentAddress = 0;
+	private long blockCount = 0;
 
 	String filename = null;
 	int lineNum = 1;
@@ -43,6 +44,19 @@ public class LabelVisitor extends CPUSim64v2BaseVisitor<Void> implements HasLoca
 		return null;
 	}
 
+	private long parseIntLike(String text) {
+		if (text.startsWith("0x") || text.startsWith("0X")) {
+			return Long.parseUnsignedLong(text.substring(2), 16);
+		} else if (text.startsWith("-0x") || text.startsWith("-0X")) {
+			return -Long.parseUnsignedLong(text.substring(3), 16);
+		} else if ((text.charAt(0) == '-') ||
+				(text.charAt(0) >= '0' && text.charAt(0) <= '9')) {
+			return Long.parseLong(text);
+		} else {
+			throw new IllegalArgumentException("Can't parse integer: " + text);
+		}
+	}
+
 	@Override
 	public Void visitProgram(CPUSim64v2Parser.ProgramContext ctx) {
 		for (var child : ctx.children) {
@@ -61,12 +75,12 @@ public class LabelVisitor extends CPUSim64v2BaseVisitor<Void> implements HasLoca
 	}
 
 	private String getScopeName() {
-		return String.join("$", blockNames);
+		return String.join("$", blockNames).toUpperCase();
 	}
 
 	@Override
 	public Void visitLabelDef(CPUSim64v2Parser.LabelDefContext ctx) {
-		String labelName = ctx.IDENT().getText();
+		String labelName = ctx.IDENT().getText().toUpperCase();
 		if (definedLabels.contains(labelName)) {
 			errors.add(getLocation() + ": Error: Duplicate label '" + labelName + "'");
 		} else {
@@ -103,6 +117,14 @@ public class LabelVisitor extends CPUSim64v2BaseVisitor<Void> implements HasLoca
 				s = StringEscapeUtils.unescapeJava(s);
 				byte[] utf8 = s.getBytes(StandardCharsets.UTF_8);
 				currentAddress += 1 + (utf8.length + 7) / 8;  // round up to nearest 8 bytes
+			} else if (ctx.dataDirective().DCA() != null) {
+				long b = 0;
+				if (ctx.dataDirective().INTLIT() != null) {
+					b = parseIntLike(ctx.dataDirective().INTLIT().getText());
+				} else if (ctx.dataDirective().HEXLIT() != null) {
+					b = parseIntLike(ctx.dataDirective().HEXLIT().getText());
+				}
+				currentAddress += 1 + b;
 			} else if (ctx.dataDirective().DCB() != null) {
 				currentAddress += 1 + (ctx.dataDirective().byteList().bLiteral().size() + 7) / 8;
 			} else if (ctx.dataDirective().DCW() != null) {
@@ -163,7 +185,18 @@ public class LabelVisitor extends CPUSim64v2BaseVisitor<Void> implements HasLoca
 
 	@Override
 	public Void visitBLOCK_BEGIN_Directive(CPUSim64v2Parser.BLOCK_BEGIN_DirectiveContext ctx) {
-		String blockname = ctx.IDENT().getText();
+		String blockname = null;
+		if (ctx.IDENT() != null) {
+			blockname = ctx.IDENT().getText();
+			if (blockname.contains("$"))
+				blockname = null;
+		} else if (ctx.BLOCK_IDENT() != null) {
+			blockname = ctx.BLOCK_IDENT().getText();
+		}
+		if (blockname == null)
+			throw new IllegalArgumentException(".block directive must have an argument@");
+		if (blockname.contains("{}") || blockname.contains("%d"))
+			blockname = String.format(blockname.replace("{}", "%d"), ++blockCount);
 		blockNames.push(blockname);
 		out.append(reflowTokens(ctx) + System.lineSeparator());
 		return null;

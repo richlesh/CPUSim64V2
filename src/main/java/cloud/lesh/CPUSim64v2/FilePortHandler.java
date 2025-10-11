@@ -28,7 +28,7 @@ public class FilePortHandler extends PortHandler
 					os=new FileWriter(filespec,true);
 					break;
 				default:
-					throw new Exception();
+					throw cpu.new CPUException("Illegal file open mode!");
 			}
 		}
 		catch (Exception e) {
@@ -51,13 +51,35 @@ public class FilePortHandler extends PortHandler
 	@Override
 	public int readChar() throws Simulator.CPUException
 	{
+		int codePoint = -1;
 		if (is == null) throw cpu.new CPUException("File \"" + filespec + "\" not open for input!");
 		try {
-			return is.read();
+			int ch1;
+			if ((ch1 = is.read()) != -1) { // read one UTF-16 code unit
+				char c1 = (char) ch1;
+				if (Character.isHighSurrogate(c1)) {
+					int ch2 = is.read();
+					if (ch2 != -1) {
+						char c2 = (char) ch2;
+						if (Character.isLowSurrogate(c2)) {
+							codePoint = Character.toCodePoint(c1, c2);
+						} else {
+							// malformed sequence
+							codePoint = c1;
+							is.reset(); // optional: push back
+						}
+					} else {
+						codePoint = c1; // last char was high surrogate with no pair
+					}
+				} else {
+					codePoint = c1;
+				}
+			}
 		}
 		catch (Exception e) {
 			throw cpu.new CPUException("Read error on file \"" + filespec + "\"!");
 		}
+		return codePoint;
  	}
 	
 	@Override

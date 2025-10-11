@@ -65,7 +65,7 @@ public class Disassembler {
 		var program = cloud.lesh.CPUSim64v2.AsmIO.readU64BE(newPath.toFile());
 		System.out.println("Read " + program.size() + " words from " + newPath.getFileName().toString());
 
-		var sim = new Simulator(memorySize, simulatorArgs.toArray(String[]::new));
+		var sim = new Simulator(memorySize, 1024, simulatorArgs.toArray(String[]::new));
 		if (debug) sim.setDebug(true);
 		sim.loadProgram(program, 0L);
 		System.out.println(sim.disassemble());

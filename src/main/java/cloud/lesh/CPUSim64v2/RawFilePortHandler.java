@@ -50,13 +50,7 @@ public class RawFilePortHandler extends PortHandler
 	@Override
 	public int readChar() throws Simulator.CPUException
 	{
-		if (is == null) throw cpu.new CPUException("File \"" + filespec + "\" not open for input!");
-		try {
-			return is.read();
-		}
-		catch (Exception e) {
-			throw cpu.new CPUException("Read error on file \"" + filespec + "\"!");
-		}
+		throw cpu.new CPUException("Can't read chars from raw file!");
  	}
 	
 	@Override
@@ -74,13 +68,7 @@ public class RawFilePortHandler extends PortHandler
 	@Override
 	public void writeChar(int x) throws Simulator.CPUException
 	{
-		if (os == null) throw cpu.new CPUException("File \"" + filespec + "\" not open for output!");
-		try {
-			os.write(x);
-		}
-		catch (Exception e) {
-			throw cpu.new CPUException("Write error on file \"" + filespec + "\"!");
-		}
+		throw cpu.new CPUException("Can't write chars to raw file!");
 	}
 	
 	@Override

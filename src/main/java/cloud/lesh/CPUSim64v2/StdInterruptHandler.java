@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.Vector;
 import java.util.regex.Matcher;
@@ -33,21 +34,25 @@ public class StdInterruptHandler extends InterruptHandler
 	public static final int iALLOC=20;
 	public static final int iREALLOC=21;
 	public static final int iFREE=22;
-	public static final int iARGS=23;
-	public static final int iARGC=24;
-	public static final int iMEMMOVE=25;
-	public static final int iMEMCLEAR=26;
+	public static final int iMEMMOVE=23;
+	public static final int iMEMCLEAR=24;
+	public static final int iALLOC_COUNT=25;
+	public static final int iFREE_COUNT=26;
+	public static final int iALLOC_SIZE=27;
+	public static final int iFREE_SIZE=28;
 
-	public static final int iEXIT=30;
-	public static final int iSYSTEM=31;
-	public static final int iFORK=32;
-	public static final int iWAIT=33;
-	public static final int iWAIT_PID=34;
-	public static final int iTHREAD=35;
-	public static final int iJOIN_THREAD=36;
-	public static final int iSLEEP=37;
-	public static final int iGET_PID=38;
-	public static final int iGET_NUM_CORES=39;
+	public static final int iARGC=30;
+	public static final int iARGS=31;
+	public static final int iEXIT=32;
+	public static final int iSYSTEM=33;
+	public static final int iGET_PID=34;
+	public static final int iGET_NUM_CORES=35;
+	public static final int iFORK=36;
+	public static final int iWAIT=37;
+	public static final int iWAIT_PID=38;
+	public static final int iTHREAD=39;
+	public static final int iJOIN_THREAD=40;
+	public static final int iSLEEP=41;
 
 	public static final int iPI=100;
 	public static final int iE=101;		
@@ -83,14 +88,17 @@ public class StdInterruptHandler extends InterruptHandler
 	public static final int iPUT_HEX=203;
 	public static final int iPUT_FP=204;
 	public static final int iPUTS=205;
-	public static final int iGET_INT=206;
-	public static final int iGET_DEC=207;
-	public static final int iGET_HEX=208;
-	public static final int iGET_FP=209;
-	public static final int iGETS=210;
-	public static final int iPRINTF=211;
-	public static final int iCOND_PRINTF=212;
-	
+	public static final int iPUT_LINE=206;
+	public static final int iGET_INT=207;
+	public static final int iGET_DEC=208;
+	public static final int iGET_HEX=209;
+	public static final int iGET_FP=210;
+	public static final int iGETS=211;
+	public static final int iGET_LINE=212;
+
+	public static final int iPRINTF=213;
+	public static final int iCOND_PRINTF=214;
+
 	public static final int iOPEN_FILE_READ=220;
 	public static final int iOPEN_FILE_WRITE=221;
 	public static final int iOPEN_FILE_APPEND=222;
@@ -117,27 +125,30 @@ public class StdInterruptHandler extends InterruptHandler
 	public static final int iPARSE_HEX=306;
 	public static final int iPARSE_FLOAT=307;
 	public static final int iSPRINTF=308;
-	public static final int iTO_LOWER=309;
-	public static final int iTO_UPPER=310;
-	public static final int iTO_LOWER_STR=311;
-	public static final int iTO_UPPER_STR=312;
-    public static final int iSUBSTRING=313;
-    public static final int iPREFIX=314;
-    public static final int iSUFFIX=315;
-    public static final int iCHAR_SEARCH=316;
-    public static final int iLAST_CHAR_SEARCH=317;
-    public static final int iSUBSTRING_SEARCH=318;
-    public static final int iLAST_SUBSTRING_SEARCH=319;
+	public static final int iFORMAT=309;
+	public static final int iTO_LOWER=310;
+	public static final int iTO_UPPER=311;
+	public static final int iTO_LOWER_STR=312;
+	public static final int iTO_UPPER_STR=313;
+	public static final int iSTRCMP=314;
+	public static final int iSUBSTRING=315;
+    public static final int iPREFIX=316;
+    public static final int iSUFFIX=317;
+    public static final int iCHAR_SEARCH=318;
+    public static final int iLAST_CHAR_SEARCH=319;
+    public static final int iSUBSTRING_SEARCH=320;
+    public static final int iLAST_SUBSTRING_SEARCH=321;
 	
 	public static final int iMATCHES=350;
 	public static final int iREPLACE_FIRST=351;
 	public static final int iREPLACE_ALL=352;
 	public static final int iSPLIT=353;
 	public static final int iJOIN=354;
+	public static final int iSTRCAT=355;
 
 	private long argv_ptr = 0;
 
-	public StdInterruptHandler(Simulator c) { cpu=c; }
+	public StdInterruptHandler(Simulator c) { cpu = c; }
 
 	@Override
 	public boolean dispatch(int id) throws Simulator.CPUException
@@ -185,16 +196,16 @@ public class StdInterruptHandler extends InterruptHandler
 				cpu.setR(0,cpu.getClock());
 				break;
 			case iSAVE:								// saves r0-r28 on the stack
-				for (i=0;i<cpu.GPR_COUNT;++i) cpu.push(cpu.getR(i));
+				cpu.opSAVE(Simulator.Decoded.decode(cpu.encT0(Opcode.SAVE.code, 2,2,0,0, 0,cpu.GPR_COUNT - 4,0,0)));
 				break;
 			case iSAVE_FP:							// saves f0-f31 on the stack
-				for (i=0;i<cpu.FPR_COUNT;++i) cpu.fpush(cpu.getFP(i));
+				cpu.opSAVE(Simulator.Decoded.decode(cpu.encT0(Opcode.SAVE.code, 3,3,0,0, 0,cpu.FPR_COUNT - 1,0,0)));
 				break;
 			case iRESTORE:							// restores r0-r28 from the stack
-				for (i=cpu.GPR_COUNT-1;i>=0;--i) cpu.setR(i,cpu.pop());
+				cpu.opRESTORE(Simulator.Decoded.decode(cpu.encT0(Opcode.RESTORE.code, 2,2,0,0, 0,cpu.GPR_COUNT - 4,0,0)));
 				break;
 			case iRESTORE_FP:						// restores f0-f31 from the stack
-				for (i=cpu.FPR_COUNT-1;i>=0;--i) cpu.setFP(i,cpu.fpop());
+				cpu.opRESTORE(Simulator.Decoded.decode(cpu.encT0(Opcode.RESTORE.code, 3,3,0,0, 0,cpu.FPR_COUNT - 1,0,0)));
 				break;
 			case iPrintCPUState:
 				cpu.printCPUState();
@@ -212,24 +223,6 @@ public class StdInterruptHandler extends InterruptHandler
 			case iFREE:								// frees allocation in r0
 				cpu.free((int)cpu.getR(0));
 				break;
-			case iARGC:								// returns the number of command line arguments
-				argc=cpu.getCommandLineCount();
-				cpu.setR(0,argc);
-				break;
-			case iARGS:								// returns address of ARGV[r0] in r0 or null
-				argc=cpu.getCommandLineCount();
-				if (argv_ptr == 0 && argc>0) {
-					argv_ptr = cpu.alloc(argc);
-					for (i=0;i<argc;++i){
-						String arg = cpu.getCommandLineArg(i);
-						cpu.store(argv_ptr+i,cpu.allocString(arg));
-					}
-				}
-				v = cpu.getR(0);
-				v = (argv_ptr>0 && v>=0 && v<argc) ? 
-					cpu.load(argv_ptr+v) : 0;
-				cpu.setR(0,v);
-				break;
 			case iMEMMOVE:
 				{
 					long dest = cpu.getR(0);
@@ -244,6 +237,36 @@ public class StdInterruptHandler extends InterruptHandler
 					long count = cpu.getR(1);
 					cpu.memclear((int)dest, (int)count);
 				}
+				break;
+			case iALLOC_COUNT:						// counts heap allocation blocks
+				cpu.setR(0, cpu.countHeapBlocks(true, false));
+				break;
+			case iFREE_COUNT:						// counts heap free blocks
+				cpu.setR(0, cpu.countHeapBlocks(false, true));
+				break;
+			case iALLOC_SIZE:						// counts heap allocation size
+				cpu.setR(0, cpu.countHeapSize(true, false));
+				break;
+			case iFREE_SIZE:						// counts heap free size
+				cpu.setR(0, cpu.countHeapSize(false, true));
+				break;
+			case iARGC:								// returns the number of command line arguments
+				argc = cpu.getCommandLineCount();
+				cpu.setR(0,argc);
+				break;
+			case iARGS:								// returns address of ARGV[r0] in r0 or null
+				argc = cpu.getCommandLineCount();
+				if (argv_ptr == 0 && argc > 0) {
+					argv_ptr = cpu.alloc(argc);
+					for (i = 0; i <argc; ++i){
+						String arg = cpu.getCommandLineArg(i);
+						cpu.memWrite(argv_ptr + i, cpu.allocString(arg));
+					}
+				}
+				v = cpu.getR(0);
+				v = (argv_ptr > 0 && v >= 0 && v < argc) ?
+						cpu.memRead(argv_ptr + v) : 0;
+				cpu.setR(0, v);
 				break;
 			case iEXIT:								// exits process with return code in r0
 				cpu.exit((int)cpu.getR(0));
@@ -271,31 +294,13 @@ public class StdInterruptHandler extends InterruptHandler
 				cpu.waitAll();
 				break;
 			case iWAIT_PID:
-				{
-					Simulator childCPU = Simulator.getChildCPU((int)cpu.getR(0));
-					if (childCPU != null) {
-	//					CPU.ChildProcess p = childCPU.getProcess();
-	//					if (p != null)
-	//						p.join();
-					}
-				}
+				cpu.waitPID((int)cpu.getR(0));
 				break;
 			case iTHREAD:		// r0: function, r1: data block
 				cpu.setR(0, cpu.thread(cpu.getR(0), cpu.getR(1)));
 				break;
 			case iJOIN_THREAD:
-				{
-//					Simulator childCPU = CPU.getChildCPU((int)cpu.getR(0));
-//					if (childCPU != null) {
-//						CPU.ChildThread t = childCPU.getThread();
-//						if (t != null) {
-//							try {
-//								t.join();
-//							} catch (InterruptedException e) {
-//							}
-//						}
-//					}
-				}
+				cpu.joinThread((int)cpu.getR(0));
 				break;
 			case iSLEEP:
 				try {
@@ -311,7 +316,7 @@ public class StdInterruptHandler extends InterruptHandler
 				break;
 // Math
 			case iPI:								// returns PI in f0
-				cpu.setFP(0,Math.PI);
+				cpu.setFP(0, Math.PI);
 				break;
 			case iE:								// returns e in f0
 				cpu.setFP(0,Math.E);
@@ -395,84 +400,97 @@ public class StdInterruptHandler extends InterruptHandler
 // IO
 			case iPUT_NL:							// Send newline to port r0
 				ph=cpu.getPortHandler((int)cpu.getR(0));
-				if (ph!=null) {
+				if (ph != null) {
 					ph.setPort(cpu.getR(0));
 					ph.writeChar('\n');		
 				}
 				break;
 			case iPUT_INT:							// Print Int in r1 to port r0 as base in r2
-				s=Long.toString(cpu.getR(1),(int)cpu.getR(2));
-				ph=cpu.getPortHandler((int)cpu.getR(0));
-				if (ph!=null)
-				{
+				s = Long.toString(cpu.getR(1), (int)cpu.getR(2));
+				ph = cpu.getPortHandler((int)cpu.getR(0));
+				if (ph != null) {
 					ph.setPort(cpu.getR(0));
-					int len=s.length();
+					int len = s.length();
 					synchronized (ph) {
-						for (int pos=0;pos<len;++pos)
+						for (int pos = 0; pos < len; ++pos)
 							ph.writeChar(s.charAt(pos));
 					}
 				}
 				break;
 			case iPUT_DEC:							// Print Int in r1 to port r0 as decimal
-				s=Long.toString(cpu.getR(1));
-				ph=cpu.getPortHandler((int)cpu.getR(0));
-				if (ph!=null) {
+				s = Long.toString(cpu.getR(1));
+				ph = cpu.getPortHandler((int)cpu.getR(0));
+				if (ph != null) {
 					ph.setPort(cpu.getR(0));
-					int len=s.length();
+					int len = s.length();
 					synchronized (ph) {
-						for (int pos=0;pos<len;++pos)
+						for (int pos = 0; pos < len; ++pos)
 							ph.writeChar(s.charAt(pos));
 					}
 				}
 				break;
 			case iPUT_HEX:							// Print Int in r1 to port r0 as hex using r2 digits
 				s = String.format("%0" + cpu.getR(2) + "X", cpu.getR(1));
-				ph=cpu.getPortHandler((int)cpu.getR(0));
-				if (ph!=null) {
+				ph = cpu.getPortHandler((int)cpu.getR(0));
+				if (ph != null) {
 					ph.setPort(cpu.getR(0));
-					int len=s.length();
+					int len = s.length();
 					synchronized (ph) {
-						for (int pos=0;pos<len;++pos)
+						for (int pos = 0; pos < len; ++pos)
 							ph.writeChar(s.charAt(pos));
 					}
 				}
 				break;
 			case iPUT_FP:							// Print FP in f0 to port r0 using r1 sig digits
 				s = String.format("%." + cpu.getR(1) + "f", cpu.getFP(0));
-				ph=cpu.getPortHandler((int)cpu.getR(0));
-				if (ph!=null) {
+				ph = cpu.getPortHandler((int)cpu.getR(0));
+				if (ph != null) {
 					ph.setPort(cpu.getR(0));
-					int len=s.length();
+					int len = s.length();
 					synchronized (ph) {
-						for (int pos=0;pos<len;++pos)
+						for (int pos = 0; pos < len; ++pos)
 							ph.writeChar(s.charAt(pos));
 					}
 				}
 				break;
 			case iPUTS:								// Print String pointed to by r1 to port r0
-				ph=cpu.getPortHandler((int)cpu.getR(0));
-				if (ph!=null)
-				{
+				ph = cpu.getPortHandler((int)cpu.getR(0));
+				if (ph != null) {
 					ph.setPort(cpu.getR(0));
 					int pos = (int)cpu.getR(1);
-					char c;
 					synchronized (ph) {
-						while ((c=(char)cpu.load(pos))!=0){
-							ph.writeChar(c);
-							++pos;
-						}
+						s = cpu.convertString(pos);
+						s.codePoints().forEach(cp -> {
+							ph.writeChar(cp);
+						});
+					}
+				}
+				break;
+			case iPUT_LINE:
+				ph = cpu.getPortHandler((int)cpu.getR(0));
+				if (ph != null) {
+					ph.setPort(cpu.getR(0));
+					int pos = (int)cpu.getR(1);
+					synchronized (ph) {
+						s = cpu.convertString(pos);
+						s.codePoints().forEach(cp -> {
+							ph.writeChar(cp);
+						});
+						ph.writeChar('\n');
 					}
 				}
 				break;
 			case iGET_INT:							// Get characters from port r0 and convert to an integer using base in r1
 				i = (int)cpu.getR(1);				// get base
-				cpu.setR(1,cpu.alloc(65));
+				cpu.setR(1, cpu.alloc(65));
 				dispatch(iGETS);
 				try {
 					s = cpu.convertString(cpu.getR(1));
 					v = Integer.parseInt(s, i);
 				}
-				catch (Exception e) {throw cpu.new CPUException("Can't convert \""+s+"\" to an integer base " + i + "!");}
+				catch (Exception e) {
+					throw cpu.new CPUException("Can't convert \"" + s + "\" to an integer base " + i + "!");
+				}
 				cpu.free((int)cpu.getR(1));
 				cpu.setR(0,v);
 				break;
@@ -496,26 +514,60 @@ public class StdInterruptHandler extends InterruptHandler
 				break;
 			case iGETS:								// Get characters from port r0 and put into an alloc buffer at r1
 													// r1 will change if buffer is reallocated
-				ph=cpu.getPortHandler((int)cpu.getR(0));
-				if (ph!=null) {
+				ph = cpu.getPortHandler((int)cpu.getR(0));
+				if (ph != null) {
 					ph.setPort(cpu.getR(0));
 					long pos = 0;
-					long bufSize = cpu.load(cpu.getR(1)-1)-1;
-					int c;
-					while ((c=ph.read())!=-1 && c!='\n' && c!='\r') {
-						cpu.store(cpu.getR(1)+(pos++),c);
-						if (pos>bufSize) {
-							cpu.setR(1,cpu.realloc((int)cpu.getR(1),(int)(bufSize+32+1)));
-							bufSize = cpu.load(cpu.getR(1)-1)-1;
+					Vector<Integer> codepoints = new Vector<>();
+					int cp;
+					synchronized (ph) {
+						while ((cp = ph.readChar()) != -1) {
+							if (Character.isWhitespace(cp)) {
+								if (codepoints.isEmpty()) continue;
+								else break;
+							}
+							codepoints.add(cp);
 						}
 					}
-		            if (c == '\r') c=ph.read();  // should be a '\n'
-					cpu.store(cpu.getR(1)+pos,0);	// null byte
-//Utils.debug("iGETS: \""+cpu.convertString(cpu.getR(1))+"\"");
+					// Convert to primitive int[] (needed by String constructor)
+					int[] cps = codepoints.stream().mapToInt(Integer::intValue).toArray();
+					// Construct a String from the code points
+					s = new String(cps, 0, cps.length);
+					long newAlloc = cpu.allocString(s, cpu.getR(1));
+					cpu.setR(1, newAlloc);
+					if (cp == -1 && s.isEmpty())
+						cpu.setR(0, -1);
+					else
+						cpu.setR(0, s.length());
+				}
+				break;
+			case iGET_LINE:
+				ph = cpu.getPortHandler((int)cpu.getR(0));
+				if (ph != null) {
+					ph.setPort(cpu.getR(0));
+					long pos = 0;
+					Vector<Integer> codepoints = new Vector<>();
+					int cp;
+					synchronized (ph) {
+						while ((cp = ph.readChar()) != -1 && cp != '\n') {
+							if (cp == '\r') continue;
+							codepoints.add(cp);
+						}
+					}
+					// Convert to primitive int[] (needed by String constructor)
+					int[] cps = codepoints.stream().mapToInt(Integer::intValue).toArray();
+					// Construct a String from the code points
+					s = new String(cps, 0, cps.length);
+					long newAlloc = cpu.allocString(s, cpu.getR(1));
+					cpu.setR(1, newAlloc);
+					if (cp == -1 && s.isEmpty())
+						cpu.setR(0, -1);
+					else
+						cpu.setR(0, s.length());
 				}
 				break;
 			case iPRINTF:
-				v = cpu.load(cpu.getR(Simulator.R_SP) + 3);		// get port
+				v = cpu.memRead(cpu.getR(Simulator.R_SP) + 3);		// get port
 				ph=cpu.getPortHandler((int)v);
 				if (ph!=null) {
 					ph.setPort(v);
@@ -528,9 +580,9 @@ public class StdInterruptHandler extends InterruptHandler
 				}
 				break;
 			case iCOND_PRINTF:
-				b = cpu.load(cpu.getR(Simulator.R_SP) + 3) != 0;		// get condition
+				b = cpu.memRead(cpu.getR(Simulator.R_SP) + 3) != 0;		// get condition
 				if (b) {
-					v = cpu.load(cpu.getR(Simulator.R_SP) + 4);		// get port
+					v = cpu.memRead(cpu.getR(Simulator.R_SP) + 4);		// get port
 					ph=cpu.getPortHandler((int)v);
 					if (ph!=null) {
 						ph.setPort(v);
@@ -544,69 +596,104 @@ public class StdInterruptHandler extends InterruptHandler
 				}
 				break;
 			case iOPEN_FILE_READ:					// Open file on port r0 using filespec pointed to by r1 for reading
-				i=(int)cpu.getR(0);
+				i = (int)cpu.getR(0);
 //System.out.println("Opening port "+i+" for reading!");
-				ph=cpu.getPortHandler(i);
-				if (ph==null) {
-					cpu.setPortHandler(i,new FilePortHandler(cpu, cpu.convertString(cpu.getR(1)),0));
-				}
-				else
-					throw cpu.new CPUException("Port "+i+" already mapped!");
+				ph = cpu.getPortHandler(i);
+				if (ph == null) {
+					try {
+						cpu.setPortHandler(i, new FilePortHandler(cpu, cpu.convertString(cpu.getR(1)), 0));
+						cpu.setR(0, -1);
+					} catch (Simulator.CPUException ex) {
+						cpu.setR(0, 0);
+						break;
+					}
+				} else
+					throw cpu.new CPUException("Port " + i + " already mapped!");
 				break;
 			case iOPEN_FILE_WRITE:					// Open file on port r0 using filespec pointed to by r1 for write
-				i=(int)cpu.getR(0);
+				i = (int)cpu.getR(0);
 //System.out.println("Opening port "+i+" for writing!");
-				ph=cpu.getPortHandler(i);
-				if (ph==null) {
-					cpu.setPortHandler(i,new FilePortHandler(cpu, cpu.convertString(cpu.getR(1)),1));
+				ph = cpu.getPortHandler(i);
+				if (ph == null) {
+					try {
+						cpu.setPortHandler(i, new FilePortHandler(cpu, cpu.convertString(cpu.getR(1)), 1));
+						cpu.setR(0, -1);
+					} catch (Simulator.CPUException ex) {
+						cpu.setR(0, 0);
+						break;
+					}
 				} else
-					throw cpu.new CPUException("Port "+i+" already mapped!");
+					throw cpu.new CPUException("Port " + i + " already mapped!");
 				break;
 			case iOPEN_FILE_APPEND:					// Open file on port r0 using filespec pointed to by r1 for append
-				i=(int)cpu.getR(0);
+				i = (int)cpu.getR(0);
 //System.out.println("Opening port "+i+" for appending!");
-				ph=cpu.getPortHandler(i);
-				if (ph==null) {
-					cpu.setPortHandler(i,new FilePortHandler(cpu, cpu.convertString(cpu.getR(1)),2));
+				ph = cpu.getPortHandler(i);
+				if (ph == null) {
+					try {
+						cpu.setPortHandler(i, new FilePortHandler(cpu, cpu.convertString(cpu.getR(1)), 2));
+						cpu.setR(0, -1);
+					} catch (Simulator.CPUException ex) {
+						cpu.setR(0, 0);
+						break;
+					}
 				} else
-					throw cpu.new CPUException("Port "+i+" already mapped!");
+					throw cpu.new CPUException("Port " + i + " already mapped!");
 				break;
 			case iOPEN_RAW_FILE_READ:					// Open file on port r0 using filespec pointed to by r1 for reading
-				i=(int)cpu.getR(0);
+				i = (int)cpu.getR(0);
 //System.out.println("Opening port "+i+" for reading!");
-				ph=cpu.getPortHandler(i);
-				if (ph==null) {
-					cpu.setPortHandler(i,new RawFilePortHandler(cpu, cpu.convertString(cpu.getR(1)),0));
+				ph = cpu.getPortHandler(i);
+				if (ph == null) {
+					try {
+						cpu.setPortHandler(i, new RawFilePortHandler(cpu, cpu.convertString(cpu.getR(1)),0));
+						cpu.setR(0, -1);
+					} catch (Simulator.CPUException ex) {
+						cpu.setR(0, 0);
+						break;
+					}
 				} else
-					throw cpu.new CPUException("Port "+i+" already mapped!");
+					throw cpu.new CPUException("Port " + i + " already mapped!");
 				break;
 			case iOPEN_RAW_FILE_WRITE:					// Open file on port r0 using filespec pointed to by r1 for write
-				i=(int)cpu.getR(0);
+				i = (int)cpu.getR(0);
 //System.out.println("Opening port "+i+" for writing!");
-				ph=cpu.getPortHandler(i);
-				if (ph==null) {
-					cpu.setPortHandler(i,new RawFilePortHandler(cpu, cpu.convertString(cpu.getR(1)),1));
+				ph = cpu.getPortHandler(i);
+				if (ph == null) {
+					try {
+						cpu.setPortHandler(i,new RawFilePortHandler(cpu, cpu.convertString(cpu.getR(1)),1));
+						cpu.setR(0, -1);
+					} catch (Simulator.CPUException ex) {
+						cpu.setR(0, 0);
+						break;
+					}
 				} else
-					throw cpu.new CPUException("Port "+i+" already mapped!");
+					throw cpu.new CPUException("Port " + i + " already mapped!");
 				break;
 			case iOPEN_RAW_FILE_APPEND:					// Open file on port r0 using filespec pointed to by r1 for append
-				i=(int)cpu.getR(0);
+				i = (int)cpu.getR(0);
 //System.out.println("Opening port "+i+" for appending!");
-				ph=cpu.getPortHandler(i);
-				if (ph==null) {
-					cpu.setPortHandler(i,new RawFilePortHandler(cpu, cpu.convertString(cpu.getR(1)),2));
+				ph = cpu.getPortHandler(i);
+				if (ph == null) {
+					try {
+						cpu.setPortHandler(i,new RawFilePortHandler(cpu, cpu.convertString(cpu.getR(1)),2));
+						cpu.setR(0, -1);
+					} catch (Simulator.CPUException ex) {
+						cpu.setR(0, 0);
+						break;
+					}
 				} else
-					throw cpu.new CPUException("Port "+i+" already mapped!");
+					throw cpu.new CPUException("Port " + i + " already mapped!");
 				break;
 			case iCLOSE_FILE:						// Close file on port r0
-				ph=cpu.getPortHandler((int)cpu.getR(0));
+				ph = cpu.getPortHandler((int)cpu.getR(0));
 //System.out.println("Closing port "+cpu.getR(0)+"!");
-				if (ph!=null) {
+				if (ph != null) {
 					ph.setPort((int)cpu.getR(0));
 					ph.close();
-					cpu.setPortHandler((int)cpu.getR(0),null);
+					cpu.setPortHandler((int)cpu.getR(0), null);
 				} else
-					throw cpu.new CPUException("Port "+cpu.getR(0)+" not mapped!");
+					throw cpu.new CPUException("Port " + cpu.getR(0) + " not mapped!");
 				break;
 			case iFLUSH:							// Flush file on port r0
 				ph=cpu.getPortHandler((int)cpu.getR(0));
@@ -663,15 +750,16 @@ public class StdInterruptHandler extends InterruptHandler
 					String[] filelist = filespec.list();
 					long resultArray = cpu.alloc(filelist.length + 1);
 					for (i = 0; i < filelist.length; ++i) {
-						cpu.store(resultArray + i, cpu.allocString(s + filelist[i]));
+						cpu.memWrite(resultArray + i, cpu.allocString(s + filelist[i]));
 					}
-					cpu.store(resultArray + filelist.length, 0);
+					cpu.memWrite(resultArray + filelist.length, 0);
 					cpu.setR(0, resultArray);
 				}
 				break;
 			case  iTEMP_DIR:
 				try {
-					filespec = Files.createTempDirectory("").toFile();
+					s = cpu.convertString(cpu.getR(0));
+					filespec = Files.createTempDirectory(s).toFile();
 					cpu.setR(0, cpu.allocString(filespec.getAbsolutePath()));
 				} catch (IOException ex) {
 					cpu.setR(0, 0);
@@ -717,7 +805,9 @@ public class StdInterruptHandler extends InterruptHandler
 				break;
 			case iSPRINTF:
 				s = sprintf(3);
-				cpu.setR(0,cpu.allocString(s));
+				cpu.setR(0, cpu.allocString(s));
+				break;
+			case iFORMAT:
 				break;
 			case iTO_LOWER:
 				v = cpu.getR(0);
@@ -738,6 +828,13 @@ public class StdInterruptHandler extends InterruptHandler
 				s = cpu.convertString(cpu.getR(0));
 				s = s.toUpperCase();
 				cpu.setR(0,cpu.allocString(s));
+				break;
+			case iSTRCMP:
+				{
+					String s1 = cpu.convertString((int) cpu.getR(0));
+					String s2 = cpu.convertString((int) cpu.getR(1));
+					cpu.setR(0, s1.compareTo(s2));
+				}
 				break;
 			case iSUBSTRING:    // r0 string, r1 start, r2 length
 				{
@@ -834,9 +931,9 @@ public class StdInterruptHandler extends InterruptHandler
 					}
 					long resultArray = cpu.alloc(splits.length + 1);
 					for (i = 0; i < splits.length; ++i) {
-						cpu.store(resultArray + i, cpu.allocString(splits[i]));
+						cpu.memWrite(resultArray + i, cpu.allocString(splits[i]));
 					}
-					cpu.store(resultArray + splits.length, 0L);
+					cpu.memWrite(resultArray + splits.length, 0L);
 					cpu.setR(0,resultArray);
 				}
 				break;
@@ -845,7 +942,7 @@ public class StdInterruptHandler extends InterruptHandler
 					String delim = cpu.convertString(cpu.getR(1));
 					int a = (int)cpu.getR(0);
 					boolean first = true;
-					v = cpu.load(a);
+					v = cpu.memRead(a);
 					s = "";
 					while (v != 0) {
 						if (!first)
@@ -853,9 +950,17 @@ public class StdInterruptHandler extends InterruptHandler
 						else
 							first = false;
 						s += cpu.convertString(v);
-						v = cpu.load(++a);
+						v = cpu.memRead(++a);
 					}
 					cpu.setR(0, cpu.allocString(s));
+				}
+				break;
+			case iSTRCAT:
+				{
+					String s1 = cpu.convertString(cpu.getR(0));
+					String s2 = cpu.convertString(cpu.getR(1));
+					s = s1 + s2;
+					cpu.setR(0, cpu.allocString(s, cpu.getR(2)));
 				}
 				break;
 			default:
@@ -867,7 +972,7 @@ public class StdInterruptHandler extends InterruptHandler
 	
 	public String sprintf(int msgOffset) throws Simulator.CPUException {
 		String s;
-		String fmt = cpu.convertString(cpu.load(cpu.getR(Simulator.R_SP) + msgOffset));
+		String fmt = cpu.convertString(cpu.memRead(cpu.getR(Simulator.R_SP) + msgOffset));
 		Vector<Object> args = new Vector<>();
 		Pattern rx = Pattern.compile("%[-+0 ]?\\d*.?\\d*([cdxefgs])", Pattern.CASE_INSENSITIVE);
 		Matcher m = rx.matcher(fmt);
@@ -875,18 +980,18 @@ public class StdInterruptHandler extends InterruptHandler
 		while (m.find()) {
 			switch (m.group(1).toLowerCase()) {
 			case "c":
-				args.add((int)cpu.load(cpu.getR(Simulator.R_SP) + numArgs + msgOffset + 1));
+				args.add((int)cpu.memRead(cpu.getR(Simulator.R_SP) + numArgs + msgOffset + 1));
 				break;
 			case "s":
-				args.add(cpu.convertString(cpu.load(cpu.getR(Simulator.R_SP) + numArgs + msgOffset + 1)));
+				args.add(cpu.convertString(cpu.memRead(cpu.getR(Simulator.R_SP) + numArgs + msgOffset + 1)));
 				break;
 			case "e":
 			case "f":
 			case "g":
-				args.add(Double.longBitsToDouble(cpu.load(cpu.getR(Simulator.R_SP) + numArgs + msgOffset + 1)));
+				args.add(Double.longBitsToDouble(cpu.memRead(cpu.getR(Simulator.R_SP) + numArgs + msgOffset + 1)));
 				break;
 			default:
-				args.add(cpu.load(cpu.getR(Simulator.R_SP) + numArgs + msgOffset + 1));
+				args.add(cpu.memRead(cpu.getR(Simulator.R_SP) + numArgs + msgOffset + 1));
 				break;
 			}
 			++numArgs;

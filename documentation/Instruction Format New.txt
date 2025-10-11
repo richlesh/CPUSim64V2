@@ -231,6 +231,7 @@ Assembler Instructions
 DCI		Declare Constant 64-Bit Integer
 DCF		Declare Constant 64-Bit Float
 DCB		Declare Array of Bytes (byte count + packed words)
+DCC		Declare Array of Chars (byte count + packed words)
 DCW		Declare Array of Words (word count + int, fp, char)
 DCS		Declare Constant String UTF-8 (Allocates one word per character with leading count plus trailing null)
 DCA		1 Arg. - Declare an array of the specified size (with leading count) initialized to zero.

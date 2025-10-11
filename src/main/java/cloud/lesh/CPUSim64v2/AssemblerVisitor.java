@@ -18,6 +18,7 @@ public class AssemblerVisitor extends CPUSim64v2BaseVisitor<Void> implements Has
 	int lineNum = 1;
 	boolean pauseLineIncrement = false;
 	private final LinkedList errors = new LinkedList<String>();
+	private long blockCount = 0;
 
 	public String getLocation() {
 		return (filename == null ? "" : filename + ":") + lineNum;
@@ -200,7 +201,7 @@ public class AssemblerVisitor extends CPUSim64v2BaseVisitor<Void> implements Has
 				text = text.substring(1);
 			if (text.charAt(0) == '$')
 				text = getScopeName() + text;
-			var v = labelMap.get(text);
+			var v = labelMap.get(text.toUpperCase());
 			if (v != null)
 				return Long.valueOf(v);
 		}
@@ -214,20 +215,28 @@ public class AssemblerVisitor extends CPUSim64v2BaseVisitor<Void> implements Has
 			case "u":
 				return 0;
 			case "z":
+			case "eq":
 				return 1;
 			case "nz":
+			case "ne":
 				return 2;
 			case "n":
+			case "lt":
 				return 3;
 			case "p":
+			case "gt":
 				return 4;
 			case "nn":
+			case "ge":
 				return 5;
 			case "np":
+			case "le":
 				return 6;
 			case "o":
+			case "inf":
 				return 7;
 			case "no":
+			case "ninf":
 				return 8;
 			case "pe":
 				return 9;
@@ -801,7 +810,7 @@ public class AssemblerVisitor extends CPUSim64v2BaseVisitor<Void> implements Has
 			v0 = parseIntLike(ctx.cLiteral().getText());
 			if (fitsIn(v0, C0_BITS, false)) {
 				aType = OT_CONST;
-				v0 =v0;
+				v0 = v0;
 				out.add(encType0(Opcode.INTERRUPT.code, aType, OT_NONE, OT_NONE, OT_NONE, (int) v0, 0, 0, 0));
 			} else {
 				out.add(encType1C1(Opcode.INTERRUPT.code, v0));
@@ -1446,6 +1455,18 @@ public class AssemblerVisitor extends CPUSim64v2BaseVisitor<Void> implements Has
 			} else {
 				throw new IllegalStateException("Invalid DCF literal");
 			}
+		} else if (ctx.DCA() != null) {
+			long b = 0;
+			if (ctx.INTLIT() != null) {
+				b = parseIntLike(ctx.INTLIT().getText());
+			} else if (ctx.HEXLIT() != null) {
+				b = parseIntLike(ctx.HEXLIT().getText());
+			}
+			if (b != 0) {
+				out.add(b);
+				for (int i = 0; i < b; ++i)
+					out.add(0L);
+			}
 		} else if (ctx.DCB() != null) {
 			if (ctx.byteList() != null) {
 				out.add((long) ctx.byteList().bLiteral().size());
@@ -1607,7 +1628,18 @@ public class AssemblerVisitor extends CPUSim64v2BaseVisitor<Void> implements Has
 
 	@Override
 	public Void visitBLOCK_BEGIN_Directive(CPUSim64v2Parser.BLOCK_BEGIN_DirectiveContext ctx) {
-		String blockname = ctx.IDENT().getText();
+		String blockname = null;
+		if (ctx.IDENT() != null) {
+			blockname = ctx.IDENT().getText();
+			if (blockname.contains("$"))
+				blockname = null;
+		} else if (ctx.BLOCK_IDENT() != null) {
+			blockname = ctx.BLOCK_IDENT().getText();
+		}
+		if (blockname == null)
+			throw new AssemblerException(".block directive must have an argument@");
+		if (blockname.contains("{}") || blockname.contains("%d"))
+			blockname = String.format(blockname.replace("{}", "%d"), ++blockCount);
 		blockNames.push(blockname);
 		return null;
 	}

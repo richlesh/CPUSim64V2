@@ -26,12 +26,34 @@ public class StdIOPortHandler extends PortHandler
 	@Override
 	public int readChar() throws Simulator.CPUException {
 		if (port()!=0) throw cpu.new CPUException("Can't read from STDOUT or STDERR!");
+		int codePoint = -1;
 		try {
-			return reader.read();
+			int ch1;
+			if ((ch1 = reader.read()) != -1) { // read one UTF-16 code unit
+				char c1 = (char) ch1;
+				if (Character.isHighSurrogate(c1)) {
+					int ch2 = reader.read();
+					if (ch2 != -1) {
+						char c2 = (char) ch2;
+						if (Character.isLowSurrogate(c2)) {
+							codePoint = Character.toCodePoint(c1, c2);
+						} else {
+							// malformed sequence
+							codePoint = c1;
+							reader.reset(); // optional: push back
+						}
+					} else {
+						codePoint = c1; // last char was high surrogate with no pair
+					}
+				} else {
+					codePoint = c1;
+				}
+			}
 		}
 		catch (Exception e) {
-			throw cpu.new CPUException("Read error on port " + port() + "!");
+			throw cpu.new CPUException("Read error on STDIN!");
 		}
+		return codePoint;
 	}
 
 	@Override
@@ -52,7 +74,11 @@ public class StdIOPortHandler extends PortHandler
 	public void writeChar(int x) throws Simulator.CPUException {
 		if (port() == 0) throw cpu.new CPUException("Can't write to STDIN!");
 		try {
-			if (port() != lastPort) {lastPort=port();System.out.flush();System.err.flush();}
+			if (port() != lastPort) {
+				lastPort = port();
+				System.out.flush();
+				System.err.flush();
+			}
 	//System.err.printf("{%d}",(int)x);
 			if (port() == 2) {
 				if (x > 0xffff) {
@@ -65,7 +91,8 @@ public class StdIOPortHandler extends PortHandler
 					StringBuilder sb = new StringBuilder();
 					sb.appendCodePoint(x);
 					System.out.print(sb.toString());
-				}else System.out.print((char)x);
+				} else
+					System.out.print((char)x);
 			}
 		}
 		catch (Exception e) {

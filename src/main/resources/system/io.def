@@ -4,15 +4,17 @@
 #define	iPUT_HEX			203
 #define	iPUT_FP				204
 #define	iPUTS				205
+#define iPUT_LINE			206
 
-#define	iGET_INT			206
-#define	iGET_DEC			207
-#define	iGET_HEX			208
-#define	iGET_FP				209
-#define	iGETS				210
+#define	iGET_INT			207
+#define	iGET_DEC			208
+#define	iGET_HEX			209
+#define	iGET_FP				210
+#define	iGETS				211
+#define iGET_LINE			212
 
-#define	iPRINTF				211
-#define	iCOND_PRINTF		212
+#define	iPRINTF				213
+#define	iCOND_PRINTF		214
 
 #define	iOPEN_FILE_READ			220
 #define	iOPEN_FILE_WRITE		221

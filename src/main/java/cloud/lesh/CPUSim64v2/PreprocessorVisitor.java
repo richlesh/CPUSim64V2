@@ -11,6 +11,8 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang3.tuple.Pair;
+
 /**
  * Walks a preprocesor.g4 parse tree and produces preprocessed assembly text.
  * - Supports: #include, #define, #if/#elseif/#else/#endif
@@ -20,11 +22,22 @@ import java.util.regex.Pattern;
  * You provide an IncludeLoader that maps include targets to file contents.
  */
 public class PreprocessorVisitor extends PreprocessorParserBaseVisitor<Void> {
+	public class PreprocessorException extends RuntimeException {
+		PreprocessorException(String msg) {
+			super(getLocation() + " -> " + msg);
+		}
+		PreprocessorException(String msg, Object... args) {
+			super(String.format(getLocation() + " -> " + msg, args));
+		}
+		PreprocessorException(Exception ex) {
+			super(getLocation() + " -> " + ex.getMessage());
+		}
+	}
 
 	String filename = null;
 	int lineNum = 1;
 	int sourceLineNum = 1;
-	boolean pauseLineSync = false;
+	int pauseLineSync = 0;
 	Stack<String> lineDirectives = new Stack<>();
 
 	String getLocation() {
@@ -34,7 +47,7 @@ public class PreprocessorVisitor extends PreprocessorParserBaseVisitor<Void> {
 	/** Provide include contents for a path like <system/io.asm> or "path". */
 	public interface IncludeLoader {
 		/** Return the full text of the included file, or throw if not found. */
-		String load(String includePath, boolean isSystemPath, PreprocessorVisitor visitor);
+		String load(String includePath, boolean isSystemPath);
 	}
 
 	/** Holds a #define value and kind so we can coerce in conditions. */
@@ -56,15 +69,17 @@ public class PreprocessorVisitor extends PreprocessorParserBaseVisitor<Void> {
 
 	/** Word boundary pattern for safe token replacement */
 	private static final Pattern TOKEN = Pattern.compile("[A-Za-z_.$][A-Za-z0-9_.$]*");
+	private static final Pattern PLACEHOLDER = Pattern.compile("\\$\\{([A-Za-z_.$][A-Za-z0-9_.$]*)\\}");
 
 	public PreprocessorVisitor(String filename, IncludeLoader loader) {
-		this(filename, loader, /*substituteInsideDirectives*/ false);
+		this(filename, loader, /*substituteInsideDirectives*/ false, 0);
 	}
 
-	public PreprocessorVisitor(String filename, IncludeLoader loader, boolean substituteInsideDirectives) {
+	public PreprocessorVisitor(String filename, IncludeLoader loader, boolean substituteInsideDirectives, int pauseLineSync) {
 		this.filename = filename;
 		this.includeLoader = Objects.requireNonNull(loader, "IncludeLoader is required");
 		this.substituteInsideDirectives = substituteInsideDirectives;
+		this.pauseLineSync = pauseLineSync;
 		pushScope();
 	}
 
@@ -75,20 +90,20 @@ public class PreprocessorVisitor extends PreprocessorParserBaseVisitor<Void> {
 
 	public void addDefine(String name, DefVal value) {
 		if (name == null || name.isEmpty() || value == null) {
-			throw new IllegalArgumentException(getLocation() + ": Define name and value must be non-null");
+			throw new PreprocessorException("Define name and value must be non-null");
 		}
 		if (defines.containsKey(name)) {
-			System.err.println("Define name already exists: " + name);
+			System.err.println(getLocation() + "-> Define name already exists: " + name);
 		}
 		defines.put(name, value);
 	}
 
 	public void addVar(String name, String value) {
 		if (name == null || name.isEmpty() || value == null) {
-			throw new IllegalArgumentException(getLocation() + ": Variable name and value must be non-null");
+			throw new PreprocessorException("Variable name and value must be non-null");
 		}
 		if (lookupVar(name) != null) {
-			throw new IllegalArgumentException(getLocation() + ": Variable name already exists: " + name);
+			throw new PreprocessorException("Variable name already exists: " + name);
 		}
 		scopes.lastElement().put(name, value);
 	}
@@ -138,7 +153,7 @@ public class PreprocessorVisitor extends PreprocessorParserBaseVisitor<Void> {
 	public Void visitDirective(PreprocessorParser.DirectiveContext ctx) {
 		sourceLineNum = lineOf(ctx);
 //		System.out.println("Visiting directive at source line " + sourceLineNum + ": " + ctx.getText().replace("\n", "\\n"));
-		if (!pauseLineSync && sourceLineNum != lineNum) {
+		if (pauseLineSync <= 0 && sourceLineNum != lineNum) {
 			emitLineDirective(filename, sourceLineNum);
 		}
 		return visitChildren(ctx);
@@ -148,7 +163,7 @@ public class PreprocessorVisitor extends PreprocessorParserBaseVisitor<Void> {
 	public Void visitCodeLine(PreprocessorParser.CodeLineContext ctx) {
 		sourceLineNum = lineOf(ctx);
 //		System.out.println("Visiting code line at source line " + sourceLineNum + ": " + ctx.getText().replace("\n", "\\n"));
-		if (!pauseLineSync && sourceLineNum != lineNum) {
+		if (pauseLineSync <= 0 && sourceLineNum != lineNum) {
 			emitLineDirective(filename, sourceLineNum);
 		}
 		if (ctx.IDENT() != null) {
@@ -163,6 +178,7 @@ public class PreprocessorVisitor extends PreprocessorParserBaseVisitor<Void> {
        Directives
        ========================================================= */
 
+	Set<String> previouslyIncluded = new HashSet<String>();
 	@Override
 	public Void visitIncludeDir(PreprocessorParser.IncludeDirContext ctx) {
 		final boolean isSystem = ctx.ANGLE_PATH() != null;
@@ -174,17 +190,24 @@ public class PreprocessorVisitor extends PreprocessorParserBaseVisitor<Void> {
 			raw = stripQuotes(ctx.STRING().getText());   // like "local/file.asm"
 		} else {
 			// Fallback: try to recover or fail with a helpful message
-			throw new IllegalArgumentException(getLocation() + ": " +
+			throw new PreprocessorException(
 					"Invalid #include; expected <path> or \"path\" at line " +
 							ctx.getStart().getLine() + ": " + ctx.getText()
 			);
 		}
 
 		final String path = normalizeIncludeTarget(raw); // strip <> when needed
-		final String included = includeLoader.load(path, isSystem, this);
-		Path filename = Path.of(path).getFileName();
-		final String preprocessed = preprocessText(filename.toString(), included, includeLoader, defines, substituteInsideDirectives);
-		out.append(preprocessed);
+		if (!previouslyIncluded.contains(path)) {
+			try {
+				previouslyIncluded.add(path);
+				final String included = includeLoader.load(path, isSystem);
+				Path filename = Path.of(path).getFileName();
+				final String preprocessed = preprocessText(filename.toString(), included, includeLoader, defines, macros, substituteInsideDirectives, 0);
+				out.append(preprocessed);
+			} catch (IllegalArgumentException ex) {
+				throw new PreprocessorException(ex);
+			}
+		}
 		return null;
 	}
 
@@ -221,10 +244,10 @@ public class PreprocessorVisitor extends PreprocessorParserBaseVisitor<Void> {
 	@Override
 	public Void visitCallDir(PreprocessorParser.CallDirContext ctx) {
 		if (ctx.argList() != null) {
-			emitLine(String.format(".LINE_BEGIN \u00ab%s\u00bb, %d", filename, lineNum), false);
-			pauseLineSync = true;
-		}
-		if (ctx.argList() != null) {
+			lineDirectives.clear();
+			if (pauseLineSync <= 0)
+				emitLine(String.format(".LINE_BEGIN \u00ab%s\u00bb, %d", filename, lineNum), false);
+			++pauseLineSync;
 			for (var param : ctx.argList().callArg().reversed()) {
 				emitLine("push " + param.getText(), true);
 			}
@@ -232,8 +255,9 @@ public class PreprocessorVisitor extends PreprocessorParserBaseVisitor<Void> {
 		emitLine("call " + ctx.IDENT().getText(), true);
 		if (ctx.argList() != null) {
 			emitLine("add sp, " + ctx.argList().callArg().size(), true);
-			emitLine(".LINE_END", false);
-			pauseLineSync = false;
+			--pauseLineSync;
+			if (pauseLineSync <= 0)
+				emitLine(".LINE_END", false);
 		}
 		return null;
 	}
@@ -344,15 +368,19 @@ public class PreprocessorVisitor extends PreprocessorParserBaseVisitor<Void> {
 				}
 				emitLine(".BLOCK " + funcName, false);
 			} else if (child == ctx.PP_END_FUNC()) {
+				lineDirectives.clear();
 				emitLine(String.format(".LINE_BEGIN \u00ab%s\u00bb, %d", filename, lineNum), false);
-				pauseLineSync = true;
-				emitLine("restore f" + (31 - fvarSet.size() + 1) + ", f31", false);
-				emitLine("restore r" + (28 - varSet.size() + 1) + ", r28", false);
-				emitLine("add sp, " + (svarSet.size()), false);
+				++pauseLineSync;
+				if (fvarSet.size() > 0)
+					emitLine("restore f" + (31 - fvarSet.size() + 1) + ", f31", false);
+				if (varSet.size() > 0)
+					emitLine("restore r" + (28 - varSet.size() + 1) + ", r28", false);
+				if (svarSet.size() > 0)
+					emitLine("add sp, " + (svarSet.size()), false);
 				emitLine("return", false);
 				emitLine(".BLOCK_END " + ctx.IDENT().getText().toUpperCase(), false);
 				emitLine(".LINE_END", false);
-				pauseLineSync = false;
+				--pauseLineSync;
 				popScope();
 			} else {
 				child.accept(this);
@@ -361,7 +389,59 @@ public class PreprocessorVisitor extends PreprocessorParserBaseVisitor<Void> {
 		return null;
 	}
 
-	/* ----- #if / #elseif / #else / #endif ----- */
+	private String macroDefName;
+	private String macroDefText;
+	Map<String, Pair<List<String>, String>> macros = new HashMap<>();
+
+	@Override
+	public Void visitDefMacroDir(PreprocessorParser.DefMacroDirContext ctx) {
+		// Name + params
+		macroDefName = ctx.IDENT().getText().toUpperCase();
+		List<String> params = new ArrayList<>();
+		if (ctx.paramList() != null) {
+			for (var id : ctx.paramList().IDENT()) {
+				params.add(id.getText().toUpperCase());
+			}
+		}
+
+		// Accumulate directives and codelines
+		StringBuilder body = new StringBuilder();
+		for (PreprocessorParser.CodeLineOrDirectiveContext lineCtx : ctx.codeLineOrDirective()) {
+			body.append(reflowTokens(lineCtx)); // see note below about whitespace
+		}
+
+		macros.put(macroDefName, Pair.of(params, body.toString()));
+		return null;
+	}
+
+	@Override
+	public Void visitMacroDir(PreprocessorParser.MacroDirContext ctx) {
+		var def = macros.get(ctx.IDENT().getText().toUpperCase());
+		if (def != null) {
+			Map<String, String> formalParams = new HashMap<String, String>();
+			for (int i = 0; i < def.getLeft().size(); ++i) {
+				formalParams.put(def.getLeft().get(i).toUpperCase(), ctx.argList().callArg(i).getText());
+			}
+			String replacement = applyPlaceholders(def.getRight(), formalParams);
+			lineDirectives.clear();
+			if (pauseLineSync <= 0)
+				emitLine(String.format(".LINE_BEGIN \u00ab%s\u00bb, %d", filename, lineNum), false);
+			for (var s : replacement.split("\n")) {
+				if (s.matches("^\\s*#.*")) {
+					++pauseLineSync;
+					if (pauseLineSync > 10)
+						throw new PreprocessorException("Macro nesting exceeded 10 levels!");
+					s = preprocessText(filename, s, includeLoader, defines, macros, true, pauseLineSync);
+					--pauseLineSync;
+				}
+				emitLine(s, true);
+			}
+			if (pauseLineSync <= 0)
+				emitLine(String.format(".LINE_END"), false);
+		}
+		return null;
+	}
+		/* ----- #if / #elseif / #else / #endif ----- */
 
 	@Override
 	public Void visitIfBlock(PreprocessorParser.IfBlockContext ctx) {
@@ -454,7 +534,7 @@ public class PreprocessorVisitor extends PreprocessorParserBaseVisitor<Void> {
 				case ">=": return cmp >= 0;
 			}
 		}
-		throw new IllegalArgumentException(getLocation() + ": Unsupported compare op: " + op);
+		throw new PreprocessorException("Unsupported compare op: " + op);
 	}
 
 	private boolean isNumericLike(PreprocessorParser.PrimaryContext p) {
@@ -523,7 +603,8 @@ public class PreprocessorVisitor extends PreprocessorParserBaseVisitor<Void> {
 		} else {
 			out.append(s);
 		}
-		out.append('\n');
+		if (s.length() == 0 || s.charAt(s.length() - 1) != '\n')
+			out.append('\n');
 		++lineNum;
 	}
 
@@ -556,6 +637,23 @@ public class PreprocessorVisitor extends PreprocessorParserBaseVisitor<Void> {
 						continue;
 				}
 			}
+			// Escape backslashes and dollars for appendReplacement
+			replacement = replacement.replace("\\", "\\\\").replace("$", "\\$");
+			m.appendReplacement(sb, replacement);
+		}
+		m.appendTail(sb);
+		return sb.toString();
+	}
+
+	/** Token-aware substitution (whole identifiers only). */
+	private String applyPlaceholders(String line, Map<String, String> formalArgs) {
+		if (line.isEmpty()) return line;
+		Matcher m = PLACEHOLDER.matcher(line);
+		StringBuffer sb = new StringBuffer(line.length());
+		while (m.find()) {
+			String ident = m.group(1).toUpperCase();
+			String replacement = formalArgs.get(ident);
+			if (replacement == null) continue;
 			// Escape backslashes and dollars for appendReplacement
 			replacement = replacement.replace("\\", "\\\\").replace("$", "\\$");
 			m.appendReplacement(sb, replacement);
@@ -741,7 +839,7 @@ public class PreprocessorVisitor extends PreprocessorParserBaseVisitor<Void> {
 	 * This one starts with a fresh, empty define table.
 	 */
 	public static String preprocessText(String filename, String source, IncludeLoader loader) {
-		return preprocessText(filename, source, loader, null, false);
+		return preprocessText(filename, source, loader, null, null, false, 0);
 	}
 
 	/**
@@ -751,7 +849,9 @@ public class PreprocessorVisitor extends PreprocessorParserBaseVisitor<Void> {
 										String source,
 										IncludeLoader loader,
 										Map<String, DefVal> seedDefines,
-										boolean substituteInsideDirectives) {
+										Map<String, Pair<List<String>, String>> seedMacros,
+										boolean substituteInsideDirectives,
+										int pauseLineSync) {
 		CharStream input = CharStreams.fromString(source);
 		PreprocessorLexer lexer = new PreprocessorLexer(input);
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
@@ -759,8 +859,9 @@ public class PreprocessorVisitor extends PreprocessorParserBaseVisitor<Void> {
 		parser.removeErrorListeners();
 		parser.addErrorListener(new DiagnosticErrorListener());
 
-		PreprocessorVisitor v = new PreprocessorVisitor(filename, loader, substituteInsideDirectives);
-		v.defines = seedDefines != null ? seedDefines : new LinkedHashMap<>();
+		PreprocessorVisitor v = new PreprocessorVisitor(filename, loader, substituteInsideDirectives, pauseLineSync);
+		v.defines = seedDefines != null ? seedDefines : new HashMap<>();
+		v.macros = seedMacros != null ? seedMacros : new HashMap<>();
 		v.visit(parser.preproc());
 		return v.getOutput();
 	}

@@ -8,16 +8,15 @@ import cloud.lesh.CPUSim64v2.Simulator;
 
 public class Simulation {
 	public static void main(String[] args) throws Exception {
-		System.out.println("CPUSim64v2 Simulator");
-		System.out.println("By Richard Lesh ©2025");
-		System.out.println("CPUSim64 Virtual Machine");
 		if (args.length < 1) {
 			System.err.println("Usage: simulation <input.obj.gz>");
 			System.exit(2);
 		}
 
 		boolean debug = false;
-		int memorySize = 1024; // default value
+		boolean verbose = false;
+		int memorySize = 1024 * 1024;	// default value
+		int stackSize = 4096; 			// default value
 		String filespec = "";
 
 		List<String> simulatorArgs = new ArrayList<String>();
@@ -25,11 +24,20 @@ public class Simulation {
 			if (arg.charAt(0) == '-') {
 				if (arg.equals("--debug") || arg.equals("-D")) {
 					debug = true;
+				} else if (arg.equals("--verbose") || arg.equals("-v")) {
+					verbose = true;
 				} else if (arg.startsWith("--mem=")) {
 					try {
 						memorySize = Integer.parseInt(arg.substring("--mem=".length()));
 					} catch (NumberFormatException e) {
 						System.err.println("Invalid memory size: " + arg);
+						System.exit(1);
+					}
+				} else if (arg.startsWith("--stack=")) {
+					try {
+						stackSize = Integer.parseInt(arg.substring("--stack=".length()));
+					} catch (NumberFormatException e) {
+						System.err.println("Invalid stack size: " + arg);
 						System.exit(1);
 					}
 				} else {
@@ -41,9 +49,13 @@ public class Simulation {
 			}
 		}
 
-		System.out.println("Debug: " + debug);
-		System.out.println("Memory size: " + memorySize);
-
+		if (verbose) {
+			System.out.println("CPUSim64v2 Simulator");
+			System.out.println("By Richard Lesh ©2025");
+			System.out.println("CPUSim64 Virtual Machine");
+			System.out.println("Debug: " + debug);
+			System.out.println("Memory size: " + memorySize);
+		}
 		Path originalPath = Path.of(simulatorArgs.get(0)).toAbsolutePath();
 		Path newPath = originalPath;
 		if (!Files.isRegularFile(newPath)) {
@@ -63,11 +75,16 @@ public class Simulation {
 
 		// 1) Read object file
 		var program = cloud.lesh.CPUSim64v2.AsmIO.readU64BE(newPath.toFile());
-		System.out.println("Read " + program.size() + " words from " + newPath.getFileName().toString());
+		if (verbose) {
+			System.out.println("Read " + program.size() + " words from " + newPath.getFileName().toString());
+		}
 
-		var sim = new Simulator(memorySize, simulatorArgs.toArray(String[]::new));
+		var sim = new Simulator(memorySize, stackSize, simulatorArgs.toArray(String[]::new));
 		if (debug) sim.setDebug(true);
 		sim.loadProgram(program, 0L);
-		sim.run();
+		long result = sim.run();
+		if (verbose) {
+			System.out.println("Result: " + result);
+		}
 	}
 }

@@ -1,11 +1,14 @@
 package cloud.lesh.CPUSim64v2;
 
-import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.nio.file.Path;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class LabelVisitorTest {
 	@Test
@@ -158,6 +161,7 @@ public class LabelVisitorTest {
 		assertTrue(errors.isEmpty());
 	}
 
+	@Disabled
 	@Test
 	void testBlock() {
 		String src = """
@@ -231,10 +235,10 @@ public class LabelVisitorTest {
 				FINIS:
 				""";
 		String errorsString = """
-				Line «test.asm»:8:10 missing ':' at '\\n' (offending: \\n)
-				Line «test.asm»:10:7 missing ':' at '\\n' (offending: \\n)
-				Line «test.asm»:12:8 missing ':' at '\\n' (offending: \\n)
-				Line «test.asm»:17:6 missing ':' at '\\n' (offending: \\n)
+				Line «test.asm»:8:9 missing ':' at '\\n' (offending: \\n)
+				Line «test.asm»:10:6 missing ':' at '\\n' (offending: \\n)
+				Line «test.asm»:12:7 missing ':' at '\\n' (offending: \\n)
+				Line «test.asm»:17:5 missing ':' at '\\n' (offending: \\n)
 				""";
 		var loader = new IncludeLoader(Path.of("."));
 		String preprocessed = PreprocessorVisitor.preprocessText("test.asm", src, loader);

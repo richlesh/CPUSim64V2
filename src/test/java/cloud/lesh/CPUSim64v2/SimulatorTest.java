@@ -28,7 +28,7 @@ public class SimulatorTest {
 	}
 
 	public void assertMem(Simulator sim, int addr, long val) {
-		assertEquals(val, sim.mem[addr]);
+		assertEquals(val, sim.memRead(addr));
 	}
 
 	public void assertMem(Simulator sim, int addr, double val) {
@@ -515,10 +515,10 @@ public class SimulatorTest {
 		sim.run();
 		var diff = sim.diffState(startState);
 		assertEquals(5, diff.size());
-		assertDiff(diff, sim.R_SP, 996);
-		assertMem(sim, 999, 123456L);
-		assertMem(sim, 998, 326L);
-		assertMem(sim, 997, Double.doubleToRawLongBits(31415.));
+		assertDiff(diff, sim.R_SP, 1096);
+		assertMem(sim, 1099, 123456L);
+		assertMem(sim, 1098, 326L);
+		assertMem(sim, 1097, Double.doubleToRawLongBits(31415.));
 		assertDiff(diff, 0);
 
 		// pop N, Y
@@ -532,7 +532,7 @@ public class SimulatorTest {
 		sim.run();
 		diff = sim.diffState(startState);
 		assertEquals(4, diff.size());
-		assertDiff(diff, sim.R_SP, 999);
+		assertDiff(diff, sim.R_SP, 1099);
 		assertDiff(diff, 3, 326);
 		assertDiff(diff, 4, 31415.);
 	}
@@ -753,8 +753,8 @@ public class SimulatorTest {
 		sim.run();
 		var diff = sim.diffState(startState);
 		assertEquals(5, diff.size());
-		assertDiff(diff, sim.R_SP, 997);
-		assertDiff(diff, sim.R_SF, 997);
+		assertDiff(diff, sim.R_SP, 1097);
+		assertDiff(diff, sim.R_SF, 1097);
 		assertDiff(diff, 1, 326);
 		assertDiff(diff, 0);
 
@@ -774,8 +774,8 @@ public class SimulatorTest {
 		diff = sim.diffState(startState);
 		assertEquals(6, diff.size());
 		assertDiff(diff, 1, 326);
-		assertDiff(diff, sim.R_SP, 997);
-		assertDiff(diff, sim.R_SF, 997);
+		assertDiff(diff, sim.R_SP, 1097);
+		assertDiff(diff, sim.R_SF, 1097);
 		assertDiff(diff, 0);
 
 		// ZC
@@ -800,8 +800,8 @@ public class SimulatorTest {
 		assertEquals(7, diff.size());
 		assertDiff(diff, 1, 326);
 		assertDiff(diff, 3, 31415);
-		assertDiff(diff, sim.R_SP, 995);
-		assertDiff(diff, sim.R_SF, 995);
+		assertDiff(diff, sim.R_SP, 1095);
+		assertDiff(diff, sim.R_SF, 1095);
 		assertDiff(diff, sim.SR_P);
 
 		// ZA
@@ -826,8 +826,8 @@ public class SimulatorTest {
 		assertEquals(7, diff.size());
 		assertDiff(diff, 1, 326);
 		assertDiff(diff, 3, 31415);
-		assertDiff(diff, sim.R_SP, 995);
-		assertDiff(diff, sim.R_SF, 995);
+		assertDiff(diff, sim.R_SP, 1095);
+		assertDiff(diff, sim.R_SF, 1095);
 		assertDiff(diff, sim.SR_P);
 
 		// AC
@@ -846,8 +846,8 @@ public class SimulatorTest {
 		diff = sim.diffState(startState);
 		assertEquals(6, diff.size());
 		assertDiff(diff, 1, 326);
-		assertDiff(diff, sim.R_SP, 997);
-		assertDiff(diff, sim.R_SF, 997);
+		assertDiff(diff, sim.R_SP, 1097);
+		assertDiff(diff, sim.R_SF, 1097);
 		assertDiff(diff, 0);
 
 		// AR
@@ -867,8 +867,8 @@ public class SimulatorTest {
 		diff = sim.diffState(startState);
 		assertEquals(7, diff.size());
 		assertDiff(diff, 1, 326);
-		assertDiff(diff, sim.R_SP, 997);
-		assertDiff(diff, sim.R_SF, 997);
+		assertDiff(diff, sim.R_SP, 1097);
+		assertDiff(diff, sim.R_SF, 1097);
 		assertDiff(diff, 0);
 
 		// ZAC,ZCA
@@ -892,8 +892,8 @@ public class SimulatorTest {
 		assertEquals(7, diff.size());
 		assertDiff(diff, 1, 326);
 		assertDiff(diff, 3, 31415);
-		assertDiff(diff, sim.R_SP, 995);
-		assertDiff(diff, sim.R_SF, 995);
+		assertDiff(diff, sim.R_SP, 1095);
+		assertDiff(diff, sim.R_SF, 1095);
 		assertDiff(diff, sim.SR_P);
 
 		// ZCC
@@ -917,8 +917,8 @@ public class SimulatorTest {
 		assertEquals(7, diff.size());
 		assertDiff(diff, 1, 326);
 		assertDiff(diff, 3, 31415);
-		assertDiff(diff, sim.R_SP, 995);
-		assertDiff(diff, sim.R_SF, 995);
+		assertDiff(diff, sim.R_SP, 1095);
+		assertDiff(diff, sim.R_SF, 1095);
 		assertDiff(diff, sim.SR_P);
 
 		// ZAR
@@ -944,8 +944,8 @@ public class SimulatorTest {
 		assertEquals(8, diff.size());
 		assertDiff(diff, 1, 326);
 		assertDiff(diff, 3, 31415);
-		assertDiff(diff, sim.R_SP, 995);
-		assertDiff(diff, sim.R_SF, 995);
+		assertDiff(diff, sim.R_SP, 1095);
+		assertDiff(diff, sim.R_SF, 1095);
 		assertDiff(diff, sim.SR_P);
 	}
 
