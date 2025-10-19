@@ -1,30 +1,49 @@
-#include <system/io.asm>
+#include <system/io.def>
 #include <system/system.def>
 
-#GVAR	ENABLE_ASSERT_EXIT
-store	1, ENABLE_ASSERT_EXIT
 jump	DEBUG_ASM_END
+ENABLE_ASSERT_EXIT: .dci	1
 
-ASSERTION_FAILED: 	dcs	"Assertion Failed (Filename: "
-ASSERTION_LINE:		dcs	", Line: "
-ASSERTION_MESSAGE:	dcs	"): "
+ASSERTION_FAILED: 	.dcs	"Assertion Failed (Filename: "
+ASSERTION_LINE:		.dcs	", Line: "
+ASSERTION_MESSAGE:	.dcs	"): "
 
-#def_func	debug_func(message, value)
-		#var	m,v
-		load	m,message
-		load	v,value
-		#call	puts(m)
-		#call	put_int(v)
-		#call	put_nl()
+#ifdef __DEBUG
+	#defmacro	DEBUG(message, ...)
+		#call	debug(STDOUT, ${message}, ${...})
+	#end_macro
+#else
+	#defmacro	DEBUG(message, ...)
+	#end_macro
+#endif
+
+// debug(port, fmt, values...)
+// Formats the values on the stack and then sends to the specified I/O port.
+// port		I/O Port
+// fmt		String with formatting information
+// values	Values for formatting
+#ifdef __DEBUG
+#def_func	debug(port, fmt, ...)
+	load	r0, port
+	#call	fputs(r0, "\nDEBUG: ")
+	int		iPRINTF
 #end_func
 
-#def_func	debug_fp_func(message, value)
-		#var	m,v
-		load	m,message
-		load	v,value
-		#call	puts(m)
-		#call	put_fp(v)
-		#call	put_nl()
+// cond_debug(cond, port, fmt, values...)
+// Formats the values on the stack and then sends to the specified I/O port.
+// cond		Must be TRUE to print
+// port		I/O Port
+// fmt		String with formatting information
+// values	Values for formatting
+#def_func	cond_debug(b, port, fmt, ...)
+#ifdef __DEBUG
+	load	r0, b
+	#cond_sr	nz
+		load	r0, port
+		#call	fputs(r0, "\nDEBUG: ")
+		int		iCOND_PRINTF
+	#end_cond_sr
+#endif
 #end_func
 
 #def_func	assert_exit()
@@ -141,7 +160,7 @@ assert_fp_macro(nn, '<')
 	#def_macro	are_assertions_enabled()
 		move	r0, 1
 	#end_macro
-	
+
 	#def_macro	debug_msg(message, value)
 		#call	debug_func(${message}, ${value})
 	#end_macro

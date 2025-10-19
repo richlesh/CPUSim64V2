@@ -10,18 +10,25 @@
 	<meta name="generator" content="BBEdit 14.6">
 	<meta name="author" content="Richard Lesh">
 	<link rel="stylesheet" type="text/css" href="styles.css">
+	<style>
+		table td:nth-child(1),
+		table td:nth-child(2),
+		table td:nth-child(3) {
+		  font-family: "JetBrains Mono", monospace;
+		}
+	</style>
 </head>
 <body>
 <h1>CPUSim64 Software Interrupts</h1>
 <p>The CPUSim64 comes with many functions defined as part of its operating system.  These functions are accessed via software interrupts.  To access the defines that give symbolic names to the interrupt values you must include the appropriate system include file.</p>
 <p>Input to interrupt functions is passed through known registers. Output is usually in either <code>r0</code> or <code>f0</code> if the function returns a value.</p>
-<p class="note">When invoking interrupts, there is no guarantee that the operands will not be modified or that registers <code>r0</code> or <code>f0</code> will not be modified.</p>
+<p class="note">When invoking interrupts, there is no guarantee that the input registers will not be modified.  Most interrupts return a value in <code>r0</code> or <code>f0</code>.</p>
 
 	<h3>&lt;system/io.def&gt;</h3>
 	<p></p>
-<table class="instruction">
-    <colgroup><col span="2" class="instruction">
-    	<col style="width:20%"><col></colgroup>
+<table>
+    <colgroup><col style="width:10%;"><col span="2" style="width:20%;">
+    	<col style="width:50%;"></colgroup>
 	<thead>
 <tr><th>Interrupt</th><th>Pneumonic</th><th>Input Registers</th><th>Operation</th></tr>
 	</thead>
@@ -64,8 +71,8 @@
 	<h3>&lt;system/math.def&gt;</h3>
 	<p></p>
 <table class="instruction">
-    <colgroup><col span="2" class="instruction">
-    	<col style="width:20%"><col></colgroup>
+    <colgroup><col style="width:10%;"><col span="2" style="width:20%;">
+    	<col style="width:50%;"></colgroup>
 	<thead>
 <tr><th>Interrupt</th><th>Pneumonic</th><th>Input Registers</th><th>Operation</th></tr>
 	</thead>
@@ -76,12 +83,12 @@
 		<tr><td>103</td><td>iABS</td><td>r0: value</td><td>Returns the absolute value of the integer value.</td></tr>
 		<tr><td>104</td><td>iCEIL</td><td>f0: value</td><td>Returns the smallest whole number greater than or equal to value.</td></tr>
 		<tr><td>105</td><td>iFLOOR</td><td>f0: value</td><td>Returns the largest whole number less than or equal to value.</td></tr>
-		<tr><td>106</td><td>iROUND</td><td>f0: value</td><td>Returns the nearest whole number to value.</td></tr>
+		<tr><td>106</td><td>iROUND</td><td>f0: value</td><td>Returns the nearest whole number to value. Ties round away from 0.</td></tr>
 		<tr><td>107</td><td>iSQRT</td><td>f0: value</td><td>Returns the square root of value.</td></tr>
 		<tr><td>108</td><td>iEXP</td><td>f0: value</td><td>Returns e<sup>value</sup>.</td></tr>
 		<tr><td>109</td><td>iLOG</td><td>f0: value</td><td>Returns the natural logarithm of value.</td></tr>
 		<tr><td>110</td><td>iPOW</td><td>f0: base<br>f1: exponent</td><td>Returns base<sup>exponent</sub></td></tr>
-		<tr><td>111</td><td>iREMAINDER</td><td>f0: num<br>f1: denom</td><td>Returns the fractional portion of num / denom.</td></tr>
+		<tr><td>111</td><td>iREMAINDER</td><td>f0: num<br>f1: denom</td><td>Returns the fractional portion of num / denom using IEEE 754 remainder rules.</td></tr>
 		<tr><td>112</td><td>iMAX_FP</td><td>f0: value<br>f1: value</td><td>Returns the larger of the two floating point values.</td></tr>
 		<tr><td>113</td><td>iMIN_FP</td><td>f0: value<br>f1: value</td><td>Returns the smaller of the two floating point values.</td></tr>
 		<tr><td>114</td><td>iMAX</td><td>r0: value<br>r1: value</td><td>Returns the larger of the two integer values.</td></tr>
@@ -103,47 +110,48 @@
 	<h3>&lt;system/string.def&gt;</h3>
 	<p></p>
 <table class="instruction">
-    <colgroup><col span="2" class="instruction">
-    	<col style="width:20%"><col></colgroup>
+    <colgroup><col style="width:10%;"><col span="2" style="width:20%;">
+    	<col style="width:50%;"></colgroup>
 	<thead>
 <tr><th>Interrupt</th><th>Pneumonic</th><th>Input Registers</th><th>Operation</th></tr>
 	</thead>
 	<tbody>
 		<tr><td>301</td><td>iFMT_DEC</td><td>r0: value</td><td>Formats the integer value in decimal as a heap allocated string.</td></tr>
-		<tr><td>302</td><td>iFMT_HEX</td><td>r0: value</td><td>Formats the integer value in hexdecimal as a heap allocated string.</td></tr>
-		<tr><td>303</td><td>iFMT_FLOAT</td><td>f0: value</td><td>Formats the floating point value as a heap allocated string.</td></tr>
+		<tr><td>302</td><td>iFMT_HEX</td><td>r0: value<br>r1: pad size</td><td>Formats the integer value in hexdecimal padded with zeros to the pad size as a heap allocated string.</td></tr>
+		<tr><td>303</td><td>iFMT_FLOAT</td><td>f0: value<br>r0: precision</td><td>Formats the floating point value to the specified precision as a heap allocated string.</td></tr>
 		<tr><td>304</td><td>iPARSE_INT</td><td>r0: string address</td><td>Parses a string as decimal, hexadecimal (0x or # prefix) or octal (0 prefix) integer.</td></tr>
 		<tr><td>305</td><td>iPARSE_DEC</td><td>r0: string address</td><td>Parses a string as a decimal integer.</td></tr>
 		<tr><td>306</td><td>iPARSE_HEX</td><td>r0: string address</td><td>Parses a string as a hexadecimal integer.</td></tr>
 		<tr><td>307</td><td>iPARSE_FLOAT</td><td>r0: string address</td><td>Parses a string as a floating point value.</td></tr>
-		<tr><td>308</td><td>iSPRINTF</td><td>Arg1: port<br>Arg2: format string address<br>Arg3: first value<br>Arg4: second value<br>...</td><td>Stack-based interrupt that implements C-style printf().  Arguments are pushed in reverse order onto the stack.  Return address and stack frame are expected to be pushed last which means this interrupt should only be used inside a called function like sprintf().</td></tr>
-		<tr><td>309</td><td>iFORMAT</td><td>Arg1: port<br>Arg2: format string address<br>Arg3: first value<br>Arg4: second value<br>...</td><td>Stack-based interrupt that implements C-style printf().  Arguments are pushed in reverse order onto the stack.  Return address and stack frame are expected to be pushed last which means this interrupt should only be used inside a called function like fprintf().</td></tr>
+		<tr><td>308</td><td>iSPRINTF</td><td>Arg1: port<br>Arg2: format string address<br>Arg3: first value<br>Arg4: second value<br>...</td><td>Stack-based interrupt that implements C-style sprintf().  Arguments are pushed in reverse order onto the stack.  Return address and stack frame are expected to be pushed last which means this interrupt should only be used inside a called function like sprintf().  Returns a heap allocated string in r0.</td></tr>
+		<tr><td>309</td><td>iFORMAT</td><td>Arg1: port<br>Arg2: format string address<br>Arg3: first value<br>Arg4: second value<br>...</td><td>Stack-based interrupt that implements Python-style format().  Arguments are pushed in reverse order onto the stack.  Return address and stack frame are expected to be pushed last which means this interrupt should only be used inside a called function like format().  Returns a heap allocated string in r0.</td></tr>
 		<tr><td>310</td><td>iTO_LOWER</td><td>r0: character</td><td>Returns the lowercase version of the character.</td></tr>
 		<tr><td>311</td><td>iTO_UPPER</td><td>r0: character</td><td>Returns the uppercase version of the character.</td></tr>
 		<tr><td>312</td><td>iTO_LOWER_STR</td><td>r0: string address</td><td>Returns lowercase version of string as a heap allocated string.</td></tr>
 		<tr><td>313</td><td>iTO_UPPER_STR</td><td>r0: string address</td><td>Returns uppercase version of string as a heap allocated string.</td></tr>
-		<tr><td>314</td><td>iSTRCMP</td><td>r0: string 1<br>r1: string 2</td><td>Compares string 1 to string 2 and returns 0 if equal, -1 if string 1 is less than string 2, and +1 if string 1 is greater than string 2.</td></tr>
-		<tr><td>315</td><td>iSUBSTRING</td><td></td><td></td></tr>
-		<tr><td>316</td><td>iPREFIX</td><td></td><td></td></tr>
-		<tr><td>317</td><td>iSUFFIX</td><td></td><td></td></tr>
-		<tr><td>318</td><td>iCHAR_SEARCH</td><td></td><td></td></tr>
-		<tr><td>319</td><td>iLAST_CHAR_SEARCH</td><td></td><td></td></tr>
-		<tr><td>320</td><td>iSUBSTRING_SEARCH</td><td>r0: string to search<br>r1: string to find</td><td>Searches a string for the specified substring and returns the index into the string if found or -1 if not found.</td></tr>
-		<tr><td>321</td><td>iLAST_SUBSTRING_SEARCH</td><td>r0: string to search<br>r1: string to find</td><td>Searches a string from the end for the specified substring and returns the index into the string if found or -1 if not found.</td></tr>
+		<tr><td>314</td><td>iSTRCMP</td><td>r0: string 1<br>r1: string 2</td><td>Compares string 1 to string 2 and returns 0 if equal, <0 if string 1 is less than string 2, and >0 if string 1 is greater than string 2.</td></tr>
+		<tr><td>315</td><td>iSUBSTRING</td><td>r0: string<br>r1: start index<br>r2: length</td><td>Returns a substring of a string as a heap allocated string.</td></tr>
+		<tr><td>316</td><td>iPREFIX</td><td>r0: String<br>r1: length</td><td>Returns length character prefix of the string as a heap allocated string.</td></tr>
+		<tr><td>317</td><td>iSUFFIX</td><td>r0: String<br>r1: length</td><td>Returns length character suffix of the string as a heap allocated string.</td></tr>
+		<tr><td>318</td><td>iCHAR_SEARCH</td><td>r0: string<br>r1: search char<br>r2: start pos</td><td>Returns the index of the location of the character in the string or -1 if not found.</td></tr>
+		<tr><td>318</td><td>iLAST_CHAR_SEARCH</td><td>r0: string<br>r1: search char<br>r2: start pos</td><td>Returns the index of the location of the character in the string searching from the end or -1 if not found.</td></tr>
+		<tr><td>320</td><td>iSUBSTRING_SEARCH</td><td>r0: string to search<br>r1: string to find<br>r2: start pos</td><td>Searches a string for the specified substring and returns the index into the string if found or -1 if not found.</td></tr>
+		<tr><td>321</td><td>iLAST_SUBSTRING_SEARCH</td><td>r0: string to search<br>r1: string to find<br>r2: start pos</td><td>Searches a string from the end for the specified substring and returns the index into the string if found or -1 if not found.</td></tr>
+		<tr><td>322</td><td>iSTRICMP</td><td>r0: string 1<br>r1: string 2</td><td>Ignoring case, compares string 1 to string 2 and returns 0 if equal, <0 if string 1 is less than string 2, and >0 if string 1 is greater than string 2.</td></tr>
 		<tr><td>350</td><td>iMATCHES</td><td>r0: string to search<br>r1: regex to find</td><td>Searches a string for the specified regular expression and returns TRUE if found or FALSE if not found.</td></tr>
 		<tr><td>351</td><td>iREPLACE_FIRST</td><td>r0: string to search<br>r1: regex to find<br>r2: replacement string</td><td>Searches a string for the specified regular expression and returns the heap allocated string that has the first occurance replaced by the replacement string.</td></tr>
 		<tr><td>352</td><td>iREPLACE_ALL</td><td>r0: string to search<br>r1: regex to find<br>r2: replacement string</td><td>Searches a string for the specified regular expression and returns the heap allocated string that has all the occurances replaced by the replacement string.</td></tr>
-		<tr><td>353</td><td>iSPLIT</td><td>r0: string to split<br>r1: split regex<br>r2: limit</td><td>Splits the string using the regex returning an array of strings capped with maximum elements specified by limit.  If limit is -1 the splitting is not capped.</td></tr>
-		<tr><td>354</td><td>iJOIN</td><td></td><td></td></tr>
-		<tr><td>355</td><td>iSTRCAT</td><td>r0: string 1<br>r1: string 2<br>r2: buffer or 0</td><td></td></tr>
+		<tr><td>353</td><td>iSPLIT</td><td>r0: string to split<br>r1: split regex<br>r2: limit</td><td>Splits the string using the regex returning an array of strings capped with maximum elements specified by limit.  If limit is -1 the splitting is not capped.  Returns a heap allocated array of heap allocated strings.</td></tr>
+		<tr><td>354</td><td>iJOIN</td><td>r0: list of strings<br>r1: delimiter string</td><td>Joins a length prefixed list of strings using the delimiter string.</td></tr>
+		<tr><td>355</td><td>iSTRCAT</td><td>r0: string 1<br>r1: string 2<br>r2: buffer or 0</td><td>Concatenates the first string and second string.  Result is put into buffer (might be reallocated) in r2.</td></tr>
 	</tbody>
 </table>
 
 	<h3>&lt;system/system.def&gt;</h3>
 	<p></p>
 <table class="instruction">
-    <colgroup><col span="2" class="instruction">
-    	<col style="width:20%"><col></colgroup>
+    <colgroup><col style="width:10%;"><col span="2" style="width:20%;">
+    	<col style="width:50%;"></colgroup>
 	<thead>
 <tr><th>Interrupt</th><th>Pneumonic</th><th>Input Registers</th><th>Operation</th></tr>
 	</thead>
@@ -191,6 +199,7 @@
 <p><a href="Architecture.html">Architecture</a> |
 <a href="Programmer_Guide.html">Programmer Guide</a> |
 <a href="Instruction_Set_Reference.html">Instruction Set Reference</a> |
+<a href="Directive_Reference.html">Directives Reference</a> |
 <a href="Interrupt_Reference.html">Software Interrupt Reference</a> |
 <a href="http://www.pureprogrammer.org">Pure Programmer</a></p>
 <p><a href="https://twitter.com/share" class="twitter-share-button" data-size="large" data-related="richlesh">Tweet</a>

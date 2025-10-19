@@ -763,6 +763,10 @@ LOOP1_DONE:
 	int		iSPRINTF
 #end_func sprintf
 
+#def_func	format(fmt, values...)
+	int		iFORMAT
+#end_func format
+
 #def_func freeArrayOfStrings(addr)
 	#var	a,i,s,len
 	load	a, addr

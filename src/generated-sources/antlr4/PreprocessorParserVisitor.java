@@ -149,6 +149,42 @@ public interface PreprocessorParserVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitElseClause(PreprocessorParser.ElseClauseContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link PreprocessorParser#forBlock}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitForBlock(PreprocessorParser.ForBlockContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link PreprocessorParser#whileBlock}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitWhileBlock(PreprocessorParser.WhileBlockContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link PreprocessorParser#doWhileBlock}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitDoWhileBlock(PreprocessorParser.DoWhileBlockContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link PreprocessorParser#ifCondBlock}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitIfCondBlock(PreprocessorParser.IfCondBlockContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link PreprocessorParser#elseifCondClause}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitElseifCondClause(PreprocessorParser.ElseifCondClauseContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link PreprocessorParser#elseCondClause}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitElseCondClause(PreprocessorParser.ElseCondClauseContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link PreprocessorParser#block}.
 	 * @param ctx the parse tree
 	 * @return the visitor result

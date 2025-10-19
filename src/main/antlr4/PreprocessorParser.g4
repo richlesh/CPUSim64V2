@@ -37,6 +37,10 @@ directive
   | returnDir
   | freturnDir
   | ifBlock
+  | forBlock
+  | whileBlock
+  | doWhileBlock
+  | ifCondBlock
   ;
 
 /* #include <path> | #include "path" */
@@ -70,6 +74,7 @@ argList
 
 callArg
   : literal
+  | cmpOp
   | PLACEHOLDER
   | IDENT
   | REG_R
@@ -91,7 +96,7 @@ defMacroDir
   ;
 
 paramList
-  : IDENT ( COMMA IDENT )*
+  : IDENT? ( COMMA IDENT )* ( COMMA? ELLIPSIS )?
   ;
 
 codeLineOrDirective
@@ -127,7 +132,7 @@ freturnDir
   : PP_FRETURN primary NL
   ;
 
-/* ----- Conditional blocks (explicit arms) ----- */
+/* ----- Preprocessor Conditional blocks (explicit arms) ----- */
 
 ifBlock
   : PP_IF expr NL block (elseifClause)* (elseClause)? PP_ENDIF NL
@@ -139,6 +144,34 @@ elseifClause
 
 elseClause
   : PP_ELSE NL block
+  ;
+
+/* ---- Higher level control structures ---- */
+
+forBlock
+  : PP_FOR init=primary? COMMA? cond=expr COMMA? incr=primary? NL block PP_ENDFOR NL
+  ;
+
+whileBlock
+  : PP_WHILE cond=expr NL block PP_ENDWHILE NL
+  ;
+
+doWhileBlock
+  : PP_DOWHILE NL block PP_ENDDOWHILE cond=expr NL
+  ;
+
+/* ----- assembly conditional blocks (explicit arms) ----- */
+
+ifCondBlock
+  : PP_IFCOND cond=expr NL block (elseifCondClause)* (elseCondClause)? PP_ENDCOND NL
+  ;
+
+elseifCondClause
+  : PP_ELSEIFCOND cond=expr NL block
+  ;
+
+elseCondClause
+  : PP_ELSECOND NL block
   ;
 
 block

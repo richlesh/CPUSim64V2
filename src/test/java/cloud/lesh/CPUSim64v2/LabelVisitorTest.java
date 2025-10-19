@@ -161,7 +161,6 @@ public class LabelVisitorTest {
 		assertTrue(errors.isEmpty());
 	}
 
-	@Disabled
 	@Test
 	void testBlock() {
 		String src = """

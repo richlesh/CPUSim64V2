@@ -242,36 +242,6 @@ jump	@IO_ASM_END
 	int		iCOND_PRINTF
 #end_func
 
-// debug(port, fmt, values...)
-// Formats the values on the stack and then sends to the specified I/O port.
-// port		I/O Port
-// fmt		String with formatting information
-// values	Values for formatting
-#def_func	debug(port, fmt, values...)
-#ifdef _debug
-	load	r0, port
-	#call	fputs(r0, "\nDEBUG: ")
-	int		iPRINTF
-#endif
-#end_func
-
-// cond_debug(cond, port, fmt, values...)
-// Formats the values on the stack and then sends to the specified I/O port.
-// cond		Must be TRUE to print
-// port		I/O Port
-// fmt		String with formatting information
-// values	Values for formatting
-#def_func	cond_debug(b, port, fmt, values...)
-#ifdef _debug
-	load	r0, b
-	#cond_sr	nz
-		load	r0, port
-		#call	fputs(r0, "\nDEBUG: ")
-		int		iCOND_PRINTF
-	#end_cond_sr
-#endif
-#end_func
-
 // fatal(port, fmt, values...)
 // Formats the values on the stack and then sends to the specified I/O port.
 // Then terminates the program with error code 1.
@@ -362,7 +332,7 @@ __FGETLINE_BUFFER: dci 0
 #define	WRITE_MODE	1
 #define	APPEND_MODE	2
 
-_PORT_MAP: dca	256			// Must match Architecture.NUM_PORTS
+_PORT_MAP: .dca	256			// Must match Architecture.NUM_PORTS
 
 #def_func	openTextFile(filename, mode)
 	#var	fn, m, i, maxPort, foundPort

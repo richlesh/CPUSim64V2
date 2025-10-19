@@ -1,10 +1,10 @@
-import java.io.File;
-import java.nio.file.Files;
-import java.nio.file.Path;
-
 import cloud.lesh.CPUSim64v2.IncludeLoader;
 import cloud.lesh.CPUSim64v2.LiteralRewriter;
 import cloud.lesh.CPUSim64v2.PreprocessorVisitor;
+
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.HashMap;
 
 public class Preprocessor {
 	public static void main(String[] args) throws Exception {
@@ -16,7 +16,28 @@ public class Preprocessor {
 			System.exit(2);
 		}
 
-		Path inPath = Path.of(args[0]).toAbsolutePath();
+		Path inPath = Path.of("");
+		HashMap<String, PreprocessorVisitor.DefVal> definitions = new HashMap<>();
+		for (String arg : args) {
+			if (arg.charAt(0) == '-') {
+				if (arg.equals("--debug")) {
+					definitions.put("__DEBUG", new PreprocessorVisitor.DefVal(PreprocessorVisitor.DefVal.Kind.STRING, "1"));
+				} else if (arg.startsWith("-D")) {
+					var def = arg.substring(2).split("=", 2);
+					if (def.length == 2) {
+						definitions.put(def[0], new PreprocessorVisitor.DefVal(PreprocessorVisitor.DefVal.Kind.STRING, def[1]));
+					} else {
+						definitions.put(def[0], new PreprocessorVisitor.DefVal(PreprocessorVisitor.DefVal.Kind.STRING, "1"));
+					}
+				} else {
+					System.err.println("Unknown option: " + arg);
+					System.exit(1);
+				}
+			} else  {
+				inPath = Path.of(arg).toAbsolutePath();
+			}
+		}
+
 		if (!Files.isRegularFile(inPath)) {
 			System.err.println("Can't find file: " + inPath.toString());
 			System.exit(3);
@@ -35,7 +56,7 @@ public class Preprocessor {
 
 		// 2) Preprocess
 		var loader = new IncludeLoader(inPath.getParent());
-		String preprocessed = PreprocessorVisitor.preprocessText(inPath.getFileName().toString(), source, loader);
+		String preprocessed = PreprocessorVisitor.preprocessText(inPath.getFileName().toString(), source, loader, definitions);
 
 		// 2b) Rewrite literals
 		LiteralRewriter rw = new LiteralRewriter();

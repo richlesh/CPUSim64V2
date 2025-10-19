@@ -51,16 +51,18 @@
 	move	z, r0, TRUE, FALSE
 #end_macro
 
+// Compares x and y using the operator op and returns TRUE or FALSE in r0
 #def_macro	COMPARE(x, op, y)
 	cmp		${x}, ${y}
-	move	op, r0, TRUE, FALSE
+	move	${op}, r0, TRUE, FALSE
 #end_macro
 
+// Compares if low op1 x op2 high and returns TRUE or FALSE in r0
 #def_macro	COMPARE_RANGE(low, op1, x, op2, high)
 	push	r1
-	COMPARE(low, op1, x)
+	#macro COMPARE(${low}, ${op1}, ${x})
 	move	r1, r0
-	COMPARE(x, op2, high)
+	#macro COMPARE(${x}, ${op2}, ${high})
 	and		r0, r1
 	pop		r1
 	test	r0
@@ -79,8 +81,8 @@
 	pop		r1
 #end_macro
 
-#def_macro	FREE2(a, offset)
-	move	r0, ${a}[${offset}]
+#def_macro	FREE_ELEMENT(a, offset)
+	load	r0, ${a}[${offset}]
 	int		iFREE
 #end_macro
 

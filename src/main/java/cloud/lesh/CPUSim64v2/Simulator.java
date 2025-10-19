@@ -465,9 +465,9 @@ public class Simulator {
 			case 1 -> Z;                 // z
 			case 2 -> !Z;                // nz
 			case 3 -> S;                 // n
-			case 4 -> !S;                // p
+			case 4 -> !S && !Z;          // p
 			case 5 -> !S;                // nn (not negative) == p
-			case 6 -> S;                 // np (not positive) == n (keep legacy aliases)
+			case 6 -> S || Z;            // np (not positive) == n (keep legacy aliases)
 			case 7 -> O;                 // o
 			case 8 -> !O;                // no
 			case 9 -> !P;                // pe (even parity)
@@ -1518,7 +1518,7 @@ public class Simulator {
 			isGood = true;
 		}
 		if (isGood) {
-			if (rhs < 0) throw new CPUException("Illegal negative shift on bitwise operator");
+			if (rhs < 0 && (d.op >= 23)) throw new CPUException("Illegal negative shift on bitwise operator");
 			long res = switch (d.op) {
 				case 18 -> lhs & rhs;
 				case 19 -> lhs | rhs;
@@ -2056,7 +2056,7 @@ public class Simulator {
 		byte[] utf8 = s.getBytes(StandardCharsets.UTF_8);
 		long neededWords = (utf8.length + 7) / 8 + 1;
 		long result;
-		if (allocBuffer == 0) {
+		if (allocBuffer <= 0) {
 			result = alloc(neededWords);
 		} else if (memRead(allocBuffer - 1) - 3 >= neededWords) {
 			result = allocBuffer;

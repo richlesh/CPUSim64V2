@@ -1192,7 +1192,7 @@ public class AssemblerVisitorTest {
 	}
 
 	@Test
-	void testBlock() {
+	void testMacroBlock() {
 		String src = """
 			START:
 			#DEF_MACRO block(x)
@@ -1220,8 +1220,8 @@ public class AssemblerVisitorTest {
 		assertEquals(0x8740040000000001L, words.get(3));
 		assertEquals(0x8740040000000005L, words.get(7));
 		assertEquals(0x8740040000000009L, words.get(11));
-		assertEquals(1, labelVisitor.getLabelMap().get("BLOCK_LABEL_1$LABEL"));
-		assertEquals(5, labelVisitor.getLabelMap().get("BLOCK_LABEL_2$LABEL"));
-		assertEquals(9, labelVisitor.getLabelMap().get("BLOCK_LABEL_3$LABEL"));
+		assertEquals(1, labelVisitor.getLabelMap().get("BLOCK_LABEL_0001$LABEL"));
+		assertEquals(5, labelVisitor.getLabelMap().get("BLOCK_LABEL_0002$LABEL"));
+		assertEquals(9, labelVisitor.getLabelMap().get("BLOCK_LABEL_0003$LABEL"));
 	}
 }

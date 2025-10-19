@@ -24,7 +24,7 @@ directive
   | LINE_BEGIN FILENAMELIT ','? INTLIT		# LINE_BEGIN_Directive
   | LINE_END								# LINE_END_Directive
   | BLOCK_BEGIN (IDENT | BLOCK_IDENT)		# BLOCK_BEGIN_Directive
-  | BLOCK_END IDENT?						# BLOCK_END_Directive
+  | BLOCK_END (IDENT | BLOCK_IDENT)?		# BLOCK_END_Directive
   ;
 
 dataDirective
@@ -451,7 +451,7 @@ HEXLIT
   ;
 
 INTLIT
-  : '-'? [0-9]+
+  : '-'? DIGITS
   ;
 
 FLOATLIT

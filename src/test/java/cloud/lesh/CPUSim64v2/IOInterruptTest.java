@@ -674,6 +674,11 @@ HÉLLØ😀🇺🇸
 				int		iFILE_EXISTS
 				jump	z, END
 				
+			// Check to see if file is a file
+				move	r0, FILENAME
+				int		iIS_FILE
+				jump	z, END
+				
 			// Delete the file
 				move	r0, FILENAME
 				int		iDELETE_FILE
@@ -688,6 +693,11 @@ HÉLLØ😀🇺🇸
 			// Check to see if file exists again
 				move	r0, FILENAME
 				int		iFILE_EXISTS
+				jump	nz, END
+				
+			// Check to see if file is a file
+				move	r0, FILENAME
+				int		iIS_FILE
 				jump	nz, END
 				
 				move	r0, -2

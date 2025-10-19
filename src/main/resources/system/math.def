@@ -32,6 +32,12 @@
 #define iACOS		124
 #define iATAN		125
 #define iATAN2		126
+#define iSINH		127
+#define iCOSH		128
+#define iTANH		129
+#define iASINH		130
+#define iACOSH		131
+#define iATANH		132
 
 #def_macro	MIN(a, b)
 	cmp		${a}, ${b}

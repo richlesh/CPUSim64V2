@@ -17,7 +17,7 @@
 <p>In the Operation columns below the description of the operation will use the operands in the same order that they appear in the Operands column.  The <code class="instruction">&lt;-</code> or <code class="instruction">-&gt;</code> symbols show the direction of data movement.  For all but the <code>STORE</code> instructions the direction is into the first argument.  If a register is listed such as <code>A</code> it means that the value in the register is used.  If a register is listed in square brackets such as <code>[A]</code> it means that the value of <code>A</code> is taken as an address and the contents in that address are used.  This is known as a memory reference.  You will only see this in the Register Load/Store Instructions.</p>
 <p>Because some instructions operate on integer registers or floating point registers and because some instructions support integer literals of differing sizes, the following table lists the symbols used in the Operands and Operation columns</p>
 <table>
-	<caption>Register Refernce Symbols</caption>
+	<caption>Register Reference Symbols</caption>
 	<tr><th>Symbol</th><th>Description</th></tr>
 	<tr>
 		<td>R</td><td>Integer in r0-r28</td>
@@ -83,6 +83,44 @@
 	</tr>
 	<tr>
 		<td>P</td><td>64-bit Absolute unsigned address</td>
+	</tr>
+</table>
+
+<table>
+	<caption>Condition Codes</caption>
+	<tr><th>Symbol</th><th>Value</th><th>Description</th><th>Other Interpretation</th></tr>
+	<tr>
+		<td>u</td><td>0</td><td>Unconditional</td><td>Any result</td>
+	</tr>
+	<tr>
+		<td>z or eq</td><td>1</td><td>Zero</td><td>Compare equivalent</td>
+	</tr>
+	<tr>
+		<td>nz or ne</td><td>2</td><td>Not zero</td><td>Compare not equivalent</td>
+	</tr>
+	<tr>
+		<td>n or lt</td><td>3</td><td>Negative</td><td>Compare less than</td>
+	</tr>
+	<tr>
+		<td>p or gt</td><td>4</td><td>Positive</td><td>Compare greater than</td>
+	</tr>
+	<tr>
+		<td>nn or ge</td><td>5</td><td>Not negative</td><td>Compare greater or equal</td>
+	</tr>
+	<tr>
+		<td>np or le</td><td>6</td><td>Not positive</td><td>Compare less or equal</td>
+	</tr>
+	<tr>
+		<td>o or inf</td><td>7</td><td>Overflow</td><td>Infinite</td>
+	</tr>
+	<tr>
+		<td>no or ninf</td><td>8</td><td>No overflow</td><td>Finite</td>
+	</tr>
+	<tr>
+		<td>pe</td><td>9</td><td>Parity even</td><td>None</td>
+	</tr>
+	<tr>
+		<td>po</td><td>10</td><td>Parity odd</td><td>None</td>
 	</tr>
 </table>
 
@@ -595,6 +633,7 @@ SF &lt;- SP</pre>
 <p><a href="Architecture.html">Architecture</a> |
 <a href="Programmer_Guide.html">Programmer Guide</a> |
 <a href="Instruction_Set_Reference.html">Instruction Set Reference</a> |
+<a href="Directive_Reference.html">Directives Reference</a> |
 <a href="Interrupt_Reference.html">Software Interrupt Reference</a> |
 <a href="http://www.pureprogrammer.org">Pure Programmer</a></p>
 <p><a href="https://twitter.com/share" class="twitter-share-button" data-size="large" data-related="richlesh">Tweet</a>

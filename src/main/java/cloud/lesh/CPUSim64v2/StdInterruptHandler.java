@@ -4,8 +4,8 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.text.MessageFormat;
 import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -81,7 +81,13 @@ public class StdInterruptHandler extends InterruptHandler
 	public static final int iACOS=124;
 	public static final int iATAN=125;
 	public static final int iATAN2=126;
-	
+	public static final int iSINH=127;
+	public static final int iCOSH=128;
+	public static final int iTANH=129;
+	public static final int iASINH=130;
+	public static final int iACOSH=131;
+	public static final int iATANH=132;
+
 	public static final int iPUT_NL=200;
 	public static final int iPUT_INT=201;
 	public static final int iPUT_DEC=202;
@@ -138,7 +144,8 @@ public class StdInterruptHandler extends InterruptHandler
     public static final int iLAST_CHAR_SEARCH=319;
     public static final int iSUBSTRING_SEARCH=320;
     public static final int iLAST_SUBSTRING_SEARCH=321;
-	
+	public static final int iSTRICMP=322;
+
 	public static final int iMATCHES=350;
 	public static final int iREPLACE_FIRST=351;
 	public static final int iREPLACE_ALL=352;
@@ -334,7 +341,7 @@ public class StdInterruptHandler extends InterruptHandler
 				cpu.setFP(0,Math.floor(cpu.getFP(0)));
 				break;
 			case iROUND:							// round of f0 in f0
-				cpu.setFP(0,Math.round(cpu.getFP(0)));
+				cpu.setFP(0, Math.copySign(Math.floor(Math.abs(cpu.getFP(0)) + 0.5), cpu.getFP(0)));
 				break;
 			case iSQRT:								// sqrt of f0 in f0
 				cpu.setFP(0,Math.sqrt(cpu.getFP(0)));
@@ -368,7 +375,6 @@ public class StdInterruptHandler extends InterruptHandler
 				break;
 			case iRAND:								// random [r1,r2] in r0
 				cpu.setR(0,(long)Math.floor(Math.random()*(cpu.getR(1)-cpu.getR(0)+1))+cpu.getR(0));
-//Utils.debug("iRAND("+cpu.getR(1)+","+cpu.getR(2)+")="+cpu.getR(0));
 				break;
 			case iTO_DEGREES:						// toDegrees of f0 in f0
 				cpu.setFP(0,Math.toDegrees(cpu.getFP(0)));
@@ -397,7 +403,25 @@ public class StdInterruptHandler extends InterruptHandler
 			case iATAN2:							// atan2 of f0/f1 in f0
 				cpu.setFP(0,Math.atan2(cpu.getFP(0),cpu.getFP(1)));
 				break;
-// IO
+			case iSINH:								// sinh of f0 in f0
+				cpu.setFP(0,Math.sinh(cpu.getFP(0)));
+				break;
+			case iCOSH:								// cosh of f0 in f0
+				cpu.setFP(0,Math.cosh(cpu.getFP(0)));
+				break;
+			case iTANH:								// tanh of f0 in f0
+				cpu.setFP(0,Math.tanh(cpu.getFP(0)));
+				break;
+			case iASINH:								// asinh of f0 in f0
+				cpu.setFP(0, Utils.asinh(cpu.getFP(0)));
+				break;
+			case iACOSH:								// acosh of f0 in f0
+				cpu.setFP(0, Utils.acosh(cpu.getFP(0)));
+				break;
+			case iATANH:								// atanh of f0 in f0
+				cpu.setFP(0, Utils.atanh(cpu.getFP(0)));
+				break;
+
 			case iPUT_NL:							// Send newline to port r0
 				ph=cpu.getPortHandler((int)cpu.getR(0));
 				if (ph != null) {
@@ -789,7 +813,7 @@ public class StdInterruptHandler extends InterruptHandler
 				break;
 			case iPARSE_INT:
 				s = cpu.convertString(cpu.getR(0));
-				cpu.setR(0,Long.parseLong(s));
+				cpu.setR(0,Long.decode(s));
 				break;
 			case iPARSE_DEC:
 				s = cpu.convertString(cpu.getR(0));
@@ -808,6 +832,8 @@ public class StdInterruptHandler extends InterruptHandler
 				cpu.setR(0, cpu.allocString(s));
 				break;
 			case iFORMAT:
+				s = format(3);
+				cpu.setR(0, cpu.allocString(s));
 				break;
 			case iTO_LOWER:
 				v = cpu.getR(0);
@@ -839,7 +865,12 @@ public class StdInterruptHandler extends InterruptHandler
 			case iSUBSTRING:    // r0 string, r1 start, r2 length
 				{
 					s = cpu.convertString((int)cpu.getR(0));
-					String sub = s.substring((int)cpu.getR(1), (int)(cpu.getR(1) + cpu.getR(2)));
+					int start = Math.max(0, (int)cpu.getR(1));
+					int stop = Math.max(0, (int)(cpu.getR(1) + cpu.getR(2)));
+					int len = s.length();
+					start = Math.min(len, start);
+					stop = Math.min(len, stop);
+					String sub = s.substring(start, stop);
 					cpu.setR(0, cpu.allocString(sub));
 				}
 				break;
@@ -862,6 +893,8 @@ public class StdInterruptHandler extends InterruptHandler
 					s = cpu.convertString((int)cpu.getR(0));
 					int c = (int)cpu.getR(1);
 					i = (int)cpu.getR(2);
+					i = Math.min(i, s.length());
+					i = Math.max(0, i);
 					v = s.indexOf(c, i);
 					cpu.setR(0,v);
 				}
@@ -871,6 +904,8 @@ public class StdInterruptHandler extends InterruptHandler
 					s = cpu.convertString((int)cpu.getR(0));
 					int c = (int)cpu.getR(1);
 					i = (int)cpu.getR(2);
+					i = Math.min(i, s.length());
+					i = Math.max(0, i);
 					v = s.lastIndexOf(c, i);
 					cpu.setR(0,v);
 				}
@@ -880,6 +915,8 @@ public class StdInterruptHandler extends InterruptHandler
 					s = cpu.convertString((int)cpu.getR(0));
 					String substr = cpu.convertString((int)cpu.getR(1));
 					i = (int)cpu.getR(2);
+					i = Math.min(i, s.length());
+					i = Math.max(0, i);
 					v = s.indexOf(substr, i);
 					cpu.setR(0,v);
 				}
@@ -889,10 +926,19 @@ public class StdInterruptHandler extends InterruptHandler
 					s = cpu.convertString((int)cpu.getR(0));
 					String substr = cpu.convertString((int)cpu.getR(1));
 					i = (int)cpu.getR(2);
+					i = Math.min(i, s.length());
+					i = Math.max(0, i);
 					v = s.lastIndexOf(substr, i);
 					cpu.setR(0,v);
 				}
 				break;
+			case iSTRICMP:
+			{
+				String s1 = cpu.convertString((int) cpu.getR(0));
+				String s2 = cpu.convertString((int) cpu.getR(1));
+				cpu.setR(0, s1.compareToIgnoreCase(s2));
+			}
+			break;
 			case iMATCHES:		// matches portion unlike Java matches() which matches whole string as in "^regex$"
 				{
 					s = cpu.convertString(cpu.getR(0));
@@ -907,7 +953,8 @@ public class StdInterruptHandler extends InterruptHandler
 					s = cpu.convertString(cpu.getR(0));
 					String regex = cpu.convertString(cpu.getR(1));
 					String repl = cpu.convertString(cpu.getR(2));
-					cpu.setR(0,cpu.allocString(s.replaceFirst(regex, repl)));
+					s = s.replaceFirst(regex, repl);
+					cpu.setR(0,cpu.allocString(s));
 				}
 				break;
 			case iREPLACE_ALL:
@@ -915,7 +962,8 @@ public class StdInterruptHandler extends InterruptHandler
 					s = cpu.convertString(cpu.getR(0));
 					String regex = cpu.convertString(cpu.getR(1));
 					String repl = cpu.convertString(cpu.getR(2));
-					cpu.setR(0,cpu.allocString(s.replaceAll(regex, repl)));
+					s = s.replaceAll(regex, repl);
+					cpu.setR(0,cpu.allocString(s));
 				}
 				break;
 			case iSPLIT:		// String r0, regex r1, returns null terminated array in r0
@@ -930,27 +978,23 @@ public class StdInterruptHandler extends InterruptHandler
 						splits = s.split(regex, limit);
 					}
 					long resultArray = cpu.alloc(splits.length + 1);
-					for (i = 0; i < splits.length; ++i) {
-						cpu.memWrite(resultArray + i, cpu.allocString(splits[i]));
+					for (i = 1; i <= splits.length; ++i) {
+						cpu.memWrite(resultArray + i, cpu.allocString(splits[i - 1]));
 					}
-					cpu.memWrite(resultArray + splits.length, 0L);
+					cpu.memWrite(resultArray, splits.length);
 					cpu.setR(0,resultArray);
 				}
 				break;
-			case iJOIN:			// null termintated list of strings in r0, delimiter string in r1
+			case iJOIN:			// length prefixed list of strings in r0, delimiter string in r1
 				{
 					String delim = cpu.convertString(cpu.getR(1));
 					int a = (int)cpu.getR(0);
-					boolean first = true;
-					v = cpu.memRead(a);
+					int len = (int)cpu.memRead(a);
 					s = "";
-					while (v != 0) {
-						if (!first)
+					for (i = 1; i <= len; ++i) {
+						if (i != 1)
 							s += delim;
-						else
-							first = false;
-						s += cpu.convertString(v);
-						v = cpu.memRead(++a);
+						s += cpu.convertString(cpu.memRead(++a));
 					}
 					cpu.setR(0, cpu.allocString(s));
 				}
@@ -969,7 +1013,7 @@ public class StdInterruptHandler extends InterruptHandler
 		}
 		return result;
 	}
-	
+
 	public String sprintf(int msgOffset) throws Simulator.CPUException {
 		String s;
 		String fmt = cpu.convertString(cpu.memRead(cpu.getR(Simulator.R_SP) + msgOffset));
@@ -979,24 +1023,64 @@ public class StdInterruptHandler extends InterruptHandler
 		int numArgs = 0;
 		while (m.find()) {
 			switch (m.group(1).toLowerCase()) {
-			case "c":
-				args.add((int)cpu.memRead(cpu.getR(Simulator.R_SP) + numArgs + msgOffset + 1));
-				break;
-			case "s":
-				args.add(cpu.convertString(cpu.memRead(cpu.getR(Simulator.R_SP) + numArgs + msgOffset + 1)));
-				break;
-			case "e":
-			case "f":
-			case "g":
-				args.add(Double.longBitsToDouble(cpu.memRead(cpu.getR(Simulator.R_SP) + numArgs + msgOffset + 1)));
-				break;
-			default:
-				args.add(cpu.memRead(cpu.getR(Simulator.R_SP) + numArgs + msgOffset + 1));
-				break;
+				case "c":
+					args.add((int)cpu.memRead(cpu.getR(Simulator.R_SP) + numArgs + msgOffset + 1));
+					break;
+				case "s":
+					args.add(cpu.convertString(cpu.memRead(cpu.getR(Simulator.R_SP) + numArgs + msgOffset + 1)));
+					break;
+				case "e":
+				case "f":
+				case "g":
+					args.add(Double.longBitsToDouble(cpu.memRead(cpu.getR(Simulator.R_SP) + numArgs + msgOffset + 1)));
+					break;
+				default:
+					args.add(cpu.memRead(cpu.getR(Simulator.R_SP) + numArgs + msgOffset + 1));
+					break;
 			}
 			++numArgs;
 		}
 		s = String.format(fmt, args.toArray());
 		return s;
+	}
+
+	// Args must all be strings.
+	public String format(int msgOffset) throws Simulator.CPUException {
+		String s;
+		String fmt = cpu.convertString(cpu.memRead(cpu.getR(Simulator.R_SP) + msgOffset));
+		Vector<Object> args = new Vector<>();
+		Pattern rx = Pattern.compile("\\{([0-9]*)\\}", Pattern.CASE_INSENSITIVE);
+		Matcher m = rx.matcher(fmt);
+		int numArgs = 0;
+		int maxArgs = 0;
+		while (m.find()) {
+			if (m.group(1).isEmpty()) {
+				++numArgs;
+			} else {
+				int i = Integer.parseInt(m.group(1));
+				maxArgs = Math.max(maxArgs, i + 1);
+			}
+		}
+		numArgs = Math.max(numArgs, maxArgs);
+		for (int i = 0; i < numArgs; ++i) {
+			args.add(cpu.convertString(cpu.memRead(cpu.getR(Simulator.R_SP) + i + msgOffset + 1)));
+		}
+		s = MessageFormat.format(numberPlaceholders(fmt), args.toArray());
+		return s;
+	}
+
+	public static String numberPlaceholders(String template) {
+		StringBuilder result = new StringBuilder();
+		int count = 0;
+		for (int i = 0; i < template.length(); i++) {
+			char c = template.charAt(i);
+			if (c == '{' && i + 1 < template.length() && template.charAt(i + 1) == '}') {
+				result.append('{').append(count++).append('}');
+				i++; // skip the '}'
+			} else {
+				result.append(c);
+			}
+		}
+		return result.toString();
 	}
 }

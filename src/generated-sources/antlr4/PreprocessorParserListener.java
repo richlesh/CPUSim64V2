@@ -238,6 +238,66 @@ public interface PreprocessorParserListener extends ParseTreeListener {
 	 */
 	void exitElseClause(PreprocessorParser.ElseClauseContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link PreprocessorParser#forBlock}.
+	 * @param ctx the parse tree
+	 */
+	void enterForBlock(PreprocessorParser.ForBlockContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link PreprocessorParser#forBlock}.
+	 * @param ctx the parse tree
+	 */
+	void exitForBlock(PreprocessorParser.ForBlockContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link PreprocessorParser#whileBlock}.
+	 * @param ctx the parse tree
+	 */
+	void enterWhileBlock(PreprocessorParser.WhileBlockContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link PreprocessorParser#whileBlock}.
+	 * @param ctx the parse tree
+	 */
+	void exitWhileBlock(PreprocessorParser.WhileBlockContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link PreprocessorParser#doWhileBlock}.
+	 * @param ctx the parse tree
+	 */
+	void enterDoWhileBlock(PreprocessorParser.DoWhileBlockContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link PreprocessorParser#doWhileBlock}.
+	 * @param ctx the parse tree
+	 */
+	void exitDoWhileBlock(PreprocessorParser.DoWhileBlockContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link PreprocessorParser#ifCondBlock}.
+	 * @param ctx the parse tree
+	 */
+	void enterIfCondBlock(PreprocessorParser.IfCondBlockContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link PreprocessorParser#ifCondBlock}.
+	 * @param ctx the parse tree
+	 */
+	void exitIfCondBlock(PreprocessorParser.IfCondBlockContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link PreprocessorParser#elseifCondClause}.
+	 * @param ctx the parse tree
+	 */
+	void enterElseifCondClause(PreprocessorParser.ElseifCondClauseContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link PreprocessorParser#elseifCondClause}.
+	 * @param ctx the parse tree
+	 */
+	void exitElseifCondClause(PreprocessorParser.ElseifCondClauseContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link PreprocessorParser#elseCondClause}.
+	 * @param ctx the parse tree
+	 */
+	void enterElseCondClause(PreprocessorParser.ElseCondClauseContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link PreprocessorParser#elseCondClause}.
+	 * @param ctx the parse tree
+	 */
+	void exitElseCondClause(PreprocessorParser.ElseCondClauseContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link PreprocessorParser#block}.
 	 * @param ctx the parse tree
 	 */

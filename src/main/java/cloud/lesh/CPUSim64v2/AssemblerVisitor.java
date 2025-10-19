@@ -1632,21 +1632,21 @@ public class AssemblerVisitor extends CPUSim64v2BaseVisitor<Void> implements Has
 		if (ctx.IDENT() != null) {
 			blockname = ctx.IDENT().getText();
 			if (blockname.contains("$"))
-				blockname = null;
+				throw new AssemblerException("Blocknames can not contain $: " + blockname);
 		} else if (ctx.BLOCK_IDENT() != null) {
 			blockname = ctx.BLOCK_IDENT().getText();
 		}
 		if (blockname == null)
 			throw new AssemblerException(".block directive must have an argument@");
-		if (blockname.contains("{}") || blockname.contains("%d"))
-			blockname = String.format(blockname.replace("{}", "%d"), ++blockCount);
+		if (blockname.contains("{}") || blockname.contains("%d") || blockname.contains("%x"))
+			blockname = String.format(blockname.replace("{}", "%04x"), ++blockCount);
 		blockNames.push(blockname);
 		return null;
 	}
 
 	@Override
 	public Void visitBLOCK_END_Directive(CPUSim64v2Parser.BLOCK_END_DirectiveContext ctx) {
-		blockNames.pop();
+		String name = blockNames.pop();
 		return null;
 	}
 

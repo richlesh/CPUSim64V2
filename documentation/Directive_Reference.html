@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>CPUSim64 Directives</title>
+	<meta name="description" content="Directive Documentation for CPUSim64">
+	<link rel="canonical" href="https://www.lesh.cloud/cpusim64/Directive_Reference.html">
+	<meta name="robots" content="max-image-preview:large">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="generator" content="BBEdit 14.6">
+	<meta name="author" content="Richard Lesh">
+	<link rel="stylesheet" type="text/css" href="styles.css">
+	<style>
+		table td:nth-child(1),
+		table td:nth-child(2) {
+		  font-family: "JetBrains Mono", monospace;
+		}
+	</style>
+</head>
+<body>
+<h1>CPUSim64 Directives</h1>
+<p>The CPUSim64 has two types of directives: Preprocessor directives and Assembler directives.</p>
+<p>Preprocessor directives are instructions to the preprocessor.  They tell the preprocessor how to modify your source <code>.asm</code> source file.  The output of the preprocessor is pure CPUSim64 assembler code.</p>
+<p>Assembler directives are instructions to the Assembler.  They consist mainly of directives to allocate scopes or data.</p>
+<p class="note">Normally the <code>assemble.sh</code>, <code>run.sh</code> and <code>debug.sh</code> scripts will run the preprocessor before passing the output on to the assembler.  Sometimes it is helpful to see how the preprocessor modified your code when there are errors.  You can run just the preprocessor by using the <code>preprocess.sh</code> script.  It will create a <code>.pp.asm</code> file that contains the output of just the preprocessor.</p>
+
+	<h2>Preprocessor Directives</h2>
+	<p>Preprocessor directives always start with a pound sign (<code>#</code>).  They are written by themselves on a line.  Some directives have a begin and and end directive that must be used in pairs.</p>
+<table style="width:80%;">
+    <colgroup><col><col style="width:40%;">
+    	<col style="width:40%;"></colgroup>
+	<thead>
+		<tr><th>Directive</th><th>Operands</th><th>Description</th></tr>
+	</thead>
+	<tbody>
+		<tr><td>#include</td><td>&lt;systemfile.def&gt;<br/>"localfile.asm"</td><td>Includes the contents of a system file or a file in the current directory.</td></tr>
+		<tr><td>#define</td><td>IDENT literal</td><td>Defines the substitution symbol IDENT as a synonym for the literal value.</td></tr>
+		<tr><td>#undef</td><td>IDENT</td><td>Undefines the substitution symbol IDENT.</td></tr>
+		<tr><td>#def_func<br/>#end_func</td><td>FUNC_IDENT(params)<br/>none</td><td>Defines a stack-based function.  Params are a comma-separated list of formal argument identifiers.  </td></tr>
+		<tr><td>#call</td><td>FUNC_IDENT(args)</td><td>Calls a stack-based function.  The args are a comma separated list of values that will be passed on the stack matching the formal parameters defined for the function.</td></tr>
+		<tr><td>#def_macro<br/>#end_macro</td><td>MACRO_IDENT(params)<br/>none</td><td>Defines a substitution macro.  Params are a comma-separated list of placeholder names.  Inside the body of the macro, parameters are represented using the special placeholder symbol <code>${param}</code>, where param is the name of the parameter to substitute.</td></tr>
+		<tr><td>#macro</td><td>MACRO_IDENT(args)</td><td>Instantiates a substitution of the macro.  The args are a comma separated list of symbols that will be substituted into the macro matching the formal parameters defined for the macro.</td></tr>
+		<tr><td>#svar</td><td>ident_list</td><td>Defines stack variables for the function.  The ident_list is a comma-separated list of variable names to be created.  Must be the first directive following the beginning of a <code>#def_func</code> directive.  Accessing the variables is done with <code>load</code>/<code>store</code> instructions.</td></tr>
+		<tr><td>#var</td><td>ident_list</td><td>Defines integer register variables for the function. The ident_list is a comma-separated list of variable names to be created.  Must follow the <code>#svar</code> directive if present. Accessing the variables is done with the <code>move</code> instruction.</td></tr>
+		<tr><td>#fvar</td><td>ident_list</td><td>Defines floating point register variables for the function. The ident_list is a comma-separated list of variable names to be created.  Must follow the <code>#var</code> directive if present. Accessing the variables is done with the <code>move</code> instruction.</td></tr>
+		<tr><td>#return</td><td>op</td><td>Moves the operand into register r0 and then returns.  Causes all <code>#svar</code>, <code>#var</code> and <code>#fvar</code> variables to be deallocated.</td></tr>
+		<tr><td>#freturn</td><td>op</td><td>Moves the operand into register f0 and then returns.  Causes all <code>#svar</code>, <code>#var</code> and <code>#fvar</code> variables to be deallocated.</td></tr>
+		<tr><td>#if<br/>#else_if<br/>#else<br/>#end_if</td><td>IDENT cmpOp IDENT/literal<br/>IDENT cmpOp IDENT/literal<br/>none<br/>none</td><td>Causes conditional inclusion of code lines.  IDENT must be a symbol defined by a <code>#define</code> directive.  The valid comparison operaters are <code>==</code>, <code>!=</code>, <code>&lt;=</code>, <code>=&gt;</code>, <code>&lt;</code>, and <code>&gt;</code>.</td></tr>
+		<tr><td>#for<br/>#end_for</td><td>inital IDENT cmpOp IDENT/literal increment<br/>none</td><td>Generates assembler code for a <code>for</code> loop.  The initial value is specified by initial.  The loop variable is identified by IDENT.  The valid comparison operaters are <code>==</code>, <code>!=</code>, <code>&lt;=</code>, <code>=&gt;</code>, <code>&lt;</code>, and <code>&gt;</code>. The final value, increment, is the amount to add to the loop variable each loop.</td></tr>
+		<tr><td>#while<br/>#end_while</td><td>IDENT cmpOp IDENT/literal<br/>none</td><td>Generates assembler code for a <code>while</code> loop.  The loop variable is identified by IDENT.  The valid comparison operaters are <code>==</code>, <code>!=</code>, <code>&lt;=</code>, <code>=&gt;</code>, <code>&lt;</code>, and <code>&gt;</code>.  The loop condition is evaluated at the beginning of the loop.</td></tr>
+		<tr><td>#do_while<br/>#end_do_while</td><td>none<br/>IDENT cmpOp IDENT/literal</td><td>Generates assembler code for a <code>do/while</code> loop.  The loop variable is identified by IDENT.  The valid comparison operaters are <code>==</code>, <code>!=</code>, <code>&lt;=</code>, <code>=&gt;</code>, <code>&lt;</code>, and <code>&gt;</code>.  The loop condition is evaluated at the end of the loop.</td></tr>
+		<tr><td>#if_cond<br/>#else_if_cond<br/>#else_cond<br/>#end_cond</td><td>IDENT cmpOp IDENT/literal<br/>IDENT cmpOp IDENT/literal</br>none</br>none</td><td>Generates assembler code for an <code>if/else</code> construct.</td></tr>
+	</tbody>
+</table>
+
+	<h2>Assembler Directives</h2>
+	<p></p>
+<table style="width:80%;">
+    <colgroup><col span="2" >
+    	<col style="font:serif;width:500px;"></colgroup>
+	<thead>
+		<tr><th>Directive</th><th>Operands</th><th>Description</th></tr>
+	</thead>
+	<tbody>
+		<tr><td>.org</td><td>literal</td><td>Sets the location in memory for the next instruction.</td></tr>
+		<tr><td>.line</td><td>«filename», linenum</td><td>Resets the source filename and line number</td></tr>
+		<tr><td>.line_begin<br/>.line_end</td><td>«filename», linenum<br/>none</td><td>Resets the source filename and line number for the enclosed statements.</td></tr>
+		<tr><td>.block_begin<br/>.block_end</td><td>IDENT<br/>none</td><td>Creates a new scope for line labels.  Label names beginning with a dollar sign (<code>$</code>) will be relative to the enclosing scope.</td></tr>
+		<tr><td>.dci</td><td>int_literal</td><td>Stores the specified integer in the next word of the assembled code.</td></tr>
+		<tr><td>.dcf</td><td>float_literal</td><td>Stores the specified floating point value in the next word of the assembled code.</td></tr>
+		<tr><td>.dca</td><td>count</td><td>Causes count + 1 words to be allocated at this point in the code.  Contents are undefined.  The first word will contain the count.</td></tr>
+		<tr><td>.dcb</td><td>byte_list</td><td>Causes the bytes specified by the comma separated byte_list to be allocated at this point in the code.  Bytes will be packed 8 to a word (big-endian).  The first word will contain the count.</td></tr>
+		<tr><td>.dcs</td><td>string_literal</td><td>Causes the string specified to be allocated at this point in the code.  String is encoded in UTF-8 and will be packed 8 to a word (big-endian).  The first word will contain the UTF-8 byte count.</td></tr>
+		<tr><td>.dcw</td><td>int_list<br/>float_list<br/>char_list</td><td>Causes the words specified by the comma separated list to be allocated at this point in the code.  Initializers are placed one per word.  The first word will contain the count.</td></tr>
+	</tbody>
+</table>
+
+<p>Literals can be a decimal integer, hexadecimal integer, floating point literal, character literal or string literal.
+</p>
+<h4>Examples</h4>
+<ul>
+	<li>Decimal Integer: <code>326</code>, <code>-123</code></li>
+	<li>Hexadecimal Integer: <code>0x1a2b</code>, <code>-0X1234</code></li>
+	<li>Floating Point: <code>3.</code>, <code>-0.123</code>, <code>3.1415e10</code>, <code>4.567E-2</code></li>
+	<li>Character Literal: <code>'A'</code>, <code>'4'</code>, <code>'\t'</code>, <code>'\u00ab'</code></li>
+	<li>String Literal: <code>"Héllø, World!"</code>, <code>"C-style escapes \t \n"</code>, <code>"Unicode escapes \u00ab \u1234, \u134F"</code></li>
+</ul>
+<p class="note">Unicode escapes are UTF-16 values.  They must be exactly four hexadecimal digits.</p>
+
+<footer>
+<p><a href="Architecture.html">Architecture</a> |
+<a href="Programmer_Guide.html">Programmer Guide</a> |
+<a href="Instruction_Set_Reference.html">Instruction Set Reference</a> |
+<a href="Directive_Reference.html">Directives Reference</a> |
+<a href="Interrupt_Reference.html">Software Interrupt Reference</a> |
+<a href="http://www.pureprogrammer.org">Pure Programmer</a></p>
+<p><a href="https://twitter.com/share" class="twitter-share-button" data-size="large" data-related="richlesh">Tweet</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+<a href="https://twitter.com/richlesh" class="twitter-follow-button" data-show-count="false" data-size="large">Follow @richlesh</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script></p>
+
+<form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
+<input type="hidden" name="cmd" value="_s-xclick">
+<input type="hidden" name="hosted_button_id" value="P2877VYMJ3G64">
+<input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif" name="submit" alt="PayPal - The safer, easier way to pay online!">
+<img alt="" style="border:0;" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
+</form>
+<address>&copy;2022 Richard Lesh.  All rights reserved.</address>
+</footer>
+</body>
+</html>

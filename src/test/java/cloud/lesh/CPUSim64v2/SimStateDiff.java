@@ -33,6 +33,8 @@ public class SimStateDiff {
 			assertTrue(diffs.contains("SP:" + val));
 		else if (reg == Simulator.R_PC)
 			assertTrue(diffs.contains("PC:" + val));
+		else if (val == 0)
+			assertTrue(diffs.stream().noneMatch(s -> s.startsWith("R" + reg + ":")));
 		else
 			assertTrue(diffs.contains("R" + reg + ":" + val));
 	}

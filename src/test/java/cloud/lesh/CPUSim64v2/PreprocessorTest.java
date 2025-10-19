@@ -1,9 +1,12 @@
 package cloud.lesh.CPUSim64v2;
 
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
+
 import java.nio.file.Path;
 
-import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class PreprocessorTest {
 	@Test
@@ -229,7 +232,10 @@ class PreprocessorTest {
 		String expected = """
 			.LINE «TEST.ASM», 1
 			MOVE R0, INT1
+			JUMP $_RETURN
+			.LINE «TEST.ASM», 2
 			MOVE F0, 3.14
+			JUMP $_RETURN
 			""";
 		var loader = new IncludeLoader(Path.of("."));
 		String preprocessed = PreprocessorVisitor.preprocessText("Test.asm", src, loader);
@@ -296,7 +302,9 @@ class PreprocessorTest {
 			STORE R26, SF[5]
 			JUMP $LOOP
 			MOVE r0, r3
-			.LINE_BEGIN «Test.asm», 15
+			JUMP $_RETURN
+			.LINE_BEGIN «TEST.ASM», 16
+			$_RETURN:
 			restore f30, f31
 			restore r26, r28
 			add sp, 2
@@ -327,6 +335,7 @@ class PreprocessorTest {
 			PUSH 0
 			ADD SP, -3
 			.LINE_BEGIN «TEST.ASM», 4
+			$_RETURN:
 			ADD SP, 4
 			RETURN
 			.BLOCK_END MYFUNC
@@ -353,6 +362,7 @@ class PreprocessorTest {
 			PUSH R28
 			SAVE R26, R28
 			.LINE_BEGIN «TEST.ASM», 4
+			$_RETURN:
 			RESTORE R25, R28
 			RETURN
 			.BLOCK_END MYFUNC
@@ -379,6 +389,7 @@ class PreprocessorTest {
 			PUSH F31
 			SAVE F29, F31
 			.LINE_BEGIN «TEST.ASM», 4
+			$_RETURN:
 			RESTORE F28, F31
 			RETURN
 			.BLOCK_END MYFUNC
@@ -448,4 +459,34 @@ class PreprocessorTest {
 		assertEquals(expected, preprocessed.toUpperCase());
 	}
 
+	@Test
+	void testMacroVarArg() {
+		String src = """
+			#defmacro	DEBUG(...)
+				#call	debug(STDOUT, ${...})
+			#end_macro
+			#macro DEBUG("Test message", 1, 2, 3)
+			#macro DEBUG("Another message")
+			""";
+		String expected = """
+			.LINE_BEGIN «TEST.ASM», 4
+			PUSH 3
+			PUSH 2
+			PUSH 1
+			PUSH "TEST MESSAGE"
+			PUSH STDOUT
+			CALL DEBUG
+			ADD SP, 5
+			.LINE_END
+			.LINE_BEGIN «TEST.ASM», 5
+			PUSH "ANOTHER MESSAGE"
+			PUSH STDOUT
+			CALL DEBUG
+			ADD SP, 2
+			.LINE_END
+			""";
+		var loader = new IncludeLoader(Path.of("."));
+		String preprocessed = PreprocessorVisitor.preprocessText("Test.asm", src, loader);
+		assertEquals(expected, preprocessed.toUpperCase());
+	}
 }
