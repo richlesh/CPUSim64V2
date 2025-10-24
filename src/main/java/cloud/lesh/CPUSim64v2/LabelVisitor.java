@@ -194,7 +194,7 @@ public class LabelVisitor extends CPUSim64v2BaseVisitor<Void> implements HasLoca
 			blockname = ctx.BLOCK_IDENT().getText();
 		}
 		if (blockname == null)
-			throw new IllegalArgumentException(".block directive must have an argument@");
+			throw new IllegalArgumentException(".block directive must have an argument!");
 		if (blockname.contains("{}") || blockname.contains("%d") || blockname.contains("%x"))
 			blockname = String.format(blockname.replace("{}", "%04x"), ++blockCount);
 		blockNames.push(blockname);

@@ -23,7 +23,7 @@ public class Disassembler {
 		List<String> simulatorArgs = new ArrayList<String>();
 		for (String arg : args) {
 			if (arg.charAt(0) == '-') {
-				if (arg.equals("--debug") || arg.equals("-D")) {
+				if (arg.equals("--debug")) {
 					debug = true;
 				} else if (arg.startsWith("--mem=")) {
 					try {

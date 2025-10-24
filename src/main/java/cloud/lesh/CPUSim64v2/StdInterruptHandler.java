@@ -591,22 +591,20 @@ public class StdInterruptHandler extends InterruptHandler
 				}
 				break;
 			case iPRINTF:
-				v = cpu.memRead(cpu.getR(Simulator.R_SP) + 3);		// get port
+				v = cpu.memRead(cpu.getR(Simulator.R_SF) + 3);		// get port
 				ph=cpu.getPortHandler((int)v);
 				if (ph!=null) {
 					ph.setPort(v);
 					s = sprintf(4);
-					int len=s.length();
-					synchronized (ph) {
-						for (int pos=0;pos<len;++pos)
-							ph.writeChar(s.charAt(pos));
-					}
+					s.codePoints().forEach(cp -> {
+						ph.writeChar(cp);
+					});
 				}
 				break;
 			case iCOND_PRINTF:
-				b = cpu.memRead(cpu.getR(Simulator.R_SP) + 3) != 0;		// get condition
+				b = cpu.memRead(cpu.getR(Simulator.R_SF) + 3) != 0;		// get condition
 				if (b) {
-					v = cpu.memRead(cpu.getR(Simulator.R_SP) + 4);		// get port
+					v = cpu.memRead(cpu.getR(Simulator.R_SF) + 4);		// get port
 					ph=cpu.getPortHandler((int)v);
 					if (ph!=null) {
 						ph.setPort(v);
@@ -1016,7 +1014,7 @@ public class StdInterruptHandler extends InterruptHandler
 
 	public String sprintf(int msgOffset) throws Simulator.CPUException {
 		String s;
-		String fmt = cpu.convertString(cpu.memRead(cpu.getR(Simulator.R_SP) + msgOffset));
+		String fmt = cpu.convertString(cpu.memRead(cpu.getR(Simulator.R_SF) + msgOffset));
 		Vector<Object> args = new Vector<>();
 		Pattern rx = Pattern.compile("%[-+0 ]?\\d*.?\\d*([cdxefgs])", Pattern.CASE_INSENSITIVE);
 		Matcher m = rx.matcher(fmt);
@@ -1024,18 +1022,18 @@ public class StdInterruptHandler extends InterruptHandler
 		while (m.find()) {
 			switch (m.group(1).toLowerCase()) {
 				case "c":
-					args.add((int)cpu.memRead(cpu.getR(Simulator.R_SP) + numArgs + msgOffset + 1));
+					args.add((int)cpu.memRead(cpu.getR(Simulator.R_SF) + numArgs + msgOffset + 1));
 					break;
 				case "s":
-					args.add(cpu.convertString(cpu.memRead(cpu.getR(Simulator.R_SP) + numArgs + msgOffset + 1)));
+					args.add(cpu.convertString(cpu.memRead(cpu.getR(Simulator.R_SF) + numArgs + msgOffset + 1)));
 					break;
 				case "e":
 				case "f":
 				case "g":
-					args.add(Double.longBitsToDouble(cpu.memRead(cpu.getR(Simulator.R_SP) + numArgs + msgOffset + 1)));
+					args.add(Double.longBitsToDouble(cpu.memRead(cpu.getR(Simulator.R_SF) + numArgs + msgOffset + 1)));
 					break;
 				default:
-					args.add(cpu.memRead(cpu.getR(Simulator.R_SP) + numArgs + msgOffset + 1));
+					args.add(cpu.memRead(cpu.getR(Simulator.R_SF) + numArgs + msgOffset + 1));
 					break;
 			}
 			++numArgs;
@@ -1047,7 +1045,7 @@ public class StdInterruptHandler extends InterruptHandler
 	// Args must all be strings.
 	public String format(int msgOffset) throws Simulator.CPUException {
 		String s;
-		String fmt = cpu.convertString(cpu.memRead(cpu.getR(Simulator.R_SP) + msgOffset));
+		String fmt = cpu.convertString(cpu.memRead(cpu.getR(Simulator.R_SF) + msgOffset));
 		Vector<Object> args = new Vector<>();
 		Pattern rx = Pattern.compile("\\{([0-9]*)\\}", Pattern.CASE_INSENSITIVE);
 		Matcher m = rx.matcher(fmt);
@@ -1063,7 +1061,7 @@ public class StdInterruptHandler extends InterruptHandler
 		}
 		numArgs = Math.max(numArgs, maxArgs);
 		for (int i = 0; i < numArgs; ++i) {
-			args.add(cpu.convertString(cpu.memRead(cpu.getR(Simulator.R_SP) + i + msgOffset + 1)));
+			args.add(cpu.convertString(cpu.memRead(cpu.getR(Simulator.R_SF) + i + msgOffset + 1)));
 		}
 		s = MessageFormat.format(numberPlaceholders(fmt), args.toArray());
 		return s;

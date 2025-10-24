@@ -24,11 +24,11 @@ public class CPUSim64v2Parser extends Parser {
 		ARSHIFT=34, LROTATE=35, RROTATE=36, IN=37, OUT=38, PACK=39, PACK64=40, 
 		UNPACK=41, UNPACK64=42, CAS=43, ENDIAN=44, SAVE=45, RESTORE=46, REG_R=47, 
 		REG_F=48, SF=49, SP=50, PC=51, SR=52, U=53, Z=54, NZ=55, EQ=56, NE=57, 
-		N=58, LT=59, P=60, GT=61, NN=62, GE=63, NP=64, LE=65, HEXLIT=66, INTLIT=67, 
-		FLOATLIT=68, CHARLIT=69, STRINGLIT=70, FILENAMELIT=71, IDENT=72, BLOCK_IDENT=73, 
-		DCI=74, DCF=75, DCA=76, DCB=77, DCC=78, DCW=79, DCS=80, ORG=81, LINE=82, 
-		LINE_BEGIN=83, LINE_END=84, BLOCK_BEGIN=85, BLOCK_END=86, BLOCK_COMMENT=87, 
-		LINE_COMMENT=88, WS=89, NL=90;
+		N=58, LT=59, P=60, GT=61, NN=62, GE=63, NP=64, LE=65, O=66, NO=67, PE=68, 
+		PO=69, HEXLIT=70, INTLIT=71, FLOATLIT=72, CHARLIT=73, STRINGLIT=74, FILENAMELIT=75, 
+		IDENT=76, BLOCK_IDENT=77, DCI=78, DCF=79, DCA=80, DCB=81, DCC=82, DCW=83, 
+		DCS=84, ORG=85, LINE=86, LINE_BEGIN=87, LINE_END=88, BLOCK_BEGIN=89, BLOCK_END=90, 
+		BLOCK_COMMENT=91, LINE_COMMENT=92, WS=93, NL=94;
 	public static final int
 		RULE_program = 0, RULE_line = 1, RULE_labelDef = 2, RULE_directive = 3, 
 		RULE_dataDirective = 4, RULE_intList = 5, RULE_floatList = 6, RULE_charList = 7, 
@@ -84,10 +84,10 @@ public class CPUSim64v2Parser extends Parser {
 			"RROTATE", "IN", "OUT", "PACK", "PACK64", "UNPACK", "UNPACK64", "CAS", 
 			"ENDIAN", "SAVE", "RESTORE", "REG_R", "REG_F", "SF", "SP", "PC", "SR", 
 			"U", "Z", "NZ", "EQ", "NE", "N", "LT", "P", "GT", "NN", "GE", "NP", "LE", 
-			"HEXLIT", "INTLIT", "FLOATLIT", "CHARLIT", "STRINGLIT", "FILENAMELIT", 
-			"IDENT", "BLOCK_IDENT", "DCI", "DCF", "DCA", "DCB", "DCC", "DCW", "DCS", 
-			"ORG", "LINE", "LINE_BEGIN", "LINE_END", "BLOCK_BEGIN", "BLOCK_END", 
-			"BLOCK_COMMENT", "LINE_COMMENT", "WS", "NL"
+			"O", "NO", "PE", "PO", "HEXLIT", "INTLIT", "FLOATLIT", "CHARLIT", "STRINGLIT", 
+			"FILENAMELIT", "IDENT", "BLOCK_IDENT", "DCI", "DCF", "DCA", "DCB", "DCC", 
+			"DCW", "DCS", "ORG", "LINE", "LINE_BEGIN", "LINE_END", "BLOCK_BEGIN", 
+			"BLOCK_END", "BLOCK_COMMENT", "LINE_COMMENT", "WS", "NL"
 		};
 	}
 	private static final String[] _SYMBOLIC_NAMES = makeSymbolicNames();
@@ -179,7 +179,7 @@ public class CPUSim64v2Parser extends Parser {
 			setState(159);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & 140737488355200L) != 0) || ((((_la - 72)) & ~0x3f) == 0 && ((1L << (_la - 72)) & 294909L) != 0)) {
+			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & 140737488355200L) != 0) || ((((_la - 76)) & ~0x3f) == 0 && ((1L << (_la - 76)) & 294909L) != 0)) {
 				{
 				{
 				setState(156);
@@ -5865,7 +5865,7 @@ public class CPUSim64v2Parser extends Parser {
 			{
 			setState(953);
 			_la = _input.LA(1);
-			if ( !(((((_la - 66)) & ~0x3f) == 0 && ((1L << (_la - 66)) & 11L) != 0)) ) {
+			if ( !(((((_la - 70)) & ~0x3f) == 0 && ((1L << (_la - 70)) & 11L) != 0)) ) {
 			_errHandler.recoverInline(this);
 			}
 			else {
@@ -5919,7 +5919,7 @@ public class CPUSim64v2Parser extends Parser {
 			{
 			setState(955);
 			_la = _input.LA(1);
-			if ( !(((((_la - 66)) & ~0x3f) == 0 && ((1L << (_la - 66)) & 67L) != 0)) ) {
+			if ( !(((((_la - 70)) & ~0x3f) == 0 && ((1L << (_la - 70)) & 67L) != 0)) ) {
 			_errHandler.recoverInline(this);
 			}
 			else {
@@ -5974,7 +5974,7 @@ public class CPUSim64v2Parser extends Parser {
 			{
 			setState(957);
 			_la = _input.LA(1);
-			if ( !(((((_la - 66)) & ~0x3f) == 0 && ((1L << (_la - 66)) & 75L) != 0)) ) {
+			if ( !(((((_la - 70)) & ~0x3f) == 0 && ((1L << (_la - 70)) & 75L) != 0)) ) {
 			_errHandler.recoverInline(this);
 			}
 			else {
@@ -6212,6 +6212,10 @@ public class CPUSim64v2Parser extends Parser {
 		public TerminalNode GE() { return getToken(CPUSim64v2Parser.GE, 0); }
 		public TerminalNode NP() { return getToken(CPUSim64v2Parser.NP, 0); }
 		public TerminalNode LE() { return getToken(CPUSim64v2Parser.LE, 0); }
+		public TerminalNode O() { return getToken(CPUSim64v2Parser.O, 0); }
+		public TerminalNode NO() { return getToken(CPUSim64v2Parser.NO, 0); }
+		public TerminalNode PE() { return getToken(CPUSim64v2Parser.PE, 0); }
+		public TerminalNode PO() { return getToken(CPUSim64v2Parser.PO, 0); }
 		public ZCondContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
@@ -6240,7 +6244,7 @@ public class CPUSim64v2Parser extends Parser {
 			{
 			setState(967);
 			_la = _input.LA(1);
-			if ( !(((((_la - 53)) & ~0x3f) == 0 && ((1L << (_la - 53)) & 8191L) != 0)) ) {
+			if ( !(((((_la - 53)) & ~0x3f) == 0 && ((1L << (_la - 53)) & 131071L) != 0)) ) {
 			_errHandler.recoverInline(this);
 			}
 			else {
@@ -6823,7 +6827,7 @@ public class CPUSim64v2Parser extends Parser {
 	}
 
 	public static final String _serializedATN =
-		"\u0004\u0001Z\u0406\u0002\u0000\u0007\u0000\u0002\u0001\u0007\u0001\u0002"+
+		"\u0004\u0001^\u0406\u0002\u0000\u0007\u0000\u0002\u0001\u0007\u0001\u0002"+
 		"\u0002\u0007\u0002\u0002\u0003\u0007\u0003\u0002\u0004\u0007\u0004\u0002"+
 		"\u0005\u0007\u0005\u0002\u0006\u0007\u0006\u0002\u0007\u0007\u0007\u0002"+
 		"\b\u0007\b\u0002\t\u0007\t\u0002\n\u0007\n\u0002\u000b\u0007\u000b\u0002"+
@@ -6957,9 +6961,9 @@ public class CPUSim64v2Parser extends Parser {
 		"M\u0404\bM\u0001M\u0000\u0000N\u0000\u0002\u0004\u0006\b\n\f\u000e\u0010"+
 		"\u0012\u0014\u0016\u0018\u001a\u001c\u001e \"$&(*,.02468:<>@BDFHJLNPR"+
 		"TVXZ\\^`bdfhjlnprtvxz|~\u0080\u0082\u0084\u0086\u0088\u008a\u008c\u008e"+
-		"\u0090\u0092\u0094\u0096\u0098\u009a\u0000\b\u0001\u0000BC\u0001\u0000"+
-		"HI\u0001\u0000\u0002\u0004\u0002\u0000//13\u0002\u0000BCEE\u0002\u0000"+
-		"BCHH\u0003\u0000BCEEHH\u0001\u00005A\u0468\u0000\u009f\u0001\u0000\u0000"+
+		"\u0090\u0092\u0094\u0096\u0098\u009a\u0000\b\u0001\u0000FG\u0001\u0000"+
+		"LM\u0001\u0000\u0002\u0004\u0002\u0000//13\u0002\u0000FGII\u0002\u0000"+
+		"FGLL\u0003\u0000FGIILL\u0001\u00005E\u0468\u0000\u009f\u0001\u0000\u0000"+
 		"\u0000\u0002\u00a5\u0001\u0000\u0000\u0000\u0004\u00ad\u0001\u0000\u0000"+
 		"\u0000\u0006\u00c6\u0001\u0000\u0000\u0000\b\u00da\u0001\u0000\u0000\u0000"+
 		"\n\u00dc\u0001\u0000\u0000\u0000\f\u00e4\u0001\u0000\u0000\u0000\u000e"+
@@ -7004,31 +7008,31 @@ public class CPUSim64v2Parser extends Parser {
 		"\u0000\u00a6\u00a9\u0001\u0000\u0000\u0000\u00a7\u00aa\u0003\u0012\t\u0000"+
 		"\u00a8\u00aa\u0003\u0006\u0003\u0000\u00a9\u00a7\u0001\u0000\u0000\u0000"+
 		"\u00a9\u00a8\u0001\u0000\u0000\u0000\u00a9\u00aa\u0001\u0000\u0000\u0000"+
-		"\u00aa\u00ab\u0001\u0000\u0000\u0000\u00ab\u00ac\u0005Z\u0000\u0000\u00ac"+
-		"\u0003\u0001\u0000\u0000\u0000\u00ad\u00ae\u0005H\u0000\u0000\u00ae\u00af"+
+		"\u00aa\u00ab\u0001\u0000\u0000\u0000\u00ab\u00ac\u0005^\u0000\u0000\u00ac"+
+		"\u0003\u0001\u0000\u0000\u0000\u00ad\u00ae\u0005L\u0000\u0000\u00ae\u00af"+
 		"\u0005\u0001\u0000\u0000\u00af\u0005\u0001\u0000\u0000\u0000\u00b0\u00c7"+
-		"\u0003\b\u0004\u0000\u00b1\u00b2\u0005Q\u0000\u0000\u00b2\u00c7\u0007"+
-		"\u0000\u0000\u0000\u00b3\u00b4\u0005R\u0000\u0000\u00b4\u00b6\u0005G\u0000"+
+		"\u0003\b\u0004\u0000\u00b1\u00b2\u0005U\u0000\u0000\u00b2\u00c7\u0007"+
+		"\u0000\u0000\u0000\u00b3\u00b4\u0005V\u0000\u0000\u00b4\u00b6\u0005K\u0000"+
 		"\u0000\u00b5\u00b7\u0005\u0002\u0000\u0000\u00b6\u00b5\u0001\u0000\u0000"+
 		"\u0000\u00b6\u00b7\u0001\u0000\u0000\u0000\u00b7\u00b8\u0001\u0000\u0000"+
-		"\u0000\u00b8\u00c7\u0005C\u0000\u0000\u00b9\u00ba\u0005S\u0000\u0000\u00ba"+
-		"\u00bc\u0005G\u0000\u0000\u00bb\u00bd\u0005\u0002\u0000\u0000\u00bc\u00bb"+
+		"\u0000\u00b8\u00c7\u0005G\u0000\u0000\u00b9\u00ba\u0005W\u0000\u0000\u00ba"+
+		"\u00bc\u0005K\u0000\u0000\u00bb\u00bd\u0005\u0002\u0000\u0000\u00bc\u00bb"+
 		"\u0001\u0000\u0000\u0000\u00bc\u00bd\u0001\u0000\u0000\u0000\u00bd\u00be"+
-		"\u0001\u0000\u0000\u0000\u00be\u00c7\u0005C\u0000\u0000\u00bf\u00c7\u0005"+
-		"T\u0000\u0000\u00c0\u00c1\u0005U\u0000\u0000\u00c1\u00c7\u0007\u0001\u0000"+
-		"\u0000\u00c2\u00c4\u0005V\u0000\u0000\u00c3\u00c5\u0007\u0001\u0000\u0000"+
+		"\u0001\u0000\u0000\u0000\u00be\u00c7\u0005G\u0000\u0000\u00bf\u00c7\u0005"+
+		"X\u0000\u0000\u00c0\u00c1\u0005Y\u0000\u0000\u00c1\u00c7\u0007\u0001\u0000"+
+		"\u0000\u00c2\u00c4\u0005Z\u0000\u0000\u00c3\u00c5\u0007\u0001\u0000\u0000"+
 		"\u00c4\u00c3\u0001\u0000\u0000\u0000\u00c4\u00c5\u0001\u0000\u0000\u0000"+
 		"\u00c5\u00c7\u0001\u0000\u0000\u0000\u00c6\u00b0\u0001\u0000\u0000\u0000"+
 		"\u00c6\u00b1\u0001\u0000\u0000\u0000\u00c6\u00b3\u0001\u0000\u0000\u0000"+
 		"\u00c6\u00b9\u0001\u0000\u0000\u0000\u00c6\u00bf\u0001\u0000\u0000\u0000"+
 		"\u00c6\u00c0\u0001\u0000\u0000\u0000\u00c6\u00c2\u0001\u0000\u0000\u0000"+
-		"\u00c7\u0007\u0001\u0000\u0000\u0000\u00c8\u00c9\u0005J\u0000\u0000\u00c9"+
-		"\u00db\u0007\u0000\u0000\u0000\u00ca\u00cb\u0005K\u0000\u0000\u00cb\u00db"+
-		"\u0005D\u0000\u0000\u00cc\u00cd\u0005L\u0000\u0000\u00cd\u00db\u0007\u0000"+
-		"\u0000\u0000\u00ce\u00cf\u0005M\u0000\u0000\u00cf\u00db\u0003\u0010\b"+
-		"\u0000\u00d0\u00d1\u0005N\u0000\u0000\u00d1\u00db\u0003\u0010\b\u0000"+
-		"\u00d2\u00d3\u0005P\u0000\u0000\u00d3\u00db\u0005F\u0000\u0000\u00d4\u00d8"+
-		"\u0005O\u0000\u0000\u00d5\u00d9\u0003\n\u0005\u0000\u00d6\u00d9\u0003"+
+		"\u00c7\u0007\u0001\u0000\u0000\u0000\u00c8\u00c9\u0005N\u0000\u0000\u00c9"+
+		"\u00db\u0007\u0000\u0000\u0000\u00ca\u00cb\u0005O\u0000\u0000\u00cb\u00db"+
+		"\u0005H\u0000\u0000\u00cc\u00cd\u0005P\u0000\u0000\u00cd\u00db\u0007\u0000"+
+		"\u0000\u0000\u00ce\u00cf\u0005Q\u0000\u0000\u00cf\u00db\u0003\u0010\b"+
+		"\u0000\u00d0\u00d1\u0005R\u0000\u0000\u00d1\u00db\u0003\u0010\b\u0000"+
+		"\u00d2\u00d3\u0005T\u0000\u0000\u00d3\u00db\u0005J\u0000\u0000\u00d4\u00d8"+
+		"\u0005S\u0000\u0000\u00d5\u00d9\u0003\n\u0005\u0000\u00d6\u00d9\u0003"+
 		"\f\u0006\u0000\u00d7\u00d9\u0003\u000e\u0007\u0000\u00d8\u00d5\u0001\u0000"+
 		"\u0000\u0000\u00d8\u00d6\u0001\u0000\u0000\u0000\u00d8\u00d7\u0001\u0000"+
 		"\u0000\u0000\u00d9\u00db\u0001\u0000\u0000\u0000\u00da\u00c8\u0001\u0000"+
@@ -7040,12 +7044,12 @@ public class CPUSim64v2Parser extends Parser {
 		"\u00df\u00dd\u0001\u0000\u0000\u0000\u00e0\u00e3\u0001\u0000\u0000\u0000"+
 		"\u00e1\u00df\u0001\u0000\u0000\u0000\u00e1\u00e2\u0001\u0000\u0000\u0000"+
 		"\u00e2\u000b\u0001\u0000\u0000\u0000\u00e3\u00e1\u0001\u0000\u0000\u0000"+
-		"\u00e4\u00e9\u0005D\u0000\u0000\u00e5\u00e6\u0005\u0002\u0000\u0000\u00e6"+
-		"\u00e8\u0005D\u0000\u0000\u00e7\u00e5\u0001\u0000\u0000\u0000\u00e8\u00eb"+
+		"\u00e4\u00e9\u0005H\u0000\u0000\u00e5\u00e6\u0005\u0002\u0000\u0000\u00e6"+
+		"\u00e8\u0005H\u0000\u0000\u00e7\u00e5\u0001\u0000\u0000\u0000\u00e8\u00eb"+
 		"\u0001\u0000\u0000\u0000\u00e9\u00e7\u0001\u0000\u0000\u0000\u00e9\u00ea"+
 		"\u0001\u0000\u0000\u0000\u00ea\r\u0001\u0000\u0000\u0000\u00eb\u00e9\u0001"+
-		"\u0000\u0000\u0000\u00ec\u00f1\u0005E\u0000\u0000\u00ed\u00ee\u0005\u0002"+
-		"\u0000\u0000\u00ee\u00f0\u0005E\u0000\u0000\u00ef\u00ed\u0001\u0000\u0000"+
+		"\u0000\u0000\u0000\u00ec\u00f1\u0005I\u0000\u0000\u00ed\u00ee\u0005\u0002"+
+		"\u0000\u0000\u00ee\u00f0\u0005I\u0000\u0000\u00ef\u00ed\u0001\u0000\u0000"+
 		"\u0000\u00f0\u00f3\u0001\u0000\u0000\u0000\u00f1\u00ef\u0001\u0000\u0000"+
 		"\u0000\u00f1\u00f2\u0001\u0000\u0000\u0000\u00f2\u000f\u0001\u0000\u0000"+
 		"\u0000\u00f3\u00f1\u0001\u0000\u0000\u0000\u00f4\u00f9\u0003~?\u0000\u00f5"+
@@ -7395,7 +7399,7 @@ public class CPUSim64v2Parser extends Parser {
 		"\u0003p8\u0000\u037e\u0387\u0003\u0082A\u0000\u037f\u0387\u0003\u0084"+
 		"B\u0000\u0380\u0387\u0003\u0086C\u0000\u0381\u0387\u0003\u0088D\u0000"+
 		"\u0382\u0387\u0003\u008cF\u0000\u0383\u0387\u0003\u008aE\u0000\u0384\u0387"+
-		"\u0003\u008eG\u0000\u0385\u0387\u0005H\u0000\u0000\u0386\u037b\u0001\u0000"+
+		"\u0003\u008eG\u0000\u0385\u0387\u0005L\u0000\u0000\u0386\u037b\u0001\u0000"+
 		"\u0000\u0000\u0386\u037c\u0001\u0000\u0000\u0000\u0386\u037d\u0001\u0000"+
 		"\u0000\u0000\u0386\u037e\u0001\u0000\u0000\u0000\u0386\u037f\u0001\u0000"+
 		"\u0000\u0000\u0386\u0380\u0001\u0000\u0000\u0000\u0386\u0381\u0001\u0000"+
@@ -7432,7 +7436,7 @@ public class CPUSim64v2Parser extends Parser {
 		"\u007f\u0001\u0000\u0000\u0000\u03bb\u03bc\u0007\u0005\u0000\u0000\u03bc"+
 		"\u0081\u0001\u0000\u0000\u0000\u03bd\u03be\u0007\u0006\u0000\u0000\u03be"+
 		"\u0083\u0001\u0000\u0000\u0000\u03bf\u03c0\u0007\u0000\u0000\u0000\u03c0"+
-		"\u0085\u0001\u0000\u0000\u0000\u03c1\u03c2\u0005D\u0000\u0000\u03c2\u0087"+
+		"\u0085\u0001\u0000\u0000\u0000\u03c1\u03c2\u0005H\u0000\u0000\u03c2\u0087"+
 		"\u0001\u0000\u0000\u0000\u03c3\u03c4\u0007\u0000\u0000\u0000\u03c4\u0089"+
 		"\u0001\u0000\u0000\u0000\u03c5\u03c6\u0007\u0000\u0000\u0000\u03c6\u008b"+
 		"\u0001\u0000\u0000\u0000\u03c7\u03c8\u0007\u0007\u0000\u0000\u03c8\u008d"+

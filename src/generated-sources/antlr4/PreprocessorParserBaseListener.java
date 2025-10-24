@@ -269,6 +269,30 @@ public class PreprocessorParserBaseListener implements PreprocessorParserListene
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterIfDefBlock(PreprocessorParser.IfDefBlockContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitIfDefBlock(PreprocessorParser.IfDefBlockContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterIfNDefBlock(PreprocessorParser.IfNDefBlockContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitIfNDefBlock(PreprocessorParser.IfNDefBlockContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterElseifClause(PreprocessorParser.ElseifClauseContext ctx) { }
 	/**
 	 * {@inheritDoc}

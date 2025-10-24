@@ -37,6 +37,8 @@ directive
   | returnDir
   | freturnDir
   | ifBlock
+  | ifDefBlock
+  | ifNDefBlock
   | forBlock
   | whileBlock
   | doWhileBlock
@@ -138,6 +140,14 @@ ifBlock
   : PP_IF expr NL block (elseifClause)* (elseClause)? PP_ENDIF NL
   ;
 
+ifDefBlock
+  : PP_IFDEF primary NL block (elseClause)? PP_ENDIF NL
+  ;
+
+ifNDefBlock
+  : PP_IFNDEF primary NL block (elseClause)? PP_ENDIF NL
+  ;
+
 elseifClause
   : PP_ELSEIF expr NL block
   ;
@@ -179,7 +189,7 @@ block
   ;
 
 /* Simple expressions for #if/#elseif:
-   IDENT | literal | primary cmpOp primary
+   primary cmpOp primary
 */
 expr
   : primary ( cmpOp primary )?

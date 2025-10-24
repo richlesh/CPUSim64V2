@@ -17,23 +17,9 @@ public class Preprocessor {
 		}
 
 		Path inPath = Path.of("");
-		HashMap<String, PreprocessorVisitor.DefVal> definitions = new HashMap<>();
-		for (String arg : args) {
-			if (arg.charAt(0) == '-') {
-				if (arg.equals("--debug")) {
-					definitions.put("__DEBUG", new PreprocessorVisitor.DefVal(PreprocessorVisitor.DefVal.Kind.STRING, "1"));
-				} else if (arg.startsWith("-D")) {
-					var def = arg.substring(2).split("=", 2);
-					if (def.length == 2) {
-						definitions.put(def[0], new PreprocessorVisitor.DefVal(PreprocessorVisitor.DefVal.Kind.STRING, def[1]));
-					} else {
-						definitions.put(def[0], new PreprocessorVisitor.DefVal(PreprocessorVisitor.DefVal.Kind.STRING, "1"));
-					}
-				} else {
-					System.err.println("Unknown option: " + arg);
-					System.exit(1);
-				}
-			} else  {
+		for (int i = 0; i < args.length; ++i) {
+			String arg = args[i];
+			if (arg.charAt(0) != '-') {
 				inPath = Path.of(arg).toAbsolutePath();
 			}
 		}
@@ -56,7 +42,7 @@ public class Preprocessor {
 
 		// 2) Preprocess
 		var loader = new IncludeLoader(inPath.getParent());
-		String preprocessed = PreprocessorVisitor.preprocessText(inPath.getFileName().toString(), source, loader, definitions);
+		String preprocessed = PreprocessorVisitor.preprocessText(inPath.getFileName().toString(), source, loader, args);
 
 		// 2b) Rewrite literals
 		LiteralRewriter rw = new LiteralRewriter();

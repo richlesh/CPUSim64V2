@@ -62,7 +62,7 @@ public class PreprocessorVisitor extends PreprocessorParserBaseVisitor<Void> {
 	private final StringBuilder out = new StringBuilder();
 
 	/** Simple symbol table for #define */
-	private Map<String, DefVal> defines = new LinkedHashMap<>();
+	private Map<String, DefVal> defines = new HashMap<>();
 	private Stack<Map<String, String>> scopes = new Stack<>();
 	/** When true, we also apply #define substitution to directive passthrough lines. */
 	private final boolean substituteInsideDirectives;
@@ -72,11 +72,12 @@ public class PreprocessorVisitor extends PreprocessorParserBaseVisitor<Void> {
 	private static final Pattern PLACEHOLDER = Pattern.compile("\\$\\{(([A-Za-z_.$][A-Za-z0-9_.$]*)|\\.\\.\\.)\\}");
 
 	public PreprocessorVisitor(String filename, IncludeLoader loader) {
-		this(filename, loader, /*substituteInsideDirectives*/ false, 0);
+		this(filename, 1, loader, /*substituteInsideDirectives*/ false, 0);
 	}
 
-	public PreprocessorVisitor(String filename, IncludeLoader loader, boolean substituteInsideDirectives, int pauseLineSync) {
+	public PreprocessorVisitor(String filename, int lineNum, IncludeLoader loader, boolean substituteInsideDirectives, int pauseLineSync) {
 		this.filename = filename;
+		this.lineNum = lineNum;
 		this.includeLoader = Objects.requireNonNull(loader, "IncludeLoader is required");
 		this.substituteInsideDirectives = substituteInsideDirectives;
 		this.pauseLineSync = pauseLineSync;
@@ -202,7 +203,7 @@ public class PreprocessorVisitor extends PreprocessorParserBaseVisitor<Void> {
 				previouslyIncluded.add(path);
 				final String included = includeLoader.load(path, isSystem);
 				Path filename = Path.of(path).getFileName();
-				final String preprocessed = preprocessText(filename.toString(), included, includeLoader, defines, macros, substituteInsideDirectives, 0);
+				final String preprocessed = preprocessText(filename.toString(), 1, included, includeLoader, defines, macros, substituteInsideDirectives, 0);
 				out.append(preprocessed);
 			} catch (IllegalArgumentException ex) {
 				throw new PreprocessorException(ex);
@@ -351,10 +352,11 @@ public class PreprocessorVisitor extends PreprocessorParserBaseVisitor<Void> {
 		// If you’d rather keep the markers, replace with reflowTokens(ctx) + emit.
 
 		// Open a new scope for arguments and local vars.
+		String funcName = "";
 		for (ParseTree child : ctx.children) {
 			if (child == ctx.PP_DEF_FUNC()) {
 				pushScope();
-				String funcName = ctx.IDENT().getText().toUpperCase();
+				funcName = ctx.IDENT().getText().toUpperCase();
 				emitLine(funcName + ":", false);
 				if (ctx.paramList() != null) {
 					int i = 3;
@@ -431,16 +433,12 @@ public class PreprocessorVisitor extends PreprocessorParserBaseVisitor<Void> {
 			}
 			String replacement = applyPlaceholders(def.getRight(), formalParams);
 			emitLineBeginDirective(filename, lineNum);
-			for (var s : replacement.split("\n")) {
-				if (s.matches("^\\s*#.*")) {
-					++pauseLineSync;
-					if (pauseLineSync > 10)
-						throw new PreprocessorException("Macro nesting exceeded 10 levels!");
-					s = preprocessText(filename, s, includeLoader, defines, macros, true, pauseLineSync);
-					--pauseLineSync;
-				}
-				emitLine(s, true);
-			}
+			++pauseLineSync;
+			if (pauseLineSync > 10)
+				throw new PreprocessorException("Macro nesting exceeded 10 levels!");
+			replacement = preprocessText(filename, lineNum, replacement, includeLoader, defines, macros, true, pauseLineSync);
+			--pauseLineSync;
+			emitLine(replacement, true);
 			emitLineEndDirective(filename, lineNum);
 		}
 		return null;
@@ -466,6 +464,46 @@ public class PreprocessorVisitor extends PreprocessorParserBaseVisitor<Void> {
 		// #else arm (optional)
 		if (ctx.elseClause() != null && ctx.elseClause().block() != null) {
 			visit(ctx.elseClause().block());
+		}
+		return null;
+	}
+
+	@Override
+	public Void visitIfDefBlock(PreprocessorParser.IfDefBlockContext ctx) {
+		if (ctx.primary() != null) {
+			boolean b = ctx.primary().IDENT() != null ?
+				defines.containsKey(ctx.primary().IDENT().getText().toUpperCase()) :
+				true;
+			// #ifdef arm
+			if (b) {
+				visit(ctx.block());   // emit only this block
+				return null;
+			}
+
+			// #else arm (optional)
+			if (ctx.elseClause() != null && ctx.elseClause().block() != null) {
+				visit(ctx.elseClause().block());
+			}
+		}
+		return null;
+	}
+
+	@Override
+	public Void visitIfNDefBlock(PreprocessorParser.IfNDefBlockContext ctx) {
+		if (ctx.primary() != null) {
+			boolean b = ctx.primary().IDENT() != null ?
+				defines.containsKey(ctx.primary().IDENT().getText().toUpperCase()) :
+				true;
+			// #ifdef arm
+			if (!b) {
+				visit(ctx.block());   // emit only this block
+				return null;
+			}
+
+			// #else arm (optional)
+			if (ctx.elseClause() != null && ctx.elseClause().block() != null) {
+				visit(ctx.elseClause().block());
+			}
 		}
 		return null;
 	}
@@ -811,19 +849,21 @@ public class PreprocessorVisitor extends PreprocessorParserBaseVisitor<Void> {
 		}
 		if (s.length() == 0 || s.charAt(s.length() - 1) != '\n')
 			out.append('\n');
-		++lineNum;
+		if (pauseLineSync <= 0 ) ++lineNum;
 	}
 
 	private void emitLineDirective(String filename, int line) {
-		lineDirectives.push(String.format(".LINE \u00ab%s\u00bb, %d%n", filename, line));
-		lineNum = line;
+		if (pauseLineSync <= 0) {
+			lineDirectives.push(String.format(".LINE \u00ab%s\u00bb, %d%n", filename, line));
+			lineNum = line;
+		}
 	}
 
 	private void emitLineBeginDirective(String filename, int line) {
 		lineDirectives.clear();
-		if (pauseLineSync <= 0)
-			emitLine(String.format(".LINE_BEGIN \u00ab%s\u00bb, %d", filename, lineNum), false);
 		++pauseLineSync;
+		if (pauseLineSync <= 1)
+			emitLine(String.format(".LINE_BEGIN \u00ab%s\u00bb, %d", filename, lineNum), false);
 	}
 
 	private void emitLineEndDirective(String filename, int line) {
@@ -849,9 +889,9 @@ public class PreprocessorVisitor extends PreprocessorParserBaseVisitor<Void> {
 				// No replacement
 				if (replacement == null) {
 					if (ident.equals("__FILE__"))
-						replacement = filename;
+						replacement = '"' + filename + '"';
 					else if (ident.equals("__LINE__"))
-						replacement = String.valueOf(line);
+						replacement = String.valueOf(lineNum);
 					else
 						continue;
 				}
@@ -955,17 +995,37 @@ public class PreprocessorVisitor extends PreprocessorParserBaseVisitor<Void> {
 	 * This one starts with a fresh, empty define table.
 	 */
 	public static String preprocessText(String filename, String source, IncludeLoader loader) {
-		return preprocessText(filename, source, loader, null, null, false, 0);
+		return preprocessText(filename, 1, source, loader, null, null, false, 0);
 	}
 
-	public static String preprocessText(String filename, String source, IncludeLoader loader, Map<String, DefVal> seedDefines) {
-		return preprocessText(filename, source, loader, seedDefines, null, false, 0);
+	// Sets elements of args to null when they are used.
+	public static String preprocessText(String filename, String source, IncludeLoader loader, String[] args) {
+		HashMap<String, PreprocessorVisitor.DefVal> definitions = new HashMap<>();
+		for (int i = 0; i < args.length; ++i) {
+			String arg = args[i];
+			if (arg.charAt(0) == '-') {
+				if (arg.equals("--DEBUG")) {
+					definitions.put("__DEBUG", new PreprocessorVisitor.DefVal(PreprocessorVisitor.DefVal.Kind.SYMBOL, "1"));
+					args[i] = null;
+				} else if (arg.startsWith("-D")) {
+					var def = arg.substring(2).split("=", 2);
+					if (def.length == 2) {
+						definitions.put(def[0], new PreprocessorVisitor.DefVal(PreprocessorVisitor.DefVal.Kind.STRING, def[1]));
+					} else {
+						definitions.put(def[0], new PreprocessorVisitor.DefVal(PreprocessorVisitor.DefVal.Kind.SYMBOL, "1"));
+					}
+					args[i] = null;
+				}
+			}
+		}
+		return preprocessText(filename, 1, source, loader, definitions, null, false, 0);
 	}
 
 	/**
 	 * Same as above, but allows reusing an existing define map (e.g., across #include).
 	 */
 	public static String preprocessText(String filename,
+										int lineNum,
 										String source,
 										IncludeLoader loader,
 										Map<String, DefVal> seedDefines,
@@ -979,7 +1039,7 @@ public class PreprocessorVisitor extends PreprocessorParserBaseVisitor<Void> {
 		parser.removeErrorListeners();
 		parser.addErrorListener(new DiagnosticErrorListener());
 
-		PreprocessorVisitor v = new PreprocessorVisitor(filename, loader, substituteInsideDirectives, pauseLineSync);
+		PreprocessorVisitor v = new PreprocessorVisitor(filename, lineNum, loader, substituteInsideDirectives, pauseLineSync);
 		v.defines = seedDefines != null ? seedDefines : new HashMap<>();
 		v.macros = seedMacros != null ? seedMacros : new HashMap<>();
 		v.visit(parser.preproc());

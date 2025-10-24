@@ -96,3 +96,40 @@
 	out	LONG,${port},${register}
 #end_macro
 #define	OUTL	OUT8
+
+#def_macro	PUT_NL()
+	move	r0, STDOUT
+	int		iPUT_NL
+#end_macro
+
+#def_macro	PUTS(str)
+	move	r0, STDOUT
+	move	r1, ${str}
+	int		iPUTS
+#end_macro
+
+#def_macro  PUT_INT(val, base)
+	move	r0, STDOUT
+	move	r1, ${val}
+	move	r2, ${base}
+	int		iPUT_INT
+#end_macro
+
+#def_macro  PUT_DEC(val)
+	move	r0, STDOUT
+	move	r1, ${val}
+	int		iPUT_DEC
+#end_macro
+
+#def_macro  PUT_HEX(val)
+	move	r0, STDOUT
+	move	r1, ${val}
+	int		iPUT_HEX
+#end_macro
+
+#def_macro  PUT_FP(val)
+	move	r0, STDOUT
+	move	r1, 16
+	move	f0, ${val}
+	int		iPUT_FP
+#end_macro

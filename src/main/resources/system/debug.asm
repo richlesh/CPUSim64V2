@@ -2,171 +2,17 @@
 #include <system/system.def>
 
 jump	DEBUG_ASM_END
-ENABLE_ASSERT_EXIT: .dci	1
-
-ASSERTION_FAILED: 	.dcs	"Assertion Failed (Filename: "
-ASSERTION_LINE:		.dcs	", Line: "
-ASSERTION_MESSAGE:	.dcs	"): "
 
 #ifdef __DEBUG
-	#defmacro	DEBUG(message, ...)
-		#call	debug(STDOUT, ${message}, ${...})
-	#end_macro
-#else
-	#defmacro	DEBUG(message, ...)
-	#end_macro
-#endif
-
-// debug(port, fmt, values...)
-// Formats the values on the stack and then sends to the specified I/O port.
-// port		I/O Port
-// fmt		String with formatting information
-// values	Values for formatting
-#ifdef __DEBUG
-#def_func	debug(port, fmt, ...)
-	load	r0, port
-	#call	fputs(r0, "\nDEBUG: ")
-	int		iPRINTF
-#end_func
-
-// cond_debug(cond, port, fmt, values...)
-// Formats the values on the stack and then sends to the specified I/O port.
-// cond		Must be TRUE to print
-// port		I/O Port
-// fmt		String with formatting information
-// values	Values for formatting
-#def_func	cond_debug(b, port, fmt, ...)
-#ifdef __DEBUG
-	load	r0, b
-	#cond_sr	nz
-		load	r0, port
-		#call	fputs(r0, "\nDEBUG: ")
-		int		iCOND_PRINTF
-	#end_cond_sr
-#endif
-#end_func
-
-#def_func	assert_exit()
-		load	r0, ENABLE_ASSERT_EXIT
-		jump	z, @END
-		mov		r0, 1
-		int		iEXIT
-END:
-#end_func
-
-#def_func	assert_true_func(isTrue, message, filename, line)
-		#var	temp
-		ld		r0, isTrue
-		jmp		nz, @ASSERT_IS_TRUE
-		#call	puts(ASSERTION_FAILED)
-		ld		temp, filename
-		#call	puts(temp)
-		#call	puts(ASSERTION_LINE)
-		ld		temp, line
-		#call	put_int(temp,10)
-		#call	puts(ASSERTION_MESSAGE)
-		ld		temp, message
-		#call	puts(temp)
-		#call	put_nl()
-		#call	assert_exit()
-ASSERT_IS_TRUE:
-#end_func
-
-#def_func	assert_false_func(isFalse, message, filename, line)
-		#var	temp
-		ld		r0, isFalse
-		jmp		z, @ASSERT_IS_FALSE
-		#call	puts(ASSERTION_FAILED)
-		ld		temp, filename
-		#call	puts(temp)
-		#call	puts(ASSERTION_LINE)
-		ld		temp, line
-		#call	put_int(temp,10)
-		#call	puts(ASSERTION_MESSAGE)
-		ld		temp, message
-		#call	puts(temp)
-		#call	put_nl()
-		#call	assert_exit()
-ASSERT_IS_FALSE:
-#end_func
-
-#def_macro	assert_macro(cond, condSymbol)
-	#def_func	assert_${cond}_func(valueA, valueB, message, filename, line)
-		#var	a,b,m,temp
-		load	a,valueA
-		load	b,valueB
-		load	m,message
-		cmp		a,b
-		jmp		${cond}, @ASSERT_${cond}_PASSED
-		#call	puts(ASSERTION_FAILED)
-		ld		temp, filename
-		#call	puts(temp)
-		#call	puts(ASSERTION_LINE)
-		ld		temp, line
-		#call	put_int(temp,10)
-		#call	puts(ASSERTION_MESSAGE)
-		#call	puts(m)
-		#call	putc(' ')
-		#call	put_int(a,10)
-		#call	putc(${condSymbol})
-		#call	put_int(b,10)
-		#call	put_nl()
-		#call	assert_exit()
-ASSERT_${cond}_PASSED:
-	#end_func
-#end_macro
-
-#def_macro	assert_fp_macro(cond, condSymbol)
-	#def_func	assert_${cond}_fp_func(valueA, valueB, message, filename, line)
-		#var	m,temp
-		#fvar	a,b
-		load	a,valueA
-		load	b,valueB
-		load	m,message
-		cmp		a,b
-		jmp		${cond}, @ASSERT_${cond}_FP_PASSED
-		#call	puts(ASSERTION_FAILED)
-		ld		temp, filename
-		#call	puts(temp)
-		#call	puts(ASSERTION_LINE)
-		ld		temp, line
-		#call	put_int(temp,10)
-		#call	puts(ASSERTION_MESSAGE)
-		#call	puts(m)
-		#call	putc(' ')
-		#call	put_fp(a)
-		#call	putc(${condSymbol})
-		#call	put_fp(b)
-		#call	put_nl()
-		#call	assert_exit()
-ASSERT_${cond}_FP_PASSED:
-	#end_func
-#end_macro
-
-assert_macro(z, '≠')
-assert_macro(nz, '=')
-assert_macro(p, '≤')
-assert_macro(np, '>')
-assert_macro(n, '≥')
-assert_macro(nn, '<')
-assert_fp_macro(z, '≠')
-assert_fp_macro(nz, '=')
-assert_fp_macro(p, '≤')
-assert_fp_macro(np, '>')
-assert_fp_macro(n, '≥')
-assert_fp_macro(nn, '<')
-
-#if_def	_debug
-	#def_macro	are_assertions_enabled()
-		move	r0, 1
+	#defmacro	DEBUG_MSG(...)
+		#call	debug_msg(STDOUT, ${...})
 	#end_macro
 
-	#def_macro	debug_msg(message, value)
-		#call	debug_func(${message}, ${value})
+	#defmacro	COND_DEBUG_MSG(b, ...)
+		#call	cond_debug_msg(${b}, STDOUT, ${...})
 	#end_macro
 
-	#def_macro	debug_fp_msg(message, value)
-		#call	debug_fp_func(${message}, ${value})
+	#defmacro	SET_EXIT_ON_ASSERT_FAILURE(b)
 	#end_macro
 
 	#def_macro	printCPU()
@@ -174,69 +20,65 @@ assert_fp_macro(nn, '<')
 	#end_macro
 
 	#def_macro	assert_true(isTrue, message)
-		#call	assert_true_func(${isTrue}, ${message},__FILE__,__LINE__)
+		#call	assert_true(${isTrue}, ${message},__FILE__,__LINE__)
 	#end_macro
 
 	#def_macro	assert_false(isFalse, message)
-		#call	assert_false_func(${isFalse}, ${message},__FILE__,__LINE__)
+		#call	assert_false(${isFalse}, ${message},__FILE__,__LINE__)
 	#end_macro
 
 	#def_macro	assert_eq(valueA, valueB, message)
-		#call	assert_z_func(${valueA}, ${valueB}, ${message},__FILE__,__LINE__)
+		#call	assert_z(${valueA}, ${valueB}, ${message},__FILE__,__LINE__)
 	#end_macro
 
 	#def_macro	assert_ne(valueA, valueB, message)
-		#call	assert_nz_func(${valueA}, ${valueB}, ${message},__FILE__,__LINE__)
+		#call	assert_nz(${valueA}, ${valueB}, ${message},__FILE__,__LINE__)
 	#end_macro
 
 	#def_macro	assert_gt(valueA, valueB, message)
-		#call	assert_p_func(${valueA}, ${valueB}, ${message},__FILE__,__LINE__)
+		#call	assert_p(${valueA}, ${valueB}, ${message},__FILE__,__LINE__)
 	#end_macro
 
 	#def_macro	assert_ge(valueA, valueB, message)
-		#call	assert_nn_func(${valueA}, ${valueB}, ${message},__FILE__,__LINE__)
+		#call	assert_nn(${valueA}, ${valueB}, ${message},__FILE__,__LINE__)
 	#end_macro
 
 	#def_macro	assert_lt(valueA, valueB, message)
-		#call	assert_n_func(${valueA}, ${valueB}, ${message},__FILE__,__LINE__)
+		#call	assert_n(${valueA}, ${valueB}, ${message},__FILE__,__LINE__)
 	#end_macro
 
 	#def_macro	assert_le(valueA, valueB, message)
-		#call	assert_np_func(${valueA}, ${valueB}, ${message},__FILE__,__LINE__)
+		#call	assert_np(${valueA}, ${valueB}, ${message},__FILE__,__LINE__)
 	#end_macro
 
 	#def_macro	assert_eq_fp(valueA, valueB, message)
-		#call	assert_z_fp_func(${valueA}, ${valueB}, ${message},__FILE__,__LINE__)
+		#call	assert_z_fp(${valueA}, ${valueB}, ${message},__FILE__,__LINE__)
 	#end_macro
 
 	#def_macro	assert_ne_fp(valueA, valueB, message)
-		#call	assert_nz_fp_func(${valueA}, ${valueB}, ${message},__FILE__,__LINE__)
+		#call	assert_nz_fp(${valueA}, ${valueB}, ${message},__FILE__,__LINE__)
 	#end_macro
 
 	#def_macro	assert_gt_fp(valueA, valueB, message)
-		#call	assert_p_fp_func(${valueA}, ${valueB}, ${message},__FILE__,__LINE__)
+		#call	assert_p_fp(${valueA}, ${valueB}, ${message},__FILE__,__LINE__)
 	#end_macro
 
 	#def_macro	assert_ge_fp(valueA, valueB, message)
-		#call	assert_nn_fp_func(${valueA}, ${valueB}, ${message},__FILE__,__LINE__)
+		#call	assert_nn_fp(${valueA}, ${valueB}, ${message},__FILE__,__LINE__)
 	#end_macro
 
 	#def_macro	assert_lt_fp(valueA, valueB, message)
-		#call	assert_n_fp_func(${valueA}, ${valueB}, ${message},__FILE__,__LINE__)
+		#call	assert_n_fp(${valueA}, ${valueB}, ${message},__FILE__,__LINE__)
 	#end_macro
 
 	#def_macro	assert_le_fp(valueA, valueB, message)
-		#call	assert_np_fp_func(${valueA}, ${valueB}, ${message},__FILE__,__LINE__)
+		#call	assert_np_fp(${valueA}, ${valueB}, ${message},__FILE__,__LINE__)
 	#end_macro
 #else
-	#def_macro	are_assertions_enabled()
-		move	r0, 0
+	#defmacro	DEBUG_MSG(...)
 	#end_macro
 
-	#def_macro	debug_msg(message, value)
-	#end_macro
-
-	#def_macro	debug_fp_msg(message, value)
+	#defmacro	COND_DEBUG_MSG(...)
 	#end_macro
 
 	#def_macro	printCPU()
@@ -283,21 +125,161 @@ assert_fp_macro(nn, '<')
 
 	#def_macro	assert_le_fp(valueA, valueB, message)
 	#end_macro
-#end_if
+#endif
 
-#def_func	enable_assertion_exit(value)
-		are_assertions_enabled()
-		jump	z, @END
-		#call	puts, "Assertions Enabled\n"
-		load	r0, value
-		store	r0, ENABLE_ASSERT_EXIT
-		jump	z, DISABLED_MSG
-		#call	puts, "Assertion Exit Enabled\n"
-		jump	@END
-DISABLED_MSG:
-		#call	puts, "Assertion Exit Disabled\n"
-END:
+#ifdef __DEBUG
+
+// debug_msg(port, fmt, values...)
+// Formats the values on the stack and then sends to the specified I/O port.
+// port		I/O Port
+// fmt		String with formatting information
+// values	Values for formatting
+#def_func	debug_msg(port, fmt, ...)
+	save	r0, r1
+	load	r0, port
+	move	r1, "DEBUG: "
+	int		iPUTS
+	int		iPRINTF
+	load	r0, port
+	int		iPUT_NL
+	restore	r0, r1
 #end_func
 
+// cond_debug_msg(cond, port, fmt, values...)
+// Formats the values on the stack and then sends to the specified I/O port.
+// cond		Must be TRUE to print
+// port		I/O Port
+// fmt		String with formatting information
+// values	Values for formatting
+#def_func	cond_debug_msg(b, port, fmt, ...)
+	save	r0, r1
+	load	r0, b
+	jump	z, $SKIP
+	load	r0, port
+	move	r1, "DEBUG: "
+	int		iPUTS
+	int		iCOND_PRINTF
+	load	r0, port
+	int		iPUT_NL
+$SKIP:
+	restore	r0, r1
+#end_func
+
+ENABLE_ASSERT_EXIT: .dci	1
+#defmacro	SET_EXIT_ON_ASSERT_FAILURE(b)
+	store	${b}, ENABLE_ASSERT_EXIT
+#end_macro
+
+#def_func	assert_failure_exit()
+		load	r0, ENABLE_ASSERT_EXIT
+		jump	z, $END
+		mov		r0, 1
+		int		iEXIT
+$END:
+#end_func
+
+#def_func	assert_true(isTrue, message, filename, line)
+		#var	temp
+		load	r0, isTrue
+		jump	nz, $ASSERT_IS_TRUE
+		#macro	PUTS("Assertion Failed (")
+		load	temp, filename
+		#macro	PUTS(temp)
+		#macro	PUTS(":")
+		load	temp, line
+		#macro	PUT_DEC(temp, 10)
+		#macro	PUTS(") ")
+		load	temp, message
+		#macro	PUTS(temp)
+		#macro	PUT_NL()
+		#call	assert_failure_exit()
+$ASSERT_IS_TRUE:
+#end_func
+
+#def_func	assert_false(isFalse, message, filename, line)
+		#var	temp
+		load	r0, isFalse
+		jump	z, $ASSERT_IS_FALSE
+		#macro	PUTS("Assertion Failed (")
+		load	temp, filename
+		#macro	PUTS(temp)
+		#macro	PUTS(":")
+		load	temp, line
+		#macro	PUT_DEC(temp)
+		#macro	PUTS(") ")
+		load	temp, message
+		#macro	PUTS(temp)
+		#macro	PUT_NL()
+		#call	assert_failure_exit()
+$ASSERT_IS_FALSE:
+#end_func
+
+#def_macro	COND_ASSERT_BUILDER(cond, condSymbol)
+	#def_func	assert_${cond}(valueA, valueB, message, filename, line)
+		#var	a,b,m,temp
+		load	a,valueA
+		load	b,valueB
+		load	m,message
+		cmp		a,b
+		jump	${cond}, $ASSERT_${cond}_PASSED
+		#macro	PUTS("Assertion Failed (")
+		load	temp, filename
+		#macro	PUTS(temp)
+		#macro	PUTS(":")
+		load	temp, line
+		#macro	PUT_DEC(temp)
+		#macro	PUTS(") ")
+		#macro	PUTS(m)
+		#macro	PUTS(" ")
+		#macro	PUT_DEC(a)
+		#macro	PUTS(${condSymbol})
+		#macro	PUT_DEC(b)
+		#macro	PUT_NL()
+		#call	assert_failure_exit()
+$ASSERT_${cond}_PASSED:
+	#end_func
+#end_macro
+
+#def_macro	COND_ASSERT_BUILDER_FP(cond, condSymbol)
+	#def_func	assert_${cond}_fp(valueA, valueB, message, filename, line)
+		#var	m,temp
+		#fvar	a,b
+		load	a,valueA
+		load	b,valueB
+		load	m,message
+		cmp		a,b
+		jump	${cond}, $ASSERT_${cond}_FP_PASSED
+		#macro	PUTS("Assertion Failed (")
+		load	temp, filename
+		#macro	PUTS(temp)
+		#macro	PUTS(":")
+		load	temp, line
+		#macro	PUT_DEC(temp)
+		#macro	PUTS(") ")
+		#macro	PUTS(m)
+		#macro	PUTS(" ")
+		#macro	PUT_FP(a)
+		#macro	PUTS(${condSymbol})
+		#macro	PUT_FP(b)
+		#macro	PUT_NL()
+		#call	assert_failure_exit()
+$ASSERT_${cond}_FP_PASSED:
+	#end_func
+#end_macro
+
+#macro COND_ASSERT_BUILDER(nz, "≠")
+#macro COND_ASSERT_BUILDER(z, "=")
+#macro COND_ASSERT_BUILDER(np, "≤")
+#macro COND_ASSERT_BUILDER(p, ">")
+#macro COND_ASSERT_BUILDER(nn, "≥")
+#macro COND_ASSERT_BUILDER(n, "<")
+#macro COND_ASSERT_BUILDER_FP(nz, "≠")
+#macro COND_ASSERT_BUILDER_FP(z, "=")
+#macro COND_ASSERT_BUILDER_FP(np, "≤")
+#macro COND_ASSERT_BUILDER_FP(p, ">")
+#macro COND_ASSERT_BUILDER_FP(nn, "≥")
+#macro COND_ASSERT_BUILDER_FP(n, "<")
+
+#endif
 
 DEBUG_ASM_END: nop

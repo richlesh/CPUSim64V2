@@ -137,6 +137,18 @@ public interface PreprocessorParserVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitIfBlock(PreprocessorParser.IfBlockContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link PreprocessorParser#ifDefBlock}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitIfDefBlock(PreprocessorParser.IfDefBlockContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link PreprocessorParser#ifNDefBlock}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitIfNDefBlock(PreprocessorParser.IfNDefBlockContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link PreprocessorParser#elseifClause}.
 	 * @param ctx the parse tree
 	 * @return the visitor result

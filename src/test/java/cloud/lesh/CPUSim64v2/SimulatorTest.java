@@ -393,7 +393,7 @@ public class SimulatorTest {
 		assertDiff(diff, 5, 4444.);
 		assertDiff(diff, 6, 5678L);
 		assertDiff(diff, 6, 2222.);
-		assertDiff(diff, sim.SR_P);
+		assertDiff(diff, 0);
 	}
 
 	@Test
@@ -531,7 +531,7 @@ public class SimulatorTest {
 		startState = sim.getState();
 		sim.run();
 		diff = sim.diffState(startState);
-		assertEquals(4, diff.size());
+		assertEquals(5, diff.size());
 		assertDiff(diff, sim.R_SP, 1099);
 		assertDiff(diff, 3, 326);
 		assertDiff(diff, 4, 31415.);

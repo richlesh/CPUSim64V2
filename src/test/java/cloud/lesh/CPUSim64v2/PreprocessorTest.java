@@ -135,7 +135,7 @@ class PreprocessorTest {
 			#endif
 			#undef USE_FP
 			#if USE_FP
-			MOV F1, 3.14159
+			MOV F0, 3.14
 			#endif
 			""";
 		String expected = """
@@ -158,16 +158,16 @@ class PreprocessorTest {
 			#endif
 			#undef USE_FP
 			#if USE_FP
-			MOV F0, 3.14159
+			MOV F0, 3.1415
 			#else
-			MOV F0, 3.14
+			MOV F0, 3.1415
 			#endif
 			""";
 		String expected = """
 			.LINE «Test.asm», 3
 			MOV F0, 3.14159
 			.LINE «Test.asm», 11
-			MOV F0, 3.14
+			MOV F0, 3.1415
 			""";
 		var loader = new IncludeLoader(Path.of("."));
 		String preprocessed = PreprocessorVisitor.preprocessText("Test.asm", src, loader);
@@ -217,6 +217,102 @@ class PreprocessorTest {
 			MOV F0, 3.1
 			.LINE «Test.asm», 23
 			MOV F0, 3.14
+			""";
+		var loader = new IncludeLoader(Path.of("."));
+		String preprocessed = PreprocessorVisitor.preprocessText("Test.asm", src, loader);
+		assertEquals(expected, preprocessed);
+	}
+
+	@Test
+	void testIfDef() {
+		String src = """
+			#define USE_FP
+			#ifdef USE_FP
+			MOV F0, 3.14159
+			#endif
+			#undef USE_FP
+			#ifdef USE_FP
+			MOV F0, 3.14
+			#endif
+			""";
+		String expected = """
+			.LINE «Test.asm», 3
+			MOV F0, 3.14159
+			""";
+		var loader = new IncludeLoader(Path.of("."));
+		String preprocessed = PreprocessorVisitor.preprocessText("Test.asm", src, loader);
+		assertEquals(expected, preprocessed);
+	}
+
+	@Test
+	void testIfDefElse() {
+		String src = """
+			#define USE_FP
+			#ifdef USE_FP
+			MOV F0, 3.14159
+			#else
+			MOV F0, 3.14
+			#endif
+			#undef USE_FP
+			#ifdef USE_FP
+			MOV F0, 3.141
+			#else
+			MOV F0, 3.1415
+			#endif
+			""";
+		String expected = """
+			.LINE «Test.asm», 3
+			MOV F0, 3.14159
+			.LINE «Test.asm», 11
+			MOV F0, 3.1415
+			""";
+		var loader = new IncludeLoader(Path.of("."));
+		String preprocessed = PreprocessorVisitor.preprocessText("Test.asm", src, loader);
+		assertEquals(expected, preprocessed);
+	}
+
+	@Test
+	void testIfNDef() {
+		String src = """
+			#define USE_FP
+			#ifndef USE_FP
+			MOV F0, 3.14159
+			#endif
+			#undef USE_FP
+			#ifndef USE_FP
+			MOV F0, 3.14
+			#endif
+			""";
+		String expected = """
+			.LINE «Test.asm», 7
+			MOV F0, 3.14
+			""";
+		var loader = new IncludeLoader(Path.of("."));
+		String preprocessed = PreprocessorVisitor.preprocessText("Test.asm", src, loader);
+		assertEquals(expected, preprocessed);
+	}
+
+	@Test
+	void testIfNDefElse() {
+		String src = """
+			#define USE_FP
+			#ifndef USE_FP
+			MOV F0, 3.14159
+			#else
+			MOV F0, 3.14
+			#endif
+			#undef USE_FP
+			#ifndef USE_FP
+			MOV F0, 3.1415
+			#else
+			MOV F0, 3.141
+			#endif
+			""";
+		String expected = """
+			.LINE «Test.asm», 5
+			MOV F0, 3.14
+			.LINE «Test.asm», 9
+			MOV F0, 3.1415
 			""";
 		var loader = new IncludeLoader(Path.of("."));
 		String preprocessed = PreprocessorVisitor.preprocessText("Test.asm", src, loader);
@@ -449,7 +545,6 @@ class PreprocessorTest {
 			MOVE R0, 1
 			INT 202
 			.LINE_END
-			.LINE «TEST.ASM», 23
 			STOP
 			STOP
 			FINIS:

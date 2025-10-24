@@ -361,7 +361,7 @@ zPort    : INTLIT | HEXLIT ;					// Z when used as I/O size/port number (0..15) 
 
 /* ---- conditions (Z when used as cond) ---- */
 zCond
-  : U | Z | NZ | EQ | NE | N | LT | P | GT | NN | GE | NP | LE
+  : U | Z | NZ | EQ | NE | N | LT | P | GT | NN | GE | NP | LE | O | NO | PE | PO
   ;
 
 /* ---- memory shapes used by LOAD/STORE ---- */
@@ -444,6 +444,10 @@ NN  : [nN][nN] ;
 GE  : [gG][eE] ;
 NP  : [nN][pP] ;
 LE  : [lL][eE] ;
+O   : [oO] ;
+NO  : [nN][oO] ;
+PE  : [pP][eE] ;
+PO  : [pP][oO] ;
 
 /* Literals */
 HEXLIT

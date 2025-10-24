@@ -218,6 +218,26 @@ public interface PreprocessorParserListener extends ParseTreeListener {
 	 */
 	void exitIfBlock(PreprocessorParser.IfBlockContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link PreprocessorParser#ifDefBlock}.
+	 * @param ctx the parse tree
+	 */
+	void enterIfDefBlock(PreprocessorParser.IfDefBlockContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link PreprocessorParser#ifDefBlock}.
+	 * @param ctx the parse tree
+	 */
+	void exitIfDefBlock(PreprocessorParser.IfDefBlockContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link PreprocessorParser#ifNDefBlock}.
+	 * @param ctx the parse tree
+	 */
+	void enterIfNDefBlock(PreprocessorParser.IfNDefBlockContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link PreprocessorParser#ifNDefBlock}.
+	 * @param ctx the parse tree
+	 */
+	void exitIfNDefBlock(PreprocessorParser.IfNDefBlockContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link PreprocessorParser#elseifClause}.
 	 * @param ctx the parse tree
 	 */

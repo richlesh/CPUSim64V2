@@ -12,6 +12,7 @@ htmlreport/
 *.iws
 *.iml
 *.ipr
+test.*
 
 ### Eclipse ###
 .apt_generated

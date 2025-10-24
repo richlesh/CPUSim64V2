@@ -557,9 +557,11 @@ public class Simulator {
 		if (isFPKind(kind)) {
 			int f = toRegIndex(kind, val12);
 			F[f] = Double.longBitsToDouble(wordBits);
+			setFlags(F[f]);
 		} else if (isRegKind(kind)){ // address/int
 			int r = toRegIndex(kind, val12);
 			R[r] = wordBits;
+			setFlags(R[r], false);
 		} else throw new CPUException("Illegal Y argument.");
 	}
 
