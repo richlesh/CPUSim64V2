@@ -431,6 +431,13 @@ public class CPUSim64v2BaseVisitor<T> extends AbstractParseTreeVisitor<T> implem
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
+	@Override public T visitInstrREADONLY(CPUSim64v2Parser.InstrREADONLYContext ctx) { return visitChildren(ctx); }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
 	@Override public T visitOperand(CPUSim64v2Parser.OperandContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}

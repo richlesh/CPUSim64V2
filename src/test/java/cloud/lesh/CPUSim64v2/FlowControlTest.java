@@ -9,34 +9,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class FlowControlTest {
-	public Triple<Integer, Simulator, SimStateDiff> runProgram(String src) {
-		String[] args = {"test"};
-		return runProgram(src, args);
-	}
-
-	public Triple<Integer, Simulator, SimStateDiff> runProgram(String src, String[] args) {
-		var loader = new IncludeLoader(Path.of("."));
-		String preprocessed = PreprocessorVisitor.preprocessText("Test.asm", src, loader);
-
-		LiteralRewriter rewriter = new LiteralRewriter();
-		String rewritten = rewriter.rewrite(preprocessed);
-
-		LabelVisitor labelVisitor = new LabelVisitor();
-		String noLabels = labelVisitor.gatherLabels(rewritten);
-		var asm = new AssemblerVisitor(labelVisitor.getLabelMap());
-		asm.assemble(noLabels);
-		List<Long> prog = asm.result();
-		Simulator sim = new Simulator(1000, args);
-		sim.clearCPUState();
-		sim.loadProgram(prog, 0L);
-		sim.SR = 0xF;
-		var startState = sim.getState();
-		int result = sim.run();
-		var diff = new SimStateDiff(sim, startState);
-		return Triple.of(result, sim, diff);
-	}
-
+public class FlowControlTest extends BaseTest {
 	@Test
 	void testForBlock() {
 		String src = """
@@ -180,6 +153,277 @@ FINIS
 		var sim = tuple.getMiddle();
 		var diff = tuple.getRight();
 		diff.assertDiff(28, 12);
+		assertEquals(expected, output);
+	}
+
+	@Test
+	void testForContinue() {
+		String src = """
+			#include <system/io.def>
+			START:
+			#VAR i, j
+			#FOR 0, i < 10, 1
+				div		r1, j, i, 2
+				#ifcond	j == 1
+					#continue
+				#endcond
+				move	r0, STDOUT
+				move	r1, i
+				int		iPUT_DEC
+				int		iPUT_NL
+			#ENDFOR
+			move	r0, STDOUT
+			move	r1, "FINIS"
+			int		iPUTS
+			int		iPUT_NL
+			stop
+			stop
+			FINIS:
+			""";
+		String expected = """
+0
+2
+4
+6
+8
+FINIS
+		""";
+		ConsoleOutputCapturer capturer = new ConsoleOutputCapturer();
+		capturer.start(ConsoleOutputCapturer.StdStream.STDOUT);
+		var tuple = runProgram(src);
+		String output = capturer.stop();
+		var result = tuple.getLeft();
+		var sim = tuple.getMiddle();
+		var diff = tuple.getRight();
+		diff.assertDiff(28, 10);
+		assertEquals(expected, output);
+	}
+
+	@Test
+	void testWhileContinue() {
+		String src = """
+			#include <system/io.def>
+			START:
+			#VAR i, j
+			move	i, 11
+			#WHILE i > 1
+				sub		i, 1
+				div		r1, j, i, 2
+				#ifcond	j == 1
+					#continue
+				#endcond
+				move	r0, STDOUT
+				move	r1, i
+				int		iPUT_DEC
+				int		iPUT_NL
+			#ENDWHILE
+			#WHILE i > 1
+				move	r0, STDOUT
+				move	r1, i
+				int		iPUT_DEC
+				int		iPUT_NL
+				sub		i, 1
+			#ENDWHILE
+			move	r0, STDOUT
+			move	r1, "FINIS"
+			int		iPUTS
+			int		iPUT_NL
+			stop
+			stop
+			FINIS:
+			""";
+		String expected = """
+10
+8
+6
+4
+2
+FINIS
+		""";
+		ConsoleOutputCapturer capturer = new ConsoleOutputCapturer();
+		capturer.start(ConsoleOutputCapturer.StdStream.STDOUT);
+		var tuple = runProgram(src);
+		String output = capturer.stop();
+		var result = tuple.getLeft();
+		var sim = tuple.getMiddle();
+		var diff = tuple.getRight();
+		diff.assertDiff(28, 1);
+		assertEquals(expected, output);
+	}
+
+	@Test
+	void testDoWhileContinue() {
+		String src = """
+			#include <system/io.def>
+			START:
+			#VAR i, j
+			move	i, -1
+			#DO_WHILE
+				add		i, 1
+				div		r1, j, i, 2
+				#ifcond	j == 1
+					#continue
+				#endcond
+				move	r0, STDOUT
+				move	r1, i
+				int		iPUT_DEC
+				int		iPUT_NL
+			#END_DO_WHILE i < 10
+			move	r0, STDOUT
+			move	r1, "FINIS"
+			int		iPUTS
+			int		iPUT_NL
+			stop
+			stop
+			FINIS:
+			""";
+		String expected = """
+0
+2
+4
+6
+8
+10
+FINIS
+		""";
+		ConsoleOutputCapturer capturer = new ConsoleOutputCapturer();
+		capturer.start(ConsoleOutputCapturer.StdStream.STDOUT);
+		var tuple = runProgram(src);
+		String output = capturer.stop();
+		var result = tuple.getLeft();
+		var sim = tuple.getMiddle();
+		var diff = tuple.getRight();
+		diff.assertDiff(28, 10);
+		assertEquals(expected, output);
+	}
+
+	@Test
+	void testForBreak() {
+		String src = """
+			#include <system/io.def>
+			START:
+			#VAR i
+			#FOR 0, i < 10, 1
+				#ifcond	i == 5
+					#break
+				#endcond
+				move	r0, STDOUT
+				move	r1, i
+				int		iPUT_DEC
+				int		iPUT_NL
+			#ENDFOR
+			move	r0, STDOUT
+			move	r1, "FINIS"
+			int		iPUTS
+			int		iPUT_NL
+			stop
+			stop
+			FINIS:
+			""";
+		String expected = """
+0
+1
+2
+3
+4
+FINIS
+		""";
+		ConsoleOutputCapturer capturer = new ConsoleOutputCapturer();
+		capturer.start(ConsoleOutputCapturer.StdStream.STDOUT);
+		var tuple = runProgram(src);
+		String output = capturer.stop();
+		var result = tuple.getLeft();
+		var sim = tuple.getMiddle();
+		var diff = tuple.getRight();
+		diff.assertDiff(28, 5);
+		assertEquals(expected, output);
+	}
+
+	@Test
+	void testWhileBreak() {
+		String src = """
+			#include <system/io.def>
+			START:
+			#VAR i
+			move	i, 11
+			#WHILE i > 1
+				sub		i, 1
+				#ifcond	i == 5
+					#break
+				#endcond
+				move	r0, STDOUT
+				move	r1, i
+				int		iPUT_DEC
+				int		iPUT_NL
+			#ENDWHILE
+			move	r0, STDOUT
+			move	r1, "FINIS"
+			int		iPUTS
+			int		iPUT_NL
+			stop
+			stop
+			FINIS:
+			""";
+		String expected = """
+10
+9
+8
+7
+6
+FINIS
+		""";
+		ConsoleOutputCapturer capturer = new ConsoleOutputCapturer();
+		capturer.start(ConsoleOutputCapturer.StdStream.STDOUT);
+		var tuple = runProgram(src);
+		String output = capturer.stop();
+		var result = tuple.getLeft();
+		var sim = tuple.getMiddle();
+		var diff = tuple.getRight();
+		diff.assertDiff(28, 5);
+		assertEquals(expected, output);
+	}
+
+	@Test
+	void testDoWhileBreak() {
+		String src = """
+			#include <system/io.def>
+			START:
+			#VAR i
+			move	i, -1
+			#DO_WHILE
+				add		i, 1
+				#ifcond	i == 5
+					#break
+				#endcond
+				move	r0, STDOUT
+				move	r1, i
+				int		iPUT_DEC
+				int		iPUT_NL
+			#END_DO_WHILE i < 10
+			move	r0, STDOUT
+			move	r1, "FINIS"
+			int		iPUTS
+			int		iPUT_NL
+			stop
+			stop
+			FINIS:
+			""";
+		String expected = """
+0
+1
+2
+3
+4
+FINIS
+		""";
+		ConsoleOutputCapturer capturer = new ConsoleOutputCapturer();
+		capturer.start(ConsoleOutputCapturer.StdStream.STDOUT);
+		var tuple = runProgram(src);
+		String output = capturer.stop();
+		var result = tuple.getLeft();
+		var sim = tuple.getMiddle();
+		var diff = tuple.getRight();
+		diff.assertDiff(28, 5);
 		assertEquals(expected, output);
 	}
 

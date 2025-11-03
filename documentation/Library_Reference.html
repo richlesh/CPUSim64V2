@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>CPUSim64 Library Reference</title>
+	<meta name="description" content=Library Reference for CPUSim64">
+	<link rel="canonical" href="https://www.lesh.cloud/cpusim64/Library_Reference.html">
+	<meta name="robots" content="max-image-preview:large">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="generator" content="BBEdit 14.6">
+	<meta name="author" content="Richard Lesh">
+	<link rel="stylesheet" type="text/css" href="styles.css">
+	<style>
+		table td:nth-child(1),
+		table td:nth-child(2),
+		table td:nth-child(3) {
+		  font-family: "JetBrains Mono", monospace;
+		}
+	</style>
+</head>
+<body>
+<h1>CPUSim64 Library Reference</h1>
+<p>The CPUSim64 comes with many library functions to make programming in CPU64 assembly easier.  These functions are defined in <code>.asm</code> files and included using the <code>#include</code> preprocessor directive.  Functions use stack-based calling conventions for arguments and return a value in <code>R0</code> or <code>F0</code>.</p>
+<p>Libraries also contain macros that use register-based calling conventions.  Macros are defined in <code>.def</code> files along with the definitions for interrupts used by that library. When invoking macros, there is no guarantee that the registers <code>R0</code>, <code>R1</code>, <code>R2</code>, <code>F0</code>, <code>F1</code> or <code>F2</code> will be preserved.  Most macros return a value in <code>R0</code> or <code>F0</code>.</p>
+
+	<h3>&lt;system/debug.def&gt;</h3>
+	<p>These debug macros only compile into your code if the assembler is passed the <code>--DEBUG</code> option.  This allows you to retain debugging instructions and still create "non-debug" code that doesn't have the debugging instructions present just by omitting the <code>--DEBUG</code> option.</p>
+<table>
+    <colgroup><col style="width:25%;"><col style="width:75%;"></colgroup>
+	<thead>
+<tr><th>Macro</th><th>Description</th></tr>
+	</thead>
+	<tbody>
+		<tr><td>DEBUG_MSG</td><td><code>DEBUG_MSG(fmt, ...)</code><br>Formats a printf-style format string using the variable number of arguments supplied and prints it as a debug message.</td></tr>
+		<tr><td>COND_DEBUG_MSG</td><td><code>COND_DEBUG_MSG(cond, fmt, ...)</code><br>Formats a prinf-style format string using the variable number of arguments supplied and prints it as a debug message if the argument <code>cond</code> is true, otherwise it prints nothing.</td></tr>
+		<tr><td>PRINTCPU</td><td><code>PRINTCPU</code></br>Prints the current state of the CPU.</td></tr>
+<tr><td>SET_EXIT_ON_ASSERT_FAILURE</td><td><code>SET_EXIT_ON_ASSERT_FAILURE(b)</code><br>Sets the mode for asserts.  If the argument <code>b</code> is true, assert macros will print message and then exit the program if they fail.  Otherwise assert macros will print a message if they fail but not exit.  Default is true.</td></tr>
+		<tr><td>ASSERT_TRUE</td><td><code>ASSERT_TRUE(isTrue, message)</code><br>Asserts that a condition is true.  Prints the message if the assertion fails.</td></tr>
+		<tr><td>ASSERT_FALSE</td><td><code>ASSERT_FALSE(isFalse, message)</code><br>Asserts that a condition is false.  Prints the message if the assertion fails.</td></tr>
+		<tr><td>ASSERT_EQ</td><td><code>ASSERT_EQ(expected, actual, message)</code><br>Asserts that integer values <code>expected</code> and <code>actual</code> are equal.  Prints the message if the assertion fails.</td></tr>
+		<tr><td>ASSERT_NE</td><td><code>ASSERT_NE(expected, actual, message)</code><br>Asserts that integer values <code>expected</code> and <code>actual</code> are not equal.  Prints the message if the assertion fails.</td></tr>
+		<tr><td>ASSERT_GT</td><td><code>ASSERT_GT(expected, actual, message)</code><br>Asserts that integer value <code>expected</code> is greater than <code>actual</code>.  Prints the message if the assertion fails.</td></tr>
+		<tr><td>ASSERT_LT</td><td><code>ASSERT_LT(expected, actual, message)</code><br>Asserts that integer value <code>expected</code> is less than <code>actual</code>.  Prints the message if the assertion fails.</td></tr>
+		<tr><td>ASSERT_GE</td><td><code>ASSERT_GE(expected, actual, message)</code><br>Asserts that integer value <code>expected</code> is greater than or equal to <code>actual</code>.  Prints the message if the assertion fails.</td></tr>
+		<tr><td>ASSERT_LE</td><td><code>ASSERT_LE(expected, actual, message)</code><br>Asserts that integer value <code>expected</code> is less than or equal to <code>actual</code>.  Prints the message if the assertion fails.</td></tr>
+		<tr><td>ASSERT_EQ_FP</td><td><code>ASSERT_EQ_FP(expected, actual, message)</code><br>Asserts that floating point values <code>expected</code> and <code>actual</code> are equal.  Prints the message if the assertion fails.</td></tr>
+		<tr><td>ASSERT_NE_FP</td><td><code>ASSERT_NE_FP(expected, actual, message)</code><br>Asserts that floating point values <code>expected</code> and <code>actual</code> are not equal.  Prints the message if the assertion fails.</td></tr>
+		<tr><td>ASSERT_GT_FP</td><td><code>ASSERT_GT_FP(expected, actual, message)</code><br>Asserts that floating point value <code>expected</code> is greater than <code>actual</code>.  Prints the message if the assertion fails.</td></tr>
+		<tr><td>ASSERT_LT_FP</td><td><code>ASSERT_LT_FP(expected, actual, message)</code><br>Asserts that floating point value <code>expected</code> is less than <code>actual</code>.  Prints the message if the assertion fails.</td></tr>
+		<tr><td>ASSERT_GE_FP</td><td><code>ASSERT_GE_FP(expected, actual, message)</code><br>Asserts that floating point value <code>expected</code> is greater than or equal to <code>actual</code>.  Prints the message if the assertion fails.</td></tr>
+		<tr><td>ASSERT_LE_FP</td><td><code>ASSERT_LE_FP(expected, actual, message)</code><br>Asserts that floating point value <code>expected</code> is less than or equal to <code>actual</code>.  Prints the message if the assertion fails.</td></tr>
+	</tbody>
+</table>
+<p class="note">The floating point assertion macros require that both float values be registers.  The integer assertion macros can use a register or a literal for the values.</p>
+
+<footer>
+<p><a href="Architecture.html">Architecture&nbsp;Reference</a> |
+<a href="Programmer_Guide.html">Programmer&nbsp;Guide</a> |
+<a href="Directive_Reference.html">Directives&nbsp;Reference</a> |
+<a href="Instruction_Set_Reference.html">Instruction&nbsp;Set&nbsp;Reference</a> |
+<a href="Interrupt_Reference.html">Software&nbsp;Interrupt&nbsp;Reference</a> |
+<a href="Library_Reference.html">Library&nbsp;Reference</a> |
+<a href="http://www.pureprogrammer.org">Pure&nbsp;Programmer</a></p>
+<p><a href="https://twitter.com/share" class="twitter-share-button" data-size="large" data-related="richlesh">Tweet</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+<a href="https://twitter.com/richlesh" class="twitter-follow-button" data-show-count="false" data-size="large">Follow @richlesh</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script></p>
+
+<form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
+<input type="hidden" name="cmd" value="_s-xclick">
+<input type="hidden" name="hosted_button_id" value="P2877VYMJ3G64">
+<input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif" name="submit" alt="PayPal - The safer, easier way to pay online!">
+<img alt="" style="border:0;" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
+</form>
+<address>&copy;2022-2025 Richard Lesh.  All rights reserved.</address>
+</footer>
+</body>
+</html>

@@ -136,17 +136,16 @@ LOOP1_END:
 
 ///////////////////////////////////////////////////////////////////////////////
 // get_and_increment(addr)
-// Atomically increments the value at addr.  Returns the old value.
+// Atomically increments the value at addr.  Returns the new value.
 ///////////////////////////////////////////////////////////////////////////////
 #def_func get_and_increment(int addr)
 	#var	oldValue, newValue
-	#load_args
-_TRY_GET_AND_INCREMENT:
+$_TRY_GET_AND_INCREMENT:
 		load	oldValue, addr
 		add		newValue, oldValue, 1
 		cas		oldValue, newValue, addr
-		jump	z, @_TRY_GET_AND_INCREMENT
-	#return	oldValue
+		jump	no, $_TRY_GET_AND_INCREMENT
+	#return	newValue
 #end_func
 
 _MUTEX_EXP_WAIT_FACTOR: dcf 1.2
@@ -184,7 +183,7 @@ _MUTEX_MAX_EXP_WAIT: dcf 500.
 	load	mutex_max_exp_wait, _MUTEX_MAX_EXP_WAIT
 	
 	load	endDuration, timeout
-//#call debug(STDOUT,"Acquiring mutex: %x %d\n", a, endDuration)
+//#call debug_msg(STDOUT,"Acquiring mutex: %x %d\n", a, endDuration)
 	#cond	endDuration, lt, 0
 		int		iINT_MAX
 		move	endDuration, r0

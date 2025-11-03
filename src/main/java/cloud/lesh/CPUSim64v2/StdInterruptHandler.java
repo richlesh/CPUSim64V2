@@ -9,6 +9,8 @@ import java.text.MessageFormat;
 import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.text.BreakIterator;
+import java.util.Locale;
 
 public class StdInterruptHandler extends InterruptHandler
 {
@@ -40,19 +42,20 @@ public class StdInterruptHandler extends InterruptHandler
 	public static final int iFREE_COUNT=26;
 	public static final int iALLOC_SIZE=27;
 	public static final int iFREE_SIZE=28;
-
+	public static final int iWALK_HEAP=29;
 	public static final int iARGC=30;
 	public static final int iARGS=31;
 	public static final int iEXIT=32;
 	public static final int iSYSTEM=33;
 	public static final int iGET_PID=34;
-	public static final int iGET_NUM_CORES=35;
-	public static final int iFORK=36;
-	public static final int iWAIT=37;
-	public static final int iWAIT_PID=38;
-	public static final int iTHREAD=39;
-	public static final int iJOIN_THREAD=40;
-	public static final int iSLEEP=41;
+	public static final int iNEXT_PID=35;
+	public static final int iGET_NUM_CORES=36;
+	public static final int iFORK=37;
+	public static final int iWAIT=38;
+	public static final int iWAIT_PID=39;
+	public static final int iTHREAD=40;
+	public static final int iJOIN_THREAD=41;
+	public static final int iSLEEP=42;
 
 	public static final int iPI=100;
 	public static final int iE=101;		
@@ -145,6 +148,11 @@ public class StdInterruptHandler extends InterruptHandler
     public static final int iSUBSTRING_SEARCH=320;
     public static final int iLAST_SUBSTRING_SEARCH=321;
 	public static final int iSTRICMP=322;
+	public static final int iGET_CODEPOINTS=323;
+	public static final int iFROM_CODEPOINTS=324;
+	public static final int iCOUNT_GLHYPHS=325;
+	public static final int iHASHCODE=326;
+	public static final int iTRIM=327;
 
 	public static final int iMATCHES=350;
 	public static final int iREPLACE_FIRST=351;
@@ -257,6 +265,9 @@ public class StdInterruptHandler extends InterruptHandler
 			case iFREE_SIZE:						// counts heap free size
 				cpu.setR(0, cpu.countHeapSize(false, true));
 				break;
+			case iWALK_HEAP:						// walks the heap and prints block info
+				cpu.walkHeap();
+				break;
 			case iARGC:								// returns the number of command line arguments
 				argc = cpu.getCommandLineCount();
 				cpu.setR(0,argc);
@@ -317,6 +328,9 @@ public class StdInterruptHandler extends InterruptHandler
 				break;
 			case iGET_PID:
 				cpu.setR(0, cpu.getPID());
+				break;
+			case iNEXT_PID:
+				cpu.setR(0, cpu.nextPID());
 				break;
 			case iGET_NUM_CORES:
 				cpu.setR(0, Runtime.getRuntime().availableProcessors());
@@ -931,12 +945,64 @@ public class StdInterruptHandler extends InterruptHandler
 				}
 				break;
 			case iSTRICMP:
-			{
-				String s1 = cpu.convertString((int) cpu.getR(0));
-				String s2 = cpu.convertString((int) cpu.getR(1));
-				cpu.setR(0, s1.compareToIgnoreCase(s2));
-			}
-			break;
+				{
+					String s1 = cpu.convertString((int) cpu.getR(0));
+					String s2 = cpu.convertString((int) cpu.getR(1));
+					cpu.setR(0, s1.compareToIgnoreCase(s2));
+				}
+				break;
+			case iGET_CODEPOINTS:
+				{
+					s = cpu.convertString(cpu.getR(0));
+					int[] codepoints = s.codePoints().toArray();
+					long resultArray = cpu.alloc(codepoints.length + 1);
+					cpu.memWrite(resultArray, codepoints.length);
+					for (i = 0; i < codepoints.length; ++i) {
+						cpu.memWrite(resultArray + i + 1, codepoints[i]);
+					}
+					cpu.setR(0, resultArray);
+				}
+				break;
+			case iFROM_CODEPOINTS:
+				{
+					long addr = cpu.getR(0);
+					int len = (int)cpu.memRead(addr);
+					int[] codepoints = new int[len];
+					for (i = 0; i < len; ++i) {
+						codepoints[i] = (int)cpu.memRead(addr + i + 1);
+					}
+					s = new String(codepoints, 0, codepoints.length);
+					cpu.setR(0, cpu.allocString(s));
+				}
+				break;
+			case iCOUNT_GLHYPHS:
+				{
+					s = cpu.convertString(cpu.getR(0));
+					BreakIterator bi = BreakIterator.getCharacterInstance(Locale.getDefault());
+					bi.setText(s);
+					int count = 0;
+					int idx = bi.first();
+					while (idx != BreakIterator.DONE) {
+						int next = bi.next();
+						if (next != BreakIterator.DONE) count++;
+						idx = next;
+					}
+					cpu.setR(0, count);
+				}
+				break;
+			case iHASHCODE:
+				{
+					s = cpu.convertString(cpu.getR(0));
+					cpu.setR(0, s.hashCode());
+				}
+				break;
+			case iTRIM:
+				{
+					s = cpu.convertString(cpu.getR(0));
+					s = s.trim();
+					cpu.setR(0,cpu.allocString(s));
+				}
+				break;
 			case iMATCHES:		// matches portion unlike Java matches() which matches whole string as in "^regex$"
 				{
 					s = cpu.convertString(cpu.getR(0));

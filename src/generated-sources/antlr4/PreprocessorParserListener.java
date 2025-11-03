@@ -288,6 +288,26 @@ public interface PreprocessorParserListener extends ParseTreeListener {
 	 */
 	void exitDoWhileBlock(PreprocessorParser.DoWhileBlockContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link PreprocessorParser#breakDir}.
+	 * @param ctx the parse tree
+	 */
+	void enterBreakDir(PreprocessorParser.BreakDirContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link PreprocessorParser#breakDir}.
+	 * @param ctx the parse tree
+	 */
+	void exitBreakDir(PreprocessorParser.BreakDirContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link PreprocessorParser#continueDir}.
+	 * @param ctx the parse tree
+	 */
+	void enterContinueDir(PreprocessorParser.ContinueDirContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link PreprocessorParser#continueDir}.
+	 * @param ctx the parse tree
+	 */
+	void exitContinueDir(PreprocessorParser.ContinueDirContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link PreprocessorParser#ifCondBlock}.
 	 * @param ctx the parse tree
 	 */
@@ -297,6 +317,16 @@ public interface PreprocessorParserListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitIfCondBlock(PreprocessorParser.IfCondBlockContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link PreprocessorParser#ifCondSRBlock}.
+	 * @param ctx the parse tree
+	 */
+	void enterIfCondSRBlock(PreprocessorParser.IfCondSRBlockContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link PreprocessorParser#ifCondSRBlock}.
+	 * @param ctx the parse tree
+	 */
+	void exitIfCondSRBlock(PreprocessorParser.IfCondSRBlockContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link PreprocessorParser#elseifCondClause}.
 	 * @param ctx the parse tree

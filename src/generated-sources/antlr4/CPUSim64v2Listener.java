@@ -612,6 +612,16 @@ public interface CPUSim64v2Listener extends ParseTreeListener {
 	 */
 	void exitInstrRESTORE(CPUSim64v2Parser.InstrRESTOREContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link CPUSim64v2Parser#instrREADONLY}.
+	 * @param ctx the parse tree
+	 */
+	void enterInstrREADONLY(CPUSim64v2Parser.InstrREADONLYContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link CPUSim64v2Parser#instrREADONLY}.
+	 * @param ctx the parse tree
+	 */
+	void exitInstrREADONLY(CPUSim64v2Parser.InstrREADONLYContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link CPUSim64v2Parser#operand}.
 	 * @param ctx the parse tree
 	 */

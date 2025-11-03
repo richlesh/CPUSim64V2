@@ -47,7 +47,7 @@
 		<tr><td>211</td><td>iGETS</td><td>r0: input port<br>r1: buffer to hold string (from iALLOC)</td><td>Gets string from the specified port.  r1 will change if buffer is realloced to a larger size.  If R1 is 0 then an allocation from the heap will be made to store the string. R0 will be -1 on EOF or the length of the string read.</td></tr>
 		<tr><td>212</td><td>iGET_LINE</td><td>r0: input port<br>r1: buffer to hold string (from iALLOC)</td><td>Gets a line from the specified port.  r1 will change if buffer is realloced to a larger size.  If R1 is 0 then an allocation from the heap will be made to store the string.  The newline is removed from the resultant string.  R0 will be -1 on EOF or the length of the string read.</td></tr>
 		<tr><td>213</td><td>iPRINTF</td><td>Arg1: port<br>Arg2: format string address<br>Arg3: first value<br>Arg4: second value<br>...</td><td>Stack-based interrupt that implements C-style printf().  Arguments are pushed in reverse order onto the stack.  Return address and stack frame are expected to be pushed last which means this interrupt should only be used inside a called function like fprintf().</td></tr>
-		<tr><td>214</td><td>iCOND_PRINTF</td><td>Arg1: condition code<br>Arg2: port<br>Arg3: format string address<br>Arg4: first value<br>Arg4: second value<br>...</td><td>Stack-based interrupt that implements C-style printf().  Arguments are pushed in reverse order onto the stack.  Return address and stack frame are expected to be pushed last which means this interrupt should only be used inside a called function like fprintf().</td></tr>
+		<tr><td>214</td><td>iCOND_PRINTF</td><td>Arg1: condition code<br>Arg2: port<br>Arg3: format string address<br>Arg4: first value<br>Arg4: second value<br>...</td><td>Stack-based interrupt that implements C-style printf().  Arguments are pushed in reverse order onto the stack.  Return address and stack frame are expected to be pushed last which means this interrupt should only be used inside a called function like fprintf().  Only prints if the condition is TRUE.</td></tr>
 		<tr><td>220</td><td>iOPEN_FILE_READ</td><td>r0: port (3-255)<br>r1: filepath string</td><td>Opens the file for text reading. Returns FALSE in R0 on error. TRUE on success.</td></tr>
 		<tr><td>221</td><td>iOPEN_FILE_WRITE</td><td>r0: port (3-255)<br>r1: filepath string</td><td>Opens the file for text writing. Returns FALSE in R0 on error. TRUE on success.</td></tr>
 		<tr><td>222</td><td>iOPEN_FILE_APPEND</td><td>r0: port (3-255)<br>r1: filepath string</td><td>Opens the file for text append. Returns FALSE in R0 on error. TRUE on success.</td></tr>
@@ -138,6 +138,11 @@
 		<tr><td>320</td><td>iSUBSTRING_SEARCH</td><td>r0: string to search<br>r1: string to find<br>r2: start pos</td><td>Searches a string for the specified substring and returns the index into the string if found or -1 if not found.</td></tr>
 		<tr><td>321</td><td>iLAST_SUBSTRING_SEARCH</td><td>r0: string to search<br>r1: string to find<br>r2: start pos</td><td>Searches a string from the end for the specified substring and returns the index into the string if found or -1 if not found.</td></tr>
 		<tr><td>322</td><td>iSTRICMP</td><td>r0: string 1<br>r1: string 2</td><td>Ignoring case, compares string 1 to string 2 and returns 0 if equal, <0 if string 1 is less than string 2, and >0 if string 1 is greater than string 2.</td></tr>
+		<tr><td>323</td><td>iGET_CODEPOINTS</td><td>r0: string 1</td><td>Returns a heap allocated array of the codepoints in the string.</td></tr>
+		<tr><td>324</td><td>iFROM_CODEPOINTS</td><td>r0: array of codepoints</td><td>Returns a heap allocated string based on the passed array of codepoints.</td></tr>
+		<tr><td>325</td><td>iCOUNT_GLPYHS</td><td>r0: string</td><td>Returns the number of glyphs (graphemes) in the string.</td></tr>
+		<tr><td>326</td><td>iHASHCODE</td><td>r0: string</td><td>Returns the hashcode for the passed string.</td></tr>
+		<tr><td>327</td><td>iTRIM</td><td>r0: string</td><td>Returns a heap allocatd string with the leading and trailing whitespace removed.</td></tr>
 		<tr><td>350</td><td>iMATCHES</td><td>r0: string to search<br>r1: regex to find</td><td>Searches a string for the specified regular expression and returns TRUE if found or FALSE if not found.</td></tr>
 		<tr><td>351</td><td>iREPLACE_FIRST</td><td>r0: string to search<br>r1: regex to find<br>r2: replacement string</td><td>Searches a string for the specified regular expression and returns the heap allocated string that has the first occurance replaced by the replacement string.</td></tr>
 		<tr><td>352</td><td>iREPLACE_ALL</td><td>r0: string to search<br>r1: regex to find<br>r2: replacement string</td><td>Searches a string for the specified regular expression and returns the heap allocated string that has all the occurances replaced by the replacement string.</td></tr>
@@ -180,28 +185,31 @@
 		<tr><td>26</td><td>iFREE_COUNT</td><td>none</td><td>Returns a count of heap free blocks.</td></tr>
 		<tr><td>27</td><td>iALLOC_SIZE</td><td>none</td><td>Returns total size of heap allocated blocks.</td></tr>
 		<tr><td>28</td><td>iFREE_SIZE</td><td>none</td><td>Returns total size of heap free blocks.</td></tr>
+		<tr><td>29</td><td>iWALK_HEAP</td><td>r0: port</td><td>Outputs the allocated blocks in the heap.</td></tr>
 		<tr><td>30</td><td>iARGC</td><td>none</td><td>Returns the number of command line arguments.</td></tr>
 		<tr><td>31</td><td>iARGS</td><td>r0: argument index</td><td>Returns address of of the command line argument specified by index or null.  Index 0 returns the program name.</td></tr>
 		<tr><td>32</td><td>iEXIT</td><td>r0: exit code</td><td>Exits process with specified code.</td></tr>
 		<tr><td>33</td><td>iSYSTEM</td><td>r0: string address</td><td>Executes the system command contained in the string.  Returns the exit code of the command.</td></tr>
 		<tr><td>34</td><td>iGET_PID</td><td>none</td><td>Returns user process ID.</td></tr>
-		<tr><td>35</td><td>iGET_NUM_CORES</td><td>none</td><td>Returns user number of CPU cores.</td></tr>
-		<tr><td>36</td><td>iFORK</td><td>none</td><td>Unix-style process fork.  Zero is returned to the child process and positive PID of the child is returned to the parent.  If the fork fails, -1 is returned.</td></tr>
-		<tr><td>37</td><td>iWAIT</td><td></td><td>Waits for all child processes to complete.</td></tr>
-		<tr><td>38</td><td>iWAIT_PID</td><td>r0: PID</td><td>Waits for the child process with PID to complete.</td></tr>
-		<tr><td>39</td><td>iTHREAD</td><td>r0: function, r1: data</td><td>Starts a thread running the function passed in r0 and the data in r1. Returns the PID of the thread in r0.</td></tr>
-		<tr><td>40</td><td>iJOIN_THREAD</td><td>r0: PID</td><td>Waits for the thread with PID to complete.</td></tr>
-		<tr><td>41</td><td>iSLEEP</td><td>r0: delay in ms</td><td>Pauses execution for the specified milliseconds.</td></tr>
+		<tr><td>35</td><td>iNEXT_PID</td><td>none</td><td>Returns the next available process ID.</td></tr>
+		<tr><td>36</td><td>iGET_NUM_CORES</td><td>none</td><td>Returns user number of CPU cores.</td></tr>
+		<tr><td>37</td><td>iFORK</td><td>none</td><td>Unix-style process fork.  Zero is returned to the child process and positive PID of the child is returned to the parent.  If the fork fails, -1 is returned.</td></tr>
+		<tr><td>38</td><td>iWAIT</td><td></td><td>Waits for all child processes to complete.</td></tr>
+		<tr><td>39</td><td>iWAIT_PID</td><td>r0: PID</td><td>Waits for the child process with PID to complete.</td></tr>
+		<tr><td>40</td><td>iTHREAD</td><td>r0: function, r1: data</td><td>Starts a thread running the function passed in r0 and the data in r1. Returns the PID of the thread in r0.</td></tr>
+		<tr><td>41</td><td>iJOIN_THREAD</td><td>r0: PID</td><td>Waits for the thread with PID to complete.</td></tr>
+		<tr><td>42</td><td>iSLEEP</td><td>r0: delay in ms</td><td>Pauses execution for the specified milliseconds.</td></tr>
 	</tbody>
 </table>
 
 <footer>
-<p><a href="Architecture.html">Architecture</a> |
-<a href="Programmer_Guide.html">Programmer Guide</a> |
-<a href="Instruction_Set_Reference.html">Instruction Set Reference</a> |
-<a href="Directive_Reference.html">Directives Reference</a> |
-<a href="Interrupt_Reference.html">Software Interrupt Reference</a> |
-<a href="http://www.pureprogrammer.org">Pure Programmer</a></p>
+<p><a href="Architecture.html">Architecture&nbsp;Reference</a> |
+<a href="Programmer_Guide.html">Programmer&nbsp;Guide</a> |
+<a href="Directive_Reference.html">Directives&nbsp;Reference</a> |
+<a href="Instruction_Set_Reference.html">Instruction&nbsp;Set&nbsp;Reference</a> |
+<a href="Interrupt_Reference.html">Software&nbsp;Interrupt&nbsp;Reference</a> |
+<a href="Library_Reference.html">Library&nbsp;Reference</a> |
+<a href="http://www.pureprogrammer.org">Pure&nbsp;Programmer</a></p>
 <p><a href="https://twitter.com/share" class="twitter-share-button" data-size="large" data-related="richlesh">Tweet</a>
 <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
 <a href="https://twitter.com/richlesh" class="twitter-follow-button" data-show-count="false" data-size="large">Follow @richlesh</a>
@@ -213,7 +221,7 @@
 <input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif" name="submit" alt="PayPal - The safer, easier way to pay online!">
 <img alt="" style="border:0;" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
 </form>
-<address>&copy;2022 Richard Lesh.  All rights reserved.</address>
+<address>&copy;2022-2025 Richard Lesh.  All rights reserved.</address>
 </footer>
 </body>
 </html>

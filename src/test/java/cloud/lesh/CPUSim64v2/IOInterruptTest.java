@@ -1,6 +1,5 @@
 package cloud.lesh.CPUSim64v2;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -10,7 +9,7 @@ import java.nio.file.Path;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class IOInterruptTest extends InterruptTest {
+public class IOInterruptTest extends BaseTest {
 	@Test
 	void testSTDOUT() {
 		String src = """

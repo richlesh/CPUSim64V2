@@ -87,6 +87,7 @@ instruction
   | instrENDIAN
   | instrSAVE
   | instrRESTORE
+  | instrREADONLY
   ;
 
 /* ----- 0 NOP/DEBUG ----- */
@@ -238,7 +239,8 @@ instrTEST
 
 instrCMP
   : CMP aOperand ',' aOperand     /* AA  */
-  | CMP aOperand ',' cLiteral     /* AC  */
+  | CMP aOperand ',' rightC=cLiteral     /* AC  */
+  | CMP leftC=cLiteral ',' aOperand     /* CA  */
   | CMP fOperand ',' fOperand     /* FF  */
   ;
 
@@ -312,6 +314,9 @@ instrSAVE
 
 instrRESTORE
   : RESTORE xOperand ',' xOperand ;
+
+instrREADONLY
+  : READONLY cLiteral ;
 
 /* =======================
    OPERAND CATEGORIES
@@ -421,6 +426,7 @@ CAS      : [cC][aA][sS] ;
 ENDIAN   : [eE][nN][dD][iI][aA][nN] ;
 SAVE     : [sS][aA][vV][eE] ;
 RESTORE  : [rR][eE][sS][tT]([oO][rR][eE])? ;
+READONLY : [rR][eE][aA][dD][oO][nN][lL][yY] ;
 
 /* Registers */
 REG_R : [rR] [0-9]+ ;			// r0..r28 (range-check later)

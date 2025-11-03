@@ -73,27 +73,27 @@
 #define	INL		IN8
 
 #def_macro	PUTC(v)
-	out		CHAR,STDOUT,${v}
+	out		${v}, CHAR, STDOUT
 #end_macro
 
 #def_macro	OUT0(register,port)
-	out	CHAR,${port},${register}
+	out		${register}, CHAR, ${port}
 #end_macro
 #define	OUTC	OUT0
 #def_macro	OUT1(register,port)
-	out	BYTE,${port},${register}
+	out		${register}, BYTE, ${port}
 #end_macro
 #define	OUTB	OUT1
 #def_macro	OUT2(register,port)
-	out	SHORT,${port},${register}
+	out		${register}, SHORT, ${port}
 #end_macro
 #define	OUTS	OUT2
 #def_macro	OUT4(register,port)
-	out	WORD,${port},${register}
+	out		${register}, WORD, ${port}
 #end_macro
 #define	OUTW	OUT4
 #def_macro	OUT8(register,port)
-	out	LONG,${port},${register}
+	out		${register}, LONG, ${port}
 #end_macro
 #define	OUTL	OUT8
 
@@ -103,33 +103,33 @@
 #end_macro
 
 #def_macro	PUTS(str)
-	move	r0, STDOUT
 	move	r1, ${str}
+	move	r0, STDOUT
 	int		iPUTS
 #end_macro
 
 #def_macro  PUT_INT(val, base)
-	move	r0, STDOUT
 	move	r1, ${val}
 	move	r2, ${base}
+	move	r0, STDOUT
 	int		iPUT_INT
 #end_macro
 
 #def_macro  PUT_DEC(val)
-	move	r0, STDOUT
 	move	r1, ${val}
+	move	r0, STDOUT
 	int		iPUT_DEC
 #end_macro
 
 #def_macro  PUT_HEX(val)
-	move	r0, STDOUT
 	move	r1, ${val}
+	move	r0, STDOUT
 	int		iPUT_HEX
 #end_macro
 
 #def_macro  PUT_FP(val)
+	move	f0, ${val}
 	move	r0, STDOUT
 	move	r1, 16
-	move	f0, ${val}
 	int		iPUT_FP
 #end_macro

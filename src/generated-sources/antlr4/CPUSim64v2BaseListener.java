@@ -725,6 +725,18 @@ public class CPUSim64v2BaseListener implements CPUSim64v2Listener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterInstrREADONLY(CPUSim64v2Parser.InstrREADONLYContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitInstrREADONLY(CPUSim64v2Parser.InstrREADONLYContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterOperand(CPUSim64v2Parser.OperandContext ctx) { }
 	/**
 	 * {@inheritDoc}

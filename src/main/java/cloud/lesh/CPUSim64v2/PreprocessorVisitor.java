@@ -39,6 +39,7 @@ public class PreprocessorVisitor extends PreprocessorParserBaseVisitor<Void> {
 	int sourceLineNum = 1;
 	int pauseLineSync = 0;
 	Stack<String> lineDirectives = new Stack<>();
+	String funcName = "";			// current function name for return handling
 
 	String getLocation() {
 		return (filename == null ? "" : filename + ":") + lineNum;
@@ -93,16 +94,17 @@ public class PreprocessorVisitor extends PreprocessorParserBaseVisitor<Void> {
 		if (name == null || name.isEmpty() || value == null) {
 			throw new PreprocessorException("Define name and value must be non-null");
 		}
-		if (defines.containsKey(name)) {
+		if (defines.containsKey(name.toUpperCase())) {
 			System.err.println(getLocation() + "-> Define name already exists: " + name);
 		}
-		defines.put(name, value);
+		defines.put(name.toUpperCase(), value);
 	}
 
 	public void addVar(String name, String value) {
 		if (name == null || name.isEmpty() || value == null) {
 			throw new PreprocessorException("Variable name and value must be non-null");
 		}
+		name = name.toUpperCase();
 		if (lookupVar(name) != null) {
 			throw new PreprocessorException("Variable name already exists: " + name);
 		}
@@ -110,6 +112,7 @@ public class PreprocessorVisitor extends PreprocessorParserBaseVisitor<Void> {
 	}
 
 	public String lookupVar(String name) {
+		name = name.toUpperCase();
 		for (int i = scopes.size() - 1; i >= 0; i--) {
 			var s = scopes.get(i);
 			if (s.containsKey(name)) {
@@ -203,7 +206,8 @@ public class PreprocessorVisitor extends PreprocessorParserBaseVisitor<Void> {
 				previouslyIncluded.add(path);
 				final String included = includeLoader.load(path, isSystem);
 				Path filename = Path.of(path).getFileName();
-				final String preprocessed = preprocessText(filename.toString(), 1, included, includeLoader, defines, macros, substituteInsideDirectives, 0);
+				final String preprocessed = preprocessText(filename.toString(), 1, included, includeLoader, defines, macros, previouslyIncluded, substituteInsideDirectives, 0);
+				out.append(filename.toString().replace("/","$").replace(".","$") + ":\n");
 				out.append(preprocessed);
 			} catch (IllegalArgumentException ex) {
 				throw new PreprocessorException(ex);
@@ -330,7 +334,7 @@ public class PreprocessorVisitor extends PreprocessorParserBaseVisitor<Void> {
 	public Void visitReturnDir(PreprocessorParser.ReturnDirContext ctx) {
 		if (ctx.primary() != null) {
 			emitLine("MOVE R0, " + ctx.primary().getText(), substituteInsideDirectives);
-			emitLine("JUMP $_RETURN", false);
+			emitLine("JUMP " + funcName + "$_RETURN", false);
 		}
 		return null;
 	}
@@ -339,7 +343,7 @@ public class PreprocessorVisitor extends PreprocessorParserBaseVisitor<Void> {
 	public Void visitFreturnDir(PreprocessorParser.FreturnDirContext ctx) {
 		if (ctx.primary() != null) {
 			emitLine("MOVE F0, " + ctx.primary().getText(), substituteInsideDirectives);
-			emitLine("JUMP $_RETURN", false);
+			emitLine("JUMP " + funcName + "$_RETURN", false);
 		}
 		return null;
 	}
@@ -352,9 +356,12 @@ public class PreprocessorVisitor extends PreprocessorParserBaseVisitor<Void> {
 		// If you’d rather keep the markers, replace with reflowTokens(ctx) + emit.
 
 		// Open a new scope for arguments and local vars.
-		String funcName = "";
+		funcName = "";
 		for (ParseTree child : ctx.children) {
 			if (child == ctx.PP_DEF_FUNC()) {
+				svarSet.clear();
+				fvarSet.clear();
+				varSet.clear();
 				pushScope();
 				funcName = ctx.IDENT().getText().toUpperCase();
 				emitLine(funcName + ":", false);
@@ -368,17 +375,22 @@ public class PreprocessorVisitor extends PreprocessorParserBaseVisitor<Void> {
 				emitLine(".BLOCK " + funcName, false);
 			} else if (child == ctx.PP_END_FUNC()) {
 				emitLineBeginDirective(filename, lineNum);
-				emitLine("$_RETURN:", false);
-				if (fvarSet.size() > 0)
+				emitLine(funcName + "$_RETURN:", false);
+				if (fvarSet.size() > 1)
 					emitLine("restore f" + (31 - fvarSet.size() + 1) + ", f31", false);
-				if (varSet.size() > 0)
+				else if (fvarSet.size() == 1)
+					emitLine("pop f31", false);
+				if (varSet.size() > 1)
 					emitLine("restore r" + (28 - varSet.size() + 1) + ", r28", false);
+				else if (varSet.size() == 1)
+					emitLine("pop r28", false);
 				if (svarSet.size() > 0)
 					emitLine("add sp, " + (svarSet.size()), false);
 				emitLine("return", false);
 				emitLine(".BLOCK_END " + ctx.IDENT().getText().toUpperCase(), false);
 				emitLineEndDirective(filename, lineNum);
 				popScope();
+				funcName = "";
 			} else {
 				child.accept(this);
 			}
@@ -436,10 +448,12 @@ public class PreprocessorVisitor extends PreprocessorParserBaseVisitor<Void> {
 			++pauseLineSync;
 			if (pauseLineSync > 10)
 				throw new PreprocessorException("Macro nesting exceeded 10 levels!");
-			replacement = preprocessText(filename, lineNum, replacement, includeLoader, defines, macros, true, pauseLineSync);
+			replacement = preprocessText(filename, lineNum, replacement, includeLoader, defines, macros, previouslyIncluded, true, pauseLineSync);
 			--pauseLineSync;
 			emitLine(replacement, true);
 			emitLineEndDirective(filename, lineNum);
+		} else {
+			throw new PreprocessorException("Undefined macro: " + ctx.IDENT().getText());
 		}
 		return null;
 	}
@@ -544,27 +558,51 @@ public class PreprocessorVisitor extends PreprocessorParserBaseVisitor<Void> {
 
 	private String getNotConditionCode(String s) {
 		String result = null;
-		switch (s) {
+		switch (s.toUpperCase()) {
 			case "==":
+			case "EQ":
+			case "Z":
 				result = "nz";
 				break;
 			case "!=":
+			case "NE":
+			case "NZ":
 				result = "z";
 				break;
 			case "<":
+			case "LT":
+			case "N":
 				result = "nn";
 				break;
 			case "<=":
+			case "LE":
+			case "NP":
 				result = "p";
 				break;
 			case ">":
+			case "GT":
+			case "P":
 				result = "np";
 				break;
 			case ">=":
+			case "GE":
+			case "NN":
 				result = "n";
 				break;
+			case "PE":
+				result = "po";
+				break;
+			case "PO":
+				result = "pe";
+				break;
+			case "O":
+				result = "no";
+				break;
+			case "NO":
+				result = "o";
+				break;
 			default:
-				throw new PreprocessorException("Illegal loop expression");
+				throw new PreprocessorException("Illegal loop/cond expression");
 		}
 		return result;
 	}
@@ -587,6 +625,7 @@ public class PreprocessorVisitor extends PreprocessorParserBaseVisitor<Void> {
 			visit(ctx.block());
 
 			emitLineBeginDirective(filename, lineNum);
+			emitLine("$_LOOP_NEXT:", true);
 			if (ctx.incr != null) {
 				emitLine("add " + loopVar + ", " + ctx.incr.getText(), true);
 			}
@@ -617,6 +656,7 @@ public class PreprocessorVisitor extends PreprocessorParserBaseVisitor<Void> {
 			visit(ctx.block());
 
 			emitLineBeginDirective(filename, lineNum);
+			emitLine("$_LOOP_NEXT:", true);
 			emitLine("$_LOOP_TEST:", true);
 			emitLine("cmp " + loopVar + ", " + ctx.cond.primary(1).getText(), true);
 			String conditionOp = getConditionCode(ctx.cond.cmpOp().getText());
@@ -643,6 +683,7 @@ public class PreprocessorVisitor extends PreprocessorParserBaseVisitor<Void> {
 			visit(ctx.block());
 
 			emitLineBeginDirective(filename, lineNum);
+			emitLine("$_LOOP_NEXT:", true);
 			emitLine("$_LOOP_TEST:", true);
 			emitLine("cmp " + loopVar + ", " + ctx.cond.primary(1).getText(), true);
 			String conditionOp = getConditionCode(ctx.cond.cmpOp().getText());
@@ -656,12 +697,27 @@ public class PreprocessorVisitor extends PreprocessorParserBaseVisitor<Void> {
 	}
 
 	@Override
+	public Void visitBreakDir(PreprocessorParser.BreakDirContext ctx) {
+		emitLine("JUMP $$_LOOP_END", true);
+		return null;
+	}
+
+	@Override
+	public Void visitContinueDir(PreprocessorParser.ContinueDirContext ctx) {
+		emitLine("JUMP $$_LOOP_NEXT", true);
+		return null;
+	}
+
+	@Override
 	public Void visitIfCondBlock(PreprocessorParser.IfCondBlockContext ctx) {
 		if (ctx.cond != null && ctx.block() != null) {
 			String blockName = "COND_{}";
 			emitLineBeginDirective(filename, lineNum);
 			emitLine(".BLOCK " + blockName, false);
 
+			if (ctx.cond.primary().size() != 2 || ctx.cond.cmpOp() == null) {
+				throw new PreprocessorException("If condition expression must have two primaries and a comparison operator");
+			}
 			// If Cond expr
 			String leftVal = ctx.cond.primary(0).getText();
 			String rightVal = ctx.cond.primary(1).getText();
@@ -673,7 +729,9 @@ public class PreprocessorVisitor extends PreprocessorParserBaseVisitor<Void> {
 			visit(ctx.block());
 
 			emitLineBeginDirective(filename, lineNum);
-			emitLine("jump $COND_END", false);
+			if (ctx.elseCondClause() != null ||
+				(ctx.elseifCondClause() != null && ctx.elseifCondClause().size() > 0))
+				emitLine("jump $_COND_END", false);
 			emitLine("$_SKIP:", false);
 			emitLineEndDirective(filename, lineNum);
 
@@ -684,6 +742,7 @@ public class PreprocessorVisitor extends PreprocessorParserBaseVisitor<Void> {
 					leftVal = ectx.cond.primary(0).getText();
 					rightVal = ectx.cond.primary(1).getText();
 					conditionOp = getNotConditionCode(ectx.cond.cmpOp().getText());
+					emitLineBeginDirective(filename, lineNum);
 					emitLine("cmp " + leftVal + ", " + rightVal, true);
 					emitLine("jump " + conditionOp + ", $_SKIP_" + (i + 1), false);
 					emitLineEndDirective(filename, lineNum);
@@ -691,7 +750,8 @@ public class PreprocessorVisitor extends PreprocessorParserBaseVisitor<Void> {
 					visit(ectx.block());
 
 					emitLineBeginDirective(filename, lineNum);
-					emitLine("jump $COND_END", false);
+					if (ctx.elseCondClause() != null || i < ctx.elseifCondClause().size() - 1)
+						emitLine("jump $_COND_END", false);
 					emitLine("$_SKIP_" + (i + 1) + ":", false);
 					emitLineEndDirective(filename, lineNum);
 				}
@@ -701,12 +761,51 @@ public class PreprocessorVisitor extends PreprocessorParserBaseVisitor<Void> {
 			if (ctx.elseCondClause() != null) {
 				visit(ctx.elseCondClause().block());
 			}
-
-			emitLine("$COND_END:", false);
+			emitLineBeginDirective(filename, lineNum);
+			emitLine("$_COND_END:", false);
 			emitLine(".BLOCK_END", false);
 			emitLineEndDirective(filename, lineNum);
 		} else
 			throw new PreprocessorException("If condition needs an expression and a block!");
+		return null;
+	}
+
+
+	@Override
+	public Void visitIfCondSRBlock(PreprocessorParser.IfCondSRBlockContext ctx) {
+		if (ctx.IDENT() != null && ctx.block() != null) {
+			String blockName = "CONDSR_{}";
+			emitLineBeginDirective(filename, lineNum);
+			emitLine(".BLOCK " + blockName, false);
+
+			// If Cond SR IDENT
+			// IDENT is z, nz, n, p, nn, np, o or no
+			String conditionOp = ctx.IDENT().getText().toUpperCase();
+			if (!conditionOp.matches("Z|NZ|N|P|NN|NP|PE|PO|O|NO")) {
+				throw new PreprocessorException("If condition SR IDENT must be one of: z, nz, n, p, nn, np, pe, po, o, no");
+			}
+			emitLine("jump " + getNotConditionCode(conditionOp) + ", $_SKIP", false);
+			emitLineEndDirective(filename, lineNum);
+
+			visit(ctx.block());
+
+			emitLineBeginDirective(filename, lineNum);
+			if (ctx.elseCondClause() != null)
+				emitLine("jump $_COND_END", false);
+			emitLine("$_SKIP:", false);
+			emitLineEndDirective(filename, lineNum);
+
+			// else cond
+			if (ctx.elseCondClause() != null) {
+				visit(ctx.elseCondClause().block());
+			}
+
+			emitLineBeginDirective(filename, lineNum);
+			emitLine("$_COND_END:", false);
+			emitLine(".BLOCK_END", false);
+			emitLineEndDirective(filename, lineNum);
+		} else
+			throw new PreprocessorException("If condition SR needs an SR code and a block!");
 		return null;
 	}
 
@@ -878,7 +977,14 @@ public class PreprocessorVisitor extends PreprocessorParserBaseVisitor<Void> {
 		Matcher m = TOKEN.matcher(line);
 		StringBuffer sb = new StringBuffer(line.length());
 		while (m.find()) {
-			String ident = m.group();
+			// Check if the token is inside quotes before substituting
+			int start = m.start();
+			if (isInsideQuotes(line, start)) {
+				// leave this token unchanged
+				m.appendReplacement(sb, m.group());
+				continue;
+			}
+			String ident = m.group().toUpperCase();
 			String replacement = null;
 			DefVal dv = defines.get(ident);
 			if (dv != null) {
@@ -902,6 +1008,21 @@ public class PreprocessorVisitor extends PreprocessorParserBaseVisitor<Void> {
 		}
 		m.appendTail(sb);
 		return sb.toString();
+	}
+
+	/** Utility: return true if position `pos` lies inside a quoted string. */
+	private static boolean isInsideQuotes(String s, int pos) {
+		boolean inSingle = false;
+		boolean inDouble = false;
+		boolean escaped = false;
+		for (int i = 0; i < pos; i++) {
+			char c = s.charAt(i);
+			if (escaped) { escaped = false; continue; }
+			if (c == '\\') { escaped = true; continue; }
+			if (c == '\'' && !inDouble) inSingle = !inSingle;
+			else if (c == '"' && !inSingle) inDouble = !inDouble;
+		}
+		return inSingle || inDouble;
 	}
 
 	/** Token-aware substitution (whole identifiers only). */
@@ -995,7 +1116,7 @@ public class PreprocessorVisitor extends PreprocessorParserBaseVisitor<Void> {
 	 * This one starts with a fresh, empty define table.
 	 */
 	public static String preprocessText(String filename, String source, IncludeLoader loader) {
-		return preprocessText(filename, 1, source, loader, null, null, false, 0);
+		return preprocessText(filename, 1, source, loader, null, null, null, true, 0);
 	}
 
 	// Sets elements of args to null when they are used.
@@ -1018,7 +1139,7 @@ public class PreprocessorVisitor extends PreprocessorParserBaseVisitor<Void> {
 				}
 			}
 		}
-		return preprocessText(filename, 1, source, loader, definitions, null, false, 0);
+		return preprocessText(filename, 1, source, loader, definitions, null, null, true, 0);
 	}
 
 	/**
@@ -1030,6 +1151,7 @@ public class PreprocessorVisitor extends PreprocessorParserBaseVisitor<Void> {
 										IncludeLoader loader,
 										Map<String, DefVal> seedDefines,
 										Map<String, Pair<List<String>, String>> seedMacros,
+										Set<String> seedIncludes,
 										boolean substituteInsideDirectives,
 										int pauseLineSync) {
 		CharStream input = CharStreams.fromString(source);
@@ -1042,6 +1164,7 @@ public class PreprocessorVisitor extends PreprocessorParserBaseVisitor<Void> {
 		PreprocessorVisitor v = new PreprocessorVisitor(filename, lineNum, loader, substituteInsideDirectives, pauseLineSync);
 		v.defines = seedDefines != null ? seedDefines : new HashMap<>();
 		v.macros = seedMacros != null ? seedMacros : new HashMap<>();
+		v.previouslyIncluded = seedIncludes != null ? seedIncludes : new HashSet<>();
 		v.visit(parser.preproc());
 		return v.getOutput();
 	}

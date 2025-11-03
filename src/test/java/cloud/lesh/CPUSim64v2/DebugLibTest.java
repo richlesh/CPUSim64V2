@@ -9,53 +9,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class DebugLibTest {
-	public Triple<Integer, Simulator, SimStateDiff> runProgram(String src) {
-		String[] args = {"test"};
-		return runProgram(src, args);
-	}
-
-	public Triple<Integer, Simulator, SimStateDiff> runProgram(String src, String[] args) {
-		var loader = new IncludeLoader(Path.of("."));
-		String preprocessed = PreprocessorVisitor.preprocessText("Test.asm", src, loader, args);
-
-		LiteralRewriter rewriter = new LiteralRewriter();
-		String rewritten = rewriter.rewrite(preprocessed);
-
-		LabelVisitor labelVisitor = new LabelVisitor();
-		String noLabels = labelVisitor.gatherLabels(rewritten);
-		var asm = new AssemblerVisitor(labelVisitor.getLabelMap());
-		asm.assemble(noLabels);
-		List<Long> prog = asm.result();
-		Simulator sim = new Simulator(1000, args);
-		sim.clearCPUState();
-		sim.loadProgram(prog, 0L);
-		sim.SR = 0xF;
-		var startState = sim.getState();
-		int result = sim.run();
-		var diff = new SimStateDiff(sim, startState);
-		return Triple.of(result, sim, diff);
-	}
-
-	@Disabled
-	@Test
-	void testBoilerplate() {
-		String src = """
-			START:
-				#include <system/system.def>
-				#macro SLEEP(500)		// 5 seconds
-				MOVE R1, 500
-				#macro sleep(r1)
-				STOP
-			FINIS:
-			""";
-		var tuple = runProgram(src);
-		var result = tuple.getLeft();
-		var sim = tuple.getMiddle();
-		var diff = tuple.getRight();
-		assertEquals(4, diff.size());
-	}
-
+public class DebugLibTest extends BaseTest {
 	@Test
 	void testDebugMsg() {
 		String src = """
@@ -242,16 +196,16 @@ DEBUG: Percent: 12.35%
 			START:
 			#include <system/debug.asm>
 			#macro SET_EXIT_ON_ASSERT_FAILURE(0)
-			#macro assert_true(0, "true")
-			#macro assert_false(1, "false")
-			#macro assert_eq(1, 2, "eq")
-			#macro assert_ne(1, 1, "ne")
-			#macro assert_lt(2, 1, "lt")
-			#macro assert_gt(1, 2, "gt")
-			#macro assert_lt(1, 1, "lt")
-			#macro assert_gt(2, 2, "gt")
-			#macro assert_le(2, 1, "le")
-			#macro assert_ge(1, 2, "ge")
+			#macro ASSERT_TRUE(0, "true")
+			#macro ASSERT_FALSE(1, "false")
+			#macro ASSERT_EQ(1, 2, "eq")
+			#macro ASSERT_NE(1, 1, "ne")
+			#macro ASSERT_LT(2, 1, "lt")
+			#macro ASSERT_GT(1, 2, "gt")
+			#macro ASSERT_LT(1, 1, "lt")
+			#macro ASSERT_GT(2, 2, "gt")
+			#macro ASSERT_LE(2, 1, "le")
+			#macro ASSERT_GE(1, 2, "ge")
 			move f1, 1.0
 			move f2, 2.0
 			#macro assert_eq_fp(f1, f2, "eq")

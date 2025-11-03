@@ -199,8 +199,13 @@ public class AssemblerVisitor extends CPUSim64v2BaseVisitor<Void> implements Has
 		} else {
 			if (text.charAt(0) == '@')
 				text = text.substring(1);
-			if (text.charAt(0) == '$')
-				text = getScopeName() + text;
+			if (text.charAt(0) == '$') {
+				if (text.charAt(1) == '$') {
+					text = getLoopScopeName() + text.substring(1);
+				} else {
+					text = getScopeName() + text;
+				}
+			}
 			var v = labelMap.get(text.toUpperCase());
 			if (v != null)
 				return Long.valueOf(v);
@@ -349,6 +354,16 @@ public class AssemblerVisitor extends CPUSim64v2BaseVisitor<Void> implements Has
 
 	private String getScopeName() {
 		return String.join("$", blockNames);
+	}
+
+	private String getLoopScopeName() {
+		int i = blockNames.size() - 1;
+		for (; i >= 0; --i) {
+			String name = blockNames.get(i).toUpperCase();
+			if (name.startsWith("FOR_") || name.startsWith("WHILE_") || name.startsWith("DO_WHILE_"))
+				break;
+		}
+		return i >= 0 ? String.join("$", blockNames.subList(0, i + 1)) : "";
 	}
 
 	@Override
@@ -729,7 +744,7 @@ public class AssemblerVisitor extends CPUSim64v2BaseVisitor<Void> implements Has
 				v0 = aIndexFromToken(ctx.aOperand().start);
 				out.add(encType0(opc.code, aType, OT_NONE, OT_NONE, OT_NONE, v0, 0, 0, 0));
 			} else {
-				long k =parseIntLike(ctx.cLiteral(0).getText());
+				long k = parseIntLike(ctx.cLiteral(0).getText());
 				out.add(encType1C1(opc.code, k));
 			}
 			return null;
@@ -1086,7 +1101,7 @@ public class AssemblerVisitor extends CPUSim64v2BaseVisitor<Void> implements Has
 
 	@Override
 	public Void visitInstrCMP(CPUSim64v2Parser.InstrCMPContext ctx) {
-		// AA | AC | FF
+		// AA | AC | CA | FF
 		int a,b, v0, v1;
 		long k;
 
@@ -1096,10 +1111,18 @@ public class AssemblerVisitor extends CPUSim64v2BaseVisitor<Void> implements Has
 			b=OT_REG; v1=aIndexFromToken(ctx.aOperand(1).start);
 			out.add(encType0(Opcode.CMP.code, a,b, OT_NONE, OT_NONE, v0, v1, 0, 0));
 		} else if (ctx.aOperand()!=null && ctx.cLiteral()!=null) {
-			// AC
-			a=OT_REG;   v0=aIndexFromToken(ctx.aOperand(0).start);
-			k =parseIntLike(ctx.cLiteral().getText());
-			out.add(encType2RC2(Opcode.CMP.code, a, v0, k));
+			// AC, CA
+			if (ctx.rightC != null) {
+				// AC
+				a = OT_REG; v0 = aIndexFromToken(ctx.aOperand(0).start);
+				k = parseIntLike(ctx.cLiteral().getText());
+				out.add(encType2RC2(Opcode.CMP.code, a, v0, k));
+			} else {
+				// CA
+				a = OT_CONST; v0 = (int)parseIntLike(ctx.cLiteral().getText());
+				b = OT_REG; v1 = aIndexFromToken(ctx.aOperand(0).start);
+				out.add(encType0(Opcode.CMP.code, a,b, OT_NONE, OT_NONE, v0, v1, 0, 0));
+			}
 		} else {
 			// FF
 			a=OT_FP; v0=fpIndex(ctx.fOperand(0).REG_F().getText());
@@ -1437,6 +1460,17 @@ public class AssemblerVisitor extends CPUSim64v2BaseVisitor<Void> implements Has
 			return null;
 		}
 		throw new AssemblerException("RESTORE invalid operand types");
+	}
+
+	@Override
+	public Void visitInstrREADONLY(CPUSim64v2Parser.InstrREADONLYContext ctx) {
+		if (ctx.cLiteral() != null) {
+			long k = parseIntLike(ctx.cLiteral().getText());
+			out.add(encType1C1(Opcode.READONLY.code, k));
+		} else {
+			throw new AssemblerException("READONLY invalid operand types");
+		}
+		return null;
 	}
 
 	public Void visitData_Directive(CPUSim64v2Parser.Data_DirectiveContext ddctx) {

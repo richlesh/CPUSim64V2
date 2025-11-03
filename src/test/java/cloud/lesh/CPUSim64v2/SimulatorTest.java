@@ -8,33 +8,6 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class SimulatorTest {
-	public void assertDiff(List<String> diffs, int val) {
-		assertTrue(diffs.contains("SR:" + val));
-	}
-
-	public void assertDiff(List<String> diffs, int reg, long val) {
-		if (reg == Simulator.R_SF)
-			assertTrue(diffs.contains("SF:" + val));
-		else if (reg == Simulator.R_SP)
-			assertTrue(diffs.contains("SP:" + val));
-		else if (reg == Simulator.R_PC)
-			assertTrue(diffs.contains("PC:" + val));
-		else
-			assertTrue(diffs.contains("R" + reg + ":" + val));
-	}
-
-	public void assertDiff(List<String> diffs, int reg, double val) {
-		assertTrue(diffs.contains("F" + reg + ":" + val));
-	}
-
-	public void assertMem(Simulator sim, int addr, long val) {
-		assertEquals(val, sim.memRead(addr));
-	}
-
-	public void assertMem(Simulator sim, int addr, double val) {
-		assertEquals(Double.doubleToRawLongBits(val), sim.mem[addr]);
-	}
-
 	@Test
 	void testSignExtend() {
 		assertEquals(1L, Simulator.signExtend(1L, 4));
@@ -100,7 +73,8 @@ public class SimulatorTest {
 		sim.SR = 0xF;
 		var startState = sim.getState();
 		sim.run();
-		var diff = sim.diffState(startState);
+		var diff = new SimStateDiff(sim, startState);
+
 		assertEquals(sim.GPR_COUNT + sim.FPR_COUNT - 3 + 2, diff.size());
 		for (int i = 0; i < sim.GPR_COUNT - 3; ++i)
 			assertEquals(0, sim.R[i]);
@@ -124,11 +98,11 @@ public class SimulatorTest {
 		sim.SR = 0xF;
 		startState = sim.getState();
 		sim.run();
-		diff = sim.diffState(startState);
+		diff = new SimStateDiff(sim, startState);
 		assertEquals(4, diff.size());
-		assertDiff(diff, 3, 0);
-		assertDiff(diff, 4, 0.);
-		assertDiff(diff, sim.SR_Z);
+		diff.assertDiff(3, 0);
+		diff.assertDiff(4, 0.);
+		diff.assertSRDiff(sim.SR_Z);
 
 		// Clear two register R/F (YY)
 		prog.clear();
@@ -139,13 +113,13 @@ public class SimulatorTest {
 		sim.SR = 0xF;
 		startState = sim.getState();
 		sim.run();
-		diff = sim.diffState(startState);
+		diff = new SimStateDiff(sim, startState);
 		assertEquals(6, diff.size());
-		assertDiff(diff, 4, 0);
-		assertDiff(diff, 5, 0);
-		assertDiff(diff, 5, 0.);
-		assertDiff(diff, 6, 0.);
-		assertDiff(diff, sim.SR_Z);
+		diff.assertDiff(4, 0);
+		diff.assertDiff(5, 0);
+		diff.assertDiff(5, 0.);
+		diff.assertDiff(6, 0.);
+		diff.assertSRDiff(sim.SR_Z);
 
 		// Clear three register R/F (YYY)
 		prog.clear();
@@ -156,15 +130,15 @@ public class SimulatorTest {
 		sim.SR = 0xF;
 		startState = sim.getState();
 		sim.run();
-		diff = sim.diffState(startState);
+		diff = new SimStateDiff(sim, startState);
 		assertEquals(8, diff.size());
-		assertDiff(diff, 6, 0);
-		assertDiff(diff, 7, 0);
-		assertDiff(diff, 8, 0);
-		assertDiff(diff, 7, 0.);
-		assertDiff(diff, 8, 0.);
-		assertDiff(diff, 9, 0.);
-		assertDiff(diff, sim.SR_Z);
+		diff.assertDiff(6, 0);
+		diff.assertDiff(7, 0);
+		diff.assertDiff(8, 0);
+		diff.assertDiff(7, 0.);
+		diff.assertDiff(8, 0.);
+		diff.assertDiff(9, 0.);
+		diff.assertSRDiff(sim.SR_Z);
 
 		// Clear four register R/F (YYYY)
 		prog.clear();
@@ -175,17 +149,17 @@ public class SimulatorTest {
 		sim.SR = 0xF;
 		startState = sim.getState();
 		sim.run();
-		diff = sim.diffState(startState);
+		diff = new SimStateDiff(sim, startState);
 		assertEquals(10, diff.size());
-		assertDiff(diff, 9, 0);
-		assertDiff(diff, 10, 0);
-		assertDiff(diff, 11, 0);
-		assertDiff(diff, 12, 0);
-		assertDiff(diff, 10, 0.);
-		assertDiff(diff, 11, 0.);
-		assertDiff(diff, 12, 0.);
-		assertDiff(diff, 13, 0.);
-		assertDiff(diff, sim.SR_Z);
+		diff.assertDiff(9, 0);
+		diff.assertDiff(10, 0);
+		diff.assertDiff(11, 0);
+		diff.assertDiff(12, 0);
+		diff.assertDiff(10, 0.);
+		diff.assertDiff(11, 0.);
+		diff.assertDiff(12, 0.);
+		diff.assertDiff(13, 0.);
+		diff.assertSRDiff(sim.SR_Z);
 
 		// Clear four register mix R/F (YYYY)
 		prog.clear();
@@ -196,17 +170,17 @@ public class SimulatorTest {
 		sim.SR = 0xF;
 		startState = sim.getState();
 		sim.run();
-		diff = sim.diffState(startState);
+		diff = new SimStateDiff(sim, startState);
 		assertEquals(10, diff.size());
-		assertDiff(diff, 20, 0);
-		assertDiff(diff, 22, 0);
-		assertDiff(diff, 25, 0);
-		assertDiff(diff, 27, 0);
-		assertDiff(diff, 21, 0.);
-		assertDiff(diff, 23, 0.);
-		assertDiff(diff, 24, 0.);
-		assertDiff(diff, 26, 0.);
-		assertDiff(diff, sim.SR_Z);
+		diff.assertDiff(20, 0);
+		diff.assertDiff(22, 0);
+		diff.assertDiff(25, 0);
+		diff.assertDiff(27, 0);
+		diff.assertDiff(21, 0.);
+		diff.assertDiff(23, 0.);
+		diff.assertDiff(24, 0.);
+		diff.assertDiff(26, 0.);
+		diff.assertSRDiff(sim.SR_Z);
 	}
 
 	@Test
@@ -224,11 +198,11 @@ public class SimulatorTest {
 		sim.SR = 0xF;
 		var startState = sim.getState();
 		sim.run();
-		var diff = sim.diffState(startState);
+		var diff = new SimStateDiff(sim, startState);
 		assertEquals(4, diff.size());
-		assertDiff(diff, 1, 1234);
-		assertDiff(diff, 1, 4567.);
-		assertDiff(diff, sim.SR_P);
+		diff.assertDiff(1, 1234);
+		diff.assertDiff(1, 4567.);
+		diff.assertSRDiff(sim.SR_P);
 
 		// move YY  (XX and FF)
 		prog.clear();
@@ -239,11 +213,11 @@ public class SimulatorTest {
 		sim.SR = 0xF;
 		startState = sim.getState();
 		sim.run();
-		diff = sim.diffState(startState);
+		diff = new SimStateDiff(sim, startState);
 		assertEquals(4, diff.size());
-		assertDiff(diff, 2, 1234);
-		assertDiff(diff, 2, 4567.);
-		assertDiff(diff, sim.SR_P);
+		diff.assertDiff(2, 1234);
+		diff.assertDiff(2, 4567.);
+		diff.assertSRDiff(sim.SR_P);
 
 		// move YY  (XF and FX)
 		prog.clear();
@@ -254,11 +228,11 @@ public class SimulatorTest {
 		sim.SR = 0xF;
 		startState = sim.getState();
 		sim.run();
-		diff = sim.diffState(startState);
+		diff = new SimStateDiff(sim, startState);
 		assertEquals(4, diff.size());
-		assertDiff(diff, 3, 4567);
-		assertDiff(diff, 3, 1234.);
-		assertDiff(diff, sim.SR_P);
+		diff.assertDiff(3, 4567);
+		diff.assertDiff(3, 1234.);
+		diff.assertSRDiff(sim.SR_P);
 
 		// move AAC/ACA
 		prog.clear();
@@ -269,11 +243,11 @@ public class SimulatorTest {
 		sim.SR = 0xF;
 		startState = sim.getState();
 		sim.run();
-		diff = sim.diffState(startState);
+		diff = new SimStateDiff(sim, startState);
 		assertEquals(4, diff.size());
-		assertDiff(diff, 4, 1234 + 5);
-		assertDiff(diff, 5, 4567 + 6);
-		assertDiff(diff, 0);
+		diff.assertDiff(4, 1234 + 5);
+		diff.assertDiff(5, 4567 + 6);
+		diff.assertSRDiff(0);
 
 		// move AAR
 		prog.clear();
@@ -283,10 +257,10 @@ public class SimulatorTest {
 		sim.SR = 0xF;
 		startState = sim.getState();
 		sim.run();
-		diff = sim.diffState(startState);
+		diff = new SimStateDiff(sim, startState);
 		assertEquals(3, diff.size());
-		assertDiff(diff, 6, 1234 + 4567);
-		assertDiff(diff, sim.SR_P);
+		diff.assertDiff(6, 1234 + 4567);
+		diff.assertSRDiff(sim.SR_P);
 
 		// move ZYQQ (ZRCC and ZFCC) with Z True and False
 		prog.clear();
@@ -300,13 +274,13 @@ public class SimulatorTest {
 		sim.SR = 0xF;
 		startState = sim.getState();
 		sim.run();
-		diff = sim.diffState(startState);
+		diff = new SimStateDiff(sim, startState);
 		assertEquals(6, diff.size());
-		assertDiff(diff, 7, 326);
-		assertDiff(diff, 7, 123.);
-		assertDiff(diff, 8, 623);
-		assertDiff(diff, 8, 321.);
-		assertDiff(diff, 0);
+		diff.assertDiff(7, 326);
+		diff.assertDiff(7, 123.);
+		diff.assertDiff(8, 623);
+		diff.assertDiff(8, 321.);
+		diff.assertSRDiff(0);
 
 		// move ZYQQ (ZRRR and ZFFF) with Z True and False
 		prog.clear();
@@ -320,13 +294,13 @@ public class SimulatorTest {
 		sim.SR = 0xF;
 		startState = sim.getState();
 		sim.run();
-		diff = sim.diffState(startState);
+		diff = new SimStateDiff(sim, startState);
 		assertEquals(6, diff.size());
-		assertDiff(diff, 9, 1234);
-		assertDiff(diff, 9, 4567.);
-		assertDiff(diff, 10, 4567);
-		assertDiff(diff, 10, 1234.);
-		assertDiff(diff, sim.SR_P);
+		diff.assertDiff(9, 1234);
+		diff.assertDiff(9, 4567.);
+		diff.assertDiff(10, 4567);
+		diff.assertDiff(10, 1234.);
+		diff.assertSRDiff(sim.SR_P);
 	}
 
 	@Test
@@ -352,13 +326,13 @@ public class SimulatorTest {
 		sim.SR = 0xF;
 		var startState = sim.getState();
 		sim.run();
-		var diff = sim.diffState(startState);
+		var diff = new SimStateDiff(sim, startState);
 		assertEquals(8, diff.size());
-		assertDiff(diff, 3, 1234);
-		assertDiff(diff, 3, 1111.);
-		assertDiff(diff, 4, 5678);
-		assertDiff(diff, 4, 2222.);
-		assertDiff(diff, 0);
+		diff.assertDiff(3, 1234);
+		diff.assertDiff(3, 1111.);
+		diff.assertDiff(4, 5678);
+		diff.assertDiff(4, 2222.);
+		diff.assertSRDiff(0);
 
 		// load YAC,YCA,YCC,YAR
 		sim.clearCPUState();
@@ -385,15 +359,15 @@ public class SimulatorTest {
 		sim.SR = 0xF;
 		startState = sim.getState();
 		sim.run();
-		diff = sim.diffState(startState);
+		diff = new SimStateDiff(sim, startState);
 		assertEquals(11, diff.size());
-		assertDiff(diff, 4, 9012L);
-		assertDiff(diff, 4, 3333.);
-		assertDiff(diff, 5, 3456L);
-		assertDiff(diff, 5, 4444.);
-		assertDiff(diff, 6, 5678L);
-		assertDiff(diff, 6, 2222.);
-		assertDiff(diff, 0);
+		diff.assertDiff(4, 9012L);
+		diff.assertDiff(4, 3333.);
+		diff.assertDiff(5, 3456L);
+		diff.assertDiff(5, 4444.);
+		diff.assertDiff(6, 5678L);
+		diff.assertDiff(6, 2222.);
+		diff.assertSRDiff(0);
 	}
 
 	@Test
@@ -419,13 +393,13 @@ public class SimulatorTest {
 		sim.SR = 0xF;
 		var startState = sim.getState();
 		sim.run();
-		var diff = sim.diffState(startState);
+		var diff = new SimStateDiff(sim, startState);
 		assertEquals(8, diff.size());
-		assertDiff(diff, 3, 1234);
-		assertDiff(diff, 3, 1111.);
-		assertDiff(diff, 4, 5678);
-		assertDiff(diff, 4, 2222.);
-		assertDiff(diff, 0);
+		diff.assertDiff(3, 1234);
+		diff.assertDiff(3, 1111.);
+		diff.assertDiff(4, 5678);
+		diff.assertDiff(4, 2222.);
+		diff.assertSRDiff(0);
 
 		// store YAC,YCA,YCC,YAR
 		prog.clear();
@@ -457,17 +431,17 @@ public class SimulatorTest {
 		sim.SR = 0xF;
 		startState = sim.getState();
 		sim.run();
-		diff = sim.diffState(startState);
+		diff = new SimStateDiff(sim, startState);
 		assertEquals(11, diff.size());
-		assertMem(sim, 16, 1234L);
-		assertMem(sim, 17, 111L);
-		assertMem(sim, 18, 1L);
-		assertMem(sim, 19, 11L);
-		assertMem(sim, 20, 1111.);
-		assertMem(sim, 21, 222.);
-		assertMem(sim, 22, 2.);
-		assertMem(sim, 23, 22.);
-		assertDiff(diff, 0);
+		diff.assertMem(16, 1234L);
+		diff.assertMem(17, 111L);
+		diff.assertMem(18, 1L);
+		diff.assertMem(19, 11L);
+		diff.assertMem(20, 1111.);
+		diff.assertMem(21, 222.);
+		diff.assertMem(22, 2.);
+		diff.assertMem(23, 22.);
+		diff.assertSRDiff(0);
 
 		// STORE CAC,CCA,CCC,CAR
 		sim.clearCPUState();
@@ -486,13 +460,13 @@ public class SimulatorTest {
 		sim.SR = 0xF;
 		startState = sim.getState();
 		sim.run();
-		diff = sim.diffState(startState);
+		diff = new SimStateDiff(sim, startState);
 		assertEquals(4, diff.size());
-		assertMem(sim, 6, 1234L);
-		assertMem(sim, 7, 6L);
-		assertMem(sim, 8, 4L);
-		assertMem(sim, 9, 5L);
-		assertDiff(diff, sim.SR_P);
+		diff.assertMem(6, 1234L);
+		diff.assertMem(7, 6L);
+		diff.assertMem(8, 4L);
+		diff.assertMem(9, 5L);
+		diff.assertSRDiff(sim.SR_P);
 	}
 
 	@Test
@@ -513,13 +487,13 @@ public class SimulatorTest {
 		sim.SR = 0xF;
 		var startState = sim.getState();
 		sim.run();
-		var diff = sim.diffState(startState);
+		var diff = new SimStateDiff(sim, startState);
 		assertEquals(5, diff.size());
-		assertDiff(diff, sim.R_SP, 1096);
-		assertMem(sim, 1099, 123456L);
-		assertMem(sim, 1098, 326L);
-		assertMem(sim, 1097, Double.doubleToRawLongBits(31415.));
-		assertDiff(diff, 0);
+		diff.assertDiff(sim.R_SP, 1096);
+		diff.assertMem(1099, 123456L);
+		diff.assertMem(1098, 326L);
+		diff.assertMem(1097, Double.doubleToRawLongBits(31415.));
+		diff.assertSRDiff(0);
 
 		// pop N, Y
 		sim.mem[0] = Simulator.encT0(Opcode.POP.code, 3, 0, 0, 0, 4, 0, 0, 0);    // POP F4
@@ -530,11 +504,11 @@ public class SimulatorTest {
 		sim.SR = 0xF;
 		startState = sim.getState();
 		sim.run();
-		diff = sim.diffState(startState);
+		diff = new SimStateDiff(sim, startState);
 		assertEquals(5, diff.size());
-		assertDiff(diff, sim.R_SP, 1099);
-		assertDiff(diff, 3, 326);
-		assertDiff(diff, 4, 31415.);
+		diff.assertDiff(sim.R_SP, 1099);
+		diff.assertDiff(3, 326);
+		diff.assertDiff(4, 31415.);
 	}
 
 	@Test
@@ -554,10 +528,10 @@ public class SimulatorTest {
 		sim.SR = 0xF;
 		var startState = sim.getState();
 		sim.run();
-		var diff = sim.diffState(startState);
+		var diff = new SimStateDiff(sim, startState);
 		assertEquals(3, diff.size());
-		assertDiff(diff, 1, 326);
-		assertDiff(diff, 0);
+		diff.assertDiff(1, 326);
+		diff.assertSRDiff(0);
 
 		// A
 		sim.clearCPUState();
@@ -572,10 +546,10 @@ public class SimulatorTest {
 		sim.SR = 0xF;
 		startState = sim.getState();
 		sim.run();
-		diff = sim.diffState(startState);
+		diff = new SimStateDiff(sim, startState);
 		assertEquals(4, diff.size());
-		assertDiff(diff, 1, 326);
-		assertDiff(diff, 0);
+		diff.assertDiff(1, 326);
+		diff.assertSRDiff(0);
 
 		// ZC
 		sim.clearCPUState();
@@ -595,11 +569,11 @@ public class SimulatorTest {
 		sim.SR = 0xF;
 		startState = sim.getState();
 		sim.run();
-		diff = sim.diffState(startState);
+		diff = new SimStateDiff(sim, startState);
 		assertEquals(5, diff.size());
-		assertDiff(diff, 1, 326);
-		assertDiff(diff, 3, 31415);
-		assertDiff(diff, sim.SR_P);
+		diff.assertDiff(1, 326);
+		diff.assertDiff(3, 31415);
+		diff.assertSRDiff(sim.SR_P);
 
 		// ZA
 		sim.clearCPUState();
@@ -619,11 +593,11 @@ public class SimulatorTest {
 		sim.SR = 0xF;
 		startState = sim.getState();
 		sim.run();
-		diff = sim.diffState(startState);
+		diff = new SimStateDiff(sim, startState);
 		assertEquals(5, diff.size());
-		assertDiff(diff, 1, 326);
-		assertDiff(diff, 3, 31415);
-		assertDiff(diff, sim.SR_P);
+		diff.assertDiff(1, 326);
+		diff.assertDiff(3, 31415);
+		diff.assertSRDiff(sim.SR_P);
 
 		// AC
 		sim.clearCPUState();
@@ -638,10 +612,10 @@ public class SimulatorTest {
 		sim.SR = 0xF;
 		startState = sim.getState();
 		sim.run();
-		diff = sim.diffState(startState);
+		diff = new SimStateDiff(sim, startState);
 		assertEquals(4, diff.size());
-		assertDiff(diff, 1, 326);
-		assertDiff(diff, 0);
+		diff.assertDiff(1, 326);
+		diff.assertSRDiff(0);
 
 		// AR
 		sim.clearCPUState();
@@ -657,10 +631,10 @@ public class SimulatorTest {
 		sim.SR = 0xF;
 		startState = sim.getState();
 		sim.run();
-		diff = sim.diffState(startState);
+		diff = new SimStateDiff(sim, startState);
 		assertEquals(5, diff.size());
-		assertDiff(diff, 1, 326);
-		assertDiff(diff, 0);
+		diff.assertDiff(1, 326);
+		diff.assertSRDiff(0);
 
 		// ZAC,ZCA
 		sim.clearCPUState();
@@ -679,11 +653,11 @@ public class SimulatorTest {
 		sim.SR = 0xF;
 		startState = sim.getState();
 		sim.run();
-		diff = sim.diffState(startState);
+		diff = new SimStateDiff(sim, startState);
 		assertEquals(5, diff.size());
-		assertDiff(diff, 1, 326);
-		assertDiff(diff, 3, 31415);
-		assertDiff(diff, sim.SR_P);
+		diff.assertDiff(1, 326);
+		diff.assertDiff(3, 31415);
+		diff.assertSRDiff(sim.SR_P);
 
 		// ZCC
 		sim.clearCPUState();
@@ -702,11 +676,11 @@ public class SimulatorTest {
 		sim.SR = 0xF;
 		startState = sim.getState();
 		sim.run();
-		diff = sim.diffState(startState);
+		diff = new SimStateDiff(sim, startState);
 		assertEquals(5, diff.size());
-		assertDiff(diff, 1, 326);
-		assertDiff(diff, 3, 31415);
-		assertDiff(diff, sim.SR_P);
+		diff.assertDiff(1, 326);
+		diff.assertDiff(3, 31415);
+		diff.assertSRDiff(sim.SR_P);
 
 		// ZAR
 		sim.clearCPUState();
@@ -727,11 +701,11 @@ public class SimulatorTest {
 		sim.SR = 0xF;
 		startState = sim.getState();
 		sim.run();
-		diff = sim.diffState(startState);
+		diff = new SimStateDiff(sim, startState);
 		assertEquals(6, diff.size());
-		assertDiff(diff, 1, 326);
-		assertDiff(diff, 3, 31415);
-		assertDiff(diff, sim.SR_P);
+		diff.assertDiff(1, 326);
+		diff.assertDiff(3, 31415);
+		diff.assertSRDiff(sim.SR_P);
 	}
 
 	@Test
@@ -751,12 +725,12 @@ public class SimulatorTest {
 		sim.SR = 0xF;
 		var startState = sim.getState();
 		sim.run();
-		var diff = sim.diffState(startState);
+		var diff = new SimStateDiff(sim, startState);
 		assertEquals(5, diff.size());
-		assertDiff(diff, sim.R_SP, 1097);
-		assertDiff(diff, sim.R_SF, 1097);
-		assertDiff(diff, 1, 326);
-		assertDiff(diff, 0);
+		diff.assertDiff(sim.R_SP, 1097);
+		diff.assertDiff(sim.R_SF, 1097);
+		diff.assertDiff(1, 326);
+		diff.assertSRDiff(0);
 
 		// A
 		sim.clearCPUState();
@@ -771,12 +745,12 @@ public class SimulatorTest {
 		sim.SR = 0xF;
 		startState = sim.getState();
 		sim.run();
-		diff = sim.diffState(startState);
+		diff = new SimStateDiff(sim, startState);
 		assertEquals(6, diff.size());
-		assertDiff(diff, 1, 326);
-		assertDiff(diff, sim.R_SP, 1097);
-		assertDiff(diff, sim.R_SF, 1097);
-		assertDiff(diff, 0);
+		diff.assertDiff(1, 326);
+		diff.assertDiff(sim.R_SP, 1097);
+		diff.assertDiff(sim.R_SF, 1097);
+		diff.assertSRDiff(0);
 
 		// ZC
 		sim.clearCPUState();
@@ -796,13 +770,13 @@ public class SimulatorTest {
 		sim.SR = 0xF;
 		startState = sim.getState();
 		sim.run();
-		diff = sim.diffState(startState);
+		diff = new SimStateDiff(sim, startState);
 		assertEquals(7, diff.size());
-		assertDiff(diff, 1, 326);
-		assertDiff(diff, 3, 31415);
-		assertDiff(diff, sim.R_SP, 1095);
-		assertDiff(diff, sim.R_SF, 1095);
-		assertDiff(diff, sim.SR_P);
+		diff.assertDiff(1, 326);
+		diff.assertDiff(3, 31415);
+		diff.assertDiff(sim.R_SP, 1095);
+		diff.assertDiff(sim.R_SF, 1095);
+		diff.assertSRDiff(sim.SR_P);
 
 		// ZA
 		sim.clearCPUState();
@@ -822,13 +796,13 @@ public class SimulatorTest {
 		sim.SR = 0xF;
 		startState = sim.getState();
 		sim.run();
-		diff = sim.diffState(startState);
+		diff = new SimStateDiff(sim, startState);
 		assertEquals(7, diff.size());
-		assertDiff(diff, 1, 326);
-		assertDiff(diff, 3, 31415);
-		assertDiff(diff, sim.R_SP, 1095);
-		assertDiff(diff, sim.R_SF, 1095);
-		assertDiff(diff, sim.SR_P);
+		diff.assertDiff(1, 326);
+		diff.assertDiff(3, 31415);
+		diff.assertDiff(sim.R_SP, 1095);
+		diff.assertDiff(sim.R_SF, 1095);
+		diff.assertSRDiff(sim.SR_P);
 
 		// AC
 		sim.clearCPUState();
@@ -843,12 +817,12 @@ public class SimulatorTest {
 		sim.SR = 0xF;
 		startState = sim.getState();
 		sim.run();
-		diff = sim.diffState(startState);
+		diff = new SimStateDiff(sim, startState);
 		assertEquals(6, diff.size());
-		assertDiff(diff, 1, 326);
-		assertDiff(diff, sim.R_SP, 1097);
-		assertDiff(diff, sim.R_SF, 1097);
-		assertDiff(diff, 0);
+		diff.assertDiff(1, 326);
+		diff.assertDiff(sim.R_SP, 1097);
+		diff.assertDiff(sim.R_SF, 1097);
+		diff.assertSRDiff(0);
 
 		// AR
 		sim.clearCPUState();
@@ -864,12 +838,12 @@ public class SimulatorTest {
 		sim.SR = 0xF;
 		startState = sim.getState();
 		sim.run();
-		diff = sim.diffState(startState);
+		diff = new SimStateDiff(sim, startState);
 		assertEquals(7, diff.size());
-		assertDiff(diff, 1, 326);
-		assertDiff(diff, sim.R_SP, 1097);
-		assertDiff(diff, sim.R_SF, 1097);
-		assertDiff(diff, 0);
+		diff.assertDiff(1, 326);
+		diff.assertDiff(sim.R_SP, 1097);
+		diff.assertDiff(sim.R_SF, 1097);
+		diff.assertSRDiff(0);
 
 		// ZAC,ZCA
 		sim.clearCPUState();
@@ -888,13 +862,13 @@ public class SimulatorTest {
 		sim.SR = 0xF;
 		startState = sim.getState();
 		sim.run();
-		diff = sim.diffState(startState);
+		diff = new SimStateDiff(sim, startState);
 		assertEquals(7, diff.size());
-		assertDiff(diff, 1, 326);
-		assertDiff(diff, 3, 31415);
-		assertDiff(diff, sim.R_SP, 1095);
-		assertDiff(diff, sim.R_SF, 1095);
-		assertDiff(diff, sim.SR_P);
+		diff.assertDiff(1, 326);
+		diff.assertDiff(3, 31415);
+		diff.assertDiff(sim.R_SP, 1095);
+		diff.assertDiff(sim.R_SF, 1095);
+		diff.assertSRDiff(sim.SR_P);
 
 		// ZCC
 		sim.clearCPUState();
@@ -913,13 +887,13 @@ public class SimulatorTest {
 		sim.SR = 0xF;
 		startState = sim.getState();
 		sim.run();
-		diff = sim.diffState(startState);
+		diff = new SimStateDiff(sim, startState);
 		assertEquals(7, diff.size());
-		assertDiff(diff, 1, 326);
-		assertDiff(diff, 3, 31415);
-		assertDiff(diff, sim.R_SP, 1095);
-		assertDiff(diff, sim.R_SF, 1095);
-		assertDiff(diff, sim.SR_P);
+		diff.assertDiff(1, 326);
+		diff.assertDiff(3, 31415);
+		diff.assertDiff(sim.R_SP, 1095);
+		diff.assertDiff(sim.R_SF, 1095);
+		diff.assertSRDiff(sim.SR_P);
 
 		// ZAR
 		sim.clearCPUState();
@@ -940,13 +914,13 @@ public class SimulatorTest {
 		sim.SR = 0xF;
 		startState = sim.getState();
 		sim.run();
-		diff = sim.diffState(startState);
+		diff = new SimStateDiff(sim, startState);
 		assertEquals(8, diff.size());
-		assertDiff(diff, 1, 326);
-		assertDiff(diff, 3, 31415);
-		assertDiff(diff, sim.R_SP, 1095);
-		assertDiff(diff, sim.R_SF, 1095);
-		assertDiff(diff, sim.SR_P);
+		diff.assertDiff(1, 326);
+		diff.assertDiff(3, 31415);
+		diff.assertDiff(sim.R_SP, 1095);
+		diff.assertDiff(sim.R_SF, 1095);
+		diff.assertSRDiff(sim.SR_P);
 	}
 
 	@Test
@@ -969,12 +943,12 @@ public class SimulatorTest {
 		sim.SR = 0xF;
 		var startState = sim.getState();
 		sim.run();
-		var diff = sim.diffState(startState);
+		var diff = new SimStateDiff(sim, startState);
 		assertEquals(5, diff.size());
-		assertDiff(diff, 1, 31415);
-		assertDiff(diff, 2, 12345);
-		assertDiff(diff, 3, 326);
-		assertDiff(diff, sim.SR_P);
+		diff.assertDiff(1, 31415);
+		diff.assertDiff(2, 12345);
+		diff.assertDiff(3, 326);
+		diff.assertSRDiff(sim.SR_P);
 	}
 
 	@Test
@@ -1014,15 +988,15 @@ public class SimulatorTest {
 		sim.SR = 0xF;
 		var startState = sim.getState();
 		sim.run();
-		var diff = sim.diffState(startState);
+		var diff = new SimStateDiff(sim, startState);
 		assertEquals(10, diff.size());
-		assertDiff(diff, 1, 4.);
-		assertDiff(diff, 2, 4.);
-		assertDiff(diff, 3, 4.);
-		assertDiff(diff, 4, 3.5);
-		assertDiff(diff, 5, 4.);
-		assertDiff(diff, 6, 3.5);
-		assertDiff(diff, sim.SR_P);
+		diff.assertDiff(1, 4.);
+		diff.assertDiff(2, 4.);
+		diff.assertDiff(3, 4.);
+		diff.assertDiff(4, 3.5);
+		diff.assertDiff(5, 4.);
+		diff.assertDiff(6, 3.5);
+		diff.assertSRDiff(sim.SR_P);
 	}
 
 	@Test
@@ -1047,13 +1021,13 @@ public class SimulatorTest {
 		sim.SR = 0xF;
 		var startState = sim.getState();
 		sim.run();
-		var diff = sim.diffState(startState);
+		var diff = new SimStateDiff(sim, startState);
 		assertEquals(6, diff.size());
-		assertDiff(diff, 1, -31415);
-		assertDiff(diff, 3, -3.5);
-		assertDiff(diff, 2, 31415);
-		assertDiff(diff, 2, 3.5);
-		assertDiff(diff, sim.SR_P);
+		diff.assertDiff(1, -31415);
+		diff.assertDiff(3, -3.5);
+		diff.assertDiff(2, 31415);
+		diff.assertDiff(2, 3.5);
+		diff.assertSRDiff(sim.SR_P);
 	}
 
 	@Test
@@ -1080,13 +1054,13 @@ public class SimulatorTest {
 		sim.SR = 0xF;
 		var startState = sim.getState();
 		sim.run();
-		var diff = sim.diffState(startState);
+		var diff = new SimStateDiff(sim, startState);
 		assertEquals(6, diff.size());
-		assertDiff(diff, 0, 43757);
-		assertDiff(diff, 1, 31415);
-		assertDiff(diff, 0, 31414.4);
-		assertDiff(diff, 1, -1.1);
-		assertDiff(diff, 0);
+		diff.assertDiff(0, 43757);
+		diff.assertDiff(1, 31415);
+		diff.assertDiff(0, 31414.4);
+		diff.assertDiff(1, -1.1);
+		diff.assertSRDiff(0);
 
 		// AAR, FFX, AAC, FFC
 		sim.clearCPUState();
@@ -1107,18 +1081,18 @@ public class SimulatorTest {
 		sim.SR = 0xF;
 		startState = sim.getState();
 		sim.run();
-		diff = sim.diffState(startState);
+		diff = new SimStateDiff(sim, startState);
 		assertEquals(11, diff.size());
-		assertDiff(diff, 0, 12345);
-		assertDiff(diff, 1, 31415);
-		assertDiff(diff, 2, 43760);
-		assertDiff(diff, 3, 12355);
-		assertDiff(diff, 0, 3.5);
-		assertDiff(diff, 1, -1.1);
-		assertDiff(diff, 2, 2.4);
-		assertDiff(diff, 3, 31418.5);
-		assertDiff(diff, 4, 8.9);
-		assertDiff(diff, 0);
+		diff.assertDiff(0, 12345);
+		diff.assertDiff(1, 31415);
+		diff.assertDiff(2, 43760);
+		diff.assertDiff(3, 12355);
+		diff.assertDiff(0, 3.5);
+		diff.assertDiff(1, -1.1);
+		diff.assertDiff(2, 2.4);
+		diff.assertDiff(3, 31418.5);
+		diff.assertDiff(4, 8.9);
+		diff.assertSRDiff(0);
 	}
 
 	@Test
@@ -1145,13 +1119,13 @@ public class SimulatorTest {
 		sim.SR = 0xF;
 		var startState = sim.getState();
 		sim.run();
-		var diff = sim.diffState(startState);
+		var diff = new SimStateDiff(sim, startState);
 		assertEquals(6, diff.size());
-		assertDiff(diff, 0, -19067);
-		assertDiff(diff, 1, 31415);
-		assertDiff(diff, 0, -31407.4);
-		assertDiff(diff, 1, -1.1);
-		assertDiff(diff, sim.SR_S);
+		diff.assertDiff(0, -19067);
+		diff.assertDiff(1, 31415);
+		diff.assertDiff(0, -31407.4);
+		diff.assertDiff(1, -1.1);
+		diff.assertSRDiff(sim.SR_S);
 
 		// AAR, FFX, AAC, FFC
 		sim.clearCPUState();
@@ -1172,18 +1146,18 @@ public class SimulatorTest {
 		sim.SR = 0xF;
 		startState = sim.getState();
 		sim.run();
-		diff = sim.diffState(startState);
+		diff = new SimStateDiff(sim, startState);
 		assertEquals(11, diff.size());
-		assertDiff(diff, 0, 12345);
-		assertDiff(diff, 1, 31415);
-		assertDiff(diff, 2, -19070);
-		assertDiff(diff, 3, 12335);
-		assertDiff(diff, 0, 3.5);
-		assertDiff(diff, 1, -1.1);
-		assertDiff(diff, 2, 4.6);
-		assertDiff(diff, 3, -31411.5);
-		assertDiff(diff, 4, -11.1);
-		assertDiff(diff, sim.SR_S | sim.SR_P);
+		diff.assertDiff(0, 12345);
+		diff.assertDiff(1, 31415);
+		diff.assertDiff(2, -19070);
+		diff.assertDiff(3, 12335);
+		diff.assertDiff(0, 3.5);
+		diff.assertDiff(1, -1.1);
+		diff.assertDiff(2, 4.6);
+		diff.assertDiff(3, -31411.5);
+		diff.assertDiff(4, -11.1);
+		diff.assertSRDiff(sim.SR_S | sim.SR_P);
 	}
 
 	@Test
@@ -1210,13 +1184,13 @@ public class SimulatorTest {
 		sim.SR = 0xF;
 		var startState = sim.getState();
 		sim.run();
-		var diff = sim.diffState(startState);
+		var diff = new SimStateDiff(sim, startState);
 		assertEquals(6, diff.size());
-		assertDiff(diff, 0, -1163454525);
-		assertDiff(diff, 1, 31415);
-		assertDiff(diff, 0, 412321.875);
-		assertDiff(diff, 1, -1.25);
-		assertDiff(diff, sim.SR_P);
+		diff.assertDiff(0, -1163454525);
+		diff.assertDiff(1, 31415);
+		diff.assertDiff(0, 412321.875);
+		diff.assertDiff(1, -1.25);
+		diff.assertSRDiff(sim.SR_P);
 
 		// AAR, FFX, AAC, FFC
 		sim.clearCPUState();
@@ -1237,18 +1211,18 @@ public class SimulatorTest {
 		sim.SR = 0xF;
 		startState = sim.getState();
 		sim.run();
-		diff = sim.diffState(startState);
+		diff = new SimStateDiff(sim, startState);
 		assertEquals(11, diff.size());
-		assertDiff(diff, 0, 12345);
-		assertDiff(diff, 1, 31415);
-		assertDiff(diff, 2, 387818175);
-		assertDiff(diff, 3, 123450);
-		assertDiff(diff, 0, 3.5);
-		assertDiff(diff, 1, -1.25);
-		assertDiff(diff, 2, -4.375);
-		assertDiff(diff, 3, 109952.5);
-		assertDiff(diff, 4, -12.5);
-		assertDiff(diff, sim.SR_S | sim.SR_P);
+		diff.assertDiff(0, 12345);
+		diff.assertDiff(1, 31415);
+		diff.assertDiff(2, 387818175);
+		diff.assertDiff(3, 123450);
+		diff.assertDiff(0, 3.5);
+		diff.assertDiff(1, -1.25);
+		diff.assertDiff(2, -4.375);
+		diff.assertDiff(3, 109952.5);
+		diff.assertDiff(4, -12.5);
+		diff.assertSRDiff(sim.SR_S | sim.SR_P);
 	}
 
 	@Test
@@ -1275,13 +1249,13 @@ public class SimulatorTest {
 		sim.SR = 0xF;
 		var startState = sim.getState();
 		sim.run();
-		var diff = sim.diffState(startState);
+		var diff = new SimStateDiff(sim, startState);
 		assertEquals(6, diff.size());
-		assertDiff(diff, 0, -6172);
-		assertDiff(diff, 1, 2);
-		assertDiff(diff, 0, -1.4);
-		assertDiff(diff, 1, 0.625);
-		assertDiff(diff, 0);
+		diff.assertDiff(0, -6172);
+		diff.assertDiff(1, 2);
+		diff.assertDiff(0, -1.4);
+		diff.assertDiff(1, 0.625);
+		diff.assertSRDiff(0);
 
 		// AAR, FFX, AAC, FFC, F
 		sim.clearCPUState();
@@ -1304,19 +1278,19 @@ public class SimulatorTest {
 		sim.SR = 0xF;
 		startState = sim.getState();
 		sim.run();
-		diff = sim.diffState(startState);
+		diff = new SimStateDiff(sim, startState);
 		assertEquals(12, diff.size());
-		assertDiff(diff, 0, 12345);
-		assertDiff(diff, 1, 31415);
-		assertDiff(diff, 2, 2);
-		assertDiff(diff, 3, 1234);
-		assertDiff(diff, 0, 3.5);
-		assertDiff(diff, 1, -1.25);
-		assertDiff(diff, 2, -2.8);
-		assertDiff(diff, 3, 1.75);
-		assertDiff(diff, 4, -0.125);
-		assertDiff(diff, 5, -0.8);
-		assertDiff(diff, sim.SR_S);
+		diff.assertDiff(0, 12345);
+		diff.assertDiff(1, 31415);
+		diff.assertDiff(2, 2);
+		diff.assertDiff(3, 1234);
+		diff.assertDiff(0, 3.5);
+		diff.assertDiff(1, -1.25);
+		diff.assertDiff(2, -2.8);
+		diff.assertDiff(3, 1.75);
+		diff.assertDiff(4, -0.125);
+		diff.assertDiff(5, -0.8);
+		diff.assertSRDiff(sim.SR_S);
 
 		// RRRR, RRRC
 		sim.clearCPUState();
@@ -1331,16 +1305,16 @@ public class SimulatorTest {
 		sim.SR = 0xF;
 		startState = sim.getState();
 		sim.run();
-		diff = sim.diffState(startState);
+		diff = new SimStateDiff(sim, startState);
 		assertEquals(9, diff.size());
-		assertDiff(diff, 0, 12345);
-		assertDiff(diff, 1, 31415);
-		assertDiff(diff, 2, 101);
-		assertDiff(diff, 3, 2);
-		assertDiff(diff, 4, 6725);
-		assertDiff(diff, 5, 33);
-		assertDiff(diff, 6, 2);
-		assertDiff(diff, 0);
+		diff.assertDiff(0, 12345);
+		diff.assertDiff(1, 31415);
+		diff.assertDiff(2, 101);
+		diff.assertDiff(3, 2);
+		diff.assertDiff(4, 6725);
+		diff.assertDiff(5, 33);
+		diff.assertDiff(6, 2);
+		diff.assertSRDiff(0);
 	}
 
 	@Test
@@ -1358,10 +1332,10 @@ public class SimulatorTest {
 		sim.SR = 0xF;
 		var startState = sim.getState();
 		sim.run();
-		var diff = sim.diffState(startState);
+		var diff = new SimStateDiff(sim, startState);
 		assertEquals(3, diff.size());
-		assertDiff(diff, 1, ~31415);
-		assertDiff(diff, sim.SR_S | sim.SR_P);
+		diff.assertDiff(1, ~31415);
+		diff.assertSRDiff(sim.SR_S | sim.SR_P);
 	}
 
 	@Test
@@ -1399,23 +1373,23 @@ public class SimulatorTest {
 		sim.SR = 0xF;
 		var startState = sim.getState();
 		sim.run();
-		var diff = sim.diffState(startState);
+		var diff = new SimStateDiff(sim, startState);
 		assertEquals(16, diff.size());
-		assertDiff(diff, 0, 12345);
-		assertDiff(diff, 1, 31415);
-		assertDiff(diff, 2, 12345 & 31415);
-		assertDiff(diff, 3, 12345 | 31415);
-		assertDiff(diff, 4, 12345 ^ 31415);
-		assertDiff(diff, 5, 31415 & 0xABCD);
-		assertDiff(diff, 6, 31415 | 0xABCD);
-		assertDiff(diff, 7, 31415 ^ 0xABCD);
-		assertDiff(diff, 8, 12345 & 31415);
-		assertDiff(diff, 9, 12345 | 31415);
-		assertDiff(diff, 10, 12345 ^ 31415);
-		assertDiff(diff, 11, 31415 & 0xABCD);
-		assertDiff(diff, 12, 31415 | 0xABCD);
-		assertDiff(diff, 13, 31415 ^ 0xABCD);
-		assertDiff(diff, sim.SR_P);
+		diff.assertDiff(0, 12345);
+		diff.assertDiff(1, 31415);
+		diff.assertDiff(2, 12345 & 31415);
+		diff.assertDiff(3, 12345 | 31415);
+		diff.assertDiff(4, 12345 ^ 31415);
+		diff.assertDiff(5, 31415 & 0xABCD);
+		diff.assertDiff(6, 31415 | 0xABCD);
+		diff.assertDiff(7, 31415 ^ 0xABCD);
+		diff.assertDiff(8, 12345 & 31415);
+		diff.assertDiff(9, 12345 | 31415);
+		diff.assertDiff(10, 12345 ^ 31415);
+		diff.assertDiff(11, 31415 & 0xABCD);
+		diff.assertDiff(12, 31415 | 0xABCD);
+		diff.assertDiff(13, 31415 ^ 0xABCD);
+		diff.assertSRDiff(sim.SR_P);
 	}
 
 	@Test
@@ -1439,9 +1413,9 @@ public class SimulatorTest {
 		sim.SR = 0xF;
 		var startState = sim.getState();
 		sim.run();
-		var diff = sim.diffState(startState);
+		var diff = new SimStateDiff(sim, startState);
 		assertEquals(3, diff.size());
-		assertDiff(diff, sim.SR_P);
+		diff.assertSRDiff(sim.SR_P);
 
 		// negative int
 		sim.clearCPUState();
@@ -1453,9 +1427,9 @@ public class SimulatorTest {
 		sim.SR = 0xF;
 		startState = sim.getState();
 		sim.run();
-		diff = sim.diffState(startState);
+		diff = new SimStateDiff(sim, startState);
 		assertEquals(3, diff.size());
-		assertDiff(diff, sim.SR_S);
+		diff.assertSRDiff(sim.SR_S);
 
 		// zero int
 		sim.clearCPUState();
@@ -1467,9 +1441,9 @@ public class SimulatorTest {
 		sim.SR = 0xF;
 		startState = sim.getState();
 		sim.run();
-		diff = sim.diffState(startState);
+		diff = new SimStateDiff(sim, startState);
 		assertEquals(2, diff.size());
-		assertDiff(diff, sim.SR_Z);
+		diff.assertSRDiff(sim.SR_Z);
 
 		// positive float
 		sim.clearCPUState();
@@ -1481,9 +1455,9 @@ public class SimulatorTest {
 		sim.SR = 0xF;
 		startState = sim.getState();
 		sim.run();
-		diff = sim.diffState(startState);
+		diff = new SimStateDiff(sim, startState);
 		assertEquals(3, diff.size());
-		assertDiff(diff, 0);
+		diff.assertSRDiff(0);
 
 		// negative float
 		sim.clearCPUState();
@@ -1495,9 +1469,9 @@ public class SimulatorTest {
 		sim.SR = 0xF;
 		startState = sim.getState();
 		sim.run();
-		diff = sim.diffState(startState);
+		diff = new SimStateDiff(sim, startState);
 		assertEquals(3, diff.size());
-		assertDiff(diff, sim.SR_S | sim.SR_P);
+		diff.assertSRDiff(sim.SR_S | sim.SR_P);
 
 		// zero float
 		sim.clearCPUState();
@@ -1509,9 +1483,9 @@ public class SimulatorTest {
 		sim.SR = 0xF;
 		startState = sim.getState();
 		sim.run();
-		diff = sim.diffState(startState);
+		diff = new SimStateDiff(sim, startState);
 		assertEquals(2, diff.size());
-		assertDiff(diff, sim.SR_Z);
+		diff.assertSRDiff(sim.SR_Z);
 
 		// int overflow addition
 		sim.clearCPUState();
@@ -1524,9 +1498,9 @@ public class SimulatorTest {
 		sim.SR = 0xF;
 		startState = sim.getState();
 		sim.run();
-		diff = sim.diffState(startState);
+		diff = new SimStateDiff(sim, startState);
 		assertEquals(3, diff.size());
-		assertDiff(diff, sim.SR_O | sim.SR_S | sim.SR_P);
+		diff.assertSRDiff(sim.SR_O | sim.SR_S | sim.SR_P);
 
 		// int overflow subtraction
 		sim.clearCPUState();
@@ -1541,9 +1515,9 @@ public class SimulatorTest {
 		sim.SR = 0xF;
 		startState = sim.getState();
 		sim.run();
-		diff = sim.diffState(startState);
+		diff = new SimStateDiff(sim, startState);
 		assertEquals(5, diff.size());
-		assertDiff(diff, sim.SR_O | sim.SR_P);
+		diff.assertSRDiff(sim.SR_O | sim.SR_P);
 
 		// int overflow multiplication
 		sim.clearCPUState();
@@ -1558,9 +1532,9 @@ public class SimulatorTest {
 		sim.SR = 0xF;
 		startState = sim.getState();
 		sim.run();
-		diff = sim.diffState(startState);
+		diff = new SimStateDiff(sim, startState);
 		assertEquals(5, diff.size());
-		assertDiff(diff, sim.SR_O | sim.SR_S | sim.SR_P);
+		diff.assertSRDiff(sim.SR_O | sim.SR_S | sim.SR_P);
 
 		// int overflow division
 		sim.clearCPUState();
@@ -1575,9 +1549,9 @@ public class SimulatorTest {
 		sim.SR = 0xF;
 		startState = sim.getState();
 		sim.run();
-		diff = sim.diffState(startState);
+		diff = new SimStateDiff(sim, startState);
 		assertEquals(5, diff.size());
-		assertDiff(diff, sim.SR_O | sim.SR_S | sim.SR_P);
+		diff.assertSRDiff(sim.SR_O | sim.SR_S | sim.SR_P);
 
 		// float overflow addition
 		sim.clearCPUState();
@@ -1590,9 +1564,9 @@ public class SimulatorTest {
 		sim.SR = 0xF;
 		startState = sim.getState();
 		sim.run();
-		diff = sim.diffState(startState);
+		diff = new SimStateDiff(sim, startState);
 		assertEquals(3, diff.size());
-		assertDiff(diff, sim.SR_O | sim.SR_P);
+		diff.assertSRDiff(sim.SR_O | sim.SR_P);
 
 		// float overflow subtraction
 		sim.clearCPUState();
@@ -1607,9 +1581,9 @@ public class SimulatorTest {
 		sim.SR = 0xF;
 		startState = sim.getState();
 		sim.run();
-		diff = sim.diffState(startState);
+		diff = new SimStateDiff(sim, startState);
 		assertEquals(5, diff.size());
-		assertDiff(diff, sim.SR_O | sim.SR_S);
+		diff.assertSRDiff(sim.SR_O | sim.SR_S);
 
 		// float overflow multiplication
 		sim.clearCPUState();
@@ -1624,9 +1598,9 @@ public class SimulatorTest {
 		sim.SR = 0xF;
 		startState = sim.getState();
 		sim.run();
-		diff = sim.diffState(startState);
+		diff = new SimStateDiff(sim, startState);
 		assertEquals(5, diff.size());
-		assertDiff(diff, sim.SR_O | sim.SR_P);
+		diff.assertSRDiff(sim.SR_O | sim.SR_P);
 
 		// float overflow division
 		sim.clearCPUState();
@@ -1641,9 +1615,9 @@ public class SimulatorTest {
 		sim.SR = 0xF;
 		startState = sim.getState();
 		sim.run();
-		diff = sim.diffState(startState);
+		diff = new SimStateDiff(sim, startState);
 		assertEquals(5, diff.size());
-		assertDiff(diff, sim.SR_O | sim.SR_P);
+		diff.assertSRDiff(sim.SR_O | sim.SR_P);
 	}
 
 	@Test
@@ -1667,9 +1641,9 @@ public class SimulatorTest {
 		sim.SR = 0xF;
 		var startState = sim.getState();
 		sim.run();
-		var diff = sim.diffState(startState);
+		var diff = new SimStateDiff(sim, startState);
 		assertEquals(4, diff.size());
-		assertDiff(diff, sim.SR_Z);
+		diff.assertSRDiff(sim.SR_Z);
 
 		// AA NOT EQUAL
 		sim.clearCPUState();
@@ -1682,9 +1656,9 @@ public class SimulatorTest {
 		sim.SR = 0xF;
 		startState = sim.getState();
 		sim.run();
-		diff = sim.diffState(startState);
+		diff = new SimStateDiff(sim, startState);
 		assertEquals(4, diff.size());
-		assertDiff(diff, sim.SR_S | sim.SR_P);
+		diff.assertSRDiff(sim.SR_S | sim.SR_P);
 
 		// AC EQUAL
 		sim.clearCPUState();
@@ -1696,9 +1670,9 @@ public class SimulatorTest {
 		sim.SR = 0xF;
 		startState = sim.getState();
 		sim.run();
-		diff = sim.diffState(startState);
+		diff = new SimStateDiff(sim, startState);
 		assertEquals(3, diff.size());
-		assertDiff(diff, sim.SR_Z);
+		diff.assertSRDiff(sim.SR_Z);
 
 		// AC NOT EQUAL
 		sim.clearCPUState();
@@ -1710,9 +1684,9 @@ public class SimulatorTest {
 		sim.SR = 0xF;
 		startState = sim.getState();
 		sim.run();
-		diff = sim.diffState(startState);
+		diff = new SimStateDiff(sim, startState);
 		assertEquals(3, diff.size());
-		assertDiff(diff, sim.SR_S | sim.SR_P);
+		diff.assertSRDiff(sim.SR_S | sim.SR_P);
 
 		// FF EQUAL
 		sim.clearCPUState();
@@ -1726,9 +1700,9 @@ public class SimulatorTest {
 		sim.SR = 0xF;
 		startState = sim.getState();
 		sim.run();
-		diff = sim.diffState(startState);
+		diff = new SimStateDiff(sim, startState);
 		assertEquals(4, diff.size());
-		assertDiff(diff, sim.SR_Z);
+		diff.assertSRDiff(sim.SR_Z);
 
 		// FF NOT EQUAL
 		sim.clearCPUState();
@@ -1743,9 +1717,9 @@ public class SimulatorTest {
 		sim.SR = 0xF;
 		startState = sim.getState();
 		sim.run();
-		diff = sim.diffState(startState);
+		diff = new SimStateDiff(sim, startState);
 		assertEquals(4, diff.size());
-		assertDiff(diff, sim.SR_S);
+		diff.assertSRDiff(sim.SR_S);
 	}
 
 	@Test
@@ -1805,37 +1779,37 @@ public class SimulatorTest {
 		sim.SR = 0xF;
 		var startState = sim.getState();
 		sim.run();
-		var diff = sim.diffState(startState);
+		var diff = new SimStateDiff(sim, startState);
 		assertEquals(30, diff.size());
-		assertDiff(diff, 0, 1);
-		assertDiff(diff, 1, 31415L);
-		assertDiff(diff, 2, -31415L);
-		assertDiff(diff, 3, 31415L << 3);
-		assertDiff(diff, 4, 31415L >>> 3);
-		assertDiff(diff, 5, 31415L >> 3);
-		assertDiff(diff, 6, Long.rotateLeft(31415L, 3));
-		assertDiff(diff, 7, Long.rotateRight(31415L, 3));
-		assertDiff(diff, 8, 31415L << 5);
-		assertDiff(diff, 9, 31415L >>> 5);
-		assertDiff(diff, 10, 31415L >> 5);
-		assertDiff(diff, 11, Long.rotateLeft(31415L, 5));
-		assertDiff(diff, 12, Long.rotateRight(31415L, 5));
-		assertDiff(diff, 13, 31415L << 1);
-		assertDiff(diff, 14, 31415L >>> 1);
-		assertDiff(diff, 15, 31415L >> 1);
-		assertDiff(diff, 16, Long.rotateLeft(31415L, 1));
-		assertDiff(diff, 17, Long.rotateRight(31415L, 1));
-		assertDiff(diff, 18, 31415L << 4);
-		assertDiff(diff, 19, 31415L >>> 4);
-		assertDiff(diff, 20, 31415L >> 4);
-		assertDiff(diff, 21, Long.rotateLeft(31415L, 4));
-		assertDiff(diff, 22, Long.rotateRight(31415L, 4));
-		assertDiff(diff, 23, -31415L << 1);
-		assertDiff(diff, 24, -31415L >>> 1);
-		assertDiff(diff, 25, -31415L >> 1);
-		assertDiff(diff, 26, Long.rotateLeft(-31415L, 1));
-		assertDiff(diff, 27, Long.rotateRight(-31415L, 1));
-		assertDiff(diff, sim.SR_S);
+		diff.assertDiff(0, 1);
+		diff.assertDiff(1, 31415L);
+		diff.assertDiff(2, -31415L);
+		diff.assertDiff(3, 31415L << 3);
+		diff.assertDiff(4, 31415L >>> 3);
+		diff.assertDiff(5, 31415L >> 3);
+		diff.assertDiff(6, Long.rotateLeft(31415L, 3));
+		diff.assertDiff(7, Long.rotateRight(31415L, 3));
+		diff.assertDiff(8, 31415L << 5);
+		diff.assertDiff(9, 31415L >>> 5);
+		diff.assertDiff(10, 31415L >> 5);
+		diff.assertDiff(11, Long.rotateLeft(31415L, 5));
+		diff.assertDiff(12, Long.rotateRight(31415L, 5));
+		diff.assertDiff(13, 31415L << 1);
+		diff.assertDiff(14, 31415L >>> 1);
+		diff.assertDiff(15, 31415L >> 1);
+		diff.assertDiff(16, Long.rotateLeft(31415L, 1));
+		diff.assertDiff(17, Long.rotateRight(31415L, 1));
+		diff.assertDiff(18, 31415L << 4);
+		diff.assertDiff(19, 31415L >>> 4);
+		diff.assertDiff(20, 31415L >> 4);
+		diff.assertDiff(21, Long.rotateLeft(31415L, 4));
+		diff.assertDiff(22, Long.rotateRight(31415L, 4));
+		diff.assertDiff(23, -31415L << 1);
+		diff.assertDiff(24, -31415L >>> 1);
+		diff.assertDiff(25, -31415L >> 1);
+		diff.assertDiff(26, Long.rotateLeft(-31415L, 1));
+		diff.assertDiff(27, Long.rotateRight(-31415L, 1));
+		diff.assertSRDiff(sim.SR_S);
 	}
 
 	@Test
@@ -1901,11 +1875,11 @@ public class SimulatorTest {
 		sim.SR = 0xF;
 		var startState = sim.getState();
 		sim.run();
-		var diff = sim.diffState(startState);
+		var diff = new SimStateDiff(sim, startState);
 		assertEquals(6, diff.size());
-		assertDiff(diff, 0, 0x1234567890ABCDEFL);
-		assertDiff(diff, 0, 3.1415926);
-		assertDiff(diff, sim.SR_P);
+		diff.assertDiff(0, 0x1234567890ABCDEFL);
+		diff.assertDiff(0, 3.1415926);
+		diff.assertSRDiff(sim.SR_P);
 		byte[] output = ((MemoryFilePortHandler)ph).toBytes();
 		byte[] expected = {(byte)0xEF, (byte)0xCD, (byte)0xEF, (byte)0x90, (byte)0xAB, (byte)0xCD, (byte)0xEF,
 				0x12, 0x34, 0x56, 0x78, (byte)0x90, (byte)0xAB, (byte)0xCD, (byte)0xEF,
@@ -2014,11 +1988,11 @@ public class SimulatorTest {
 		sim.SR = 0xF;
 		var startState = sim.getState();
 		sim.run();
-		var diff = sim.diffState(startState);
+		var diff = new SimStateDiff(sim, startState);
 		assertEquals(8, diff.size());
-		assertDiff(diff, 3, 0x48D159E48561AAF0L);
-		assertDiff(diff, 3, 12.5663704);
-		assertDiff(diff, 0);
+		diff.assertDiff(3, 0x48D159E48561AAF0L);
+		diff.assertDiff(3, 12.5663704);
+		diff.assertSRDiff(0);
 	}
 
 	@Test
@@ -2042,11 +2016,11 @@ public class SimulatorTest {
 		sim.SR = 0xF;
 		var startState = sim.getState();
 		sim.run();
-		var diff = sim.diffState(startState);
+		var diff = new SimStateDiff(sim, startState);
 		assertEquals(7, diff.size());
-		assertDiff(diff, 1, 0x12345678);
-		assertDiff(diff, 2, 0x12345678);
-		assertDiff(diff, sim.SR_P);
+		diff.assertDiff(1, 0x12345678);
+		diff.assertDiff(2, 0x12345678);
+		diff.assertSRDiff(sim.SR_P);
 	}
 
 	@Test
@@ -2070,11 +2044,11 @@ public class SimulatorTest {
 		sim.SR = 0xF;
 		var startState = sim.getState();
 		sim.run();
-		var diff = sim.diffState(startState);
+		var diff = new SimStateDiff(sim, startState);
 		assertEquals(7, diff.size());
-		assertDiff(diff, 1, 0x1234567890ABCDEFL);
-		assertDiff(diff, 2, 0x1234567890ABCDEFL);
-		assertDiff(diff, 0);
+		diff.assertDiff(1, 0x1234567890ABCDEFL);
+		diff.assertDiff(2, 0x1234567890ABCDEFL);
+		diff.assertSRDiff(0);
 	}
 
 	@Test
@@ -2094,15 +2068,15 @@ public class SimulatorTest {
 		sim.SR = 0xF;
 		var startState = sim.getState();
 		sim.run();
-		var diff = sim.diffState(startState);
+		var diff = new SimStateDiff(sim, startState);
 		assertEquals(8, diff.size());
-		assertDiff(diff, 1, 0x1234);
-		assertDiff(diff, 2, 0x5678);
-		assertDiff(diff, 3, 0x12);
-		assertDiff(diff, 4, 0x34);
-		assertDiff(diff, 5, 0x56);
-		assertDiff(diff, 6, 0x78);
-		assertDiff(diff, 0);
+		diff.assertDiff(1, 0x1234);
+		diff.assertDiff(2, 0x5678);
+		diff.assertDiff(3, 0x12);
+		diff.assertDiff(4, 0x34);
+		diff.assertDiff(5, 0x56);
+		diff.assertDiff(6, 0x78);
+		diff.assertSRDiff(0);
 	}
 
 	@Test
@@ -2123,15 +2097,15 @@ public class SimulatorTest {
 		sim.SR = 0xF;
 		var startState = sim.getState();
 		sim.run();
-		var diff = sim.diffState(startState);
+		var diff = new SimStateDiff(sim, startState);
 		assertEquals(8, diff.size());
-		assertDiff(diff, 1, 0x12345678L);
-		assertDiff(diff, 2, 0x90ABCDEFL);
-		assertDiff(diff, 3, 0x1234);
-		assertDiff(diff, 4, 0x5678);
-		assertDiff(diff, 5, 0x90AB);
-		assertDiff(diff, 6, 0xCDEF);
-		assertDiff(diff, sim.SR_P);
+		diff.assertDiff(1, 0x12345678L);
+		diff.assertDiff(2, 0x90ABCDEFL);
+		diff.assertDiff(3, 0x1234);
+		diff.assertDiff(4, 0x5678);
+		diff.assertDiff(5, 0x90AB);
+		diff.assertDiff(6, 0xCDEF);
+		diff.assertSRDiff(sim.SR_P);
 	}
 
 	@Test
@@ -2164,10 +2138,10 @@ public class SimulatorTest {
 		sim.SR = 0xF;
 		var startState = sim.getState();
 		sim.run();
-		var diff = sim.diffState(startState);
+		var diff = new SimStateDiff(sim, startState);
 		assertEquals(5, diff.size());
 		assertEquals(100, (int)sim.memRead(end + 1));
-		assertDiff(diff, sim.SR_Z);
+		diff.assertSRDiff(sim.SR_Z);
 	}
 
 	@Test
@@ -2190,7 +2164,7 @@ public class SimulatorTest {
 		sim.SR = 0xF;
 		var startState = sim.getState();
 		sim.run();
-		var diff = sim.diffState(startState);
+		var diff = new SimStateDiff(sim, startState);
 		assertEquals(9, diff.size());
 		int sp = (int)sim.R[sim.R_SP];
 		assertEquals(5., Double.longBitsToDouble(sim.memRead(sp + 1)));
@@ -2199,7 +2173,7 @@ public class SimulatorTest {
 		assertEquals(4, (int)sim.memRead(sp + 4));
 		assertEquals(3, (int)sim.memRead(sp + 5));
 		assertEquals(2, (int)sim.memRead(sp + 6));
-		assertDiff(diff, 0);
+		diff.assertSRDiff(0);
 	}
 
 	@Test
@@ -2226,15 +2200,35 @@ public class SimulatorTest {
 		sim.SR = 0xF;
 		var startState = sim.getState();
 		sim.run();
-		var diff = sim.diffState(startState);
+		var diff = new SimStateDiff(sim, startState);
 		assertEquals(9, diff.size());
 		int sp = (int)sim.R[sim.R_SP];
-		assertDiff(diff, 26, 2);
-		assertDiff(diff, 27, 3);
-		assertDiff(diff, 28, 4);
-		assertDiff(diff, 29, 7.);
-		assertDiff(diff, 30, 6.);
-		assertDiff(diff, 31, 5.);
-		assertDiff(diff, 0);
+		diff.assertDiff(26, 2);
+		diff.assertDiff(27, 3);
+		diff.assertDiff(28, 4);
+		diff.assertDiff(29, 7.);
+		diff.assertDiff(30, 6.);
+		diff.assertDiff(31, 5.);
+		diff.assertSRDiff(0);
+	}
+
+	@Test
+	void testReadonly() {
+		String[] args = {"test"};
+		Simulator sim = new Simulator(1000, args);
+		List<Long> prog = new ArrayList<Long>();
+		sim.clearCPUState();
+
+		prog.add(Simulator.encT1(Opcode.READONLY.code, 4));					// READONLY 4
+		prog.add(Simulator.encT2(Opcode.STORE.code, 2, 0, 2));				// STORE R0, 2
+		prog.add(Simulator.encT0(Opcode.STOP.code, 0, 0, 0, 0, 0, 0, 0, 0));
+		prog.add(Simulator.encT0(Opcode.STOP.code, 0, 0, 0, 0, 0, 0, 0, 0));
+		sim.loadProgram(prog, 0L);
+		try {
+			sim.run();
+			fail("Expected CPUException not thrown!");
+		} catch (Simulator.CPUException ex) {
+			assertTrue(ex.getMessage().contains("Write access violation of 00000002"));
+		}
 	}
 }

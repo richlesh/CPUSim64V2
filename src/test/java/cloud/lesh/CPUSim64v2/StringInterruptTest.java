@@ -9,34 +9,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class StringInterruptTest {
-	public Triple<Integer, Simulator, SimStateDiff> runProgram(String src) {
-		String[] args = {"test"};
-		return runProgram(src, args);
-	}
-
-	public Triple<Integer, Simulator, SimStateDiff> runProgram(String src, String[] args) {
-		var loader = new IncludeLoader(Path.of("."));
-		String preprocessed = PreprocessorVisitor.preprocessText("Test.asm", src, loader);
-
-		LiteralRewriter rewriter = new LiteralRewriter();
-		String rewritten = rewriter.rewrite(preprocessed);
-
-		LabelVisitor labelVisitor = new LabelVisitor();
-		String noLabels = labelVisitor.gatherLabels(rewritten);
-		var asm = new AssemblerVisitor(labelVisitor.getLabelMap());
-		asm.assemble(noLabels);
-		List<Long> prog = asm.result();
-		Simulator sim = new Simulator(1000, args);
-		sim.clearCPUState();
-		sim.loadProgram(prog, 0L);
-		sim.SR = 0xF;
-		var startState = sim.getState();
-		int result = sim.run();
-		var diff = new SimStateDiff(sim, startState);
-		return Triple.of(result, sim, diff);
-	}
-
+public class StringInterruptTest extends BaseTest {
 	@Test
 	void testNumberFormat() {
 		String src = """
@@ -191,7 +164,7 @@ public class StringInterruptTest {
 	}
 
 	@Test
-	void testSTRCMP() {
+	void testStrCmp() {
 		String src = """
 			START:
 				#include <system/string.def>
@@ -228,7 +201,7 @@ public class StringInterruptTest {
 	}
 
 	@Test
-	void testSTRICMP() {
+	void testStrICmp() {
 		String src = """
 			START:
 				#include <system/string.def>
@@ -552,5 +525,67 @@ public class StringInterruptTest {
 		assertEquals("ABC,DEF,GHIJK,LMNOPQ,RST,U,VWXYZ", sim.convertString((int)sim.getR(26)));
 		assertEquals("ABCDEFGHI", sim.convertString((int)sim.getR(25)));
 		assertEquals("ABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZ", sim.convertString((int)sim.getR(23)));
+	}
+
+	@Test
+	void testCodepoints() {
+		String src = """
+			START:
+				#include <system/string.def>
+				move	R28, "A¢ह𝄞🇺🇸"
+				move	R0, R28
+				int		iGET_CODEPOINTS
+				move	R27, R0
+				int		iFROM_CODEPOINTS
+				move	R26, R0
+				move	R0, R28
+				int		iCOUNT_GLPYHS
+				STOP
+			FINIS:
+			""";
+		var tuple = runProgram(src);
+		var result = tuple.getLeft();
+		var sim = tuple.getMiddle();
+		var diff = tuple.getRight();
+		assertEquals(6, diff.size());
+		diff.assertMemListEquals((int)sim.getR(27), List.of(65L, 162L, 2361L, 119070L, 127482L, 127480L));
+		assertEquals("A¢ह𝄞🇺🇸", sim.convertString(sim.getR(26)));
+		diff.assertDiff(0, 5);
+	}
+
+	@Test
+	void testHashCode() {
+		String src = """
+			START:
+				#include <system/string.def>
+				move	R0, "Héllø, Wörld! 😀"
+				int		iHASHCODE
+				STOP
+			FINIS:
+			""";
+		var tuple = runProgram(src);
+		var result = tuple.getLeft();
+		var sim = tuple.getMiddle();
+		var diff = tuple.getRight();
+		assertEquals(3, diff.size());
+		diff.assertDiff(0, 960973890);
+	}
+
+	@Test
+	void testTrim() {
+		String src = """
+			START:
+				#include <system/string.def>
+				move	R0, " \\tHéllø, Wörld! 😀 \\n"
+				int		iTRIM
+				STOP
+			FINIS:
+			""";
+		var tuple = runProgram(src);
+		var result = tuple.getLeft();
+		var sim = tuple.getMiddle();
+		var diff = tuple.getRight();
+		assertEquals(3, diff.size());
+		assertEquals("Héllø, Wörld! 😀", sim.convertString(sim.getR(0)));
 	}
 }

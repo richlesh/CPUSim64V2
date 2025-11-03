@@ -582,18 +582,6 @@ SF &lt;- SP</pre>
 	</tbody>
 </table>
 
-	<h3>Compare and Set</h3>
-	<p>Performs atomic set of a memory location.  Only if the current value of the memory location matches the old value does it then set it to the new value.  Sets status register bit Overflow if successful.</p>
-<table class="instruction">
-    <colgroup><col span="3" class="instruction"><col></colgroup>
-	<thead>
-		<tr><th>Opcode</th><th>Pneumonic</th><th>Operands</th><th>Operation</th></tr>
-	</thead>
-	<tbody>
-		<tr><td>34</td><td>CAS</td><td style="line-height: 1.5em;">RRAO<br>CCAO<br>RCAO<br>CRAO</td><td>Atomic compare and swap<br>First operand is old value<br>Second operand is new value<br>Remaining arguments are address + offset.  </td></tr>
-	</tbody>
-</table>
-
 	<h3>Endian Mode</h3>
 	<p></p>
 <table class="instruction">
@@ -606,7 +594,7 @@ SF &lt;- SP</pre>
 	</tbody>
 </table>
 
-	<h2>Save/Restore Registers</h2>
+	<h2>Protect Registers/Memory</h2>
 	<h3>Save Registers</h3>
 	<p></p>
 <table class="instruction">
@@ -629,13 +617,38 @@ SF &lt;- SP</pre>
 		<tr><td>37</td><td>Restore</td><td style="line-height: 1.5em;">RR<br />FF</td><td>Restores registers R<sub>1</sub> through R<sub>2</sub> from the stack.<br />Restores registers F<sub>1</sub> through F<sub>2</sub> from the stack.</td></tr>
 	</tbody>
 </table>
+
+	<h3>Compare and Set</h3>
+	<p>Performs atomic set of a memory location.  Only if the current value of the memory location matches the old value does it then set it to the new value.  Sets status register bit Overflow if successful.</p>
+<table class="instruction">
+    <colgroup><col span="3" class="instruction"><col></colgroup>
+	<thead>
+		<tr><th>Opcode</th><th>Pneumonic</th><th>Operands</th><th>Operation</th></tr>
+	</thead>
+	<tbody>
+		<tr><td>34</td><td>CAS</td><td style="line-height: 1.5em;">RRAO<br>CCAO<br>RCAO<br>CRAO</td><td>Atomic compare and swap<br>First operand is old value<br>Second operand is new value<br>Remaining arguments are address + offset.  </td></tr>
+	</tbody>
+</table>
+
+	<h3>Protect Read-Only Memory</h3>
+	<p></p>
+<table class="instruction">
+    <colgroup><col span="3" class="instruction"><col></colgroup>
+	<thead>
+		<tr><th>Opcode</th><th>Pneumonic</th><th>Operands</th><th>Operation</th></tr>
+	</thead>
+		<tr><td>38</td><td>ReadOnly</td><td style="line-height: 1.5em;">C1</td><td>Protects memory addressed from SP through C1 as read-only memory.  The Assembler will add a ReadOnly instruction at the beginning of your program that protects memory from 0 through <code>__DATA</code>.  Define label <code>__DATA</code> at the beginning of your read-write data directives.</td></tr>
+	</tbody>
+</table>
+
 <footer>
-<p><a href="Architecture.html">Architecture</a> |
-<a href="Programmer_Guide.html">Programmer Guide</a> |
-<a href="Instruction_Set_Reference.html">Instruction Set Reference</a> |
-<a href="Directive_Reference.html">Directives Reference</a> |
-<a href="Interrupt_Reference.html">Software Interrupt Reference</a> |
-<a href="http://www.pureprogrammer.org">Pure Programmer</a></p>
+<p><a href="Architecture.html">Architecture&nbsp;Reference</a> |
+<a href="Programmer_Guide.html">Programmer&nbsp;Guide</a> |
+<a href="Directive_Reference.html">Directives&nbsp;Reference</a> |
+<a href="Instruction_Set_Reference.html">Instruction&nbsp;Set&nbsp;Reference</a> |
+<a href="Interrupt_Reference.html">Software&nbsp;Interrupt&nbsp;Reference</a> |
+<a href="Library_Reference.html">Library&nbsp;Reference</a> |
+<a href="http://www.pureprogrammer.org">Pure&nbsp;Programmer</a></p>
 <p><a href="https://twitter.com/share" class="twitter-share-button" data-size="large" data-related="richlesh">Tweet</a>
 <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
 <a href="https://twitter.com/richlesh" class="twitter-follow-button" data-show-count="false" data-size="large">Follow @richlesh</a>
@@ -647,7 +660,7 @@ SF &lt;- SP</pre>
 <input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif" name="submit" alt="PayPal - The safer, easier way to pay online!">
 <img alt="" style="border:0;" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
 </form>
-<address>&copy;2022 Richard Lesh.  All rights reserved.</address>
+<address>&copy;2022-2025 Richard Lesh.  All rights reserved.</address>
 </footer>
 </body>
 </html>

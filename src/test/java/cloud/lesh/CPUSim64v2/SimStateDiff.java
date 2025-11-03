@@ -34,7 +34,8 @@ public class SimStateDiff {
 		else if (reg == Simulator.R_PC)
 			assertTrue(diffs.contains("PC:" + val));
 		else if (val == 0)
-			assertTrue(diffs.stream().noneMatch(s -> s.startsWith("R" + reg + ":")));
+			assertTrue(diffs.contains("R" + reg + ":" + val) ||
+					diffs.stream().noneMatch(s -> s.startsWith("R" + reg + ":")));
 		else
 			assertTrue(diffs.contains("R" + reg + ":" + val));
 	}
@@ -51,6 +52,12 @@ public class SimStateDiff {
 		assertEquals(Double.doubleToRawLongBits(val), sim.memRead(addr));
 	}
 
+	public void assertMemListEquals(long addr, List<Long> vals) {
+		assertEquals(sim.memRead(addr), vals.size());
+		for (int i = 0; i < vals.size(); i++) {
+			assertEquals(vals.get(i), sim.memRead(addr + i + 1));
+		}
+	}
 	@Override
 	public String toString() {
 		diffs.sort(null); 		// sorts in natural order

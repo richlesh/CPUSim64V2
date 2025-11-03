@@ -1,9 +1,12 @@
 import cloud.lesh.CPUSim64v2.*;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 // adjust package imports for your classes:
@@ -77,6 +80,8 @@ public class Assembler {
 			System.exit(1);
 		}
 */
+		preprocessed = "READONLY __DATA" + System.lineSeparator() + preprocessed;
+
 		// 5) Gather labels
 		LabelVisitor labelVisitor = new LabelVisitor();
 		String noLabels = labelVisitor.gatherLabels(preprocessed);
@@ -87,7 +92,19 @@ public class Assembler {
 			System.exit(2);
 		}
 		// 6) Assemble
-		var asm = new AssemblerVisitor(labelVisitor.getLabelMap());
+		Map<String, Long> labelMap = labelVisitor.getLabelMap();
+		// Write label map for debugging
+		Path symbolFile = inPath.getParent().resolve(filename + ".sym");
+		try (BufferedWriter writer = new BufferedWriter(new FileWriter(symbolFile.toFile()))) {
+			for (Map.Entry<String, Long> entry : labelMap.entrySet()) {
+				writer.write(entry.getKey() + ": " + entry.getValue());
+				writer.newLine();
+			}
+		} catch (IOException e) {
+			System.err.println("Error writing label map: " + e.getMessage());
+		}
+
+		var asm = new AssemblerVisitor(labelMap);
 		asm.assemble(noLabels);
 		List<Long> words = asm.result();
 		errors = asm.getErrors();

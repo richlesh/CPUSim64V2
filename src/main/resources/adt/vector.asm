@@ -1,19 +1,21 @@
 #include <system/io.asm>
 #include <system/math.def>
-#include <system/system.asm>
+#include <system/system.def>
 
 	jump	@VECTOR_ASM_END
 ///////////////////////////////////////////////////////////////////////////////
 // Vector
 // Implements a growable list of integers.  Is thread safe.
+// Vector Data is a heap allocated block with the following structure:
+//-1:	int		total capacity + 1 + HEAP_BLOCK_HEADER_SIZE (number of elements allocated)
+// 0:	int		current length (number of elements used)
+// 1..n:	int		elements
 ///////////////////////////////////////////////////////////////////////////////
 
-#define	_VECTOR_LEN		0		// Number of elements used
-#define	_VECTOR_DATA	1		// Heap allocated block for the vector data
-#define	_VECTOR_MUTEX	2		// Mutex used for concurrent access
-#define	_VECTOR_END		3
-_VECTOR_SIZE_FACTOR: dcf 1.2	// Ratio to increase data block size.
-_VECTOR_MIN_SIZE: dci 8			// Smallest vector size
+#define	_VECTOR_DATA	0				// Heap allocated block for the vector data
+#define	_VECTOR_MUTEX	1				// Mutex used for concurrent access
+#define	_VECTOR_END		2
+_VECTOR_SIZE_FACTOR: 	.dcf	1.2		// Ratio to increase data block size.
 
 ///////////////////////////////////////////////////////////////////////////////
 // newVector(size)
@@ -22,101 +24,101 @@ _VECTOR_MIN_SIZE: dci 8			// Smallest vector size
 // initialCapacity	capacity to start the vector.
 ///////////////////////////////////////////////////////////////////////////////
 #def_func newVector(initialCapacity)
-	#var	s, addr
-	load	s, initialCapacity
-	ALLOC(_VECTOR_END)
+	#var	s, capacity, addr, data
+	load	capacity, initialCapacity
+	#macro	ALLOC(_VECTOR_END)
 	move	addr, r0
-	store	0, addr[_VECTOR_LEN]
-	store	0, addr[_VECTOR_MUTEX]
-	// Allocate some extra
-	load	r0, _VECTOR_MIN_SIZE
-	MAX(r0, s)
-	move	s, r0
+	store	0, addr[_VECTOR_MUTEX]			// To do: Initialize mutex
 	load	f0, _VECTOR_SIZE_FACTOR
-	mult	f0, s
+	mult	f0, capacity
 	move	s, f0
-	ALLOC(s)
-	store	r0, addr[_VECTOR_DATA]
-	TO_NOT_BOOLEAN(r0)
-	#call	cond_fatal(r0, STDOUT, "Can\'t allocate new vector size %d!\n", s)
+	add		s, 1
+	#macro	ALLOC(s)
+	move	data, r0
+	#macro	TO_NOT_BOOLEAN(r0)
+	#call	cond_fatal(r0, STDOUT, "Can\'t allocate new vector size %d!\n", capacity)
+	store	data, addr[_VECTOR_DATA]
+	store	0, data[0]						// Leading count to 0
 	#return	addr
 #end_func
 
 ///////////////////////////////////////////////////////////////////////////////
-// vectorResize(vector, size)
+// resizeVector(vector, size)
 // Resizes a vector object to a new size.  Size can be larger or smaller.
 // vector	vector to operate on.
 // size		new number of elements.
 ///////////////////////////////////////////////////////////////////////////////
-#def_func vectorResize(vector, size)
-	#var	v, data, newSize, len
+#def_func resizeVector(vector, size)
+	#var	v, data, newSize, capacity
 	load	v, vector
-	#sync	v[_VECTOR_MUTEX]
+//	#sync	v[_VECTOR_MUTEX]
 		load	data, v[_VECTOR_DATA]
-		load	newSize, size
-		// Allocate some extra
-		load	r0, _VECTOR_MIN_SIZE
-		MAX(r0, newSize)
+		load	capacity, size
 		load	f0, _VECTOR_SIZE_FACTOR
-		mult	f0, r0
+		mult	f0, capacity
 		move	newSize, f0
-		REALLOC(data, newSize)
-		store	r0, v[_VECTOR_DATA]
-		TO_NOT_BOOLEAN(r0)
-		#call	cond_fatal(r0, STDOUT, "Can\'t allocate new vector size %d!\n", newSize)
-		load	len, size
-		load	r0, v[_VECTOR_LEN]
-		#cond	len, lt, r0
-			store	len, v[_VECTOR_LEN]
+		add		newSize, 1
+		#macro	REALLOC(data, newSize)
+		move	data, r0
+		store	data, v[_VECTOR_DATA]
+		#macro	TO_NOT_BOOLEAN(r0)
+		#call	cond_fatal(r0, STDOUT, "Can\'t allocate new vector size %d!\n", capacity)
+		load	newSize, size
+		load	r0, data[0]
+		#cond	newSize < r0
+			store	newSize, data[0]
 		#endcond
-	#endsync
+//	#endsync
 #end_func
 
 ///////////////////////////////////////////////////////////////////////////////
-// vectorTrim(vector)
+// freeVector(vector)
+// Deallocates the vector.
+// vector	vector to operate on.
+///////////////////////////////////////////////////////////////////////////////
+#def_func freeVector(vector)
+	#var	v, data
+	load	v, vector
+//	#sync	v[_VECTOR_MUTEX]
+		load	data, v[_VECTOR_DATA]
+		#macro	FREE(data)
+		store	0, v[_VECTOR_DATA]
+		#macro	FREE(v)
+//	#endsync
+#end_func
+
+///////////////////////////////////////////////////////////////////////////////
+// trimVector(vector)
 // Trims vector capacity down to the vector length.
 // vector	vector to operate on.
 ///////////////////////////////////////////////////////////////////////////////
-#def_func vectorTrim(vector)
-	#var	v, newSize
+#def_func trimVector(vector)
+	#var	v, data, newSize
 	load	v, vector
-	load	newSize, v[_VECTOR_LEN]
-	#call	vectorResize(v, newSize)
+	load	data, v[_VECTOR_DATA]
+	load	newSize, data[0]
+	#call	resizeVector(v, newSize)
 #end_func
 
 ///////////////////////////////////////////////////////////////////////////////
-// vectorMaximize(vector)
+// maximizeVector(vector)
 // Increases the length of the vector to the maximum capacity.  New elements
 // are set to 0.
 // vector	vector to operate on.
 ///////////////////////////////////////////////////////////////////////////////
-#def_func vectorMaximize(vector)
+#def_func maximizeVector(vector)
 	#var	i, v, data, oldSize, newSize
 	load	v, vector
-	load	oldSize, v[_VECTOR_LEN]
 	load	data, v[_VECTOR_DATA]
+	load	oldSize, data[0]
 	load	newSize, data[-1]
-	#for	i, oldSize, lt, newSize, 1
+	sub		newSize, 1
+	sub		newSize, HEAP_BLOCK_HEADER_SIZE
+	add		oldSize, 1
+	#for	oldSize, i <= newSize, 1
 		store	0, data[i]
 	#endfor
-	store	newSize, v[_VECTOR_LEN]
-#end_func
-
-///////////////////////////////////////////////////////////////////////////////
-// vectorFree(vector)
-// Deallocates the vector.
-// vector	vector to operate on.
-///////////////////////////////////////////////////////////////////////////////
-#def_func vectorFree(vector)
-	#var	v, data
-	load	v, vector
-	#sync	v[_VECTOR_MUTEX]
-		load	data, v[_VECTOR_DATA]
-		FREE(data)
-		store	0, v[_VECTOR_LEN]
-		store	0, v[_VECTOR_DATA]
-		FREE(v)
-	#endsync
+	store	newSize, data[0]
 #end_func
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -126,26 +128,25 @@ _VECTOR_MIN_SIZE: dci 8			// Smallest vector size
 // vector	vector to operate on.
 ///////////////////////////////////////////////////////////////////////////////
 #def_func vectorSize(vector)
-	#var	v, len
+	#var	v, data, len
 	load	v, vector
-	#sync	v[_VECTOR_MUTEX]
-		load	len, v[_VECTOR_LEN]
-	#endsync
+//	#sync	v[_VECTOR_MUTEX]
+		load	data, v[_VECTOR_DATA]
+		load	len, data[0]
+//	#endsync
 	#return	len
 #end_func
 
 ///////////////////////////////////////////////////////////////////////////////
 // vectorIsEmpty(vector)
-// Returns TRUE if the vector is empty, i.e. no elements have been accessed.
+// Returns TRUE if the vector is empty, i.e. no elements have been added.
 // vector	vector to operate on.
 ///////////////////////////////////////////////////////////////////////////////
 #def_func vectorIsEmpty(vector)
-	#var	v, len
+	#var	v
 	load	v, vector
-	#sync	v[_VECTOR_MUTEX]
-		load	len, v[_VECTOR_LEN]
-	#endsync
-	TO_NOT_BOOLEAN(len)
+	#call	vectorSize(v)
+	#macro	TO_NOT_BOOLEAN(r0)
 #end_func
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -157,66 +158,141 @@ _VECTOR_MIN_SIZE: dci 8			// Smallest vector size
 #def_func vectorCapacity(vector)
 	#var	v, data, size
 	load	v, vector
-	#sync	v[_VECTOR_MUTEX]
+//	#sync	v[_VECTOR_MUTEX]
 		load	data, v[_VECTOR_DATA]
 		load	size, data[-1]
-	#endsync
+		sub		size, 1
+		sub		size, HEAP_BLOCK_HEADER_SIZE
+//	#endsync
 	#return	size
 #end_func
 
 ///////////////////////////////////////////////////////////////////////////////
-// vectorAt(vector, index)
+// getVectorAt(vector, index)
 // Returns the integer element at index.  Returns 0 if index is out of bounds.
 // vector	vector to operate on.
-// index	element index into the vector.
+// index	element index into the vector. [0, len - 1]
 ///////////////////////////////////////////////////////////////////////////////
-#def_func vectorAt(vector, index)
-	#var	v, i, value, len, data
+#def_func getVectorAt(vector, index)
+	#var	v, i, data, len, value
 	load	v, vector
-	#sync	v[_VECTOR_MUTEX]
+//	#sync	v[_VECTOR_MUTEX]
 		load	i, index
-		load	len, v[_VECTOR_LEN]
+		add		i, 1
 		load	data, v[_VECTOR_DATA]
+		load	len, data[0]
 		move	value, 0
-		COMPARE_RANGE(0, le, i, lt, len)
+		#macro	COMPARE_RANGE(1, le, i, le, len)
 		#cond_sr	nz
 			load	value, data[i]
 		#end_cond_sr
-	#endsync
+//	#endsync
 	#return	value
 #end_func
 
 ///////////////////////////////////////////////////////////////////////////////
-// vectorSetAt(vector, value, index)
+// setVectorAt(vector, index, value)
 // Sets the integer element at index.  Does nothing if index is out of bounds.
 // vector	vector to operate on.
+// index	element index into the vector. [0, len - 1]
 // value	new value to store.
-// index	element index into the vector.
 ///////////////////////////////////////////////////////////////////////////////
-#def_func vectorSetAt(vector, value, index)
-	#var	v, i, val, len, data
+#def_func setVectorAt(vector, index, value)
+	#var	v, i, data, len, val
 	load	v, vector
-	#sync	v[_VECTOR_MUTEX]
+//	#sync	v[_VECTOR_MUTEX]
 		load	val, value
 		load	i, index
-		load	len, v[_VECTOR_LEN]
+		add		i, 1
 		load	data, v[_VECTOR_DATA]
-		COMPARE_RANGE(0, le, i, lt, len)
+		load	len, data[0]
+		#macro	COMPARE_RANGE(1, le, i, le, len)
 		#cond_sr	nz
 			store	val, data[i]
-		#end_cond_sr
-	#endsync
+		#end_cond
+//	#endsync
 #end_func
 
 ///////////////////////////////////////////////////////////////////////////////
-// STACK_PEEK(vector)
+// PEEK_BACK(vector)
 // Returns the last integer value in the vector.  Returns 0 if vector is empty.
 // Convenience macro for when using a vector as a stack.
 // vector	vector to operate on.
 ///////////////////////////////////////////////////////////////////////////////
-#def_macro	STACK_PEEK(vector)
+#def_macro	PEEK_BACK(vector)
 	#call	vectorLast(${vector})
 #end_macro
+
+///////////////////////////////////////////////////////////////////////////////
+// PUSH_BACK(vector, value)
+// Pushes the integer value onto the end of the vector.
+// Convenience macro for when using a vector as a stack.
+// vector	vector to operate on.
+// value	new value to store.
+///////////////////////////////////////////////////////////////////////////////
+#def_macro	PUSH_BACK(vector, value)
+	#call	vectorAdd(${vector}, ${value})
+#end_macro
+
+///////////////////////////////////////////////////////////////////////////////
+// POP_BACK(vector)
+// Removes the last integer value in the vector.  Returns 0 if vector is empty.
+// Convenience macro for when using a vector as a stack.
+// vector	vector to operate on.
+///////////////////////////////////////////////////////////////////////////////
+#def_macro	POP_BACK(vector)
+	#call	vectorRemoveAtEnd(${vector})
+#end_macro
+
+///////////////////////////////////////////////////////////////////////////////
+// PEEK_FRONT(vector)
+// Returns the first integer value in the vector.  Returns 0 if vector is empty.
+// Convenience macro for when using a vector as a queue.
+// vector	vector to operate on.
+///////////////////////////////////////////////////////////////////////////////
+#def_macro	PEEK_FRONT(vector)
+	#call	vectorFirst(${vector})
+#end_macro
+
+///////////////////////////////////////////////////////////////////////////////
+// POP_FRONT(vector)
+// Removes the integer value from the front of the vector.
+// Convenience macro for when using a vector as a queue.
+// vector	vector to operate on.
+///////////////////////////////////////////////////////////////////////////////
+#def_macro	POP_FRONT(vector)
+	#call	vectorRemoveAt(${vector}, 0)
+#end_macro
+
+///////////////////////////////////////////////////////////////////////////////
+// PUSH_FRONT(vector, value)
+// Shifts the integer value onto the front of the vector.
+// Convenience macro for when using a vector as a queue.
+// vector	vector to operate on.
+// value	new value to store.
+///////////////////////////////////////////////////////////////////////////////
+#def_macro	PUSH_FRONT(vector, value)
+	#call	vectorAddAt(${vector}, 0, ${value})
+#end_macro
+
+///////////////////////////////////////////////////////////////////////////////
+// vectorFirst(vector)
+// Returns the first integer value in the vector.  Returns 0 if vector is empty.
+// vector	vector to operate on.
+///////////////////////////////////////////////////////////////////////////////
+#def_func vectorFirst(vector)
+	#var	v, data, len, value
+	load	v, vector
+//	#sync	v[_VECTOR_MUTEX]
+		load	data, v[_VECTOR_DATA]
+		load	len, data[0]
+		move	value, 0
+		#cond	len != 0
+			load	value, data[1]
+		#end_cond
+//	#endsync
+	#return	value
+#end_func
 
 ///////////////////////////////////////////////////////////////////////////////
 // vectorLast(vector)
@@ -224,30 +300,18 @@ _VECTOR_MIN_SIZE: dci 8			// Smallest vector size
 // vector	vector to operate on.
 ///////////////////////////////////////////////////////////////////////////////
 #def_func vectorLast(vector)
-	#var	v, i, value, len, data
+	#var	v, data, len, value
 	load	v, vector
-	#sync	v[_VECTOR_MUTEX]
-		load	len, v[_VECTOR_LEN]
+//	#sync	v[_VECTOR_MUTEX]
 		load	data, v[_VECTOR_DATA]
+		load	len, data[0]
 		move	value, 0
-		#cond	len, ne, 0
-			sub		len, 1
+		#cond	len != 0
 			load	value, data[len]
 		#end_cond
-	#endsync
+//	#endsync
 	#return	value
 #end_func
-
-///////////////////////////////////////////////////////////////////////////////
-// STACK_PUSH(vector, value)
-// Pushes the integer value onto the end of the vector.
-// Convenience macro for when using a vector as a stack.
-// vector	vector to operate on.
-// value	new value to store.
-///////////////////////////////////////////////////////////////////////////////
-#def_macro	STACK_PUSH(vector, value)
-	#call	vectorAdd(${vector}, ${value})
-#end_macro
 
 ///////////////////////////////////////////////////////////////////////////////
 // vectorAdd(vector, value)
@@ -256,89 +320,81 @@ _VECTOR_MIN_SIZE: dci 8			// Smallest vector size
 // value	new value to store.
 ///////////////////////////////////////////////////////////////////////////////
 #def_func vectorAdd(vector, value)
-	#var	v, i, size, len, data
+	#var	v, data, len, size
 	load	v, vector
-	#sync	v[_VECTOR_MUTEX]
-		load	i, value
-		load	len, v[_VECTOR_LEN]
+//	#sync	v[_VECTOR_MUTEX]
 		load	data, v[_VECTOR_DATA]
-		load	size, data[-1]
-		cmp		len, size
-		#cond_sr	ge
-			#call	vectorResize(v, len)
-		#end_cond_sr
-		load	data, v[_VECTOR_DATA]
-		store	i, data[len]
+		load	len, data[0]
 		add		len, 1
-		store	len, v[_VECTOR_LEN]
-	#endsync
+		load	size, data[-1]
+		sub		size, 1
+		sub		size, HEAP_BLOCK_HEADER_SIZE
+		#cond	len > size
+			#call	resizeVector(v, len)
+		#end_cond
+		load	data, v[_VECTOR_DATA]
+		load	r0, value
+		store	r0, data[len]
+		store	len, data[0]
+//	#endsync
 #end_func
 
 ///////////////////////////////////////////////////////////////////////////////
-// vectorAddAt(vector, value, index)
+// vectorAddAt(vector, index, value)
 // Adds the integer value into the vector at index.
 // vector	vector to operate on.
+// index	element index into the vector. [0, len - 1]
 // value	new value to store.
-// index	element index into the vector.
 ///////////////////////////////////////////////////////////////////////////////
-#def_func vectorAddAt(vector, value, index)
-	#var	v, i, val, len, data, size, newSize, src, dest
+#def_func vectorAddAt(vector, index, value)
+	#var	v, i, val, len, data, size, newSize, src, dest, moveLen
 	load	v, vector
-	#sync	v[_VECTOR_MUTEX]
+//	#sync	v[_VECTOR_MUTEX]
 		load	val, value
 		load	i, index
-		load	len, v[_VECTOR_LEN]
+		add		i, 1
 		load	data, v[_VECTOR_DATA]
+		load	len, data[0]
+		add		len, 1
 		load	size, data[-1]
-		COMPARE_RANGE(0, le, i, le, len)
+		sub		size, 1
+		sub		size, HEAP_BLOCK_HEADER_SIZE
+		#macro	COMPARE_RANGE(1, le, i, le, len)
 		#cond_sr	nz
-			cmp		len, size
-			#cond_sr	ge
-				#call	vectorResize(v, len)
+			#cond	len > size
+				#call	resizeVector(v, len)
 				load	data, v[_VECTOR_DATA]
 			#end_cond_sr
 			// Move the data at i one to the right
 			add		src, data, i
-			move	dest, src
-			add		dest, 1
-			sub		len, i
-			MEMMOVE(dest, src, len)
+			add		dest, src, 1
+			sub		moveLen, len, i
+			#macro	MEMMOVE(dest, src, moveLen)
 			store	val, src
-			load	len, v[_VECTOR_LEN]
-			add		len, 1
-			store	len, v[_VECTOR_LEN]
+			store	len, data[0]
 		#end_cond_sr
-	#endsync
+//	#endsync
 #end_func
 
 ///////////////////////////////////////////////////////////////////////////////
-// STACK_POP(vector)
-// Removes the last integer value in the vector.  Returns 0 if vector is empty.
-// Convenience macro for when using a vector as a stack.
-// vector	vector to operate on.
-///////////////////////////////////////////////////////////////////////////////
-#def_macro	STACK_POP(vector)
-	#call	vectorRemoveAtEnd(${vector})
-#end_macro
-
-///////////////////////////////////////////////////////////////////////////////
 // vectorRemoveAtEnd(vector)
-// Removes the last integer value in the vector.  Returns 0 if vector is empty.
+// Removes the last integer value in the vector and returns it in R0.
+// Returns 0 if vector is empty.
 // vector	vector to operate on.
 ///////////////////////////////////////////////////////////////////////////////
 #def_func vectorRemoveAtEnd(vector)
 	#var	v, size, len, data, value
 	load	v, vector
-	#sync	v[_VECTOR_MUTEX]
-		load	len, v[_VECTOR_LEN]
+//	#sync	v[_VECTOR_MUTEX]
 		load	data, v[_VECTOR_DATA]
+		load	len, data[0]
 		move	value, 0
-		#cond	len, ne, 0
-			sub		len, 1
+		#cond	len != 0
 			load	value, data[len]
-			store	len, v[_VECTOR_LEN]
+			sub		len, 1
+			store	len, data[0]
 		#endcond
-	#endsync
+//	#endsync
 	#return	value
 #end_func
 
@@ -347,47 +403,45 @@ _VECTOR_MIN_SIZE: dci 8			// Smallest vector size
 // Removes the integer value from the vector at index.  Returns the value
 // removed in r0.
 // vector	vector to operate on.
-// index	element index into the vector.
+// index	element index into the vector. [0, len - 1]
 ///////////////////////////////////////////////////////////////////////////////
 #def_func vectorRemoveAt(vector, index)
-	#var	v, i, len, data, value, src, dest
+	#var	v, i, len, data, value, src, dest, moveLen
 	load	v, vector
-	#sync	v[_VECTOR_MUTEX]
+//	#sync	v[_VECTOR_MUTEX]
 		load	i, index
-		load	len, v[_VECTOR_LEN]
+		add		i, 1
 		load	data, v[_VECTOR_DATA]
+		load	len, data[0]
 		move	value, 0
-		COMPARE_RANGE(0, le, i, lt, len)
+		#macro	COMPARE_RANGE(1, le, i, le, len)
 		#cond_sr	nz
 			load	value, data[i]
 			// Move the data at i one to the left
 			add		dest, data, i
-			move	src, dest
-			add		src, 1
-			sub		len, i
+			add		src, dest, 1
+			sub		moveLen, len, i
+			#macro	MEMMOVE(dest, src, len)
 			sub		len, 1
-			MEMMOVE(dest, src, len)
-			load	len, v[_VECTOR_LEN]
-			sub		len, 1
-			store	len, v[_VECTOR_LEN]
+			store	len, data[0]
 		#end_cond_sr
-	#endsync
+//	#endsync
 	#return	value
 #end_func
 
 ///////////////////////////////////////////////////////////////////////////////
-// vectorClear(vector)
+// clearVector(vector)
 // Sets the vector length to 0.
 // vector	vector to operate on.
 ///////////////////////////////////////////////////////////////////////////////
-#def_func vectorClear(vector)
-	#var	v
+#def_func clearVector(vector)
+	#var	v, data
 	load	v, vector
-	#sync	v[_VECTOR_MUTEX]
-		load	r0, _VECTOR_MIN_SIZE
-		#call	vectorResize(v, r0)
-		store	0, v[_VECTOR_LEN]
-	#endsync
+//	#sync	v[_VECTOR_MUTEX]
+		#call	resizeVector(v, 1)
+		load	data, v[_VECTOR_DATA]
+		store	0, data[0]
+//	#endsync
 #end_func
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -396,26 +450,28 @@ _VECTOR_MIN_SIZE: dci 8			// Smallest vector size
 // after the afterIndex. Returns -1 if not found.
 // vector	vector to operate on.
 // value	value to find.
-// afterIndex	element index into the vector to start search.
+// afterIndex	element index into the vector to start search. [0, size - 1]
 ///////////////////////////////////////////////////////////////////////////////
-#def_func vectorIndexOf(vector, value, index)
+#def_func vectorIndexOf(vector, value, afterIndex)
 	#var	v, i, j, k, val, len, data
 	load	v, vector
-	#sync	v[_VECTOR_MUTEX]
-		load	i, index
+//	#sync	v[_VECTOR_MUTEX]
+		load	i, afterIndex
+		add		i, 1
 		load	val, value
-		load	len, v[_VECTOR_LEN]
 		load	data, v[_VECTOR_DATA]
-		#for	j, i, lt, len, 1
+		load	len, data[0]
+		#for	i, j <= len, 1
 			load	k, data[j]
-			#cond	val, eq, k
+			#cond	val == k
 				#break
 			#endcond
 		#endfor
-	#endsync
-	#cond	j, eq, len
+//	#endsync
+	#cond	j > len
 		#return	-1
 	#elsecond
+		sub		j, 1
 		#return	j
 	#endcond
 #end_func
@@ -432,44 +488,50 @@ _VECTOR_MIN_SIZE: dci 8			// Smallest vector size
 #def_func vectorLastIndexOf(vector, value, index)
 	#var	v, i, j, k, val, len, data
 	load	v, vector
-	#sync	v[_VECTOR_MUTEX]
+//	#sync	v[_VECTOR_MUTEX]
 		load	i, index
 		load	val, value
-		load	len, v[_VECTOR_LEN]
 		load	data, v[_VECTOR_DATA]
-		#cond	i, lt, 0
+		load	len, data[0]
+		#cond	i < 0
 			move	i, len
-			sub		i, 1
+		#else
+			add		i, 1
 		#endcond
-		#for	j, i, ge, 0, -1
+		#for	i, j >= 1, -1
 			load	k, data[j]
-			#cond	val, eq, k
+			#cond	val == k
 				#break
 			#endcond
 		#endfor
-	#endsync
-	#return	j
+//	#endsync
+	#cond	j == 0
+		#return	-1
+	#elsecond
+		sub		j, 1
+		#return	j
+	#endcond
 #end_func
 
 ///////////////////////////////////////////////////////////////////////////////
-// vectorPrint(vector)
+// printVector(vector)
 // Prints the vector.
 // vector	vector to operate on.
 ///////////////////////////////////////////////////////////////////////////////
-#def_func vectorPrint(vector)
+#def_func printVector(vector)
 	#var	v, i, j, len, data
 	load	v, vector
-	#sync	v[_VECTOR_MUTEX]
-		load	len, v[_VECTOR_LEN]
+//	#sync	v[_VECTOR_MUTEX]
 		load	data, v[_VECTOR_DATA]
-		#for	i, 0, lt, len, 1
-			#cond	i, ne, 0
-				#call	putc(',')
+		load	len, data[0]
+		#for	1, i <= len, 1
+			#cond	i != 1
+				#macro	out1(',', STDOUT)
 			#endcond
 			load	j, data[i]
-			#call	put_dec(j)
+			#macro	put_dec(j)
 		#endfor
-		#call	put_nl()
-	#endsync
+		#macro	put_nl()
+//	#endsync
 #end_func
 VECTOR_ASM_END: nop

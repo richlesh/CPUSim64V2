@@ -191,7 +191,7 @@ jump	@IO_ASM_END
 // fpvalue	Value to format
 #def_func	put_fp(fpvalue)
 		mov	r0,STDOUT
-		ld	f0,fpvalue
+		load	f0,fpvalue
 		int	iPUT_FP
 #end_func put_fp
 
@@ -200,8 +200,8 @@ jump	@IO_ASM_END
 // port	I/O Port
 // fpvalue	Value to format
 #def_func	fput_fp(port,fpvalue)
-		ld	r0,port
-		ld	f0,fpvalue
+		load	r0,port
+		load	f0,fpvalue
 		int	iPUT_FP
 #end_func fput_fp
 
@@ -219,7 +219,7 @@ jump	@IO_ASM_END
 
 #def_func	fput_nl(port)
 #var	port_arg
-		ld		port_arg,port
+		load		port_arg,port
 		out		CHAR,port_arg,'\n'
 #end_func put_nl
 
@@ -269,11 +269,12 @@ jump	@IO_ASM_END
 		load	r0, port
 		#call	fputs(r0, "\nFATAL: ")
 		int		iCOND_PRINTF
-		move	r0, 0
+		move	r0, 1
 		int		iEXIT
 	#end_cond_sr
 #end_func
 
+/*
 // fgetline
 // Read an entire line from the specified I/O port
 // port		I/O Port
@@ -285,18 +286,18 @@ __FGETLINE_BUFFER: dci 0
 	push	r1
 	load	p, port
 	load	buffer, __FGETLINE_BUFFER
-	#cond	buffer, eq, 0
+	#cond	buffer == 0
 		move	r0, 128
 		int		iALLOC
 		move	buffer, r0
 	#endcond
-	#cond	buffer, ne, 0
+	#cond	buffer != 0
 		load	bufferLen, buffer[-1]
 		sub		bufferLen, 1
 		clear	i
 		IN0(charRead, p)
 		#while	charRead, ne, -1
-			#cond	charRead, eq, '\n'
+			#cond	charRead == '\n'
 				#break
 			#endcond
 			#cond	i, ge, bufferLen
@@ -523,5 +524,5 @@ FINIS:
 		IN1(ch, fp)
 	#endwhile
 #end_func
-
+*/
 IO_ASM_END:	nop

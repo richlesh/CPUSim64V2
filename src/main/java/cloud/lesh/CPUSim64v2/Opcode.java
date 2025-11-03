@@ -45,6 +45,7 @@ public enum Opcode {
 	ENDIAN(35),
 	SAVE(36),
 	RESTORE(37),
+	READONLY(38),
 	UNDEFINED(-1);
 
 	public final int code;

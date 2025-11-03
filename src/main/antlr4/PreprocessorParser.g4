@@ -42,7 +42,10 @@ directive
   | forBlock
   | whileBlock
   | doWhileBlock
+  | breakDir
+  | continueDir
   | ifCondBlock
+  | ifCondSRBlock
   ;
 
 /* #include <path> | #include "path" */
@@ -170,10 +173,21 @@ doWhileBlock
   : PP_DOWHILE NL block PP_ENDDOWHILE cond=expr NL
   ;
 
+breakDir
+  : PP_BREAK NL
+  ;
+
+continueDir
+  : PP_CONTINUE NL
+  ;
 /* ----- assembly conditional blocks (explicit arms) ----- */
 
 ifCondBlock
   : PP_IFCOND cond=expr NL block (elseifCondClause)* (elseCondClause)? PP_ENDCOND NL
+  ;
+
+ifCondSRBlock
+  : PP_IFCONDSR IDENT NL block (elseCondClause)? PP_ENDCOND NL
   ;
 
 elseifCondClause
@@ -192,11 +206,13 @@ block
    primary cmpOp primary
 */
 expr
-  : primary ( cmpOp primary )?
+  : primary COMMA? ( cmpOp COMMA? primary )?
   ;
 
 primary
   : IDENT
+  | REG_R
+  | REG_F
   | literal
   ;
 

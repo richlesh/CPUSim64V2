@@ -45,11 +45,16 @@
 		<tr><td>#fvar</td><td>ident_list</td><td>Defines floating point register variables for the function. The ident_list is a comma-separated list of variable names to be created.  Must follow the <code>#var</code> directive if present. Accessing the variables is done with the <code>move</code> instruction.</td></tr>
 		<tr><td>#return</td><td>op</td><td>Moves the operand into register r0 and then returns.  Causes all <code>#svar</code>, <code>#var</code> and <code>#fvar</code> variables to be deallocated.</td></tr>
 		<tr><td>#freturn</td><td>op</td><td>Moves the operand into register f0 and then returns.  Causes all <code>#svar</code>, <code>#var</code> and <code>#fvar</code> variables to be deallocated.</td></tr>
-		<tr><td>#if<br/>#else_if<br/>#else<br/>#end_if</td><td>IDENT cmpOp IDENT/literal<br/>IDENT cmpOp IDENT/literal<br/>none<br/>none</td><td>Causes conditional inclusion of code lines.  IDENT must be a symbol defined by a <code>#define</code> directive.  The valid comparison operaters are <code>==</code>, <code>!=</code>, <code>&lt;=</code>, <code>=&gt;</code>, <code>&lt;</code>, and <code>&gt;</code>.</td></tr>
+		<tr><td>#if<br/>#else_if<br/>#else<br/>#end_if</td><td>IDENT cmpOp IDENT/literal<br/>IDENT cmpOp IDENT/literal<br/>none<br/>none</td><td>Causes conditional inclusion of code lines.  IDENT must be a symbol defined by a <code>#define</code> directive.  The valid comparison operaters are <code>==</code>, <code>!=</code>, <code>&lt;=</code>, <code>=&gt;</code>, <code>&lt;</code>, and <code>&gt;</code>.  If just an IDENT is supplied instead of an expression, the "truthiness" of the identifier is evaluated.  O is false, everything else is true.</td></tr>
+		<tr><td>#ifdef<br/>#else<br/>#end_if</td><td>IDENT<br/>none<br/>none</td><td>Causes conditional inclusion of code lines.  IDENT must be a symbol defined by a <code>#define</code> directive.  If the identifier is defined (doesn't matter what it is defined as) then the code will be included.  If the identifier is not defined the optional else block code will be included.</td></tr>
+		<tr><td>#ifndef<br/>#else<br/>#end_if</td><td>IDENT<br/>none<br/>none</td><td>Causes conditional inclusion of code lines.  IDENT must be a symbol defined by a <code>#define</code> directive.  If the identifier is not defined then the code will be included.  If the identifier is defined (doesn't matter what it is defined as) the optional else block code will be included.</td></tr>
 		<tr><td>#for<br/>#end_for</td><td>inital IDENT cmpOp IDENT/literal increment<br/>none</td><td>Generates assembler code for a <code>for</code> loop.  The initial value is specified by initial.  The loop variable is identified by IDENT.  The valid comparison operaters are <code>==</code>, <code>!=</code>, <code>&lt;=</code>, <code>=&gt;</code>, <code>&lt;</code>, and <code>&gt;</code>. The final value, increment, is the amount to add to the loop variable each loop.</td></tr>
 		<tr><td>#while<br/>#end_while</td><td>IDENT cmpOp IDENT/literal<br/>none</td><td>Generates assembler code for a <code>while</code> loop.  The loop variable is identified by IDENT.  The valid comparison operaters are <code>==</code>, <code>!=</code>, <code>&lt;=</code>, <code>=&gt;</code>, <code>&lt;</code>, and <code>&gt;</code>.  The loop condition is evaluated at the beginning of the loop.</td></tr>
 		<tr><td>#do_while<br/>#end_do_while</td><td>none<br/>IDENT cmpOp IDENT/literal</td><td>Generates assembler code for a <code>do/while</code> loop.  The loop variable is identified by IDENT.  The valid comparison operaters are <code>==</code>, <code>!=</code>, <code>&lt;=</code>, <code>=&gt;</code>, <code>&lt;</code>, and <code>&gt;</code>.  The loop condition is evaluated at the end of the loop.</td></tr>
+		<tr><td>#break</td><td>none</td><td>Breaks out of the innermost loop.</td></tr>
+		<tr><td>#continue</td><td>none</td><td>Continues to the next iteration of the innermost loop.</td></tr>
 		<tr><td>#if_cond<br/>#else_if_cond<br/>#else_cond<br/>#end_cond</td><td>IDENT cmpOp IDENT/literal<br/>IDENT cmpOp IDENT/literal</br>none</br>none</td><td>Generates assembler code for an <code>if/else</code> construct.</td></tr>
+		<tr><td>#if_cond_sr<br/>#else_cond<br/>#end_cond</td><td>z|nz|n|p|nn|np|pe|po|o|no</br>none</br>none</td><td>Generates assembler code for an <code>if/else</code> construct based on the conditions in the status register (SR)</td></tr>
 	</tbody>
 </table>
 
@@ -88,12 +93,13 @@
 <p class="note">Unicode escapes are UTF-16 values.  They must be exactly four hexadecimal digits.</p>
 
 <footer>
-<p><a href="Architecture.html">Architecture</a> |
-<a href="Programmer_Guide.html">Programmer Guide</a> |
-<a href="Instruction_Set_Reference.html">Instruction Set Reference</a> |
-<a href="Directive_Reference.html">Directives Reference</a> |
-<a href="Interrupt_Reference.html">Software Interrupt Reference</a> |
-<a href="http://www.pureprogrammer.org">Pure Programmer</a></p>
+<p><a href="Architecture.html">Architecture&nbsp;Reference</a> |
+<a href="Programmer_Guide.html">Programmer&nbsp;Guide</a> |
+<a href="Directive_Reference.html">Directives&nbsp;Reference</a> |
+<a href="Instruction_Set_Reference.html">Instruction&nbsp;Set&nbsp;Reference</a> |
+<a href="Interrupt_Reference.html">Software&nbsp;Interrupt&nbsp;Reference</a> |
+<a href="Library_Reference.html">Library&nbsp;Reference</a> |
+<a href="http://www.pureprogrammer.org">Pure&nbsp;Programmer</a></p>
 <p><a href="https://twitter.com/share" class="twitter-share-button" data-size="large" data-related="richlesh">Tweet</a>
 <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
 <a href="https://twitter.com/richlesh" class="twitter-follow-button" data-show-count="false" data-size="large">Follow @richlesh</a>
@@ -105,7 +111,7 @@
 <input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif" name="submit" alt="PayPal - The safer, easier way to pay online!">
 <img alt="" style="border:0;" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
 </form>
-<address>&copy;2022 Richard Lesh.  All rights reserved.</address>
+<address>&copy;2022-2025 Richard Lesh.  All rights reserved.</address>
 </footer>
 </body>
 </html>

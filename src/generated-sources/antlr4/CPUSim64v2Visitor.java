@@ -372,6 +372,12 @@ public interface CPUSim64v2Visitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitInstrRESTORE(CPUSim64v2Parser.InstrRESTOREContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link CPUSim64v2Parser#instrREADONLY}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitInstrREADONLY(CPUSim64v2Parser.InstrREADONLYContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link CPUSim64v2Parser#operand}.
 	 * @param ctx the parse tree
 	 * @return the visitor result

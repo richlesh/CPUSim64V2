@@ -353,6 +353,30 @@ public class PreprocessorParserBaseListener implements PreprocessorParserListene
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterBreakDir(PreprocessorParser.BreakDirContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitBreakDir(PreprocessorParser.BreakDirContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterContinueDir(PreprocessorParser.ContinueDirContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitContinueDir(PreprocessorParser.ContinueDirContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterIfCondBlock(PreprocessorParser.IfCondBlockContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -360,6 +384,18 @@ public class PreprocessorParserBaseListener implements PreprocessorParserListene
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitIfCondBlock(PreprocessorParser.IfCondBlockContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterIfCondSRBlock(PreprocessorParser.IfCondSRBlockContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitIfCondSRBlock(PreprocessorParser.IfCondSRBlockContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

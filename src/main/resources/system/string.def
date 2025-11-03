@@ -21,6 +21,11 @@
 #define iSUBSTRING_SEARCH	320
 #define iLAST_SUBSTRING_SEARCH	321
 #define	iSTRICMP			322
+#define iGET_CODEPOINTS		323
+#define iFROM_CODEPOINTS	324
+#define iCOUNT_GLPYHS		325
+#define iHASHCODE			326
+#define iTRIM				327
 
 #define	iMATCHES			350
 #define	iREPLACE_FIRST		351
@@ -29,7 +34,179 @@
 #define	iJOIN				354
 #define	iSTRCAT				355
 
-#defmacro	TO_INT(x)
+#defmacro	FMT_DEC(x)
+	move	r0, ${x}
+	int		iFMT_DEC
+#endmacro
+
+#defmacro	FMT_HEX(x)
+	move	r0, ${x}
+	int		iFMT_HEX
+#endmacro
+
+#defmacro	FMT_FLOAT(x)
+	move	f0, ${x}
+	int		iFMT_FLOAT
+#endmacro
+
+#defmacro	PARSE_INT(x)
 	move	r0, ${x}
 	int		iPARSE_INT
+#endmacro
+
+#defmacro	PARSE_DEC(x)
+	move	r0, ${x}
+	int		iPARSE_DEC
+#endmacro
+
+#defmacro	PARSE_HEX(x)
+	move	r0, ${x}
+	int		iPARSE_HEX
+#endmacro
+
+#defmacro	PARSE_FLOAT(x)
+	move	r0, ${x}
+	int		iPARSE_FLOAT
+#endmacro
+
+#defmacro	TO_LOWER(x)
+	move	r0, ${x}
+	int		iTO_LOWER
+#endmacro
+
+#defmacro	TO_UPPER(x)
+	move	r0, ${x}
+	int		iTO_UPPER
+#endmacro
+
+#defmacro	TO_LOWER_STR(x)
+	move	r0, ${x}
+	int		iTO_LOWER_STR
+#endmacro
+
+#defmacro	TO_UPPER_STR(x)
+	move	r0, ${x}
+	int		iTO_UPPER_STR
+#endmacro
+
+#defmacro	STRCMP(s1, s2)
+	move	r0, ${s1}
+	move	r1, ${s2}
+	int		iSTRCMP
+#endmacro
+
+#defmacro	SUBSTRING(s, start, length)
+	move	r0, ${s}
+	move	r1, ${start}
+	move	r2, ${length}
+	int		iSUBSTRING
+#endmacro
+
+#defmacro	PREFIX(s, length)
+	move	r0, ${s}
+	move	r1, ${length}
+	int		iPREFIX
+#endmacro
+
+#defmacro	SUFFIX(s, length)
+	move	r0, ${s}
+	move	r1, ${length}
+	int		iSUFFIX
+#endmacro
+
+#defmacro	CHAR_SEARCH(s, char, startpos)
+	move	r0, ${s}
+	move	r1, ${char}
+	move	r2, ${startpos}
+	int		iCHAR_SEARCH
+#endmacro
+
+#defmacro	LAST_CHAR_SEARCH(s, char, startpos)
+	move	r0, ${s}
+	move	r1, ${char}
+	move	r2, ${startpos}
+	int		iLAST_CHAR_SEARCH
+#endmacro
+
+#defmacro	SUBSTRING_SEARCH(s, substr, startpos)
+	move	r0, ${s}
+	move	r1, ${substr}
+	move	r2, ${startpos}
+	int		iSUBSTRING_SEARCH
+#endmacro
+
+#defmacro	LAST_SUBSTRING_SEARCH(s, substr, startpos)
+	move	r0, ${s}
+	move	r1, ${substr}
+	move	r2, ${startpos}
+	int		iLAST_SUBSTRING_SEARCH
+#endmacro
+
+#defmacro	STRICMP(s1, s2)
+	move	r0, ${s1}
+	move	r1, ${s2}
+	int		iSTRICMP
+#endmacro
+
+#defmacro	GET_CODEPOINTS(str)
+	move	r0, ${str}
+	int		iGET_CODEPOINTS
+#endmacro
+
+#defmacro	FROM_CODEPOINTS(arr)
+	move	r0, ${arr}
+	int		iFROM_CODEPOINTS
+#endmacro
+
+#defmacro	COUNT_GLPYHS(str)
+	move	r0, ${str}
+	int		iCOUNT_GLPYHS
+#endmacro
+
+#defmacro	HASHCODE(str)
+	move	r0, ${str}
+	int		iHASHCODE
+#endmacro
+
+#defmacro	TRIM(str)
+	move	r0, ${str}
+	int		iTRIM
+#endmacro
+
+#defmacro	MATCHES(str, pattern)
+	move	r0, ${str}
+	move	r1, ${pattern}
+	int		iMATCHES
+#endmacro
+
+#defmacro	REPLACE_FIRST(str, pattern, replacement)
+	move	r0, ${str}
+	move	r1, ${pattern}
+	move	r2, ${replacement}
+	int		iREPLACE_FIRST
+#endmacro
+
+#defmacro	REPLACE_ALL(str, pattern, replacement)
+	move	r0, ${str}
+	move	r1, ${pattern}
+	move	r2, ${replacement}
+	int		iREPLACE_ALL
+#endmacro
+
+#defmacro	SPLIT(str, delimiter)
+	move	r0, ${str}
+	move	r1, ${delimiter}
+	int		iSPLIT
+#endmacro
+
+#defmacro	JOIN(arr, delimiter)
+	move	r0, ${arr}
+	move	r1, ${delimiter}
+	int		iJOIN
+#endmacro
+
+#defmacro	STRCAT(s1, s2)
+	move	r0, ${s1}
+	move	r1, ${s2}
+	int		iSTRCAT
 #endmacro

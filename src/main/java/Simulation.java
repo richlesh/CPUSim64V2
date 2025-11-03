@@ -3,6 +3,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Map;
 
 import cloud.lesh.CPUSim64v2.Simulator;
 
@@ -58,18 +59,33 @@ public class Simulation {
 		}
 		Path originalPath = Path.of(simulatorArgs.get(0)).toAbsolutePath();
 		Path newPath = originalPath;
+		Path symbolPath = originalPath;
+		Map<String, Long> symbolMap = null;
+		Map<Long, String> reverseSymbolMap = null;
+		// Get filename without extension
+		String fileName = newPath.getFileName().toString();
+		int dot = fileName.indexOf('.');
+		String baseName = (dot == -1) ? fileName : fileName.substring(0, dot);
+		// Compose new path
+		newPath = originalPath.resolveSibling(baseName + ".obj.gz");
 		if (!Files.isRegularFile(newPath)) {
-			// Get filename without extension
-			String fileName = newPath.getFileName().toString();
-			int dot = fileName.lastIndexOf('.');
-			String baseName = (dot == -1) ? fileName : fileName.substring(0, dot);
-			// Compose new path
-			newPath = originalPath.resolveSibling(baseName + ".obj.gz");
+			newPath = originalPath.resolveSibling(baseName + ".obj");
 			if (!Files.isRegularFile(newPath)) {
-				newPath = originalPath.resolveSibling(baseName + ".obj");
-				if (!Files.isRegularFile(newPath)) {
-					throw new RuntimeException("Can't locate object file for program: " + baseName);
-				}
+				throw new RuntimeException("Can't locate object file for program: " + baseName);
+			}
+		}
+		symbolPath = originalPath.resolveSibling(baseName + ".sym");
+		if (!Files.isRegularFile(symbolPath)) {
+			System.out.println("Can't locate symbol file for program: " + baseName);
+		} else {
+			symbolMap = Simulator.readLabelMapFromFile(symbolPath.toFile());
+			// Create reverse map
+			reverseSymbolMap = new java.util.HashMap<>();
+			for (var entry : symbolMap.entrySet()) {
+				reverseSymbolMap.put(entry.getValue(), entry.getKey());
+			}
+			if (reverseSymbolMap.get(0L) == null) {
+				reverseSymbolMap.put(0L, "__START");
 			}
 		}
 
@@ -79,10 +95,10 @@ public class Simulation {
 			System.out.println("Read " + program.size() + " words from " + newPath.getFileName().toString());
 		}
 
-		var sim = new Simulator(memorySize, stackSize, simulatorArgs.toArray(String[]::new));
+		var sim = new Simulator(memorySize, 0, stackSize, simulatorArgs.toArray(String[]::new));
 		if (debug) sim.setDebug(true);
 		sim.loadProgram(program, 0L);
-		long result = sim.run();
+		long result = sim.run(reverseSymbolMap);
 		if (verbose) {
 			System.out.println("Result: " + result);
 		}

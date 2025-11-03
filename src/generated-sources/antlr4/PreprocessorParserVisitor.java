@@ -179,11 +179,29 @@ public interface PreprocessorParserVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitDoWhileBlock(PreprocessorParser.DoWhileBlockContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link PreprocessorParser#breakDir}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitBreakDir(PreprocessorParser.BreakDirContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link PreprocessorParser#continueDir}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitContinueDir(PreprocessorParser.ContinueDirContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link PreprocessorParser#ifCondBlock}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitIfCondBlock(PreprocessorParser.IfCondBlockContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link PreprocessorParser#ifCondSRBlock}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitIfCondSRBlock(PreprocessorParser.IfCondSRBlockContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link PreprocessorParser#elseifCondClause}.
 	 * @param ctx the parse tree

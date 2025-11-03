@@ -1,5 +1,9 @@
 package cloud.lesh.CPUSim64v2;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.VarHandle;
 import java.nio.charset.StandardCharsets;
@@ -39,10 +43,11 @@ public class Simulator {
 
 	public class CPUException extends RuntimeException {
 		CPUException(String msg) {
-			super(String.format("PC:0x%08X -> ", R[R_PC]) + msg);
+			super(String.format("PC:" + fmtAddress + " -> ", R[R_PC]) + msg);
 		}
+
 		CPUException(String msg, Object... args) {
-			super(String.format("PC:0x%08X -> " + msg, R[R_PC], args));
+			super(String.format("PC:" + fmtAddress + " -> " + msg, R[R_PC], args));
 		}
 	}
 
@@ -66,12 +71,12 @@ public class Simulator {
 	long[] mem;
 	long[] stack;
 	VarHandle atomicMem;
-	long heapStart = 0;		// End of code / beginning of free heap
-	long heapLimit = 0;		// End of free heap / max stack limit
-	long stackSize = 2048;	// Maximum stack size
-	long stackBase = 0;		// Maximum memory address / stack base
-	private long heapList;	// Linked list of all heap blocks (alloc and free)
-	private LinkedList<Long> freeList;	// Linked list of free blocks
+	long heapStart = 0;        // End of code / beginning of free heap
+	long heapLimit = 0;        // End of free heap / max stack limit
+	long stackSize = 2048;    // Maximum stack size
+	long stackBase = 0;        // Maximum memory address / stack base
+	private long heapList;    // Linked list of all heap blocks (alloc and free)
+	private LinkedList<Long> freeList;    // Linked list of free blocks
 
 	// Integer and floating-point register files
 	long[] R = new long[GPR_COUNT];     // R0..R31 (R29=SF, R30=SP, R31=PC, SR kept separate)
@@ -84,7 +89,7 @@ public class Simulator {
 	private long pid;
 	private static AtomicLong nextPID = new AtomicLong(0);
 	private Vector<Simulator> childCPUs = new Vector<>();
-	private ChildProcess process = null;	// If this is a child what is its process object.
+	private ChildProcess process = null;    // If this is a child what is its process object.
 	private ChildThread thread = null;
 
 	private InterruptHandler interruptHandler;
@@ -96,42 +101,53 @@ public class Simulator {
 	private final static int floatSize = 23;
 	private final static int fractionSize = 16;
 
-	private final static String padHex = String.format("%" + hexSize + "s","");
+	private final static String padHex = String.format("%" + hexSize + "s", "");
 	private final static String fmtHex = "%0" + hexSize + "x";
-	private final static String padDec = String.format("%" + decSize + "s","");
+	private final static String padDec = String.format("%" + decSize + "s", "");
 	private final static String fmtDec = "%" + decSize + "d";
 	private final static String fmtFloat = "%" + floatSize + "." + fractionSize + "g";
 	private final static String fmtReg = fmtRegName + fmtHex + " (%d)  ";
 	private final static String fmtFP = fmtRegName + fmtHex + " (%." + fractionSize + "g)  ";
 	private final static String fmtCPU = fmtRegName + fmtHex + " " + fmtDec + " " + fmtRegName + fmtFloat;
 	private final static String fmtCPUAlt = fmtRegName + fmtHex + " " + padDec + " " + fmtRegName + fmtFloat;
-	private final static String fmtStack = " %2sSP+%02d: "  + fmtHex + " " + fmtDec + " " + fmtFloat;
+	private final static String fmtStack = " %2sSP+%02d: " + fmtHex + " " + fmtDec + " " + fmtFloat;
 	private final static String fmtDisassemble = fmtAddress + ": " + fmtHex + " ";
 	private final static String fmtPC = fmtRegName + fmtHex;
 	private final static String fmtHeading = "%3s  %" + hexSize + "s %" + decSize + "s %3s  %" + floatSize + "s   %5s  %" + hexSize + "s %" + decSize + "s %" + floatSize + "s\n";
-	private final static String[] cpuLabels = {"R","hex","dec","FP","float","Stack","hex","dec","float"};
+	private final static String[] cpuLabels = {"R", "hex", "dec", "FP", "float", "Stack", "hex", "dec", "float"};
 
 	// Symbols for the general purpose (integer/address) registers: r0, r1, r2, ... sf, sp, pc, sr
 	public static final String[] registers = new String[GPR_COUNT];
 	// Symbols for the floating point registers: f0, f1, f2, ...
 	public static final String[] registersFP = new String[FPR_COUNT];
+
 	static {
-		for (int i = 0; i < GPR_COUNT - 3; ++i) {registers[i] = "R"+i;}
-		registers[GPR_COUNT-3] = "SF";
-		registers[GPR_COUNT-2] = "SP";
-		registers[GPR_COUNT-1] = "PC";
-		for (int i=0; i<FPR_COUNT; ++i) {registersFP[i] = "F"+i;}
+		for (int i = 0; i < GPR_COUNT - 3; ++i) {
+			registers[i] = "R" + i;
+		}
+		registers[GPR_COUNT - 3] = "SF";
+		registers[GPR_COUNT - 2] = "SP";
+		registers[GPR_COUNT - 1] = "PC";
+		for (int i = 0; i < FPR_COUNT; ++i) {
+			registersFP[i] = "F" + i;
+		}
 	}
+
+	public record Pair<A, B>(A first, B second) {
+	}
+
+	private Vector<Pair<Long, Long>> protectedMemory = new Vector<>();
 
 	public Simulator(int memoryWords, String[] args) {
-		this(memoryWords, memoryWords / 10, args);
+		this(memoryWords, 0, memoryWords / 10, args);
 	}
 
-	public Simulator(int memoryWords, int stackSize, String[] args) {
+	public Simulator(int memoryWords, int heapStart, int stackSize, String[] args) {
 		pid = nextPID.getAndIncrement();
 		this.mem = new long[memoryWords];
 		this.stack = new long[stackSize];
 		this.stackSize = stackSize;
+		this.heapStart = heapStart;
 		heapLimit = memoryWords;
 		stackBase = memoryWords + stackSize;
 		atomicMem = MethodHandles.arrayElementVarHandle(long[].class);
@@ -152,7 +168,7 @@ public class Simulator {
 		args = cloneMe.args;
 		R = cloneMe.R.clone();
 		F = cloneMe.F.clone();
-		ports = (HashMap<Integer, PortHandler>)(cloneMe.ports.clone());
+		ports = (HashMap<Integer, PortHandler>) (cloneMe.ports.clone());
 		interruptHandler = new StdInterruptHandler(this);
 
 		try {
@@ -160,14 +176,14 @@ public class Simulator {
 			stackSize = cloneMe.stackSize;
 			heapLimit = cloneMe.heapLimit;
 			heapStart = cloneMe.heapStart;
-			if (makeProcess) {	// for processes
-				freeList = (LinkedList<Long>)cloneMe.freeList.clone();
+			if (makeProcess) {    // for processes
+				freeList = (LinkedList<Long>) cloneMe.freeList.clone();
 				mem = cloneMe.mem.clone();
 				atomicMem = MethodHandles.arrayElementVarHandle(long[].class);
-			} else {			// for threads
+			} else {            // for threads
 				freeList = cloneMe.freeList;
 				mem = cloneMe.mem;
-				stack = new long[(int)stackSize];
+				stack = new long[(int) stackSize];
 				atomicMem = cloneMe.atomicMem;
 			}
 			for (var i : ports.keySet()) {
@@ -176,7 +192,7 @@ public class Simulator {
 				}
 			}
 		} catch (OutOfMemoryError ex) {
-			int memoryMax = (int)(stackSize + heapLimit);
+			int memoryMax = (int) (stackSize + heapLimit);
 			throw new CPUException("Stack plus Heap size of " + memoryMax + " words is too large for child process!");
 		}
 	}
@@ -189,10 +205,11 @@ public class Simulator {
 		R[R_PC] = loadAddr;
 		R[R_SP] = stackBase - 1;
 		R[R_SF] = R[R_SP];
-		heapStart = words.length + loadAddr;
-		memWrite(heapStart, -1L);						//prev
-		memWrite(heapStart + 1, -1L);					//next
-		memWrite(heapStart + 2, heapStart - heapLimit);	//block size (neg for free block)
+		if (words.length + loadAddr > heapStart)
+			heapStart = words.length + loadAddr;
+		memWrite(heapStart, -1L);                        //prev
+		memWrite(heapStart + 1, -1L);                    //next
+		memWrite(heapStart + 2, heapStart - heapLimit);    //block size (neg for free block)
 		heapList = heapStart;
 		freeList = new LinkedList<Long>();
 		freeList.push(heapList);
@@ -205,59 +222,64 @@ public class Simulator {
 		R[R_PC] = loadAddr;
 		R[R_SP] = stackBase - 1;
 		R[R_SF] = R[R_SP];
-		heapStart = words.size() + loadAddr;
-		memWrite(heapStart, -1L);						//prev
-		memWrite(heapStart + 1, -1L);					//next
-		memWrite(heapStart + 2, heapStart - heapLimit);	//block size (neg for free block)
+		if (words.size() + loadAddr > heapStart)
+			heapStart = words.size() + loadAddr;
+		memWrite(heapStart, -1L);                        //prev
+		memWrite(heapStart + 1, -1L);                    //next
+		memWrite(heapStart + 2, heapStart - heapLimit);    //block size (neg for free block)
 		heapList = heapStart;
 		freeList = new LinkedList<Long>();
 		freeList.push(heapList);
 	}
 
-	private static String[] condition = {"u","z","nz","n","p","nn","np","o","no","pe","po"};
+	private static String[] condition = {"u", "z", "nz", "n", "p", "nn", "np", "o", "no", "pe", "po"};
+
 	// ===== FETCH/DECODE =====
 	public final static class Decoded {
-		public int tt; int op;
+		public int tt;
+		int op;
 		public int a, b, c, d;   // operand kinds (2-bit each)
 		public int v0, v1, v2, v3; // 12-bit fields
-		public long c1; long c2; int c3;
+		public long c1;
+		long c2;
+		int c3;
 
 		public static Decoded decode(long w) {
 			Decoded d = new Decoded();
-			d.tt = (int)((w >>> 62) & 0x3);
-			d.op = (int)((w >>> 56) & 0x3F);
+			d.tt = (int) ((w >>> 62) & 0x3);
+			d.op = (int) ((w >>> 56) & 0x3F);
 			switch (d.tt) {
 				case 0 -> {
-					d.a = (int)((w >>> 54) & 0x3);
-					d.b = (int)((w >>> 52) & 0x3);
-					d.c = (int)((w >>> 50) & 0x3);
-					d.d = (int)((w >>> 48) & 0x3);
-					d.v0 = (int)((w >>> 36) & 0xFFF);
-					d.v1 = (int)((w >>> 24) & 0xFFF);
-					d.v2 = (int)((w >>> 12) & 0xFFF);
-					d.v3 = (int)(w & 0xFFF);
-					if (isConstKind(d.a)) d.v0 = (int)signExtend(d.v0, 12);
-					if (isConstKind(d.b)) d.v1 = (int)signExtend(d.v1, 12);
-					if (isConstKind(d.c)) d.v2 = (int)signExtend(d.v2, 12);
-					if (isConstKind(d.d)) d.v3 = (int)signExtend(d.v3, 12);
+					d.a = (int) ((w >>> 54) & 0x3);
+					d.b = (int) ((w >>> 52) & 0x3);
+					d.c = (int) ((w >>> 50) & 0x3);
+					d.d = (int) ((w >>> 48) & 0x3);
+					d.v0 = (int) ((w >>> 36) & 0xFFF);
+					d.v1 = (int) ((w >>> 24) & 0xFFF);
+					d.v2 = (int) ((w >>> 12) & 0xFFF);
+					d.v3 = (int) (w & 0xFFF);
+					if (isConstKind(d.a)) d.v0 = (int) signExtend(d.v0, 12);
+					if (isConstKind(d.b)) d.v1 = (int) signExtend(d.v1, 12);
+					if (isConstKind(d.c)) d.v2 = (int) signExtend(d.v2, 12);
+					if (isConstKind(d.d)) d.v3 = (int) signExtend(d.v3, 12);
 				}
 				case 1 -> {
 					long imm = w & ((1L << 56) - 1);
 					d.c1 = signExtend(imm, 56);
 				}
 				case 2 -> {
-					d.a = (int)((w >>> 54) & 0x3);
-					d.v0 = (int)((w >>> 42) & 0xFFF);
+					d.a = (int) ((w >>> 54) & 0x3);
+					d.v0 = (int) ((w >>> 42) & 0xFFF);
 					long imm = w & ((1L << 42) - 1);
 					d.c2 = signExtend(imm, 42);
 				}
 				case 3 -> {
-					d.a = (int)((w >>> 54) & 0x3);
-					d.b = (int)((w >>> 52) & 0x3);
-					d.v0 = (int)((w >>> 40) & 0xFFF);
-					d.v1 = (int)((w >>> 28) & 0xFFF);
-					int raw = (int)(w & ((1L << 28) - 1));
-					d.c3 = (int)signExtend(raw, 28);
+					d.a = (int) ((w >>> 54) & 0x3);
+					d.b = (int) ((w >>> 52) & 0x3);
+					d.v0 = (int) ((w >>> 40) & 0xFFF);
+					d.v1 = (int) ((w >>> 28) & 0xFFF);
+					int raw = (int) (w & ((1L << 28) - 1));
+					d.c3 = (int) signExtend(raw, 28);
 				}
 			}
 			return d;
@@ -295,8 +317,8 @@ public class Simulator {
 			return switch (type) {
 				case 0 -> "None";
 				case 1 -> Long.toString(num);
-				case 2 -> registers[(int)num];
-				case 3 -> registersFP[(int)num];
+				case 2 -> registers[(int) num];
+				case 3 -> registersFP[(int) num];
 				default -> throw new RuntimeException("Unexpected op type: " + type);
 			};
 		}
@@ -315,15 +337,23 @@ public class Simulator {
 					throw new RuntimeException("Illegal op index: " + i);
 			}
 		}
-		public int getType() { return tt; }
-		public int getOpCode() { return op; }
+
+		public int getType() {
+			return tt;
+		}
+
+		public int getOpCode() {
+			return op;
+		}
+
 		public String getOpName() {
 			if (op == Opcode.NOP.getCode() && getArgCount() == 0)
 				return Opcode.NOP.getName();
 			else
 				return Opcode.fromCode(op).getName();
 		}
-		public String disassemble() {
+
+		public String disassemble(Map<Long, String> reverseSymbolMap) {
 			String v0, v1, v2, v3;
 			StringBuffer buffer = new StringBuffer();
 			buffer.append(String.format("%-10s\t", getOpName()));
@@ -351,10 +381,13 @@ public class Simulator {
 					break;
 				case 1:
 					if (getOpCode() == Opcode.JUMP.code ||
-						getOpCode() == Opcode.CALL.code)
+							getOpCode() == Opcode.CALL.code) {
 						v0 = "0x" + Long.toString(c1, 16);
-					else
+						String label = findNearestLabel(reverseSymbolMap, c1);
+						if (label != null) v0 += " (" + label + ")";
+					} else {
 						v0 = Long.toString(c1);
+					}
 					buffer.append(v0);
 					break;
 				case 2:
@@ -365,10 +398,13 @@ public class Simulator {
 					buffer.append(v0);
 					buffer.append(", ");
 					if (getOpCode() == Opcode.JUMP.code ||
-							getOpCode() == Opcode.CALL.code)
+							getOpCode() == Opcode.CALL.code) {
 						v1 = "0x" + Long.toString(c2, 16);
-					else
+						String label = findNearestLabel(reverseSymbolMap, c2);
+						if (label != null) v1 += " (" + label + ")";
+					} else {
 						v1 = Long.toString(c2);
+					}
 					buffer.append(v1);
 					break;
 				case 3:
@@ -393,6 +429,18 @@ public class Simulator {
 			return buffer.toString();
 		}
 
+		public static String findNearestLabel(Map<Long, String> reverseSymbolMap, long loc) {
+			if (reverseSymbolMap == null || reverseSymbolMap.size() == 0)
+				return null;
+			String label = reverseSymbolMap.get(loc);
+			long j = loc;
+			while(label == null && j > 0) {
+				--j;
+				label = reverseSymbolMap.get(j);
+			}
+			label += "+" + (loc - j);
+			return label;
+		}
 	}
 
 	long startClock = 0;
@@ -415,14 +463,37 @@ public class Simulator {
 		return val12 & 0x3F;
 	}
 
-	private static boolean isNoneKind(int k){ return k == 0; }
-	private static boolean isConstKind(int k){ return k == 1; }
-	private static boolean isRegKind(int k) { return k == 2; }
-	private static boolean isFPKind(int k)  { return k == 3; }
-	private static boolean isXKind(int k)  { return k == 2 || k == 3; }
-	private static boolean isYKind(int k)  { return k == 2 || k == 3; }
-	private static boolean isOKind(int k)  { return k == 1 || k == 2; }
-	private static boolean isQKind(int k)  { return k != 0; }
+	private static boolean isNoneKind(int k) {
+		return k == 0;
+	}
+
+	private static boolean isConstKind(int k) {
+		return k == 1;
+	}
+
+	private static boolean isRegKind(int k) {
+		return k == 2;
+	}
+
+	private static boolean isFPKind(int k) {
+		return k == 3;
+	}
+
+	private static boolean isXKind(int k) {
+		return k == 2 || k == 3;
+	}
+
+	private static boolean isYKind(int k) {
+		return k == 2 || k == 3;
+	}
+
+	private static boolean isOKind(int k) {
+		return k == 1 || k == 2;
+	}
+
+	private static boolean isQKind(int k) {
+		return k != 0;
+	}
 
 	private void setFlags(long x, boolean overflowHappened) {
 		boolean neg = x < 0;
@@ -449,7 +520,7 @@ public class Simulator {
 		boolean Z = (SR & SR_Z) != 0;
 		boolean S = (SR & SR_S) != 0;
 		boolean O = (SR & SR_O) != 0;
-		return  (O ? "O" : "o") +
+		return (O ? "O" : "o") +
 				(S ? "S" : "s") +
 				(Z ? "Z" : "z") +
 				(P ? "P" : "p");
@@ -483,24 +554,31 @@ public class Simulator {
 			if (a < heapLimit)
 				val = mem[a];
 			else
-				val = stack[a - (int)heapLimit];
+				val = stack[a - (int) heapLimit];
 			++cycles;
 		} catch (Exception ex) {
-			throw new CPUException("Illegal memory access at " + addr);
+			throw new CPUException(String.format("Illegal memory access of " + fmtAddress, addr));
 		}
 		return val;
 	}
 
 	public void memWrite(long addr, long val) {
+		if (addr < 0 || addr >= stackBase)
+			throw new CPUException(String.format("Illegal memory access of " + fmtAddress, addr));
+		for (var p : protectedMemory) {
+			if (addr >= p.first && addr < p.second) {
+				throw new CPUException(String.format("Write access violation of " + fmtAddress, addr));
+			}
+		}
 		try {
 			int a = Math.toIntExact(addr);
 			if (a < heapLimit)
 				mem[a] = val;
 			else
-				stack[a - (int)heapLimit] = val;
+				stack[a - (int) heapLimit] = val;
 			++cycles;
 		} catch (Exception ex) {
-			throw new CPUException("Illegal memory access at " + addr);
+			throw new CPUException(String.format("Illegal memory access of " + fmtAddress, addr));
 		}
 	}
 
@@ -519,7 +597,7 @@ public class Simulator {
 	}
 
 	public void setR(int kind, int val12, long wordBits) {
-		if (isRegKind(kind)){ // address/int
+		if (isRegKind(kind)) { // address/int
 			int r = toRegIndex(kind, val12);
 			R[r] = wordBits;
 			setFlags(wordBits, false);
@@ -535,7 +613,7 @@ public class Simulator {
 	}
 
 	public void setFP(int kind, int val12, double f) {
-		if (isFPKind(kind)){ // address/int
+		if (isFPKind(kind)) { // address/int
 			int r = toRegIndex(kind, val12);
 			F[r] = f;
 			setFlags(f);
@@ -546,7 +624,7 @@ public class Simulator {
 		if (isFPKind(kind)) {
 			int f = toRegIndex(kind, val12);
 			return Double.doubleToRawLongBits(F[f]);
-		} else if (isRegKind(kind)){ // address/int
+		} else if (isRegKind(kind)) { // address/int
 			int r = toRegIndex(kind, val12);
 			return R[r];
 		}
@@ -558,7 +636,7 @@ public class Simulator {
 			int f = toRegIndex(kind, val12);
 			F[f] = Double.longBitsToDouble(wordBits);
 			setFlags(F[f]);
-		} else if (isRegKind(kind)){ // address/int
+		} else if (isRegKind(kind)) { // address/int
 			int r = toRegIndex(kind, val12);
 			R[r] = wordBits;
 			setFlags(R[r], false);
@@ -566,7 +644,7 @@ public class Simulator {
 	}
 
 	private long getO(int kind, int val12) {
-		if (isRegKind(kind)){ // address/int
+		if (isRegKind(kind)) { // address/int
 			int r = toRegIndex(kind, val12);
 			return R[r];
 		} else if (isConstKind(kind)) {
@@ -579,7 +657,7 @@ public class Simulator {
 		if (isFPKind(kind)) {
 			int f = toRegIndex(kind, val12);
 			return Double.doubleToRawLongBits(F[f]);
-		} else if (isRegKind(kind)){ // address/int
+		} else if (isRegKind(kind)) { // address/int
 			int r = toRegIndex(kind, val12);
 			return R[r];
 		} else if (isConstKind(kind)) {
@@ -590,12 +668,17 @@ public class Simulator {
 	private void checkIntReg(int r) {
 		if (r < 0 || r >= GPR_COUNT) throw new CPUException("Bad int register: R" + r);
 	}
+
 	private void checkFPReg(int f) {
 		if (f < 0 || f >= FPR_COUNT) throw new CPUException("Bad FP register: F" + f);
 	}
 
 	// ===== EXECUTION =====
 	public int run() {
+		return run(null);
+	}
+
+	public int run(Map<Long, String> reverseSymbolMap) {
 		running = true;
 		startClock = System.nanoTime();
 		totalSystemTime = 0;
@@ -609,25 +692,51 @@ public class Simulator {
 			Decoded d = Decoded.decode(instr);
 
 			if (debug) {
-				System.out.print(String.format("%08X ", pc));
-				System.out.print(d.disassemble());
+				String label = null;
+				if (reverseSymbolMap != null) {
+					label = Decoded.findNearestLabel(reverseSymbolMap, pc);
+				}
+				if (label == null)
+					System.out.print(String.format(fmtAddress + " ", pc));
+				else
+					System.out.print(String.format("%-60.60s " + fmtAddress + " ", label, pc));
+				try {
+					System.out.print(d.disassemble(reverseSymbolMap));
+				} catch (Exception ex) {
+					System.out.print("DECODE ERROR\n");
+				}
 			}
 			exec(d);
 		}
-		return (int)R[0];
+		return (int) R[0];
 	}
 
-	public String disassemble() {
+	public String disassemble(Map<Long, String> reverseSymbolMap) {
 		int numStops = 0;
 		StringBuffer buffer = new StringBuffer();
-		for (int i = (int)R[R_PC]; i < heapStart; ++i) {
-			buffer.append(String.format("%08X ", i));
-			long instr = memRead(i);
-			var d = Decoded.decode(instr);
-			buffer.append(d.disassemble());
-			if (d.getOpCode() == Opcode.STOP.code)
-				++numStops;
-			if (numStops > 1) break;
+		try {
+			for (int i = (int) R[R_PC]; i < heapStart; ++i) {
+				String label = null;
+				if (reverseSymbolMap != null) {
+					label = Decoded.findNearestLabel(reverseSymbolMap, i);
+				}
+				if (label == null)
+					buffer.append(String.format(fmtAddress + " ", i));
+				else
+					buffer.append(String.format("%-60.60s " + fmtAddress + " ", label, i));
+				long instr = memRead(i);
+				var d = Decoded.decode(instr);
+				try {
+					buffer.append(d.disassemble(reverseSymbolMap));
+				} catch (Exception ex) {
+					buffer.append("DECODE ERROR\n");
+				}
+				if (d.getOpCode() == Opcode.STOP.code)
+					++numStops;
+				if (numStops > 1) break;
+			}
+		} catch (Exception ex) {
+			buffer.append("... Exception during disassembly: " + ex.getMessage() + "\n");
 		}
 		return buffer.toString();
 	}
@@ -652,16 +761,16 @@ public class Simulator {
 			case 15 -> opMULT(d);
 			case 16 -> opDIV_or_RECIP(d);
 			case 17 -> opCOMPL(d);
-			case 18 -> bitwise(d);	// AND
-			case 19 -> bitwise(d);	// OR
-			case 20 -> bitwise(d);	// XOR
+			case 18 -> bitwise(d);		// AND
+			case 19 -> bitwise(d);		// OR
+			case 20 -> bitwise(d);		// XOR
 			case 21 -> opTEST(d);
 			case 22 -> opCMP(d);
-			case 23 -> bitwise(d);  // LSH
-			case 24 -> bitwise(d);  // RSH
-			case 25 -> bitwise(d);  // arithmetic RSH>>
-			case 26 -> bitwise(d);  // LROT
-			case 27 -> bitwise(d);	// RROT
+			case 23 -> bitwise(d);		// LSH
+			case 24 -> bitwise(d);		// RSH
+			case 25 -> bitwise(d);		// arithmetic RSH>>
+			case 26 -> bitwise(d);		// LROT
+			case 27 -> bitwise(d);		// RROT
 			case 28 -> opIN(d);
 			case 29 -> opOUT(d);
 			case 30 -> opPACK(d);
@@ -672,6 +781,7 @@ public class Simulator {
 			case 35 -> opENDIAN(d);
 			case 36 -> opSAVE(d);
 			case 37 -> opRESTORE(d);
+			case 38 -> opREADONLY(d);
 			default -> throw new IllegalStateException("Unimplemented opcode: " + d.op);
 		}
 	}
@@ -751,16 +861,16 @@ public class Simulator {
 					if (isRegKind(d.a)) {
 						setR(d.a, d.v0, k);
 						return;
-					} else if (isFPKind(d.a)){
+					} else if (isFPKind(d.a)) {
 						setFP(d.a, d.v0, k);
 						return;
 					}
-				} else if (isFPKind(d.b)){
+				} else if (isFPKind(d.b)) {
 					fp = getFP(d.b, d.v1);
 					if (isRegKind(d.a)) {
-						setR(d.a, d.v0, (long)fp);
+						setR(d.a, d.v0, (long) fp);
 						return;
-					} else if (isFPKind(d.a)){
+					} else if (isFPKind(d.a)) {
 						setFP(d.a, d.v0, fp);
 						return;
 					}
@@ -778,7 +888,7 @@ public class Simulator {
 					if (testCond(d.v0)) {
 						if (isFPKind(d.c)) {
 							fp = getFP(d.c, d.v2);
-							k = (long)fp;
+							k = (long) fp;
 						} else {
 							k = getO(d.c, d.v2);
 							fp = k;
@@ -786,7 +896,7 @@ public class Simulator {
 					} else {
 						if (isFPKind(d.d)) {
 							fp = getFP(d.d, d.v3);
-							k = (long)fp;
+							k = (long) fp;
 						} else {
 							k = getO(d.d, d.v3);
 							fp = k;
@@ -940,7 +1050,7 @@ public class Simulator {
 
 	// ---- 7: JUMP ----
 	private void opJUMP(Decoded d) {
-		if (d.tt == 1) {		// C
+		if (d.tt == 1) {        // C
 			R[R_PC] = d.c1;
 			return;
 		} else if (d.tt == 2) { // AC, ZC
@@ -983,11 +1093,13 @@ public class Simulator {
 	// ---- 8: CALL ----
 	private void opCALL(Decoded d) {
 		// Prologue:
-		memWrite(R[R_SP], R[R_PC]); R[R_SP]--;
-		memWrite(R[R_SP], R[R_SF]); R[R_SP]--;
+		memWrite(R[R_SP], R[R_PC]);
+		R[R_SP]--;
+		memWrite(R[R_SP], R[R_SF]);
+		R[R_SP]--;
 		R[R_SF] = R[R_SP];
 
-		if (d.tt == 1) {		// C
+		if (d.tt == 1) {        // C
 			R[R_PC] = d.c1;
 			return;
 		} else if (d.tt == 2) { // AC, ZC
@@ -1030,15 +1142,17 @@ public class Simulator {
 	// ---- 9: RETURN ----
 	private void opRETURN(Decoded d) {
 		R[R_SP] = R[R_SF];
-		R[R_SP] = R[R_SP] + 1; R[R_SF] = memRead(R[R_SP]);
-		R[R_SP] = R[R_SP] + 1; R[R_PC] = memRead(R[R_SP]);
-		if (R[R_PC] < 0) exit((int)R[R_PC]);
+		R[R_SP] = R[R_SP] + 1;
+		R[R_SF] = memRead(R[R_SP]);
+		R[R_SP] = R[R_SP] + 1;
+		R[R_PC] = memRead(R[R_SP]);
+		if (R[R_PC] < 0) exit((int) R[R_PC]);
 	}
 
 	// ---- 10: INTERRUPT ----
 	private void opINTERRUPT(Decoded d) {
-		long code = -1;			// -1 Illegal, 0 don't interrupt, 1... valid interrupts
-		if (d.tt == 1) {		// C
+		long code = -1;            // -1 Illegal, 0 don't interrupt, 1... valid interrupts
+		if (d.tt == 1) {        // C
 			code = d.c1;
 		} else if (d.tt == 2) { // ZC
 			if (testCond(getConst(d.a, d.v0)))
@@ -1485,14 +1599,14 @@ public class Simulator {
 	// ---- 18/19/20: AND/OR/XOR ----
 
 	private void bitwise(Decoded d) {
-		assert(Opcode.AND.code == 18);
-		assert(Opcode.OR.code == 19);
-		assert(Opcode.XOR.code == 20);
-		assert(Opcode.LSHIFT.code == 23);
-		assert(Opcode.RSHIFT.code == 24);
-		assert(Opcode.ARSHIFT.code == 25);
-		assert(Opcode.LROTATE.code == 26);
-		assert(Opcode.RROTATE.code == 27);
+		assert (Opcode.AND.code == 18);
+		assert (Opcode.OR.code == 19);
+		assert (Opcode.XOR.code == 20);
+		assert (Opcode.LSHIFT.code == 23);
+		assert (Opcode.RSHIFT.code == 24);
+		assert (Opcode.ARSHIFT.code == 25);
+		assert (Opcode.LROTATE.code == 26);
+		assert (Opcode.RROTATE.code == 27);
 		boolean isGood = false;
 		long lhs = 0, rhs = 0;
 		if (d.tt == 0 && isRegKind(d.a) && isRegKind(d.b)) {
@@ -1528,8 +1642,8 @@ public class Simulator {
 				case 23 -> lhs << rhs;
 				case 24 -> lhs >>> rhs;
 				case 25 -> lhs >> rhs;
-				case 26 -> Long.rotateLeft(lhs, (int)rhs);
-				case 27 -> Long.rotateRight(lhs, (int)rhs);
+				case 26 -> Long.rotateLeft(lhs, (int) rhs);
+				case 27 -> Long.rotateRight(lhs, (int) rhs);
 				default -> throw new CPUException("Illegal bitwise operator");
 			};
 			setR(d.a, d.v0, res);
@@ -1553,11 +1667,11 @@ public class Simulator {
 		throw new IllegalStateException("TEST form not implemented");
 	}
 
-	// ---- 22: CMP (AA/AC/FF -> set SR from (lhs - rhs)) ----
+	// ---- 22: CMP (AA/AC/CA/FF -> set SR from (lhs - rhs)) ----
 	private void opCMP(Decoded d) {
 		if (d.tt == 0 && !isFPKind(d.a) && !isFPKind(d.b)) {
-			long a1 = getY(d.a, d.v0);
-			long a2 = getY(d.b, d.v1);
+			long a1 = getQ(d.a, d.v0);
+			long a2 = getQ(d.b, d.v1);
 			long res = a1 - a2;
 			setFlagsFromSubtract(a1, a2, res);
 			return;
@@ -1572,7 +1686,7 @@ public class Simulator {
 		if (d.tt == 0 && isFPKind(d.a) && isFPKind(d.b)) {
 			double f1 = F[toRegIndex(d.a, d.v0)];
 			double f2 = F[toRegIndex(d.b, d.v1)];
-			long res = (long)Math.signum(f1 - f2); // encode as -1/0/+1 for flags
+			long res = (long) Math.signum(f1 - f2); // encode as -1/0/+1 for flags
 			setFlags(res, false);
 			return;
 		}
@@ -1584,8 +1698,8 @@ public class Simulator {
 			// QOO
 			int count = d.getArgCount();
 			if (count == 3) {
-				int bytes = (int)getO(d.b, d.v1);
-				int port = (int)getO(d.c, d.v2);
+				int bytes = (int) getO(d.b, d.v1);
+				int port = (int) getO(d.c, d.v2);
 				long val = getQ(d.a, d.v0);
 				if (isFPKind(d.a) && bytes != 8)
 					throw new CPUException("OUT for FP must be 8 bytes");
@@ -1606,8 +1720,8 @@ public class Simulator {
 			// XOO
 			int count = d.getArgCount();
 			if (count == 3) {
-				int bytes = (int)getO(d.b, d.v1);
-				int port = (int)getO(d.c, d.v2);
+				int bytes = (int) getO(d.b, d.v1);
+				int port = (int) getO(d.c, d.v2);
 				if (isFPKind(d.a) && bytes != 8)
 					throw new CPUException("IN for FP must be 8 bytes");
 				else if (bytes < 0 || bytes > 8)
@@ -1631,10 +1745,10 @@ public class Simulator {
 				return;
 			} else if (count == 4) {
 				setR(d.a, d.v0,
-					((getR(d.a, d.v0) & 0xFF) << 24) |
-					((getR(d.b, d.v1) & 0xFF) << 16) |
-					((getR(d.c, d.v2) & 0xFF) << 8) |
-					(getR(d.d, d.v3) & 0xFF)
+						((getR(d.a, d.v0) & 0xFF) << 24) |
+								((getR(d.b, d.v1) & 0xFF) << 16) |
+								((getR(d.c, d.v2) & 0xFF) << 8) |
+								(getR(d.d, d.v3) & 0xFF)
 				);
 				return;
 			}
@@ -1650,10 +1764,10 @@ public class Simulator {
 				return;
 			} else if (count == 4) {
 				setR(d.a, d.v0,
-					((getR(d.a, d.v0) & 0xFFFF) << 48) |
-					((getR(d.b, d.v1) & 0xFFFF) << 32) |
-					((getR(d.c, d.v2) & 0xFFFF) << 16) |
-					(getR(d.d, d.v3) & 0xFFFF)
+						((getR(d.a, d.v0) & 0xFFFF) << 48) |
+								((getR(d.b, d.v1) & 0xFFFF) << 32) |
+								((getR(d.c, d.v2) & 0xFFFF) << 16) |
+								(getR(d.d, d.v3) & 0xFFFF)
 				);
 				return;
 			}
@@ -1722,7 +1836,7 @@ public class Simulator {
 					setFlags(0, ok);
 					return;
 				} catch (Exception ex) {
-					throw new CPUException("Illegal memory access at " + addr);
+					throw new CPUException(String.format("Illegal memory access of " + fmtAddress, addr));
 				}
 			}
 		}
@@ -1735,7 +1849,7 @@ public class Simulator {
 			if (count != 2)
 				throw new CPUException("ENDIAN must have two arguments");
 			boolean littleEndian = getO(d.b, d.v1) == 0 ? false : true;
-			var ph = getPortHandler((int)getO(d.a, d.v0));
+			var ph = getPortHandler((int) getO(d.a, d.v0));
 			if (ph != null)
 				ph.setEndian(littleEndian);
 		}
@@ -1785,8 +1899,22 @@ public class Simulator {
 		throw new CPUException("RESTORE form not implemented");
 	}
 
+	private void opREADONLY(Decoded d) {
+		if (d.tt == 1) {        // C
+			protect(R[R_PC], d.c1);
+			return;
+		} else {
+			throw new CPUException("READONLY form not implemented");
+		}
+	}
+
 	// ====== PUBLIC CONTROLS ======
-	public long getPID() {return pid;}
+	public long getPID() {
+		return pid;
+	}
+	public long nextPID() {
+		return nextPID.getAndIncrement();
+	}
 	public Vector<Long> getChildPIDs() {
 		return childCPUs.stream().map(x -> x.getPID()).collect(Collectors.toCollection(Vector::new));
 	}
@@ -1838,6 +1966,14 @@ public class Simulator {
 	public double fpop() {
 		R[R_SP] = R[R_SP] + 1;
 		return Double.longBitsToDouble(memRead(R[R_SP]));
+	}
+
+	public void protect(long addr, long limit) throws CPUException {
+		if (addr < 0 || addr > heapStart)
+			throw new CPUException("Illegal protect base addr at " + addr);
+		if (limit < addr || limit > heapStart)
+			throw new CPUException("Illegal protect limit at " + limit);
+		protectedMemory.add(new Pair<>(addr, limit));
 	}
 
 	// Pointer to the first free block in the heap.  The free list is composed of a
@@ -2029,6 +2165,18 @@ public class Simulator {
 		else if (countFree)
 			return numFree;
 		else return 0;
+	}
+
+	public void walkHeap() {
+		long p = heapStart;
+		long numAlloc = 0;
+		long numFree = 0;
+		System.out.printf("Heap Blocks:\n");
+		while (p > 0) {
+			long size = memRead(p + 2);
+			System.out.printf(fmtAddress + ": %d\n", p, size);
+			p = memRead(p + 1);
+		}
 	}
 
 	public void memmove(long dest, long src, long size) {
@@ -2348,5 +2496,38 @@ public class Simulator {
 			if (start.F[i] != end.F[i]) diffs.add("F" + i + ":" + end.F[i]);
 		if (start.SR != end.SR) diffs.add("SR:" + end.SR);
 		return diffs;
+	}
+
+	public static Map<String, Long> readLabelMapFromFile(File filename) {
+		Map<String, Long> labelMap = new HashMap<>();
+
+		System.out.println("Reading symbol file: " + filename.getAbsolutePath());
+		try (BufferedReader reader = new BufferedReader(new FileReader(filename))) {
+			String line;
+			while ((line = reader.readLine()) != null) {
+				line = line.trim();
+				if (line.isEmpty() || line.startsWith("#"))
+					continue; // skip blank or comment lines
+
+				// Split "KEY: VALUE"
+				int colon = line.indexOf(':');
+				if (colon == -1)
+					continue; // skip malformed lines
+
+				String key = line.substring(0, colon).trim();
+				String valStr = line.substring(colon + 1).trim();
+
+				try {
+					long value = Long.parseLong(valStr);
+					labelMap.put(key, value);
+				} catch (NumberFormatException e) {
+					System.err.println("Skipping invalid line: " + line);
+				}
+			}
+		} catch (IOException e) {
+			System.err.println("Error reading label map: " + e.getMessage());
+		}
+
+		return labelMap;
 	}
 }
