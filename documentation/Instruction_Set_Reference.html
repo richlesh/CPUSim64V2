@@ -626,7 +626,7 @@ SF &lt;- SP</pre>
 		<tr><th>Opcode</th><th>Pneumonic</th><th>Operands</th><th>Operation</th></tr>
 	</thead>
 	<tbody>
-		<tr><td>34</td><td>CAS</td><td style="line-height: 1.5em;">RRAO<br>CCAO<br>RCAO<br>CRAO</td><td>Atomic compare and swap<br>First operand is old value<br>Second operand is new value<br>Remaining arguments are address + offset.  </td></tr>
+		<tr><td>34</td><td>CAS</td><td style="line-height: 1.5em;">RRAO<br>CCAO<br>RCAO<br>CRAO</td><td>Atomic compare and set<br>First operand is old value<br>Second operand is new value<br>Remaining arguments are address + offset.<br>Sets overflow flag if successful.</td></tr>
 	</tbody>
 </table>
 
@@ -637,7 +637,7 @@ SF &lt;- SP</pre>
 	<thead>
 		<tr><th>Opcode</th><th>Pneumonic</th><th>Operands</th><th>Operation</th></tr>
 	</thead>
-		<tr><td>38</td><td>ReadOnly</td><td style="line-height: 1.5em;">C1</td><td>Protects memory addressed from SP through C1 as read-only memory.  The Assembler will add a ReadOnly instruction at the beginning of your program that protects memory from 0 through <code>__DATA</code>.  Define label <code>__DATA</code> at the beginning of your read-write data directives.</td></tr>
+		<tr><td>38</td><td>ReadOnly</td><td style="line-height: 1.5em;">C1</td><td>Protects memory addressed from SP through C1 as read-only memory.  The Assembler will add a ReadOnly instruction at the beginning of your program that protects memory from 0 through <code>__DATA__</code>.  Define label <code>__DATA__</code> at the beginning of your read-write data directives.</td></tr>
 	</tbody>
 </table>
 

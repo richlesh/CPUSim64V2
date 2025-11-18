@@ -1,0 +1,25 @@
+	jump	@VECTOR_DEF_END
+///////////////////////////////////////////////////////////////////////////////
+// Vector
+// Implements a growable list of integers.  Is thread safe.
+// Vector Data is a heap allocated block with the following structure:
+//-1:	int		total capacity + 1 + HEAP_BLOCK_HEADER_SIZE (number of elements allocated)
+// 0:	int		current length (number of elements used)
+// 1..n:	int		elements
+///////////////////////////////////////////////////////////////////////////////
+
+#define	_VECTOR_DATA	0				// Heap allocated block for the vector data
+#define	_VECTOR_MUTEX	1				// Mutex used for concurrent access
+#define	_VECTOR_END		2
+
+#def_macro ZERO_VECTOR()
+	#macro	ALLOC(_VECTOR_END)
+	move	r1, r0
+	store	0, r1[_VECTOR_MUTEX]		// To do: Initialize mutex
+	#macro	ALLOC(1)
+	store	r0, r1[_VECTOR_DATA]		// Create storage array
+	store	0, r0						// Leading count to 0
+	move	r0, r1
+#end_macro
+
+VECTOR_DEF_END:

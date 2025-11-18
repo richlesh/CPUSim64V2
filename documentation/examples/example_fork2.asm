@@ -8,27 +8,27 @@ PIDS: dca	3
 	#var	pid, i
 	#call	spawnChild("A")
 	move	pid, r0
-	#cond	pid, gt, 0
+	#if_cond	pid, gt, 0
 		store	pid, PIDS[0]
 		#call	spawnChild("B")
 		move	pid, r0
-		#cond	pid, gt, 0
+		#if_cond	pid, gt, 0
 			store	pid, PIDS[1]
 			#call	spawnChild("C")
 			move	pid, r0
-			#cond	pid, gt, 0
+			#if_cond	pid, gt, 0
 				store	pid, PIDS[2]
-			#endcond
-		#endcond
-	#endcond
+			#end_cond
+		#end_cond
+	#end_cond
 	#for	i, 0, lt, 3, 1
 		load	pid, PIDS[i]
-		#cond	pid, gt, 0
+		#if_cond	pid, gt, 0
 			#call	fprintf(STDOUT, "Waiting for %d...\n", pid)
 			move	r0, pid
 			int		iWAIT_PID
-		#endcond
-	#endfor
+		#end_cond
+	#end_for
 #end_func
 	
 #def_func spawnChild(name)
@@ -48,7 +48,7 @@ CHILD_FORK:
 	#for	r1, 0, lt, 10, 1
 		#call	fprintf(STDOUT, "%s %d...\n", childName, r1)
 		#call	sleep(1000)
-	#endfor
+	#end_for
 	#call	fprintf(STDOUT, "Child %s done!\n", childName)
 	stop
 FORK_FAILED:

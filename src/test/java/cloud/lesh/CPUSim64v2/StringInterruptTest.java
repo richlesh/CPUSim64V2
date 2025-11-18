@@ -122,8 +122,8 @@ public class StringInterruptTest extends BaseTest {
 		String src = """
 			START:
 				#include <system/string.def>
-				move	r1, 'A';
-				move	r2, 'a';
+				move	r1, 'A'
+				move	r2, 'a'
 				move	r3, "AbCdEf123!"
 				
 				move	r0, r1
@@ -249,7 +249,7 @@ public class StringInterruptTest extends BaseTest {
 		String src = """
 			START:
 				#include <system/string.def>
-				move	r28, "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+				move	r28, "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 				move	r0, r28
 				move	r1, 5
 				move	r2, 6
@@ -290,7 +290,7 @@ public class StringInterruptTest extends BaseTest {
 		String src = """
 			START:
 				#include <system/string.def>
-				move	r28, "ABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZ";
+				move	r28, "ABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZ"
 				move	r0, r28
 				move	r1, 'J'
 				move	r2, 0
@@ -353,7 +353,7 @@ public class StringInterruptTest extends BaseTest {
 		String src = """
 			START:
 				#include <system/string.def>
-				move	r28, "ABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZ";
+				move	r28, "ABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZ"
 				move	r0, r28
 				move	r1, "JKL"
 				move	r2, 0

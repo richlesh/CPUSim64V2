@@ -54,9 +54,10 @@ public class Assembler {
 
 		// 2) Preprocess
 		var loader = new IncludeLoader(inPath.getParent());
+		PreprocessorVisitor.resetGlobals();
 		String preprocessed = PreprocessorVisitor.preprocessText(inPath.getFileName().toString(), source, loader, args);
 
-		// 2b) Rewrite literals
+		// 3) Rewrite literals
 		LiteralRewriter rw = new LiteralRewriter();
 		preprocessed = rw.rewrite(preprocessed);
 
@@ -80,7 +81,8 @@ public class Assembler {
 			System.exit(1);
 		}
 */
-		preprocessed = "READONLY __DATA" + System.lineSeparator() + preprocessed;
+		// 4) Add global declarations
+		preprocessed = PreprocessorVisitor.addGlobals(preprocessed);
 
 		// 5) Gather labels
 		LabelVisitor labelVisitor = new LabelVisitor();

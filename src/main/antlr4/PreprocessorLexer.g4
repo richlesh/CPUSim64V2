@@ -10,40 +10,41 @@ WS : [ \t]+ -> channel(HIDDEN) ;
 NL : ('\r'? '\n')+ ;
 
 
-// Use a mode for processing argumnets to preprocessor directives
+// Use a mode for processing arguments to preprocessor directives
 PP_INCLUDE  : '#' [iI][nN][cC][lL][uU][dD][eE]       -> pushMode(DIRECTIVE_ARGS) ;
 PP_DEFINE   : '#' [dD][eE][fF][iI][nN][eE]           -> pushMode(DIRECTIVE_ARGS) ;
 PP_UNDEF    : '#' [uU][nN][dD][eE][fF]               -> pushMode(DIRECTIVE_ARGS) ;
 PP_CALL     : '#' [cC][aA][lL][lL]                   -> pushMode(DIRECTIVE_ARGS) ;
-PP_DEF_FUNC : '#' [dD][eE][fF] '_'? [fF][uU][nN][cC] -> pushMode(DIRECTIVE_ARGS) ;
-PP_END_FUNC : '#' [eE][nN][dD] '_'? [fF][uU][nN][cC] ;
-PP_DEF_MACRO: '#' [dD][eE][fF] '_'? [mM][aA][cC][rR][oO] -> pushMode(DIRECTIVE_ARGS) ;
-PP_END_MACRO: '#' [eE][nN][dD] '_'? [mM][aA][cC][rR][oO] ;
+PP_DEF_FUNC : '#' [dD][eE][fF]([iI][nN][eE])? '_' [fF][uU][nN][cC]([tT][iI][oO][nN])? -> pushMode(DIRECTIVE_ARGS) ;
+PP_END_FUNC : '#' [eE][nN][dD] '_' [fF][uU][nN][cC]([tT][iI][oO][nN])? ;
+PP_DEF_MACRO: '#' [dD][eE][fF]([iI][nN][eE])? '_' [mM][aA][cC][rR][oO] -> pushMode(DIRECTIVE_ARGS) ;
+PP_END_MACRO: '#' [eE][nN][dD] '_' [mM][aA][cC][rR][oO] ;
 PP_MACRO    : '#' [mM][aA][cC][rR][oO]               -> pushMode(DIRECTIVE_ARGS) ;
+PP_GLOBAL   : '#' [gG][lL][oO][bB][aA][lL] ;
 PP_SVAR     : '#' [sS][vV][aA][rR]                   -> pushMode(DIRECTIVE_ARGS) ;
 PP_VAR      : '#' [vV][aA][rR]                       -> pushMode(DIRECTIVE_ARGS) ;
 PP_FVAR     : '#' [fF][vV][aA][rR]                   -> pushMode(DIRECTIVE_ARGS) ;
 PP_RETURN   : '#' [rR][eE][tT][uU][rR][nN]           -> pushMode(DIRECTIVE_ARGS) ;
 PP_FRETURN  : '#' [fF][rR][eE][tT][uU][rR][nN]       -> pushMode(DIRECTIVE_ARGS) ;
 PP_IF       : '#' [iI][fF]				             -> pushMode(DIRECTIVE_ARGS) ;
-PP_IFDEF    : '#' [iI][fF][dD][eE][fF]	             -> pushMode(DIRECTIVE_ARGS) ;
-PP_IFNDEF   : '#' [iI][fF][nN][dD][eE][fF]           -> pushMode(DIRECTIVE_ARGS) ;
-PP_ELSEIF   : '#' [eE][lL][sS][eE] '_'? [iI][fF]     -> pushMode(DIRECTIVE_ARGS) ;
+PP_IFDEF    : '#' [iI][fF][dD][eE][fF]	     		-> pushMode(DIRECTIVE_ARGS) ;
+PP_IFNDEF   : '#' [iI][fF][nN][dD][eE][fF]    		-> pushMode(DIRECTIVE_ARGS) ;
+PP_ELSEIF   : '#' [eE][lL][sS][eE] '_' [iI][fF]     -> pushMode(DIRECTIVE_ARGS) ;
 PP_ELSE     : '#' [eE][lL][sS][eE] ;
 PP_ENDIF    : '#' [eE][nN][dD] '_'? [iI][fF] ;
 PP_FOR		: '#' [fF][oO][rR]						 -> pushMode(DIRECTIVE_ARGS) ;
-PP_ENDFOR	: '#' [eE][nN][dD] '_'? [fF][oO][rR] ;
+PP_ENDFOR	: '#' [eE][nN][dD] '_' [fF][oO][rR] ;
 PP_WHILE	: '#' [wW][hH][iI][lL][eE]				 -> pushMode(DIRECTIVE_ARGS) ;
-PP_ENDWHILE	: '#' [eE][nN][dD] '_'? [wW][hH][iI][lL][eE] ;
-PP_DOWHILE	: '#' [dD][oO] '_'? [wW][hH][iI][lL][eE] ;
-PP_ENDDOWHILE: '#' [eE][nN][dD] '_'? [dD][oO] '_'? [wW][hH][iI][lL][eE] -> pushMode(DIRECTIVE_ARGS) ;
+PP_ENDWHILE	: '#' [eE][nN][dD] '_' [wW][hH][iI][lL][eE] ;
+PP_DOWHILE	: '#' [dD][oO] '_' [wW][hH][iI][lL][eE] ;
+PP_ENDDOWHILE: '#' [eE][nN][dD] '_' [dD][oO] '_' [wW][hH][iI][lL][eE] -> pushMode(DIRECTIVE_ARGS) ;
 PP_BREAK    : '#' [bB][rR][eE][aA][kK]               -> pushMode(DIRECTIVE_ARGS) ;
 PP_CONTINUE : '#' [cC][oO][nN][tT][iI][nN][uU][eE]   -> pushMode(DIRECTIVE_ARGS) ;
-PP_IFCOND   : '#' ([iI][fF])? '_'? [cC][oO][nN][dD]	 -> pushMode(DIRECTIVE_ARGS) ;
-PP_IFCONDSR : '#' ([iI][fF])? '_'? [cC][oO][nN][dD] '_'? [sS][rR]	 -> pushMode(DIRECTIVE_ARGS) ;
-PP_ELSEIFCOND: '#' [eE][lL][sS][eE] '_'? [iI][fF] '_'? [cC][oO][nN][dD] -> pushMode(DIRECTIVE_ARGS) ;
-PP_ELSECOND : '#' [eE][lL][sS][eE] '_'? [cC][oO][nN][dD] ;
-PP_ENDCOND  : '#' [eE][nN][dD] '_'? [cC][oO][nN][dD];
+PP_IFCONDSR : '#' ([iI][fF]) '_' [cC][oO][nN][dD] '_' [sS][rR]	 -> pushMode(DIRECTIVE_ARGS) ;
+PP_IFCOND   : '#' ([iI][fF]) '_' [cC][oO][nN][dD]	 -> pushMode(DIRECTIVE_ARGS) ;
+PP_ELSEIFCOND: '#' [eE][lL][sS][eE] '_' [iI][fF] '_' [cC][oO][nN][dD] -> pushMode(DIRECTIVE_ARGS) ;
+PP_ELSECOND : '#' [eE][lL][sS][eE] '_' [cC][oO][nN][dD] ;
+PP_ENDCOND  : '#' [eE][nN][dD] '_' [cC][oO][nN][dD] ('_' [sR][rR])?;
 REG_R : [rR] [0-9]+ ;
 REG_F : [fF] [0-9]+ ;
 PLACEHOLDER: '$' '{' ([\p{L}_] [\p{L}\p{Nd}_]* | ELLIPSIS)'}' ;
@@ -75,15 +76,13 @@ DOLLAR: '$' ;
 LCURLY: '{' ;
 RCURLY: '}' ;
 ELLIPSIS : '.' '.' '.' ;
+COLON: ':' ;
 
-// helper: next chars are NOT the start of a comment
-fragment NOT_COMMENT_START
-  : { _input.LA(1) != '/' || (_input.LA(1) == '/' && _input.LA(2) != '/' && _input.LA(2) != '*') }?
-  ;
 // stop CODE_TEXT at newline OR before '//' or '/*'
 // Must contain at least one non-# non-newline char
 CODE_TEXT
-  : ~[ \t#\r\n] ~[\r\n]*
+  : ( ~[#\r\n/] | '/' ~[/*\r\n] )+   // match anything except start of comment or newline
+   { setText(getText().trim()); }
   ;
 
 // ---- Then the mode block ----
@@ -114,3 +113,4 @@ DOLLAR_D	 : '$' -> type(DOLLAR) ;
 LCURLY_D	 : '{' -> type(LCURLY) ;
 RCURLY_D	 : '}' -> type(RCURLY) ;
 ELLIPSIS_D 	 : '.' '.' '.' -> type(ELLIPSIS) ;
+COLON_D		 : ':' -> type(COLON) ;

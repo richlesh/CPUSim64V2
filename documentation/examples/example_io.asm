@@ -270,12 +270,12 @@
 	#call	fprintf(STDOUT, "listFiles: %d\n", r4)
 	#for	r1, 0, lt, r4, 1
 		load	r2, r5[r1]
-		#cond	r2, eq, 0
+		#if_cond	r2, eq, 0
 			#break
-		#endcond
+		#end_cond
 		#call	puts(r2)
 		#call	put_nl()
-	#endfor
+	#end_for
 	#call	freeArrayOfStrings(r5)
 #end_func
 

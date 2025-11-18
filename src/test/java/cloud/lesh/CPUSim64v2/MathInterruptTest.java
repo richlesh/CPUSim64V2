@@ -187,7 +187,7 @@ public class MathInterruptTest extends BaseTest {
 				INT		iPUT_NL
 				#macro COMPARE_RANGE(zero, le, r, lt, one)
 				jump	z, FAILURE
-			#endfor
+			#end_for
 			move r0, 0
 			STOP
 			FAILURE:
@@ -223,7 +223,7 @@ public class MathInterruptTest extends BaseTest {
 				INT		iPUT_NL
 				#macro COMPARE_RANGE(low, le, r, le, high)
 				jump	z, FAILURE
-			#endfor
+			#end_for
 			move r0, 0
 			STOP
 			FAILURE:

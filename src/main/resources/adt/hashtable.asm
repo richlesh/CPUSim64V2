@@ -13,9 +13,9 @@
 #def_func newHashTable(size)
 	#var	s, addr
 	load	s, size
-	#cond	s, lt, 10
+	#if_cond	s, lt, 10
 		move	s, 10
-	#endcond
+	#end_cond
 	ALLOC(_VECTOR_END)
 	move	addr, r0
 	store	0, addr[_VECTOR_LEN]
@@ -89,7 +89,7 @@
 		load	data, v[_VECTOR_DATA]
 		move	value, 0
 		COMPARE_RANGE(0, le, i, lt, len)
-		#cond_sr	nz
+		#if_cond_sr	nz
 			load	value, data[i]
 		#end_cond_sr
 	#endsync
@@ -105,7 +105,7 @@
 		load	len, v[_VECTOR_LEN]
 		load	data, v[_VECTOR_DATA]
 		COMPARE_RANGE(0, le, i, lt, len)
-		#cond_sr	nz
+		#if_cond_sr	nz
 			store	val, data[i]
 		#end_cond_sr
 	#endsync
@@ -126,12 +126,12 @@
 		load	len, v[_VECTOR_LEN]
 		load	data, v[_VECTOR_DATA]
 		#for	i, 0, lt, len, 1
-			#cond	i, ne, 0
+			#if_cond	i, ne, 0
 				#call	putc(',')
-			#endcond
+			#end_cond
 			load	j, data[i]
 			#call	put_dec(j)
-		#endfor
+		#end_for
 		#call	put_nl()
 	#endsync
 #end_func

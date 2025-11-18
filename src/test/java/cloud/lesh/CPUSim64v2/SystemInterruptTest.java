@@ -498,7 +498,7 @@ public class SystemInterruptTest extends BaseTest {
 
 		// diff.assertDiff(1, sim.getPID());
 		diff.assertDiff(2, Runtime.getRuntime().availableProcessors());
-		diff.assertDiff(3, 53);
+		diff.assertDiff(3, 54);
 		assertTrue(500000000 < diff.getReg(4));
 	}
 
@@ -610,7 +610,7 @@ R27: 000000000000001b                    27 F27:       27.00000000000000
 R28: 000000000000001c                    28 F28:       28.00000000000000
  SF: 00000000000024ff                       F29:       29.00000000000000
  SP: 00000000000024fd                       F30:       30.00000000000000
- PC: 000000000000003e                       F31:       31.00000000000000
+ PC: 000000000000003f                       F31:       31.00000000000000
 """;
 		ConsoleOutputCapturer capturer = new ConsoleOutputCapturer();
 		capturer.start(ConsoleOutputCapturer.StdStream.STDOUT);
@@ -1133,12 +1133,12 @@ R28: 000000000000001c                    28 F28:       28.00000000000000
 				move	r0, 1
 				int		iPUT_DEC
 				int		iPUT_NL
-				move	r0, ${i}000
+				move	r0, 1000
 				int		iSLEEP
 				jump	@END_MACRO_${i}
 			FORK_FAILED_${i}:
 				move	r1, -999
-				move	r1, 1
+				move	r0, 1
 				int		iPUT_DEC
 				int		iPUT_NL
 			END_MACRO_${i}:

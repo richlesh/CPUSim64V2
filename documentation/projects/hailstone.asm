@@ -28,7 +28,7 @@ GET_ARGS_FAILED:
 	#for	i, 1, le, 30, 1
 		#call	compute_hailstone(i)
 		#call	fprintf(STDOUT,"%d: %d\n", i, r0)
-	#endfor
+	#end_for
 	#return	0
 MAIN_END:
 #end_func
@@ -46,21 +46,21 @@ MAIN_END:
 #def_func	compute_hailstone(arg)
 	#var	i,isOdd
 	load	i, arg
-	#cond	i, le, 1
+	#if_cond	i, le, 1
 		#return	1
-	#elsecond
+	#else_cond
 		and	isOdd, i, 0x1
-		#cond	isOdd, eq, 0
+		#if_cond	isOdd, eq, 0
 			div		i, 2
 			#call	compute_hailstone(i)
 			add		r0, 1
-		#elsecond
+		#else_cond
 			mult	i, 3
 			add		i, 1
 			#call	compute_hailstone(i)
 			add		r0, 1
-		#endcond
-	#endcond
+		#end_cond
+	#end_cond
 #end_func
 
 	stop

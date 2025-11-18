@@ -28,7 +28,7 @@ MAIN:
 		sub	i, 1
 	#endwhile
 	#call	put_nl()
-#endfunc
+#end_forunc
 
 #deffunc func2(max, inc)
 	#fvar	i, j, m, incr
@@ -41,4 +41,4 @@ MAIN:
 		add		i, incr
 	#endwhile
 	#call	put_nl()
-#endfunc
+#end_forunc

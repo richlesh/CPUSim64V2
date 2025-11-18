@@ -72,20 +72,20 @@ GET_ARGS:
 		#call	sprintf("%s_%d.tmp", filename, i)
 		#call	spawnChild(r0, firstRow, lastRow, imageSize)
 		move	pid, r0
-		#cond	pid, gt, 0
+		#if_cond	pid, gt, 0
 			#call	fprintf(STDOUT, "Spawn child for %d...\n", pid)
 			store	pid, PIDS[i]
-		#endcond
+		#end_cond
 		move	firstRow, lastRow
-	#endfor
+	#end_for
 	#for	i, 0, lt, numChildren, 1
 		load	pid, PIDS[i]
-		#cond	pid, gt, 0
+		#if_cond	pid, gt, 0
 			#call	fprintf(STDOUT, "Waiting for %d...\n", pid)
 			move	r0, pid
 			int		iWAIT_PID
-		#endcond
-	#endfor
+		#end_cond
+	#end_for
 	#call	combine_output(filename, imageSize)
 	#return	0
 	jump	@MAIN_END
@@ -149,12 +149,12 @@ END:
 	sub		yHeight, yMax, yMin
 	#for	j, first, lt, last, 1
 		#for	i, 0, lt, w, 1
-			#cond	i, ne, 0
+			#if_cond	i, ne, 0
 				div		quotient, remainder, i, 20
 				cmp		remainder, 0
 				move	eq, r0, '\n', 32
 				#call	fputc(p, r0)
-			#endcond
+			#end_cond
 			// x0 = xWidth / width * (i + 0.5) + xMin
 			move	f0, i
 			add		f0, one_half
@@ -171,9 +171,9 @@ END:
 			mult	f0, 256
 			move	level, f0
 			#call	fput_dec(p, level)
-		#endfor
+		#end_for
 		#call	fput_nl(p)
-	#endfor
+	#end_for
 #end_func
 
 FOUR:		DCF 4.0
@@ -216,10 +216,10 @@ LOOP_COND:
 	jump	nz, @LOOP_START
     
     pop		r1
-    #cond	iteration, eq, max_iteration
+    #if_cond	iteration, eq, max_iteration
     	clear	f0
 //#call debug(STDOUT,"MAXITER\n")    	
-    #elsecond
+    #else_cond
 // Linear coloring
 		move	f0, iteration
 		div		f0, max_iteration
@@ -227,7 +227,7 @@ LOOP_COND:
 //		move	normalized, f0
 //		int		iFLOOR
 //		sub		f0, normalized, f0
-	#endcond
+	#end_cond
 #end_func
 
 #def_func	combine_output(filename, imageSize)
@@ -251,7 +251,7 @@ LOOP_COND:
 		#call	copy_text_file(in_port, out_port)
 		#call	closeFile(in_port)
 		#call	deleteFile(tempFile)
-	#endfor
+	#end_for
 
 // Close the file
 	#call	closeFile(out_port)

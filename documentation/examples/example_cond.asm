@@ -19,24 +19,24 @@ MAIN:
 	push	r2
 	load	r1, v1
 	load	r2, v2
-	#cond	r1, gt, 20
+	#if_cond	r1, gt, 20
 		#call	puts("r1 gt 20\n")
-		#cond	r2, gt, 20
+		#if_cond	r2, gt, 20
 			#call	puts("r2 gt 20\n")
-		#elsecond
+		#else_cond
 			#call	puts("r2 le 20\n")
-		#endcond
-	#elsecond
+		#end_cond
+	#else_cond
 		#call	puts("r1 le 20\n")
-		#cond	r2, gt, 20
+		#if_cond	r2, gt, 20
 			#call	puts("r2 gt 20\n")
-		#elsecond
+		#else_cond
 			#call	puts("r2 le 20\n")
-		#endcond
-	#endcond
+		#end_cond
+	#end_cond
 	pop		r2
 	pop		r1
-#endfunc
+#end_forunc
 
 #deffunc func2(v1)
 	#var	i
@@ -49,10 +49,10 @@ MAIN:
 		#call	puts("i lt 30\n")
 	#elseifcond	i, lt, 40
 		#call	puts("i lt 40\n")
-	#elsecond
+	#else_cond
 		#call	puts("i ge 40\n")
-	#endcond
-	#endcond
-	#endcond
-	#endcond
-#endfunc
+	#end_cond
+	#end_cond
+	#end_cond
+	#end_cond
+#end_forunc

@@ -10,31 +10,31 @@ PIDS: dca	3
 	move	r1, "A"
 	int		iTHREAD
 	move	pid, r0
-	#cond	pid, gt, 0
+	#if_cond	pid, gt, 0
 		store	pid, PIDS[0]
-	#endcond
+	#end_cond
 	move	r0, run
 	move	r1, "B"
 	int		iTHREAD
 	move	pid, r0
-	#cond	pid, gt, 0
+	#if_cond	pid, gt, 0
 		store	pid, PIDS[1]
-	#endcond
+	#end_cond
 	move	r0, run
 	move	r1, "C"
 	int		iTHREAD
 	move	pid, r0
-	#cond	pid, gt, 0
+	#if_cond	pid, gt, 0
 		store	pid, PIDS[2]
-	#endcond
+	#end_cond
 	#for	i, 0, lt, 3, 1
 		load	pid, PIDS[i]
-		#cond	pid, gt, 0
+		#if_cond	pid, gt, 0
 			#call	fprintf(STDOUT, "Waiting for %d...\n", pid)
 			move	r0, pid
 			int		iJOIN_THREAD
-		#endcond
-	#endfor
+		#end_cond
+	#end_for
 	#call	puts("Finis\n")
 #end_func
 	
@@ -45,7 +45,7 @@ PIDS: dca	3
 	#for	r1, 0, lt, 10, 1
 		#call	fprintf(STDOUT, "%s %d...\n", d, r1)
 		#call	sleep(1000)
-	#endfor
+	#end_for
 	#call	fprintf(STDOUT, "Thread %s done!\n", d)
 #end_func
 

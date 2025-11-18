@@ -139,11 +139,11 @@ SUB R1, R1, 1
 			#define USE_FP
 			#if USE_FP
 			MOV F0, 3.14159
-			#endif
+			#end_if
 			#undef USE_FP
 			#if USE_FP
 			MOV F0, 3.14
-			#endif
+			#end_if
 			""";
 		String expected = """
 			.LINE «Test.asm», 3
@@ -187,33 +187,33 @@ SUB R1, R1, 1
 			#define SIZE 1
 			#if SIZE == 1
 			MOV F0, 3
-			#elseif SIZE == 2
+			#else_if SIZE == 2
 			MOV F0, 3.1
-			#elseif SIZE == 3
+			#else_if SIZE == 3
 			MOV F0, 3.14
-			#endif
+			#end_if
 			#define SIZE 2
 			#if SIZE == 1
 			MOV F0, 3
-			#elseif SIZE == 2
+			#else_if SIZE == 2
 			MOV F0, 3.1
-			#elseif SIZE == 3
+			#else_if SIZE == 3
 			MOV F0, 3.14
-			#endif
+			#end_if
 			#define SIZE 3
 			#if SIZE == 1
 			MOV F0, 3
-			#elseif SIZE == 2
+			#else_if SIZE == 2
 			MOV F0, 3.1
-			#elseif SIZE == 3
+			#else_if SIZE == 3
 			MOV F0, 3.14
-			#endif
+			#end_if
 			#undef SIZE
 			#if SIZE == 1
 			MOV F0, 3
-			#elseif SIZE == 2
+			#else_if SIZE == 2
 			MOV F0, 3.1
-			#elseif SIZE == 3
+			#else_if SIZE == 3
 			MOV F0, 3.14
 			#endif
 			""";
@@ -259,13 +259,13 @@ SUB R1, R1, 1
 			MOV F0, 3.14159
 			#else
 			MOV F0, 3.14
-			#endif
+			#end_if
 			#undef USE_FP
 			#ifdef USE_FP
 			MOV F0, 3.141
 			#else
 			MOV F0, 3.1415
-			#endif
+			#end_if
 			""";
 		String expected = """
 			.LINE «Test.asm», 3
@@ -423,6 +423,51 @@ JUMP $BEGIN
 	}
 
 	@Test
+	void testGlobal() {
+		String src = """
+			#global	GLOBAL_INT:	.dci 326			// comment
+			#global	GLOBAL_FP:	.dcf 3.14
+			#global	GLOBAL_ARRAY:	.dca 10			/* Comment */
+			#global	GLOBAL_BYTES:	.dcb 1,2,3,4,5
+			move	r0, r1
+			move	r1, "Hello, world!"
+			move	f0, 3.14159267
+			stop
+			stop
+			#global GLOBAL_WORDS:	.dcw 0x01, 0x02, 0x03
+			#global GLOBAL_FLOATS:	.dcw 1.2, 2.3, 3.4	// Comment
+			""";
+		String expected = """
+READONLY __DATA__
+.LINE «TEST.ASM», 5
+MOVE	R0, R1
+MOVE	R1, __STR_1
+MOVE	F0, __FP_1
+STOP
+STOP
+
+__FP_1: .DCF 3.14159267
+__STR_1: .DCS "HELLO, WORLD!"
+
+__CODE_END__:
+__DATA__:
+GLOBAL_INT:	.DCI 326
+GLOBAL_FP:	.DCF 3.14
+GLOBAL_ARRAY:	.DCA 10
+GLOBAL_BYTES:	.DCB 1,2,3,4,5
+GLOBAL_WORDS:	.DCW 0X01, 0X02, 0X03
+GLOBAL_FLOATS:	.DCW 1.2, 2.3, 3.4
+__HEAP_START__:
+			""";
+		var loader = new IncludeLoader(Path.of("."));
+		String preprocessed = PreprocessorVisitor.preprocessText("Test.asm", src, loader);
+		LiteralRewriter rw = new LiteralRewriter();
+		preprocessed = rw.rewrite(preprocessed);
+		preprocessed = PreprocessorVisitor.addGlobals(preprocessed);
+		assertEquals(expected, preprocessed.toUpperCase());
+	}
+
+	@Test
 	void testSVar() {
 		String src = """
 			#def_func myFunc()
@@ -569,7 +614,7 @@ FINIS:
 	@Test
 	void testMacroVarArg() {
 		String src = """
-			#defmacro	DEBUG(...)
+			#def_macro	DEBUG(...)
 				#call	debug(STDOUT, ${...})
 			#end_macro
 			#macro DEBUG("Test message", 1, 2, 3)
@@ -602,9 +647,9 @@ FINIS:
 		String src = """
 			#var x, y
 			move x = 0
-			#ifcond x < 10
+			#if_cond x < 10
 				move y, 10
-			#endcond
+			#end_cond
 			move x, 0
 			""";
 		String expected = """
@@ -637,11 +682,11 @@ MOVE R28, 0
 		String src = """
 			#var x, y
 			move x = 0
-			#ifcond x < 10
+			#if_cond x < 10
 				move y, 10
-			#elsecond
+			#else_cond
 				move y, 20
-			#endcond
+			#end_cond
 			move x, 0
 			""";
 		String expected = """
@@ -675,11 +720,11 @@ MOVE R28, 0
 		String src = """
 			#var x, y
 			move x = 0
-			#ifcond x < 10
+			#if_cond x < 10
 				move y, 10
-			#elseifcond x < 20
+			#else_if_cond x < 20
 				move y, 20
-			#endcond
+			#end_cond
 			move x, 0
 			""";
 		String expected = """
@@ -722,13 +767,13 @@ MOVE R28, 0
 		String src = """
 			#var x, y
 			move x = 0
-			#ifcond x < 10
+			#if_cond x < 10
 				move y, 10
-			#elseifcond x < 20
+			#else_if_cond x < 20
 				move y, 20
-			#elseifcond x < 30
+			#else_if_cond x < 30
 				move y, 30
-			#endcond
+			#end_cond
 			move x, 0
 			""";
 		String expected = """
@@ -780,15 +825,15 @@ MOVE R28, 0
 		String src = """
 			#var x, y
 			move x = 0
-			#ifcond x < 10
+			#if_cond x < 10
 				move y, 10
-			#elseifcond x < 20
+			#else_if_cond x < 20
 				move y, 20
-			#elseifcond x < 30
+			#else_if_cond x < 30
 				move y, 30
-			#elsecond
+			#else_cond
 				move y, 40
-			#endcond
+			#end_cond
 			move x, 0
 			""";
 		String expected = """
@@ -842,9 +887,9 @@ MOVE R28, 0
 		String src = """
 			#var x, y
 			move x = 0
-			#ifcondSR nz
+			#if_cond_SR nz
 				move y, 10
-			#endcond
+			#end_cond
 			move x, 0
 			""";
 		String expected = """
@@ -876,11 +921,11 @@ MOVE R28, 0
 		String src = """
 			#var x, y
 			move x = 0
-			#ifcondSR z
+			#if_cond_SR z
 				move y, 10
-			#elsecond
+			#else_cond
 				move y, 20
-			#endcond
+			#end_cond
 			move x, 0
 			""";
 		String expected = """

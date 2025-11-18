@@ -8,9 +8,9 @@
 	#var	filename, outfilename, mode, inport, outport
 	// if (argc < 4)
 	int		iARGC
-	#cond	r0, lt, 4
+	#if_cond	r0, lt, 4
 		#call	puts("Syntax: Base64 [e|d] input_file output_file")
-	#elsecond
+	#else_cond
 		// Get first command line argument and put it in mode.
 		move	r0, 1
 		int		iARGS
@@ -22,40 +22,40 @@
 		int		iARGS
 		move	filename, r0
 		// Open file in read mode.
-		#cond	mode, eq, 'e'
+		#if_cond	mode, eq, 'e'
 			#call	openRawFile(filename, READ_MODE)
-		#elsecond
+		#else_cond
 			#call	openTextFile(filename, READ_MODE)
-		#endcond
+		#end_cond
 		move	inport, r0
 		// If the port returned is -1 we failed.
-		#cond	inport, ne, -1
+		#if_cond	inport, ne, -1
 			// Get third command line argument and put it in outfilename.
 			move	r0, 3
 			int		iARGS
 			move	outfilename, r0
 			// Open text file in write mode.
-			#cond	mode, eq, 'e'
+			#if_cond	mode, eq, 'e'
 				#call	openTextFile(outfilename, WRITE_MODE)
-			#elsecond
+			#else_cond
 				#call	openRawFile(outfilename, WRITE_MODE)
-			#endcond
+			#end_cond
 			move	outport, r0
 			// If the port returned is -1 we failed.
-			#cond	outport, ne, -1
+			#if_cond	outport, ne, -1
 				// Process the input stream
 				#call	Base64(mode, inport, outport)
 				// Close the files
 				#call	closeFile(outport)
 				#call	closeFile(inport)
-			#elsecond
+			#else_cond
 				#call	closeFile(inport)
 				#call	puts("Output file creation failed!")
-			#endcond
-		#elsecond
+			#end_cond
+		#else_cond
 			#call	puts("Input file open failed!")
-		#endcond
-	#endcond
+		#end_cond
+	#end_cond
 
 	#return	0
 #end_func
@@ -76,16 +76,16 @@ DECODE_TABLE: dca \
 	clear	index
 	clear	buffer
 // Read a character
-	#cond	m, eq, 'e'
+	#if_cond	m, eq, 'e'
 		IN1(inputValue,p)
-	#elsecond
+	#else_cond
 		IN0(inputValue,p)
-	#endcond
+	#end_cond
 // If it is -1 we are at EOF.
 	#while	inputValue, ne, -1
-		#cond	m, eq, 'e'
+		#if_cond	m, eq, 'e'
 			div	r0, which, index, 3
-			#cond	which, eq, 0
+			#if_cond	which, eq, 0
 				move	buffer, inputValue
 				rshift	outputValue, buffer, 2
 				lshift	buffer, 8
@@ -99,7 +99,7 @@ DECODE_TABLE: dca \
 				and		buffer, 0xF00
 				load	r0, ALPHABET[outputValue]
 				OUT0(r0,po)
-			#elsecond
+			#else_cond
 				or		buffer, inputValue
 				rshift	outputValue, buffer, 6
 				load	r0, ALPHABET[outputValue]
@@ -107,21 +107,21 @@ DECODE_TABLE: dca \
 				and		outputValue, buffer, 0x3F
 				load	r0, ALPHABET[outputValue]
 				OUT0(r0,po)
-			#endcond
-			#endcond
+			#end_cond
+			#end_cond
 			add		index, 1
 			div		r0, which, index, 48
-			#cond	which, eq, 0
+			#if_cond	which, eq, 0
 				#call	fput_nl(po)
-			#endcond
-		#elsecond
+			#end_cond
+		#else_cond
 			load	inputValue, DECODE_TABLE[inputValue]
-			#cond	inputValue, eq, 64
+			#if_cond	inputValue, eq, 64
 				#break
-			#endcond
-			#cond	inputValue, ne, -1
+			#end_cond
+			#if_cond	inputValue, ne, -1
 				div	r0, which, index, 4
-				#cond	which, eq, 0
+				#if_cond	which, eq, 0
 					move	buffer, inputValue
 				#elseif_cond	which, eq, 1
 					lshift	buffer, 6
@@ -139,24 +139,24 @@ DECODE_TABLE: dca \
 					lshift	buffer, 6
 					or		buffer, inputValue
 					OUT1(buffer,po)
-				#endcond
-				#endcond
-				#endcond
+				#end_cond
+				#end_cond
+				#end_cond
 				add		index, 1
-			#endcond
-		#endcond
+			#end_cond
+		#end_cond
 
-		#cond	m, eq, 'e'
+		#if_cond	m, eq, 'e'
 			IN1(inputValue,p)
-		#elsecond
+		#else_cond
 			IN0(inputValue,p)
-		#endcond
+		#end_cond
 	#endwhile
 
 // Add padding if needed
-	#cond	m, eq, 'e'
+	#if_cond	m, eq, 'e'
 		div	r0, which, index, 3
-		#cond	which, eq, 1
+		#if_cond	which, eq, 1
 			rshift	outputValue, buffer, 4
 			load	r0, ALPHABET[outputValue]
 			OUT0(r0,po)
@@ -169,11 +169,11 @@ DECODE_TABLE: dca \
 			OUT0(r0,po)
 			load	r0, ALPHABET[64]
 			OUT0(r0,po)
-		#endcond
-		#endcond
+		#end_cond
+		#end_cond
 		OUT0('\n',po)
-	#endcond
+	#end_cond
 	pop		r1
-#endfunc
+#end_forunc
 	stop
 	stop

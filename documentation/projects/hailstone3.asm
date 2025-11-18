@@ -27,19 +27,19 @@ GET_ARGS:
 	#for	i, 2, le, limit, 1
 		#call	compute_hailstone(i)
 		move	hailstone, r0
-		#cond	hailstone, gt, max
+		#if_cond	hailstone, gt, max
 			move	imax, i
 			move	max, hailstone
-		#endcond
+		#end_cond
 		div		r0, j, i, 1000
-		#cond	j, eq, 0
+		#if_cond	j, eq, 0
 			int		iCLOCK
 			sub		r0, lastClock
 			#call	fprintf(STDOUT,"%d...%d:%d (%d)\n", i, imax, max, r0)
 			int		iCLOCK
 			move	lastClock, r0
-		#endcond
-	#endfor
+		#end_cond
+	#end_for
 	#call	fprintf(STDOUT, "%d: %d\n", imax, max)
 	#return	0
 	jump	@MAIN_END
@@ -75,29 +75,29 @@ PRECOMPUTED_SIZE: dci	3000000
 	store	1, cache[1]
 BEGIN_COMPUTE:
 	load	i, arg
-	#cond	i, lt, cacheSize
+	#if_cond	i, lt, cacheSize
 		load	hailstone, cache[i]
-		#cond	hailstone, ne, 0
+		#if_cond	hailstone, ne, 0
 			#return	hailstone
 			jump	@END
-		#endcond
-	#endcond
+		#end_cond
+	#end_cond
 	
 	move	i0, i
 	and	isOdd, i, 0x1
-	#cond	isOdd, eq, 0
+	#if_cond	isOdd, eq, 0
 		div		i, 2
 		#call	compute_hailstone(i)
 		add		hailstone, r0, 1
-	#elsecond
+	#else_cond
 		mult	i, 3
 		add		i, 1
 		#call	compute_hailstone(i)
 		add		hailstone, r0, 1
-	#endcond
-	#cond	i0, lt, cacheSize
+	#end_cond
+	#if_cond	i0, lt, cacheSize
 		store	hailstone, cache[i0]
-	#endcond
+	#end_cond
 	#return	hailstone
 END:
 #end_func

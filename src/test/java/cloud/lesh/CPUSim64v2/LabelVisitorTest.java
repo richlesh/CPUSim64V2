@@ -26,7 +26,7 @@ public class LabelVisitorTest {
 		assertEquals(expected, noLabels);
 		var labelMap = labelVisitor.getLabelMap();
 		assertEquals(3, labelMap.size());
-		assertEquals(2, labelMap.get("__DATA"));
+		assertEquals(2, labelMap.get("__DATA__"));
 		assertEquals(2, labelMap.get("__CODE_END__"));
 		assertEquals(2, labelMap.get("__HEAP_START__"));
 		var errors = labelVisitor.getErrors();
@@ -59,7 +59,7 @@ public class LabelVisitorTest {
 		assertEquals(5, labelMap.size());
 		assertEquals(1, labelMap.get("LABEL1"));
 		assertEquals(3, labelMap.get("LABEL2"));
-		assertEquals(6, labelMap.get("__DATA"));
+		assertEquals(6, labelMap.get("__DATA__"));
 		assertEquals(6, labelMap.get("__CODE_END__"));
 		assertEquals(6, labelMap.get("__HEAP_START__"));
 		var errors = labelVisitor.getErrors();
@@ -117,7 +117,7 @@ public class LabelVisitorTest {
 		assertEquals(18, labelMap.get("DATA6"));
 		assertEquals(22, labelMap.get("DATA7"));
 		assertEquals(27, labelMap.get("END"));
-		assertEquals(29, labelMap.get("__DATA"));
+		assertEquals(29, labelMap.get("__DATA__"));
 		assertEquals(29, labelMap.get("__CODE_END__"));
 		assertEquals(29, labelMap.get("__HEAP_START__"));
 		var errors = labelVisitor.getErrors();
@@ -158,7 +158,7 @@ public class LabelVisitorTest {
 		assertEquals(3, labelMap.get("LABEL2"));
 		assertEquals(101, labelMap.get("LABEL3"));
 		assertEquals(200, labelMap.get("END"));
-		assertEquals(202, labelMap.get("__DATA"));
+		assertEquals(202, labelMap.get("__DATA__"));
 		assertEquals(202, labelMap.get("__CODE_END__"));
 		assertEquals(202, labelMap.get("__HEAP_START__"));
 		var errors = labelVisitor.getErrors();
@@ -209,7 +209,7 @@ public class LabelVisitorTest {
 		assertEquals(5, labelMap.get("BLOCK1$LABEL4"));
 		assertEquals(6, labelMap.get("$LABEL5"));
 		assertEquals(7, labelMap.get("END"));
-		assertEquals(9, labelMap.get("__DATA"));
+		assertEquals(9, labelMap.get("__DATA__"));
 		assertEquals(9, labelMap.get("__CODE_END__"));
 		assertEquals(9, labelMap.get("__HEAP_START__"));
 		var errors = labelVisitor.getErrors();

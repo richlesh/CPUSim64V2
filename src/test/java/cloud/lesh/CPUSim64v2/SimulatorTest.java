@@ -2120,15 +2120,15 @@ public class SimulatorTest {
 		prog.add(Simulator.encT2(Opcode.MOVE.code, 2, 0, end + 1));			// MOVE R0,end + 1
 		prog.add(Simulator.encT0(Opcode.CAS.code, 1,1,2,0, 1,2,0,0));		// CAS 1,2,R0
 		prog.add(Simulator.encT2(Opcode.JUMP.code, 1, 8, end));          	// JUMP NO, END
-		prog.add(Simulator.encT0(Opcode.CAS.code, 1,1,2,0, 1,2,0,0));		// CAS 1,2,R0
+		prog.add(Simulator.encT0(Opcode.CAS.code, 1,1,2,0, 1,3,0,0));		// CAS 1,3,R0
 		prog.add(Simulator.encT2(Opcode.JUMP.code, 1, 7, end));          	// JUMP O, END
 		// OOAO
-		prog.add(Simulator.encT2(Opcode.MOVE.code, 2, 0, end ));			// MOVE R0,end + 1
+		prog.add(Simulator.encT2(Opcode.MOVE.code, 2, 0, end));				// MOVE R0,end
 		prog.add(Simulator.encT2(Opcode.MOVE.code, 2, 1, 2));				// MOVE R1,2
 		prog.add(Simulator.encT2(Opcode.MOVE.code, 2, 2, 3));				// MOVE R2,3
-		prog.add(Simulator.encT0(Opcode.CAS.code, 2,2,2,1, 1,2,0,1));		// CAS 1,2,R0
+		prog.add(Simulator.encT0(Opcode.CAS.code, 2,2,2,1, 1,2,0,1));		// CAS 2,3,R0[1]
 		prog.add(Simulator.encT2(Opcode.JUMP.code, 1, 8, end));          	// JUMP NO, END
-		prog.add(Simulator.encT0(Opcode.CAS.code, 2,2,2,1, 1,2,0,1));		// CAS 1,2,R0
+		prog.add(Simulator.encT0(Opcode.CAS.code, 2,2,2,1, 1,2,0,1));		// CAS 1,2,R0[1]
 		prog.add(Simulator.encT2(Opcode.JUMP.code, 1, 7, end));          	// JUMP O, END
 
 		prog.add(Simulator.encT2(Opcode.STORE.code, 1, 100, end + 1));      // STORE 100,end + 1
@@ -2141,7 +2141,7 @@ public class SimulatorTest {
 		var diff = new SimStateDiff(sim, startState);
 		assertEquals(5, diff.size());
 		assertEquals(100, (int)sim.memRead(end + 1));
-		diff.assertSRDiff(sim.SR_Z);
+		diff.assertSRDiff(0);
 	}
 
 	@Test

@@ -78,20 +78,20 @@ GET_ARGS:
 		move	lastRow, f0
 		#call	spawnChild(firstRow, lastRow, imageSize)
 		move	pid, r0
-		#cond	pid, gt, 0
+		#if_cond	pid, gt, 0
 //			#call	fprintf(STDOUT, "Spawn child for %d...\n", pid)
 			store	pid, PIDS[i]
-		#endcond
+		#end_cond
 		move	firstRow, lastRow
-	#endfor
+	#end_for
 	#for	i, 0, lt, numChildren, 1
 		load	pid, PIDS[i]
-		#cond	pid, gt, 0
+		#if_cond	pid, gt, 0
 			#call	fprintf(STDOUT, "Waiting for %d...\n", pid)
 			move	r0, pid
 			int		iJOIN_THREAD
-		#endcond
-	#endfor
+		#end_cond
+	#end_for
 	#call	combine_output(filename, imageSize)
 	#return	0
 	jump	@MAIN_END
@@ -132,9 +132,9 @@ RUN_LOOP:
 	#call	get_and_increment(COUNTER)
 	move	first, r0
 	add		last, first, 1
-	#cond	first, ge, w
+	#if_cond	first, ge, w
 		jump	@RUN_DONE
-	#endcond
+	#end_cond
 //	#call	fprintf(STDOUT,"Child %x computing...%d %d %d\n", data, first, last, w)
 	#call	compute_mandelbrot(first, last, w)
 	jump	@RUN_LOOP
@@ -177,9 +177,9 @@ RUN_DONE:
 			#call	compute_escape(x0, y0)
 			move	level, r0
 			store	level, image_buffer[i]
-		#endfor
+		#end_for
 		add	image_buffer, w
-	#endfor
+	#end_for
 #end_func
 
 FOUR:		DCF 4.0
@@ -222,12 +222,12 @@ LOOP_COND:
 	jump	nz, @LOOP_START
     
     pop		r1
-    #cond	iteration, eq, max_iteration
+    #if_cond	iteration, eq, max_iteration
     	clear	r0
 //#call debug(STDOUT,"MAXITER\n")    	
-    #elsecond
+    #else_cond
 		move	r0, iteration
-	#endcond
+	#end_cond
 #end_func
 
 #def_func	combine_output(filename, imageSize)
@@ -241,10 +241,10 @@ LOOP_COND:
 // Create text file in write mode.
 	#call	sprintf("%s.pgm", fn)
 	#call	openRawFile(r0, WRITE_MODE)
-	#cond	r0, eq, -1
+	#if_cond	r0, eq, -1
 		#call	fprintf(STDOUT, "Can\'t open %s.pgm...\n", fn)
 		return
-	#endcond
+	#end_cond
 	move	out_port, r0
 	#call	fprintf(STDOUT, "Writing %s.pgm...\n", fn)
 	#call	fprintf(out_port, "P5\n%d %d\n%d\n", size, size, 255)
@@ -252,19 +252,19 @@ LOOP_COND:
 
 	#for	i, 0, lt, max_iteration, 1
 		store	0, histogram[i]
-	#endfor
+	#end_for
 	
 	// Compute histogram for pixel value frequency
 	clear	totalCount
 	#for	i, 0, lt, size, 1
 		load	pix_value, image_buffer[i]
-		#cond	pix_value, gt, 0
+		#if_cond	pix_value, gt, 0
 			load	r0, histogram[pix_value]
 			add		r0, 1
 			store	r0, histogram[pix_value]
 			add		totalCount, 1
-		#endcond
-	#endfor
+		#end_cond
+	#end_for
 
 	// compute cumulative histogram
 	clear	subtotal
@@ -277,13 +277,13 @@ LOOP_COND:
 		mult	f0, 256
 		move	r0, f0
 		store	r0, histogram[i]
-	#endfor
+	#end_for
 	
 	#for	i, 0, lt, size, 1
 		load	pix_value, image_buffer[i]
 		load	r0, histogram[pix_value]
 		OUT1(r0, out_port)
-	#endfor
+	#end_for
 
 // Close the file
 	#call	closeFile(out_port)

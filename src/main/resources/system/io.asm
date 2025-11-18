@@ -1,6 +1,9 @@
 #include <system/io.def>
 #include <system/system.def>
+#include <system/thread.asm>
 
+#macro DEFINE_RECURSIVE_SPINLOCK(STDOUT_LOCK)
+#call initializeRecursiveSpinLock(STDOUT_LOCK)
 jump	@IO_ASM_END
 
 // PUTS
@@ -8,9 +11,11 @@ jump	@IO_ASM_END
 // str	String Address
 #def_func puts(str)
 	push	r1
+	#call	acquireRecursiveSpinLock(STDOUT_LOCK)
 	load	r1,str
 	mov		r0,STDOUT
 	int		iPUTS
+	#call	releaseRecursiveSpinLock(STDOUT_LOCK)
 	pop		r1
 #end_func	puts
 
@@ -32,10 +37,12 @@ jump	@IO_ASM_END
 // str	String Address
 #def_func putline(str)
 	push	r1
+	#call	acquireRecursiveSpinLock(STDOUT_LOCK)
 	load	r1,str
 	mov		r0,STDOUT
 	int		iPUTS
 	out		1,STDOUT,'\n'
+	#call	releaseRecursiveSpinLock(STDOUT_LOCK)
 	pop		r1
 #end_func	puts
 
@@ -59,8 +66,10 @@ jump	@IO_ASM_END
 // Sends the character to the STDOUT port
 // value	Character to output
 #def_func	putc(value)
-		load	r0,value
-		out		CHAR,STDOUT,r0
+	#call	acquireRecursiveSpinLock(STDOUT_LOCK)
+	load	r0,value
+	out		CHAR,STDOUT,r0
+	#call	releaseRecursiveSpinLock(STDOUT_LOCK)
 #end_func putc
 
 // FPUTC
@@ -80,14 +89,16 @@ jump	@IO_ASM_END
 // value	Value to format
 // base		Base for formatting
 #def_func	put_int(value,base)
-		push	r1
-		push	r2
-		move	r0,STDOUT
-		load	r1,value
-		load	r2,base
-		int		iPUT_INT
-		pop		r2
-		pop		r1
+	push	r1
+	push	r2
+	#call	acquireRecursiveSpinLock(STDOUT_LOCK)
+	move	r0,STDOUT
+	load	r1,value
+	load	r2,base
+	int		iPUT_INT
+	#call	releaseRecursiveSpinLock(STDOUT_LOCK)
+	pop		r2
+	pop		r1
 #end_func put_int
 
 // FPUT_INT
@@ -110,11 +121,13 @@ jump	@IO_ASM_END
 // Formats the integer value as a string and then sends to STDOUT
 // value	Value to format
 #def_func	put_dec(value)
-		push	r1
-		move	r0,STDOUT
-		load	r1,value
-		int		iPUT_DEC
-		pop		r1
+	push	r1
+	#call	acquireRecursiveSpinLock(STDOUT_LOCK)
+	move	r0,STDOUT
+	load	r1,value
+	int		iPUT_DEC
+	#call	releaseRecursiveSpinLock(STDOUT_LOCK)
+	pop		r1
 #end_func put_dec
 
 // FPUT_DEC 
@@ -133,14 +146,16 @@ jump	@IO_ASM_END
 // Formats the integer value as a string and then sends to STDOUT
 // value	Value to format
 #def_func	put_hex(value)
-		push	r1
-		push	r2
-		move	r0,STDOUT
-		load	r1,value
-		move	r2,-1
-		int		iPUT_HEX
-		pop		r2
-		pop		r1
+	push	r1
+	push	r2
+	#call	acquireRecursiveSpinLock(STDOUT_LOCK)
+	move	r0,STDOUT
+	load	r1,value
+	move	r2,-1
+	int		iPUT_HEX
+	#call	releaseRecursiveSpinLock(STDOUT_LOCK)
+	pop		r2
+	pop		r1
 #end_func put_hex
 
 // PUT_HEX_SIZE
@@ -148,14 +163,16 @@ jump	@IO_ASM_END
 // value	Value to format
 // size		Minimum number of digits to print, pads with 0
 #def_func	put_hex_size(value, size)
-		push	r1
-		push	r2
-		move	r0,STDOUT
-		load	r1,value
-		load	r2,size
-		int		iPUT_HEX
-		pop		r2
-		pop		r1
+	push	r1
+	push	r2
+	#call	acquireRecursiveSpinLock(STDOUT_LOCK)
+	move	r0,STDOUT
+	load	r1,value
+	load	r2,size
+	int		iPUT_HEX
+	#call	releaseRecursiveSpinLock(STDOUT_LOCK)
+	pop		r2
+	pop		r1
 #end_func put_hex
 
 // FPUT_HEX
@@ -163,11 +180,11 @@ jump	@IO_ASM_END
 // port		I/O Port
 // value	Value to format
 #def_func	fput_hex(port,value)
-		push	r1
-		load	r0,port
-		load	r1,value
-		int		iPUT_HEX
-		pop		r1
+	push	r1
+	load	r0,port
+	load	r1,value
+	int		iPUT_HEX
+	pop		r1
 #end_func fput_hex
 
 // FPUT_HEX_SIZE
@@ -176,23 +193,25 @@ jump	@IO_ASM_END
 // value	Value to format
 // size		Minimum number of digits to print, pads with 0
 #def_func	fput_hex_size(port, value, size)
-		push	r1
-		push	r2
-		load	r0,port
-		load	r1,value
-		load	r2,size
-		int		iPUT_HEX
-		pop		r2
-		pop		r1
+	push	r1
+	push	r2
+	load	r0,port
+	load	r1,value
+	load	r2,size
+	int		iPUT_HEX
+	pop		r2
+	pop		r1
 #end_func put_hex
 
 // PUT_FP
 // Formats the IEEE754 floating point value as a string and then sends to STDOUT
 // fpvalue	Value to format
 #def_func	put_fp(fpvalue)
-		mov	r0,STDOUT
-		load	f0,fpvalue
-		int	iPUT_FP
+	#call	acquireRecursiveSpinLock(STDOUT_LOCK)
+	move	r0,STDOUT
+	load	f0,fpvalue
+	int	iPUT_FP
+	#call	releaseRecursiveSpinLock(STDOUT_LOCK)
 #end_func put_fp
 
 // FPUT_FP
@@ -200,9 +219,9 @@ jump	@IO_ASM_END
 // port	I/O Port
 // fpvalue	Value to format
 #def_func	fput_fp(port,fpvalue)
-		load	r0,port
-		load	f0,fpvalue
-		int	iPUT_FP
+	load	r0,port
+	load	f0,fpvalue
+	int	iPUT_FP
 #end_func fput_fp
 
 // PUT_NL
@@ -210,7 +229,9 @@ jump	@IO_ASM_END
 // port	I/O Port
 
 #def_func	put_nl()
-		out		CHAR,STDOUT,'\n'
+	#call	acquireRecursiveSpinLock(STDOUT_LOCK)
+	out		CHAR,STDOUT,'\n'
+	#call	releaseRecursiveSpinLock(STDOUT_LOCK)
 #end_func put_nl
 
 // FPUT_NL
@@ -218,9 +239,9 @@ jump	@IO_ASM_END
 // port	I/O Port
 
 #def_func	fput_nl(port)
-#var	port_arg
-		load		port_arg,port
-		out		CHAR,port_arg,'\n'
+	#var	port_arg
+	load	port_arg,port
+	out		CHAR,port_arg,'\n'
 #end_func put_nl
 
 // fprintf(port, fmt, values...)
@@ -249,9 +270,11 @@ jump	@IO_ASM_END
 // fmt		String with formatting information
 // values	Values for formatting
 #def_func	fatal(port, fmt, values...)
+	#call	acquireRecursiveSpinLock(STDOUT_LOCK)
 	load	r0, port
 	#call	fputs(r0, "\nFATAL: ")
 	int		iPRINTF
+	#call	releaseRecursiveSpinLock(STDOUT_LOCK)
 	move	r0, 0
 	int		iEXIT
 #end_func
@@ -264,8 +287,9 @@ jump	@IO_ASM_END
 // fmt		String with formatting information
 // values	Values for formatting
 #def_func	cond_fatal(b, port, fmt, values...)
+	#call	acquireRecursiveSpinLock(STDOUT_LOCK)
 	load	r0, b
-	#cond_sr	nz
+	#if_cond_sr	nz
 		load	r0, port
 		#call	fputs(r0, "\nFATAL: ")
 		int		iCOND_PRINTF
@@ -286,40 +310,40 @@ __FGETLINE_BUFFER: dci 0
 	push	r1
 	load	p, port
 	load	buffer, __FGETLINE_BUFFER
-	#cond	buffer == 0
+	#if_cond	buffer == 0
 		move	r0, 128
 		int		iALLOC
 		move	buffer, r0
-	#endcond
-	#cond	buffer != 0
+	#end_cond
+	#if_cond	buffer != 0
 		load	bufferLen, buffer[-1]
 		sub		bufferLen, 1
 		clear	i
 		IN0(charRead, p)
 		#while	charRead, ne, -1
-			#cond	charRead == '\n'
+			#if_cond	charRead == '\n'
 				#break
-			#endcond
-			#cond	i, ge, bufferLen
+			#end_cond
+			#if_cond	i, ge, bufferLen
 				move	r1, bufferLen
 				add		r1, 128
 				move	r0, buffer
 				int		iREALLOC
 				move	buffer, r0
-				#cond	buffer, eq, 0
+				#if_cond	buffer, eq, 0
 					#break
-				#endcond
+				#end_cond
 				load	bufferLen, buffer[-1]
 				sub		bufferLen, 1
-			#endcond
+			#end_cond
 			store	charRead, buffer[i]
 			add		i, 1
 			IN0(charRead, p)
 		#endwhile
-		#cond	buffer, ne, 0
+		#if_cond	buffer, ne, 0
 			store	0, buffer[i]
-		#endcond
-	#endcond
+		#end_cond
+	#end_cond
 	store	buffer, __FGETLINE_BUFFER
 	COMPARE(charRead, eq, -1)
 	move	r1, r0

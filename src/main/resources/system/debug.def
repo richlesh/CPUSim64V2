@@ -1,0 +1,129 @@
+#include <system/io.def>
+
+#ifdef __DEBUG__
+	#def_macro	DEBUG_MSG(...)
+		#call	debug_msg(STDOUT, ${...})
+	#end_macro
+
+	#def_macro	COND_DEBUG_MSG(b, ...)
+		#call	cond_debug_msg(${b}, STDOUT, ${...})
+	#end_macro
+
+	#def_macro	SET_EXIT_ON_ASSERT_FAILURE(b)
+		store	${b}, ENABLE_ASSERT_EXIT
+	#end_macro
+
+	#def_macro	printCPU()
+		int		iPrintCPUState
+	#end_macro
+
+	#def_macro	assert_true(isTrue, message)
+		#call	assert_true(${isTrue}, ${message},__FILE__,__LINE__)
+	#end_macro
+
+	#def_macro	assert_false(isFalse, message)
+		#call	assert_false(${isFalse}, ${message},__FILE__,__LINE__)
+	#end_macro
+
+	#def_macro	assert_eq(valueA, valueB, message)
+		#call	assert_z(${valueA}, ${valueB}, ${message},__FILE__,__LINE__)
+	#end_macro
+
+	#def_macro	assert_ne(valueA, valueB, message)
+		#call	assert_nz(${valueA}, ${valueB}, ${message},__FILE__,__LINE__)
+	#end_macro
+
+	#def_macro	assert_gt(valueA, valueB, message)
+		#call	assert_p(${valueA}, ${valueB}, ${message},__FILE__,__LINE__)
+	#end_macro
+
+	#def_macro	assert_ge(valueA, valueB, message)
+		#call	assert_nn(${valueA}, ${valueB}, ${message},__FILE__,__LINE__)
+	#end_macro
+
+	#def_macro	assert_lt(valueA, valueB, message)
+		#call	assert_n(${valueA}, ${valueB}, ${message},__FILE__,__LINE__)
+	#end_macro
+
+	#def_macro	assert_le(valueA, valueB, message)
+		#call	assert_np(${valueA}, ${valueB}, ${message},__FILE__,__LINE__)
+	#end_macro
+
+	#def_macro	assert_eq_fp(valueA, valueB, message)
+		#call	assert_z_fp(${valueA}, ${valueB}, ${message},__FILE__,__LINE__)
+	#end_macro
+
+	#def_macro	assert_ne_fp(valueA, valueB, message)
+		#call	assert_nz_fp(${valueA}, ${valueB}, ${message},__FILE__,__LINE__)
+	#end_macro
+
+	#def_macro	assert_gt_fp(valueA, valueB, message)
+		#call	assert_p_fp(${valueA}, ${valueB}, ${message},__FILE__,__LINE__)
+	#end_macro
+
+	#def_macro	assert_ge_fp(valueA, valueB, message)
+		#call	assert_nn_fp(${valueA}, ${valueB}, ${message},__FILE__,__LINE__)
+	#end_macro
+
+	#def_macro	assert_lt_fp(valueA, valueB, message)
+		#call	assert_n_fp(${valueA}, ${valueB}, ${message},__FILE__,__LINE__)
+	#end_macro
+
+	#def_macro	assert_le_fp(valueA, valueB, message)
+		#call	assert_np_fp(${valueA}, ${valueB}, ${message},__FILE__,__LINE__)
+	#end_macro
+#else
+	#def_macro	DEBUG_MSG(...)
+	#end_macro
+
+	#def_macro	COND_DEBUG_MSG(...)
+	#end_macro
+
+	#def_macro	SET_EXIT_ON_ASSERT_FAILURE(b)
+	#end_macro
+
+	#def_macro	printCPU()
+	#end_macro
+
+	#def_macro	assert_true(isTrue, message)
+	#end_macro
+
+	#def_macro	assert_false(isFalse, message)
+	#end_macro
+
+	#def_macro	assert_eq(valueA, ValueB, message)
+	#end_macro
+
+	#def_macro	assert_ne(valueA, ValueB, message)
+	#end_macro
+
+	#def_macro	assert_gt(valueA, valueB, message)
+	#end_macro
+
+	#def_macro	assert_ge(valueA, valueB, message)
+	#end_macro
+
+	#def_macro	assert_lt(valueA, valueB, message)
+	#end_macro
+
+	#def_macro	assert_le(valueA, valueB, message)
+	#end_macro
+
+	#def_macro	assert_eq_fp(valueA, ValueB, message)
+	#end_macro
+
+	#def_macro	assert_ne_fp(valueA, ValueB, message)
+	#end_macro
+
+	#def_macro	assert_gt_fp(valueA, valueB, message)
+	#end_macro
+
+	#def_macro	assert_ge_fp(valueA, valueB, message)
+	#end_macro
+
+	#def_macro	assert_lt_fp(valueA, valueB, message)
+	#end_macro
+
+	#def_macro	assert_le_fp(valueA, valueB, message)
+	#end_macro
+#end_if

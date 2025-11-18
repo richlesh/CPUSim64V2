@@ -74,7 +74,7 @@ SIZE: dci	10
 		store	i, struct[STRUCT_B]
 		store	i, struct[STRUCT_C]
 		#call	heapSetElementAt(h, struct, i)
-	#endfor
+	#end_for
 	#call	heapStats(h)
 	#call	heapPrint(h, structToString)
 
@@ -86,7 +86,7 @@ SIZE: dci	10
 		store	i, struct[STRUCT_B]
 		store	i, struct[STRUCT_C]
 		#call	heapSetElementAt(h, struct, k)
-	#endfor
+	#end_for
 	#call	heapStats(h)
 	#call	heapPrint(h, structToString)
 
@@ -110,7 +110,7 @@ SIZE: dci	10
 		store	i, r0[STRUCT_A]
 		store	i, r0[STRUCT_B]
 		store	i, r0[STRUCT_C]
-	#endfor
+	#end_for
 	int		iCLOCK
 	sub		j, r0, j
 	#call	fprintf(STDOUT, "Time: %d\n", j)

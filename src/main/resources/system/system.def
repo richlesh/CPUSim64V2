@@ -38,6 +38,7 @@
 #define	iTHREAD			40
 #define	iJOIN_THREAD	41
 #define	iSLEEP			42
+#define iWAKE_THREAD    43
 
 #define	TRUE	-1
 #define	FALSE	0
@@ -77,9 +78,9 @@
 #end_macro
 
 #def_macro	REALLOC(addr, size)
-	move	r0, ${addr}
 	push	r1
 	move	r1, ${size}
+	move	r0, ${addr}
 	int		iREALLOC
 	pop		r1
 #end_macro
@@ -111,9 +112,4 @@
 	move	r1, ${size}
 	int		iMEMCLEAR
 	pop		r1
-#end_macro
-
-#def_macro	SLEEP(delay_in_milliseconds)
-	move	r0, ${delay_in_milliseconds}
-	int		iSLEEP
 #end_macro

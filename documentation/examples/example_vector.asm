@@ -19,7 +19,7 @@ SIZE: dci	5
 	#call	puts("Add 20...\n")
 	#for	i, 0, lt, 20, 1
 		#call	vectorAdd(v, i)
-	#endfor
+	#end_for
 	#call	vectorStats(v)
 	#call	vectorPrint(v)
 
@@ -30,14 +30,14 @@ SIZE: dci	5
 	#call	puts("Add 80...\n")
 	#for	i, 0, lt, 80, 1
 		#call	vectorAdd(v, i)
-	#endfor
+	#end_for
 	#call	vectorStats(v)
 	#call	vectorPrint(v)
 
 	#call	puts("Delete 80...\n")
 	#for	i, 0, lt, 80, 1
 		#call	vectorRemoveAtEnd(v)
-	#endfor
+	#end_for
 	#call	vectorStats(v)
 	#call	vectorPrint(v)
 
@@ -48,14 +48,14 @@ SIZE: dci	5
 	#call	puts("Delete even...\n")
 	#for	i, 20, ge, 0, -2
 		#call	vectorRemoveAt(v, i)
-	#endfor
+	#end_for
 	#call	vectorStats(v)
 	#call	vectorPrint(v)
 
 	#call	puts("Add even...\n")
 	#for	i, 0, le, 20, 2
 		#call	vectorAddAt(v, i, i)
-	#endfor
+	#end_for
 	#call	vectorStats(v)
 	#call	vectorPrint(v)
 	

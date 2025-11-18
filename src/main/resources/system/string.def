@@ -34,179 +34,179 @@
 #define	iJOIN				354
 #define	iSTRCAT				355
 
-#defmacro	FMT_DEC(x)
+#def_macro	FMT_DEC(x)
 	move	r0, ${x}
 	int		iFMT_DEC
-#endmacro
+#end_macro
 
-#defmacro	FMT_HEX(x)
+#def_macro	FMT_HEX(x)
 	move	r0, ${x}
 	int		iFMT_HEX
-#endmacro
+#end_macro
 
-#defmacro	FMT_FLOAT(x)
+#def_macro	FMT_FLOAT(x)
 	move	f0, ${x}
 	int		iFMT_FLOAT
-#endmacro
+#end_macro
 
-#defmacro	PARSE_INT(x)
+#def_macro	PARSE_INT(x)
 	move	r0, ${x}
 	int		iPARSE_INT
-#endmacro
+#end_macro
 
-#defmacro	PARSE_DEC(x)
+#def_macro	PARSE_DEC(x)
 	move	r0, ${x}
 	int		iPARSE_DEC
-#endmacro
+#end_macro
 
-#defmacro	PARSE_HEX(x)
+#def_macro	PARSE_HEX(x)
 	move	r0, ${x}
 	int		iPARSE_HEX
-#endmacro
+#end_macro
 
-#defmacro	PARSE_FLOAT(x)
+#def_macro	PARSE_FLOAT(x)
 	move	r0, ${x}
 	int		iPARSE_FLOAT
-#endmacro
+#end_macro
 
-#defmacro	TO_LOWER(x)
+#def_macro	TO_LOWER(x)
 	move	r0, ${x}
 	int		iTO_LOWER
-#endmacro
+#end_macro
 
-#defmacro	TO_UPPER(x)
+#def_macro	TO_UPPER(x)
 	move	r0, ${x}
 	int		iTO_UPPER
-#endmacro
+#end_macro
 
-#defmacro	TO_LOWER_STR(x)
+#def_macro	TO_LOWER_STR(x)
 	move	r0, ${x}
 	int		iTO_LOWER_STR
-#endmacro
+#end_macro
 
-#defmacro	TO_UPPER_STR(x)
+#def_macro	TO_UPPER_STR(x)
 	move	r0, ${x}
 	int		iTO_UPPER_STR
-#endmacro
+#end_macro
 
-#defmacro	STRCMP(s1, s2)
+#def_macro	STRCMP(s1, s2)
 	move	r0, ${s1}
 	move	r1, ${s2}
 	int		iSTRCMP
-#endmacro
+#end_macro
 
-#defmacro	SUBSTRING(s, start, length)
+#def_macro	SUBSTRING(s, start, length)
 	move	r0, ${s}
 	move	r1, ${start}
 	move	r2, ${length}
 	int		iSUBSTRING
-#endmacro
+#end_macro
 
-#defmacro	PREFIX(s, length)
+#def_macro	PREFIX(s, length)
 	move	r0, ${s}
 	move	r1, ${length}
 	int		iPREFIX
-#endmacro
+#end_macro
 
-#defmacro	SUFFIX(s, length)
+#def_macro	SUFFIX(s, length)
 	move	r0, ${s}
 	move	r1, ${length}
 	int		iSUFFIX
-#endmacro
+#end_macro
 
-#defmacro	CHAR_SEARCH(s, char, startpos)
+#def_macro	CHAR_SEARCH(s, char, startpos)
 	move	r0, ${s}
 	move	r1, ${char}
 	move	r2, ${startpos}
 	int		iCHAR_SEARCH
-#endmacro
+#end_macro
 
-#defmacro	LAST_CHAR_SEARCH(s, char, startpos)
+#def_macro	LAST_CHAR_SEARCH(s, char, startpos)
 	move	r0, ${s}
 	move	r1, ${char}
 	move	r2, ${startpos}
 	int		iLAST_CHAR_SEARCH
-#endmacro
+#end_macro
 
-#defmacro	SUBSTRING_SEARCH(s, substr, startpos)
+#def_macro	SUBSTRING_SEARCH(s, substr, startpos)
 	move	r0, ${s}
 	move	r1, ${substr}
 	move	r2, ${startpos}
 	int		iSUBSTRING_SEARCH
-#endmacro
+#end_macro
 
-#defmacro	LAST_SUBSTRING_SEARCH(s, substr, startpos)
+#def_macro	LAST_SUBSTRING_SEARCH(s, substr, startpos)
 	move	r0, ${s}
 	move	r1, ${substr}
 	move	r2, ${startpos}
 	int		iLAST_SUBSTRING_SEARCH
-#endmacro
+#end_macro
 
-#defmacro	STRICMP(s1, s2)
+#def_macro	STRICMP(s1, s2)
 	move	r0, ${s1}
 	move	r1, ${s2}
 	int		iSTRICMP
-#endmacro
+#end_macro
 
-#defmacro	GET_CODEPOINTS(str)
+#def_macro	GET_CODEPOINTS(str)
 	move	r0, ${str}
 	int		iGET_CODEPOINTS
-#endmacro
+#end_macro
 
-#defmacro	FROM_CODEPOINTS(arr)
+#def_macro	FROM_CODEPOINTS(arr)
 	move	r0, ${arr}
 	int		iFROM_CODEPOINTS
-#endmacro
+#end_macro
 
-#defmacro	COUNT_GLPYHS(str)
+#def_macro	COUNT_GLPYHS(str)
 	move	r0, ${str}
 	int		iCOUNT_GLPYHS
-#endmacro
+#end_macro
 
-#defmacro	HASHCODE(str)
+#def_macro	HASHCODE(str)
 	move	r0, ${str}
 	int		iHASHCODE
-#endmacro
+#end_macro
 
-#defmacro	TRIM(str)
+#def_macro	TRIM(str)
 	move	r0, ${str}
 	int		iTRIM
-#endmacro
+#end_macro
 
-#defmacro	MATCHES(str, pattern)
+#def_macro	MATCHES(str, pattern)
 	move	r0, ${str}
 	move	r1, ${pattern}
 	int		iMATCHES
-#endmacro
+#end_macro
 
-#defmacro	REPLACE_FIRST(str, pattern, replacement)
+#def_macro	REPLACE_FIRST(str, pattern, replacement)
 	move	r0, ${str}
 	move	r1, ${pattern}
 	move	r2, ${replacement}
 	int		iREPLACE_FIRST
-#endmacro
+#end_macro
 
-#defmacro	REPLACE_ALL(str, pattern, replacement)
+#def_macro	REPLACE_ALL(str, pattern, replacement)
 	move	r0, ${str}
 	move	r1, ${pattern}
 	move	r2, ${replacement}
 	int		iREPLACE_ALL
-#endmacro
+#end_macro
 
-#defmacro	SPLIT(str, delimiter)
+#def_macro	SPLIT(str, delimiter)
 	move	r0, ${str}
 	move	r1, ${delimiter}
 	int		iSPLIT
-#endmacro
+#end_macro
 
-#defmacro	JOIN(arr, delimiter)
+#def_macro	JOIN(arr, delimiter)
 	move	r0, ${arr}
 	move	r1, ${delimiter}
 	int		iJOIN
-#endmacro
+#end_macro
 
-#defmacro	STRCAT(s1, s2)
+#def_macro	STRCAT(s1, s2)
 	move	r0, ${s1}
 	move	r1, ${s2}
 	int		iSTRCAT
-#endmacro
+#end_macro

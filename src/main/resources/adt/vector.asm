@@ -1,6 +1,7 @@
 #include <system/io.asm>
 #include <system/math.def>
 #include <system/system.def>
+#include <adt/vector.def>
 
 	jump	@VECTOR_ASM_END
 ///////////////////////////////////////////////////////////////////////////////
@@ -12,16 +13,13 @@
 // 1..n:	int		elements
 ///////////////////////////////////////////////////////////////////////////////
 
-#define	_VECTOR_DATA	0				// Heap allocated block for the vector data
-#define	_VECTOR_MUTEX	1				// Mutex used for concurrent access
-#define	_VECTOR_END		2
 _VECTOR_SIZE_FACTOR: 	.dcf	1.2		// Ratio to increase data block size.
 
 ///////////////////////////////////////////////////////////////////////////////
 // newVector(size)
 // Creates a new vector object and returns its address.  Vectors are contiguous
 // lists of integers that can grow when needed.
-// initialCapacity	capacity to start the vector.
+// initialCapacity  capacity to start the vector.
 ///////////////////////////////////////////////////////////////////////////////
 #def_func newVector(initialCapacity)
 	#var	s, capacity, addr, data
@@ -33,7 +31,7 @@ _VECTOR_SIZE_FACTOR: 	.dcf	1.2		// Ratio to increase data block size.
 	mult	f0, capacity
 	move	s, f0
 	add		s, 1
-	#macro	ALLOC(s)
+	#macro	ALLOC(s)						// Allocate storage array
 	move	data, r0
 	#macro	TO_NOT_BOOLEAN(r0)
 	#call	cond_fatal(r0, STDOUT, "Can\'t allocate new vector size %d!\n", capacity)
@@ -65,9 +63,9 @@ _VECTOR_SIZE_FACTOR: 	.dcf	1.2		// Ratio to increase data block size.
 		#call	cond_fatal(r0, STDOUT, "Can\'t allocate new vector size %d!\n", capacity)
 		load	newSize, size
 		load	r0, data[0]
-		#cond	newSize < r0
+		#if_cond	newSize < r0
 			store	newSize, data[0]
-		#endcond
+		#end_cond
 //	#endsync
 #end_func
 
@@ -117,7 +115,7 @@ _VECTOR_SIZE_FACTOR: 	.dcf	1.2		// Ratio to increase data block size.
 	add		oldSize, 1
 	#for	oldSize, i <= newSize, 1
 		store	0, data[i]
-	#endfor
+	#end_for
 	store	newSize, data[0]
 #end_func
 
@@ -183,7 +181,7 @@ _VECTOR_SIZE_FACTOR: 	.dcf	1.2		// Ratio to increase data block size.
 		load	len, data[0]
 		move	value, 0
 		#macro	COMPARE_RANGE(1, le, i, le, len)
-		#cond_sr	nz
+		#if_cond_sr	nz
 			load	value, data[i]
 		#end_cond_sr
 //	#endsync
@@ -207,7 +205,7 @@ _VECTOR_SIZE_FACTOR: 	.dcf	1.2		// Ratio to increase data block size.
 		load	data, v[_VECTOR_DATA]
 		load	len, data[0]
 		#macro	COMPARE_RANGE(1, le, i, le, len)
-		#cond_sr	nz
+		#if_cond_sr	nz
 			store	val, data[i]
 		#end_cond
 //	#endsync
@@ -287,7 +285,7 @@ _VECTOR_SIZE_FACTOR: 	.dcf	1.2		// Ratio to increase data block size.
 		load	data, v[_VECTOR_DATA]
 		load	len, data[0]
 		move	value, 0
-		#cond	len != 0
+		#if_cond	len != 0
 			load	value, data[1]
 		#end_cond
 //	#endsync
@@ -306,7 +304,7 @@ _VECTOR_SIZE_FACTOR: 	.dcf	1.2		// Ratio to increase data block size.
 		load	data, v[_VECTOR_DATA]
 		load	len, data[0]
 		move	value, 0
-		#cond	len != 0
+		#if_cond	len != 0
 			load	value, data[len]
 		#end_cond
 //	#endsync
@@ -329,7 +327,7 @@ _VECTOR_SIZE_FACTOR: 	.dcf	1.2		// Ratio to increase data block size.
 		load	size, data[-1]
 		sub		size, 1
 		sub		size, HEAP_BLOCK_HEADER_SIZE
-		#cond	len > size
+		#if_cond	len > size
 			#call	resizeVector(v, len)
 		#end_cond
 		load	data, v[_VECTOR_DATA]
@@ -360,8 +358,8 @@ _VECTOR_SIZE_FACTOR: 	.dcf	1.2		// Ratio to increase data block size.
 		sub		size, 1
 		sub		size, HEAP_BLOCK_HEADER_SIZE
 		#macro	COMPARE_RANGE(1, le, i, le, len)
-		#cond_sr	nz
-			#cond	len > size
+		#if_cond_sr	nz
+			#if_cond	len > size
 				#call	resizeVector(v, len)
 				load	data, v[_VECTOR_DATA]
 			#end_cond_sr
@@ -389,11 +387,11 @@ _VECTOR_SIZE_FACTOR: 	.dcf	1.2		// Ratio to increase data block size.
 		load	data, v[_VECTOR_DATA]
 		load	len, data[0]
 		move	value, 0
-		#cond	len != 0
+		#if_cond	len != 0
 			load	value, data[len]
 			sub		len, 1
 			store	len, data[0]
-		#endcond
+		#end_cond
 //	#endsync
 	#return	value
 #end_func
@@ -415,7 +413,7 @@ _VECTOR_SIZE_FACTOR: 	.dcf	1.2		// Ratio to increase data block size.
 		load	len, data[0]
 		move	value, 0
 		#macro	COMPARE_RANGE(1, le, i, le, len)
-		#cond_sr	nz
+		#if_cond_sr	nz
 			load	value, data[i]
 			// Move the data at i one to the left
 			add		dest, data, i
@@ -446,7 +444,7 @@ _VECTOR_SIZE_FACTOR: 	.dcf	1.2		// Ratio to increase data block size.
 
 ///////////////////////////////////////////////////////////////////////////////
 // vectorIndexOf(vector, value, afterIndex)
-// Returns the index of the first occurrance of value in the vector at or
+// Returns the index of the first occurrence of value in the vector at or
 // after the afterIndex. Returns -1 if not found.
 // vector	vector to operate on.
 // value	value to find.
@@ -463,17 +461,17 @@ _VECTOR_SIZE_FACTOR: 	.dcf	1.2		// Ratio to increase data block size.
 		load	len, data[0]
 		#for	i, j <= len, 1
 			load	k, data[j]
-			#cond	val == k
+			#if_cond	val == k
 				#break
-			#endcond
-		#endfor
+			#end_cond
+		#end_for
 //	#endsync
-	#cond	j > len
+	#if_cond	j > len
 		#return	-1
-	#elsecond
+	#else_cond
 		sub		j, 1
 		#return	j
-	#endcond
+	#end_cond
 #end_func
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -493,24 +491,24 @@ _VECTOR_SIZE_FACTOR: 	.dcf	1.2		// Ratio to increase data block size.
 		load	val, value
 		load	data, v[_VECTOR_DATA]
 		load	len, data[0]
-		#cond	i < 0
+		#if_cond	i < 0
 			move	i, len
 		#else
 			add		i, 1
-		#endcond
+		#end_cond
 		#for	i, j >= 1, -1
 			load	k, data[j]
-			#cond	val == k
+			#if_cond	val == k
 				#break
-			#endcond
-		#endfor
+			#end_cond
+		#end_for
 //	#endsync
-	#cond	j == 0
+	#if_cond	j == 0
 		#return	-1
-	#elsecond
+	#else_cond
 		sub		j, 1
 		#return	j
-	#endcond
+	#end_cond
 #end_func
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -525,12 +523,12 @@ _VECTOR_SIZE_FACTOR: 	.dcf	1.2		// Ratio to increase data block size.
 		load	data, v[_VECTOR_DATA]
 		load	len, data[0]
 		#for	1, i <= len, 1
-			#cond	i != 1
+			#if_cond	i != 1
 				#macro	out1(',', STDOUT)
-			#endcond
+			#end_cond
 			load	j, data[i]
 			#macro	put_dec(j)
-		#endfor
+		#end_for
 		#macro	put_nl()
 //	#endsync
 #end_func

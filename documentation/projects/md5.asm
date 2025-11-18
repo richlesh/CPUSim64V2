@@ -79,8 +79,8 @@ K_ARRAY: dca 64
 		store	r0, K_ARRAY[i]
 //		#call	put_hex_size(r0, 8)
 //		#call	putc(' ')
-	#endfor
-#endfunc
+	#end_for
+#end_forunc
 
 a0: dci 0x67452301   // A
 b0:	dci 0xefcdab89   // B
@@ -111,7 +111,7 @@ LOOP1:
 	load	d, d0
 	// main loop
 	#for	i, 0, lt, 64, 1
-		#cond	i, lt, 16
+		#if_cond	i, lt, 16
             // F := (B and C) or ((not B) and D)
             // alternatly F := D xor (B and (C xor D))
 			xor		F, c, d
@@ -146,9 +146,9 @@ LOOP1:
             // g := (7×i) mod 16
             mult	r0, 7, i
             div		r0, g, r0, 16
-        #endcond
-        #endcond
-        #endcond
+        #end_cond
+        #end_cond
+        #end_cond
 	// F := F + A + K[i] + M[g]  // M[g] must be a 32-bits block
         add		F, a
         load	r0, K_ARRAY[i]
@@ -168,7 +168,7 @@ LOOP1:
 		and		F, 0xffffffff
 		add		b, F
 		and		b, 0xffffffff
-	#endfor
+	#end_for
 	
 	// add a into a0, b into b0, etc.
 	load	r0, a0
@@ -217,7 +217,7 @@ LOOP1_END:
 		load	v, b
 		#call	put_hex_little_endian(v, 4)
 		add		b, 1
-	#endfor
+	#end_for
 #end_func
 
 INPUT_LENGTH: dci 0
@@ -232,7 +232,7 @@ NEEDS_EXTRA_BUFFER: dci FALSE
 	
 	#for	i, 0, lt, 16, 1
 		store	0, BUFFER[i]
-	#endfor
+	#end_for
 	load	r0, NEEDS_EXTRA_BUFFER
 	jump	z, @SKIP1
 	load	r0, INPUT_LENGTH
@@ -267,7 +267,7 @@ LOOP1_END:
 // padd with zeros and length
 	load	r0, INPUT_LENGTH
 	div		r1, r2, r0, 64
-	#cond	r2, le, 55
+	#if_cond	r2, le, 55
 		#call	storeByteInBuffer(0x80, r2)
 		load	r0, INPUT_LENGTH
 		#call	storeLengthInBuffer(r0)
@@ -305,7 +305,7 @@ END:
 		and		byte, len, 0xff
 		#call	storeByteInBuffer(byte, i)
 		rshift	len, 8
-	#endfor
+	#end_for
 #end_func
 
 #def_func	put_hex_little_endian(value, sizeInBytes)
@@ -317,7 +317,7 @@ END:
 		and		r0, 0xff
 		#call	put_hex_size(r0, 2)
 		rshift	v, 8
-	#endfor
+	#end_for
 #end_func
 	stop
 	stop

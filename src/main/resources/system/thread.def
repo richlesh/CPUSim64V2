@@ -1,0 +1,44 @@
+#include <system/system.def>
+
+// SpinLock structure is just a single atomic boolean
+#def_macro  DEFINE_SPINLOCK(name)
+    #global ${name}:   .dci    0
+#end_macro
+
+// Recursive SpinLock structure is:
+// 0: PID that owns spinlock or 0
+// 1: Re-entry count, decrement to 0 releases lock
+#def_macro  DEFINE_RECURSIVE_SPINLOCK(name)
+    #global ${name}:   .dca    1
+#end_macro
+
+// Mutex structure is:
+// 0: PID that owns mutex or 0
+// 1: Re-entry count, decrement to 0 releases lock
+// 2: Heap allocated array of waiting PIDs
+// 3: SpinLock to protect array of waiting PIDs
+#def_macro  DEFINE_MUTEX(name)
+    #global ${name}:   .dca    3
+#end_macro
+
+// Returns thread ID of the new thread in R0
+#def_macro	create_thread(entryPoint, data)
+	move	r0, ${entryPoint}
+	move	r1, ${data}
+	int		iTHREAD
+#end_macro
+
+#def_macro	join_thread(threadPID)
+	move	r0, ${threadPID}
+	int		iJOIN_THREAD
+#end_macro
+
+#def_macro	sleep(delay_in_milliseconds)
+	move	r0, ${delay_in_milliseconds}
+	int		iSLEEP
+#end_macro
+
+#def_macro	wake_thread(threadPID)
+	move	r0, ${threadPID}
+	int		iWAKE_THREAD
+#end_macro

@@ -69,9 +69,9 @@ _HEAP_DEFAULT_BLOCK_NUM_ELEMENTS: dci 100	// Smallest number of elements/block
 	// Determine number of blocks to start with s/blockNumElem.
 	// Plus 1 block if remainder to account for partial block.
 	div		blockListSize, r0, s, blockNumElem
-	#cond	r0, ne, 0
+	#if_cond	r0, ne, 0
 		add		blockListSize, 1
-	#endcond
+	#end_cond
 	// Make sure blockListSize is not below minimum size.
 	load	r0, _HEAP_DEFAULT_BLOCK_LIST_SIZE
 	MAX(r0, blockListSize)
@@ -125,9 +125,9 @@ _HEAP_DEFAULT_BLOCK_NUM_ELEMENTS: dci 100	// Smallest number of elements/block
 		// Compute the new size of the block list as newSize/blockNumElem.
 		// Plus 1 block if remainder to account for partial block.
 		div		blockListSize, r0, newSize, blockNumElem
-		#cond	r0, ne, 0
+		#if_cond	r0, ne, 0
 			add		blockListSize, 1
-		#endcond
+		#end_cond
 		// Make sure blockListSize is not below minimum size.
 		load	r0, _HEAP_DEFAULT_BLOCK_LIST_SIZE
 		MAX(r0, blockListSize)
@@ -135,12 +135,12 @@ _HEAP_DEFAULT_BLOCK_NUM_ELEMENTS: dci 100	// Smallest number of elements/block
 //#call debug(STDOUT, "newBlockListSize=%d\n", blockListSize)
 		
 		// Free blocks that are now completely unused.
-		#cond	blockListSize, lt, oldBlockListSize
+		#if_cond	blockListSize, lt, oldBlockListSize
 //#call debug(STDOUT, "Freeing blocks...%d to %d", blockListSize, oldBlockListSize)
 			#for	i, blockListSize, lt, oldBlockListSize, 1
 				#call	_heapFreeBlock(h, i)
-			#endfor
-		#endcond
+			#end_for
+		#end_cond
 		// Make the block list new size and fail on alloc error.
 //#call debug(STDOUT, "vectorResize(%x, %d)\n", blockList, blockListSize)
 		#call	vectorResize(blockList, blockListSize)
@@ -200,10 +200,10 @@ _HEAP_DEFAULT_BLOCK_NUM_ELEMENTS: dci 100	// Smallest number of elements/block
 		move	blockListSize, r0
 		// Check to make sure index is in the block list.
 		COMPARE_RANGE(0, le, i, lt, blockListSize)
-		#cond_sr	nz
+		#if_cond_sr	nz
 			#call	vectorAt(blockList, i)
 			move	block, r0
-			#cond_sr	z
+			#if_cond_sr	z
 				// Allocate a new block and fail on alloc error.
 				load	blockSize, h[_HEAP_BLOCK_SIZE]
 				ALLOC(blockSize)
@@ -214,7 +214,7 @@ _HEAP_DEFAULT_BLOCK_NUM_ELEMENTS: dci 100	// Smallest number of elements/block
 				#call	vectorSetAt(blockList, block, i)
 				// If the init function is non-null, use it to initialize the
 				// elements in the block.
-				#cond	init, ne, 0
+				#if_cond	init, ne, 0
 					load	blockElementSize, h[_HEAP_BLOCK_ELEMENT_SIZE]
 					load	r0, h[_HEAP_BLOCK_SIZE]
 					add		aLimit, block, r0
@@ -222,12 +222,12 @@ _HEAP_DEFAULT_BLOCK_NUM_ELEMENTS: dci 100	// Smallest number of elements/block
 						push	a
 						call	init
 						add		sp, 1
-					#endfor
-				#endcond
-			#endcond
-		#elsecond
+					#end_for
+				#end_cond
+			#end_cond
+		#else_cond
 			#call	cond_fatal(TRUE, STDOUT, "Illegal allocate new heap block %d!\n", i)
-		#endcond
+		#end_cond
 	#endsync
 	#return	block
 #end_func
@@ -256,27 +256,27 @@ _HEAP_DEFAULT_BLOCK_NUM_ELEMENTS: dci 100	// Smallest number of elements/block
 		load	blockElementSize, h[_HEAP_BLOCK_ELEMENT_SIZE]
 		// Check to make sure index is in the block list.
 		COMPARE_RANGE(0, le, i, lt, blockListSize)
-		#cond_sr	nz
+		#if_cond_sr	nz
 			#call	vectorAt(blockList, i)
 			move	block, r0
-			#cond	block, ne, 0
+			#if_cond	block, ne, 0
 				// Clear the block list at index
 				#call	vectorSetAt(blockList, 0, i)
 				// If the destroy function is non-null, use it to destroy
 				// the elements in the block.
-				#cond	ff, ne, 0
+				#if_cond	ff, ne, 0
 					load	r0, h[_HEAP_BLOCK_SIZE]
 					add		aLimit, block, r0
 					#for	a, block, lt, aLimit, blockElementSize
 						push	a
 						call	ff
 						add		sp, 1
-					#endfor
-				#endcond
+					#end_for
+				#end_cond
 				// Finally free the block allocation
 				FREE(block)
-			#endcond
-		#elsecond
+			#end_cond
+		#else_cond
 			#call	cond_fatal(TRUE, STDOUT, "Illegal free heap block %d!\n", i)
 		#end_cond_sr
 	#endsync
@@ -296,7 +296,7 @@ _HEAP_DEFAULT_BLOCK_NUM_ELEMENTS: dci 100	// Smallest number of elements/block
 		move	blockListSize, r0
 		#for	i, 0, lt, blockListSize, 1
 			#call	_heapFreeBlock(h, i)
-		#endfor
+		#end_for
 		#call	vectorFree(blockList)
 		store	0, h[_HEAP_LEN]
 		store	0, h[_HEAP_BLOCK_LIST]
@@ -359,12 +359,12 @@ _HEAP_DEFAULT_BLOCK_NUM_ELEMENTS: dci 100	// Smallest number of elements/block
 	clear	size
 	#sync	h[_HEAP_MUTEX]
 		load	blockList, h[_HEAP_BLOCK_LIST]
-		#cond	blockList, ne, 0
+		#if_cond	blockList, ne, 0
 			#call	vectorSize(blockList)
 			move	size, r0
 			load	blockNumElem, h[_HEAP_BLOCK_NUM_ELEMENTS]
 			mult	size, blockNumElem
-		#endcond
+		#end_cond
 		store	size, h[_HEAP_CAPACITY]
 	#endsync
 	#return	size
@@ -445,24 +445,24 @@ _HEAP_DEFAULT_BLOCK_NUM_ELEMENTS: dci 100	// Smallest number of elements/block
 		load	capacity, h[_HEAP_CAPACITY]
 		load	blockNumElem, h[_HEAP_BLOCK_NUM_ELEMENTS]
 		// Resize the heap if index >= capacity.
-		#cond	i, ge, capacity
+		#if_cond	i, ge, capacity
 			add		s, i, 1
 			#call	heapResize(h, s)
 			load	capacity, h[_HEAP_CAPACITY]
-		#endcond
+		#end_cond
 		// Check to make sure index is in the block list now.
 		COMPARE_RANGE(0, le, i, lt, capacity)
-		#cond_sr	ne
+		#if_cond_sr	ne
 			// Compute the block num and the index into the block.
 			div		blockNum, blockOffset, i, blockNumElem
 			load	blockList, h[_HEAP_BLOCK_LIST]
 			// Load the block and add a new one if null
 			#call	vectorAt(blockList, blockNum)
 			move	block, r0
-			#cond_sr	z
+			#if_cond_sr	z
 				#call	_heapAddBlock(h, blockNum)
 				move	block, r0
-			#endcond
+			#end_cond
 			// Compute the offset into the block for the element
 			load	blockElemSize, h[_HEAP_BLOCK_ELEMENT_SIZE]
 			mult	blockOffset, blockElemSize
@@ -501,11 +501,11 @@ _HEAP_DEFAULT_BLOCK_NUM_ELEMENTS: dci 100	// Smallest number of elements/block
 		move	elementAddr, r0
 		load	blockElementSize, h[_HEAP_BLOCK_ELEMENT_SIZE]
 		load	ff, h[_HEAP_DESTROY_FUNCTION]
-		#cond	ff, ne, 0
+		#if_cond	ff, ne, 0
 			push	elementAddr
 			call	ff
 			add		sp, 1
-		#endcond
+		#end_cond
 		MEMMOVE(elementAddr, nea, blockElementSize)
 	#endsync
 #end_func
@@ -531,28 +531,28 @@ _HEAP_DEFAULT_BLOCK_NUM_ELEMENTS: dci 100	// Smallest number of elements/block
 	load	blockElementSize, h[_HEAP_BLOCK_ELEMENT_SIZE]
 	#call	vectorAt(blockList, i)
 	move	block, r0
-	#cond	block, gt, 0
+	#if_cond	block, gt, 0
 		load	r0, h[_HEAP_BLOCK_SIZE]
 		add		aLimit, block, r0
 		#for	a, block, lt, aLimit, blockElementSize
-			#cond	a, ne, block
+			#if_cond	a, ne, block
 				#call	putc(',')
-			#endcond
-			#cond	pf, ne, 0
+			#end_cond
+			#if_cond	pf, ne, 0
 				push	a
 				call	pf
 				add		sp, 1
 				move	s, r0
 				#call	puts(s)
 				#call	free(s)
-			#elsecond
+			#else_cond
 				load	i, a
 				#call	put_dec(i)
-			#endcond
-		#endfor
-	#elsecond
+			#end_cond
+		#end_for
+	#else_cond
 		#call	puts("null")
-	#endcond
+	#end_cond
 #end_func
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -574,11 +574,11 @@ _HEAP_DEFAULT_BLOCK_NUM_ELEMENTS: dci 100	// Smallest number of elements/block
 		MAX(len, 0)
 		move	len, r0
 		#for	i, 0, le, len, 1
-			#cond	i, ne, 0
+			#if_cond	i, ne, 0
 				#call	putc(';')
-			#endcond
+			#end_cond
 			#call	_heapPrintBlock(h, i, pf)
-		#endfor
+		#end_for
 		#call	put_nl()
 	#endsync
 #end_func

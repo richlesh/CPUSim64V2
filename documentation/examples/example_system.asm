@@ -73,7 +73,7 @@ LOOP1_END:
 	#for	i, 6, lt, 200000, i
 		#call	miniumAllocSize(i)
 		#call	fprintf(STDOUT, "%d => %d\n", i, r0)
-	#endfor
+	#end_for
 	#return 0					// Programs should return 0 if all went well.
 #end_func
 	stop

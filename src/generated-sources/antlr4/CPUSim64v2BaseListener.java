@@ -821,6 +821,18 @@ public class CPUSim64v2BaseListener implements CPUSim64v2Listener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterPOperand(CPUSim64v2Parser.POperandContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitPOperand(CPUSim64v2Parser.POperandContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterQOperand(CPUSim64v2Parser.QOperandContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -960,78 +972,6 @@ public class CPUSim64v2BaseListener implements CPUSim64v2Listener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitMemRef(CPUSim64v2Parser.MemRefContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterMemC(CPUSim64v2Parser.MemCContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitMemC(CPUSim64v2Parser.MemCContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterMemA(CPUSim64v2Parser.MemAContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitMemA(CPUSim64v2Parser.MemAContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterMemAplusC(CPUSim64v2Parser.MemAplusCContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitMemAplusC(CPUSim64v2Parser.MemAplusCContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterMemCplusA(CPUSim64v2Parser.MemCplusAContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitMemCplusA(CPUSim64v2Parser.MemCplusAContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterMemCplusC(CPUSim64v2Parser.MemCplusCContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitMemCplusC(CPUSim64v2Parser.MemCplusCContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterMemAplusR(CPUSim64v2Parser.MemAplusRContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitMemAplusR(CPUSim64v2Parser.MemAplusRContext ctx) { }
 
 	/**
 	 * {@inheritDoc}

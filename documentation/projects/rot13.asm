@@ -8,9 +8,9 @@
 	#var	filename, outfilename, inport, outport
 	// if (argc < 3)
 	int		iARGC
-	#cond	r0, lt, 3
+	#if_cond	r0, lt, 3
 		#call	puts("Syntax: rot13 input_file output_file")
-	#elsecond
+	#else_cond
 		// Get first command line argument and put it in filename.
 		move	r0, 1
 		int		iARGS
@@ -19,7 +19,7 @@
 		#call	openTextFile(filename, READ_MODE)
 		move	inport, r0
 		// If the port returned is -1 we failed.
-		#cond	inport, ne, -1
+		#if_cond	inport, ne, -1
 			// Get second command line argument and put it in outfilename.
 			move	r0, 2
 			int		iARGS
@@ -28,20 +28,20 @@
 			#call	openTextFile(outfilename, WRITE_MODE)
 			move	outport, r0
 			// If the port returned is -1 we failed.
-			#cond	outport, ne, -1
+			#if_cond	outport, ne, -1
 				// Process the input stream
 				#call	rot13(inport, outport)
 				// Close the files
 				#call	closeFile(outport)
 				#call	closeFile(inport)
-			#elsecond
+			#else_cond
 				#call	closeFile(inport)
 				#call	puts("Output file creation failed!")
-			#endcond
-		#elsecond
+			#end_cond
+		#else_cond
 			#call	puts("Input file open failed!")
-		#endcond
-	#endcond
+		#end_cond
+	#end_cond
 
 	#return	0
 #end_func
@@ -65,25 +65,25 @@ LOOP1:
 	move	r1, r0
 	COMPARE(charRead, le, 'Z')
 	and		r0, r1
-	#cond	r0, eq, TRUE
+	#if_cond	r0, eq, TRUE
 		sub		r0, charRead, 'A'
 		load	charRead, UPPER[r0]
-	#elsecond
+	#else_cond
 		COMPARE(charRead, ge, 'a')
 		move	r1, r0
 		COMPARE(charRead, le, 'z')
 		and		r0, r1
-		#cond	r0, eq, TRUE
+		#if_cond	r0, eq, TRUE
 			sub		r0, charRead, 'a'
 			load	charRead, LOWER[r0]
-		#endcond
-	#endcond
+		#end_cond
+	#end_cond
 
 // Output the character
 	#call	fputc(po, charRead)
 	jump	@LOOP1
 LOOP_END1:
 	pop		r1
-#endfunc
+#end_forunc
 	stop
 	stop

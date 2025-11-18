@@ -12,13 +12,13 @@ options { tokenVocab=PreprocessorLexer; }
    ======================= */
 
 preproc
-  : ( directive | codeLine )* EOF
+  : ( directive | codeLine | NL)* EOF
   ;
 
 // Any line that does not start with '#' is passed through as code
 codeLine
   : IDENT NL				// for Pnuemonics without arguments like STOP
-  | CODE_TEXT? NL
+  | CODE_TEXT NL
   ;
 
 /* ----- Directives ----- */
@@ -31,6 +31,7 @@ directive
   | defFuncDir
   | defMacroDir
   | macroDir
+  | globalDir
   | svarDir
   | varDir
   | fvarDir
@@ -105,7 +106,12 @@ paramList
   ;
 
 codeLineOrDirective
-  : directive | codeLine
+  : directive | codeLine | NL
+  ;
+
+/* #global IDENT .dc? .* */
+globalDir
+  : PP_GLOBAL CODE_TEXT
   ;
 
 /* #svar a, b, c      (stack variables / aliases) */
@@ -199,7 +205,7 @@ elseCondClause
   ;
 
 block
-  : (directive | codeLine)*
+  : (directive | codeLine | NL)*
   ;
 
 /* Simple expressions for #if/#elseif:

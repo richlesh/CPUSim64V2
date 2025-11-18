@@ -68,7 +68,7 @@ $FOUND:
 		load	r1, addr[i]
 		int		iPUTS
 		int		iPUT_NL
-	#endfor
+	#end_for
 #end_func
 
 #def_func freeStrArray(addArg)
@@ -78,7 +78,7 @@ $FOUND:
 	#for	1, i <= len, 1
 		load	r0, addr[i]
 		int		iFREE
-	#endfor
+	#end_for
 	move	r0, addr
 	int		iFREE
 #end_func

@@ -43,7 +43,7 @@ GET_ARGS:
 	neg		worksize
 	#for	i, workunits, gt, 0, worksize
 		STACK_PUSH(queue, i)
-	#endfor
+	#end_for
 	
 	// Spawn worker threads
 	int		iGET_NUM_CORES
@@ -56,7 +56,7 @@ GET_ARGS:
 		move	r1, queue
 		int		iTHREAD
 		store	r0, pids[i]
-	#endfor
+	#end_for
 	
 	// Join with threads
 	#for	i, 0, lt, cores, 1
@@ -64,7 +64,7 @@ GET_ARGS:
 		#call	fprintf(STDOUT, "Main is joining %d...\n", pid)
 		move	r0, pid
 		int		iJOIN_THREAD
-	#endfor
+	#end_for
 
 	load	imax, IMAX
 	load	max, MAX
@@ -100,40 +100,40 @@ PRECOMPUTED_SIZE: dci	100000000
 	int		iALLOC
 	move	cache, r0
 	store	cache, PRECOMPUTED
-	#cond	cache, eq, 0
+	#if_cond	cache, eq, 0
 		#call	fprintf(STDOUT, "Can\'t allocate cache size %d\n", cacheSize)
 		move	r0,1
 		int		iEXIT
-	#endcond
+	#end_cond
 	store	1, cache[0]
 	store	1, cache[1]
 	store	2, cache[2]
 	store	3, cache[4]
 BEGIN_COMPUTE:
 	load	i, arg
-	#cond	i, lt, cacheSize
+	#if_cond	i, lt, cacheSize
 		load	hailstone, cache[i]
-		#cond	hailstone, ne, 0
+		#if_cond	hailstone, ne, 0
 			#return	hailstone
 			jump	@END
-		#endcond
-	#endcond
+		#end_cond
+	#end_cond
 	
 	move	i0, i
 	and	isOdd, i, 0x1
-	#cond	isOdd, eq, 0
+	#if_cond	isOdd, eq, 0
 		div		i, 2
 		#call	compute_hailstone(i)
 		add		hailstone, r0, 1
-	#elsecond
+	#else_cond
 		mult	i, 3
 		add		i, 1
 		#call	compute_hailstone(i)
 		add		hailstone, r0, 1
-	#endcond
-	#cond	i0, lt, cacheSize
+	#end_cond
+	#if_cond	i0, lt, cacheSize
 		store	hailstone, cache[i0]
-	#endcond
+	#end_cond
 	#return	hailstone
 END:
 #end_func
@@ -145,10 +145,10 @@ END:
 	load	q, queue
 	#sync	q[_VECTOR_MUTEX]
 		#call	vectorIsEmpty(q)
-		#cond	r0, eq, 0
+		#if_cond	r0, eq, 0
 			STACK_POP(q)
 			move	d, r0
-		#condelse
+		#if_condelse
 			move	d, -1
 		#end_cond
 	#endsync
@@ -161,22 +161,22 @@ END:
 			#call	compute_hailstone(i)
 			move	hs, r0
 			load	max, MAX
-			#cond	hs, gt, max
+			#if_cond	hs, gt, max
 				#sync	MY_MUTEX
 					load	max, MAX
-					#cond	hs, gt, max
+					#if_cond	hs, gt, max
 						store	hs, MAX
 						store	i, IMAX
-					#endcond
+					#end_cond
 				#endsync
-			#endcond
-		#endfor
+			#end_cond
+		#end_for
 		#sync	q[_VECTOR_MUTEX]
 			#call	vectorIsEmpty(q)
-			#cond	r0, eq, 0
+			#if_cond	r0, eq, 0
 				STACK_POP(q)
 				move	d, r0
-			#condelse
+			#if_condelse
 				move	d, -1
 			#end_cond
 		#endsync

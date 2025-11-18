@@ -9,6 +9,7 @@ public class IOLibTest extends BaseTest {
 	void testDebugMsg() {
 		String src = """
 			START:
+			#include <system/debug.def>
 			#include <system/debug.asm>
 
 			STOP
@@ -24,7 +25,7 @@ public class IOLibTest extends BaseTest {
 		var result = tuple.getLeft();
 		var sim = tuple.getMiddle();
 		var diff = tuple.getRight();
-		assertEquals(1, diff.size());
+		assertEquals(2, diff.size());
 		assertEquals(expected, output);
 	}
 }

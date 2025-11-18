@@ -119,22 +119,12 @@ instrMOVE
 
 /* ----- 3 LOAD (memory -> reg/float) ----- */
 instrLOAD
-  : LOAD yOperand ',' memC             /* YC:  Y <- [C] */
-  | LOAD yOperand ',' memA             /* YA:  Y <- [A] */
-  | LOAD yOperand ',' memAplusC        /* YAC: Y <- [A+C] */
-  | LOAD yOperand ',' memCplusA        /* YCA: Y <- [C+A] */
-  | LOAD yOperand ',' memCplusC        /* YCC: Y <- [C+C] */
-  | LOAD yOperand ',' memAplusR        /* YAR: Y <- [A+R] */
+  : LOAD yOperand ',' memRef
   ;
 
 /* ----- 4 STORE (reg/float/const -> memory) ----- */
 instrSTORE
-  : STORE qOperand ',' memC
-  | STORE qOperand ',' memA
-  | STORE qOperand ',' memAplusC
-  | STORE qOperand ',' memCplusA
-  | STORE qOperand ',' memCplusC
-  | STORE qOperand ',' memAplusR
+  : STORE qOperand ',' memRef
   ;
 
 /* ----- 5 POP / 6 PUSH ----- */
@@ -296,10 +286,7 @@ instrUNPACK64
   ;
 
 instrCAS
-  : CAS rOperand ',' rOperand ',' aOperand ',' oOperand  /* RRAO */
-  | CAS cLiteral ',' cLiteral ',' aOperand ',' oOperand  /* CCAO */
-  | CAS rOperand ',' cLiteral ',' aOperand ',' oOperand  /* RCAO */
-  | CAS cLiteral ',' rOperand ',' aOperand ',' oOperand  /* CRAO */
+  : CAS oOperand ',' oOperand ',' memRef
   ;
 
 instrENDIAN
@@ -336,6 +323,7 @@ aOperand : REG_R | SF | SP | PC ;              // A: address-capable regs
 xOperand : rOperand | fOperand ;               // X: R or F
 yOperand : aOperand | fOperand ;               // Y: A or F
 oOperand : rOperand | cLiteral ;               // O: R or C
+pOperand : aOperand | cLiteral ;               // P: A or C
 qOperand : aOperand | fOperand | cLiteral ;    // Q: A or F or C
 
 /* one-to-four helpers */
@@ -371,15 +359,9 @@ zCond
 
 /* ---- memory shapes used by LOAD/STORE ---- */
 memRef
-  : memC | memA | memAplusC | memCplusA | memCplusC | memAplusR
+  : '@'? (aOperand | aLiteral) ('[' ']')?
+  | '@'? (aOperand | aLiteral) ('+' | ',' | '[') (rOperand | cLiteral) ']'?
   ;
-
-memC       : '@'? aLiteral ('[' ']')? ;
-memA       : '@'? aOperand ('[' ']')? ;
-memAplusC  : '@'? aOperand ('+' | ',' | '[') cLiteral ']'? ;
-memCplusA  : '@'? cLiteral ('+' | ',' | '[') aOperand ']'? ;
-memCplusC  : '@'? aLiteral ('+' | ',' | '[') cLiteral ']'? ;
-memAplusR  : '@'? aOperand ('+' | ',' | '[') rOperand ']'? ;
 
 /* =======================
    LEXER

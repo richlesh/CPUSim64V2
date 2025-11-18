@@ -25,7 +25,7 @@ MY_MUTEX: dci 0
 			move	r1, name
 			int		iTHREAD
 			store	r0, pids[i]
-		#endfor
+		#end_for
 	
 		#call	puts("Main is unlocking...\n")
 	#endsync	MY_MUTEX	
@@ -35,7 +35,7 @@ MY_MUTEX: dci 0
 		#call	fprintf(STDOUT, "Main is joining %d...\n", pid)
 		move	r0, pid
 		int		iJOIN_THREAD
-	#endfor
+	#end_for
 	#call	puts("Main is done\n")
 #end_func
 

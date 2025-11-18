@@ -21,7 +21,7 @@ public class FlowControlTest extends BaseTest {
 				move	r1, i
 				int		iPUT_DEC
 				int		iPUT_NL
-			#ENDFOR
+			#END_FOR
 			move	r0, STDOUT
 			move	r1, "FINIS"
 			int		iPUTS
@@ -67,14 +67,14 @@ FINIS
 				int		iPUT_DEC
 				int		iPUT_NL
 				sub		i, 1
-			#ENDWHILE
+			#END_WHILE
 			#WHILE i > 0
 				move	r0, STDOUT
 				move	r1, i
 				int		iPUT_DEC
 				int		iPUT_NL
 				sub		i, 1
-			#ENDWHILE
+			#END_WHILE
 			move	r0, STDOUT
 			move	r1, "FINIS"
 			int		iPUTS
@@ -164,14 +164,14 @@ FINIS
 			#VAR i, j
 			#FOR 0, i < 10, 1
 				div		r1, j, i, 2
-				#ifcond	j == 1
+				#if_cond	j == 1
 					#continue
-				#endcond
+				#end_cond
 				move	r0, STDOUT
 				move	r1, i
 				int		iPUT_DEC
 				int		iPUT_NL
-			#ENDFOR
+			#END_FOR
 			move	r0, STDOUT
 			move	r1, "FINIS"
 			int		iPUTS
@@ -209,21 +209,21 @@ FINIS
 			#WHILE i > 1
 				sub		i, 1
 				div		r1, j, i, 2
-				#ifcond	j == 1
+				#if_cond	j == 1
 					#continue
-				#endcond
+				#end_cond
 				move	r0, STDOUT
 				move	r1, i
 				int		iPUT_DEC
 				int		iPUT_NL
-			#ENDWHILE
+			#END_WHILE
 			#WHILE i > 1
 				move	r0, STDOUT
 				move	r1, i
 				int		iPUT_DEC
 				int		iPUT_NL
 				sub		i, 1
-			#ENDWHILE
+			#END_WHILE
 			move	r0, STDOUT
 			move	r1, "FINIS"
 			int		iPUTS
@@ -261,9 +261,9 @@ FINIS
 			#DO_WHILE
 				add		i, 1
 				div		r1, j, i, 2
-				#ifcond	j == 1
+				#if_cond	j == 1
 					#continue
-				#endcond
+				#end_cond
 				move	r0, STDOUT
 				move	r1, i
 				int		iPUT_DEC
@@ -304,14 +304,14 @@ FINIS
 			START:
 			#VAR i
 			#FOR 0, i < 10, 1
-				#ifcond	i == 5
+				#if_cond	i == 5
 					#break
-				#endcond
+				#end_cond
 				move	r0, STDOUT
 				move	r1, i
 				int		iPUT_DEC
 				int		iPUT_NL
-			#ENDFOR
+			#END_FOR
 			move	r0, STDOUT
 			move	r1, "FINIS"
 			int		iPUTS
@@ -348,14 +348,14 @@ FINIS
 			move	i, 11
 			#WHILE i > 1
 				sub		i, 1
-				#ifcond	i == 5
+				#if_cond	i == 5
 					#break
-				#endcond
+				#end_cond
 				move	r0, STDOUT
 				move	r1, i
 				int		iPUT_DEC
 				int		iPUT_NL
-			#ENDWHILE
+			#END_WHILE
 			move	r0, STDOUT
 			move	r1, "FINIS"
 			int		iPUTS
@@ -392,9 +392,9 @@ FINIS
 			move	i, -1
 			#DO_WHILE
 				add		i, 1
-				#ifcond	i == 5
+				#if_cond	i == 5
 					#break
-				#endcond
+				#end_cond
 				move	r0, STDOUT
 				move	r1, i
 				int		iPUT_DEC
@@ -445,9 +445,9 @@ FINIS
 					int		iPUT_DEC
 					move	r1, ","
 					int		iPUTS
-				#ENDFOR
+				#END_FOR
 				int		iPUT_NL
-			#ENDFOR
+			#END_FOR
 			move	r0, STDOUT
 			move	r1, "FINIS"
 			int		iPUTS

@@ -133,21 +133,6 @@ LOOP1_END:
 	int		iARGS
 #end_func
 
-
-///////////////////////////////////////////////////////////////////////////////
-// get_and_increment(addr)
-// Atomically increments the value at addr.  Returns the new value.
-///////////////////////////////////////////////////////////////////////////////
-#def_func get_and_increment(int addr)
-	#var	oldValue, newValue
-$_TRY_GET_AND_INCREMENT:
-		load	oldValue, addr
-		add		newValue, oldValue, 1
-		cas		oldValue, newValue, addr
-		jump	no, $_TRY_GET_AND_INCREMENT
-	#return	newValue
-#end_func
-
 _MUTEX_EXP_WAIT_FACTOR: dcf 1.2
 _MUTEX_MAX_EXP_WAIT: dcf 500.
 
@@ -184,12 +169,12 @@ _MUTEX_MAX_EXP_WAIT: dcf 500.
 	
 	load	endDuration, timeout
 //#call debug_msg(STDOUT,"Acquiring mutex: %x %d\n", a, endDuration)
-	#cond	endDuration, lt, 0
+	#if_cond	endDuration, lt, 0
 		int		iINT_MAX
 		move	endDuration, r0
-	#elsecond
+	#else_cond
 		mult	endDuration, 1000000
-	#endcond
+	#end_cond
 	move	sleepDuration, 10
 	int		iCLOCK
 	move	start, r0
@@ -198,16 +183,16 @@ _MUTEX_MAX_EXP_WAIT: dcf 500.
 		load	oldPID, a
 		unpack	oldPID, oldValue
 //#call debug(STDOUT,"Old value: %x %x\n", oldPID, oldValue)
-		#cond	oldPID, eq, 0
+		#if_cond	oldPID, eq, 0
 			pack	oldPID, oldValue
 			move	newValue, pid
 			move	r0, 1
 			pack	newValue, r0
 //#call debug(STDOUT,"Next value: %x\n", newValue)
 			cas		oldPID, newValue, a
-			#cond_sr	nz
+			#if_cond_sr	nz
 				#break
-			#endcond
+			#end_cond
 		#elseifcond	oldPID, eq, pid
 			pack	oldPID, oldValue
 			move	newValue, pid
@@ -215,29 +200,29 @@ _MUTEX_MAX_EXP_WAIT: dcf 500.
 			pack	newValue, oldValue
 //#call debug(STDOUT,"Same thread next value: %x\n", newValue)
 			cas		oldPID, newValue, a
-			#cond_sr	nz
+			#if_cond_sr	nz
 				#break
-			#endcond
-		#endcond
-		#endcond
+			#end_cond
+		#end_cond
+		#end_cond
 //#call debug(STDOUT, "Sleeping: %d...\n", sleepDuration)
 		#call	sleep(sleepDuration)
 		move	f0, sleepDuration
 		mult	f0, mutex_exp_wait_factor
-		#cond	f0, gt, mutex_max_exp_wait
+		#if_cond	f0, gt, mutex_max_exp_wait
 			move	f0, mutex_max_exp_wait
-		#endcond
+		#end_cond
 		move	sleepDuration, f0
 		int	iCLOCK
 		sub	duration, r0, start
 	#endwhile
-	#cond	duration, le, endDuration
+	#if_cond	duration, le, endDuration
 //#call puts("Lock succeeded\n")
 		#return	TRUE
-	#elsecond
+	#else_cond
 //#call puts("Lock failed\n")
 		#return	FALSE
-	#endcond
+	#end_cond
 END:
 #end_func
 
@@ -267,21 +252,21 @@ END:
 	load	ov, a
 	move	oldPID, ov
 	unpack	oldPID, oldValue
-	#cond	oldPID, eq, pid
+	#if_cond	oldPID, eq, pid
 		sub	newValue, oldValue, 1
-		#cond_sr	nz
+		#if_cond_sr	nz
 			move	v, oldPID
 			pack	v, newValue
-		#elsecond
+		#else_cond
 			move	v, 0
-		#endcond
+		#end_cond
 		cas		ov, v, a
-		#cond_sr	nz
+		#if_cond_sr	nz
 //#call puts("Unlock succeeded\n")
 			#return	TRUE
 			jump	@END
-		#endcond
-	#endcond
+		#end_cond
+	#end_cond
 //#call puts("Unlock failed\n")
 	#return	0
 END:
@@ -295,10 +280,10 @@ _fibonacci: DCA 13, 21, 34, 55, 89, 144, 233, 377, 610, 987, 1597, 2584, \
 	load	fiblen, _fibonacci[-1]
 	#for	i, 0, lt, fiblen, 1
 		load	f, _fibonacci[i]
-		#cond	f, ge, x
+		#if_cond	f, ge, x
 			#break
-		#endcond
-	#endfor
+		#end_cond
+	#end_for
 	COMPARE(i, eq, fiblen)
 	move	nz, r0, x, f
 #end_func

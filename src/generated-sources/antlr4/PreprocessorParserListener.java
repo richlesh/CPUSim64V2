@@ -148,6 +148,16 @@ public interface PreprocessorParserListener extends ParseTreeListener {
 	 */
 	void exitCodeLineOrDirective(PreprocessorParser.CodeLineOrDirectiveContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link PreprocessorParser#globalDir}.
+	 * @param ctx the parse tree
+	 */
+	void enterGlobalDir(PreprocessorParser.GlobalDirContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link PreprocessorParser#globalDir}.
+	 * @param ctx the parse tree
+	 */
+	void exitGlobalDir(PreprocessorParser.GlobalDirContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link PreprocessorParser#svarDir}.
 	 * @param ctx the parse tree
 	 */
@@ -338,12 +348,12 @@ public interface PreprocessorParserListener extends ParseTreeListener {
 	 */
 	void exitElseifCondClause(PreprocessorParser.ElseifCondClauseContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link PreprocessorParser#elseCondClause}.
+	 * Enter a parse tree produced by {@link PreprocessorParser#else_condClause}.
 	 * @param ctx the parse tree
 	 */
 	void enterElseCondClause(PreprocessorParser.ElseCondClauseContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link PreprocessorParser#elseCondClause}.
+	 * Exit a parse tree produced by {@link PreprocessorParser#else_condClause}.
 	 * @param ctx the parse tree
 	 */
 	void exitElseCondClause(PreprocessorParser.ElseCondClauseContext ctx);

@@ -7,20 +7,20 @@ MAIN:
 		#for	r2, '1', lt, '4', 1		
 			store	r2, LICENSE_PLATE[1]
 			#for	r3, '1', lt, '4', 1	
-				#cond	r3, eq, '2'
+				#if_cond	r3, eq, '2'
 					#continue
-				#endcond	
+				#end_cond
 				store	r3, LICENSE_PLATE[2]
 				#for	r4, '1', lt, '4', 1		
-					#cond	r4, eq, '2'
+					#if_cond	r4, eq, '2'
 						#break
-					#endcond
+					#end_cond
 					store	r4, LICENSE_PLATE[3]
 					#call	puts(LICENSE_PLATE)
 					#call	put_nl()
-				#endfor
-			#endfor
-		#endfor
-	#endfor
+				#end_for
+			#end_for
+		#end_for
+	#end_for
 	stop
 	stop

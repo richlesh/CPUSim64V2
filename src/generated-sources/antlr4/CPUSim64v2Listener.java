@@ -692,6 +692,16 @@ public interface CPUSim64v2Listener extends ParseTreeListener {
 	 */
 	void exitOOperand(CPUSim64v2Parser.OOperandContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link CPUSim64v2Parser#pOperand}.
+	 * @param ctx the parse tree
+	 */
+	void enterPOperand(CPUSim64v2Parser.POperandContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link CPUSim64v2Parser#pOperand}.
+	 * @param ctx the parse tree
+	 */
+	void exitPOperand(CPUSim64v2Parser.POperandContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link CPUSim64v2Parser#qOperand}.
 	 * @param ctx the parse tree
 	 */
@@ -811,64 +821,4 @@ public interface CPUSim64v2Listener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitMemRef(CPUSim64v2Parser.MemRefContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link CPUSim64v2Parser#memC}.
-	 * @param ctx the parse tree
-	 */
-	void enterMemC(CPUSim64v2Parser.MemCContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link CPUSim64v2Parser#memC}.
-	 * @param ctx the parse tree
-	 */
-	void exitMemC(CPUSim64v2Parser.MemCContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link CPUSim64v2Parser#memA}.
-	 * @param ctx the parse tree
-	 */
-	void enterMemA(CPUSim64v2Parser.MemAContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link CPUSim64v2Parser#memA}.
-	 * @param ctx the parse tree
-	 */
-	void exitMemA(CPUSim64v2Parser.MemAContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link CPUSim64v2Parser#memAplusC}.
-	 * @param ctx the parse tree
-	 */
-	void enterMemAplusC(CPUSim64v2Parser.MemAplusCContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link CPUSim64v2Parser#memAplusC}.
-	 * @param ctx the parse tree
-	 */
-	void exitMemAplusC(CPUSim64v2Parser.MemAplusCContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link CPUSim64v2Parser#memCplusA}.
-	 * @param ctx the parse tree
-	 */
-	void enterMemCplusA(CPUSim64v2Parser.MemCplusAContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link CPUSim64v2Parser#memCplusA}.
-	 * @param ctx the parse tree
-	 */
-	void exitMemCplusA(CPUSim64v2Parser.MemCplusAContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link CPUSim64v2Parser#memCplusC}.
-	 * @param ctx the parse tree
-	 */
-	void enterMemCplusC(CPUSim64v2Parser.MemCplusCContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link CPUSim64v2Parser#memCplusC}.
-	 * @param ctx the parse tree
-	 */
-	void exitMemCplusC(CPUSim64v2Parser.MemCplusCContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link CPUSim64v2Parser#memAplusR}.
-	 * @param ctx the parse tree
-	 */
-	void enterMemAplusR(CPUSim64v2Parser.MemAplusRContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link CPUSim64v2Parser#memAplusR}.
-	 * @param ctx the parse tree
-	 */
-	void exitMemAplusR(CPUSim64v2Parser.MemAplusRContext ctx);
 }

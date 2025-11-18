@@ -6,6 +6,7 @@ import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.tree.ParseTree;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.StringEscapeUtils;
 import java.util.*;
 import java.nio.charset.StandardCharsets;
@@ -211,6 +212,49 @@ public class AssemblerVisitor extends CPUSim64v2BaseVisitor<Void> implements Has
 				return Long.valueOf(v);
 		}
 		throw new AssemblerException("Invalid integer/label: " + text);
+	}
+
+	private Pair<Integer, Long> parseOOperand(CPUSim64v2Parser.OOperandContext ctx) {
+		int d;
+		long v;
+		if (ctx == null) {
+			d = OT_CONST;
+			v = 0;
+		} else if (ctx.rOperand() != null) {
+			d = OT_REG;
+			v = regIndex(ctx.rOperand().REG_R().getText());
+		} else {
+			d = OT_CONST;
+			v = parseIntLike(ctx.cLiteral().getText());
+		}
+		return Pair.of(d, v);
+	}
+
+	private Pair<Pair<Integer, Long>, Pair<Integer, Long>> parseMemRef(CPUSim64v2Parser.MemRefContext ctx) {
+		int a = OT_NONE, b;
+		long v0 = 0, v1;
+
+		if (ctx.aOperand() != null) {
+			a = OT_REG;
+			v0 = aIndexFromToken(ctx.aOperand().start);
+		} else if (ctx.aLiteral() != null) {
+			a = OT_CONST;
+			v0 = parseIntLike(ctx.aLiteral().getText());
+		}
+
+		if (ctx.rOperand() != null) {
+			b = OT_REG;
+			v1 = regIndex(ctx.rOperand().REG_R().getText());
+		} else if (ctx.cLiteral() != null){
+			b = OT_CONST;
+			v1 = parseIntLike(ctx.cLiteral().getText());
+		} else {
+			b = OT_NONE;
+			v1 = 0L;
+		}
+		Pair<Integer, Long> addr = Pair.of(a, v0);
+		Pair<Integer, Long> offset = Pair.of(b, v1);
+		return Pair.of(addr, offset);
 	}
 
 	// zPort or zCond (0..15)
@@ -579,50 +623,37 @@ public class AssemblerVisitor extends CPUSim64v2BaseVisitor<Void> implements Has
 	public Void visitInstrLOAD(CPUSim64v2Parser.InstrLOADContext ctx) {
 		var y = ctx.yOperand();
 		boolean yIsFp = y.fOperand() != null;
-		int aType = yIsFp ? OT_FP : OT_REG;
+		int a = yIsFp ? OT_FP : OT_REG;
 		int v0 = yIsFp ? fpIndex(y.fOperand().REG_F().getText())
 				: aIndexFromToken(y.aOperand().start);
 
-		int bType = OT_NONE, cType = OT_NONE, dType = OT_NONE;
-		int v1 = 0, v2 = 0, v3 = 0;
-		long k;
+		int b = OT_NONE, c = OT_NONE, d = OT_NONE;
+		long v1 = 0, v2 = 0, v3 = 0;
 
-		if (ctx.memC() != null) {                  // Y[C]
-			k =parseIntLike(ctx.memC().aLiteral().getText());
-			out.add(encType2RC2(Opcode.LOAD.code, aType, v0, k));
-		} else if (ctx.memA() != null) {           // Y[A]
-			bType = OT_REG;
-			v1 = aIndexFromToken(ctx.memA().aOperand().start);
-			out.add(encType0(Opcode.LOAD.code, aType, bType, cType, dType, v0, v1, v2, v3));
-		} else if (ctx.memAplusC() != null) {      // Y[A+C]
-			bType = OT_REG;
-			v1 = aIndexFromToken(ctx.memAplusC().aOperand().start);
-			v2 = (int)parseIntLike(ctx.memAplusC().cLiteral().getText());
-			out.add(encType3ZZC3(Opcode.LOAD.code, aType, v0, bType, v1, v2));
-		} else if (ctx.memCplusA() != null) {      // Y[C+A]
-			v1 = (int)parseIntLike(ctx.memCplusA().cLiteral().getText());
-			cType = OT_REG;
-			v2 = aIndexFromToken(ctx.memCplusA().aOperand().start);
-			out.add(encType3ZZC3(Opcode.LOAD.code, aType, v0, cType, v2, v1));
-		} else if (ctx.memCplusC() != null) {      // Y[C+C]
-			long c1 = parseIntLike(ctx.memCplusC().aLiteral().getText());
-			long c2 = parseIntLike(ctx.memCplusC().cLiteral().getText());
-			bType = OT_CONST;
-			if (fitsIn(c2, C0_BITS, true)) {
-				v1 = (int)c2;
-				out.add(encType3ZZC3(Opcode.LOAD.code, aType, v0, bType, v1, (int)c1));
-			} else if (fitsIn(c1, C0_BITS, true)) {
-				v1 = (int)c1;
-				out.add(encType3ZZC3(Opcode.LOAD.code, aType, v0, bType, v1, (int)c2));
+		var memRef = parseMemRef(ctx.memRef());
+		b = memRef.getLeft().getLeft();
+		c = memRef.getRight().getLeft();
+		v1 = memRef.getLeft().getRight();
+		v2 = memRef.getRight().getRight();
+
+		if (b == OT_CONST && c == OT_NONE) {     			// Y[C]
+			out.add(encType2RC2(Opcode.LOAD.code, a, v0, v1));
+		} else if (b == OT_REG && c == OT_NONE) {           // Y[A]
+			out.add(encType0(Opcode.LOAD.code, a, b, c, d, v0, (int)v1, (int)v2, (int)v3));
+		} else if (b == OT_REG && c == OT_CONST) {      	// Y[A+C]
+			out.add(encType3ZZC3(Opcode.LOAD.code, a, v0, b, (int)v1, (int)v2));
+		} else if (b == OT_CONST && c == OT_REG) {			// Y[C+A]
+			out.add(encType3ZZC3(Opcode.LOAD.code, a, v0, c, (int)v2, (int)v1));
+		} else if (b == OT_CONST && c == OT_CONST) {  		// Y[C+C]
+			if (fitsIn(v2, C0_BITS, true)) {
+				out.add(encType3ZZC3(Opcode.LOAD.code, a, v0, c, (int)v2, (int)v1));
+			} else if (fitsIn(v1, C0_BITS, true)) {
+				out.add(encType3ZZC3(Opcode.LOAD.code, a, v0, b, (int)v1, (int)v2));
 			} else {
 				throw new AssemblerException("LOAD [C+C] requires one constant to fit in 12 bits");
 			}
-		} else if (ctx.memAplusR() != null) {      // Y[A+R]
-			bType = OT_REG;
-			v1 = aIndexFromToken(ctx.memAplusR().aOperand().start);
-			cType = OT_REG;
-			v2 = regIndex(ctx.memAplusR().rOperand().REG_R().getText());
-			out.add(encType0(Opcode.LOAD.code, aType, bType, cType, dType, v0, v1, v2, v3));
+		} else if (b == OT_REG && c == OT_REG) {      		// Y[A+R]
+			out.add(encType0(Opcode.LOAD.code, a, b, c, d, v0, (int)v1, (int)v2, (int)v3));
 		} else {
 			throw new AssemblerException("Unhandled LOAD form");
 		}
@@ -632,59 +663,46 @@ public class AssemblerVisitor extends CPUSim64v2BaseVisitor<Void> implements Has
 	@Override
 	public Void visitInstrSTORE(CPUSim64v2Parser.InstrSTOREContext ctx) {
 		// Q , [addr] → Type-0
-		int aType, v0;
+		int a, v0;
 		var q = ctx.qOperand();
 		if (q.fOperand() != null) {
-			aType = OT_FP;
+			a = OT_FP;
 			v0 = fpIndex(q.fOperand().REG_F().getText());
 		} else if (q.aOperand() != null) {
-			aType = OT_REG;
+			a = OT_REG;
 			v0 = aIndexFromToken(q.aOperand().start);
 		} else {
-			aType = OT_CONST;
+			a = OT_CONST;
 			v0 = (int)parseIntLike(q.cLiteral().getText());
 		}
 
-		int bType = OT_NONE, cType = OT_NONE, dType = OT_NONE;
-		int v1 = 0, v2 = 0, v3 = 0;
-		long k;
+		int b = OT_NONE, c = OT_NONE, d = OT_NONE;
+		long v1 = 0, v2 = 0, v3 = 0;
 
-		if (ctx.memC() != null) {                  // [C]
-			k =parseIntLike(ctx.memC().aLiteral().getText());
-			out.add(encType2RC2(Opcode.STORE.code, aType, v0, k));
-		} else if (ctx.memA() != null) {           // [A]
-			bType = OT_REG;
-			v1 = aIndexFromToken(ctx.memA().aOperand().start);
-			out.add(encType0(Opcode.STORE.code, aType, bType, cType, dType, v0, v1, v2, v3));
-		} else if (ctx.memAplusC() != null) {      // [A+C]
-			bType = OT_REG;
-			v1 = aIndexFromToken(ctx.memAplusC().aOperand().start);
-			v2 = (int)parseIntLike(ctx.memAplusC().cLiteral().getText());
-			out.add(encType3ZZC3(Opcode.STORE.code, aType, v0, bType, v1, v2));
-		} else if (ctx.memCplusA() != null) {      // [C+A]
-			v1 = (int)parseIntLike(ctx.memCplusA().cLiteral().getText());
-			cType = OT_REG;
-			v2 = aIndexFromToken(ctx.memCplusA().aOperand().start);
-			out.add(encType3ZZC3(Opcode.STORE.code, aType, v0, cType, v2, v1));
-		} else if (ctx.memCplusC() != null) {      // [C+C]
-			long c1 = (int)parseIntLike(ctx.memCplusC().aLiteral().getText());
-			long c2 = (int)parseIntLike(ctx.memCplusC().cLiteral().getText());
-			bType = OT_CONST;
-			if (fitsIn(c2, C0_BITS, true)) {
-				v1 = (int)c2;
-				out.add(encType3ZZC3(Opcode.STORE.code, aType, v0, bType, v1, (int)c1));
-			} else if (fitsIn(c1, C0_BITS, true)) {
-				v1 = (int)c1;
-				out.add(encType3ZZC3(Opcode.STORE.code, aType, v0, bType, v1, (int)c2));
+		var memRef = parseMemRef(ctx.memRef());
+		b = memRef.getLeft().getLeft();
+		c = memRef.getRight().getLeft();
+		v1 = memRef.getLeft().getRight();
+		v2 = memRef.getRight().getRight();
+
+		if (b == OT_CONST && c == OT_NONE) {       			// [C]
+			out.add(encType2RC2(Opcode.STORE.code, a, v0, v1));
+		} else if (b == OT_REG && c == OT_NONE) {           // [A]
+			out.add(encType0(Opcode.STORE.code, a, b, c, d, v0, (int)v1, (int)v2, (int)v3));
+		} else if (b == OT_REG && c == OT_CONST) {      	// [A+C]
+			out.add(encType3ZZC3(Opcode.STORE.code, a, v0, b, (int)v1, (int)v2));
+		} else if (b == OT_CONST && c == OT_REG) {      	// [C+A]
+			out.add(encType3ZZC3(Opcode.STORE.code, a, v0, c, (int)v2, (int)v1));
+		} else if (b == OT_CONST && c == OT_CONST) {      	// [C+C]
+			if (fitsIn(v2, C0_BITS, true)) {
+				out.add(encType3ZZC3(Opcode.STORE.code, a, v0, b, (int)v2, (int)v1));
+			} else if (fitsIn(v1, C0_BITS, true)) {
+				out.add(encType3ZZC3(Opcode.STORE.code, a, v0, b, (int)v1, (int)v2));
 			} else {
 				throw new AssemblerException("LOAD [C+C] requires one constant to fit in 12 bits");
 			}
-		} else if (ctx.memAplusR() != null) {      // [A+R]
-			bType = OT_REG;
-			v1 = aIndexFromToken(ctx.memAplusR().aOperand().start);
-			cType = OT_REG;
-			v2 = regIndex(ctx.memAplusR().rOperand().REG_R().getText());
-			out.add(encType0(Opcode.STORE.code, aType, bType, cType, dType, v0, v1, v2, v3));
+		} else if (b == OT_REG && c == OT_REG) {      		// [A+R]
+			out.add(encType0(Opcode.STORE.code, a, b, c, d, v0, (int)v1, (int)v2, (int)v3));
 		} else {
 			throw new AssemblerException("Unhandled LOAD form");
 		}
@@ -1228,47 +1246,13 @@ public class AssemblerVisitor extends CPUSim64v2BaseVisitor<Void> implements Has
 		int v0=0,v1=0,v2=0,v3=0;
 
 //		ctx.children.forEach(ch -> System.out.println("  child: " + ch.getText() + " (" + ch.getClass().getSimpleName() + ")"));
-		if (ctx.children.size()<4) throw new AssemblerException("CAS missing operands");
-		if (ctx.getChild(1) instanceof CPUSim64v2Parser.ROperandContext &&
-				ctx.getChild(3) instanceof CPUSim64v2Parser.ROperandContext) {
-			// RRAO
-			a = OT_REG; b = OT_REG;
-			v0 = regIndex(ctx.rOperand(0).REG_R().getText());
-			v1 = regIndex(ctx.rOperand(1).REG_R().getText());
-		} else if (ctx.getChild(1) instanceof CPUSim64v2Parser.CLiteralContext &&
-				ctx.getChild(3) instanceof CPUSim64v2Parser.CLiteralContext) {
-			// CCAO
-			a = OT_CONST; b = OT_CONST;
-			v0 = (int)parseIntLike(ctx.cLiteral(0).getText());
-			v1 = (int)parseIntLike(ctx.cLiteral(1).getText());
-		} else if (ctx.getChild(1) instanceof CPUSim64v2Parser.ROperandContext &&
-				ctx.getChild(3) instanceof CPUSim64v2Parser.CLiteralContext) {
-			// RCAO
-			a = OT_REG; b = OT_CONST;
-			v0 = regIndex(ctx.rOperand(0).REG_R().getText());
-			v1 = (int)parseIntLike(ctx.cLiteral(0).getText());
-		} else if (ctx.getChild(1) instanceof CPUSim64v2Parser.CLiteralContext &&
-				ctx.getChild(3) instanceof CPUSim64v2Parser.ROperandContext) {
-			// CRAO
-			a = OT_CONST; b = OT_REG;
-			v0 = (int)parseIntLike(ctx.cLiteral(0).getText());
-			v1 = (int)regIndex(ctx.rOperand(0).REG_R().getText());
-		} else {
-			throw new AssemblerException("CAS invalid operand types");
-		}
-
-		// op2: A (address-capable)
-		c=OT_REG; v2=aIndexFromToken(ctx.aOperand().start);
-
-		// op3: O (R or C)
-		if (ctx.oOperand().rOperand()!=null) {
-			d=OT_REG;
-			v3=regIndex(ctx.oOperand().rOperand().REG_R().getText());
-		} else{
-			d=OT_CONST;
-			v3=(int)parseIntLike(ctx.oOperand().cLiteral().getText());
-		}
-		out.add(encType0(Opcode.CAS.code, a,b,c,d, v0, v1, v2, v3));
+		var oldVal = parseOOperand(ctx.oOperand(0));
+		var newVal = parseOOperand(ctx.oOperand(1));
+		var memRef = parseMemRef(ctx.memRef());
+		out.add(encType0(Opcode.CAS.code,
+				oldVal.getLeft(), newVal.getLeft(), memRef.getLeft().getLeft(), memRef.getRight().getLeft(),
+				oldVal.getRight().intValue(), newVal.getRight().intValue(),
+				memRef.getLeft().getRight().intValue(), memRef.getRight().getRight().intValue()));
 		return null;
 	}
 

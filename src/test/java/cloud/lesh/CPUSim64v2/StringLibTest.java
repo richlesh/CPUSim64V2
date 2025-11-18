@@ -21,7 +21,7 @@ public class StringLibTest extends BaseTest {
 			#for 	1, i <= len, 1
 				#macro	FMT_DEC(i)
 				store	r0, array[i]
-			#endfor
+			#end_for
 			#call	printStrArray(array)
 			#call	freeStrArray(array)
 			int		iALLOC_COUNT

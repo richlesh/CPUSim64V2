@@ -5,8 +5,8 @@ MAIN:
 		#call	put_dec(r1)
 		#for	r2, 0, lt, 2, 1		
 			#call	put_nl()
-		#endfor
-	#endfor
+		#end_for
+	#end_for
 	#call	func1(15)
 	mov		f1, 1.0
 	mov		f2, 0.1
@@ -20,9 +20,9 @@ MAIN:
 	#for	i, m, gt, 0, -1
 		#call	put_hex(i)
 		#call	putc(' ')
-	#endfor
+	#end_for
 	#call	put_nl()
-#endfunc
+#end_forunc
 
 #deffunc func2(max, inc)
 	#fvar	i, j, m, incr
@@ -31,6 +31,6 @@ MAIN:
 	#for	i, 0, le, m, incr
 		#call	put_fp(i)
 		#call	putc(' ')
-	#endfor
+	#end_for
 	#call	put_nl()
-#endfunc
+#end_forunc

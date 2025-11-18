@@ -36,15 +36,15 @@
 	#var	a, b
 	load	a, firstNode
 	load	b, secondNode
-	#cond	a, eq, 0
+	#if_cond	a, eq, 0
 		store	0, b[_LINKED_LIST_NODE_PREV]
 	#elseifcond b, eq, 0
 		store	0, a[_LINKED_LIST_NODE_NEXT]
-	#elsecond
+	#else_cond
 		store	b, a[_LINKED_LIST_NODE_NEXT]
 		store	a, b[_LINKED_LIST_NODE_PREV]
-	#endcond
-	#endcond
+	#end_cond
+	#end_cond
 #end_func
 
 #def_func _linkedListInsertNode(afterThisNode, node)
@@ -98,10 +98,10 @@
 		load	len, ll[_LINKED_LIST_LEN]
 		load	p, ll[_LINKED_LIST_HEAD]
 		COMPARE_RANGE(0, le, i, lt, len)
-		#cond_sr	nz
+		#if_cond_sr	nz
 			#for	j, 0, lt, i, 1
 				load	p, p[_LINKED_LIST_NODE_NEXT]
-			#endfor
+			#end_for
 		#end_cond_sr
 	#endsync
 	#return	p
@@ -115,9 +115,9 @@
 	#sync	ll[_LINKED_LIST_MUTEX]
 		#call	linkedListNodeAt(ll, i)
 		move	p, r0
-		#cond_sr	nz
+		#if_cond_sr	nz
 			load	value, p[_LINKED_LIST_NODE_DATA]
-		#endcond
+		#end_cond
 	#endsync
 	#return	value
 #end_func
@@ -130,9 +130,9 @@
 	#sync	ll[_LINKED_LIST_MUTEX]
 		#call	linkedListNodeAt(ll, i)
 		move	p, r0
-		#cond_sr	nz
+		#if_cond_sr	nz
 			store	v, p[_LINKED_LIST_NODE_DATA]
-		#endcond
+		#end_cond
 	#endsync
 #end_func
 
@@ -162,9 +162,9 @@
 	load	len, ll[_LINKED_LIST_LEN]
 	add		len, 1
 	store	len, ll[_LINKED_LIST_LEN]
-	#cond	len, eq, 1
+	#if_cond	len, eq, 1
 		store	newNode, ll[_LINKED_LIST_TAIL]
-	#endcond
+	#end_cond
 #end_func
 
 #def_func linkedListAddToTail(list, value)
@@ -181,47 +181,47 @@
 	load	len, ll[_LINKED_LIST_LEN]
 	add		len, 1
 	store	len, ll[_LINKED_LIST_LEN]
-	#cond	len, eq, 1
+	#if_cond	len, eq, 1
 		store	newNode, ll[_LINKED_LIST_HEAD]
-	#endcond
+	#end_cond
 #end_func
 
 #def_func linkedListRemoveNodeFromHead(list)
 	#var	ll, p, head, len
 	load	ll, list
 	load	len, ll[_LINKED_LIST_LEN]
-	#cond	len, eq, 0
+	#if_cond	len, eq, 0
 		move	r0, 0
-	#elsecond
+	#else_cond
 		load	head, ll[_LINKED_LIST_HEAD]
 		load	p, head[_LINKED_LIST_NODE_NEXT]
 		store	p, ll[_LINKED_LIST_HEAD]
 		sub		len, 1
 		store	len, ll[_LINKED_LIST_LEN]
-		#cond	len, le, 1
+		#if_cond	len, le, 1
 			store	p, ll[_LINKED_LIST_TAIL]
-		#endcond
+		#end_cond
 		#return	head
-	#endcond
+	#end_cond
 #end_func
 
 #def_func linkedListRemoveNodeFromTail(list)
 	#var	ll, p, v, tail, len
 	load	ll, list
 	load	len, ll[_LINKED_LIST_LEN]
-	#cond	len, eq, 0
+	#if_cond	len, eq, 0
 		move	r0, 0
-	#elsecond
+	#else_cond
 		load	tail, ll[_LINKED_LIST_TAIL]
 		load	p, tail[_LINKED_LIST_NODE_PREV]
 		store	p, ll[_LINKED_LIST_TAIL]
 		sub		len, 1
 		store	len, ll[_LINKED_LIST_LEN]
-		#cond	len, le, 1
+		#if_cond	len, le, 1
 			store	p, ll[_LINKED_LIST_HEAD]
-		#endcond
+		#end_cond
 		#return	tail
-	#endcond
+	#end_cond
 #end_func
 
 #def_func linkedListAddAfter(list, value, index)
@@ -232,11 +232,11 @@
 	load	len, ll[_LINKED_LIST_LEN]
 	sub		len, 1
 	#sync	v[_VECTOR_MUTEX]
-		#cond	i, le, -1
+		#if_cond	i, le, -1
 			linkedListAddToHead(ll, v)
-		#elsecond	i, ge, len
+		#else_cond	i, ge, len
 			linkedListAddToTail(ll, v)
-		#elsecond
+		#else_cond
 			linkedListNodeAt(ll, i)
 			move	p, r0
 			load	nodes, ll[_LINKED_LIST_NODES]
@@ -247,8 +247,8 @@
 			load	len, ll[_LINKED_LIST_LEN]
 			add		len, 1
 			store	len, ll[_LINKED_LIST_LEN]
-		#endcond
-		#endcond
+		#end_cond
+		#end_cond
 	#endsync
 #end_func
 
@@ -259,20 +259,20 @@
 	load	len, ll[_LINKED_LIST_LEN]
 	sub		len, 1
 	#sync	v[_VECTOR_MUTEX]
-		#cond	i, le, 0
+		#if_cond	i, le, 0
 			linkedListRemoveNodeFromHead(ll)
 			move	p, r0
-		#elsecond	i, ge, len
+		#else_cond	i, ge, len
 			linkedListRemoveNodeFromTail(ll)
 			move	p, r0
-		#elsecond
+		#else_cond
 			_linkedListRemoveNode(ll, i)
 			move	p, r0
 			load	len, ll[_LINKED_LIST_LEN]
 			sub		len, 1
 			store	len, ll[_LINKED_LIST_LEN]
-		#endcond
-		#endcond
+		#end_cond
+		#end_cond
 	#endsync
 	#return	p
 #end_func
@@ -299,17 +299,17 @@
 		move	p, r0
 		#for	j, i, lt, len, 1
 			load	data, p[_LINKED_LIST_NODE_DATA]
-			#cond	data, eq, v
+			#if_cond	data, eq, v
 				#break
-			#endcond
+			#end_cond
 			load	p, p[_LINKED_LIST_NODE_NEXT]
-		#endfor
+		#end_for
 	#endsync
-	#cond	j, eq, len
+	#if_cond	j, eq, len
 		#return	-1
-	#elsecond
+	#else_cond
 		#return	j
-	#endcond
+	#end_cond
 #end_func
 
 #def_func linkedListLastIndexOf(vector, value, index)
@@ -324,11 +324,11 @@
 		move	p, r0
 		#for	j, i, ge, 0, -1
 			load	data, p[_LINKED_LIST_NODE_DATA]
-			#cond	data, eq, v
+			#if_cond	data, eq, v
 				#break
-			#endcond
+			#end_cond
 			load	p, p[_LINKED_LIST_NODE_PREV]
-		#endfor
+		#end_for
 	#endsync
 	#return	j
 #end_func
@@ -344,13 +344,13 @@
 		load	p, ll[_LINKED_LIST_HEAD]
 		#for	i, 0, lt, len, 1
 			load	data, p[_LINKED_LIST_NODE_DATA]
-			#cond	i, ne, 0
+			#if_cond	i, ne, 0
 				#call	putc(',')
-			#endcond
+			#end_cond
 			load	data, p[_LINKED_LIST_NODE_DATA]
 			#call	put_dec(data)
 			load	p, p[_LINKED_LIST_NODE_NEXT]
-		#endfor
+		#end_for
 		#call	put_nl()
 	#endsync
 #end_func

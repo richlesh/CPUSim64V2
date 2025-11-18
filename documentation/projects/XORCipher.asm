@@ -8,9 +8,9 @@
 	#var	filename, outfilename, key, inport, outport
 	// if (argc < 4)
 	int		iARGC
-	#cond	r0, lt, 4
+	#if_cond	r0, lt, 4
 		#call	puts("Syntax: XORCipher keyword input_file output_file")
-	#elsecond
+	#else_cond
 		// Get first command line argument and put it in key.
 		move	r0, 1
 		int		iARGS
@@ -23,7 +23,7 @@
 		#call	openRawFile(filename, READ_MODE)
 		move	inport, r0
 		// If the port returned is -1 we failed.
-		#cond	inport, ne, -1
+		#if_cond	inport, ne, -1
 			// Get third command line argument and put it in outfilename.
 			move	r0, 3
 			int		iARGS
@@ -32,20 +32,20 @@
 			#call	openRawFile(outfilename, WRITE_MODE)
 			move	outport, r0
 			// If the port returned is -1 we failed.
-			#cond	outport, ne, -1
+			#if_cond	outport, ne, -1
 				// Process the input stream
 				#call	XORCipher(key, inport, outport)
 				// Close the files
 				#call	closeFile(outport)
 				#call	closeFile(inport)
-			#elsecond
+			#else_cond
 				#call	closeFile(inport)
 				#call	puts("Output file creation failed!")
-			#endcond
-		#elsecond
+			#end_cond
+		#else_cond
 			#call	puts("Input file open failed!")
-		#endcond
-	#endcond
+		#end_cond
+	#end_cond
 
 	#return	0
 #end_func
@@ -67,14 +67,14 @@
 		load	mask, k[index]
 		xor		byteRead, mask
 		add		index, 1
-		#cond	index, ge, keylen
+		#if_cond	index, ge, keylen
 			sub	index, keylen
-		#endcond
+		#end_cond
 		OUT1(byteRead,po)
 		IN1(byteRead,p)
 	#endwhile
 
 	pop		r1
-#endfunc
+#end_forunc
 	stop
 	stop

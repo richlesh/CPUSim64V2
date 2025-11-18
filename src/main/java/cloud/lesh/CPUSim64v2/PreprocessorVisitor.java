@@ -262,6 +262,29 @@ public class PreprocessorVisitor extends PreprocessorParserBaseVisitor<Void> {
 		return null;
 	}
 
+	private static List<String> globals = new ArrayList<>();
+
+	@Override
+	public Void visitGlobalDir(PreprocessorParser.GlobalDirContext ctx) {
+		globals.add(ctx.CODE_TEXT().getText());
+		return null;
+	}
+
+	public static List<String> getGlobals() { return globals; }
+
+	public static void resetGlobals() { globals.clear(); }
+
+	public static String addGlobals(String preprocessed) {
+		preprocessed = "READONLY __DATA__" + System.lineSeparator() +
+				preprocessed + System.lineSeparator() +
+				"__CODE_END__:" + System.lineSeparator() +
+				"__DATA__:" + System.lineSeparator() +
+				String.join(System.lineSeparator(), PreprocessorVisitor.getGlobals()) + System.lineSeparator() +
+				"__HEAP_START__:" + System.lineSeparator();
+		resetGlobals();
+		return preprocessed;
+	}
+
 	private final Set<String> svarSet = new HashSet<>();
 	@Override
 	public Void visitSvarDir(PreprocessorParser.SvarDirContext ctx) {
@@ -658,9 +681,21 @@ public class PreprocessorVisitor extends PreprocessorParserBaseVisitor<Void> {
 			emitLineBeginDirective(filename, lineNum);
 			emitLine("$_LOOP_NEXT:", true);
 			emitLine("$_LOOP_TEST:", true);
-			emitLine("cmp " + loopVar + ", " + ctx.cond.primary(1).getText(), true);
-			String conditionOp = getConditionCode(ctx.cond.cmpOp().getText());
-			emitLine("jump " + conditionOp + ", $_LOOP_BEGIN", false);
+			if (ctx.cond.primary().size() == 1) {
+				loopVar = applyDefines(loopVar);
+				try {
+					long i = Long.parseLong(loopVar);
+					if (i != 0)
+						emitLine("jump $_LOOP_BEGIN", false);
+				} catch (NumberFormatException e) {
+					emitLine("test " + loopVar, false);
+					emitLine("jump nz, $_LOOP_BEGIN", false);
+				}
+			} else {
+				emitLine("cmp " + loopVar + ", " + ctx.cond.primary(1).getText(), true);
+				String conditionOp = getConditionCode(ctx.cond.cmpOp().getText());
+				emitLine("jump " + conditionOp + ", $_LOOP_BEGIN", false);
+			}
 			emitLine("$_LOOP_END:", true);
 			emitLine(".BLOCK_END", false);
 			emitLineEndDirective(filename, lineNum);
@@ -685,9 +720,21 @@ public class PreprocessorVisitor extends PreprocessorParserBaseVisitor<Void> {
 			emitLineBeginDirective(filename, lineNum);
 			emitLine("$_LOOP_NEXT:", true);
 			emitLine("$_LOOP_TEST:", true);
-			emitLine("cmp " + loopVar + ", " + ctx.cond.primary(1).getText(), true);
-			String conditionOp = getConditionCode(ctx.cond.cmpOp().getText());
-			emitLine("jump " + conditionOp + ", $_LOOP_BEGIN", false);
+			if (ctx.cond.primary().size() == 1) {
+				loopVar = applyDefines(loopVar);
+				try {
+					long i = Long.parseLong(loopVar);
+					if (i != 0)
+						emitLine("jump $_LOOP_BEGIN", false);
+				} catch (NumberFormatException e) {
+					emitLine("test " + loopVar, false);
+					emitLine("jump nz, $_LOOP_BEGIN", false);
+				}
+			} else {
+				emitLine("cmp " + loopVar + ", " + ctx.cond.primary(1).getText(), true);
+				String conditionOp = getConditionCode(ctx.cond.cmpOp().getText());
+				emitLine("jump " + conditionOp + ", $_LOOP_BEGIN", false);
+			}
 			emitLine("$_LOOP_END:", true);
 			emitLine(".BLOCK_END", false);
 			emitLineEndDirective(filename, lineNum);
@@ -698,12 +745,14 @@ public class PreprocessorVisitor extends PreprocessorParserBaseVisitor<Void> {
 
 	@Override
 	public Void visitBreakDir(PreprocessorParser.BreakDirContext ctx) {
+		// $$ refers to the loop scope
 		emitLine("JUMP $$_LOOP_END", true);
 		return null;
 	}
 
 	@Override
 	public Void visitContinueDir(PreprocessorParser.ContinueDirContext ctx) {
+		// $$ refers to the loop scope
 		emitLine("JUMP $$_LOOP_NEXT", true);
 		return null;
 	}
@@ -715,15 +764,26 @@ public class PreprocessorVisitor extends PreprocessorParserBaseVisitor<Void> {
 			emitLineBeginDirective(filename, lineNum);
 			emitLine(".BLOCK " + blockName, false);
 
-			if (ctx.cond.primary().size() != 2 || ctx.cond.cmpOp() == null) {
-				throw new PreprocessorException("If condition expression must have two primaries and a comparison operator");
-			}
 			// If Cond expr
 			String leftVal = ctx.cond.primary(0).getText();
-			String rightVal = ctx.cond.primary(1).getText();
-			String conditionOp = getNotConditionCode(ctx.cond.cmpOp().getText());
-			emitLine("cmp " + leftVal + ", " + rightVal, true);
-			emitLine("jump " + conditionOp + ", $_SKIP", false);
+			String rightVal;
+			String conditionOp;
+			if (ctx.cond.primary().size() == 2) {
+				rightVal = ctx.cond.primary(1).getText();
+				conditionOp = getNotConditionCode(ctx.cond.cmpOp().getText());
+				emitLine("cmp " + leftVal + ", " + rightVal, true);
+				emitLine("jump " + conditionOp + ", $_SKIP", false);
+			} else {
+				leftVal = applyDefines(leftVal);
+				try {
+					long v = Long.parseLong(leftVal);
+					if (v == 0)
+						emitLine("jump $_SKIP", false);
+				} catch (NumberFormatException e) {
+					emitLine("test " + leftVal, false);
+					emitLine("jump z, $_SKIP", false);
+				}
+			}
 			emitLineEndDirective(filename, lineNum);
 
 			visit(ctx.block());
@@ -740,11 +800,23 @@ public class PreprocessorVisitor extends PreprocessorParserBaseVisitor<Void> {
 				for (int i = 0; i < ctx.elseifCondClause().size(); ++i) {
 					var ectx = ctx.elseifCondClause(i);
 					leftVal = ectx.cond.primary(0).getText();
-					rightVal = ectx.cond.primary(1).getText();
-					conditionOp = getNotConditionCode(ectx.cond.cmpOp().getText());
-					emitLineBeginDirective(filename, lineNum);
-					emitLine("cmp " + leftVal + ", " + rightVal, true);
-					emitLine("jump " + conditionOp + ", $_SKIP_" + (i + 1), false);
+					if (ctx.cond.primary().size() == 2) {
+						rightVal = ectx.cond.primary(1).getText();
+						conditionOp = getNotConditionCode(ectx.cond.cmpOp().getText());
+						emitLineBeginDirective(filename, lineNum);
+						emitLine("cmp " + leftVal + ", " + rightVal, true);
+						emitLine("jump " + conditionOp + ", $_SKIP_" + (i + 1), false);
+					} else {
+						leftVal = applyDefines(leftVal);
+						try {
+							long v = Long.parseLong(leftVal);
+							if (v == 0)
+								emitLine("jump $_SKIP_" + (i + 1), false);
+						} catch (NumberFormatException e) {
+							emitLine("test " + leftVal, false);
+							emitLine("jump z, $_SKIP_" + (i + 1), false);
+						}
+					}
 					emitLineEndDirective(filename, lineNum);
 
 					visit(ectx.block());
@@ -1126,7 +1198,7 @@ public class PreprocessorVisitor extends PreprocessorParserBaseVisitor<Void> {
 			String arg = args[i];
 			if (arg.charAt(0) == '-') {
 				if (arg.equals("--DEBUG")) {
-					definitions.put("__DEBUG", new PreprocessorVisitor.DefVal(PreprocessorVisitor.DefVal.Kind.SYMBOL, "1"));
+					definitions.put("__DEBUG__", new PreprocessorVisitor.DefVal(PreprocessorVisitor.DefVal.Kind.SYMBOL, "1"));
 					args[i] = null;
 				} else if (arg.startsWith("-D")) {
 					var def = arg.substring(2).split("=", 2);

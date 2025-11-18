@@ -19,7 +19,7 @@ CHILD_FORK:
 	#for	r1, 0, lt, 10, 1
 		#call	fprintf(STDOUT, "%d...\n", r1)
 		#call	sleep(1000)
-	#endfor
+	#end_for
 	#call	puts("Child done!\n")
 	jump	@END
 FORK_FAILED:

@@ -87,10 +87,11 @@ public class Simulator {
 	private boolean running = false;
 	private boolean debug = false;
 	private long pid;
-	private static AtomicLong nextPID = new AtomicLong(0);
+	private static AtomicLong nextPID = new AtomicLong(1);
 	private Vector<Simulator> childCPUs = new Vector<>();
+	private static Vector<Simulator> threadCPUs = new Vector<>();
 	private ChildProcess process = null;    // If this is a child what is its process object.
-	private ChildThread thread = null;
+	private ChildThread thread = null;		// If this is a thread what i its thread object.
 
 	private InterruptHandler interruptHandler;
 
@@ -552,9 +553,9 @@ public class Simulator {
 		try {
 			int a = Math.toIntExact(addr);
 			if (a < heapLimit)
-				val = mem[a];
+				val = (long)atomicMem.getVolatile(mem, a);						// val = mem[a];
 			else
-				val = stack[a - (int) heapLimit];
+				val = (long)atomicMem.getVolatile(stack, a - (int) heapLimit);	// val = stack[a - (int) heapLimit];
 			++cycles;
 		} catch (Exception ex) {
 			throw new CPUException(String.format("Illegal memory access of " + fmtAddress, addr));
@@ -573,9 +574,9 @@ public class Simulator {
 		try {
 			int a = Math.toIntExact(addr);
 			if (a < heapLimit)
-				mem[a] = val;
+				atomicMem.setVolatile(mem, a, val);							// mem[a] = val;
 			else
-				stack[a - (int) heapLimit] = val;
+				atomicMem.setVolatile(stack, a - (int) heapLimit, val); 	// stack[a - (int) heapLimit] = val;
 			++cycles;
 		} catch (Exception ex) {
 			throw new CPUException(String.format("Illegal memory access of " + fmtAddress, addr));
@@ -1832,8 +1833,12 @@ public class Simulator {
 				long offset = (count == 4) ? getO(d.d, d.v3) : 0;
 				int addr = Math.toIntExact(base + offset);
 				try {
-					boolean ok = atomicMem.compareAndSet(mem, addr, oldVal, newVal);
-					setFlags(0, ok);
+					boolean ok;
+					if (addr < heapLimit)
+						ok = atomicMem.compareAndSet(mem, addr, oldVal, newVal);
+					else
+						ok = atomicMem.compareAndSet(stack, addr - (int) heapLimit, oldVal, newVal);
+					setFlags(newVal, ok);
 					return;
 				} catch (Exception ex) {
 					throw new CPUException(String.format("Illegal memory access of " + fmtAddress, addr));
@@ -1918,10 +1923,20 @@ public class Simulator {
 	public Vector<Long> getChildPIDs() {
 		return childCPUs.stream().map(x -> x.getPID()).collect(Collectors.toCollection(Vector::new));
 	}
-	public Simulator getChildCPU(int pid) {
+	public static Vector<Long> getThreadPIDs() {
+		return threadCPUs.stream().map(x -> x.getPID()).collect(Collectors.toCollection(Vector::new));
+	}
+	public synchronized Simulator getChildCPU(int pid) {
 		for (var child : childCPUs) {
 			if (child.getPID() == pid)
 				return child;
+		}
+		return null;
+	}
+	public static synchronized Simulator getThreadCPU(int pid) {
+		for (var thread : threadCPUs) {
+			if (thread.getPID() == pid)
+				return thread;
 		}
 		return null;
 	}
@@ -2030,7 +2045,7 @@ public class Simulator {
 						found = true;
 						break;
 					} else {												// Split block into 1 alloc and 1 free
-						long new_p = p + numWords;							// Point to new block
+						long new_p = p + numWords;							// Point to new free block
 						memWrite(new_p, p);									// set new free block's prev pointer
 						memWrite(new_p + 1, memRead(p + 1));				// set new free block's next pointer
 						memWrite(new_p + 2, size + numWords);				// calc new free block size
@@ -2333,20 +2348,20 @@ public class Simulator {
 
 	public long thread(long function, long data) throws CPUException
 	{
-		Simulator childCPU;
+		Simulator threadCPU;
 		try {
-			childCPU = new Simulator(this, false);
-			childCPU.push(data);
-			childCPU.push(-1);					// push return address, -1 exits
-			childCPU.push(childCPU.getR(R_SF));	// push old stack frame so it can be restored on return
-			childCPU.setR(R_SF, childCPU.getR(R_SP));// set new stack frame for call
-			childCPU.setR(R_PC, function);
-			ChildThread child = new ChildThread(childCPU);
-			synchronized (childCPUs) {
-				childCPUs.add(childCPU);
+			threadCPU = new Simulator(this, false);
+			threadCPU.push(data);
+			threadCPU.push(-1);					// push return address, -1 exits
+			threadCPU.push(threadCPU.getR(R_SF));	// push old stack frame so it can be restored on return
+			threadCPU.setR(R_SF, threadCPU.getR(R_SP));// set new stack frame for call
+			threadCPU.setR(R_PC, function);
+			ChildThread child = new ChildThread(threadCPU);
+			synchronized (threadCPUs) {
+				threadCPUs.add(threadCPU);
 			}
 			child.start();
-			return childCPU.getPID();
+			return threadCPU.getPID();
 		} catch (Exception ex) {
 //			throw new CPUException("Child thread creation failed! %s", ex.getMessage());
 		}
@@ -2354,17 +2369,27 @@ public class Simulator {
 	}
 
 	public void joinThread(long pid) {
-		Simulator childCPU = getChildCPU((int)getR(0));
-		if (childCPU != null) {
-			Simulator.ChildThread t = childCPU.getThread();
+		Simulator threadCPU = getThreadCPU((int)getR(0));
+		if (threadCPU != null) {
+			Simulator.ChildThread t = threadCPU.getThread();
 			if (t != null) {
 				try {
 					t.join();
 				} catch (InterruptedException e) {
 				}
-				synchronized (childCPUs) {
-					childCPUs.remove(childCPU);
+				synchronized (threadCPUs) {
+					threadCPUs.remove(threadCPU);
 				}
+			}
+		}
+	}
+
+	public void wakeThread(long pid) {
+		Simulator threadCPU = getThreadCPU((int)getR(0));
+		if (threadCPU != null) {
+			Simulator.ChildThread t = threadCPU.getThread();
+			if (t != null) {
+				t.interrupt();
 			}
 		}
 	}

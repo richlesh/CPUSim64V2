@@ -56,6 +56,7 @@ public class StdInterruptHandler extends InterruptHandler
 	public static final int iTHREAD=40;
 	public static final int iJOIN_THREAD=41;
 	public static final int iSLEEP=42;
+	public static final int iWAKE_THREAD=43;
 
 	public static final int iPI=100;
 	public static final int iE=101;		
@@ -325,6 +326,9 @@ public class StdInterruptHandler extends InterruptHandler
 					Thread.sleep(cpu.getR(0));
 				} catch (InterruptedException e) {
 				}
+				break;
+			case iWAKE_THREAD:
+				cpu.wakeThread((int)cpu.getR(0));
 				break;
 			case iGET_PID:
 				cpu.setR(0, cpu.getPID());

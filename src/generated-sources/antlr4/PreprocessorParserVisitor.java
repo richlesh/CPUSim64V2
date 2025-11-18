@@ -95,6 +95,12 @@ public interface PreprocessorParserVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitCodeLineOrDirective(PreprocessorParser.CodeLineOrDirectiveContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link PreprocessorParser#globalDir}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitGlobalDir(PreprocessorParser.GlobalDirContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link PreprocessorParser#svarDir}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -209,7 +215,7 @@ public interface PreprocessorParserVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitElseifCondClause(PreprocessorParser.ElseifCondClauseContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link PreprocessorParser#elseCondClause}.
+	 * Visit a parse tree produced by {@link PreprocessorParser#else_condClause}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */

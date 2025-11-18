@@ -69,8 +69,8 @@ public class LabelVisitor extends CPUSim64v2BaseVisitor<Void> implements HasLoca
 			}
 			if (!pauseLineIncrement) ++lineNum;
 		}
-		labelMap.putIfAbsent("__DATA", currentAddress);
 		labelMap.putIfAbsent("__CODE_END__", currentAddress);
+		labelMap.putIfAbsent("__DATA__", currentAddress);
 		labelMap.putIfAbsent("__HEAP_START__", currentAddress);
 		return null;
 	}

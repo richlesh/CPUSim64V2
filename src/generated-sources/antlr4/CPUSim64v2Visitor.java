@@ -420,6 +420,12 @@ public interface CPUSim64v2Visitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitOOperand(CPUSim64v2Parser.OOperandContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link CPUSim64v2Parser#pOperand}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitPOperand(CPUSim64v2Parser.POperandContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link CPUSim64v2Parser#qOperand}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -491,40 +497,4 @@ public interface CPUSim64v2Visitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitMemRef(CPUSim64v2Parser.MemRefContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link CPUSim64v2Parser#memC}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitMemC(CPUSim64v2Parser.MemCContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link CPUSim64v2Parser#memA}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitMemA(CPUSim64v2Parser.MemAContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link CPUSim64v2Parser#memAplusC}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitMemAplusC(CPUSim64v2Parser.MemAplusCContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link CPUSim64v2Parser#memCplusA}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitMemCplusA(CPUSim64v2Parser.MemCplusAContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link CPUSim64v2Parser#memCplusC}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitMemCplusC(CPUSim64v2Parser.MemCplusCContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link CPUSim64v2Parser#memAplusR}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitMemAplusR(CPUSim64v2Parser.MemAplusRContext ctx);
 }

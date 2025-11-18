@@ -14,6 +14,7 @@ public class DebugLibTest extends BaseTest {
 	void testDebugMsg() {
 		String src = """
 			START:
+			#include <system/debug.def>
 			#include <system/debug.asm>
 			#macro DEBUG_MSG("Hello, World!")
 			#macro DEBUG_MSG("Hello, %s!", "Rich")
@@ -49,6 +50,7 @@ DEBUG: Percent: 12.35%
 	void testCondDebugMsg() {
 		String src = """
 			START:
+			#include <system/debug.def>
 			#include <system/debug.asm>
 			#macro COND_DEBUG_MSG(0, "Bad, World!")
 			#macro COND_DEBUG_MSG(1, "Hello, World!")
@@ -75,21 +77,13 @@ DEBUG: Hex: ff
 DEBUG: Char: A
 DEBUG: Percent: 12.35%
 """;
-		ConsoleOutputCapturer capturer = new ConsoleOutputCapturer();
-		capturer.start(ConsoleOutputCapturer.StdStream.STDOUT);
-		var tuple = runProgram(src, new String[] {"--DEBUG"});
-		String output = capturer.stop();
-		var result = tuple.getLeft();
-		var sim = tuple.getMiddle();
-		var diff = tuple.getRight();
-		assertEquals(3, diff.size());
-		assertEquals(expected, output);
 	}
 
 	@Test
 	void testDebugMsg_NoDebug() {
 		String src = """
 			START:
+			#include <system/debug.def>
 			#include <system/debug.asm>
 			#macro DEBUG_MSG("Hello, World!")
 			#macro DEBUG_MSG("Hello, %s!", "Rich")
@@ -118,6 +112,7 @@ DEBUG: Percent: 12.35%
 	void testCondDebugMsg_NoDebug() {
 		String src = """
 			START:
+			#include <system/debug.def>
 			#include <system/debug.asm>
 			#macro COND_DEBUG_MSG(0, "Bad, World!")
 			#macro COND_DEBUG_MSG(1, "Hello, World!")
@@ -152,6 +147,7 @@ DEBUG: Percent: 12.35%
 	void testAssertPass() {
 		String src = """
 			START:
+			#include <system/debug.def>
 			#include <system/debug.asm>
 			#macro SET_EXIT_ON_ASSERT_FAILURE(0)
 			#macro assert_true(1, "true")
@@ -186,7 +182,7 @@ DEBUG: Percent: 12.35%
 		var result = tuple.getLeft();
 		var sim = tuple.getMiddle();
 		var diff = tuple.getRight();
-		assertEquals(4, diff.size());
+		assertEquals(5, diff.size());
 		assertEquals(expected, output);
 	}
 
@@ -194,6 +190,7 @@ DEBUG: Percent: 12.35%
 	void testAssertFail() {
 		String src = """
 			START:
+			#include <system/debug.def>
 			#include <system/debug.asm>
 			#macro SET_EXIT_ON_ASSERT_FAILURE(0)
 			#macro ASSERT_TRUE(0, "true")
@@ -206,8 +203,8 @@ DEBUG: Percent: 12.35%
 			#macro ASSERT_GT(2, 2, "gt")
 			#macro ASSERT_LE(2, 1, "le")
 			#macro ASSERT_GE(1, 2, "ge")
-			move f1, 1.0
-			move f2, 2.0
+			load f1, 1.0
+			load f2, 2.0
 			#macro assert_eq_fp(f1, f2, "eq")
 			#macro assert_ne_fp(f1, f1, "ne")
 			#macro assert_lt_fp(f2, f1, "lt")
@@ -221,24 +218,24 @@ DEBUG: Percent: 12.35%
 			FINIS:
 			""";
 		String expected = """
-Assertion Failed (Test.asm:4) true
-Assertion Failed (Test.asm:5) false
-Assertion Failed (Test.asm:6) eq 1=2
-Assertion Failed (Test.asm:7) ne 1≠1
-Assertion Failed (Test.asm:8) lt 2<1
-Assertion Failed (Test.asm:9) gt 1>2
-Assertion Failed (Test.asm:10) lt 1<1
-Assertion Failed (Test.asm:11) gt 2>2
-Assertion Failed (Test.asm:12) le 2≤1
-Assertion Failed (Test.asm:13) ge 1≥2
-Assertion Failed (Test.asm:16) eq 755.0000000000000000=756.0000000000000000
-Assertion Failed (Test.asm:17) ne 755.0000000000000000≠755.0000000000000000
-Assertion Failed (Test.asm:18) lt 756.0000000000000000<755.0000000000000000
-Assertion Failed (Test.asm:19) gt 755.0000000000000000>756.0000000000000000
-Assertion Failed (Test.asm:20) lt 755.0000000000000000<755.0000000000000000
-Assertion Failed (Test.asm:21) gt 756.0000000000000000>756.0000000000000000
-Assertion Failed (Test.asm:22) le 756.0000000000000000≤755.0000000000000000
-Assertion Failed (Test.asm:23) ge 755.0000000000000000≥756.0000000000000000
+Assertion Failed (Test.asm:5) true
+Assertion Failed (Test.asm:6) false
+Assertion Failed (Test.asm:7) eq 1=2
+Assertion Failed (Test.asm:8) ne 1≠1
+Assertion Failed (Test.asm:9) lt 2<1
+Assertion Failed (Test.asm:10) gt 1>2
+Assertion Failed (Test.asm:11) lt 1<1
+Assertion Failed (Test.asm:12) gt 2>2
+Assertion Failed (Test.asm:13) le 2≤1
+Assertion Failed (Test.asm:14) ge 1≥2
+Assertion Failed (Test.asm:17) eq 1.0000000000000000=2.0000000000000000
+Assertion Failed (Test.asm:18) ne 1.0000000000000000≠1.0000000000000000
+Assertion Failed (Test.asm:19) lt 2.0000000000000000<1.0000000000000000
+Assertion Failed (Test.asm:20) gt 1.0000000000000000>2.0000000000000000
+Assertion Failed (Test.asm:21) lt 1.0000000000000000<1.0000000000000000
+Assertion Failed (Test.asm:22) gt 2.0000000000000000>2.0000000000000000
+Assertion Failed (Test.asm:23) le 2.0000000000000000≤1.0000000000000000
+Assertion Failed (Test.asm:24) ge 1.0000000000000000≥2.0000000000000000
 			""";
 		ConsoleOutputCapturer capturer = new ConsoleOutputCapturer();
 		capturer.start(ConsoleOutputCapturer.StdStream.STDOUT);

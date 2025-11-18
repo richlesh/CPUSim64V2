@@ -42,13 +42,17 @@ public class Preprocessor {
 
 		// 2) Preprocess
 		var loader = new IncludeLoader(inPath.getParent());
+		PreprocessorVisitor.resetGlobals();
 		String preprocessed = PreprocessorVisitor.preprocessText(inPath.getFileName().toString(), source, loader, args);
 
-		// 2b) Rewrite literals
+		// 3) Rewrite literals
 		LiteralRewriter rw = new LiteralRewriter();
 		preprocessed = rw.rewrite(preprocessed);
 
-		// 3) Write preprocessed output	}
+		// 4) Add global declarations
+		preprocessed = PreprocessorVisitor.addGlobals(preprocessed);
+
+		// 5) Write preprocessed output	}
 		Files.writeString(outPath, preprocessed);
 	}
 }
