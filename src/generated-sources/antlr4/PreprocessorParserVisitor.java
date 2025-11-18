@@ -215,11 +215,17 @@ public interface PreprocessorParserVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitElseifCondClause(PreprocessorParser.ElseifCondClauseContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link PreprocessorParser#else_condClause}.
+	 * Visit a parse tree produced by {@link PreprocessorParser#elseCondClause}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitElseCondClause(PreprocessorParser.ElseCondClauseContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link PreprocessorParser#syncBlock}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitSyncBlock(PreprocessorParser.SyncBlockContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link PreprocessorParser#block}.
 	 * @param ctx the parse tree

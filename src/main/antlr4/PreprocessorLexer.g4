@@ -44,7 +44,10 @@ PP_IFCONDSR : '#' ([iI][fF]) '_' [cC][oO][nN][dD] '_' [sS][rR]	 -> pushMode(DIRE
 PP_IFCOND   : '#' ([iI][fF]) '_' [cC][oO][nN][dD]	 -> pushMode(DIRECTIVE_ARGS) ;
 PP_ELSEIFCOND: '#' [eE][lL][sS][eE] '_' [iI][fF] '_' [cC][oO][nN][dD] -> pushMode(DIRECTIVE_ARGS) ;
 PP_ELSECOND : '#' [eE][lL][sS][eE] '_' [cC][oO][nN][dD] ;
-PP_ENDCOND  : '#' [eE][nN][dD] '_' [cC][oO][nN][dD] ('_' [sR][rR])?;
+PP_ENDCOND  : '#' [eE][nN][dD] '_' [cC][oO][nN][dD] ('_' [sR][rR])? ;
+PP_SYNC     : '#' [sS][yY][nN][cC] -> pushMode(DIRECTIVE_ARGS) ;
+PP_ENDSYNC  : '#' [eE][nN][dD] '_' [sS][yY][nN][cC] ;
+
 REG_R : [rR] [0-9]+ ;
 REG_F : [fF] [0-9]+ ;
 PLACEHOLDER: '$' '{' ([\p{L}_] [\p{L}\p{Nd}_]* | ELLIPSIS)'}' ;

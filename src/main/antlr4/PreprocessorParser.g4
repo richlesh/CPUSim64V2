@@ -47,6 +47,7 @@ directive
   | continueDir
   | ifCondBlock
   | ifCondSRBlock
+  | syncBlock
   ;
 
 /* #include <path> | #include "path" */
@@ -202,6 +203,10 @@ elseifCondClause
 
 elseCondClause
   : PP_ELSECOND NL block
+  ;
+
+syncBlock
+  : PP_SYNC LPAREN? IDENT RPAREN? NL block PP_ENDSYNC NL
   ;
 
 block

@@ -348,15 +348,25 @@ public interface PreprocessorParserListener extends ParseTreeListener {
 	 */
 	void exitElseifCondClause(PreprocessorParser.ElseifCondClauseContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link PreprocessorParser#else_condClause}.
+	 * Enter a parse tree produced by {@link PreprocessorParser#elseCondClause}.
 	 * @param ctx the parse tree
 	 */
 	void enterElseCondClause(PreprocessorParser.ElseCondClauseContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link PreprocessorParser#else_condClause}.
+	 * Exit a parse tree produced by {@link PreprocessorParser#elseCondClause}.
 	 * @param ctx the parse tree
 	 */
 	void exitElseCondClause(PreprocessorParser.ElseCondClauseContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link PreprocessorParser#syncBlock}.
+	 * @param ctx the parse tree
+	 */
+	void enterSyncBlock(PreprocessorParser.SyncBlockContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link PreprocessorParser#syncBlock}.
+	 * @param ctx the parse tree
+	 */
+	void exitSyncBlock(PreprocessorParser.SyncBlockContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link PreprocessorParser#block}.
 	 * @param ctx the parse tree

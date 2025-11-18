@@ -842,7 +842,6 @@ public class PreprocessorVisitor extends PreprocessorParserBaseVisitor<Void> {
 		return null;
 	}
 
-
 	@Override
 	public Void visitIfCondSRBlock(PreprocessorParser.IfCondSRBlockContext ctx) {
 		if (ctx.IDENT() != null && ctx.block() != null) {
@@ -878,6 +877,31 @@ public class PreprocessorVisitor extends PreprocessorParserBaseVisitor<Void> {
 			emitLineEndDirective(filename, lineNum);
 		} else
 			throw new PreprocessorException("If condition SR needs an SR code and a block!");
+		return null;
+	}
+
+	@Override
+	public Void visitSyncBlock(PreprocessorParser.SyncBlockContext ctx) {
+		if (ctx.IDENT() != null && ctx.block() != null) {
+			String blockName = "SYNC_{}";
+			String mutex = ctx.IDENT().getText().toUpperCase();
+			emitLineBeginDirective(filename, lineNum);
+			emitLine(".BLOCK " + blockName, false);
+			emitLine("push " + mutex, true);
+			emitLine("call acquireMutex", false);
+			emitLine("add sp, 1", false);
+			emitLineEndDirective(filename, lineNum);
+
+			visit(ctx.block());
+
+			emitLineBeginDirective(filename, lineNum);
+			emitLine("push " + mutex, true);
+			emitLine("call releaseMutex", false);
+			emitLine("add sp, 1", false);
+			emitLine(".BLOCK_END", false);
+			emitLineEndDirective(filename, lineNum);
+		} else
+			throw new PreprocessorException("Sync block needs a mutex and a block!");
 		return null;
 	}
 

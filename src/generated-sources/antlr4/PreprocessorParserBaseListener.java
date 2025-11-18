@@ -437,6 +437,18 @@ public class PreprocessorParserBaseListener implements PreprocessorParserListene
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterSyncBlock(PreprocessorParser.SyncBlockContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitSyncBlock(PreprocessorParser.SyncBlockContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterBlock(PreprocessorParser.BlockContext ctx) { }
 	/**
 	 * {@inheritDoc}
