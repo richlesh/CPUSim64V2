@@ -8,11 +8,23 @@ target/
 .idea/jarRepositories.xml
 .idea/compiler.xml
 .idea/libraries/
+
+.metals
+
 htmlreport/
 *.iws
 *.iml
 *.ipr
 test.*
+*.obj
+*.obj.gz
+*.pp.asm
+*.bin
+*.sym
+*.jar
+*.zip
+old
+*.old
 
 ### Eclipse ###
 .apt_generated
