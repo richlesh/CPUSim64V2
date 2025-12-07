@@ -27,12 +27,13 @@ public class AssemblerVisitorTest {
 		asm.assemble(noLabels);
 		List<Long> words = asm.result();
 		assertEquals(6, words.size());
-		assertEquals(0x0000000000000000L, words.get(0));
-		assertEquals(0x0080001000000000L, words.get(1));
-		assertEquals(0x00C0002000000000L, words.get(2));
-		assertEquals(0x008001F000000000L, words.get(3));
-		assertEquals(0x00AA001002003004L, words.get(4));
-		assertEquals(0x00FF001002003004L, words.get(5));
+		int i = 0;
+		assertEquals(0x0000000000000000L, words.get(i++));
+		assertEquals(0x0080001000000000L, words.get(i++));
+		assertEquals(0x00C0002000000000L, words.get(i++));
+		assertEquals(0x008001F000000000L, words.get(i++));
+		assertEquals(0x00AA001002003004L, words.get(i++));
+		assertEquals(0x00FF001002003004L, words.get(i++));
 		assertEquals(6, labelVisitor.getLabelMap().get("FINIS") - labelVisitor.getLabelMap().get("START"));
 	}
 
@@ -55,13 +56,14 @@ public class AssemblerVisitorTest {
 		asm.assemble(noLabels);
 		List<Long> words = asm.result();
 		assertEquals(7, words.size());
-		assertEquals(0x0100000000000000L, words.get(0));
-		assertEquals(0x0180001000000000L, words.get(1));
-		assertEquals(0x01C0002000000000L, words.get(2));
-		assertEquals(0x018001C000000000L, words.get(3));
-		assertEquals(0x01C001F000000000L, words.get(4));
-		assertEquals(0x01AA001002003004L, words.get(5));
-		assertEquals(0x01FF001002003004L, words.get(6));
+		int i = 0;
+		assertEquals(0x0100000000000000L, words.get(i++));
+		assertEquals(0x0180001000000000L, words.get(i++));
+		assertEquals(0x01C0002000000000L, words.get(i++));
+		assertEquals(0x018001C000000000L, words.get(i++));
+		assertEquals(0x01C001F000000000L, words.get(i++));
+		assertEquals(0x01AA001002003004L, words.get(i++));
+		assertEquals(0x01FF001002003004L, words.get(i++));
 		assertEquals(7, labelVisitor.getLabelMap().get("FINIS") - labelVisitor.getLabelMap().get("START"));
 	}
 
@@ -224,9 +226,10 @@ public class AssemblerVisitorTest {
 		asm.assemble(noLabels);
 		List<Long> words = asm.result();
 		assertEquals(3, words.size());
-		assertEquals(0x0500000000000000L, words.get(0));
-		assertEquals(0x0580001000000000L, words.get(1));
-		assertEquals(0x05C0002000000000L, words.get(2));
+		int i = 0;
+		assertEquals(0x0500000000000000L, words.get(i++));
+		assertEquals(0x0580001000000000L, words.get(i++));
+		assertEquals(0x05C0002000000000L, words.get(i++));
 		assertEquals(3, labelVisitor.getLabelMap().get("FINIS") - labelVisitor.getLabelMap().get("START"));
 	}
 
@@ -246,9 +249,10 @@ public class AssemblerVisitorTest {
 		asm.assemble(noLabels);
 		List<Long> words = asm.result();
 		assertEquals(3, words.size());
-		assertEquals(0x0680001000000000L, words.get(0));
-		assertEquals(0x06C0002000000000L, words.get(1));
-		assertEquals(0x4600000000001234L, words.get(2));
+		int i = 0;
+		assertEquals(0x0680001000000000L, words.get(i++));
+		assertEquals(0x06C0002000000000L, words.get(i++));
+		assertEquals(0x4600000000001234L, words.get(i++));
 		assertEquals(3, labelVisitor.getLabelMap().get("FINIS") - labelVisitor.getLabelMap().get("START"));
 	}
 
@@ -341,7 +345,8 @@ public class AssemblerVisitorTest {
 		asm.assemble(noLabels);
 		List<Long> words = asm.result();
 		assertEquals(1, words.size());
-		assertEquals(0x0900000000000000L, words.get(0));
+		int i = 0;
+		assertEquals(0x0900000000000000L, words.get(i++));
 		assertEquals(1, labelVisitor.getLabelMap().get("FINIS") - labelVisitor.getLabelMap().get("START"));
 	}
 
@@ -360,9 +365,10 @@ public class AssemblerVisitorTest {
 		asm.assemble(noLabels);
 		List<Long> words = asm.result();
 		assertEquals(3, words.size());
-		assertEquals(0x0A80001000000000L, words.get(0));
-		assertEquals(0x0A400FF000000000L, words.get(1));
-		assertEquals(0x4A00000012345678L, words.get(2));
+		int i = 0;
+		assertEquals(0x0A80001000000000L, words.get(i++));
+		assertEquals(0x0A400FF000000000L, words.get(i++));
+		assertEquals(0x4A00000012345678L, words.get(i++));
 		assertEquals(3, labelVisitor.getLabelMap().get("FINIS") - labelVisitor.getLabelMap().get("START"));
 	}
 
@@ -379,7 +385,8 @@ public class AssemblerVisitorTest {
 		asm.assemble(noLabels);
 		List<Long> words = asm.result();
 		assertEquals(1, words.size());
-		assertEquals(0x0B00000000000000L, words.get(0));
+		int i = 0;
+		assertEquals(0x0B00000000000000L, words.get(i++));
 		assertEquals(1, labelVisitor.getLabelMap().get("FINIS") - labelVisitor.getLabelMap().get("START"));
 	}
 
@@ -397,8 +404,9 @@ public class AssemblerVisitorTest {
 		asm.assemble(noLabels);
 		List<Long> words = asm.result();
 		assertEquals(2, words.size());
-		assertEquals(0x0C80001000000000L, words.get(0));
-		assertEquals(0x0CC0002000000000L, words.get(1));
+		int i = 0;
+		assertEquals(0x0C80001000000000L, words.get(i++));
+		assertEquals(0x0CC0002000000000L, words.get(i++));
 		assertEquals(2, labelVisitor.getLabelMap().get("FINIS") - labelVisitor.getLabelMap().get("START"));
 	}
 
@@ -562,8 +570,9 @@ public class AssemblerVisitorTest {
 		var asm = new AssemblerVisitor(labelVisitor.getLabelMap());
 		asm.assemble(noLabels);
 		List<Long> words = asm.result();
+		int i = 0;
 		assertEquals(1, words.size());
-		assertEquals(0x10C0001000000000L, words.get(0));
+		assertEquals(0x10C0001000000000L, words.get(i++));
 		assertEquals(1, labelVisitor.getLabelMap().get("FINIS") - labelVisitor.getLabelMap().get("START"));
 	}
 
@@ -580,7 +589,8 @@ public class AssemblerVisitorTest {
 		asm.assemble(noLabels);
 		List<Long> words = asm.result();
 		assertEquals(1, words.size());
-		assertEquals(0x1180001000000000L, words.get(0));
+		int i = 0;
+		assertEquals(0x1180001000000000L, words.get(i++));
 		assertEquals(1, labelVisitor.getLabelMap().get("FINIS") - labelVisitor.getLabelMap().get("START"));
 	}
 
@@ -600,10 +610,11 @@ public class AssemblerVisitorTest {
 		asm.assemble(noLabels);
 		List<Long> words = asm.result();
 		assertEquals(4, words.size());
-		assertEquals(0x12A0001002000000L, words.get(0));
-		assertEquals(0x9280040000000003L, words.get(1));
-		assertEquals(0x12A8001002003000L, words.get(2));
-		assertEquals(0xD2A0010020000003L, words.get(3));
+		int i = 0;
+		assertEquals(0x12A0001002000000L, words.get(i++));
+		assertEquals(0x9280040000000003L, words.get(i++));
+		assertEquals(0x12A8001002003000L, words.get(i++));
+		assertEquals(0xD2A0010020000003L, words.get(i++));
 		assertEquals(4, labelVisitor.getLabelMap().get("FINIS") - labelVisitor.getLabelMap().get("START"));
 	}
 
@@ -623,10 +634,11 @@ public class AssemblerVisitorTest {
 		asm.assemble(noLabels);
 		List<Long> words = asm.result();
 		assertEquals(4, words.size());
-		assertEquals(0x13A0001002000000L, words.get(0));
-		assertEquals(0x9380040000000003L, words.get(1));
-		assertEquals(0x13A8001002003000L, words.get(2));
-		assertEquals(0xD3A0010020000003L, words.get(3));
+		int i = 0;
+		assertEquals(0x13A0001002000000L, words.get(i++));
+		assertEquals(0x9380040000000003L, words.get(i++));
+		assertEquals(0x13A8001002003000L, words.get(i++));
+		assertEquals(0xD3A0010020000003L, words.get(i++));
 		assertEquals(4, labelVisitor.getLabelMap().get("FINIS") - labelVisitor.getLabelMap().get("START"));
 	}
 
@@ -646,10 +658,11 @@ public class AssemblerVisitorTest {
 		asm.assemble(noLabels);
 		List<Long> words = asm.result();
 		assertEquals(4, words.size());
-		assertEquals(0x14A0001002000000L, words.get(0));
-		assertEquals(0x9480040000000003L, words.get(1));
-		assertEquals(0x14A8001002003000L, words.get(2));
-		assertEquals(0xD4A0010020000003L, words.get(3));
+		int i = 0;
+		assertEquals(0x14A0001002000000L, words.get(i++));
+		assertEquals(0x9480040000000003L, words.get(i++));
+		assertEquals(0x14A8001002003000L, words.get(i++));
+		assertEquals(0xD4A0010020000003L, words.get(i++));
 		assertEquals(4, labelVisitor.getLabelMap().get("FINIS") - labelVisitor.getLabelMap().get("START"));
 	}
 
@@ -667,8 +680,9 @@ public class AssemblerVisitorTest {
 		asm.assemble(noLabels);
 		List<Long> words = asm.result();
 		assertEquals(2, words.size());
-		assertEquals(0x1580001000000000L, words.get(0));
-		assertEquals(0x15C0001000000000L, words.get(1));
+		int i = 0;
+		assertEquals(0x1580001000000000L, words.get(i++));
+		assertEquals(0x15C0001000000000L, words.get(i++));
 		assertEquals(2, labelVisitor.getLabelMap().get("FINIS") - labelVisitor.getLabelMap().get("START"));
 	}
 
@@ -687,9 +701,10 @@ public class AssemblerVisitorTest {
 		asm.assemble(noLabels);
 		List<Long> words = asm.result();
 		assertEquals(3, words.size());
-		assertEquals(0x16A0001002000000L, words.get(0));
-		assertEquals(0x16F0001002000000L, words.get(1));
-		assertEquals(0x9680040000001234L, words.get(2));
+		int i = 0;
+		assertEquals(0x16A0001002000000L, words.get(i++));
+		assertEquals(0x16F0001002000000L, words.get(i++));
+		assertEquals(0x9680040000001234L, words.get(i++));
 		assertEquals(3, labelVisitor.getLabelMap().get("FINIS") - labelVisitor.getLabelMap().get("START"));
 	}
 
@@ -709,10 +724,11 @@ public class AssemblerVisitorTest {
 		asm.assemble(noLabels);
 		List<Long> words = asm.result();
 		assertEquals(4, words.size());
-		assertEquals(0x17A0001002000000L, words.get(0));
-		assertEquals(0x9780040000000003L, words.get(1));
-		assertEquals(0x17A8001002003000L, words.get(2));
-		assertEquals(0xD7A0010020000003L, words.get(3));
+		int i = 0;
+		assertEquals(0x17A0001002000000L, words.get(i++));
+		assertEquals(0x9780040000000003L, words.get(i++));
+		assertEquals(0x17A8001002003000L, words.get(i++));
+		assertEquals(0xD7A0010020000003L, words.get(i++));
 		assertEquals(4, labelVisitor.getLabelMap().get("FINIS") - labelVisitor.getLabelMap().get("START"));
 	}
 
@@ -732,10 +748,11 @@ public class AssemblerVisitorTest {
 		asm.assemble(noLabels);
 		List<Long> words = asm.result();
 		assertEquals(4, words.size());
-		assertEquals(0x18A0001002000000L, words.get(0));
-		assertEquals(0x9880040000000003L, words.get(1));
-		assertEquals(0x18A8001002003000L, words.get(2));
-		assertEquals(0xD8A0010020000003L, words.get(3));
+		int i = 0;
+		assertEquals(0x18A0001002000000L, words.get(i++));
+		assertEquals(0x9880040000000003L, words.get(i++));
+		assertEquals(0x18A8001002003000L, words.get(i++));
+		assertEquals(0xD8A0010020000003L, words.get(i++));
 		assertEquals(4, labelVisitor.getLabelMap().get("FINIS") - labelVisitor.getLabelMap().get("START"));
 	}
 
@@ -755,10 +772,11 @@ public class AssemblerVisitorTest {
 		asm.assemble(noLabels);
 		List<Long> words = asm.result();
 		assertEquals(4, words.size());
-		assertEquals(0x19A0001002000000L, words.get(0));
-		assertEquals(0x9980040000000003L, words.get(1));
-		assertEquals(0x19A8001002003000L, words.get(2));
-		assertEquals(0xD9A0010020000003L, words.get(3));
+		int i = 0;
+		assertEquals(0x19A0001002000000L, words.get(i++));
+		assertEquals(0x9980040000000003L, words.get(i++));
+		assertEquals(0x19A8001002003000L, words.get(i++));
+		assertEquals(0xD9A0010020000003L, words.get(i++));
 		assertEquals(4, labelVisitor.getLabelMap().get("FINIS") - labelVisitor.getLabelMap().get("START"));
 	}
 
@@ -778,10 +796,11 @@ public class AssemblerVisitorTest {
 		asm.assemble(noLabels);
 		List<Long> words = asm.result();
 		assertEquals(4, words.size());
-		assertEquals(0x1AA0001002000000L, words.get(0));
-		assertEquals(0x9A80040000000003L, words.get(1));
-		assertEquals(0x1AA8001002003000L, words.get(2));
-		assertEquals(0xDAA0010020000003L, words.get(3));
+		int i = 0;
+		assertEquals(0x1AA0001002000000L, words.get(i++));
+		assertEquals(0x9A80040000000003L, words.get(i++));
+		assertEquals(0x1AA8001002003000L, words.get(i++));
+		assertEquals(0xDAA0010020000003L, words.get(i++));
 		assertEquals(4, labelVisitor.getLabelMap().get("FINIS") - labelVisitor.getLabelMap().get("START"));
 	}
 
@@ -801,10 +820,11 @@ public class AssemblerVisitorTest {
 		asm.assemble(noLabels);
 		List<Long> words = asm.result();
 		assertEquals(4, words.size());
-		assertEquals(0x1BA0001002000000L, words.get(0));
-		assertEquals(0x9B80040000000003L, words.get(1));
-		assertEquals(0x1BA8001002003000L, words.get(2));
-		assertEquals(0xDBA0010020000003L, words.get(3));
+		int i = 0;
+		assertEquals(0x1BA0001002000000L, words.get(i++));
+		assertEquals(0x9B80040000000003L, words.get(i++));
+		assertEquals(0x1BA8001002003000L, words.get(i++));
+		assertEquals(0xDBA0010020000003L, words.get(i++));
 		assertEquals(4, labelVisitor.getLabelMap().get("FINIS") - labelVisitor.getLabelMap().get("START"));
 	}
 
@@ -828,14 +848,15 @@ public class AssemblerVisitorTest {
 		asm.assemble(noLabels);
 		List<Long> words = asm.result();
 		assertEquals(8, words.size());
-		assertEquals(0x1CA8001002003000L, words.get(0));
-		assertEquals(0x1C94001002003000L, words.get(1));
-		assertEquals(0x1CA4001002003000L, words.get(2));
-		assertEquals(0x1C98001002003000L, words.get(3));
-		assertEquals(0x1CE8001002003000L, words.get(4));
-		assertEquals(0x1CD4001002003000L, words.get(5));
-		assertEquals(0x1CE4001002003000L, words.get(6));
-		assertEquals(0x1CD8001002003000L, words.get(7));
+		int i = 0;
+		assertEquals(0x1CA8001002003000L, words.get(i++));
+		assertEquals(0x1C94001002003000L, words.get(i++));
+		assertEquals(0x1CA4001002003000L, words.get(i++));
+		assertEquals(0x1C98001002003000L, words.get(i++));
+		assertEquals(0x1CE8001002003000L, words.get(i++));
+		assertEquals(0x1CD4001002003000L, words.get(i++));
+		assertEquals(0x1CE4001002003000L, words.get(i++));
+		assertEquals(0x1CD8001002003000L, words.get(i++));
 		assertEquals(8, labelVisitor.getLabelMap().get("FINIS") - labelVisitor.getLabelMap().get("START"));
 	}
 
@@ -893,8 +914,9 @@ public class AssemblerVisitorTest {
 		asm.assemble(noLabels);
 		List<Long> words = asm.result();
 		assertEquals(2, words.size());
-		assertEquals(0x1EA0001002000000L, words.get(0));
-		assertEquals(0x1EAA001002003004L, words.get(1));
+		int i = 0;
+		assertEquals(0x1EA0001002000000L, words.get(i++));
+		assertEquals(0x1EAA001002003004L, words.get(i++));
 		assertEquals(2, labelVisitor.getLabelMap().get("FINIS") - labelVisitor.getLabelMap().get("START"));
 	}
 
@@ -912,8 +934,9 @@ public class AssemblerVisitorTest {
 		asm.assemble(noLabels);
 		List<Long> words = asm.result();
 		assertEquals(2, words.size());
-		assertEquals(0x1FA0001002000000L, words.get(0));
-		assertEquals(0x1FAA001002003004L, words.get(1));
+		int i = 0;
+		assertEquals(0x1FA0001002000000L, words.get(i++));
+		assertEquals(0x1FAA001002003004L, words.get(i++));
 		assertEquals(2, labelVisitor.getLabelMap().get("FINIS") - labelVisitor.getLabelMap().get("START"));
 	}
 
@@ -931,8 +954,9 @@ public class AssemblerVisitorTest {
 		asm.assemble(noLabels);
 		List<Long> words = asm.result();
 		assertEquals(2, words.size());
-		assertEquals(0x20A0001002000000L, words.get(0));
-		assertEquals(0x20AA001002003004L, words.get(1));
+		int i = 0;
+		assertEquals(0x20A0001002000000L, words.get(i++));
+		assertEquals(0x20AA001002003004L, words.get(i++));
 		assertEquals(2, labelVisitor.getLabelMap().get("FINIS") - labelVisitor.getLabelMap().get("START"));
 	}
 
@@ -950,8 +974,9 @@ public class AssemblerVisitorTest {
 		asm.assemble(noLabels);
 		List<Long> words = asm.result();
 		assertEquals(2, words.size());
-		assertEquals(0x21A0001002000000L, words.get(0));
-		assertEquals(0x21AA001002003004L, words.get(1));
+		int i = 0;
+		assertEquals(0x21A0001002000000L, words.get(i++));
+		assertEquals(0x21AA001002003004L, words.get(i++));
 		assertEquals(2, labelVisitor.getLabelMap().get("FINIS") - labelVisitor.getLabelMap().get("START"));
 	}
 
@@ -1003,10 +1028,11 @@ public class AssemblerVisitorTest {
 		asm.assemble(noLabels);
 		List<Long> words = asm.result();
 		assertEquals(4, words.size());
-		assertEquals(0x23A0001002000000L, words.get(0));
-		assertEquals(0x2390001002000000L, words.get(1));
-		assertEquals(0x2360001002000000L, words.get(2));
-		assertEquals(0x2350001002000000L, words.get(3));
+		int i = 0;
+		assertEquals(0x23A0001002000000L, words.get(i++));
+		assertEquals(0x2390001002000000L, words.get(i++));
+		assertEquals(0x2360001002000000L, words.get(i++));
+		assertEquals(0x2350001002000000L, words.get(i++));
 		assertEquals(4, labelVisitor.getLabelMap().get("FINIS") - labelVisitor.getLabelMap().get("START"));
 	}
 
@@ -1026,10 +1052,11 @@ public class AssemblerVisitorTest {
 		asm.assemble(noLabels);
 		List<Long> words = asm.result();
 		assertEquals(4, words.size());
-		assertEquals(0x24A000A01C000000L, words.get(0));
-		assertEquals(0x24A0014016000000L, words.get(1));
-		assertEquals(0x25F000A01F000000L, words.get(2));
-		assertEquals(0x25F0014016000000L, words.get(3));
+		int i = 0;
+		assertEquals(0x24A000A01C000000L, words.get(i++));
+		assertEquals(0x24A0014016000000L, words.get(i++));
+		assertEquals(0x25F000A01F000000L, words.get(i++));
+		assertEquals(0x25F0014016000000L, words.get(i++));
 		assertEquals(4, labelVisitor.getLabelMap().get("FINIS") - labelVisitor.getLabelMap().get("START"));
 	}
 
@@ -1048,9 +1075,10 @@ public class AssemblerVisitorTest {
 		asm.assemble(noLabels);
 		List<Long> words = asm.result();
 		assertEquals(3, words.size());
-		assertEquals(0x1234567890ABCDEFL, words.get(0));
-		assertEquals(0xFFFFFFFFFFFFFFFFL, words.get(1));
-		assertEquals(0xFFFFFFFFFFFFFEDDL, words.get(2));
+		int i = 0;
+		assertEquals(0x1234567890ABCDEFL, words.get(i++));
+		assertEquals(0xFFFFFFFFFFFFFFFFL, words.get(i++));
+		assertEquals(0xFFFFFFFFFFFFFEDDL, words.get(i++));
 		assertEquals(3, labelVisitor.getLabelMap().get("FINIS") - labelVisitor.getLabelMap().get("START"));
 	}
 
@@ -1070,10 +1098,11 @@ public class AssemblerVisitorTest {
 		asm.assemble(noLabels);
 		List<Long> words = asm.result();
 		assertEquals(4, words.size());
-		assertEquals(0x400921FB4D12D84AL, words.get(0));
-		assertEquals(0xC005BF0A87427F01L, words.get(1));
-		assertEquals(0x0000000000000000L, words.get(2));
-		assertEquals(0x3FF0000000000000L, words.get(3));
+		int i = 0;
+		assertEquals(0x400921FB4D12D84AL, words.get(i++));
+		assertEquals(0xC005BF0A87427F01L, words.get(i++));
+		assertEquals(0x0000000000000000L, words.get(i++));
+		assertEquals(0x3FF0000000000000L, words.get(i++));
 		assertEquals(4, labelVisitor.getLabelMap().get("FINIS") - labelVisitor.getLabelMap().get("START"));
 	}
 
@@ -1094,13 +1123,12 @@ public class AssemblerVisitorTest {
 		List<Long> words = asm.result();
 		assertEquals(120, words.size());
 		int i = 0;
-		assertEquals(5, words.get(i));
-		i += 6;
-		assertEquals(10, words.get(i));
-		i += 11;
-		assertEquals(100, words.get(i));
-		i += 101;
-		assertEquals(1, words.get(i));
+		assertEquals(5, words.get(i++));
+		i += 5;
+		assertEquals(10, words.get(i++));
+		i += 10;
+		assertEquals(100, words.get(i++));
+		i += 100;
 	}
 
 	@Test
@@ -1142,7 +1170,7 @@ public class AssemblerVisitorTest {
 			.DCW -326
 			.DCW 0x1234, 0x5678, 0x9ABC, 0xDEF0
 			.DCW 3.1415926, -2.7182818, 0.
-			.DCW 'a', '\\n', 'é', '\\u1234'
+			.DCW 'a', '\\n', 'é', '\\u{1234}'
 			FINIS:
 			""";
 		LabelVisitor labelVisitor = new LabelVisitor();
@@ -1164,6 +1192,10 @@ public class AssemblerVisitorTest {
 		assertEquals(0xC005BF0A87427F01L, words.get(i++));
 		assertEquals(0, words.get(i++));
 		assertEquals(4, words.get(i++));
+		assertEquals('a', words.get(i++));
+		assertEquals('\n', words.get(i++));
+		assertEquals('é', words.get(i++));
+		assertEquals('\u1234', words.get(i++));
 	}
 
 	@Test
@@ -1172,7 +1204,7 @@ public class AssemblerVisitorTest {
 			START:
 			.DCS ""
 			.DCS "Hello, World!"
-			.DCS "\\'\\"\\\\\\n\\b\\u1234"
+			.DCS "\\'\\"\\\\\\n\\b\\u{1234}🙂¡€\\u{1F1FA}\\u{1F1F8}"
 			FINIS:
 			""";
 		LabelVisitor labelVisitor = new LabelVisitor();
@@ -1180,14 +1212,17 @@ public class AssemblerVisitorTest {
 		var asm = new AssemblerVisitor(labelVisitor.getLabelMap());
 		asm.assemble(noLabels);
 		List<Long> words = asm.result();
-		assertEquals(6, words.size());
+		assertEquals(9, words.size());
 		int i = 0;
 		assertEquals(0x0000000000000000L, words.get(i++));
 		assertEquals(13, words.get(i++));
 		assertEquals(0x48656C6C6F2C2057L, words.get(i++));
 		assertEquals(0x6F726C6421000000L, words.get(i++));
-		assertEquals(8, words.get(i++));
+		assertEquals(25, words.get(i++));
 		assertEquals(0x27225C0A08E188B4L, words.get(i++));
+		assertEquals(0xF09F9982C2A1E282L, words.get(i++));
+		assertEquals(0xACF09F87BAF09F87L, words.get(i++));
+		assertEquals(0xB800000000000000L, words.get(i++));
 		assertEquals(i, labelVisitor.getLabelMap().get("FINIS") - labelVisitor.getLabelMap().get("START"));
 	}
 

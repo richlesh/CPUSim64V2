@@ -532,4 +532,14 @@ _VECTOR_SIZE_FACTOR: 	.dcf	1.2		// Ratio to increase data block size.
 		#macro	put_nl()
 //	#endsync
 #end_func
+
+#def_func debugVector(vector)
+	#var	v, data, mutex, size
+	load	v, vector
+	load	data, v[_VECTOR_DATA]
+	move	size, -1
+	load	mutex, v[_VECTOR_MUTEX]
+	#call	fprintf(STDOUT,"vec[%x, size: %d, %x]\n", data, size, mutex)
+#end_func
+
 VECTOR_ASM_END: nop

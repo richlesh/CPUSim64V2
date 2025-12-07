@@ -8,6 +8,7 @@ import java.util.Map;
 import cloud.lesh.CPUSim64v2.Simulator;
 
 public class Simulation {
+
 	public static void main(String[] args) throws Exception {
 		if (args.length < 1) {
 			System.err.println("Usage: simulation <input.obj.gz>");
@@ -98,7 +99,7 @@ public class Simulation {
 		var sim = new Simulator(memorySize, 0, stackSize, simulatorArgs.toArray(String[]::new));
 		if (debug) sim.setDebug(true);
 		sim.loadProgram(program, 0L);
-		long result = sim.run(reverseSymbolMap);
+		long result = sim.run(program.get(0), reverseSymbolMap);
 		if (verbose) {
 			System.out.println("Result: " + result);
 		}

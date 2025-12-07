@@ -462,30 +462,37 @@ public class SystemInterruptTest extends BaseTest {
 				#include <system/system.def>
 				INT iARGC
 				MOVE R28, R0
-				MOVE R0, 2
+				MOVE R1, 2
 				INT iARGS
 				MOVE R27, R0
-				MOVE R0, 1
+				MOVE R1, 1
 				INT iARGS
 				MOVE R26, R0 
 				INT iGET_PID
-				MOVE R1, R0
-				INT iGET_NUM_CORES
 				MOVE R2, R0
-				INT	 iCYCLES
+				INT iGET_NUM_CORES
 				MOVE R3, R0
-				MOVE R0, 500
+				INT	 iCYCLES
+				MOVE R4, R0
+				MOVE R1, 500
 				INT iSLEEP
 				INT	iCLOCK
-				MOVE R4, R0
-				MOVE R0, "src/test/resources/sum.sh 4 5"
+				MOVE R5, R0
+				MOVE R1, "src/test/resources/listing.sh"
 				INT iSYSTEM
+				MOVE R1, "src/test/resources/sum.sh 4 5"
+				INT iSYSTEM
+				MOVE R1, R0
 				INT iEXIT
 				STOP
 			FINIS:
 			""";
 		String[] args = {"test", "abc", "defghijklmn"};
+		ConsoleOutputCapturer capturer = new ConsoleOutputCapturer();
+		capturer.start(ConsoleOutputCapturer.StdStream.STDOUT);
 		var tuple = runProgram(src, args);
+		String output = capturer.stop();
+		String[] lines = output.split("\n");
 		var result = tuple.getLeft();
 		var sim = tuple.getMiddle();
 		var diff = tuple.getRight();
@@ -497,9 +504,10 @@ public class SystemInterruptTest extends BaseTest {
 		assertEquals("abc", sim.convertString(sim.getR(26)));
 
 		// diff.assertDiff(1, sim.getPID());
-		diff.assertDiff(2, Runtime.getRuntime().availableProcessors());
-		diff.assertDiff(3, 54);
-		assertTrue(500000000 < diff.getReg(4));
+		diff.assertDiff(3, Runtime.getRuntime().availableProcessors());
+		diff.assertDiff(4, 54);
+		assertTrue(500000000 < diff.getReg(5));
+		assertTrue(lines.length > 8);
 	}
 
 	@Test
@@ -628,19 +636,19 @@ R28: 000000000000001c                    28 F28:       28.00000000000000
 		String src = """
 			START:
 				#include <system/system.def>
-				MOVE R0, 100
-				INT iALLOC
-				MOVE R1, R0
-				MOVE R0, 200
+				MOVE R1, 100
 				INT iALLOC
 				MOVE R2, R0
-				MOVE R0, 300
+				MOVE R1, 200
 				INT iALLOC
 				MOVE R3, R0
-				MOVE R0, 400
+				MOVE R1, 300
 				INT iALLOC
 				MOVE R4, R0
-				MOVE R0, R2
+				MOVE R1, 400
+				INT iALLOC
+				MOVE R5, R0
+				MOVE R1, R3
 				INT iFREE
 				INT iALLOC_COUNT
 				MOVE R6, R0
@@ -661,12 +669,12 @@ R28: 000000000000001c                    28 F28:       28.00000000000000
 		var result = tuple.getLeft();
 		var sim = tuple.getMiddle();
 		var diff = tuple.getRight();
-		assertEquals(11, diff.size());
+		assertEquals(12, diff.size());
 		// diff.assertDiff(0, 0);
-		diff.assertDiff(1, sim.heapStart + 3);
-		diff.assertDiff(2, sim.heapStart + 144 + 3);
-		diff.assertDiff(3, sim.heapStart + 233 + 144 + 3);
-		diff.assertDiff(4, sim.heapStart + 377 + 233 + 144 + 3);
+		diff.assertDiff(2, sim.heapStart + 3);
+		diff.assertDiff(3, sim.heapStart + 144 + 3);
+		diff.assertDiff(4, sim.heapStart + 233 + 144 + 3);
+		diff.assertDiff(5, sim.heapStart + 377 + 233 + 144 + 3);
 		diff.assertDiff(6, 3);		// Alloc count
 		diff.assertDiff(7, 2);		// Free count
 		diff.assertDiff(8, 1131);	// Alloc size
@@ -679,20 +687,20 @@ R28: 000000000000001c                    28 F28:       28.00000000000000
 		String src = """
 			START:
 				#include <system/system.def>
-				MOVE R0, 100
-				INT iALLOC
-				MOVE R1, R0
-				MOVE R0, 200
+				MOVE R1, 100
 				INT iALLOC
 				MOVE R2, R0
-				MOVE R0, 300
+				MOVE R1, 200
 				INT iALLOC
 				MOVE R3, R0
-				MOVE R0, R2
-				INT iFREE
-				MOVE R0, 200
+				MOVE R1, 300
 				INT iALLOC
-				MOVE R2, R0
+				MOVE R4, R0
+				MOVE R1, R3
+				INT iFREE
+				MOVE R1, 200
+				INT iALLOC
+				MOVE R3, R0
 				INT iALLOC_COUNT
 				MOVE R6, R0
 				INT iFREE_COUNT
@@ -708,11 +716,11 @@ R28: 000000000000001c                    28 F28:       28.00000000000000
 		var result = tuple.getLeft();
 		var sim = tuple.getMiddle();
 		var diff = tuple.getRight();
-		assertEquals(10, diff.size());
+		assertEquals(11, diff.size());
 		// diff.assertDiff(0, 0);
-		diff.assertDiff(1, sim.heapStart + 3);
-		diff.assertDiff(2, sim.heapStart + 144 + 3);
-		diff.assertDiff(3, sim.heapStart + 233 + 144 + 3);
+		diff.assertDiff(2, sim.heapStart + 3);
+		diff.assertDiff(3, sim.heapStart + 144 + 3);
+		diff.assertDiff(4, sim.heapStart + 233 + 144 + 3);
 		diff.assertDiff(6, 3);		// Alloc count
 		diff.assertDiff(7, 1);		// Free count
 		diff.assertDiff(8, 754);	// Alloc size
@@ -725,39 +733,39 @@ R28: 000000000000001c                    28 F28:       28.00000000000000
 		String src = """
 			START:
 				#include <system/system.def>
-				MOVE R0, 15
-				INT iALLOC
-				MOVE R1, R0
-				MOVE R0, 15
+				MOVE R1, 15
 				INT iALLOC
 				MOVE R2, R0
-				MOVE R0, 15
+				MOVE R1, 15
 				INT iALLOC
 				MOVE R3, R0
-				MOVE R0, 15
+				MOVE R1, 15
 				INT iALLOC
 				MOVE R4, R0
-				MOVE R0, 15
+				MOVE R1, 15
 				INT iALLOC
 				MOVE R5, R0
-				MOVE R0, R3
+				MOVE R1, 15
+				INT iALLOC
+				MOVE R6, R0
+				MOVE R1, R4
 				INT iFREE
-				MOVE R0, R2
+				MOVE R1, R3
 				INT iFREE
-				MOVE R0, R4
+				MOVE R1, R5
 				INT iFREE
-				MOVE R0, R1
+				MOVE R1, R2
 				INT iFREE
-				MOVE R0, R5
+				MOVE R1, R6
 				INT iFREE
 				INT iALLOC_COUNT
-				MOVE R6, R0
-				INT iFREE_COUNT
 				MOVE R7, R0
-				INT iALLOC_SIZE
+				INT iFREE_COUNT
 				MOVE R8, R0
-				INT iFREE_SIZE
+				INT iALLOC_SIZE
 				MOVE R9, R0
+				INT iFREE_SIZE
+				MOVE R10, R0
 				STOP
 			FINIS:
 			""";
@@ -765,13 +773,13 @@ R28: 000000000000001c                    28 F28:       28.00000000000000
 		var result = tuple.getLeft();
 		var sim = tuple.getMiddle();
 		var diff = tuple.getRight();
-		assertEquals(10, diff.size());
+		assertEquals(11, diff.size());
 		// diff.assertDiff(0, 0);
-		diff.assertDiff(1, sim.heapStart + 3);
+		diff.assertDiff(2, sim.heapStart + 3);
 		// diff.assertDiff(6, 0);	// Alloc count
-		diff.assertDiff(7, 1);		// Free count
+		diff.assertDiff(8, 1);		// Free count
 		// diff.assertDiff(8, 0);	// Alloc size
-		diff.assertDiff(9, sim.heapLimit - sim.heapStart - sim.getR(8));	// Free size
+		diff.assertDiff(10, sim.heapLimit - sim.heapStart - sim.getR(9));	// Free size
 	}
 
 	// three allocs, realloc same size
@@ -780,22 +788,22 @@ R28: 000000000000001c                    28 F28:       28.00000000000000
 		String src = """
 			START:
 				#include <system/system.def>
-				MOVE R0, 15
-				INT iALLOC
-				MOVE R1, R0
-				MOVE R0, 15
+				MOVE R1, 15
 				INT iALLOC
 				MOVE R2, R0
-				MOVE R0, 15
+				MOVE R1, 15
 				INT iALLOC
 				MOVE R3, R0
+				MOVE R1, 15
+				INT iALLOC
+				MOVE R4, R0
 
 				STORE 1, R2
 				STORE 2, R2 + 1
 				STORE 3, R2 + 2
 				STORE 99, R2 + 14
-				MOVE R0, R2
-				MOVE R1, 16
+				MOVE R1, R2
+				MOVE R2, 16
 				INT iREALLOC
 				MOVE R2, R0
 				
@@ -814,7 +822,7 @@ R28: 000000000000001c                    28 F28:       28.00000000000000
 		var result = tuple.getLeft();
 		var sim = tuple.getMiddle();
 		var diff = tuple.getRight();
-		assertEquals(10, diff.size());
+		assertEquals(11, diff.size());
 		// diff.assertDiff(0, 0);
 		diff.assertDiff(6, 3);		// Alloc count
 		diff.assertDiff(7, 1);		// Free count
@@ -834,24 +842,24 @@ R28: 000000000000001c                    28 F28:       28.00000000000000
 		String src = """
 			START:
 				#include <system/system.def>
-				MOVE R0, 15
-				INT iALLOC
-				MOVE R1, R0
-				MOVE R0, 15
+				MOVE R1, 15
 				INT iALLOC
 				MOVE R2, R0
-				MOVE R0, 15
+				MOVE R1, 15
 				INT iALLOC
 				MOVE R3, R0
+				MOVE R1, 15
+				INT iALLOC
+				MOVE R4, R0
 
-				STORE 1, R2
-				STORE 2, R2 + 1
-				STORE 3, R2 + 2
-				STORE 99, R2 + 14
-				MOVE R0, R2
-				MOVE R1, 100
+				STORE 1, R3
+				STORE 2, R3 + 1
+				STORE 3, R3 + 2
+				STORE 99, R3 + 14
+				MOVE R1, R3
+				MOVE R2, 100
 				INT iREALLOC
-				MOVE R2, R0
+				MOVE R3, R0
 				
 				INT iALLOC_COUNT
 				MOVE R6, R0
@@ -868,18 +876,18 @@ R28: 000000000000001c                    28 F28:       28.00000000000000
 		var result = tuple.getLeft();
 		var sim = tuple.getMiddle();
 		var diff = tuple.getRight();
-		assertEquals(10, diff.size());
+		assertEquals(11, diff.size());
 		// diff.assertDiff(0, 0);
 		diff.assertDiff(6, 3);		// Alloc count
 		diff.assertDiff(7, 2);		// Free count
 		diff.assertDiff(8, 186);	// Alloc size
 		diff.assertDiff(9, sim.heapLimit - sim.heapStart - sim.getR(8));	// Free size
-		long r2 = sim.getR(2);
-		diff.assertMem(r2 - 1, 144);
-		diff.assertMem(r2, 1);
-		diff.assertMem(r2 + 1, 2);
-		diff.assertMem(r2 + 2, 3);
-		diff.assertMem(r2 + 14, 99);
+		long r3 = sim.getR(3);
+		diff.assertMem(r3 - 1, 144);
+		diff.assertMem(r3, 1);
+		diff.assertMem(r3 + 1, 2);
+		diff.assertMem(r3 + 2, 3);
+		diff.assertMem(r3 + 14, 99);
 	}
 
 	// three allocs, realloc smaller size
@@ -888,24 +896,24 @@ R28: 000000000000001c                    28 F28:       28.00000000000000
 		String src = """
 			START:
 				#include <system/system.def>
-				MOVE R0, 30
-				INT iALLOC
-				MOVE R1, R0
-				MOVE R0, 30
+				MOVE R1, 30
 				INT iALLOC
 				MOVE R2, R0
-				MOVE R0, 30
+				MOVE R1, 30
 				INT iALLOC
 				MOVE R3, R0
+				MOVE R1, 30
+				INT iALLOC
+				MOVE R4, R0
 
-				STORE 1, R2
-				STORE 2, R2 + 1
-				STORE 3, R2 + 2
-				STORE 99, R2 + 29
-				MOVE R0, R2
-				MOVE R1, 10
+				STORE 1, R3
+				STORE 2, R3 + 1
+				STORE 3, R3 + 2
+				STORE 99, R3 + 29
+				MOVE R1, R3
+				MOVE R2, 10
 				INT iREALLOC
-				MOVE R2, R0
+				MOVE R3, R0
 				
 				INT iALLOC_COUNT
 				MOVE R6, R0
@@ -922,17 +930,17 @@ R28: 000000000000001c                    28 F28:       28.00000000000000
 		var result = tuple.getLeft();
 		var sim = tuple.getMiddle();
 		var diff = tuple.getRight();
-		assertEquals(10, diff.size());
+		assertEquals(11, diff.size());
 		// diff.assertDiff(0, 0);
 		diff.assertDiff(6, 3);		// Alloc count
 		diff.assertDiff(7, 2);		// Free count
 		diff.assertDiff(8, 81);		// Alloc size
 		diff.assertDiff(9, sim.heapLimit - sim.heapStart - sim.getR(8));	// Free size
-		long r2 = sim.getR(2);
-		diff.assertMem(r2 - 1, 13);
-		diff.assertMem(r2, 1);
-		diff.assertMem(r2 + 1, 2);
-		diff.assertMem(r2 + 2, 3);
+		long r3 = sim.getR(3);
+		diff.assertMem(r3 - 1, 13);
+		diff.assertMem(r3, 1);
+		diff.assertMem(r3 + 1, 2);
+		diff.assertMem(r3 + 2, 3);
 	}
 
 	@Test
@@ -941,31 +949,31 @@ R28: 000000000000001c                    28 F28:       28.00000000000000
 			START:
 				#include <system/system.def>
 				#DEFINE COUNT 100
-				MOVE R0, COUNT
-				ADD R0, 1
+				MOVE R1, COUNT
+				ADD R1, 1
 				INT iALLOC				// Allocate COUNT + 1 words
 				MOVE R28, R0			// Save src block in R28
-				MOVE R0, COUNT
-				ADD R0, 1
+				MOVE R1, COUNT
+				ADD R1, 1
 				INT iALLOC				// Allocate COUNT + 1 words
 				MOVE R27, R0			// Save dest block in R27
 				
-				MOVE R1, R28
-				MOVE R0, COUNT
+				MOVE R2, R28
+				MOVE R1, COUNT
 			LOOP_START:
 				JUMP Z, LOOP_END		// End we we get to 0
-				STORE R0, R1			// Store the loop counter in block
-				ADD R1, 1
-				SUB R0, 1
+				STORE R1, R2			// Store the loop counter in block
+				ADD R2, 1
+				SUB R1, 1
 				JUMP LOOP_START
 			LOOP_END:
 				STORE -1, R1			// Add a sentinel of -1 at end of src
-				MOVE R0, R27 + COUNT
-				STORE -2, R0			// Add a sentinel of -2 at end of dest
+				MOVE R1, R27 + COUNT
+				STORE -2, R1			// Add a sentinel of -2 at end of dest
 				
-				MOVE R0, R27
-				MOVE R1, R28
-				MOVE R2, COUNT
+				MOVE R1, R27
+				MOVE R2, R28
+				MOVE R3, COUNT
 				INT iMEMMOVE			// Move data from src to dest but not sentinel
 				STOP
 			FINIS:
@@ -974,7 +982,7 @@ R28: 000000000000001c                    28 F28:       28.00000000000000
 		var result = tuple.getLeft();
 		var sim = tuple.getMiddle();
 		var diff = tuple.getRight();
-		assertEquals(7, diff.size());
+		assertEquals(8, diff.size());
 		long p = sim.getR(27);
 		for (int i = 100; i > 0; --i) {
 			diff.assertMem(p, i);
@@ -989,24 +997,24 @@ R28: 000000000000001c                    28 F28:       28.00000000000000
 			START:
 				#include <system/system.def>
 				#DEFINE COUNT 100
-				MOVE R0, COUNT
-				ADD R0, 1
+				MOVE R1, COUNT
+				ADD R1, 1
 				INT iALLOC				// Allocate COUNT + 1 words
 				MOVE R28, R0			// Save block in R28
 
-				MOVE R1, R28			// Pointer into block
-				MOVE R0, COUNT			// Loop counter
+				MOVE R2, R28			// Pointer into block
+				MOVE R1, COUNT			// Loop counter
 			LOOP_START:
 				JUMP Z, LOOP_END		// End we we get to 0
-				STORE R0, R1			// Store the loop counter in block
-				ADD R1, 1
-				SUB R0, 1
+				STORE R1, R2			// Store the loop counter in block
+				ADD R2, 1
+				SUB R1, 1
 				JUMP LOOP_START
 			LOOP_END:
-				STORE -1, R1			// Add a sentinel of -1 at end
+				STORE -1, R2			// Add a sentinel of -1 at end
 				
-				MOVE R0, R28
-				MOVE R1, COUNT
+				MOVE R1, R28
+				MOVE R2, COUNT
 				INT iMEMCLEAR			// Clear the block but not sentinel
 				STOP
 			FINIS:
@@ -1015,7 +1023,7 @@ R28: 000000000000001c                    28 F28:       28.00000000000000
 		var result = tuple.getLeft();
 		var sim = tuple.getMiddle();
 		var diff = tuple.getRight();
-		assertEquals(5, diff.size());
+		assertEquals(6, diff.size());
 		long p = sim.getR(28);
 		for (int i = 100; i > 0; --i) {
 			diff.assertMem(p, 0);
@@ -1112,10 +1120,10 @@ R28: 000000000000001c                    28 F28:       28.00000000000000
 			START:
 			#include <system/system.def>
 			#include <system/io.def>
-			#define MS 000
+			#define MS 1000
 			#def_macro put_dec(i)
-				move R1, ${i}
-				move R0, 1
+				move R2, ${i}
+				move R1, STDOUT
 				int iPUT_DEC
 				int iPUT_NL
 			#end_macro
@@ -1123,29 +1131,27 @@ R28: 000000000000001c                    28 F28:       28.00000000000000
 				int		iFORK
 				move	r${i}, r0
 				cmp		r${i}, -1
-				jump	eq, @FORK_FAILED_${i}
+				jump	eq, FORK_FAILED_${i}
 				test	r${i}
-				jump	z, @CHILD_FORK_${i}
-				jump	@END_MACRO_${i}
+				jump	z, CHILD_FORK_${i}
+				jump	END_MACRO_${i}
 			CHILD_FORK_${i}:
 				int		iGET_PID
-				move	r1, r0
-				move	r0, 1
-				int		iPUT_DEC
-				int		iPUT_NL
-				move	r0, 1000
+				#macro	put_dec(r0)
+				move	r1, MS
 				int		iSLEEP
-				jump	@END_MACRO_${i}
+				jump	END_MACRO_${i}
 			FORK_FAILED_${i}:
-				move	r1, -999
-				move	r0, 1
-				int		iPUT_DEC
-				int		iPUT_NL
+				#macro	put_dec(-999)
 			END_MACRO_${i}:
 			#end_macro
 			MAIN:
 				#macro fork_child(3)
+				move	r1, 500
+				int		iSLEEP
 				#macro fork_child(4)
+				move	r1, 500
+				int		iSLEEP
 				#macro fork_child(5)
 			END:
 				int iWAIT
@@ -1161,7 +1167,7 @@ R28: 000000000000001c                    28 F28:       28.00000000000000
 		var result = tuple.getLeft();
 		var sim = tuple.getMiddle();
 		var diff = tuple.getRight();
-		assertEquals(6, diff.size());
+		assertEquals(7, diff.size());
 		assertEquals(7, lines.length);
 	}
 

@@ -37,12 +37,12 @@ public class ThreadLibTest extends BaseTest {
 			#include <system/thread.asm>
 			
 			call	main
-			move	r0, 0
+			move	r1, 0
 			int		iEXIT
 
 			#def_macro put_dec(i)
-				move R1, ${i}
-				move R0, 1
+				move R2, ${i}
+				move R1, 1
 				int iPUT_DEC
 				int	iPUT_NL
 			#end_macro
@@ -57,11 +57,11 @@ public class ThreadLibTest extends BaseTest {
 				store	r0, PIDS[2]
 				#macro	create_thread(run, 3)
 				store	r0, PIDS[3]
-				load	r0, PIDS[1]
+				load	r1, PIDS[1]
 				int		iJOIN_THREAD
-				load	r0, PIDS[2]
+				load	r1, PIDS[2]
 				int		iJOIN_THREAD
-				load	r0, PIDS[3]
+				load	r1, PIDS[3]
 				int		iJOIN_THREAD
 			#end_func
 			
@@ -104,12 +104,12 @@ public class ThreadLibTest extends BaseTest {
 			#include <system/thread.asm>
 
 			call	main
-			move	r0, 0
+			move	r1, 0
 			int		iEXIT
 
 			#def_macro put_dec(i)
-				move R1, ${i}
-				move R0, 1
+				move R2, ${i}
+				move R1, 1
 				int iPUT_DEC
 				int	iPUT_NL
 			#end_macro
@@ -124,11 +124,11 @@ public class ThreadLibTest extends BaseTest {
 				store	r0, PIDS[2]
 				#macro	create_thread(run, 3)
 				store	r0, PIDS[3]
-				load	r0, PIDS[1]
+				load	r1, PIDS[1]
 				int		iJOIN_THREAD
-				load	r0, PIDS[2]
+				load	r1, PIDS[2]
 				int		iJOIN_THREAD
-				load	r0, PIDS[3]
+				load	r1, PIDS[3]
 				int		iJOIN_THREAD
 			#end_func
 
@@ -176,12 +176,12 @@ public class ThreadLibTest extends BaseTest {
 			#include <system/thread.asm>
 
 			call	main
-			move	r0, 0
+			move	r1, 0
 			int		iEXIT
 
 			#def_macro put_dec(i)
-				move R1, ${i}
-				move R0, 1
+				move R2, ${i}
+				move R1, 1
 				int iPUT_DEC
 				int	iPUT_NL
 			#end_macro
@@ -189,7 +189,7 @@ public class ThreadLibTest extends BaseTest {
 			#global	PIDS: .dca	8
 			#def_func	MAIN()
 				#var	pid, i
-				#CALL	initializeMutex(MUTEX)
+				#call	initializeMutex(MUTEX)
 				#macro	create_thread(run, 1)
 				store	r0, PIDS[1]
 				#macro	create_thread(run, 2)
@@ -207,7 +207,7 @@ public class ThreadLibTest extends BaseTest {
 				#macro	create_thread(run, 8)
 				store	r0, PIDS[8]
 				#for 	1, i <= 8, 1
-					load	r0, PIDS[i]
+					load	r1, PIDS[i]
 					int		iJOIN_THREAD
 				#end_for
 			#end_func
@@ -257,12 +257,12 @@ public class ThreadLibTest extends BaseTest {
 			#include <system/thread.asm>
 
 			call	main
-			move	r0, 0
+			move	r1, 0
 			int		iEXIT
 
 			#def_macro put_dec(i)
-				move R1, ${i}
-				move R0, 1
+				move R2, ${i}
+				move R1, 1
 				int iPUT_DEC
 				int	iPUT_NL
 			#end_macro
@@ -288,7 +288,7 @@ public class ThreadLibTest extends BaseTest {
 				#macro	create_thread(run, 8)
 				store	r0, PIDS[8]
 				#for 	1, i <= 8, 1
-					load	r0, PIDS[i]
+					load	r1, PIDS[i]
 					int		iJOIN_THREAD
 				#end_for
 			#end_func
@@ -338,18 +338,18 @@ public class ThreadLibTest extends BaseTest {
 			#include <system/thread.asm>
 			
 			call	main
-			move	r0, 0
+			move	r1, 0
 			int		iEXIT
 
 			#def_macro put_dec(i)
-				move R1, ${i}
-				move R0, 1
+				move R2, ${i}
+				move R1, 1
 				int iPUT_DEC
 				int	iPUT_NL
 			#end_macro
 			
 			#call	main()
-			move	r0, 0
+			move	r1, 0
 			int		iEXIT
 			
 			#global	PIDS: .dca	3
@@ -361,11 +361,11 @@ public class ThreadLibTest extends BaseTest {
 				store	r0, PIDS[2]
 				#macro	create_thread(run, 3)
 				store	r0, PIDS[3]
-				load	r0, PIDS[1]
+				load	r1, PIDS[1]
 				int		iJOIN_THREAD
-				load	r0, PIDS[2]
+				load	r1, PIDS[2]
 				int		iJOIN_THREAD
-				load	r0, PIDS[3]
+				load	r1, PIDS[3]
 				int		iJOIN_THREAD
 				load	r0, ATOMIC
 				#macro	put_dec(r0)

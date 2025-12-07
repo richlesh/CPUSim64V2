@@ -1,23 +1,48 @@
 package cloud.lesh.CPUSim64v2;
 
 import org.apache.commons.lang3.tuple.Triple;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class BaseTest {
+	@Test
+	void testTemplate() {
+		String src = """
+			START:
+			
+			STOP
+			STOP
+			FINIS:
+			""";
+		String expected = """
+""";
+		ConsoleOutputCapturer capturer = new ConsoleOutputCapturer();
+		capturer.start(ConsoleOutputCapturer.StdStream.STDOUT);
+		var tuple = runProgram(src, new String[] {"--DEBUG"});
+		String output = capturer.stop();
+		var result = tuple.getLeft();
+		var sim = tuple.getMiddle();
+		var diff = tuple.getRight();
+		assertEquals(1, diff.size());
+		assertEquals(expected, output);
+	}
+
 	public Triple<Integer, Simulator, SimStateDiff> runProgram(String src) {
 		String[] args = {"test"};
 		return runProgram(src, args);
 	}
 
 	public Triple<Integer, Simulator, SimStateDiff> runProgram(String src, String[] args) {
+		return runProgram(src, args, null);
+	}
+
+	public Triple<Integer, Simulator, SimStateDiff> runProgram(String src, String[] args, byte[] inputData) {
 		var loader = new IncludeLoader(Path.of("."));
 		PreprocessorVisitor.resetGlobals();
 		String preprocessed = PreprocessorVisitor.preprocessText("Test.asm", src, loader, args);
@@ -47,11 +72,13 @@ public class BaseTest {
 		}
 
 		Simulator sim = new Simulator(0x2000, 0x1000, 0x500, args);
+		if (inputData != null)
+			sim.setPortHandler(0, new MemoryFilePortHandler(sim, 0, inputData));
 		sim.clearCPUState();
 		sim.loadProgram(prog, 0L);
 		sim.SR = 0xF;
 		var startState = sim.getState();
-		int result = sim.run();
+		int result = sim.run(0L);
 		var diff = new SimStateDiff(sim, startState);
 		return Triple.of(result, sim, diff);
 	}

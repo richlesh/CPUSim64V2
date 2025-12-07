@@ -158,6 +158,7 @@ public class Simulator {
 		setPortHandler(1, ph);
 		setPortHandler(2, ph);
 		this.args = args;
+		SR = SR_Z;
 	}
 
 	public Simulator(Simulator cloneMe, boolean makeProcess) throws CPUException {
@@ -171,6 +172,7 @@ public class Simulator {
 		F = cloneMe.F.clone();
 		ports = (HashMap<Integer, PortHandler>) (cloneMe.ports.clone());
 		interruptHandler = new StdInterruptHandler(this);
+		setDebug(cloneMe.debug);
 
 		try {
 			stackBase = cloneMe.stackBase;
@@ -675,36 +677,40 @@ public class Simulator {
 	}
 
 	// ===== EXECUTION =====
-	public int run() {
-		return run(null);
+	public int run(long startPC) {
+		return run(startPC, null);
 	}
 
-	public int run(Map<Long, String> reverseSymbolMap) {
+	public int run(long startPC, Map<Long, String> reverseSymbolMap) {
 		running = true;
 		startClock = System.nanoTime();
 		totalSystemTime = 0;
 		cycles = 0;
+		R[R_PC] = startPC;				// Load program start address
+		String fmt = "%5d:%-60.60s" + fmtAddress + " ";
 
 		while (running) {
 			long pc = R[R_PC];
-			long instr = memRead(pc); // This increments cycles by 1
+			long instr = memRead(pc);	// This increments cycles by 1
 			R[R_PC] = pc + 1;
 
 			Decoded d = Decoded.decode(instr);
 
 			if (debug) {
-				String label = null;
-				if (reverseSymbolMap != null) {
-					label = Decoded.findNearestLabel(reverseSymbolMap, pc);
-				}
-				if (label == null)
-					System.out.print(String.format(fmtAddress + " ", pc));
-				else
-					System.out.print(String.format("%-60.60s " + fmtAddress + " ", label, pc));
-				try {
-					System.out.print(d.disassemble(reverseSymbolMap));
-				} catch (Exception ex) {
-					System.out.print("DECODE ERROR\n");
+				synchronized(System.out) {
+					String label = null;
+					if (reverseSymbolMap != null) {
+						label = Decoded.findNearestLabel(reverseSymbolMap, pc);
+					}
+					if (label == null)
+						System.out.print(String.format(fmt, getPID(), "" , pc));
+					else
+						System.out.print(String.format(fmt, getPID(), label, pc));
+					try {
+						System.out.print(d.disassemble(reverseSymbolMap));
+					} catch (Exception ex) {
+						System.out.print("DECODE ERROR\n");
+					}
 				}
 			}
 			exec(d);
@@ -1707,9 +1713,13 @@ public class Simulator {
 				else if (bytes < 0 || bytes > 8)
 					throw new CPUException("OUT number of bytes must be 0-8");
 				var ph = getPortHandler(port);
+				ph.setPort(port);
 				if (ph == null)
 					throw new CPUException("OUT port " + port + " handler not set");
-				ph.write(val, bytes);
+				if (bytes == 0)
+					ph.writeChar((int)val);
+				else
+					ph.write(val, bytes);
 				return;
 			}
 		}
@@ -1730,7 +1740,11 @@ public class Simulator {
 				var ph = getPortHandler(port);
 				if (ph == null)
 					throw new CPUException("IN port " + port + " handler not set");
-				long val = ph.read(bytes);
+				long val = 0;
+				if (bytes == 0)
+					val = ph.readChar();
+				else
+					val = ph.read(bytes);
 				setY(d.a, d.v0, val);
 				return;
 			}
@@ -1856,7 +1870,7 @@ public class Simulator {
 			boolean littleEndian = getO(d.b, d.v1) == 0 ? false : true;
 			var ph = getPortHandler((int) getO(d.a, d.v0));
 			if (ph != null)
-				ph.setEndian(littleEndian);
+				ph.setLittleEndian(littleEndian);
 		}
 	}
 
@@ -2282,7 +2296,7 @@ public class Simulator {
 		@Override
 		protected void compute() {
 			try {
-				cpu.run();
+				cpu.run(cpu.getR(R_PC));
 			} catch (Exception ex) {
 				throw ex;
 			}
@@ -2339,7 +2353,7 @@ public class Simulator {
 		@Override
 		public void run() {
 			try {
-				cpu.run();
+				cpu.run(cpu.getR(R_PC));
 			} catch (Exception ex) {
 //				throw new CPUException("Child thread run failed! %s", ex.getMessage());
 			}
@@ -2369,7 +2383,7 @@ public class Simulator {
 	}
 
 	public void joinThread(long pid) {
-		Simulator threadCPU = getThreadCPU((int)getR(0));
+		Simulator threadCPU = getThreadCPU((int)pid);
 		if (threadCPU != null) {
 			Simulator.ChildThread t = threadCPU.getThread();
 			if (t != null) {
@@ -2385,7 +2399,7 @@ public class Simulator {
 	}
 
 	public void wakeThread(long pid) {
-		Simulator threadCPU = getThreadCPU((int)getR(0));
+		Simulator threadCPU = getThreadCPU((int)pid);
 		if (threadCPU != null) {
 			Simulator.ChildThread t = threadCPU.getThread();
 			if (t != null) {

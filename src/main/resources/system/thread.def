@@ -23,22 +23,22 @@
 
 // Returns thread ID of the new thread in R0
 #def_macro	create_thread(entryPoint, data)
-	move	r0, ${entryPoint}
-	move	r1, ${data}
+	move	r1, ${entryPoint}
+	move	r2, ${data}
 	int		iTHREAD
 #end_macro
 
 #def_macro	join_thread(threadPID)
-	move	r0, ${threadPID}
+	move	r1, ${threadPID}
 	int		iJOIN_THREAD
 #end_macro
 
 #def_macro	sleep(delay_in_milliseconds)
-	move	r0, ${delay_in_milliseconds}
+	move	r1, ${delay_in_milliseconds}
 	int		iSLEEP
 #end_macro
 
 #def_macro	wake_thread(threadPID)
-	move	r0, ${threadPID}
+	move	r1, ${threadPID}
 	int		iWAKE_THREAD
 #end_macro

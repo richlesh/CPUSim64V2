@@ -35,178 +35,204 @@
 #define	iSTRCAT				355
 
 #def_macro	FMT_DEC(x)
-	move	r0, ${x}
+	move	r1, ${x}
 	int		iFMT_DEC
 #end_macro
 
 #def_macro	FMT_HEX(x)
-	move	r0, ${x}
+	move	r1, ${x}
 	int		iFMT_HEX
 #end_macro
 
 #def_macro	FMT_FLOAT(x)
-	move	f0, ${x}
+	move	f1, ${x}
 	int		iFMT_FLOAT
 #end_macro
 
 #def_macro	PARSE_INT(x)
-	move	r0, ${x}
+	move	r1, ${x}
 	int		iPARSE_INT
 #end_macro
 
 #def_macro	PARSE_DEC(x)
-	move	r0, ${x}
+	move	r1, ${x}
 	int		iPARSE_DEC
 #end_macro
 
 #def_macro	PARSE_HEX(x)
-	move	r0, ${x}
+	move	r1, ${x}
 	int		iPARSE_HEX
 #end_macro
 
 #def_macro	PARSE_FLOAT(x)
-	move	r0, ${x}
+	move	r1, ${x}
 	int		iPARSE_FLOAT
 #end_macro
 
 #def_macro	TO_LOWER(x)
-	move	r0, ${x}
+	move	r1, ${x}
 	int		iTO_LOWER
 #end_macro
 
 #def_macro	TO_UPPER(x)
-	move	r0, ${x}
+	move	r1, ${x}
 	int		iTO_UPPER
 #end_macro
 
 #def_macro	TO_LOWER_STR(x)
-	move	r0, ${x}
+	move	r1, ${x}
 	int		iTO_LOWER_STR
 #end_macro
 
 #def_macro	TO_UPPER_STR(x)
-	move	r0, ${x}
+	move	r1, ${x}
 	int		iTO_UPPER_STR
 #end_macro
 
 #def_macro	STRCMP(s1, s2)
-	move	r0, ${s1}
-	move	r1, ${s2}
+	move	r1, ${s1}
+	move	r2, ${s2}
 	int		iSTRCMP
 #end_macro
 
 #def_macro	SUBSTRING(s, start, length)
-	move	r0, ${s}
-	move	r1, ${start}
-	move	r2, ${length}
+	move	r1, ${s}
+	move	r2, ${start}
+	move	r3, ${length}
 	int		iSUBSTRING
 #end_macro
 
 #def_macro	PREFIX(s, length)
-	move	r0, ${s}
-	move	r1, ${length}
+	move	r1, ${s}
+	move	r2, ${length}
 	int		iPREFIX
 #end_macro
 
 #def_macro	SUFFIX(s, length)
-	move	r0, ${s}
-	move	r1, ${length}
+	move	r1, ${s}
+	move	r2, ${length}
 	int		iSUFFIX
 #end_macro
 
 #def_macro	CHAR_SEARCH(s, char, startpos)
-	move	r0, ${s}
-	move	r1, ${char}
-	move	r2, ${startpos}
+	move	r1, ${s}
+	move	r2, ${char}
+	move	r3, ${startpos}
 	int		iCHAR_SEARCH
 #end_macro
 
 #def_macro	LAST_CHAR_SEARCH(s, char, startpos)
-	move	r0, ${s}
-	move	r1, ${char}
-	move	r2, ${startpos}
+	move	r1, ${s}
+	move	r2, ${char}
+	move	r3, ${startpos}
 	int		iLAST_CHAR_SEARCH
 #end_macro
 
 #def_macro	SUBSTRING_SEARCH(s, substr, startpos)
-	move	r0, ${s}
-	move	r1, ${substr}
-	move	r2, ${startpos}
+	move	r1, ${s}
+	move	r2, ${substr}
+	move	r3, ${startpos}
 	int		iSUBSTRING_SEARCH
 #end_macro
 
 #def_macro	LAST_SUBSTRING_SEARCH(s, substr, startpos)
-	move	r0, ${s}
-	move	r1, ${substr}
-	move	r2, ${startpos}
+	move	r1, ${s}
+	move	r2, ${substr}
+	move	r3, ${startpos}
 	int		iLAST_SUBSTRING_SEARCH
 #end_macro
 
+///////////////////////////////////////////////////////////////////////////////
+// STARTS_WITH(str, prefix) - Checks to see if the string begins with prefix
+// str		Base address of string to search
+// prefix	Prefix to cehck for
+// Returns 	TRUE if prefix matches, otherwise FALSE
+///////////////////////////////////////////////////////////////////////////////
+#def_macro	STARTS_WITH(str, prefix)
+	#macro	SUBSTRING_SEARCH(${str}, ${prefix}, 0)
+	move	z, r0, TRUE, FALSE
+#end_macro
+
+///////////////////////////////////////////////////////////////////////////////
+// ENDS_WITH(str, suffix) - Checks to see if the string ends with suffix
+// str		Base address of string to search
+// suffix	Suffix to cehck for
+// Returns 	TRUE if suffix matches, otherwise FALSE
+///////////////////////////////////////////////////////////////////////////////
+#def_macro	ENDS_WITH(str, suffix)
+	load	r1, ${str}[0]
+	load	r2, ${suffix}[0]
+	sub		r3, r1, r2
+	#macro	LAST_SUBSTRING_SEARCH(${str}, ${suffix}, r3)
+	cmp		r0, r3
+	move	z, r0, TRUE, FALSE
+#end_macro
+
 #def_macro	STRICMP(s1, s2)
-	move	r0, ${s1}
-	move	r1, ${s2}
+	move	r1, ${s1}
+	move	r2, ${s2}
 	int		iSTRICMP
 #end_macro
 
 #def_macro	GET_CODEPOINTS(str)
-	move	r0, ${str}
+	move	r1, ${str}
 	int		iGET_CODEPOINTS
 #end_macro
 
 #def_macro	FROM_CODEPOINTS(arr)
-	move	r0, ${arr}
+	move	r1, ${arr}
 	int		iFROM_CODEPOINTS
 #end_macro
 
 #def_macro	COUNT_GLPYHS(str)
-	move	r0, ${str}
+	move	r1, ${str}
 	int		iCOUNT_GLPYHS
 #end_macro
 
 #def_macro	HASHCODE(str)
-	move	r0, ${str}
+	move	r1, ${str}
 	int		iHASHCODE
 #end_macro
 
 #def_macro	TRIM(str)
-	move	r0, ${str}
+	move	r1, ${str}
 	int		iTRIM
 #end_macro
 
 #def_macro	MATCHES(str, pattern)
-	move	r0, ${str}
-	move	r1, ${pattern}
+	move	r1, ${str}
+	move	r2, ${pattern}
 	int		iMATCHES
 #end_macro
 
 #def_macro	REPLACE_FIRST(str, pattern, replacement)
-	move	r0, ${str}
-	move	r1, ${pattern}
-	move	r2, ${replacement}
+	move	r1, ${str}
+	move	r2, ${pattern}
+	move	r3, ${replacement}
 	int		iREPLACE_FIRST
 #end_macro
 
 #def_macro	REPLACE_ALL(str, pattern, replacement)
-	move	r0, ${str}
-	move	r1, ${pattern}
-	move	r2, ${replacement}
+	move	r1, ${str}
+	move	r2, ${pattern}
+	move	r3, ${replacement}
 	int		iREPLACE_ALL
 #end_macro
 
 #def_macro	SPLIT(str, delimiter)
-	move	r0, ${str}
-	move	r1, ${delimiter}
+	move	r1, ${str}
+	move	r2, ${delimiter}
 	int		iSPLIT
 #end_macro
 
 #def_macro	JOIN(arr, delimiter)
-	move	r0, ${arr}
-	move	r1, ${delimiter}
+	move	r1, ${arr}
+	move	r2, ${delimiter}
 	int		iJOIN
 #end_macro
 
 #def_macro	STRCAT(s1, s2)
-	move	r0, ${s1}
-	move	r1, ${s2}
+	move	r1, ${s1}
+	move	r2, ${s2}
 	int		iSTRCAT
 #end_macro

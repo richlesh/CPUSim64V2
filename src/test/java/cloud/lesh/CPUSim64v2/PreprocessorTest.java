@@ -438,7 +438,8 @@ JUMP $BEGIN
 			#global GLOBAL_FLOATS:	.dcw 1.2, 2.3, 3.4	// Comment
 			""";
 		String expected = """
-READONLY __DATA__
+__CODE__:
+READONLY __CODE_END__
 .LINE «TEST.ASM», 5
 MOVE	R0, R1
 MOVE	R1, __STR_1
@@ -457,6 +458,7 @@ GLOBAL_ARRAY:	.DCA 10
 GLOBAL_BYTES:	.DCB 1,2,3,4,5
 GLOBAL_WORDS:	.DCW 0X01, 0X02, 0X03
 GLOBAL_FLOATS:	.DCW 1.2, 2.3, 3.4
+__DATA_END__:
 __HEAP_START__:
 			""";
 		var loader = new IncludeLoader(Path.of("."));

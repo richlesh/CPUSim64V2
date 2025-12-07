@@ -34,75 +34,75 @@ public class MathInterruptTest extends BaseTest {
 		String src = """
 			#include <system/math.def>
 			// ABS
-			LOAD 	F0, -2.5
+			LOAD 	F1, -2.5
 			INT		iABS_FP
 			MOVE 	F31, F0
-			LOAD 	F0, 2.5
+			LOAD 	F1, 2.5
 			INT		iABS_FP
 			MOVE 	F30, F0
-			MOVE	R0, -2
+			MOVE	R1, -2
 			INT		iABS
 			MOVE	R27, R0
-			MOVE	R0, 2
+			MOVE	R1, 2
 			INT		iABS
 			MOVE	R26, R0
 			
 			// CEIL
-			LOAD 	F0, -2.5
+			LOAD 	F1, -2.5
 			INT		iCEIL
 			MOVE 	F29, F0
-			LOAD 	F0, 2.5
+			LOAD 	F1, 2.5
 			INT		iCEIL
 			MOVE 	F28, F0
 			
 			// FLOOR
-			LOAD 	F0, -2.5
+			LOAD 	F1, -2.5
 			INT		iFLOOR
 			MOVE 	F27, F0
-			LOAD 	F0, 2.5
+			LOAD 	F1, 2.5
 			INT		iFLOOR
 			MOVE 	F26, F0
 			
 			// ROUND
-			LOAD 	F0, -2.5
+			LOAD 	F1, -2.5
 			INT		iROUND
 			MOVE 	F25, F0
-			LOAD 	F0, 2.5
+			LOAD 	F1, 2.5
 			INT		iROUND
 			MOVE 	F24, F0
 			
 			// MAX/MIN
-			LOAD	F0, 2.5
-			LOAD	F1, 2.0
+			LOAD	F1, 2.5
+			LOAD	F2, 2.0
 			INT		iMAX_FP
 			MOVE	F23, F0
-			LOAD	F0, 2.0
-			LOAD	F1, 2.5
+			LOAD	F1, 2.0
+			LOAD	F2, 2.5
 			INT		iMIN_FP
 			MOVE	F22, F0
-			LOAD	F0, -2.5
-			LOAD	F1, -2.0
+			LOAD	F1, -2.5
+			LOAD	F2, -2.0
 			INT		iMAX_FP
 			MOVE	F21, F0
-			LOAD	F0, -2.0
-			LOAD	F1, -2.5
+			LOAD	F1, -2.0
+			LOAD	F2, -2.5
 			INT		iMIN_FP
 			MOVE	F20, F0
 			
-			MOVE	R0, 4
-			MOVE	R1, 2
+			MOVE	R1, 4
+			MOVE	R2, 2
 			INT		iMAX
 			MOVE	R25, R0
-			MOVE	R0, 4
-			MOVE	R1, 2
+			MOVE	R1, 4
+			MOVE	R2, 2
 			INT		iMIN
 			MOVE	R24, R0
-			MOVE	R0, -4
-			MOVE	R1, -2
+			MOVE	R1, -4
+			MOVE	R2, -2
 			INT		iMAX
 			MOVE	R23, R0
-			MOVE	R0, -4
-			MOVE	R1, -2
+			MOVE	R1, -4
+			MOVE	R2, -2
 			INT		iMIN
 			MOVE	R22, R0
 			
@@ -112,7 +112,7 @@ public class MathInterruptTest extends BaseTest {
 		var result = tuple.getLeft();
 		var sim = tuple.getMiddle();
 		var diff = tuple.getRight();
-		assertEquals(24, diff.size());
+		assertEquals(26, diff.size());
 		diff.assertDiff(31, 2.5);
 		diff.assertDiff(30, 2.5);
 		diff.assertDiff(27, 2);
@@ -137,21 +137,21 @@ public class MathInterruptTest extends BaseTest {
 	void testLogExpPowerRoot() {
 		String src = """
 			#include <system/math.def>
-			LOAD 	F0, 2.
+			LOAD 	F1, 2.
 			INT		iSQRT
 			MOVE 	F31, F0
-			LOAD 	F0, 2.
+			LOAD 	F1, 2.
 			INT		iEXP
 			MOVE 	F30, F0
-			LOAD 	F0, 2.
+			LOAD 	F1, 2.
 			INT		iLOG
 			MOVE 	F29, F0
-			LOAD 	F0, 2.
-			LOAD	F1, 3.5
+			LOAD 	F1, 2.
+			LOAD	F2, 3.5
 			INT		iPOW
 			MOVE 	F28, F0
-			LOAD 	F0, 3.5
-			LOAD	F1, 2.
+			LOAD 	F1, 3.5
+			LOAD	F2, 2.
 			INT		iREMAINDER
 			MOVE 	F27, F0
 			STOP
@@ -160,7 +160,7 @@ public class MathInterruptTest extends BaseTest {
 		var result = tuple.getLeft();
 		var sim = tuple.getMiddle();
 		var diff = tuple.getRight();
-		assertEquals(9, diff.size());
+		assertEquals(10, diff.size());
 		diff.assertDiff(31, Math.sqrt(2.));
 		diff.assertDiff(30, Math.exp(2.));
 		diff.assertDiff(29, Math.log(2.));
@@ -243,42 +243,43 @@ public class MathInterruptTest extends BaseTest {
 	void testTrig() {
 		String src = """
 			#include <system/math.def>
-			LOAD 	F0, 0.5
+			LOAD 	F1, 0.5
 			INT		iTO_DEGREES
 			MOVE 	F31, F0
+			MOVE	F1, F0
 			INT		iTO_RADIANS
 			MOVE 	F30, F0
 			
-			LOAD 	F0, 0.5
+			LOAD 	F1, 0.5
 			INT		iSIN
 			MOVE 	F29, F0
-			LOAD 	F0, 0.5
-			NEG		F0
+			LOAD 	F1, 0.5
+			NEG		F1
 			INT		iSIN
 			MOVE 	F28, F0
-			LOAD 	F0, 2.0
+			LOAD 	F1, 2.0
 			INT		iSIN
 			MOVE 	F27, F0
 			
-			LOAD 	F0, 0.5
+			LOAD 	F1, 0.5
 			INT		iCOS
 			MOVE 	F26, F0
-			LOAD 	F0, 0.5
-			NEG		F0
+			LOAD 	F1, 0.5
+			NEG		F1
 			INT		iCOS
 			MOVE 	F25, F0
-			LOAD 	F0, 2.0
+			LOAD 	F1, 2.0
 			INT		iCOS
 			MOVE 	F24, F0
 			
-			LOAD 	F0, 0.5
+			LOAD 	F1, 0.5
 			INT		iTAN
 			MOVE 	F23, F0
-			LOAD 	F0, 0.5
-			NEG		F0
+			LOAD 	F1, 0.5
+			NEG		F1
 			INT		iTAN
 			MOVE 	F22, F0
-			LOAD 	F0, 2.0
+			LOAD 	F1, 2.0
 			INT		iTAN
 			MOVE 	F21, F0
 			STOP
@@ -287,7 +288,7 @@ public class MathInterruptTest extends BaseTest {
 		var result = tuple.getLeft();
 		var sim = tuple.getMiddle();
 		var diff = tuple.getRight();
-		assertEquals(14, diff.size());
+		assertEquals(15, diff.size());
 		diff.assertDiff(31, Math.toDegrees(0.5));
 		diff.assertDiff(30, 0.5);
 		diff.assertDiff(29, Math.sin(0.5));
@@ -305,42 +306,43 @@ public class MathInterruptTest extends BaseTest {
 	void testInvTrig() {
 		String src = """
 			#include <system/math.def>
-			LOAD 	F0, 0.5
+			LOAD 	F1, 0.5
 			INT		iTO_RADIANS
 			MOVE 	F31, F0
+			MOVE	F1, F0
 			INT		iTO_DEGREES
 			MOVE 	F30, F0
 			
-			LOAD 	F0, 0.5
+			LOAD 	F1, 0.5
 			INT		iASIN
 			MOVE 	F29, F0
-			LOAD 	F0, 0.5
-			NEG		F0
+			LOAD 	F1, 0.5
+			NEG		F1
 			INT		iASIN
 			MOVE 	F28, F0
-			LOAD 	F0, 2.0
+			LOAD 	F1, 2.0
 			INT		iASIN
 			MOVE 	F27, F0
 			
-			LOAD 	F0, 0.5
+			LOAD 	F1, 0.5
 			INT		iACOS
 			MOVE 	F26, F0
-			LOAD 	F0, 0.5
-			NEG		F0
+			LOAD 	F1, 0.5
+			NEG		F1
 			INT		iACOS
 			MOVE 	F25, F0
-			LOAD 	F0, 2.0
+			LOAD 	F1, 2.0
 			INT		iACOS
 			MOVE 	F24, F0
 			
-			LOAD 	F0, 0.5
+			LOAD 	F1, 0.5
 			INT		iATAN
 			MOVE 	F23, F0
-			LOAD 	F0, 0.5
-			NEG		F0
+			LOAD 	F1, 0.5
+			NEG		F1
 			INT		iATAN
 			MOVE 	F22, F0
-			LOAD 	F0, 2.0
+			LOAD 	F1, 2.0
 			INT		iATAN
 			MOVE 	F21, F0
 			STOP
@@ -349,7 +351,7 @@ public class MathInterruptTest extends BaseTest {
 		var result = tuple.getLeft();
 		var sim = tuple.getMiddle();
 		var diff = tuple.getRight();
-		assertEquals(14, diff.size());
+		assertEquals(15, diff.size());
 		diff.assertDiff(31, Math.toRadians(0.5));
 		diff.assertDiff(30, 0.5);
 		diff.assertDiff(29, Math.asin(0.5));
@@ -367,36 +369,36 @@ public class MathInterruptTest extends BaseTest {
 	void testHyperbolicTrig() {
 		String src = """
 			#include <system/math.def>
-			LOAD 	F0, 0.5
+			LOAD 	F1, 0.5
 			INT		iSINH
 			MOVE 	F29, F0
-			LOAD 	F0, 0.5
-			NEG		F0
+			LOAD 	F1, 0.5
+			NEG		F1
 			INT		iSINH
 			MOVE 	F28, F0
-			LOAD 	F0, 2.0
+			LOAD 	F1, 2.0
 			INT		iSINH
 			MOVE 	F27, F0
 			
-			LOAD 	F0, 0.5
+			LOAD 	F1, 0.5
 			INT		iCOSH
 			MOVE 	F26, F0
-			LOAD 	F0, 0.5
-			NEG		F0
+			LOAD 	F1, 0.5
+			NEG		F1
 			INT		iCOSH
 			MOVE 	F25, F0
-			LOAD 	F0, 2.0
+			LOAD 	F1, 2.0
 			INT		iCOSH
 			MOVE 	F24, F0
 			
-			LOAD 	F0, 0.5
+			LOAD 	F1, 0.5
 			INT		iTANH
 			MOVE 	F23, F0
-			LOAD 	F0, 0.5
-			NEG		F0
+			LOAD 	F1, 0.5
+			NEG		F1
 			INT		iTANH
 			MOVE 	F22, F0
-			LOAD 	F0, 2.0
+			LOAD 	F1, 2.0
 			INT		iTANH
 			MOVE 	F21, F0
 			STOP
@@ -405,7 +407,7 @@ public class MathInterruptTest extends BaseTest {
 		var result = tuple.getLeft();
 		var sim = tuple.getMiddle();
 		var diff = tuple.getRight();
-		assertEquals(12, diff.size());
+		assertEquals(13, diff.size());
 		diff.assertDiff(29, Math.sinh(0.5));
 		diff.assertDiff(28, Math.sinh(-0.5));
 		diff.assertDiff(27, Math.sinh(2.0));
@@ -421,36 +423,36 @@ public class MathInterruptTest extends BaseTest {
 	void testInvHyperbolicTrig() {
 		String src = """
 			#include <system/math.def>			
-			LOAD 	F0, 0.5
+			LOAD 	F1, 0.5
 			INT		iASINH
 			MOVE 	F29, F0
-			LOAD 	F0, 0.5
-			NEG		F0
+			LOAD 	F1, 0.5
+			NEG		F1
 			INT		iASINH
 			MOVE 	F28, F0
-			LOAD 	F0, 2.0
+			LOAD 	F1, 2.0
 			INT		iASINH
 			MOVE 	F27, F0
 			
-			LOAD 	F0, 0.5
+			LOAD 	F1, 0.5
 			INT		iACOSH
 			MOVE 	F26, F0
-			LOAD 	F0, 0.5
-			NEG		F0
+			LOAD 	F1, 0.5
+			NEG		F1
 			INT		iACOSH
 			MOVE 	F25, F0
-			LOAD 	F0, 2.0
+			LOAD 	F1, 2.0
 			INT		iACOSH
 			MOVE 	F24, F0
 			
-			LOAD 	F0, 0.5
+			LOAD 	F1, 0.5
 			INT		iATANH
 			MOVE 	F23, F0
-			LOAD 	F0, 0.5
-			NEG		F0
+			LOAD 	F1, 0.5
+			NEG		F1
 			INT		iATANH
 			MOVE 	F22, F0
-			LOAD 	F0, 2.0
+			LOAD 	F1, 2.0
 			INT		iATANH
 			MOVE 	F21, F0
 			STOP
@@ -459,7 +461,7 @@ public class MathInterruptTest extends BaseTest {
 		var result = tuple.getLeft();
 		var sim = tuple.getMiddle();
 		var diff = tuple.getRight();
-		assertEquals(12, diff.size());
+		assertEquals(13, diff.size());
 		diff.assertDiff(29, Utils.asinh(0.5));
 		diff.assertDiff(28, Utils.asinh(-0.5));
 		diff.assertDiff(27, Utils.asinh(2.0));

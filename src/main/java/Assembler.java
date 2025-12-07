@@ -84,6 +84,8 @@ public class Assembler {
 		// 4) Add global declarations
 		preprocessed = PreprocessorVisitor.addGlobals(preprocessed);
 
+		preprocessed = ".org 1" + System.lineSeparator() + preprocessed;
+
 		// 5) Gather labels
 		LabelVisitor labelVisitor = new LabelVisitor();
 		String noLabels = labelVisitor.gatherLabels(preprocessed);
@@ -109,6 +111,7 @@ public class Assembler {
 		var asm = new AssemblerVisitor(labelMap);
 		asm.assemble(noLabels);
 		List<Long> words = asm.result();
+		words.set(0, 1L);				// Set start of program
 		errors = asm.getErrors();
 
 		if (errors.size() > 0) {

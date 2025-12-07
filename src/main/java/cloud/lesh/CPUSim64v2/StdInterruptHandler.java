@@ -226,31 +226,31 @@ public class StdInterruptHandler extends InterruptHandler
 			case iPrintCPUState:
 				cpu.printCPUState();
 				break;
-			case iALLOC:							// returns pointer in r0 to allocated array of r0 words
+			case iALLOC:							// returns pointer in r0 to allocated array of r1 words
 													// returns 0 on failure
 													// Block structure prev:next:size:data....
-				cpu.setR(0,cpu.alloc((int)cpu.getR(0)));
+				cpu.setR(0,cpu.alloc((int)cpu.getR(1)));
 				break;
-			case iREALLOC:							// array in r0 is reallocated to size of r1 words
-													// Data is copied from r0 then r0 is freed
+			case iREALLOC:							// array in r1 is reallocated to size of r2 words
+													// Data is copied from r1 then r1 is freed
 													// returns new array in r0 or 0 on failure
-				cpu.setR(0,cpu.realloc((int)cpu.getR(0),(int)cpu.getR(1)));
+				cpu.setR(0,cpu.realloc((int)cpu.getR(1),(int)cpu.getR(2)));
 				break;
-			case iFREE:								// frees allocation in r0
-				cpu.free((int)cpu.getR(0));
+			case iFREE:								// frees allocation in r1
+				cpu.free((int)cpu.getR(1));
 				break;
 			case iMEMMOVE:
 				{
-					long dest = cpu.getR(0);
-					long src = cpu.getR(1);
-					long count = cpu.getR(2);
+					long dest = cpu.getR(1);
+					long src = cpu.getR(2);
+					long count = cpu.getR(3);
 					cpu.memmove(dest, src, count);
 				}
 				break;
 			case iMEMCLEAR:
 				{
-					long dest = cpu.getR(0);
-					long count = cpu.getR(1);
+					long dest = cpu.getR(1);
+					long count = cpu.getR(2);
 					cpu.memclear((int)dest, (int)count);
 				}
 				break;
@@ -282,22 +282,22 @@ public class StdInterruptHandler extends InterruptHandler
 						cpu.memWrite(argv_ptr + i, cpu.allocString(arg));
 					}
 				}
-				v = cpu.getR(0);
+				v = cpu.getR(1);
 				v = (argv_ptr > 0 && v >= 0 && v < argc) ?
-						cpu.memRead(argv_ptr + v) : 0;
+					cpu.memRead(argv_ptr + v) : 0;
 				cpu.setR(0, v);
 				break;
-			case iEXIT:								// exits process with return code in r0
-				cpu.exit((int)cpu.getR(0));
+			case iEXIT:								// exits process with return code in r1
+				cpu.exit((int)cpu.getR(1));
 				break;
 			case iSYSTEM:
-				s = cpu.convertString(cpu.getR(0));
+				s = cpu.convertString(cpu.getR(1));
 				try {
 					Runtime run = Runtime.getRuntime();
 					Process pr = run.exec(s);
 					pr.waitFor();
 					BufferedReader buf = new BufferedReader(new InputStreamReader(pr.getInputStream()));
-					while ((s=buf.readLine())!=null) {
+					while ((s = buf.readLine()) != null) {
 						System.out.println(s);
 					}
 					cpu.setR(0, pr.exitValue());
@@ -313,22 +313,22 @@ public class StdInterruptHandler extends InterruptHandler
 				cpu.waitAll();
 				break;
 			case iWAIT_PID:
-				cpu.waitPID((int)cpu.getR(0));
+				cpu.waitPID((int)cpu.getR(1));
 				break;
-			case iTHREAD:		// r0: function, r1: data block
-				cpu.setR(0, cpu.thread(cpu.getR(0), cpu.getR(1)));
+			case iTHREAD:		// r1: function, r2: data block
+				cpu.setR(0, cpu.thread(cpu.getR(1), cpu.getR(2)));
 				break;
 			case iJOIN_THREAD:
-				cpu.joinThread((int)cpu.getR(0));
+				cpu.joinThread((int)cpu.getR(1));
 				break;
 			case iSLEEP:
 				try {
-					Thread.sleep(cpu.getR(0));
+					Thread.sleep(cpu.getR(1));
 				} catch (InterruptedException e) {
 				}
 				break;
 			case iWAKE_THREAD:
-				cpu.wakeThread((int)cpu.getR(0));
+				cpu.wakeThread((int)cpu.getR(1));
 				break;
 			case iGET_PID:
 				cpu.setR(0, cpu.getPID());
@@ -346,112 +346,112 @@ public class StdInterruptHandler extends InterruptHandler
 			case iE:								// returns e in f0
 				cpu.setFP(0,Math.E);
 				break;
-			case iABS_FP:							// abs of f0 in f0
-				cpu.setFP(0,Math.abs(cpu.getFP(0)));
+			case iABS_FP:							// abs of f1 in f0
+				cpu.setFP(0,Math.abs(cpu.getFP(1)));
 				break;
-			case iABS:								// abs of r0 in r0
-				cpu.setR(0,Math.abs(cpu.getR(0)));
+			case iABS:								// abs of r1 in r0
+				cpu.setR(0,Math.abs(cpu.getR(1)));
 				break;
-			case iCEIL:								// ceil of f0 in f0
-				cpu.setFP(0,Math.ceil(cpu.getFP(0)));
+			case iCEIL:								// ceil of f1 in f0
+				cpu.setFP(0,Math.ceil(cpu.getFP(1)));
 				break;
-			case iFLOOR:							// floor of f0 in f0
-				cpu.setFP(0,Math.floor(cpu.getFP(0)));
+			case iFLOOR:							// floor of f1 in f0
+				cpu.setFP(0,Math.floor(cpu.getFP(1)));
 				break;
-			case iROUND:							// round of f0 in f0
-				cpu.setFP(0, Math.copySign(Math.floor(Math.abs(cpu.getFP(0)) + 0.5), cpu.getFP(0)));
+			case iROUND:							// round of f1 in f0
+				cpu.setFP(0, Math.copySign(Math.floor(Math.abs(cpu.getFP(1)) + 0.5), cpu.getFP(1)));
 				break;
-			case iSQRT:								// sqrt of f0 in f0
-				cpu.setFP(0,Math.sqrt(cpu.getFP(0)));
+			case iSQRT:								// sqrt of f1 in f0
+				cpu.setFP(0,Math.sqrt(cpu.getFP(1)));
 				break;
-			case iEXP:								// exp of f0 in f0
-				cpu.setFP(0,Math.exp(cpu.getFP(0)));
+			case iEXP:								// exp of f1 in f0
+				cpu.setFP(0,Math.exp(cpu.getFP(1)));
 				break;
-			case iLOG:								// ln of f0 in f0
-				cpu.setFP(0,Math.log(cpu.getFP(0)));
+			case iLOG:								// ln of f1 in f0
+				cpu.setFP(0,Math.log(cpu.getFP(1)));
 				break;
-			case iPOW:								// pow of f0^f1 in f0
-				cpu.setFP(0,Math.pow(cpu.getFP(0),cpu.getFP(1)));
+			case iPOW:								// pow of f1^f2 in f0
+				cpu.setFP(0,Math.pow(cpu.getFP(1),cpu.getFP(2)));
 				break;
-			case iREMAINDER:						// remainder of f0/f1 in f0
-				cpu.setFP(0,Math.IEEEremainder(cpu.getFP(0),cpu.getFP(1)));
+			case iREMAINDER:						// remainder of f1/f2 in f0
+				cpu.setFP(0,Math.IEEEremainder(cpu.getFP(1),cpu.getFP(2)));
 				break;
-			case iMAX_FP:							// max of f0 or f1 in f0
-				cpu.setFP(0,Math.max(cpu.getFP(0),cpu.getFP(1)));
+			case iMAX_FP:							// max of f1 or f2 in f0
+				cpu.setFP(0,Math.max(cpu.getFP(1),cpu.getFP(2)));
 				break;
-			case iMIN_FP:							// min of f0 or f1 in f0
-				cpu.setFP(0,Math.min(cpu.getFP(0),cpu.getFP(1)));
+			case iMIN_FP:							// min of f1 or f2 in f0
+				cpu.setFP(0,Math.min(cpu.getFP(1),cpu.getFP(2)));
 				break;
-			case iMAX:								// max of r0 or r1 in r0
-				cpu.setR(0,Math.max(cpu.getR(0),cpu.getR(1)));
+			case iMAX:								// max of r1 or r2 in r0
+				cpu.setR(0,Math.max(cpu.getR(1),cpu.getR(2)));
 				break;
-			case iMIN:								// min of r0 or r1 in r0
-				cpu.setR(0,Math.min(cpu.getR(0),cpu.getR(1)));
+			case iMIN:								// min of r1 or r2 in r0
+				cpu.setR(0,Math.min(cpu.getR(1),cpu.getR(2)));
 				break;
 			case iRANDOM:							// random [0,1) in f0
 				cpu.setFP(0,Math.random());
 				break;
 			case iRAND:								// random [r1,r2] in r0
-				cpu.setR(0,(long)Math.floor(Math.random()*(cpu.getR(1)-cpu.getR(0)+1))+cpu.getR(0));
+				cpu.setR(0,(long)Math.floor(Math.random()*(cpu.getR(2)-cpu.getR(1)+1))+cpu.getR(1));
 				break;
-			case iTO_DEGREES:						// toDegrees of f0 in f0
-				cpu.setFP(0,Math.toDegrees(cpu.getFP(0)));
+			case iTO_DEGREES:						// toDegrees of f1 in f0
+				cpu.setFP(0,Math.toDegrees(cpu.getFP(1)));
 				break;
-			case iTO_RADIANS:						// toRadians of f0 in f0
-				cpu.setFP(0,Math.toRadians(cpu.getFP(0)));
+			case iTO_RADIANS:						// toRadians of f1 in f0
+				cpu.setFP(0,Math.toRadians(cpu.getFP(1)));
 				break;
-			case iSIN:								// sin of f0 in f0
-				cpu.setFP(0,Math.sin(cpu.getFP(0)));
+			case iSIN:								// sin of f1 in f0
+				cpu.setFP(0,Math.sin(cpu.getFP(1)));
 				break;
-			case iCOS:								// cos of f0 in f0
-				cpu.setFP(0,Math.cos(cpu.getFP(0)));
+			case iCOS:								// cos of f1 in f0
+				cpu.setFP(0,Math.cos(cpu.getFP(1)));
 				break;
-			case iTAN:								// tan of f0 in f0
-				cpu.setFP(0,Math.tan(cpu.getFP(0)));
+			case iTAN:								// tan of f1 in f0
+				cpu.setFP(0,Math.tan(cpu.getFP(1)));
 				break;
-			case iASIN:								// asin of f0 in f0
-				cpu.setFP(0,Math.asin(cpu.getFP(0)));
+			case iASIN:								// asin of f1 in f0
+				cpu.setFP(0,Math.asin(cpu.getFP(1)));
 				break;
-			case iACOS:								// acos of f0 in f0
-				cpu.setFP(0,Math.acos(cpu.getFP(0)));
+			case iACOS:								// acos of f1 in f0
+				cpu.setFP(0,Math.acos(cpu.getFP(1)));
 				break;
-			case iATAN:								// atan of f0 in f0
-				cpu.setFP(0,Math.atan(cpu.getFP(0)));
+			case iATAN:								// atan of f1 in f0
+				cpu.setFP(0,Math.atan(cpu.getFP(1)));
 				break;
-			case iATAN2:							// atan2 of f0/f1 in f0
-				cpu.setFP(0,Math.atan2(cpu.getFP(0),cpu.getFP(1)));
+			case iATAN2:							// atan2 of f1/f2 in f0
+				cpu.setFP(0,Math.atan2(cpu.getFP(1),cpu.getFP(2)));
 				break;
-			case iSINH:								// sinh of f0 in f0
-				cpu.setFP(0,Math.sinh(cpu.getFP(0)));
+			case iSINH:								// sinh of f1 in f0
+				cpu.setFP(0,Math.sinh(cpu.getFP(1)));
 				break;
-			case iCOSH:								// cosh of f0 in f0
-				cpu.setFP(0,Math.cosh(cpu.getFP(0)));
+			case iCOSH:								// cosh of f1 in f0
+				cpu.setFP(0,Math.cosh(cpu.getFP(1)));
 				break;
-			case iTANH:								// tanh of f0 in f0
-				cpu.setFP(0,Math.tanh(cpu.getFP(0)));
+			case iTANH:								// tanh of f1 in f0
+				cpu.setFP(0,Math.tanh(cpu.getFP(1)));
 				break;
-			case iASINH:								// asinh of f0 in f0
-				cpu.setFP(0, Utils.asinh(cpu.getFP(0)));
+			case iASINH:								// asinh of f1 in f0
+				cpu.setFP(0, Utils.asinh(cpu.getFP(1)));
 				break;
-			case iACOSH:								// acosh of f0 in f0
-				cpu.setFP(0, Utils.acosh(cpu.getFP(0)));
+			case iACOSH:								// acosh of f1 in f0
+				cpu.setFP(0, Utils.acosh(cpu.getFP(1)));
 				break;
-			case iATANH:								// atanh of f0 in f0
-				cpu.setFP(0, Utils.atanh(cpu.getFP(0)));
+			case iATANH:								// atanh of f1 in f0
+				cpu.setFP(0, Utils.atanh(cpu.getFP(1)));
 				break;
 
-			case iPUT_NL:							// Send newline to port r0
-				ph=cpu.getPortHandler((int)cpu.getR(0));
+			case iPUT_NL:								// Send newline to port r1
+				ph=cpu.getPortHandler((int)cpu.getR(1));
 				if (ph != null) {
-					ph.setPort(cpu.getR(0));
+					ph.setPort(cpu.getR(1));
 					ph.writeChar('\n');		
 				}
 				break;
-			case iPUT_INT:							// Print Int in r1 to port r0 as base in r2
-				s = Long.toString(cpu.getR(1), (int)cpu.getR(2));
-				ph = cpu.getPortHandler((int)cpu.getR(0));
+			case iPUT_INT:							// Print Int in r2 to port r1 as base in r3
+				s = Long.toString(cpu.getR(2), (int)cpu.getR(3));
+				ph = cpu.getPortHandler((int)cpu.getR(1));
 				if (ph != null) {
-					ph.setPort(cpu.getR(0));
+					ph.setPort(cpu.getR(1));
 					int len = s.length();
 					synchronized (ph) {
 						for (int pos = 0; pos < len; ++pos)
@@ -459,11 +459,11 @@ public class StdInterruptHandler extends InterruptHandler
 					}
 				}
 				break;
-			case iPUT_DEC:							// Print Int in r1 to port r0 as decimal
-				s = Long.toString(cpu.getR(1));
-				ph = cpu.getPortHandler((int)cpu.getR(0));
+			case iPUT_DEC:							// Print Int in r2 to port r1 as decimal
+				s = Long.toString(cpu.getR(2));
+				ph = cpu.getPortHandler((int)cpu.getR(1));
 				if (ph != null) {
-					ph.setPort(cpu.getR(0));
+					ph.setPort(cpu.getR(1));
 					int len = s.length();
 					synchronized (ph) {
 						for (int pos = 0; pos < len; ++pos)
@@ -471,11 +471,14 @@ public class StdInterruptHandler extends InterruptHandler
 					}
 				}
 				break;
-			case iPUT_HEX:							// Print Int in r1 to port r0 as hex using r2 digits
-				s = String.format("%0" + cpu.getR(2) + "X", cpu.getR(1));
-				ph = cpu.getPortHandler((int)cpu.getR(0));
+			case iPUT_HEX:							// Print Int in r2 to port r1 as hex using r3 digits (or 0 for unlimited)
+				if (cpu.getR(3) <= 0)
+					s = String.format("%X", cpu.getR(2));
+				else
+					s = String.format("%0" + cpu.getR(3) + "X", cpu.getR(2));
+				ph = cpu.getPortHandler((int)cpu.getR(1));
 				if (ph != null) {
-					ph.setPort(cpu.getR(0));
+					ph.setPort(cpu.getR(1));
 					int len = s.length();
 					synchronized (ph) {
 						for (int pos = 0; pos < len; ++pos)
@@ -483,11 +486,11 @@ public class StdInterruptHandler extends InterruptHandler
 					}
 				}
 				break;
-			case iPUT_FP:							// Print FP in f0 to port r0 using r1 sig digits
-				s = String.format("%." + cpu.getR(1) + "f", cpu.getFP(0));
-				ph = cpu.getPortHandler((int)cpu.getR(0));
+			case iPUT_FP:							// Print FP in f1 to port r1 using r2 sig digits
+				s = String.format("%." + cpu.getR(2) + "f", cpu.getFP(1));
+				ph = cpu.getPortHandler((int)cpu.getR(1));
 				if (ph != null) {
-					ph.setPort(cpu.getR(0));
+					ph.setPort(cpu.getR(1));
 					int len = s.length();
 					synchronized (ph) {
 						for (int pos = 0; pos < len; ++pos)
@@ -495,11 +498,11 @@ public class StdInterruptHandler extends InterruptHandler
 					}
 				}
 				break;
-			case iPUTS:								// Print String pointed to by r1 to port r0
-				ph = cpu.getPortHandler((int)cpu.getR(0));
+			case iPUTS:								// Print String pointed to by r2 to port r1
+				ph = cpu.getPortHandler((int)cpu.getR(1));
 				if (ph != null) {
-					ph.setPort(cpu.getR(0));
-					int pos = (int)cpu.getR(1);
+					ph.setPort(cpu.getR(1));
+					int pos = (int)cpu.getR(2);
 					synchronized (ph) {
 						s = cpu.convertString(pos);
 						s.codePoints().forEach(cp -> {
@@ -508,11 +511,11 @@ public class StdInterruptHandler extends InterruptHandler
 					}
 				}
 				break;
-			case iPUT_LINE:
-				ph = cpu.getPortHandler((int)cpu.getR(0));
+			case iPUT_LINE:							// Print String pointed to by r2 plus newline to port r1
+				ph = cpu.getPortHandler((int)cpu.getR(1));
 				if (ph != null) {
-					ph.setPort(cpu.getR(0));
-					int pos = (int)cpu.getR(1);
+					ph.setPort(cpu.getR(1));
+					int pos = (int)cpu.getR(2);
 					synchronized (ph) {
 						s = cpu.convertString(pos);
 						s.codePoints().forEach(cp -> {
@@ -522,43 +525,43 @@ public class StdInterruptHandler extends InterruptHandler
 					}
 				}
 				break;
-			case iGET_INT:							// Get characters from port r0 and convert to an integer using base in r1
-				i = (int)cpu.getR(1);				// get base
-				cpu.setR(1, cpu.alloc(65));
+			case iGET_INT:							// Get characters from port r1 and convert to an integer using base in r2
+				i = (int)cpu.getR(2);				// get base
+				cpu.setR(2, cpu.alloc(65));
 				dispatch(iGETS);
 				try {
-					s = cpu.convertString(cpu.getR(1));
+					s = cpu.convertString(cpu.getR(2));
 					v = Integer.parseInt(s, i);
 				}
 				catch (Exception e) {
 					throw cpu.new CPUException("Can't convert \"" + s + "\" to an integer base " + i + "!");
 				}
-				cpu.free((int)cpu.getR(1));
+				cpu.free((int)cpu.getR(2));
 				cpu.setR(0,v);
 				break;
-			case iGET_DEC:							// Get characters from port r0 and convert to a decimal integer in r0
-				cpu.setR(1,10);
+			case iGET_DEC:							// Get characters from port r1 and convert to a decimal integer in r0
+				cpu.setR(2,10);
 				dispatch(iGET_INT);
 				break;
-			case iGET_HEX:							// Get characters from port r0 and convert to a hexdecimal integer in r0
-				cpu.setR(1,16);
+			case iGET_HEX:							// Get characters from port r1 and convert to a hexdecimal integer in r0
+				cpu.setR(2,16);
 				dispatch(iGET_INT);
 				break;
-			case iGET_FP:							// Get characters from port r0 and convert to a floating point number in f0
-				cpu.setR(1,cpu.alloc(65));
+			case iGET_FP:							// Get characters from port r1 and convert to a floating point number in f0
+				cpu.setR(2,cpu.alloc(65));
 				dispatch(iGETS);
 				try {
-					f = Double.parseDouble(s=cpu.convertString(cpu.getR(1)));
+					f = Double.parseDouble(s=cpu.convertString(cpu.getR(2)));
 				}
 				catch (Exception e) {throw cpu.new CPUException("Can't convert \""+s+"\" to a floating point!");}
-				cpu.free((int)cpu.getR(1));
+				cpu.free((int)cpu.getR(2));
 				cpu.setFP(0,f);
 				break;
-			case iGETS:								// Get characters from port r0 and put into an alloc buffer at r1
-													// r1 will change if buffer is reallocated
-				ph = cpu.getPortHandler((int)cpu.getR(0));
+			case iGETS:								// Get characters from port r1 and put into an alloc buffer at r2
+													// r2 will change if buffer is reallocated
+				ph = cpu.getPortHandler((int)cpu.getR(1));
 				if (ph != null) {
-					ph.setPort(cpu.getR(0));
+					ph.setPort(cpu.getR(1));
 					long pos = 0;
 					Vector<Integer> codepoints = new Vector<>();
 					int cp;
@@ -575,18 +578,19 @@ public class StdInterruptHandler extends InterruptHandler
 					int[] cps = codepoints.stream().mapToInt(Integer::intValue).toArray();
 					// Construct a String from the code points
 					s = new String(cps, 0, cps.length);
-					long newAlloc = cpu.allocString(s, cpu.getR(1));
-					cpu.setR(1, newAlloc);
+					long newAlloc = cpu.allocString(s, cpu.getR(2));
+					cpu.setR(2, newAlloc);
 					if (cp == -1 && s.isEmpty())
 						cpu.setR(0, -1);
 					else
 						cpu.setR(0, s.length());
 				}
 				break;
-			case iGET_LINE:
-				ph = cpu.getPortHandler((int)cpu.getR(0));
+			case iGET_LINE:						// Get characters from port r1 and put into an alloc buffer at r2
+												// r2 will change if buffer is reallocated
+				ph = cpu.getPortHandler((int)cpu.getR(1));
 				if (ph != null) {
-					ph.setPort(cpu.getR(0));
+					ph.setPort(cpu.getR(1));
 					long pos = 0;
 					Vector<Integer> codepoints = new Vector<>();
 					int cp;
@@ -600,8 +604,8 @@ public class StdInterruptHandler extends InterruptHandler
 					int[] cps = codepoints.stream().mapToInt(Integer::intValue).toArray();
 					// Construct a String from the code points
 					s = new String(cps, 0, cps.length);
-					long newAlloc = cpu.allocString(s, cpu.getR(1));
-					cpu.setR(1, newAlloc);
+					long newAlloc = cpu.allocString(s, cpu.getR(2));
+					cpu.setR(2, newAlloc);
 					if (cp == -1 && s.isEmpty())
 						cpu.setR(0, -1);
 					else
@@ -623,25 +627,25 @@ public class StdInterruptHandler extends InterruptHandler
 				b = cpu.memRead(cpu.getR(Simulator.R_SF) + 3) != 0;		// get condition
 				if (b) {
 					v = cpu.memRead(cpu.getR(Simulator.R_SF) + 4);		// get port
-					ph=cpu.getPortHandler((int)v);
-					if (ph!=null) {
+					ph = cpu.getPortHandler((int)v);
+					if (ph != null) {
 						ph.setPort(v);
 						s = sprintf(5);
-						int len=s.length();
+						int len = s.length();
 						synchronized (ph) {
-							for (int pos=0;pos<len;++pos)
+							for (int pos = 0; pos < len; ++pos)
 								ph.writeChar(s.charAt(pos));
 						}
 					}
 				}
 				break;
-			case iOPEN_FILE_READ:					// Open file on port r0 using filespec pointed to by r1 for reading
-				i = (int)cpu.getR(0);
+			case iOPEN_FILE_READ:					// Open file on port r1 using filespec pointed to by r2 for reading
+				i = (int)cpu.getR(1);
 //System.out.println("Opening port "+i+" for reading!");
 				ph = cpu.getPortHandler(i);
 				if (ph == null) {
 					try {
-						cpu.setPortHandler(i, new FilePortHandler(cpu, cpu.convertString(cpu.getR(1)), 0));
+						cpu.setPortHandler(i, new FilePortHandler(cpu, 0, cpu.convertString(cpu.getR(2))));
 						cpu.setR(0, -1);
 					} catch (Simulator.CPUException ex) {
 						cpu.setR(0, 0);
@@ -650,13 +654,13 @@ public class StdInterruptHandler extends InterruptHandler
 				} else
 					throw cpu.new CPUException("Port " + i + " already mapped!");
 				break;
-			case iOPEN_FILE_WRITE:					// Open file on port r0 using filespec pointed to by r1 for write
-				i = (int)cpu.getR(0);
+			case iOPEN_FILE_WRITE:					// Open file on port r1 using filespec pointed to by r2 for write
+				i = (int)cpu.getR(1);
 //System.out.println("Opening port "+i+" for writing!");
 				ph = cpu.getPortHandler(i);
 				if (ph == null) {
 					try {
-						cpu.setPortHandler(i, new FilePortHandler(cpu, cpu.convertString(cpu.getR(1)), 1));
+						cpu.setPortHandler(i, new FilePortHandler(cpu, 1, cpu.convertString(cpu.getR(2))));
 						cpu.setR(0, -1);
 					} catch (Simulator.CPUException ex) {
 						cpu.setR(0, 0);
@@ -665,13 +669,13 @@ public class StdInterruptHandler extends InterruptHandler
 				} else
 					throw cpu.new CPUException("Port " + i + " already mapped!");
 				break;
-			case iOPEN_FILE_APPEND:					// Open file on port r0 using filespec pointed to by r1 for append
-				i = (int)cpu.getR(0);
+			case iOPEN_FILE_APPEND:					// Open file on port r1 using filespec pointed to by r2 for append
+				i = (int)cpu.getR(1);
 //System.out.println("Opening port "+i+" for appending!");
 				ph = cpu.getPortHandler(i);
 				if (ph == null) {
 					try {
-						cpu.setPortHandler(i, new FilePortHandler(cpu, cpu.convertString(cpu.getR(1)), 2));
+						cpu.setPortHandler(i, new FilePortHandler(cpu, 2, cpu.convertString(cpu.getR(2))));
 						cpu.setR(0, -1);
 					} catch (Simulator.CPUException ex) {
 						cpu.setR(0, 0);
@@ -680,13 +684,13 @@ public class StdInterruptHandler extends InterruptHandler
 				} else
 					throw cpu.new CPUException("Port " + i + " already mapped!");
 				break;
-			case iOPEN_RAW_FILE_READ:					// Open file on port r0 using filespec pointed to by r1 for reading
-				i = (int)cpu.getR(0);
+			case iOPEN_RAW_FILE_READ:					// Open file on port r1 using filespec pointed to by r2 for reading
+				i = (int)cpu.getR(1);
 //System.out.println("Opening port "+i+" for reading!");
 				ph = cpu.getPortHandler(i);
 				if (ph == null) {
 					try {
-						cpu.setPortHandler(i, new RawFilePortHandler(cpu, cpu.convertString(cpu.getR(1)),0));
+						cpu.setPortHandler(i, new RawFilePortHandler(cpu, cpu.convertString(cpu.getR(2)),0));
 						cpu.setR(0, -1);
 					} catch (Simulator.CPUException ex) {
 						cpu.setR(0, 0);
@@ -695,13 +699,13 @@ public class StdInterruptHandler extends InterruptHandler
 				} else
 					throw cpu.new CPUException("Port " + i + " already mapped!");
 				break;
-			case iOPEN_RAW_FILE_WRITE:					// Open file on port r0 using filespec pointed to by r1 for write
-				i = (int)cpu.getR(0);
+			case iOPEN_RAW_FILE_WRITE:					// Open file on port r1 using filespec pointed to by r2 for write
+				i = (int)cpu.getR(1);
 //System.out.println("Opening port "+i+" for writing!");
 				ph = cpu.getPortHandler(i);
 				if (ph == null) {
 					try {
-						cpu.setPortHandler(i,new RawFilePortHandler(cpu, cpu.convertString(cpu.getR(1)),1));
+						cpu.setPortHandler(i,new RawFilePortHandler(cpu, cpu.convertString(cpu.getR(2)),1));
 						cpu.setR(0, -1);
 					} catch (Simulator.CPUException ex) {
 						cpu.setR(0, 0);
@@ -710,13 +714,13 @@ public class StdInterruptHandler extends InterruptHandler
 				} else
 					throw cpu.new CPUException("Port " + i + " already mapped!");
 				break;
-			case iOPEN_RAW_FILE_APPEND:					// Open file on port r0 using filespec pointed to by r1 for append
-				i = (int)cpu.getR(0);
+			case iOPEN_RAW_FILE_APPEND:					// Open file on port r1 using filespec pointed to by r2 for append
+				i = (int)cpu.getR(1);
 //System.out.println("Opening port "+i+" for appending!");
 				ph = cpu.getPortHandler(i);
 				if (ph == null) {
 					try {
-						cpu.setPortHandler(i,new RawFilePortHandler(cpu, cpu.convertString(cpu.getR(1)),2));
+						cpu.setPortHandler(i,new RawFilePortHandler(cpu, cpu.convertString(cpu.getR(2)),2));
 						cpu.setR(0, -1);
 					} catch (Simulator.CPUException ex) {
 						cpu.setR(0, 0);
@@ -725,26 +729,26 @@ public class StdInterruptHandler extends InterruptHandler
 				} else
 					throw cpu.new CPUException("Port " + i + " already mapped!");
 				break;
-			case iCLOSE_FILE:						// Close file on port r0
-				ph = cpu.getPortHandler((int)cpu.getR(0));
+			case iCLOSE_FILE:						// Close file on port r1
+				ph = cpu.getPortHandler((int)cpu.getR(1));
 //System.out.println("Closing port "+cpu.getR(0)+"!");
 				if (ph != null) {
-					ph.setPort((int)cpu.getR(0));
+					ph.setPort((int)cpu.getR(1));
 					ph.close();
-					cpu.setPortHandler((int)cpu.getR(0), null);
+					cpu.setPortHandler((int)cpu.getR(1), null);
 				} else
-					throw cpu.new CPUException("Port " + cpu.getR(0) + " not mapped!");
+					throw cpu.new CPUException("Port " + cpu.getR(1) + " not mapped!");
 				break;
 			case iFLUSH:							// Flush file on port r0
-				ph=cpu.getPortHandler((int)cpu.getR(0));
+				ph=cpu.getPortHandler((int)cpu.getR(1));
 				if (ph!=null) {
-					ph.setPort(cpu.getR(0));
+					ph.setPort(cpu.getR(1));
 					ph.flush();
 				} else
-					throw cpu.new CPUException("Port "+cpu.getR(0)+" not mapped!");
+					throw cpu.new CPUException("Port "+cpu.getR(1)+" not mapped!");
 				break;
 			case  iDELETE_FILE:
-				s = cpu.convertString(cpu.getR(0));
+				s = cpu.convertString(cpu.getR(1));
 				filespec = new File(s);
 				b = false;
 				if (filespec.isFile()) {
@@ -753,13 +757,13 @@ public class StdInterruptHandler extends InterruptHandler
 				cpu.setR(0, b ? -1 : 0);
 				break;
 			case  iMAKE_DIR:
-				s = cpu.convertString(cpu.getR(0));
+				s = cpu.convertString(cpu.getR(1));
 				filespec = new File(s);
 				b = filespec.mkdir();
 				cpu.setR(0, b ? -1 : 0);
 				break;
 			case  iDELETE_DIR:
-				s = cpu.convertString(cpu.getR(0));
+				s = cpu.convertString(cpu.getR(1));
 				filespec = new File(s);
 				b = false;
 				if (filespec.isDirectory()) {
@@ -768,47 +772,47 @@ public class StdInterruptHandler extends InterruptHandler
 				cpu.setR(0, b ? -1 : 0);
 				break;
 			case  iIS_DIR:
-				s = cpu.convertString(cpu.getR(0));
+				s = cpu.convertString(cpu.getR(1));
 				filespec = new File(s);
 				cpu.setR(0, filespec.isDirectory() ? -1 : 0);
 				break;
 			case  iIS_FILE:
-				s = cpu.convertString(cpu.getR(0));
+				s = cpu.convertString(cpu.getR(1));
 				filespec = new File(s);
 				cpu.setR(0, filespec.isFile() ? -1 : 0);
 				break;
 			case  iFILE_EXISTS:
-				s = cpu.convertString(cpu.getR(0));
+				s = cpu.convertString(cpu.getR(1));
 				filespec = new File(s);
 				cpu.setR(0, filespec.exists() ? -1 : 0);
 				break;
 			case  iFILES:
-				s = cpu.convertString(cpu.getR(0));
+				s = cpu.convertString(cpu.getR(1));
 				if (!s.endsWith("/")) s += "/";
 				filespec = new File(s);
 				{
 					String[] filelist = filespec.list();
 					long resultArray = cpu.alloc(filelist.length + 1);
 					for (i = 0; i < filelist.length; ++i) {
-						cpu.memWrite(resultArray + i, cpu.allocString(s + filelist[i]));
+						cpu.memWrite(resultArray + i + 1, cpu.allocString(s + filelist[i]));
 					}
-					cpu.memWrite(resultArray + filelist.length, 0);
+					cpu.memWrite(resultArray, filelist.length);
 					cpu.setR(0, resultArray);
 				}
 				break;
 			case  iTEMP_DIR:
 				try {
-					s = cpu.convertString(cpu.getR(0));
+					s = cpu.convertString(cpu.getR(1));
 					filespec = Files.createTempDirectory(s).toFile();
 					cpu.setR(0, cpu.allocString(filespec.getAbsolutePath()));
 				} catch (IOException ex) {
 					cpu.setR(0, 0);
 				}
 				break;
-			case  iTEMP_FILE:
-				s = cpu.convertString(cpu.getR(1));
+			case  iTEMP_FILE:				// r1 prefix, r2 extension
+				s = cpu.convertString(cpu.getR(2));
 				try {
-					filespec = File.createTempFile(cpu.convertString(cpu.getR(0)), s);
+					filespec = File.createTempFile(cpu.convertString(cpu.getR(1)), s);
 					cpu.setR(0, cpu.allocString(filespec.getAbsolutePath()));
 				} catch (IOException ex) {
 					cpu.setR(0, 0);
@@ -816,31 +820,31 @@ public class StdInterruptHandler extends InterruptHandler
 				break;
 // Strings and Formatting
 			case iFMT_DEC:
-				s = Long.toString(cpu.getR(0));
+				s = Long.toString(cpu.getR(1));
 				cpu.setR(0,cpu.allocString(s));
 				break;
-			case iFMT_HEX:				// format Int in r0 as hex using r1 digits
-				s = String.format("%0" + cpu.getR(1) + "X", cpu.getR(0));
+			case iFMT_HEX:				// format Int in r1 as hex using r2 digits
+				s = String.format("%0" + cpu.getR(2) + "X", cpu.getR(1));
 				cpu.setR(0,cpu.allocString(s));
 				break;
-			case iFMT_FLOAT:			// format f0 using r0 sig digits
-				s = String.format("%." + cpu.getR(0) + "f", cpu.getFP(0));
+			case iFMT_FLOAT:			// format f1 using r1 sig digits
+				s = String.format("%." + cpu.getR(1) + "f", cpu.getFP(1));
 				cpu.setR(0,cpu.allocString(s));
 				break;
 			case iPARSE_INT:
-				s = cpu.convertString(cpu.getR(0));
+				s = cpu.convertString(cpu.getR(1));
 				cpu.setR(0,Long.decode(s));
 				break;
 			case iPARSE_DEC:
-				s = cpu.convertString(cpu.getR(0));
+				s = cpu.convertString(cpu.getR(1));
 				cpu.setR(0,Long.parseLong(s,10));
 				break;
 			case iPARSE_HEX:
-				s = cpu.convertString(cpu.getR(0));
+				s = cpu.convertString(cpu.getR(1));
 				cpu.setR(0,Long.parseLong(s,16));
 				break;
 			case iPARSE_FLOAT:
-				s = cpu.convertString(cpu.getR(0));
+				s = cpu.convertString(cpu.getR(1));
 				cpu.setFP(0,Double.parseDouble(s));
 				break;
 			case iSPRINTF:
@@ -852,37 +856,37 @@ public class StdInterruptHandler extends InterruptHandler
 				cpu.setR(0, cpu.allocString(s));
 				break;
 			case iTO_LOWER:
-				v = cpu.getR(0);
+				v = cpu.getR(1);
 				v = Character.toLowerCase((int)v);
 				cpu.setR(0,v);
 				break;
 			case iTO_UPPER:
-				v = cpu.getR(0);
+				v = cpu.getR(1);
 				v = Character.toUpperCase((int)v);
 				cpu.setR(0,v);
 				break;
 			case iTO_LOWER_STR:
-				s = cpu.convertString(cpu.getR(0));
+				s = cpu.convertString(cpu.getR(1));
 				s = s.toLowerCase();
 				cpu.setR(0,cpu.allocString(s));
 				break;
 			case iTO_UPPER_STR:
-				s = cpu.convertString(cpu.getR(0));
+				s = cpu.convertString(cpu.getR(1));
 				s = s.toUpperCase();
 				cpu.setR(0,cpu.allocString(s));
 				break;
 			case iSTRCMP:
 				{
-					String s1 = cpu.convertString((int) cpu.getR(0));
-					String s2 = cpu.convertString((int) cpu.getR(1));
+					String s1 = cpu.convertString((int) cpu.getR(1));
+					String s2 = cpu.convertString((int) cpu.getR(2));
 					cpu.setR(0, s1.compareTo(s2));
 				}
 				break;
-			case iSUBSTRING:    // r0 string, r1 start, r2 length
+			case iSUBSTRING:    //r1 string, r2 start, r3 length
 				{
-					s = cpu.convertString((int)cpu.getR(0));
-					int start = Math.max(0, (int)cpu.getR(1));
-					int stop = Math.max(0, (int)(cpu.getR(1) + cpu.getR(2)));
+					s = cpu.convertString((int)cpu.getR(1));
+					int start = Math.max(0, (int)cpu.getR(2));
+					int stop = Math.max(0, (int)(cpu.getR(2) + cpu.getR(3)));
 					int len = s.length();
 					start = Math.min(len, start);
 					stop = Math.min(len, stop);
@@ -890,58 +894,58 @@ public class StdInterruptHandler extends InterruptHandler
 					cpu.setR(0, cpu.allocString(sub));
 				}
 				break;
-			case iPREFIX:    // r0 String, r1 length
+			case iPREFIX:    // r1 String, r2 length
 				{
-					s = cpu.convertString((int)cpu.getR(0));
-					String sub = s.substring(0, (int)cpu.getR(1));
+					s = cpu.convertString((int)cpu.getR(1));
+					String sub = s.substring(0, (int)cpu.getR(2));
 					cpu.setR(0, cpu.allocString(sub));
 				}
 				break;
-			case iSUFFIX:    // r0 String, r1 length
+			case iSUFFIX:    // r1 String, r2 length
 				{
-					s = cpu.convertString((int)cpu.getR(0));
-					String sub = s.substring(s.length() - (int)cpu.getR(1), s.length());
+					s = cpu.convertString((int)cpu.getR(1));
+					String sub = s.substring(s.length() - (int)cpu.getR(2), s.length());
 					cpu.setR(0, cpu.allocString(sub));
 				}
 				break;
-		    case iCHAR_SEARCH:      // r0 string, r1 search char, r2 first pos or 0
+		    case iCHAR_SEARCH:      // r1 string, r2 search char, r3 first pos or 0
 				{
-					s = cpu.convertString((int)cpu.getR(0));
-					int c = (int)cpu.getR(1);
-					i = (int)cpu.getR(2);
+					s = cpu.convertString((int)cpu.getR(1));
+					int c = (int)cpu.getR(2);
+					i = (int)cpu.getR(3);
 					i = Math.min(i, s.length());
 					i = Math.max(0, i);
 					v = s.indexOf(c, i);
 					cpu.setR(0,v);
 				}
 				break;
-			case iLAST_CHAR_SEARCH:  // r0 string, r1 search char, r2 last pos or -1
+			case iLAST_CHAR_SEARCH:  // r1 string, r2 search char, r3 last pos or -1
 				{
-					s = cpu.convertString((int)cpu.getR(0));
-					int c = (int)cpu.getR(1);
-					i = (int)cpu.getR(2);
+					s = cpu.convertString((int)cpu.getR(1));
+					int c = (int)cpu.getR(2);
+					i = (int)cpu.getR(3);
 					i = Math.min(i, s.length());
 					i = Math.max(0, i);
 					v = s.lastIndexOf(c, i);
 					cpu.setR(0,v);
 				}
 				break;
-			case iSUBSTRING_SEARCH:     // r0 string, r1 search string, r2 first pos or 0
+			case iSUBSTRING_SEARCH:     // r1 string, r2 search string, r3 first pos or 0
 				{
-					s = cpu.convertString((int)cpu.getR(0));
-					String substr = cpu.convertString((int)cpu.getR(1));
-					i = (int)cpu.getR(2);
+					s = cpu.convertString((int)cpu.getR(1));
+					String substr = cpu.convertString((int)cpu.getR(2));
+					i = (int)cpu.getR(3);
 					i = Math.min(i, s.length());
 					i = Math.max(0, i);
 					v = s.indexOf(substr, i);
 					cpu.setR(0,v);
 				}
 				break;
-			case iLAST_SUBSTRING_SEARCH:  // r0 string, r1 search str, r2 last pos or -1
+			case iLAST_SUBSTRING_SEARCH:  // r1 string, r2 search str, r3 last pos or -1
 				{
-					s = cpu.convertString((int)cpu.getR(0));
-					String substr = cpu.convertString((int)cpu.getR(1));
-					i = (int)cpu.getR(2);
+					s = cpu.convertString((int)cpu.getR(1));
+					String substr = cpu.convertString((int)cpu.getR(2));
+					i = (int)cpu.getR(3);
 					i = Math.min(i, s.length());
 					i = Math.max(0, i);
 					v = s.lastIndexOf(substr, i);
@@ -950,14 +954,14 @@ public class StdInterruptHandler extends InterruptHandler
 				break;
 			case iSTRICMP:
 				{
-					String s1 = cpu.convertString((int) cpu.getR(0));
-					String s2 = cpu.convertString((int) cpu.getR(1));
+					String s1 = cpu.convertString((int) cpu.getR(1));
+					String s2 = cpu.convertString((int) cpu.getR(2));
 					cpu.setR(0, s1.compareToIgnoreCase(s2));
 				}
 				break;
 			case iGET_CODEPOINTS:
 				{
-					s = cpu.convertString(cpu.getR(0));
+					s = cpu.convertString(cpu.getR(1));
 					int[] codepoints = s.codePoints().toArray();
 					long resultArray = cpu.alloc(codepoints.length + 1);
 					cpu.memWrite(resultArray, codepoints.length);
@@ -969,7 +973,7 @@ public class StdInterruptHandler extends InterruptHandler
 				break;
 			case iFROM_CODEPOINTS:
 				{
-					long addr = cpu.getR(0);
+					long addr = cpu.getR(1);
 					int len = (int)cpu.memRead(addr);
 					int[] codepoints = new int[len];
 					for (i = 0; i < len; ++i) {
@@ -981,7 +985,7 @@ public class StdInterruptHandler extends InterruptHandler
 				break;
 			case iCOUNT_GLHYPHS:
 				{
-					s = cpu.convertString(cpu.getR(0));
+					s = cpu.convertString(cpu.getR(1));
 					BreakIterator bi = BreakIterator.getCharacterInstance(Locale.getDefault());
 					bi.setText(s);
 					int count = 0;
@@ -996,21 +1000,21 @@ public class StdInterruptHandler extends InterruptHandler
 				break;
 			case iHASHCODE:
 				{
-					s = cpu.convertString(cpu.getR(0));
+					s = cpu.convertString(cpu.getR(1));
 					cpu.setR(0, s.hashCode());
 				}
 				break;
 			case iTRIM:
 				{
-					s = cpu.convertString(cpu.getR(0));
+					s = cpu.convertString(cpu.getR(1));
 					s = s.trim();
 					cpu.setR(0,cpu.allocString(s));
 				}
 				break;
 			case iMATCHES:		// matches portion unlike Java matches() which matches whole string as in "^regex$"
 				{
-					s = cpu.convertString(cpu.getR(0));
-					String regex = cpu.convertString(cpu.getR(1));
+					s = cpu.convertString(cpu.getR(1));
+					String regex = cpu.convertString(cpu.getR(2));
 					Pattern p = Pattern.compile(regex);
 					Matcher m = p.matcher(s);
 					cpu.setR(0,m.find()?-1:0);
@@ -1018,27 +1022,27 @@ public class StdInterruptHandler extends InterruptHandler
 				break;
 			case iREPLACE_FIRST	:
 				{
-					s = cpu.convertString(cpu.getR(0));
-					String regex = cpu.convertString(cpu.getR(1));
-					String repl = cpu.convertString(cpu.getR(2));
+					s = cpu.convertString(cpu.getR(1));
+					String regex = cpu.convertString(cpu.getR(2));
+					String repl = cpu.convertString(cpu.getR(3));
 					s = s.replaceFirst(regex, repl);
 					cpu.setR(0,cpu.allocString(s));
 				}
 				break;
 			case iREPLACE_ALL:
 				{
-					s = cpu.convertString(cpu.getR(0));
-					String regex = cpu.convertString(cpu.getR(1));
-					String repl = cpu.convertString(cpu.getR(2));
+					s = cpu.convertString(cpu.getR(1));
+					String regex = cpu.convertString(cpu.getR(2));
+					String repl = cpu.convertString(cpu.getR(3));
 					s = s.replaceAll(regex, repl);
 					cpu.setR(0,cpu.allocString(s));
 				}
 				break;
 			case iSPLIT:		// String r0, regex r1, returns null terminated array in r0
 				{
-					s = cpu.convertString(cpu.getR(0));
-					String regex = cpu.convertString(cpu.getR(1));
-					int limit = (int)cpu.getR(2);
+					s = cpu.convertString(cpu.getR(1));
+					String regex = cpu.convertString(cpu.getR(2));
+					int limit = (int)cpu.getR(3);
 					String[] splits;
 					if (limit == -1) {
 						splits = s.split(regex);
@@ -1053,10 +1057,10 @@ public class StdInterruptHandler extends InterruptHandler
 					cpu.setR(0,resultArray);
 				}
 				break;
-			case iJOIN:			// length prefixed list of strings in r0, delimiter string in r1
+			case iJOIN:			// length prefixed list of strings in r1, delimiter string in r2
 				{
-					String delim = cpu.convertString(cpu.getR(1));
-					int a = (int)cpu.getR(0);
+					String delim = cpu.convertString(cpu.getR(2));
+					int a = (int)cpu.getR(1);
 					int len = (int)cpu.memRead(a);
 					s = "";
 					for (i = 1; i <= len; ++i) {
@@ -1069,10 +1073,10 @@ public class StdInterruptHandler extends InterruptHandler
 				break;
 			case iSTRCAT:
 				{
-					String s1 = cpu.convertString(cpu.getR(0));
-					String s2 = cpu.convertString(cpu.getR(1));
+					String s1 = cpu.convertString(cpu.getR(1));
+					String s2 = cpu.convertString(cpu.getR(2));
 					s = s1 + s2;
-					cpu.setR(0, cpu.allocString(s, cpu.getR(2)));
+					cpu.setR(0, cpu.allocString(s, cpu.getR(3)));
 				}
 				break;
 			default:

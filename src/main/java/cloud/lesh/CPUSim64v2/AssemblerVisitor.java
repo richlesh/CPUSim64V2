@@ -9,6 +9,7 @@ import org.antlr.v4.runtime.tree.ParseTree;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.StringEscapeUtils;
 import java.util.*;
+import java.util.regex.*;
 import java.nio.charset.StandardCharsets;
 
 public class AssemblerVisitor extends CPUSim64v2BaseVisitor<Void> implements HasLocation {
@@ -197,6 +198,8 @@ public class AssemblerVisitor extends CPUSim64v2BaseVisitor<Void> implements Has
 		} else if ((text.charAt(0) == '-') ||
 				(text.charAt(0) >= '0' && text.charAt(0) <= '9')) {
 			return Long.parseLong(text);
+		} else if (text.charAt(0) == '\'') {
+			return Utils.parseCharLiteral(text);
 		} else {
 			if (text.charAt(0) == '@')
 				text = text.substring(1);
@@ -323,77 +326,6 @@ public class AssemblerVisitor extends CPUSim64v2BaseVisitor<Void> implements Has
 		} else {
 			return (val >= 0 && val <= ((1L << bits) - 1));
 		}
-	}
-
-	private long parseCharLiteral(String s) {
-/*
-		if (s.length() >= 2 && s.charAt(0) == '\'' && s.charAt(s.length() - 1) == '\'') {
-			s = s.substring(1, s.length() - 1);
-		}
-		// Handle escape sequences
-		StringBuilder sb = new StringBuilder();
-		for (int i = 0; i < s.length(); i++) {
-			char ch = s.charAt(i);
-			if (ch == '\\' && i + 1 < s.length()) {
-				char next = s.charAt(i + 1);
-				switch (next) {
-					case 'n' -> {
-						sb.append('\n');
-						i++;
-					}
-					case 't' -> {
-						sb.append('\t');
-						i++;
-					}
-					case 'r' -> {
-						sb.append('\r');
-						i++;
-					}
-					case '\\' -> {
-						sb.append('\\');
-						i++;
-					}
-					case '\'' -> {
-						sb.append('\'');
-						i++;
-					}
-					case '\"' -> {
-						sb.append('\"');
-						i++;
-					}
-					case '0' -> {
-						sb.append('\0');
-						i++;
-					}
-					case 'u', 'U' -> {
-						if (i + 5 < s.length()) {
-							String hex = s.substring(i + 2, i + 6);
-							try {
-								int codePoint = Integer.parseInt(hex, 16);
-								sb.append((char) codePoint);
-								i += 5;
-							} catch (NumberFormatException e) {
-								sb.append(s); // Invalid escape, keep as-is
-								i++;
-							}
-						} else {
-							sb.append(s); // Incomplete escape, keep as-is
-							i++;
-						}
-					}
-					default -> sb.append(ch); // Unknown escape, keep as-is
-				}
-			} else {
-				sb.append(ch);
-			}
-		}
-		String unescaped = sb.toString();
-		if (unescaped.length() != 1) {
-			throw new IllegalStateException("CHARLIT must be a single character");
-		}
-		return unescaped.codePointAt(0);
-		*/
-		return 0;
 	}
 
 	private String getScopeName() {
@@ -581,10 +513,7 @@ public class AssemblerVisitor extends CPUSim64v2BaseVisitor<Void> implements Has
 			v0 = (y.fOperand() != null) ? fpIndex(y.fOperand().REG_F().getText())
 					: aIndexFromToken(y.aOperand().start);
 			b = OT_CONST;
-			if (ctx.cLiteral().CHARLIT() != null)
-				k =parseCharLiteral(ctx.cLiteral().CHARLIT().getText());
-			else
-				k =parseIntLike(ctx.cLiteral().getText());
+			k =parseIntLike(ctx.cLiteral().getText());
 			out.add(encType2RC2(Opcode.MOVE.code, a, v0, k));
 		} else if (ctx.aOperand(0) != null && ctx.aOperand(1) != null && ctx.rOperand() != null) {
 			// AAR
@@ -1498,7 +1427,7 @@ public class AssemblerVisitor extends CPUSim64v2BaseVisitor<Void> implements Has
 						b = parseIntLike(bctx.HEXLIT().getText());
 					} else if (bctx.CHARLIT() != null) {
 						String s = bctx.CHARLIT().getText();
-						b = parseCharLiteral(s);
+						b = parseIntLike(bctx.HEXLIT().getText());
 					} else {
 						throw new IllegalStateException("Invalid DCB byte literal");
 					}
@@ -1529,7 +1458,7 @@ public class AssemblerVisitor extends CPUSim64v2BaseVisitor<Void> implements Has
 						b = parseIntLike(bctx.HEXLIT().getText());
 					} else if (bctx.CHARLIT() != null) {
 						String s = bctx.CHARLIT().getText();
-						b = parseCharLiteral(s);
+						b = Utils.parseCharLiteral(s);
 					} else {
 						throw new IllegalStateException("Invalid DCC char literal");
 					}
@@ -1570,7 +1499,7 @@ public class AssemblerVisitor extends CPUSim64v2BaseVisitor<Void> implements Has
 				out.add((long) ctx.charList().CHARLIT().size());
 				for (var kctx : ctx.charList().CHARLIT()) {
 					String s = kctx.getText();
-					long k = parseCharLiteral(s);
+					long k = Utils.parseCharLiteral(s);
 					out.add(k);
 				}
 			} else {
@@ -1581,8 +1510,7 @@ public class AssemblerVisitor extends CPUSim64v2BaseVisitor<Void> implements Has
 			String s = ctx.STRINGLIT().getText();
 			if (s != null && s.length() >= 2) {
 				s = s.substring(1, s.length() - 1);
-				s = StringEscapeUtils.unescapeJava(s);
-				byte[] utf8 = s.getBytes(StandardCharsets.UTF_8);
+				byte[] utf8 = Utils.parseStringLiteral(s);
 				out.add((long)utf8.length);
 				long buffer = 0;
 				int index = 7;
@@ -1672,15 +1600,15 @@ public class AssemblerVisitor extends CPUSim64v2BaseVisitor<Void> implements Has
 		CharStream input = CharStreams.fromString(src);
 		var lex = new cloud.lesh.CPUSim64v2.CPUSim64v2Lexer(input);
 		var lexerListener = new CollectingErrorListener(errors, null);
-		lex.removeErrorListeners();                // remove ConsoleErrorListener
-		lex.addErrorListener(lexerListener);       // collect lexer errors
+		lex.removeErrorListeners(); 				// remove ConsoleErrorListener
+		lex.addErrorListener(lexerListener); 		// collect lexer errors
 		CommonTokenStream toks = new CommonTokenStream(lex);
 //		if (errors.size() > 0) return;
 
 		var parser = new cloud.lesh.CPUSim64v2.CPUSim64v2Parser(toks);
 		var parserListener = new CollectingErrorListener(errors, null);
-		parser.removeErrorListeners();             // remove ConsoleErrorListener
-		parser.addErrorListener(parserListener);   // collect parser errors
+		parser.removeErrorListeners();				// remove ConsoleErrorListener
+		parser.addErrorListener(parserListener);	// collect parser errors
 		ParseTree tree = parser.program();
 //		if (errors.size() > 0) return;
 		visit(tree);

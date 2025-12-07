@@ -17,13 +17,13 @@ public class FlowControlTest extends BaseTest {
 			START:
 			#VAR i
 			#FOR 0, i < 10, 1
-				move	r0, STDOUT
-				move	r1, i
+				move	r1, STDOUT
+				move	r2, i
 				int		iPUT_DEC
 				int		iPUT_NL
 			#END_FOR
-			move	r0, STDOUT
-			move	r1, "FINIS"
+			move	r1, STDOUT
+			move	r2, "FINIS"
 			int		iPUTS
 			int		iPUT_NL
 			stop
@@ -62,21 +62,21 @@ FINIS
 			#VAR i
 			move	i, 10
 			#WHILE i > 0
-				move	r0, STDOUT
-				move	r1, i
+				move	r1, STDOUT
+				move	r2, i
 				int		iPUT_DEC
 				int		iPUT_NL
 				sub		i, 1
 			#END_WHILE
 			#WHILE i > 0
-				move	r0, STDOUT
-				move	r1, i
+				move	r1, STDOUT
+				move	r2, i
 				int		iPUT_DEC
 				int		iPUT_NL
 				sub		i, 1
 			#END_WHILE
-			move	r0, STDOUT
-			move	r1, "FINIS"
+			move	r1, STDOUT
+			move	r2, "FINIS"
 			int		iPUTS
 			int		iPUT_NL
 			stop
@@ -115,21 +115,21 @@ FINIS
 			#VAR i
 			move	i, 0
 			#DO_WHILE
-				move	r0, STDOUT
-				move	r1, i
+				move	r1, STDOUT
+				move	r2, i
 				int		iPUT_DEC
 				int		iPUT_NL
 				add		i, 2
 			#END_DO_WHILE i < 10
 			#DO_WHILE
-				move	r0, STDOUT
-				move	r1, i
+				move	r1, STDOUT
+				move	r2, i
 				int		iPUT_DEC
 				int		iPUT_NL
 				add		i, 2
 			#END_DO_WHILE i < 10
-			move	r0, STDOUT
-			move	r1, "FINIS"
+			move	r1, STDOUT
+			move	r2, "FINIS"
 			int		iPUTS
 			int		iPUT_NL
 			stop
@@ -163,17 +163,17 @@ FINIS
 			START:
 			#VAR i, j
 			#FOR 0, i < 10, 1
-				div		r1, j, i, 2
+				div		r2, j, i, 2
 				#if_cond	j == 1
 					#continue
 				#end_cond
-				move	r0, STDOUT
-				move	r1, i
+				move	r1, STDOUT
+				move	r2, i
 				int		iPUT_DEC
 				int		iPUT_NL
 			#END_FOR
-			move	r0, STDOUT
-			move	r1, "FINIS"
+			move	r1, STDOUT
+			move	r2, "FINIS"
 			int		iPUTS
 			int		iPUT_NL
 			stop
@@ -208,24 +208,24 @@ FINIS
 			move	i, 11
 			#WHILE i > 1
 				sub		i, 1
-				div		r1, j, i, 2
+				div		r2, j, i, 2
 				#if_cond	j == 1
 					#continue
 				#end_cond
-				move	r0, STDOUT
-				move	r1, i
+				move	r1, STDOUT
+				move	r2, i
 				int		iPUT_DEC
 				int		iPUT_NL
 			#END_WHILE
 			#WHILE i > 1
-				move	r0, STDOUT
-				move	r1, i
+				move	r1, STDOUT
+				move	r2, i
 				int		iPUT_DEC
 				int		iPUT_NL
 				sub		i, 1
 			#END_WHILE
-			move	r0, STDOUT
-			move	r1, "FINIS"
+			move	r1, STDOUT
+			move	r2, "FINIS"
 			int		iPUTS
 			int		iPUT_NL
 			stop
@@ -260,17 +260,17 @@ FINIS
 			move	i, -1
 			#DO_WHILE
 				add		i, 1
-				div		r1, j, i, 2
+				div		r2, j, i, 2
 				#if_cond	j == 1
 					#continue
 				#end_cond
-				move	r0, STDOUT
-				move	r1, i
+				move	r1, STDOUT
+				move	r2, i
 				int		iPUT_DEC
 				int		iPUT_NL
 			#END_DO_WHILE i < 10
-			move	r0, STDOUT
-			move	r1, "FINIS"
+			move	r1, STDOUT
+			move	r2, "FINIS"
 			int		iPUTS
 			int		iPUT_NL
 			stop
@@ -307,13 +307,13 @@ FINIS
 				#if_cond	i == 5
 					#break
 				#end_cond
-				move	r0, STDOUT
-				move	r1, i
+				move	r1, STDOUT
+				move	r2, i
 				int		iPUT_DEC
 				int		iPUT_NL
 			#END_FOR
-			move	r0, STDOUT
-			move	r1, "FINIS"
+			move	r1, STDOUT
+			move	r2, "FINIS"
 			int		iPUTS
 			int		iPUT_NL
 			stop
@@ -351,13 +351,13 @@ FINIS
 				#if_cond	i == 5
 					#break
 				#end_cond
-				move	r0, STDOUT
-				move	r1, i
+				move	r1, STDOUT
+				move	r2, i
 				int		iPUT_DEC
 				int		iPUT_NL
 			#END_WHILE
-			move	r0, STDOUT
-			move	r1, "FINIS"
+			move	r1, STDOUT
+			move	r2, "FINIS"
 			int		iPUTS
 			int		iPUT_NL
 			stop
@@ -395,13 +395,13 @@ FINIS
 				#if_cond	i == 5
 					#break
 				#end_cond
-				move	r0, STDOUT
-				move	r1, i
+				move	r1, STDOUT
+				move	r2, i
 				int		iPUT_DEC
 				int		iPUT_NL
 			#END_DO_WHILE i < 10
-			move	r0, STDOUT
-			move	r1, "FINIS"
+			move	r1, STDOUT
+			move	r2, "FINIS"
 			int		iPUTS
 			int		iPUT_NL
 			stop
@@ -434,22 +434,22 @@ FINIS
 			START:
 			#VAR i,j
 			#FOR 0, i < 10, 1
-				move	r0, STDOUT
-				move	r1, i
+				move	r1, STDOUT
+				move	r2, i
 				int		iPUT_DEC
-				move	r1, ","
+				move	r2, ","
 				int		iPUTS
 				#FOR 0, j < 4, 1
-					move	r0, STDOUT
-					move	r1, j
+					move	r1, STDOUT
+					move	r2, j
 					int		iPUT_DEC
-					move	r1, ","
+					move	r2, ","
 					int		iPUTS
 				#END_FOR
 				int		iPUT_NL
 			#END_FOR
-			move	r0, STDOUT
-			move	r1, "FINIS"
+			move	r1, STDOUT
+			move	r2, "FINIS"
 			int		iPUTS
 			int		iPUT_NL
 			stop
@@ -489,14 +489,14 @@ FINIS
 			#VAR i
 			move	i, 10
 			#IF_COND i == 10
-				move	r0, STDOUT
-				move	r1, "GOOD"
+				move	r1, STDOUT
+				move	r2, "GOOD"
 				int		iPUTS
 				int		iPUT_NL
 			#END_COND
 			#IF_COND i == 9
-				move	r0, STDOUT
-				move	r1, "BADWOLF"
+				move	r1, STDOUT
+				move	r2, "BADWOLF"
 				int		iPUTS
 				int		iPUT_NL
 			#END_COND
@@ -526,24 +526,24 @@ GOOD
 			#VAR i
 			move	i, 10
 			#IF_COND i < 10
-				move	r0, STDOUT
-				move	r1, "BAD WOLF"
+				move	r1, STDOUT
+				move	r2, "BAD WOLF"
 				int		iPUTS
 				int		iPUT_NL
 			#ELSE_COND
-				move	r0, STDOUT
-				move	r1, "GOOD"
+				move	r1, STDOUT
+				move	r2, "GOOD"
 				int		iPUTS
 				int		iPUT_NL
 			#END_COND
 			#IF_COND i >= 10
-				move	r0, STDOUT
-				move	r1, "GOOD"
+				move	r1, STDOUT
+				move	r2, "GOOD"
 				int		iPUTS
 				int		iPUT_NL
 			#ELSE_COND
-				move	r0, STDOUT
-				move	r1, "BAD WOLF"
+				move	r1, STDOUT
+				move	r2, "BAD WOLF"
 				int		iPUTS
 				int		iPUT_NL
 			#END_COND
@@ -575,90 +575,90 @@ GOOD
 			move	i, 10
 			move	j, 9
 			#IF_COND i > 10
-				move	r0, STDOUT
-				move	r1, "BAD WOLF"
+				move	r1, STDOUT
+				move	r2, "BAD WOLF"
 				int		iPUTS
 				int		iPUT_NL
 			#ELSE_IF_COND i <= 8
-				move	r0, STDOUT
-				move	r1, "BAD WOLF"
+				move	r1, STDOUT
+				move	r2, "BAD WOLF"
 				int		iPUTS
 				int		iPUT_NL
 			#ELSE_IF_COND i == j
-				move	r0, STDOUT
-				move	r1, "BAD WOLF"
+				move	r1, STDOUT
+				move	r2, "BAD WOLF"
 				int		iPUTS
 				int		iPUT_NL
 			#ELSE_COND
-				move	r0, STDOUT
-				move	r1, "GOOD"
+				move	r1, STDOUT
+				move	r2, "GOOD"
 				int		iPUTS
 				int		iPUT_NL
 			#END_COND
 
 			move	i, 9
 			#IF_COND i > 10
-				move	r0, STDOUT
-				move	r1, "BAD WOLF"
+				move	r1, STDOUT
+				move	r2, "BAD WOLF"
 				int		iPUTS
 				int		iPUT_NL
 			#ELSE_IF_COND i <= 8
-				move	r0, STDOUT
-				move	r1, "BAD WOLF"
+				move	r1, STDOUT
+				move	r2, "BAD WOLF"
 				int		iPUTS
 				int		iPUT_NL
 			#ELSE_IF_COND i == j
-				move	r0, STDOUT
-				move	r1, "GOOD"
+				move	r1, STDOUT
+				move	r2, "GOOD"
 				int		iPUTS
 				int		iPUT_NL
 			#ELSE_COND
-				move	r0, STDOUT
-				move	r1, "BAD WOLF"
+				move	r1, STDOUT
+				move	r2, "BAD WOLF"
 				int		iPUTS
 				int		iPUT_NL
 			#END_COND
 			move	i, 8
 			#IF_COND i > 10
-				move	r0, STDOUT
-				move	r1, "BAD WOLF"
+				move	r1, STDOUT
+				move	r2, "BAD WOLF"
 				int		iPUTS
 				int		iPUT_NL
 			#ELSE_IF_COND i <= 8
-				move	r0, STDOUT
-				move	r1, "GOOD"
+				move	r1, STDOUT
+				move	r2, "GOOD"
 				int		iPUTS
 				int		iPUT_NL
 			#ELSE_IF_COND i == j
-				move	r0, STDOUT
-				move	r1, "BAD WOLF"
+				move	r1, STDOUT
+				move	r2, "BAD WOLF"
 				int		iPUTS
 				int		iPUT_NL
 			#ELSE_COND
-				move	r0, STDOUT
-				move	r1, "BAD WOLF"
+				move	r1, STDOUT
+				move	r2, "BAD WOLF"
 				int		iPUTS
 				int		iPUT_NL
 			#END_COND
 			move	i, 7
 			#IF_COND i > 10
-				move	r0, STDOUT
-				move	r1, "BAD WOLF"
+				move	r1, STDOUT
+				move	r2, "BAD WOLF"
 				int		iPUTS
 				int		iPUT_NL
 			#ELSE_IF_COND i <= 7
-				move	r0, STDOUT
-				move	r1, "GOOD"
+				move	r1, STDOUT
+				move	r2, "GOOD"
 				int		iPUTS
 				int		iPUT_NL
 			#ELSE_IF_COND i == j
-				move	r0, STDOUT
-				move	r1, "BAD WOLF"
+				move	r1, STDOUT
+				move	r2, "BAD WOLF"
 				int		iPUTS
 				int		iPUT_NL
 			#ELSE_COND
-				move	r0, STDOUT
-				move	r1, "BAD WOLF"
+				move	r1, STDOUT
+				move	r2, "BAD WOLF"
 				int		iPUTS
 				int		iPUT_NL
 			#END_COND

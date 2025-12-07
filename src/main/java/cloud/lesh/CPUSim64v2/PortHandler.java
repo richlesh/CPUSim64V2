@@ -19,7 +19,7 @@ public abstract class PortHandler implements Cloneable {
 	public abstract void close() throws Simulator.CPUException;
 	public boolean isError() { return error; }
 	public boolean isEOF() { return eof; }
-	public void setEndian(boolean b) { littleEndian = b; }
+	public void setLittleEndian(boolean b) { littleEndian = b; }
 
 	public final void setPort(int i){port=i;}
 	public final void setPort(long i){port=(int)i;}
@@ -39,7 +39,7 @@ public abstract class PortHandler implements Cloneable {
 	{
 //System.out.println("read("+count+")");
 		long result=0;
-		if (count<=0 || count>REG_SIZE_BYTES) count=REG_SIZE_BYTES;
+		if (count <= 0 || count > REG_SIZE_BYTES) count=REG_SIZE_BYTES;
 		if (!littleEndian) {		// big-endian
 			while (count-- > 0) {
 				result <<= 8;
@@ -83,10 +83,10 @@ public abstract class PortHandler implements Cloneable {
 		if (count <= 0 || count > REG_SIZE_BYTES)
 			count = REG_SIZE_BYTES;
 		if (!littleEndian) {		// big-endian
-			int shiftAmount=(count-1)*8;
+			int shiftAmount = (count-1)*8;
 			while (count-- > 0) {
-				write((byte)((x>>shiftAmount)&0xff));
-				shiftAmount-=8;
+				write((byte)((x >> shiftAmount) & 0xff));
+				shiftAmount -= 8;
 			}
 		} else {				// little-endian
 			while (count-- > 0) {

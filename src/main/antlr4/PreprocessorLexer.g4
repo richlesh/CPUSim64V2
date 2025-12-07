@@ -64,7 +64,7 @@ CHAR  : '\'' ( ESC | ~['\\\r\n] ) '\'' ;
 STRING: '"' ( ESC | ~["\\\r\n] )* '"' ;
 ANGLE_PATH : '<' (~[>\r\n])+ '>' ;
 // Fragments: **no** actions/commands here
-fragment ESC : '\\' [btnfr"'\\] | '\\' 'u' HEX HEX HEX HEX ;
+fragment ESC : '\\' [btnfr"'\\] | '\\' [uU] LCURLY (HEX)+ RCURLY ;
 fragment HEX : [0-9A-Fa-f] ;
 EQEQ : '==' | [eE][qQ] ;
 NEQ : '!=' | [nN][eE] ;
@@ -113,7 +113,5 @@ COMMA_D      : ',' -> type(COMMA) ;
 LPAREN_D     : '(' -> type(LPAREN) ;
 RPAREN_D     : ')' -> type(RPAREN) ;
 DOLLAR_D	 : '$' -> type(DOLLAR) ;
-LCURLY_D	 : '{' -> type(LCURLY) ;
-RCURLY_D	 : '}' -> type(RCURLY) ;
 ELLIPSIS_D 	 : '.' '.' '.' -> type(ELLIPSIS) ;
 COLON_D		 : ':' -> type(COLON) ;

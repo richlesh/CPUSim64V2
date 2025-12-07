@@ -73,43 +73,47 @@
 #end_macro
 
 #def_macro	ALLOC(size)
-	move	r0, ${size}
+	push	r1
+	move	r1, ${size}
 	int		iALLOC
+	pop		r1
 #end_macro
 
 #def_macro	REALLOC(addr, size)
-	push	r1
-	move	r1, ${size}
-	move	r0, ${addr}
+	save	r1,r2
+	move	r2, ${size}
+	move	r1, ${addr}
 	int		iREALLOC
-	pop		r1
+	restore	r1,r2
 #end_macro
 
 #def_macro	FREE_ELEMENT(a, offset)
-	load	r0, ${a}[${offset}]
+	push	r1
+	load	r1, ${a}[${offset}]
 	int		iFREE
+	pop		r1
 #end_macro
 
 #def_macro	FREE(a)
-	move	r0, ${a}
+	push	r1
+	move	r1, ${a}
 	int		iFREE
+	pop		r1
 #end_macro
 
 #def_macro	MEMMOVE(dest, src, size)
-	push	r2
-	push	r1
-	move	r0, ${dest}
-	move	r1, ${src}
-	move	r2, ${size}
+	save	r1,r3
+	move	r1, ${dest}
+	move	r2, ${src}
+	move	r3, ${size}
 	int		iMEMMOVE
-	pop		r1
-	pop		r2
+	restore	r1,r3
 #end_macro
 
 #def_macro	MEMCLEAR(dest, size)
-	push	r1
-	move	r0, ${dest}
-	move	r1, ${size}
+	save	r1,r2
+	move	r1, ${dest}
+	move	r2, ${size}
 	int		iMEMCLEAR
-	pop		r1
+	restore	r1,r2
 #end_macro

@@ -467,7 +467,7 @@ FILENAMELIT
 
 fragment ESC
   : '\\' [0btnfr"'\\]
-  | '\\' [uU] HEX HEX HEX HEX
+  | '\\' [uU] '{' HEX+ '}'
   ;
 
 fragment HEX : [0-9A-Fa-f];

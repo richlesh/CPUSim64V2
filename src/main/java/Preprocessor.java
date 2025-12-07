@@ -52,6 +52,8 @@ public class Preprocessor {
 		// 4) Add global declarations
 		preprocessed = PreprocessorVisitor.addGlobals(preprocessed);
 
+		preprocessed = ".org 1" + System.lineSeparator() + preprocessed;
+
 		// 5) Write preprocessed output	}
 		Files.writeString(outPath, preprocessed);
 	}

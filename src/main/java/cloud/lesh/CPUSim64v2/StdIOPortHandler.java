@@ -1,6 +1,7 @@
 package cloud.lesh.CPUSim64v2;
 
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 
 public class StdIOPortHandler extends PortHandler
 {
@@ -71,7 +72,7 @@ public class StdIOPortHandler extends PortHandler
 	}
 
 	@Override
-	public void writeChar(int x) throws Simulator.CPUException {
+	public void writeChar(int codePoint) throws Simulator.CPUException {
 		if (port() == 0) throw cpu.new CPUException("Can't write to STDIN!");
 		try {
 			if (port() != lastPort) {
@@ -81,24 +82,20 @@ public class StdIOPortHandler extends PortHandler
 			}
 	//System.err.printf("{%d}",(int)x);
 			if (port() == 2) {
-				if (x > 0xffff) {
-					StringBuilder sb = new StringBuilder();
-					sb.appendCodePoint(x);
-					System.err.print(sb.toString());
-				}else System.err.print((char)x);
+				String s = new String(Character.toChars(codePoint));
+				byte[] utf8 = s.getBytes(StandardCharsets.UTF_8);
+				System.err.write(utf8);
 			} else {
-				if (x > 0xffff) {
-					StringBuilder sb = new StringBuilder();
-					sb.appendCodePoint(x);
-					System.out.print(sb.toString());
-				} else
-					System.out.print((char)x);
+				String s = new String(Character.toChars(codePoint));
+				byte[] utf8 = s.getBytes(StandardCharsets.UTF_8);
+				System.out.write(utf8);
 			}
 		}
 		catch (Exception e) {
 			throw cpu.new CPUException("Write error on port " + port() + "!");
 		}
 	}
+
 	@Override
 	public void flush() throws Simulator.CPUException {
 		if (port() == 0) throw cpu.new CPUException("Can't write to STDIN!");

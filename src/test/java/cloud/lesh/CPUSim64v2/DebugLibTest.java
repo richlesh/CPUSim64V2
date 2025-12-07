@@ -192,6 +192,7 @@ DEBUG: Percent: 12.35%
 			START:
 			#include <system/debug.def>
 			#include <system/debug.asm>
+			#var fl, fr
 			#macro SET_EXIT_ON_ASSERT_FAILURE(0)
 			#macro ASSERT_TRUE(0, "true")
 			#macro ASSERT_FALSE(1, "false")
@@ -203,39 +204,39 @@ DEBUG: Percent: 12.35%
 			#macro ASSERT_GT(2, 2, "gt")
 			#macro ASSERT_LE(2, 1, "le")
 			#macro ASSERT_GE(1, 2, "ge")
-			load f1, 1.0
-			load f2, 2.0
-			#macro assert_eq_fp(f1, f2, "eq")
-			#macro assert_ne_fp(f1, f1, "ne")
-			#macro assert_lt_fp(f2, f1, "lt")
-			#macro assert_gt_fp(f1, f2, "gt")
-			#macro assert_lt_fp(f1, f1, "lt")
-			#macro assert_gt_fp(f2, f2, "gt")
-			#macro assert_le_fp(f2, f1, "le")
-			#macro assert_ge_fp(f1, f2, "ge")
+			load fl, 1.0
+			load fr, 2.0
+			#macro assert_eq_fp(fl, fr, "eq")
+			#macro assert_ne_fp(fl, fl, "ne")
+			#macro assert_lt_fp(fr, fl, "lt")
+			#macro assert_gt_fp(fl, fr, "gt")
+			#macro assert_lt_fp(fl, fl, "lt")
+			#macro assert_gt_fp(fr, fr, "gt")
+			#macro assert_le_fp(fr, fl, "le")
+			#macro assert_ge_fp(fl, fr, "ge")
 			STOP
 			STOP
 			FINIS:
 			""";
 		String expected = """
-Assertion Failed (Test.asm:5) true
-Assertion Failed (Test.asm:6) false
-Assertion Failed (Test.asm:7) eq 1=2
-Assertion Failed (Test.asm:8) ne 1≠1
-Assertion Failed (Test.asm:9) lt 2<1
-Assertion Failed (Test.asm:10) gt 1>2
-Assertion Failed (Test.asm:11) lt 1<1
-Assertion Failed (Test.asm:12) gt 2>2
-Assertion Failed (Test.asm:13) le 2≤1
-Assertion Failed (Test.asm:14) ge 1≥2
-Assertion Failed (Test.asm:17) eq 1.0000000000000000=2.0000000000000000
-Assertion Failed (Test.asm:18) ne 1.0000000000000000≠1.0000000000000000
-Assertion Failed (Test.asm:19) lt 2.0000000000000000<1.0000000000000000
-Assertion Failed (Test.asm:20) gt 1.0000000000000000>2.0000000000000000
-Assertion Failed (Test.asm:21) lt 1.0000000000000000<1.0000000000000000
-Assertion Failed (Test.asm:22) gt 2.0000000000000000>2.0000000000000000
-Assertion Failed (Test.asm:23) le 2.0000000000000000≤1.0000000000000000
-Assertion Failed (Test.asm:24) ge 1.0000000000000000≥2.0000000000000000
+Assertion Failed (Test.asm:6) true
+Assertion Failed (Test.asm:7) false
+Assertion Failed (Test.asm:8) eq 1=2
+Assertion Failed (Test.asm:9) ne 1≠1
+Assertion Failed (Test.asm:10) lt 2<1
+Assertion Failed (Test.asm:11) gt 1>2
+Assertion Failed (Test.asm:12) lt 1<1
+Assertion Failed (Test.asm:13) gt 2>2
+Assertion Failed (Test.asm:14) le 2≤1
+Assertion Failed (Test.asm:15) ge 1≥2
+Assertion Failed (Test.asm:18) eq 1.0000000000000000=2.0000000000000000
+Assertion Failed (Test.asm:19) ne 1.0000000000000000≠1.0000000000000000
+Assertion Failed (Test.asm:20) lt 2.0000000000000000<1.0000000000000000
+Assertion Failed (Test.asm:21) gt 1.0000000000000000>2.0000000000000000
+Assertion Failed (Test.asm:22) lt 1.0000000000000000<1.0000000000000000
+Assertion Failed (Test.asm:23) gt 2.0000000000000000>2.0000000000000000
+Assertion Failed (Test.asm:24) le 2.0000000000000000≤1.0000000000000000
+Assertion Failed (Test.asm:25) ge 1.0000000000000000≥2.0000000000000000
 			""";
 		ConsoleOutputCapturer capturer = new ConsoleOutputCapturer();
 		capturer.start(ConsoleOutputCapturer.StdStream.STDOUT);
@@ -244,7 +245,7 @@ Assertion Failed (Test.asm:24) ge 1.0000000000000000≥2.0000000000000000
 		var result = tuple.getLeft();
 		var sim = tuple.getMiddle();
 		var diff = tuple.getRight();
-		assertEquals(6, diff.size());
+		assertEquals(8, diff.size());
 		assertEquals(expected, output);
 	}
 }

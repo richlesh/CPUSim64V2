@@ -15,15 +15,15 @@ public class StringInterruptTest extends BaseTest {
 		String src = """
 			START:
 				#include <system/string.def>
-				move	R0, 3261963
+				move	R1, 3261963
 				int		iFMT_DEC
 				move	R28, R0
-				move	R1, 16
-				move	R0, 3261963
+				move	R2, 16
+				move	R1, 3261963
 				int		iFMT_HEX
 				move	R27, R0
-				move	R0, 7
-				load	F0, 3.1415926
+				move	R1, 7
+				load	F1, 3.1415926
 				int		iFMT_FLOAT
 				move	R26, R0
 				STOP
@@ -33,7 +33,7 @@ public class StringInterruptTest extends BaseTest {
 		var result = tuple.getLeft();
 		var sim = tuple.getMiddle();
 		var diff = tuple.getRight();
-		assertEquals(8, diff.size());
+		assertEquals(9, diff.size());
 		assertEquals("3261963", sim.convertString(sim.getR(28)));
 		assertEquals("000000000031C60B", sim.convertString(sim.getR(27)));
 		assertEquals("3.1415926", sim.convertString(sim.getR(26)));
@@ -44,22 +44,22 @@ public class StringInterruptTest extends BaseTest {
 		String src = """
 			START:
 				#include <system/string.def>
-				move	r0, "3261963"
+				move	r1, "3261963"
 				int		iPARSE_INT
 				move	r28, r0
-				move	r0, "0x123456"
+				move	r1, "0x123456"
 				int		iPARSE_INT
 				move	r27, r0
-				move	r0, "01234"
+				move	r1, "01234"
 				int		iPARSE_INT
 				move	r26, r0
-				move	r0, "123456"
+				move	r1, "123456"
 				int		iPARSE_DEC
 				move	r25, r0
-				move	r0, "123456"
+				move	r1, "123456"
 				int		iPARSE_HEX
 				move	r24, r0
-				move	r0, "3.1415926"
+				move	r1, "3.1415926"
 				int		iPARSE_FLOAT
 				STOP
 			FINIS:
@@ -68,7 +68,7 @@ public class StringInterruptTest extends BaseTest {
 		var result = tuple.getLeft();
 		var sim = tuple.getMiddle();
 		var diff = tuple.getRight();
-		assertEquals(9, diff.size());
+		assertEquals(10, diff.size());
 		diff.assertDiff(28, 3261963);
 		diff.assertDiff(27, 1193046);
 		diff.assertDiff(26, 668);
@@ -84,9 +84,9 @@ public class StringInterruptTest extends BaseTest {
 				#include <system/string.def>				
 				move	r1, 326
 				move	r2, "Héllø"
-				load	f0, 3.1415926
+				load	f1, 3.1415926
 				move	r3, '😀'
-				#call	sprintf("%d %x %s %.2f %c", r1, r1, r2, f0, r3)
+				#call	sprintf("%d %x %s %.2f %c", r1, r1, r2, f1, r3)
 				move	r28, r0
 				
 				move	r3, "Rich"
@@ -122,28 +122,28 @@ public class StringInterruptTest extends BaseTest {
 		String src = """
 			START:
 				#include <system/string.def>
-				move	r1, 'A'
-				move	r2, 'a'
-				move	r3, "AbCdEf123!"
+				move	r2, 'A'
+				move	r3, 'a'
+				move	r4, "AbCdEf123!"
 				
-				move	r0, r1
+				move	r1, r2
 				int		iTO_LOWER
 				move	r28, r0
-				move	r0, r1
+				move	r1, r2
 				int		iTO_UPPER
 				move	r27, r0
 				
-				move	r0, r2
+				move	r1, r3
 				int		iTO_LOWER
 				move	r26, r0
-				move	r0, r2
+				move	r1, r3
 				int		iTO_UPPER
 				move	r25, r0
 				
-				move	r0, r3
+				move	r1, r4
 				int		iTO_LOWER_STR
 				move	r24, r0
-				move	r0, r3
+				move	r1, r4
 				int		iTO_UPPER_STR
 				move	r23, r0
 				STOP
@@ -154,7 +154,7 @@ public class StringInterruptTest extends BaseTest {
 		var result = tuple.getLeft();
 		var sim = tuple.getMiddle();
 		var diff = tuple.getRight();
-		assertEquals(12, diff.size());
+		assertEquals(13, diff.size());
 		diff.assertDiff(28, 'a');
 		diff.assertDiff(27, 'A');
 		diff.assertDiff(26, 'a');
@@ -171,18 +171,18 @@ public class StringInterruptTest extends BaseTest {
 				move	r28, "ABC"
 				move	r27, "abc"
 
-				move	r0, r28
 				move	r1, r28
+				move	r2, r28
 				int		iSTRCMP
 				move	r26, r0
 				
-				move	r0, r28
-				move	r1, r27
+				move	r1, r28
+				move	r2, r27
 				int		iSTRCMP
 				move	r25, r0
 				
-				move	r0, r27
-				move	r1, r28
+				move	r1, r27
+				move	r2, r28
 				int		iSTRCMP
 				move	r24, r0
 				
@@ -194,7 +194,7 @@ public class StringInterruptTest extends BaseTest {
 		var result = tuple.getLeft();
 		var sim = tuple.getMiddle();
 		var diff = tuple.getRight();
-		assertEquals(8, diff.size());
+		assertEquals(9, diff.size());
 		assertTrue(sim.getR(26) == 0);
 		assertTrue(sim.getR(25) < 0);
 		assertTrue(sim.getR(24) > 0);
@@ -209,23 +209,23 @@ public class StringInterruptTest extends BaseTest {
 				move	r27, "def"
 				move	r26, "abc"
 
-				move	r0, r28
 				move	r1, r28
+				move	r2, r28
 				int		iSTRICMP
 				move	r25, r0
 				
-				move	r0, r28
-				move	r1, r27
+				move	r1, r28
+				move	r2, r27
 				int		iSTRICMP
 				move	r24, r0
 				
-				move	r0, r27
-				move	r1, r28
+				move	r1, r27
+				move	r2, r28
 				int		iSTRICMP
 				move	r23, r0
 				
-				move	r0, r26
-				move	r1, r28
+				move	r1, r26
+				move	r2, r28
 				int		iSTRICMP
 				move	r22, r0
 				
@@ -237,7 +237,7 @@ public class StringInterruptTest extends BaseTest {
 		var result = tuple.getLeft();
 		var sim = tuple.getMiddle();
 		var diff = tuple.getRight();
-		assertEquals(8, diff.size());
+		assertEquals(9, diff.size());
 		assertTrue(sim.getR(25) == 0);
 		assertTrue(sim.getR(24) == 0);
 		assertTrue(sim.getR(23) == 0);
@@ -250,24 +250,24 @@ public class StringInterruptTest extends BaseTest {
 			START:
 				#include <system/string.def>
 				move	r28, "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-				move	r0, r28
-				move	r1, 5
-				move	r2, 6
+				move	r1, r28
+				move	r2, 5
+				move	r3, 6
 				int		iSUBSTRING
 				move	r27, r0
-				move	r0, r28
-				move	r1, 24
-				move	r2, 10
+				move	r1, r28
+				move	r2, 24
+				move	r3, 10
 				int		iSUBSTRING
 				move	r26, r0
 				
-				move	r0, r28
-				move	r1, 5
+				move	r1, r28
+				move	r2, 5
 				int		iPREFIX
 				move	r25, r0
 				
-				move	r0, R28
-				move	r1, 4
+				move	r1, R28
+				move	r2, 4
 				int		iSUFFIX
 				move	r24, r0
 				STOP
@@ -278,7 +278,7 @@ public class StringInterruptTest extends BaseTest {
 		var result = tuple.getLeft();
 		var sim = tuple.getMiddle();
 		var diff = tuple.getRight();
-		assertEquals(10, diff.size());
+		assertEquals(11, diff.size());
 		assertEquals("FGHIJK", sim.convertString(sim.getR(27)));
 		assertEquals("YZ", sim.convertString(sim.getR(26)));
 		assertEquals("ABCDE", sim.convertString(sim.getR(25)));
@@ -291,41 +291,41 @@ public class StringInterruptTest extends BaseTest {
 			START:
 				#include <system/string.def>
 				move	r28, "ABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZ"
-				move	r0, r28
-				move	r1, 'J'
-				move	r2, 0
+				move	r1, r28
+				move	r2, 'J'
+				move	r3, 0
 				int		iCHAR_SEARCH
 				move	r27, r0
-				move	r0, r28
-				move	r2, 20
+				move	r1, r28
+				move	r3, 20
 				int		iCHAR_SEARCH
 				move	r26, r0
-				move	r0, r28
-				move	r2, 60
+				move	r1, r28
+				move	r3, 60
 				int		iCHAR_SEARCH
 				move	r25, r0
-				move	r0, r28
-				move	r1, '1'
-				move	r2, 0
+				move	r1, r28
+				move	r2, '1'
+				move	r3, 0
 				int		iCHAR_SEARCH
 				move	r24, r0
 
-				move	r0, r28
-				move	r1, 'J'
-				move	r2, 100
+				move	r1, r28
+				move	r2, 'J'
+				move	r3, 100
 				int		iLAST_CHAR_SEARCH
 				move	r23, r0
-				move	r0, r28
-				move	r2, 20
+				move	r1, r28
+				move	r3, 20
 				int		iLAST_CHAR_SEARCH
 				move	r22, r0
-				move	r0, r28
-				move	r2, 5
+				move	r1, r28
+				move	r3, 5
 				int		iLAST_CHAR_SEARCH
 				move	r21, r0
-				move	r0, r28
-				move	r1, '1'
-				move	r2, 100
+				move	r1, r28
+				move	r2, '1'
+				move	r3, 100
 				int		iLAST_CHAR_SEARCH
 				move	r20, r0
 
@@ -337,7 +337,7 @@ public class StringInterruptTest extends BaseTest {
 		var result = tuple.getLeft();
 		var sim = tuple.getMiddle();
 		var diff = tuple.getRight();
-		assertEquals(14, diff.size());
+		assertEquals(15, diff.size());
 		diff.assertDiff(27, 9);
 		diff.assertDiff(26, 26 + 9);
 		diff.assertDiff(25, -1);
@@ -354,41 +354,41 @@ public class StringInterruptTest extends BaseTest {
 			START:
 				#include <system/string.def>
 				move	r28, "ABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZ"
-				move	r0, r28
-				move	r1, "JKL"
-				move	r2, 0
+				move	r1, r28
+				move	r2, "JKL"
+				move	r3, 0
 				int		iSUBSTRING_SEARCH
 				move	r27, r0
-				move	r0, r28
-				move	r2, 20
+				move	r1, r28
+				move	r3, 20
 				int		iSUBSTRING_SEARCH
 				move	r26, r0
-				move	r0, r28
-				move	r2, 60
+				move	r1, r28
+				move	r3, 60
 				int		iSUBSTRING_SEARCH
 				move	r25, r0
-				move	r0, r28
-				move	r1, "jkl"
-				move	r2, 0
+				move	r1, r28
+				move	r2, "jkl"
+				move	r3, 0
 				int		iSUBSTRING_SEARCH
 				move	r24, r0
 
-				move	r0, r28
-				move	r1, "JKL"
-				move	r2, 100
+				move	r1, r28
+				move	r2, "JKL"
+				move	r3, 100
 				int		iLAST_SUBSTRING_SEARCH
 				move	r23, r0
-				move	r0, r28
-				move	r2, 20
+				move	r1, r28
+				move	r3, 20
 				int		iLAST_SUBSTRING_SEARCH
 				move	r22, r0
-				move	r0, r28
-				move	r2, 5
+				move	r1, r28
+				move	r3, 5
 				int		iLAST_SUBSTRING_SEARCH
 				move	r21, r0
-				move	r0, r28
-				move	r1, "jkl"
-				move	r2, 100
+				move	r1, r28
+				move	r2, "jkl"
+				move	r3, 100
 				int		iLAST_SUBSTRING_SEARCH
 				move	r20, r0
 
@@ -400,7 +400,7 @@ public class StringInterruptTest extends BaseTest {
 		var result = tuple.getLeft();
 		var sim = tuple.getMiddle();
 		var diff = tuple.getRight();
-		assertEquals(14, diff.size());
+		assertEquals(15, diff.size());
 		diff.assertDiff(27, 9);
 		diff.assertDiff(26, 26 + 9);
 		diff.assertDiff(25, -1);
@@ -417,32 +417,32 @@ public class StringInterruptTest extends BaseTest {
 			START:
 				#include <system/string.def>
 				move	r28, "ABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZ"
-				move	r0, r28
-				move	r1, "A\\\\w+Q"
+				move	r1, r28
+				move	r2, "A\\\\w+Q"
 				int		iMATCHES
 				move	r27, r0
-				move	r0, r28
-				move	r1, "\\\\d+"
+				move	r1, r28
+				move	r2, "\\\\d+"
 				int		iMATCHES
 				move	r26, r0
 
-				move	r0, r28
-				move	r1, "L[MNOP]+Q"
-				move	r2, "xxx"
+				move	r1, r28
+				move	r2, "L[MNOP]+Q"
+				move	r3, "xxx"
 				int		iREPLACE_FIRST
 				move	r25, r0
-				move	r0, r28
-				move	r1, "\\\\d+"
+				move	r1, r28
+				move	r2, "\\\\d+"
 				int		iREPLACE_FIRST
 				move	r24, r0
 			
-				move	r0, r28
-				move	r1, "L[MNOP]+Q"
-				move	r2, "xxx"
+				move	r1, r28
+				move	r2, "L[MNOP]+Q"
+				move	r3, "xxx"
 				int		iREPLACE_ALL
 				move	r23, r0
-				move	r0, r28
-				move	r1, "\\\\d+"
+				move	r1, r28
+				move	r2, "\\\\d+"
 				int		iREPLACE_ALL
 				move	r22, r0
 			
@@ -454,7 +454,7 @@ public class StringInterruptTest extends BaseTest {
 		var result = tuple.getLeft();
 		var sim = tuple.getMiddle();
 		var diff = tuple.getRight();
-		assertEquals(11, diff.size());
+		assertEquals(12, diff.size());
 		diff.assertDiff(27, -1);
 		diff.assertDiff(26, 0);
 		assertEquals("ABCDEFGHIJKxxxRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZ", sim.convertString(sim.getR(25)));
@@ -470,36 +470,37 @@ public class StringInterruptTest extends BaseTest {
 				#include <system/system.def>
 				#include <system/string.def>
 				move	r28, "ABC DEF GHIJK LMNOPQ RST U VWXYZ"
-				move	r0, r28
-				move	r1, "\\\\s+"
-				move	r2, -1
+				move	r1, r28
+				move	r2, "\\\\s+"
+				move	r3, -1
 				int		iSPLIT
 				move	r27, r0
 				
-				move	r0, r27
-				move	r1, ","
+				move	r1, r27
+				move	r2, ","
 				int		iJOIN
 				move	r26, r0
 
-				move	r0, "ABCD"
-				move	r1, "EFGH"
-				move	r2, 0
+				move	r1, "ABCD"
+				move	r2, "EFGH"
+				move	r3, 0
 				int		iSTRCAT
 				move	r25, r0
 				
 				// STRCAT into the string allocate in r0
-				move	r1, "I"
-				move	r2, r0
+				move	r1, r0
+				move	r2, "I"
+				move	r3, r0
 				int		iSTRCAT
 				move	r24, r0
 				
-				move	r0, 10
+				move	r1, 10
 				int		iALLOC
 
 				// STRCAT into the string allocate in r0 will realloc
-				move	r0, r24
-				move	r1, "JKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZ"
-				move	r2, r0
+				move	r1, r24
+				move	r2, "JKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZ"
+				move	r3, r0
 				int		iSTRCAT
 				move	r23, r0
 				
@@ -511,7 +512,7 @@ public class StringInterruptTest extends BaseTest {
 		var result = tuple.getLeft();
 		var sim = tuple.getMiddle();
 		var diff = tuple.getRight();
-		assertEquals(11, diff.size());
+		assertEquals(12, diff.size());
 		int a = (int)sim.getR(27);
 		int i = 0;
 		assertEquals(7, sim.memRead(a + i++));
@@ -533,12 +534,13 @@ public class StringInterruptTest extends BaseTest {
 			START:
 				#include <system/string.def>
 				move	R28, "A¢ह𝄞🇺🇸"
-				move	R0, R28
+				move	R1, R28
 				int		iGET_CODEPOINTS
 				move	R27, R0
+				move	R1, R0
 				int		iFROM_CODEPOINTS
 				move	R26, R0
-				move	R0, R28
+				move	R1, R28
 				int		iCOUNT_GLPYHS
 				STOP
 			FINIS:
@@ -547,7 +549,7 @@ public class StringInterruptTest extends BaseTest {
 		var result = tuple.getLeft();
 		var sim = tuple.getMiddle();
 		var diff = tuple.getRight();
-		assertEquals(6, diff.size());
+		assertEquals(7, diff.size());
 		diff.assertMemListEquals((int)sim.getR(27), List.of(65L, 162L, 2361L, 119070L, 127482L, 127480L));
 		assertEquals("A¢ह𝄞🇺🇸", sim.convertString(sim.getR(26)));
 		diff.assertDiff(0, 5);
@@ -558,7 +560,7 @@ public class StringInterruptTest extends BaseTest {
 		String src = """
 			START:
 				#include <system/string.def>
-				move	R0, "Héllø, Wörld! 😀"
+				move	R1, "Héllø, Wörld! 😀"
 				int		iHASHCODE
 				STOP
 			FINIS:
@@ -567,7 +569,7 @@ public class StringInterruptTest extends BaseTest {
 		var result = tuple.getLeft();
 		var sim = tuple.getMiddle();
 		var diff = tuple.getRight();
-		assertEquals(3, diff.size());
+		assertEquals(4, diff.size());
 		diff.assertDiff(0, 960973890);
 	}
 
@@ -576,7 +578,7 @@ public class StringInterruptTest extends BaseTest {
 		String src = """
 			START:
 				#include <system/string.def>
-				move	R0, " \\tHéllø, Wörld! 😀 \\n"
+				move	R1, " \\tHéllø, Wörld! 😀 \\n"
 				int		iTRIM
 				STOP
 			FINIS:
@@ -585,7 +587,7 @@ public class StringInterruptTest extends BaseTest {
 		var result = tuple.getLeft();
 		var sim = tuple.getMiddle();
 		var diff = tuple.getRight();
-		assertEquals(3, diff.size());
+		assertEquals(4, diff.size());
 		assertEquals("Héllø, Wörld! 😀", sim.convertString(sim.getR(0)));
 	}
 }

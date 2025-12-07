@@ -480,8 +480,8 @@ SF &lt;- SP</pre>
 </table>
 
 <h2>I/O Instructions</h2>
-<p>Input and output instructions read/write a specified number of bytes to a port which can be a stream to the console if STDIN, STDOUT or STDERR are used for the port or to a file that has been opened.</p>
-<p>I/O sizes are specified in <code>&lt;system/io.def&gt;</code> using the following symbols.</p>
+<p>Input and output instructions read/write a specified number of bytes to a port which can be a stream to the console if <code>STDIN</code>, <code>STDOUT</code> or <code>STDERR</code> are used for the port or to a file that has been opened.</p>
+<p>I/O sizes are specified in <code>&lt;system/io.def&gt;</code> using the following symbols.  The <code>CHAR</code> size is unique in that it refers to a UTF-8 sequence that encodes a single codepoint and is therefore a variable number of bytes.</p>
 <table>
 	<tr><th>Symbol</th><th>Size</th></tr>
 	<tr>

@@ -1,16 +1,18 @@
 package cloud.lesh.CPUSim64v2;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.FileWriter;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 
 public class FilePortHandler extends PortHandler
 {
-	private FileWriter os;
-	private BufferedReader is;
+	private FileOutputStream os;
+	private FileInputStream fis;
+	private InputStreamReader is;
 	private String filespec;
 
-	public FilePortHandler(Simulator cpu, String filespec, int mode) throws Simulator.CPUException
+	public FilePortHandler(Simulator cpu, int mode, String filespec) throws Simulator.CPUException
 	{
 		super(cpu);
 //System.out.println("Opening file "+filespec);
@@ -19,13 +21,14 @@ public class FilePortHandler extends PortHandler
 			switch (mode)
 			{
 				case 0:
-					is=new BufferedReader(new FileReader(filespec));
+					fis = new FileInputStream(filespec);
+					is = new InputStreamReader(fis, StandardCharsets.UTF_8);
 					break;
 				case 1:
-					os=new FileWriter(filespec);
+					os = new FileOutputStream(filespec);
 					break;
 				case 2:
-					os=new FileWriter(filespec,true);
+					os = new FileOutputStream(filespec, true);
 					break;
 				default:
 					throw cpu.new CPUException("Illegal file open mode!");
@@ -41,7 +44,7 @@ public class FilePortHandler extends PortHandler
 	{
 		if (is == null) throw cpu.new CPUException("File \"" + filespec + "\" not open for input!");
 		try {
-			return is.read();
+			return fis.read();
 		}
 		catch (Exception e) {
 			throw cpu.new CPUException("Read error on file \"" + filespec + "\"!");
@@ -95,15 +98,13 @@ public class FilePortHandler extends PortHandler
 	}
 	
 	@Override
-	public void writeChar(int x) throws Simulator.CPUException
+	public void writeChar(int codePoint) throws Simulator.CPUException
 	{
 		if (os == null) throw cpu.new CPUException("File \"" + filespec + "\" not open for output!");
 		try {
-			if (x > 0xffff) {
-				StringBuilder sb = new StringBuilder();
-				sb.appendCodePoint(x);
-				os.write(sb.toString());
-			} else os.write(x);
+			String s = new String(Character.toChars(codePoint));
+			byte[] utf8 = s.getBytes(StandardCharsets.UTF_8);
+			os.write(utf8);
 		}
 		catch (Exception e) {
 			throw cpu.new CPUException("Write error on file \"" + filespec + "\"!");

@@ -275,11 +275,14 @@ public class PreprocessorVisitor extends PreprocessorParserBaseVisitor<Void> {
 	public static void resetGlobals() { globals.clear(); }
 
 	public static String addGlobals(String preprocessed) {
-		preprocessed = "READONLY __DATA__" + System.lineSeparator() +
+		preprocessed =
+				"__CODE__:" + System.lineSeparator() +
+				"READONLY __CODE_END__" + System.lineSeparator() +
 				preprocessed + System.lineSeparator() +
 				"__CODE_END__:" + System.lineSeparator() +
 				"__DATA__:" + System.lineSeparator() +
 				String.join(System.lineSeparator(), PreprocessorVisitor.getGlobals()) + System.lineSeparator() +
+				"__DATA_END__:" + System.lineSeparator() +
 				"__HEAP_START__:" + System.lineSeparator();
 		resetGlobals();
 		return preprocessed;

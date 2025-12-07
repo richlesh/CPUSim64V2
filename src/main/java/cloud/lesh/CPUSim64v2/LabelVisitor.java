@@ -57,6 +57,70 @@ public class LabelVisitor extends CPUSim64v2BaseVisitor<Void> implements HasLoca
 		}
 	}
 
+	private long parseStringLiteral(String s) {
+		if (s.length() >= 2 && s.charAt(0) == '\'' && s.charAt(s.length() - 1) == '\'') {
+			s = s.substring(1, s.length() - 1);
+		}
+		// Handle escape sequences
+		StringBuilder sb = new StringBuilder();
+		for (int i = 0; i < s.length(); i++) {
+			char ch = s.charAt(i);
+			if (ch == '\\' && i + 1 < s.length()) {
+				char next = s.charAt(i + 1);
+				switch (next) {
+					case 'n' -> {
+						sb.append('\n');
+						i++;
+					}
+					case 't' -> {
+						sb.append('\t');
+						i++;
+					}
+					case 'r' -> {
+						sb.append('\r');
+						i++;
+					}
+					case '\\' -> {
+						sb.append('\\');
+						i++;
+					}
+					case '\'' -> {
+						sb.append('\'');
+						i++;
+					}
+					case '\"' -> {
+						sb.append('\"');
+						i++;
+					}
+					case '0' -> {
+						sb.append('\0');
+						i++;
+					}
+					case 'u', 'U' -> {
+						Pattern p = Pattern.compile("\\{([0-9A-Fa-f]{1,5})\\}");
+						Matcher m = p.matcher(s.substring(i));
+						if (m.find()) {
+							String hex = m.group(1);   // the 4 hex digits
+							int codePoint = Integer.parseInt(hex, 16);
+							return codePoint;
+						} else {
+							sb.append(s); // Incomplete escape, keep as-is
+							i++;
+						}
+					}
+					default -> sb.append(ch); // Unknown escape, keep as-is
+				}
+			} else {
+				sb.append(ch);
+			}
+		}
+		String unescaped = sb.toString();
+		if (unescaped.length() != 1) {
+			throw new IllegalStateException("CHARLIT must be a single character");
+		}
+		return unescaped.codePointAt(0);
+	}
+
 	@Override
 	public Void visitProgram(CPUSim64v2Parser.ProgramContext ctx) {
 		for (var child : ctx.children) {
@@ -115,8 +179,7 @@ public class LabelVisitor extends CPUSim64v2BaseVisitor<Void> implements HasLoca
 				}
 				String s = ctx.dataDirective().STRINGLIT().getText();
 				s = s.substring(1, s.length() - 1);
-				s = StringEscapeUtils.unescapeJava(s);
-				byte[] utf8 = s.getBytes(StandardCharsets.UTF_8);
+				byte[] utf8 = Utils.parseStringLiteral(s);
 				currentAddress += 1 + (utf8.length + 7) / 8;  // round up to nearest 8 bytes
 			} else if (ctx.dataDirective().DCA() != null) {
 				long b = 0;

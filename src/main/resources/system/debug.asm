@@ -13,16 +13,16 @@ jump	DEBUG_ASM_END
 // fmt		String with formatting information
 // values	Values for formatting
 #def_func	debug_msg(port, fmt, ...)
-	save	r0, r1
+	save	r1, r2
 	#call	acquireRecursiveSpinLock(STDOUT_LOCK)
-	load	r0, port
-	move	r1, "DEBUG: "
+	load	r1, port
+	move	r2, "DEBUG: "
 	int		iPUTS
 	int		iPRINTF
-	load	r0, port
+	load	r1, port
 	int		iPUT_NL
 	#call	releaseRecursiveSpinLock(STDOUT_LOCK)
-	restore	r0, r1
+	restore	r1, r2
 #end_func
 
 // cond_debug_msg(cond, port, fmt, values...)
@@ -32,19 +32,19 @@ jump	DEBUG_ASM_END
 // fmt		String with formatting information
 // values	Values for formatting
 #def_func	cond_debug_msg(b, port, fmt, ...)
-	save	r0, r1
+	save	r1, r2
 	#call	acquireRecursiveSpinLock(STDOUT_LOCK)
-	load	r0, b
+	load	r1, b
 	jump	z, $SKIP
-	load	r0, port
-	move	r1, "DEBUG: "
+	load	r1, port
+	move	r2, "DEBUG: "
 	int		iPUTS
 	int		iCOND_PRINTF
-	load	r0, port
+	load	r1, port
 	int		iPUT_NL
 $SKIP:
 	#call	releaseRecursiveSpinLock(STDOUT_LOCK)
-	restore	r0, r1
+	restore	r1, r2
 #end_func
 
 #global		ENABLE_ASSERT_EXIT: .dci	1
@@ -52,7 +52,7 @@ $SKIP:
 #def_func	assert_failure_exit()
 	load	r0, ENABLE_ASSERT_EXIT
 	jump	z, $END
-	mov		r0, 1
+	mov		r1, 1
 	int		iEXIT
 $END:
 #end_func
@@ -144,9 +144,9 @@ $ASSERT_${cond}_PASSED:
 		#macro	PUTS(") ")
 		#macro	PUTS(m)
 		#macro	PUTS(" ")
-		#macro	PUT_FP(a)
+		#macro	PUT_FP(a, 16)
 		#macro	PUTS(${condSymbol})
-		#macro	PUT_FP(b)
+		#macro	PUT_FP(b, 16)
 		#macro	PUT_NL()
 		#call	releaseRecursiveSpinLock(STDOUT_LOCK)
 		#call	assert_failure_exit()
