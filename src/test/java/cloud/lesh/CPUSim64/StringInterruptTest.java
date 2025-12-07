@@ -1,0 +1,591 @@
+package cloud.lesh.CPUSim64;
+
+import org.junit.jupiter.api.Test;
+
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+public class StringInterruptTest extends BaseTest {
+	@Test
+	void testNumberFormat() {
+		String src = """
+			START:
+				#include <system/string.def>
+				move	R1, 3261963
+				int		iFMT_DEC
+				move	R28, R0
+				move	R2, 16
+				move	R1, 3261963
+				int		iFMT_HEX
+				move	R27, R0
+				move	R1, 7
+				load	F1, 3.1415926
+				int		iFMT_FLOAT
+				move	R26, R0
+				STOP
+			FINIS:
+			""";
+		var tuple = runProgram(src);
+		var result = tuple.getLeft();
+		var sim = tuple.getMiddle();
+		var diff = tuple.getRight();
+		assertEquals(9, diff.size());
+		assertEquals("3261963", sim.convertString(sim.getR(28)));
+		assertEquals("000000000031C60B", sim.convertString(sim.getR(27)));
+		assertEquals("3.1415926", sim.convertString(sim.getR(26)));
+	}
+
+	@Test
+	void testParse() {
+		String src = """
+			START:
+				#include <system/string.def>
+				move	r1, "3261963"
+				int		iPARSE_INT
+				move	r28, r0
+				move	r1, "0x123456"
+				int		iPARSE_INT
+				move	r27, r0
+				move	r1, "01234"
+				int		iPARSE_INT
+				move	r26, r0
+				move	r1, "123456"
+				int		iPARSE_DEC
+				move	r25, r0
+				move	r1, "123456"
+				int		iPARSE_HEX
+				move	r24, r0
+				move	r1, "3.1415926"
+				int		iPARSE_FLOAT
+				STOP
+			FINIS:
+			""";
+		var tuple = runProgram(src);
+		var result = tuple.getLeft();
+		var sim = tuple.getMiddle();
+		var diff = tuple.getRight();
+		assertEquals(10, diff.size());
+		diff.assertDiff(28, 3261963);
+		diff.assertDiff(27, 1193046);
+		diff.assertDiff(26, 668);
+		diff.assertDiff(25, 123456);
+		diff.assertDiff(24, 1193046);
+		diff.assertDiff(0, 3.1415926);
+	}
+
+	@Test
+	void testFormat() {
+		String src = """
+			START:
+				#include <system/string.def>				
+				move	r1, 326
+				move	r2, "Héllø"
+				load	f1, 3.1415926
+				move	r3, '😀'
+				#call	sprintf("%d %x %s %.2f %c", r1, r1, r2, f1, r3)
+				move	r28, r0
+				
+				move	r3, "Rich"
+				move	r4, "!"
+				move	r5, ", "
+				#call	format("<{}{}{}{}>", r2, r5, r3, r4)
+				move	r27, r0
+				#call	format("<{0}{3}{1}{2}>", r2, r3, r4, r5)
+				move	r26, r0
+				STOP
+				#def_func	sprintf(fmt, values)
+				 	int		iSPRINTF
+				 #end_func sprintf
+				#def_func	format(fmt, values)
+				 	int		iFORMAT
+				 #end_func format
+				STOP
+				STOP
+			FINIS:
+			""";
+		var tuple = runProgram(src);
+		var result = tuple.getLeft();
+		var sim = tuple.getMiddle();
+		var diff = tuple.getRight();
+		assertEquals(12, diff.size());
+		assertEquals("326 146 Héllø 3.14 😀", sim.convertString(sim.getR(28)));
+		assertEquals("<Héllø, Rich!>", sim.convertString(sim.getR(26)));
+		assertEquals("<Héllø, Rich!>", sim.convertString(sim.getR(27)));
+	}
+
+	@Test
+	void testConvertCase() {
+		String src = """
+			START:
+				#include <system/string.def>
+				move	r2, 'A'
+				move	r3, 'a'
+				move	r4, "AbCdEf123!"
+				
+				move	r1, r2
+				int		iTO_LOWER
+				move	r28, r0
+				move	r1, r2
+				int		iTO_UPPER
+				move	r27, r0
+				
+				move	r1, r3
+				int		iTO_LOWER
+				move	r26, r0
+				move	r1, r3
+				int		iTO_UPPER
+				move	r25, r0
+				
+				move	r1, r4
+				int		iTO_LOWER_STR
+				move	r24, r0
+				move	r1, r4
+				int		iTO_UPPER_STR
+				move	r23, r0
+				STOP
+				STOP
+			FINIS:
+			""";
+		var tuple = runProgram(src);
+		var result = tuple.getLeft();
+		var sim = tuple.getMiddle();
+		var diff = tuple.getRight();
+		assertEquals(13, diff.size());
+		diff.assertDiff(28, 'a');
+		diff.assertDiff(27, 'A');
+		diff.assertDiff(26, 'a');
+		diff.assertDiff(25, 'A');
+		assertEquals("abcdef123!", sim.convertString(sim.getR(24)));
+		assertEquals("ABCDEF123!", sim.convertString(sim.getR(23)));
+	}
+
+	@Test
+	void testStrCmp() {
+		String src = """
+			START:
+				#include <system/string.def>
+				move	r28, "ABC"
+				move	r27, "abc"
+
+				move	r1, r28
+				move	r2, r28
+				int		iSTRCMP
+				move	r26, r0
+				
+				move	r1, r28
+				move	r2, r27
+				int		iSTRCMP
+				move	r25, r0
+				
+				move	r1, r27
+				move	r2, r28
+				int		iSTRCMP
+				move	r24, r0
+				
+				STOP
+				STOP
+			FINIS:
+			""";
+		var tuple = runProgram(src);
+		var result = tuple.getLeft();
+		var sim = tuple.getMiddle();
+		var diff = tuple.getRight();
+		assertEquals(9, diff.size());
+		assertTrue(sim.getR(26) == 0);
+		assertTrue(sim.getR(25) < 0);
+		assertTrue(sim.getR(24) > 0);
+	}
+
+	@Test
+	void testStrICmp() {
+		String src = """
+			START:
+				#include <system/string.def>
+				move	r28, "DEF"
+				move	r27, "def"
+				move	r26, "abc"
+
+				move	r1, r28
+				move	r2, r28
+				int		iSTRICMP
+				move	r25, r0
+				
+				move	r1, r28
+				move	r2, r27
+				int		iSTRICMP
+				move	r24, r0
+				
+				move	r1, r27
+				move	r2, r28
+				int		iSTRICMP
+				move	r23, r0
+				
+				move	r1, r26
+				move	r2, r28
+				int		iSTRICMP
+				move	r22, r0
+				
+				STOP
+				STOP
+			FINIS:
+			""";
+		var tuple = runProgram(src);
+		var result = tuple.getLeft();
+		var sim = tuple.getMiddle();
+		var diff = tuple.getRight();
+		assertEquals(9, diff.size());
+		assertTrue(sim.getR(25) == 0);
+		assertTrue(sim.getR(24) == 0);
+		assertTrue(sim.getR(23) == 0);
+		assertTrue(sim.getR(22) < 0);
+	}
+
+	@Test
+	void testSubstring() {
+		String src = """
+			START:
+				#include <system/string.def>
+				move	r28, "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+				move	r1, r28
+				move	r2, 5
+				move	r3, 6
+				int		iSUBSTRING
+				move	r27, r0
+				move	r1, r28
+				move	r2, 24
+				move	r3, 10
+				int		iSUBSTRING
+				move	r26, r0
+				
+				move	r1, r28
+				move	r2, 5
+				int		iPREFIX
+				move	r25, r0
+				
+				move	r1, R28
+				move	r2, 4
+				int		iSUFFIX
+				move	r24, r0
+				STOP
+				STOP
+			FINIS:
+			""";
+		var tuple = runProgram(src);
+		var result = tuple.getLeft();
+		var sim = tuple.getMiddle();
+		var diff = tuple.getRight();
+		assertEquals(11, diff.size());
+		assertEquals("FGHIJK", sim.convertString(sim.getR(27)));
+		assertEquals("YZ", sim.convertString(sim.getR(26)));
+		assertEquals("ABCDE", sim.convertString(sim.getR(25)));
+		assertEquals("WXYZ", sim.convertString(sim.getR(24)));
+	}
+
+	@Test
+	void testCharSearch() {
+		String src = """
+			START:
+				#include <system/string.def>
+				move	r28, "ABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZ"
+				move	r1, r28
+				move	r2, 'J'
+				move	r3, 0
+				int		iCHAR_SEARCH
+				move	r27, r0
+				move	r1, r28
+				move	r3, 20
+				int		iCHAR_SEARCH
+				move	r26, r0
+				move	r1, r28
+				move	r3, 60
+				int		iCHAR_SEARCH
+				move	r25, r0
+				move	r1, r28
+				move	r2, '1'
+				move	r3, 0
+				int		iCHAR_SEARCH
+				move	r24, r0
+
+				move	r1, r28
+				move	r2, 'J'
+				move	r3, 100
+				int		iLAST_CHAR_SEARCH
+				move	r23, r0
+				move	r1, r28
+				move	r3, 20
+				int		iLAST_CHAR_SEARCH
+				move	r22, r0
+				move	r1, r28
+				move	r3, 5
+				int		iLAST_CHAR_SEARCH
+				move	r21, r0
+				move	r1, r28
+				move	r2, '1'
+				move	r3, 100
+				int		iLAST_CHAR_SEARCH
+				move	r20, r0
+
+				STOP
+				STOP
+			FINIS:
+			""";
+		var tuple = runProgram(src);
+		var result = tuple.getLeft();
+		var sim = tuple.getMiddle();
+		var diff = tuple.getRight();
+		assertEquals(15, diff.size());
+		diff.assertDiff(27, 9);
+		diff.assertDiff(26, 26 + 9);
+		diff.assertDiff(25, -1);
+		diff.assertDiff(24, -1);
+		diff.assertDiff(23, 26 + 9);
+		diff.assertDiff(22, 9);
+		diff.assertDiff(21, -1);
+		diff.assertDiff(20, -1);
+	}
+
+	@Test
+	void testSubstringSearch() {
+		String src = """
+			START:
+				#include <system/string.def>
+				move	r28, "ABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZ"
+				move	r1, r28
+				move	r2, "JKL"
+				move	r3, 0
+				int		iSUBSTRING_SEARCH
+				move	r27, r0
+				move	r1, r28
+				move	r3, 20
+				int		iSUBSTRING_SEARCH
+				move	r26, r0
+				move	r1, r28
+				move	r3, 60
+				int		iSUBSTRING_SEARCH
+				move	r25, r0
+				move	r1, r28
+				move	r2, "jkl"
+				move	r3, 0
+				int		iSUBSTRING_SEARCH
+				move	r24, r0
+
+				move	r1, r28
+				move	r2, "JKL"
+				move	r3, 100
+				int		iLAST_SUBSTRING_SEARCH
+				move	r23, r0
+				move	r1, r28
+				move	r3, 20
+				int		iLAST_SUBSTRING_SEARCH
+				move	r22, r0
+				move	r1, r28
+				move	r3, 5
+				int		iLAST_SUBSTRING_SEARCH
+				move	r21, r0
+				move	r1, r28
+				move	r2, "jkl"
+				move	r3, 100
+				int		iLAST_SUBSTRING_SEARCH
+				move	r20, r0
+
+				STOP
+				STOP
+			FINIS:
+			""";
+		var tuple = runProgram(src);
+		var result = tuple.getLeft();
+		var sim = tuple.getMiddle();
+		var diff = tuple.getRight();
+		assertEquals(15, diff.size());
+		diff.assertDiff(27, 9);
+		diff.assertDiff(26, 26 + 9);
+		diff.assertDiff(25, -1);
+		diff.assertDiff(24, -1);
+		diff.assertDiff(23, 26 + 9);
+		diff.assertDiff(22, 9);
+		diff.assertDiff(21, -1);
+		diff.assertDiff(20, -1);
+	}
+
+	@Test
+	void testRegex() {
+		String src = """
+			START:
+				#include <system/string.def>
+				move	r28, "ABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZ"
+				move	r1, r28
+				move	r2, "A\\\\w+Q"
+				int		iMATCHES
+				move	r27, r0
+				move	r1, r28
+				move	r2, "\\\\d+"
+				int		iMATCHES
+				move	r26, r0
+
+				move	r1, r28
+				move	r2, "L[MNOP]+Q"
+				move	r3, "xxx"
+				int		iREPLACE_FIRST
+				move	r25, r0
+				move	r1, r28
+				move	r2, "\\\\d+"
+				int		iREPLACE_FIRST
+				move	r24, r0
+			
+				move	r1, r28
+				move	r2, "L[MNOP]+Q"
+				move	r3, "xxx"
+				int		iREPLACE_ALL
+				move	r23, r0
+				move	r1, r28
+				move	r2, "\\\\d+"
+				int		iREPLACE_ALL
+				move	r22, r0
+			
+				STOP
+				STOP
+			FINIS:
+			""";
+		var tuple = runProgram(src);
+		var result = tuple.getLeft();
+		var sim = tuple.getMiddle();
+		var diff = tuple.getRight();
+		assertEquals(12, diff.size());
+		diff.assertDiff(27, -1);
+		diff.assertDiff(26, 0);
+		assertEquals("ABCDEFGHIJKxxxRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZ", sim.convertString(sim.getR(25)));
+		assertEquals("ABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZ", sim.convertString(sim.getR(24)));
+		assertEquals("ABCDEFGHIJKxxxRSTUVWXYZABCDEFGHIJKxxxRSTUVWXYZ", sim.convertString(sim.getR(23)));
+		assertEquals("ABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZ", sim.convertString(sim.getR(22)));
+	}
+
+	@Test
+	void testSplitJoin() {
+		String src = """
+			START:
+				#include <system/system.def>
+				#include <system/string.def>
+				move	r28, "ABC DEF GHIJK LMNOPQ RST U VWXYZ"
+				move	r1, r28
+				move	r2, "\\\\s+"
+				move	r3, -1
+				int		iSPLIT
+				move	r27, r0
+				
+				move	r1, r27
+				move	r2, ","
+				int		iJOIN
+				move	r26, r0
+
+				move	r1, "ABCD"
+				move	r2, "EFGH"
+				move	r3, 0
+				int		iSTRCAT
+				move	r25, r0
+				
+				// STRCAT into the string allocate in r0
+				move	r1, r0
+				move	r2, "I"
+				move	r3, r0
+				int		iSTRCAT
+				move	r24, r0
+				
+				move	r1, 10
+				int		iALLOC
+
+				// STRCAT into the string allocate in r0 will realloc
+				move	r1, r24
+				move	r2, "JKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZ"
+				move	r3, r0
+				int		iSTRCAT
+				move	r23, r0
+				
+				STOP
+				STOP
+			FINIS:
+			""";
+		var tuple = runProgram(src);
+		var result = tuple.getLeft();
+		var sim = tuple.getMiddle();
+		var diff = tuple.getRight();
+		assertEquals(12, diff.size());
+		int a = (int)sim.getR(27);
+		int i = 0;
+		assertEquals(7, sim.memRead(a + i++));
+		assertEquals("ABC", sim.convertString(sim.memRead(a + i++)));
+		assertEquals("DEF", sim.convertString(sim.memRead(a + i++)));
+		assertEquals("GHIJK", sim.convertString(sim.memRead(a + i++)));
+		assertEquals("LMNOPQ", sim.convertString(sim.memRead(a + i++)));
+		assertEquals("RST", sim.convertString(sim.memRead(a + i++)));
+		assertEquals("U", sim.convertString(sim.memRead(a + i++)));
+		assertEquals("VWXYZ", sim.convertString(sim.memRead(a + i++)));
+		assertEquals("ABC,DEF,GHIJK,LMNOPQ,RST,U,VWXYZ", sim.convertString((int)sim.getR(26)));
+		assertEquals("ABCDEFGHI", sim.convertString((int)sim.getR(25)));
+		assertEquals("ABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZ", sim.convertString((int)sim.getR(23)));
+	}
+
+	@Test
+	void testCodepoints() {
+		String src = """
+			START:
+				#include <system/string.def>
+				move	R28, "A¢ह𝄞🇺🇸"
+				move	R1, R28
+				int		iGET_CODEPOINTS
+				move	R27, R0
+				move	R1, R0
+				int		iFROM_CODEPOINTS
+				move	R26, R0
+				move	R1, R28
+				int		iCOUNT_GLPYHS
+				STOP
+			FINIS:
+			""";
+		var tuple = runProgram(src);
+		var result = tuple.getLeft();
+		var sim = tuple.getMiddle();
+		var diff = tuple.getRight();
+		assertEquals(7, diff.size());
+		diff.assertMemListEquals((int)sim.getR(27), List.of(65L, 162L, 2361L, 119070L, 127482L, 127480L));
+		assertEquals("A¢ह𝄞🇺🇸", sim.convertString(sim.getR(26)));
+		diff.assertDiff(0, 5);
+	}
+
+	@Test
+	void testHashCode() {
+		String src = """
+			START:
+				#include <system/string.def>
+				move	R1, "Héllø, Wörld! 😀"
+				int		iHASHCODE
+				STOP
+			FINIS:
+			""";
+		var tuple = runProgram(src);
+		var result = tuple.getLeft();
+		var sim = tuple.getMiddle();
+		var diff = tuple.getRight();
+		assertEquals(4, diff.size());
+		diff.assertDiff(0, 960973890);
+	}
+
+	@Test
+	void testTrim() {
+		String src = """
+			START:
+				#include <system/string.def>
+				move	R1, " \\tHéllø, Wörld! 😀 \\n"
+				int		iTRIM
+				STOP
+			FINIS:
+			""";
+		var tuple = runProgram(src);
+		var result = tuple.getLeft();
+		var sim = tuple.getMiddle();
+		var diff = tuple.getRight();
+		assertEquals(4, diff.size());
+		assertEquals("Héllø, Wörld! 😀", sim.convertString(sim.getR(0)));
+	}
+}

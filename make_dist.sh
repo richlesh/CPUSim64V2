@@ -2,7 +2,7 @@
 
 set -e
 
-OUTPUT="CPUSimV2.zip"
+OUTPUT="CPUSim64.zip"
 
 # Remove existing file if needed
 rm -f "$OUTPUT"
@@ -10,7 +10,8 @@ rm -f "$OUTPUT"
 zip -r "$OUTPUT" \
     pom.xml \
     *.sh \
-    target/CPUSim*.jar \
+    *.bat \
+    lib \
     src \
     documentation \
     -x "**/.DS_Store"

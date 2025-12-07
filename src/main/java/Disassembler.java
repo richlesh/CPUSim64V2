@@ -1,4 +1,4 @@
-import cloud.lesh.CPUSim64v2.Simulator;
+import cloud.lesh.CPUSim64.Simulator;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -8,7 +8,7 @@ import java.util.Map;
 
 public class Disassembler {
 	public static void main(String[] args) throws Exception {
-		System.out.println("CPUSim64v2 Simulator");
+		System.out.println("CPUSim64 Simulator");
 		System.out.println("By Richard Lesh ©2025");
 		System.out.println("CPUSim64 Disassembler");
 		if (args.length < 1) {
@@ -78,7 +78,7 @@ public class Disassembler {
 		}
 
 		// 1) Read object file
-		var program = cloud.lesh.CPUSim64v2.AsmIO.readU64BE(newPath.toFile());
+		var program = cloud.lesh.CPUSim64.AsmIO.readU64BE(newPath.toFile());
 		System.out.println("Read " + program.size() + " words from " + newPath.getFileName().toString());
 
 		var sim = new Simulator(memorySize, 0, 1024, simulatorArgs.toArray(String[]::new));

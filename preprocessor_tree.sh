@@ -1,2 +1,6 @@
 #!/usr/bin/env bash
-java -cp antlr-4.13.2-complete.jar:target/CPUSim64V2-1.0-SNAPSHOT.jar org.antlr.v4.gui.TestRig cloud.lesh.CPUSim64v2.Preprocessor preproc -tokens $1.asm -tokens -gui
+
+SCRIPT_PATH="$(realpath "${BASH_SOURCE[0]}")"
+SCRIPT_DIR="$(dirname "$SCRIPT_PATH")"
+
+java -cp "$SCRIPT_DIR"/lib/* org.antlr.v4.gui.TestRig cloud.lesh.CPUSim64.Preprocessor preproc -tokens $1.asm -tokens -gui

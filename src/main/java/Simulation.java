@@ -1,11 +1,10 @@
-import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
 
-import cloud.lesh.CPUSim64v2.Simulator;
+import cloud.lesh.CPUSim64.Simulator;
 
 public class Simulation {
 
@@ -52,7 +51,7 @@ public class Simulation {
 		}
 
 		if (verbose) {
-			System.out.println("CPUSim64v2 Simulator");
+			System.out.println("CPUSim64 Simulator");
 			System.out.println("By Richard Lesh ©2025");
 			System.out.println("CPUSim64 Virtual Machine");
 			System.out.println("Debug: " + debug);
@@ -91,7 +90,7 @@ public class Simulation {
 		}
 
 		// 1) Read object file
-		var program = cloud.lesh.CPUSim64v2.AsmIO.readU64BE(newPath.toFile());
+		var program = cloud.lesh.CPUSim64.AsmIO.readU64BE(newPath.toFile());
 		if (verbose) {
 			System.out.println("Read " + program.size() + " words from " + newPath.getFileName().toString());
 		}

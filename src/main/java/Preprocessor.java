@@ -1,14 +1,13 @@
-import cloud.lesh.CPUSim64v2.IncludeLoader;
-import cloud.lesh.CPUSim64v2.LiteralRewriter;
-import cloud.lesh.CPUSim64v2.PreprocessorVisitor;
+import cloud.lesh.CPUSim64.IncludeLoader;
+import cloud.lesh.CPUSim64.LiteralRewriter;
+import cloud.lesh.CPUSim64.PreprocessorVisitor;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.HashMap;
 
 public class Preprocessor {
 	public static void main(String[] args) throws Exception {
-		System.out.println("CPUSim64v2 Preprocessor");
+		System.out.println("CPUSim64 Preprocessor");
 		System.out.println("By Richard Lesh ©2025");
 		System.out.println("Preprocesses .asm source files into .pp.asm files");
 		if (args.length < 1) {

@@ -58,7 +58,7 @@
 <p>The CPUSim64 code consists of an assembler and an emulator.  Assembly language files are plain text files that can create with any programming editor.  Do not use a word processor like Word or Pages as these do not save their files as plain text.  Then you use the assembler to compile your assembly language source files into CPUSim64 machine code object files.  These object files can then be run with the CPUSim64 emulator.  Both of these programs are written in Java so they themselves run on the Java VM (virtual machine).</p>
 <figure><img alt="Memory Model Diagram" src="images/compile_execution_model.png" style="width:50%;height:50%"><figcaption>Development Model Diagram</figcaption></figure>
 <h2>Installation</h2>
-<p>CPUSim64 is composed of Java classes in jar files located in the lib folder of the distribution and script files in the main directory that you can use to run the assembler and emulator in different modes.  Download the <a href="CPUSim64.zip">CPUSim64.zip</a> file and expand it to a location of your choice.  For this guide we will assume that you expand the ZIP archive in your Documents dirctory.</p>
+<p>CPUSim64 is composed of Java classes in a jar file located in the target folder of the distribution and script files in the main directory that you can use to run the assembler and emulator in different modes.  Download the <a href="CPUSim64.zip">CPUSim64.zip</a> file and expand it to a location of your choice.  For this guide we will assume that you expand the ZIP archive in your Documents dirctory.</p>
 <p>You are required to install Java JDK 17 on your system and make sure that the Java JDK bin directory is in your system's PATH ejvironment variable.  Type the following in your terminal window to see if Java is installed correctly.</p>
 <div class="console">&gt; <b>java --version</b>
 java 17.0.5 2022-10-18 LTS
@@ -70,7 +70,7 @@ Java HotSpot(TM) 64-Bit Server VM (build 17.0.5+9-LTS-191, mixed mode, sharing)
 <p>Once you have Java and CPUSim64 installed, you can test it out using a the very small program listed below.  Use a text editor to enter the text of the program then save it as example001.asm.</p>
 <div id="example001_asm"></div>
 <script>register("example001_asm")</script>
-<p>Our simple program only has three instructions.  The <code>NOP</code> instruction is called a No-Op because it doesn't do anything but take up one CPU cycle.  The <code>STOP</code> instruction tells the CPU to stop executing your program and return to the command line.  At the very end of all your programs you must place two <code>STOP</code> instructions as this tells the assembler to stop compiling instructions.</p>
+<p>Our simple program only has three instructions.  The <code>NOP</code> instruction is called a No-Op because it doesn't do anything but take up one CPU cycle.  The <code>STOP</code> instruction tells the CPU to stop executing your program and return to the command line.  At the very end of all your programs you must place two <code>STOP</code> instructions as this tells the disassembler to stop de-compiling instructions.</p>
 <p>Once the program source file is saved you can run the assembler to compile your assembly language program into CPUSim64 machine code.  This is done with the compile.sh (or compile.bat for Windows) script.  Using the terminal window, navigate to the directory where your source file is saved.  Then run the compile script by typing the script filename followed by the name of your source file.  Do not include the ".asm" extension as that is assumed by the script.  You should see output similar to the output below.</p>
 <div class="console">&gt; <b>compile.sh example001</b></div>
 <div id="example001c_out"></div>
@@ -335,7 +335,8 @@ end if</div>
 <script>register("example_math_out")</script>
 
 <footer>
-<p><a href="Architecture.html">Architecture&nbsp;Reference</a> |
+<p><a href="index.html">Overview</a> |
+<a href="Architecture.html">Architecture&nbsp;Reference</a> |
 <a href="Programmer_Guide.html">Programmer&nbsp;Guide</a> |
 <a href="Directive_Reference.html">Directives&nbsp;Reference</a> |
 <a href="Instruction_Set_Reference.html">Instruction&nbsp;Set&nbsp;Reference</a> |

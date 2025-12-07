@@ -1,18 +1,12 @@
-CPU Simulator 64 Assembler 1.6
-© 2002-2003,2011,2017,2022,2023 Richard Lesh
-All rights reserved.
-
-Loading /Users/rich/Desktop/Resources/CPUSim64/documentation/examples/example001.asm...
-Saved 3 lines!
-
-Preprocessing Complete
-
-Loading /Users/rich/Desktop/Resources/CPUSim64/documentation/examples/example001.preprocessed...
-
-Parsing...
-
-Assembling...
-Saved 5 words!
-
-Assembly Complete
-
+CPUSim64 Assembler
+By Richard Lesh ©2025
+Assembles .asm source files into .obj.gz binary files
+Wrote 5 words to /Users/rich/Desktop/Resources/CPUSim64/documentation/examples/example001.obj.gz
+CPUSim64 Simulator
+By Richard Lesh ©2025
+CPUSim64 Virtual Machine
+Debug: false
+Memory size: 1048576
+Reading symbol file: /Users/rich/Desktop/Resources/CPUSim64/documentation/examples/example001.sym
+Read 5 words from example001.obj.gz
+Result: 0

@@ -1,4 +1,8 @@
 #!/usr/bin/env bash
 
-java -cp target/CPUSim64V2-1.0-SNAPSHOT.jar Assembler $1.asm --DEBUG
-java -cp target/CPUSim64V2-1.0-SNAPSHOT.jar Simulation $1.obj.gz --debug
+SCRIPT_PATH="$(realpath "${BASH_SOURCE[0]}")"
+SCRIPT_DIR="$(dirname "$SCRIPT_PATH")"
+
+rm $1.obj.gz
+java -cp "$SCRIPT_DIR"/lib/* Assembler $1.asm --DEBUG
+java -cp "$SCRIPT_DIR"/lib/* Simulation $1.obj.gz --debug

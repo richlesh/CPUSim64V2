@@ -1,2 +1,7 @@
 #!/usr/bin/env bash
-java -cp target/CPUSim64V2-1.0-SNAPSHOT.jar Assembler $1.asm $2 $3 $4 $5 $6 $7 $8 $9
+
+SCRIPT_PATH="$(realpath "${BASH_SOURCE[0]}")"
+SCRIPT_DIR="$(dirname "$SCRIPT_PATH")"
+
+rm $1.obj.gz
+java -cp "$SCRIPT_DIR"/lib/* Assembler $1.asm $2 $3 $4 $5 $6 $7 $8 $9

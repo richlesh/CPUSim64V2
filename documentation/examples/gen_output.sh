@@ -2,7 +2,7 @@ rm *.out
 runout.sh hello_world > hello_world.out
 compile.sh example001 > example001c.out
 debug.sh example001 > example001d.out
-run.sh example001 > example001r.out
+../../run.sh example001 > example001r.out
 trace.sh example001 > example001t.out
 debugout.sh example003 > example003.out
 debugout.sh example004 > example004.out

@@ -1,4 +1,4 @@
-import cloud.lesh.CPUSim64v2.*;
+import cloud.lesh.CPUSim64.*;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
@@ -12,15 +12,15 @@ import java.util.stream.Collectors;
 // adjust package imports for your classes:
 // import your.pkg.PreprocessVisitor;
 // import your.pkg.IncludeLoader;
-// import your.pkg.CPUSim64v2Lexer;
-// import your.pkg.CPUSim64v2Parser;
+// import your.pkg.CPUSim64Lexer;
+// import your.pkg.CPUSim64Parser;
 // import your.pkg.SemanticsCheck;
 // import your.pkg.AssemblerVisitorImpl;
 // import your.pkg.AsmIO;
 
 public class Assembler {
 	public static void main(String[] args) throws Exception {
-		System.out.println("CPUSim64v2 Assembler");
+		System.out.println("CPUSim64 Assembler");
 		System.out.println("By Richard Lesh ©2025");
 		System.out.println("Assembles .asm source files into .obj.gz binary files");
 		if (args.length < 1) {
@@ -64,9 +64,9 @@ public class Assembler {
 		// 3) Lex/parse the preprocessed source
 /*
 		CharStream input = CharStreams.fromString(preprocessed);
-		var lex = new cloud.lesh.CPUSim64v2.CPUSim64v2Lexer(input);
+		var lex = new cloud.lesh.CPUSim64.CPUSim64Lexer(input);
 		CommonTokenStream toks = new CommonTokenStream(lex);
-		var parser = new cloud.lesh.CPUSim64v2.CPUSim64v2Parser(toks);
+		var parser = new cloud.lesh.CPUSim64.CPUSim64Parser(toks);
 
 		parser.removeErrorListeners();
 		parser.addErrorListener(new DiagnosticErrorListener());
@@ -119,7 +119,7 @@ public class Assembler {
 			System.exit(2);
 		}
 
-		cloud.lesh.CPUSim64v2.AsmIO.writeU64BE(outPath, words);
+		cloud.lesh.CPUSim64.AsmIO.writeU64BE(outPath, words);
 		System.out.println("Wrote " + words.size() + " words to " + outPath.toString());
 		System.exit(0);
 	}

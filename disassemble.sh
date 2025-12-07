@@ -1,2 +1,6 @@
 #!/usr/bin/env bash
-java -cp target/CPUSim64V2-1.0-SNAPSHOT.jar Disassembler $1.obj.gz --mem=2048
+
+SCRIPT_PATH="$(realpath "${BASH_SOURCE[0]}")"
+SCRIPT_DIR="$(dirname "$SCRIPT_PATH")"
+
+java -cp "$SCRIPT_DIR"/lib/* Disassembler $1.obj.gz --mem=2048
