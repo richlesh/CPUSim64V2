@@ -39,7 +39,7 @@ DIRECTIVE_LINE
  */
 STRING: '"' ( ESC | ~["\\\r\n] )* '"' ;
 CHARLIT: '\'' ( ESC | ~['\\\r\n] ) '\'' ;
-fragment ESC : '\\' [0btnfr"'\\] | '\\' [uU] HEX HEX HEX HEX ;
+fragment ESC : '\\' [0btnfr"'\\] | '\\' [uU] '{' HEX+ '}' ;
 fragment HEX : [0-9A-Fa-f] ;
 
 /*

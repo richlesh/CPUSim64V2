@@ -1,11 +1,11 @@
-///////////////////////////////////////////////////////////////////////////////
-// Program Name
-//
-// This program does nothing interesting.
-//
-// Author: Richard Lesh
-// Modified: 2022/10/29
-///////////////////////////////////////////////////////////////////////////////
+/*
+Program Name
+
+This program does nothing interesting.
+
+Author: Richard Lesh
+Modified: 2022/10/29
+*/
 
 nop			// This does nothing
 stop		// Double stop to end program

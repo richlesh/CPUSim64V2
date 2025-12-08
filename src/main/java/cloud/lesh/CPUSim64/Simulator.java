@@ -40,6 +40,7 @@ import java.util.stream.Collectors;
  *  - Instruction format & programmer’s model (registers/flags): Simulator docs.  (see inline citations in readme)
  */
 public class Simulator {
+	public enum LabelType {CODE, CHAR, INT, HEX, FLOAT, STRING};
 
 	public class CPUException extends RuntimeException {
 		CPUException(String msg) {
@@ -384,7 +385,8 @@ public class Simulator {
 					break;
 				case 1:
 					if (getOpCode() == Opcode.JUMP.code ||
-							getOpCode() == Opcode.CALL.code) {
+							getOpCode() == Opcode.CALL.code ||
+							getOpCode() == Opcode.READONLY.code) {
 						v0 = "0x" + Long.toString(c1, 16);
 						String label = findNearestLabel(reverseSymbolMap, c1);
 						if (label != null) v0 += " (" + label + ")";
@@ -428,16 +430,22 @@ public class Simulator {
 					buffer.append(v2);
 					break;
 			}
-			buffer.append("\n");
 			return buffer.toString();
 		}
 
+		static long maxLabel = -1;
 		public static String findNearestLabel(Map<Long, String> reverseSymbolMap, long loc) {
 			if (reverseSymbolMap == null || reverseSymbolMap.size() == 0)
 				return null;
-			String label = reverseSymbolMap.get(loc);
-			long j = loc;
-			while(label == null && j > 0) {
+			if (maxLabel < 0) {
+				for (var i : reverseSymbolMap.keySet()) {
+					if (i > maxLabel)
+						maxLabel = i;
+				}
+			}
+			long j = loc > maxLabel ? maxLabel : loc;
+			String label = reverseSymbolMap.get(j);
+			while (label == null && j > 0) {
 				--j;
 				label = reverseSymbolMap.get(j);
 			}
@@ -707,7 +715,7 @@ public class Simulator {
 					else
 						System.out.print(String.format(fmt, getPID(), label, pc));
 					try {
-						System.out.print(d.disassemble(reverseSymbolMap));
+						System.out.println(d.disassemble(reverseSymbolMap));
 					} catch (Exception ex) {
 						System.out.print("DECODE ERROR\n");
 					}
@@ -715,14 +723,19 @@ public class Simulator {
 			}
 			exec(d);
 		}
+		if (debug) {
+			synchronized (System.out) {
+				printCPUState();
+			}
+		}
 		return (int) R[0];
 	}
 
-	public String disassemble(Map<Long, String> reverseSymbolMap) {
+	public String disassemble(long startAddress, Map<Long, String> reverseSymbolMap, Map<String, LabelType> symbolTypes ) {
 		int numStops = 0;
 		StringBuffer buffer = new StringBuffer();
 		try {
-			for (int i = (int) R[R_PC]; i < heapStart; ++i) {
+			for (int i = (int) startAddress; i < heapStart; ++i) {
 				String label = null;
 				if (reverseSymbolMap != null) {
 					label = Decoded.findNearestLabel(reverseSymbolMap, i);
@@ -732,15 +745,42 @@ public class Simulator {
 				else
 					buffer.append(String.format("%-60.60s " + fmtAddress + " ", label, i));
 				long instr = memRead(i);
-				var d = Decoded.decode(instr);
 				try {
-					buffer.append(d.disassemble(reverseSymbolMap));
+					var type = symbolTypes.get(label);
+					if (type == null) {
+						var d = Decoded.decode(instr);
+						buffer.append(d.disassemble(reverseSymbolMap));
+						if (d.getOpCode() == Opcode.STOP.code)
+							++numStops;
+					} else {
+						switch (symbolTypes.get(label)) {
+							case CHAR:
+								buffer.append("'" + Utils.escapeString(new String(Character.toChars((int)instr))) + "'");
+								break;
+							case INT:
+								buffer.append(Long.toString(instr));
+								break;
+							case HEX:
+								buffer.append("0x" + Long.toHexString(instr));
+								break;
+							case FLOAT:
+								buffer.append(Double.toString(Double.longBitsToDouble(instr)));
+								break;
+							case STRING:
+								String s = Utils.escapeString(convertString(i));
+								i += (instr + 7) / 8;
+								buffer.append("\"" + s + "\"");
+								break;
+							default:
+								buffer.append("0x" + Long.toString(instr, 16));
+								break;
+						}
+					}
 				} catch (Exception ex) {
-					buffer.append("DECODE ERROR\n");
+					buffer.append("DECODE ERROR");
 				}
-				if (d.getOpCode() == Opcode.STOP.code)
-					++numStops;
-				if (numStops > 1) break;
+				buffer.append("\n");
+//				if (numStops > 1) break;
 			}
 		} catch (Exception ex) {
 			buffer.append("... Exception during disassembly: " + ex.getMessage() + "\n");
@@ -800,15 +840,17 @@ public class Simulator {
 		if (noOps) return; // NOP
 		if (!debug) return;
 
-		if (d.tt == 0) {
-			// Print up to 4 registers (int or float)
-			printX(d.a, d.v0);
-			printX(d.b, d.v1);
-			printX(d.c, d.v2);
-			printX(d.d, d.v3);
-			System.out.println();
-		} else {
-			printCPUState();
+		synchronized(System.out) {
+			if (d.tt == 0) {
+				// Print up to 4 registers (int or float)
+				printX(d.a, d.v0);
+				printX(d.b, d.v1);
+				printX(d.c, d.v2);
+				printX(d.d, d.v3);
+				System.out.println();
+			} else {
+				printCPUState();
+			}
 		}
 	}
 
@@ -1961,7 +2003,7 @@ public class Simulator {
 	// Return CPU cycles elapsed
 	public long getCycles(){return cycles;}
 	// Return elapsed time spent in interrupts
-	public long systemClock(){return totalSystemTime;}
+	public long getSystemClock(){return totalSystemTime;}
 
 	public int getCommandLineCount() {
 		return args.length;
@@ -2540,7 +2582,7 @@ public class Simulator {
 	public static Map<String, Long> readLabelMapFromFile(File filename) {
 		Map<String, Long> labelMap = new HashMap<>();
 
-		System.out.println("Reading symbol file: " + filename.getAbsolutePath());
+//		System.out.println("Reading label map file: " + filename.getAbsolutePath());
 		try (BufferedReader reader = new BufferedReader(new FileReader(filename))) {
 			String line;
 			while ((line = reader.readLine()) != null) {
@@ -2568,5 +2610,71 @@ public class Simulator {
 		}
 
 		return labelMap;
+	}
+
+	public static Map<Long, String> readReverseLabelMapFromFile(File filename) {
+		Map<Long, String> labelMap = new HashMap<>();
+
+//		System.out.println("Reading label map file: " + filename.getAbsolutePath());
+		try (BufferedReader reader = new BufferedReader(new FileReader(filename))) {
+			String line;
+			while ((line = reader.readLine()) != null) {
+				line = line.trim();
+				if (line.isEmpty() || line.startsWith("#"))
+					continue; // skip blank or comment lines
+
+				// Split "KEY: VALUE"
+				int colon = line.indexOf(':');
+				if (colon == -1)
+					continue; // skip malformed lines
+
+				String keyStr = line.substring(0, colon).trim();
+				String valStr = line.substring(colon + 1).trim();
+
+				try {
+					long key = Long.parseLong(keyStr);
+					labelMap.put(key, valStr);
+				} catch (NumberFormatException e) {
+					System.err.println("Skipping invalid line: " + line);
+				}
+			}
+		} catch (IOException e) {
+			System.err.println("Error reading reverse label map: " + e.getMessage());
+		}
+
+		return labelMap;
+	}
+
+	public static Map<String, LabelType> readLabelTypesFromFile(File filename) {
+		Map<String, LabelType> labelTypes = new HashMap<>();
+
+//		System.out.println("Reading label type file: " + filename.getAbsolutePath());
+		try (BufferedReader reader = new BufferedReader(new FileReader(filename))) {
+			String line;
+			while ((line = reader.readLine()) != null) {
+				line = line.trim();
+				if (line.isEmpty() || line.startsWith("#"))
+					continue; // skip blank or comment lines
+
+				// Split "KEY: VALUE"
+				int colon = line.indexOf(':');
+				if (colon == -1)
+					continue; // skip malformed lines
+
+				String key = line.substring(0, colon).trim();
+				String valStr = line.substring(colon + 1).trim();
+
+				try {
+					var value = LabelType.valueOf(valStr);
+					labelTypes.put(key, value);
+				} catch (NumberFormatException e) {
+					System.err.println("Skipping invalid line: " + line);
+				}
+			}
+		} catch (IOException e) {
+			System.err.println("Error reading label type map: " + e.getMessage());
+		}
+
+		return labelTypes;
 	}
 }

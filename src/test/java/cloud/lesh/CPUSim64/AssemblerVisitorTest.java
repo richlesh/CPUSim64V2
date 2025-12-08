@@ -22,7 +22,7 @@ public class AssemblerVisitorTest {
 			""";
 		LabelVisitor labelVisitor = new LabelVisitor();
 		String noLabels = labelVisitor.gatherLabels(src);
-		var asm = new AssemblerVisitor(labelVisitor.getLabelMap());
+		var asm = new AssemblerVisitor(labelVisitor.getLabelMap(), labelVisitor.getReverseLabelMap());
 		asm.assemble(noLabels);
 		List<Long> words = asm.result();
 		assertEquals(6, words.size());
@@ -51,7 +51,7 @@ public class AssemblerVisitorTest {
 			""";
 		LabelVisitor labelVisitor = new LabelVisitor();
 		String noLabels = labelVisitor.gatherLabels(src);
-		var asm = new AssemblerVisitor(labelVisitor.getLabelMap());
+		var asm = new AssemblerVisitor(labelVisitor.getLabelMap(), labelVisitor.getReverseLabelMap());
 		asm.assemble(noLabels);
 		List<Long> words = asm.result();
 		assertEquals(7, words.size());
@@ -88,7 +88,7 @@ public class AssemblerVisitorTest {
 		String preprocessed = rw.rewrite(src);
 		LabelVisitor labelVisitor = new LabelVisitor();
 		String noLabels = labelVisitor.gatherLabels(preprocessed);
-		var asm = new AssemblerVisitor(labelVisitor.getLabelMap());
+		var asm = new AssemblerVisitor(labelVisitor.getLabelMap(), labelVisitor.getReverseLabelMap());
 		asm.assemble(noLabels);
 		List<Long> words = asm.result();
 		assertEquals(12, words.size());
@@ -128,7 +128,7 @@ public class AssemblerVisitorTest {
 			""";
 		LabelVisitor labelVisitor = new LabelVisitor();
 		String noLabels = labelVisitor.gatherLabels(src);
-		var asm = new AssemblerVisitor(labelVisitor.getLabelMap());
+		var asm = new AssemblerVisitor(labelVisitor.getLabelMap(), labelVisitor.getReverseLabelMap());
 		asm.assemble(noLabels);
 		List<Long> words = asm.result();
 		assertEquals(12, words.size());
@@ -179,7 +179,7 @@ public class AssemblerVisitorTest {
 			""";
 		LabelVisitor labelVisitor = new LabelVisitor();
 		String noLabels = labelVisitor.gatherLabels(src);
-		var asm = new AssemblerVisitor(labelVisitor.getLabelMap());
+		var asm = new AssemblerVisitor(labelVisitor.getLabelMap(), labelVisitor.getReverseLabelMap());
 		asm.assemble(noLabels);
 		List<Long> words = asm.result();
 		assertEquals(18, words.size());
@@ -221,7 +221,7 @@ public class AssemblerVisitorTest {
 			""";
 		LabelVisitor labelVisitor = new LabelVisitor();
 		String noLabels = labelVisitor.gatherLabels(src);
-		var asm = new AssemblerVisitor(labelVisitor.getLabelMap());
+		var asm = new AssemblerVisitor(labelVisitor.getLabelMap(), labelVisitor.getReverseLabelMap());
 		asm.assemble(noLabels);
 		List<Long> words = asm.result();
 		assertEquals(3, words.size());
@@ -244,7 +244,7 @@ public class AssemblerVisitorTest {
 			""";
 		LabelVisitor labelVisitor = new LabelVisitor();
 		String noLabels = labelVisitor.gatherLabels(src);
-		var asm = new AssemblerVisitor(labelVisitor.getLabelMap());
+		var asm = new AssemblerVisitor(labelVisitor.getLabelMap(), labelVisitor.getReverseLabelMap());
 		asm.assemble(noLabels);
 		List<Long> words = asm.result();
 		assertEquals(3, words.size());
@@ -279,7 +279,7 @@ public class AssemblerVisitorTest {
 			""";
 		LabelVisitor labelVisitor = new LabelVisitor();
 		String noLabels = labelVisitor.gatherLabels(src);
-		var asm = new AssemblerVisitor(labelVisitor.getLabelMap());
+		var asm = new AssemblerVisitor(labelVisitor.getLabelMap(), labelVisitor.getReverseLabelMap());
 		asm.assemble(noLabels);
 		List<Long> words = asm.result();
 		assertEquals(12, words.size());
@@ -315,7 +315,7 @@ public class AssemblerVisitorTest {
 			""";
 		LabelVisitor labelVisitor = new LabelVisitor();
 		String noLabels = labelVisitor.gatherLabels(src);
-		var asm = new AssemblerVisitor(labelVisitor.getLabelMap());
+		var asm = new AssemblerVisitor(labelVisitor.getLabelMap(), labelVisitor.getReverseLabelMap());
 		asm.assemble(noLabels);
 		List<Long> words = asm.result();
 		assertEquals(8, words.size());
@@ -340,7 +340,7 @@ public class AssemblerVisitorTest {
 			""";
 		LabelVisitor labelVisitor = new LabelVisitor();
 		String noLabels = labelVisitor.gatherLabels(src);
-		var asm = new AssemblerVisitor(labelVisitor.getLabelMap());
+		var asm = new AssemblerVisitor(labelVisitor.getLabelMap(), labelVisitor.getReverseLabelMap());
 		asm.assemble(noLabels);
 		List<Long> words = asm.result();
 		assertEquals(1, words.size());
@@ -360,7 +360,7 @@ public class AssemblerVisitorTest {
 			""";
 		LabelVisitor labelVisitor = new LabelVisitor();
 		String noLabels = labelVisitor.gatherLabels(src);
-		var asm = new AssemblerVisitor(labelVisitor.getLabelMap());
+		var asm = new AssemblerVisitor(labelVisitor.getLabelMap(), labelVisitor.getReverseLabelMap());
 		asm.assemble(noLabels);
 		List<Long> words = asm.result();
 		assertEquals(3, words.size());
@@ -380,7 +380,7 @@ public class AssemblerVisitorTest {
 			""";
 		LabelVisitor labelVisitor = new LabelVisitor();
 		String noLabels = labelVisitor.gatherLabels(src);
-		var asm = new AssemblerVisitor(labelVisitor.getLabelMap());
+		var asm = new AssemblerVisitor(labelVisitor.getLabelMap(), labelVisitor.getReverseLabelMap());
 		asm.assemble(noLabels);
 		List<Long> words = asm.result();
 		assertEquals(1, words.size());
@@ -399,7 +399,7 @@ public class AssemblerVisitorTest {
 			""";
 		LabelVisitor labelVisitor = new LabelVisitor();
 		String noLabels = labelVisitor.gatherLabels(src);
-		var asm = new AssemblerVisitor(labelVisitor.getLabelMap());
+		var asm = new AssemblerVisitor(labelVisitor.getLabelMap(), labelVisitor.getReverseLabelMap());
 		asm.assemble(noLabels);
 		List<Long> words = asm.result();
 		assertEquals(2, words.size());
@@ -427,7 +427,7 @@ public class AssemblerVisitorTest {
 			""";
 		LabelVisitor labelVisitor = new LabelVisitor();
 		String noLabels = labelVisitor.gatherLabels(src);
-		var asm = new AssemblerVisitor(labelVisitor.getLabelMap());
+		var asm = new AssemblerVisitor(labelVisitor.getLabelMap(), labelVisitor.getReverseLabelMap());
 		asm.assemble(noLabels);
 		List<Long> words = asm.result();
 		assertEquals(10, words.size());
@@ -463,7 +463,7 @@ public class AssemblerVisitorTest {
 			""";
 		LabelVisitor labelVisitor = new LabelVisitor();
 		String noLabels = labelVisitor.gatherLabels(src);
-		var asm = new AssemblerVisitor(labelVisitor.getLabelMap());
+		var asm = new AssemblerVisitor(labelVisitor.getLabelMap(), labelVisitor.getReverseLabelMap());
 		asm.assemble(noLabels);
 		List<Long> words = asm.result();
 		assertEquals(10, words.size());
@@ -499,7 +499,7 @@ public class AssemblerVisitorTest {
 			""";
 		LabelVisitor labelVisitor = new LabelVisitor();
 		String noLabels = labelVisitor.gatherLabels(src);
-		var asm = new AssemblerVisitor(labelVisitor.getLabelMap());
+		var asm = new AssemblerVisitor(labelVisitor.getLabelMap(), labelVisitor.getReverseLabelMap());
 		asm.assemble(noLabels);
 		List<Long> words = asm.result();
 		assertEquals(10, words.size());
@@ -537,7 +537,7 @@ public class AssemblerVisitorTest {
 			""";
 		LabelVisitor labelVisitor = new LabelVisitor();
 		String noLabels = labelVisitor.gatherLabels(src);
-		var asm = new AssemblerVisitor(labelVisitor.getLabelMap());
+		var asm = new AssemblerVisitor(labelVisitor.getLabelMap(), labelVisitor.getReverseLabelMap());
 		asm.assemble(noLabels);
 		List<Long> words = asm.result();
 		assertEquals(12, words.size());
@@ -566,7 +566,7 @@ public class AssemblerVisitorTest {
 			""";
 		LabelVisitor labelVisitor = new LabelVisitor();
 		String noLabels = labelVisitor.gatherLabels(src);
-		var asm = new AssemblerVisitor(labelVisitor.getLabelMap());
+		var asm = new AssemblerVisitor(labelVisitor.getLabelMap(), labelVisitor.getReverseLabelMap());
 		asm.assemble(noLabels);
 		List<Long> words = asm.result();
 		int i = 0;
@@ -584,7 +584,7 @@ public class AssemblerVisitorTest {
 			""";
 		LabelVisitor labelVisitor = new LabelVisitor();
 		String noLabels = labelVisitor.gatherLabels(src);
-		var asm = new AssemblerVisitor(labelVisitor.getLabelMap());
+		var asm = new AssemblerVisitor(labelVisitor.getLabelMap(), labelVisitor.getReverseLabelMap());
 		asm.assemble(noLabels);
 		List<Long> words = asm.result();
 		assertEquals(1, words.size());
@@ -605,7 +605,7 @@ public class AssemblerVisitorTest {
 			""";
 		LabelVisitor labelVisitor = new LabelVisitor();
 		String noLabels = labelVisitor.gatherLabels(src);
-		var asm = new AssemblerVisitor(labelVisitor.getLabelMap());
+		var asm = new AssemblerVisitor(labelVisitor.getLabelMap(), labelVisitor.getReverseLabelMap());
 		asm.assemble(noLabels);
 		List<Long> words = asm.result();
 		assertEquals(4, words.size());
@@ -629,7 +629,7 @@ public class AssemblerVisitorTest {
 			""";
 		LabelVisitor labelVisitor = new LabelVisitor();
 		String noLabels = labelVisitor.gatherLabels(src);
-		var asm = new AssemblerVisitor(labelVisitor.getLabelMap());
+		var asm = new AssemblerVisitor(labelVisitor.getLabelMap(), labelVisitor.getReverseLabelMap());
 		asm.assemble(noLabels);
 		List<Long> words = asm.result();
 		assertEquals(4, words.size());
@@ -653,7 +653,7 @@ public class AssemblerVisitorTest {
 			""";
 		LabelVisitor labelVisitor = new LabelVisitor();
 		String noLabels = labelVisitor.gatherLabels(src);
-		var asm = new AssemblerVisitor(labelVisitor.getLabelMap());
+		var asm = new AssemblerVisitor(labelVisitor.getLabelMap(), labelVisitor.getReverseLabelMap());
 		asm.assemble(noLabels);
 		List<Long> words = asm.result();
 		assertEquals(4, words.size());
@@ -675,7 +675,7 @@ public class AssemblerVisitorTest {
 			""";
 		LabelVisitor labelVisitor = new LabelVisitor();
 		String noLabels = labelVisitor.gatherLabels(src);
-		var asm = new AssemblerVisitor(labelVisitor.getLabelMap());
+		var asm = new AssemblerVisitor(labelVisitor.getLabelMap(), labelVisitor.getReverseLabelMap());
 		asm.assemble(noLabels);
 		List<Long> words = asm.result();
 		assertEquals(2, words.size());
@@ -696,7 +696,7 @@ public class AssemblerVisitorTest {
 			""";
 		LabelVisitor labelVisitor = new LabelVisitor();
 		String noLabels = labelVisitor.gatherLabels(src);
-		var asm = new AssemblerVisitor(labelVisitor.getLabelMap());
+		var asm = new AssemblerVisitor(labelVisitor.getLabelMap(), labelVisitor.getReverseLabelMap());
 		asm.assemble(noLabels);
 		List<Long> words = asm.result();
 		assertEquals(3, words.size());
@@ -719,7 +719,7 @@ public class AssemblerVisitorTest {
 			""";
 		LabelVisitor labelVisitor = new LabelVisitor();
 		String noLabels = labelVisitor.gatherLabels(src);
-		var asm = new AssemblerVisitor(labelVisitor.getLabelMap());
+		var asm = new AssemblerVisitor(labelVisitor.getLabelMap(), labelVisitor.getReverseLabelMap());
 		asm.assemble(noLabels);
 		List<Long> words = asm.result();
 		assertEquals(4, words.size());
@@ -743,7 +743,7 @@ public class AssemblerVisitorTest {
 			""";
 		LabelVisitor labelVisitor = new LabelVisitor();
 		String noLabels = labelVisitor.gatherLabels(src);
-		var asm = new AssemblerVisitor(labelVisitor.getLabelMap());
+		var asm = new AssemblerVisitor(labelVisitor.getLabelMap(), labelVisitor.getReverseLabelMap());
 		asm.assemble(noLabels);
 		List<Long> words = asm.result();
 		assertEquals(4, words.size());
@@ -767,7 +767,7 @@ public class AssemblerVisitorTest {
 			""";
 		LabelVisitor labelVisitor = new LabelVisitor();
 		String noLabels = labelVisitor.gatherLabels(src);
-		var asm = new AssemblerVisitor(labelVisitor.getLabelMap());
+		var asm = new AssemblerVisitor(labelVisitor.getLabelMap(), labelVisitor.getReverseLabelMap());
 		asm.assemble(noLabels);
 		List<Long> words = asm.result();
 		assertEquals(4, words.size());
@@ -791,7 +791,7 @@ public class AssemblerVisitorTest {
 			""";
 		LabelVisitor labelVisitor = new LabelVisitor();
 		String noLabels = labelVisitor.gatherLabels(src);
-		var asm = new AssemblerVisitor(labelVisitor.getLabelMap());
+		var asm = new AssemblerVisitor(labelVisitor.getLabelMap(), labelVisitor.getReverseLabelMap());
 		asm.assemble(noLabels);
 		List<Long> words = asm.result();
 		assertEquals(4, words.size());
@@ -815,7 +815,7 @@ public class AssemblerVisitorTest {
 			""";
 		LabelVisitor labelVisitor = new LabelVisitor();
 		String noLabels = labelVisitor.gatherLabels(src);
-		var asm = new AssemblerVisitor(labelVisitor.getLabelMap());
+		var asm = new AssemblerVisitor(labelVisitor.getLabelMap(), labelVisitor.getReverseLabelMap());
 		asm.assemble(noLabels);
 		List<Long> words = asm.result();
 		assertEquals(4, words.size());
@@ -843,7 +843,7 @@ public class AssemblerVisitorTest {
 			""";
 		LabelVisitor labelVisitor = new LabelVisitor();
 		String noLabels = labelVisitor.gatherLabels(src);
-		var asm = new AssemblerVisitor(labelVisitor.getLabelMap());
+		var asm = new AssemblerVisitor(labelVisitor.getLabelMap(), labelVisitor.getReverseLabelMap());
 		asm.assemble(noLabels);
 		List<Long> words = asm.result();
 		assertEquals(8, words.size());
@@ -879,7 +879,7 @@ public class AssemblerVisitorTest {
 			""";
 		LabelVisitor labelVisitor = new LabelVisitor();
 		String noLabels = labelVisitor.gatherLabels(src);
-		var asm = new AssemblerVisitor(labelVisitor.getLabelMap());
+		var asm = new AssemblerVisitor(labelVisitor.getLabelMap(), labelVisitor.getReverseLabelMap());
 		asm.assemble(noLabels);
 		List<Long> words = asm.result();
 		assertEquals(12, words.size());
@@ -909,7 +909,7 @@ public class AssemblerVisitorTest {
 			""";
 		LabelVisitor labelVisitor = new LabelVisitor();
 		String noLabels = labelVisitor.gatherLabels(src);
-		var asm = new AssemblerVisitor(labelVisitor.getLabelMap());
+		var asm = new AssemblerVisitor(labelVisitor.getLabelMap(), labelVisitor.getReverseLabelMap());
 		asm.assemble(noLabels);
 		List<Long> words = asm.result();
 		assertEquals(2, words.size());
@@ -929,7 +929,7 @@ public class AssemblerVisitorTest {
 			""";
 		LabelVisitor labelVisitor = new LabelVisitor();
 		String noLabels = labelVisitor.gatherLabels(src);
-		var asm = new AssemblerVisitor(labelVisitor.getLabelMap());
+		var asm = new AssemblerVisitor(labelVisitor.getLabelMap(), labelVisitor.getReverseLabelMap());
 		asm.assemble(noLabels);
 		List<Long> words = asm.result();
 		assertEquals(2, words.size());
@@ -949,7 +949,7 @@ public class AssemblerVisitorTest {
 			""";
 		LabelVisitor labelVisitor = new LabelVisitor();
 		String noLabels = labelVisitor.gatherLabels(src);
-		var asm = new AssemblerVisitor(labelVisitor.getLabelMap());
+		var asm = new AssemblerVisitor(labelVisitor.getLabelMap(), labelVisitor.getReverseLabelMap());
 		asm.assemble(noLabels);
 		List<Long> words = asm.result();
 		assertEquals(2, words.size());
@@ -969,7 +969,7 @@ public class AssemblerVisitorTest {
 			""";
 		LabelVisitor labelVisitor = new LabelVisitor();
 		String noLabels = labelVisitor.gatherLabels(src);
-		var asm = new AssemblerVisitor(labelVisitor.getLabelMap());
+		var asm = new AssemblerVisitor(labelVisitor.getLabelMap(), labelVisitor.getReverseLabelMap());
 		asm.assemble(noLabels);
 		List<Long> words = asm.result();
 		assertEquals(2, words.size());
@@ -995,7 +995,7 @@ public class AssemblerVisitorTest {
 			""";
 		LabelVisitor labelVisitor = new LabelVisitor();
 		String noLabels = labelVisitor.gatherLabels(src);
-		var asm = new AssemblerVisitor(labelVisitor.getLabelMap());
+		var asm = new AssemblerVisitor(labelVisitor.getLabelMap(), labelVisitor.getReverseLabelMap());
 		asm.assemble(noLabels);
 		List<Long> words = asm.result();
 		assertEquals(8, words.size());
@@ -1023,7 +1023,7 @@ public class AssemblerVisitorTest {
 			""";
 		LabelVisitor labelVisitor = new LabelVisitor();
 		String noLabels = labelVisitor.gatherLabels(src);
-		var asm = new AssemblerVisitor(labelVisitor.getLabelMap());
+		var asm = new AssemblerVisitor(labelVisitor.getLabelMap(), labelVisitor.getReverseLabelMap());
 		asm.assemble(noLabels);
 		List<Long> words = asm.result();
 		assertEquals(4, words.size());
@@ -1047,7 +1047,7 @@ public class AssemblerVisitorTest {
 			""";
 		LabelVisitor labelVisitor = new LabelVisitor();
 		String noLabels = labelVisitor.gatherLabels(src);
-		var asm = new AssemblerVisitor(labelVisitor.getLabelMap());
+		var asm = new AssemblerVisitor(labelVisitor.getLabelMap(), labelVisitor.getReverseLabelMap());
 		asm.assemble(noLabels);
 		List<Long> words = asm.result();
 		assertEquals(4, words.size());
@@ -1070,7 +1070,7 @@ public class AssemblerVisitorTest {
 			""";
 		LabelVisitor labelVisitor = new LabelVisitor();
 		String noLabels = labelVisitor.gatherLabels(src);
-		var asm = new AssemblerVisitor(labelVisitor.getLabelMap());
+		var asm = new AssemblerVisitor(labelVisitor.getLabelMap(), labelVisitor.getReverseLabelMap());
 		asm.assemble(noLabels);
 		List<Long> words = asm.result();
 		assertEquals(3, words.size());
@@ -1093,7 +1093,7 @@ public class AssemblerVisitorTest {
 			""";
 		LabelVisitor labelVisitor = new LabelVisitor();
 		String noLabels = labelVisitor.gatherLabels(src);
-		var asm = new AssemblerVisitor(labelVisitor.getLabelMap());
+		var asm = new AssemblerVisitor(labelVisitor.getLabelMap(), labelVisitor.getReverseLabelMap());
 		asm.assemble(noLabels);
 		List<Long> words = asm.result();
 		assertEquals(4, words.size());
@@ -1117,7 +1117,7 @@ public class AssemblerVisitorTest {
 			""";
 		LabelVisitor labelVisitor = new LabelVisitor();
 		String noLabels = labelVisitor.gatherLabels(src);
-		var asm = new AssemblerVisitor(labelVisitor.getLabelMap());
+		var asm = new AssemblerVisitor(labelVisitor.getLabelMap(), labelVisitor.getReverseLabelMap());
 		asm.assemble(noLabels);
 		List<Long> words = asm.result();
 		assertEquals(120, words.size());
@@ -1137,14 +1137,14 @@ public class AssemblerVisitorTest {
 			.DCB 1, 2, 3, 4
 			.DCB 0x1, 0x2, 0x3, 0x4, 0x5, 0x6, 0x7, 0x8
 			.DCB 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12
-			.DCB -1, -2, -3, 4, 5, 6, 7, 8, 9, '\\n', 'a', 'b', 'c', 'd', 'é', '\\u1234'
+			.DCB -1, -2, -3, 4, 5, 6, 7, 8, 9, '\\n', 'a', 'b', 'c', 'd', 'é', '\\u{1234}'
 			FINIS:
 			""";
 		LiteralRewriter rw = new LiteralRewriter();
 		String preprocessed = rw.rewrite(src);
 		LabelVisitor labelVisitor = new LabelVisitor();
 		String noLabels = labelVisitor.gatherLabels(preprocessed);
-		var asm = new AssemblerVisitor(labelVisitor.getLabelMap());
+		var asm = new AssemblerVisitor(labelVisitor.getLabelMap(), labelVisitor.getReverseLabelMap());
 		asm.assemble(noLabels);
 		List<Long> words = asm.result();
 		assertEquals(10, words.size());
@@ -1174,7 +1174,7 @@ public class AssemblerVisitorTest {
 			""";
 		LabelVisitor labelVisitor = new LabelVisitor();
 		String noLabels = labelVisitor.gatherLabels(src);
-		var asm = new AssemblerVisitor(labelVisitor.getLabelMap());
+		var asm = new AssemblerVisitor(labelVisitor.getLabelMap(), labelVisitor.getReverseLabelMap());
 		asm.assemble(noLabels);
 		List<Long> words = asm.result();
 		assertEquals(16, words.size());
@@ -1208,7 +1208,7 @@ public class AssemblerVisitorTest {
 			""";
 		LabelVisitor labelVisitor = new LabelVisitor();
 		String noLabels = labelVisitor.gatherLabels(src);
-		var asm = new AssemblerVisitor(labelVisitor.getLabelMap());
+		var asm = new AssemblerVisitor(labelVisitor.getLabelMap(), labelVisitor.getReverseLabelMap());
 		asm.assemble(noLabels);
 		List<Long> words = asm.result();
 		assertEquals(9, words.size());
@@ -1247,7 +1247,7 @@ public class AssemblerVisitorTest {
 		String preprocessed = PreprocessorVisitor.preprocessText("Test.asm", src, loader);
 		LabelVisitor labelVisitor = new LabelVisitor();
 		String noLabels = labelVisitor.gatherLabels(preprocessed);
-		var asm = new AssemblerVisitor(labelVisitor.getLabelMap());
+		var asm = new AssemblerVisitor(labelVisitor.getLabelMap(), labelVisitor.getReverseLabelMap());
 		asm.assemble(noLabels);
 		List<Long> words = asm.result();
 		assertEquals(12, words.size());

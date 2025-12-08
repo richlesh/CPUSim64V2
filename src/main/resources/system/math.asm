@@ -1,7 +1,7 @@
 #include <system/math.def>
 #include <system/system.def>
 
-jump	@MATH_ASM_END
+jump	MATH_ASM_END
 
 #def_func	pi()
 	int		iPI
@@ -11,95 +11,91 @@ jump	@MATH_ASM_END
 	int		iE
 #end_func
 
-#def_func	fdiv(int i, int j)
-	#var    
-	#fvar	fi, fj
-	#loadargs
-	move	fi, i
-	move	fj, j
-	div		fi, fj
+#def_func	idiv(i, j)
+	#var	fi, fj
+	load	fi, i
+	load	fj, j
+	div		r0, r1, fi, fj
+#end_func
+
+#def_func	mod(i, j)
+	#var	fi, fj
+	load	fi, i
+	load	fj, j
+	div		r0, r1, fi, fj
+	move	r0, r1
 #end_func
 
 #def_func	fabs(x)
-	load	f0,x
+	load	f1, x
 	int		iABS_FP
 #end_func	fabs
 
 #def_func	abs(i)
-	load	r0,i
+	load	r1, i
 	int		iABS
 #end_func	abs
 
 #def_func	ceil(x)
-	load	f0,x
+	load	f1, x
 	int		iCEIL
 #end_func	ceil
 
 #def_func	floor(x)
-	load	f0,x
+	load	f1, x
 	int		iFLOOR
 #end_func	floor
 
 #def_func	round(x)
-	load	f0,x
+	load	f1, x
 	int		iROUND
 #end_func	round
 
 #def_func	sqrt(x)
-	load	f0,x
+	load	f1, x
 	int		iSQRT
 #end_func	sqrt
 
 #def_func	exp(x)
-	load	f0,x
+	load	f1, x
 	int		iEXP
 #end_func	exp
 
 #def_func	log(x)
-	load	f0,x
+	load	f1, x
 	int		iLOG
 #end_func	log
 
 #def_func	exp10(x)
-	push	f1
-	move	f0, 10.
-	load	f1, x
+	load	f1, 10.
+	load	f2, x
 	int		iPOW
-	pop		f1
 #end_func	exp10
 
 #def_func	log10(x)
-	load	f0,x
+	load	f1, x
 	int		iLOG
-	push	f1
-	move	f1,2.3025850929940456840179914546844
+	load	f1, 2.3025850929940456840179914546844
 	div		f0,f1
-	pop		f1
 #end_func	log10
 
 #def_func	exp2(x)
-	push	f1
-	move	f0, 2.
-	load	f1, x
+	move	f1, 2.
+	load	f2, x
 	int		iPOW
-	pop		f1
 #end_func	exp10
 
 #def_func	log2(x)
-	load	f0,x
+	load	f1, x
 	int		iLOG
-	push	f1
-	move	f1,0.693147180559945309417232121458
-	div		f0,f1
-	pop		f1
+	load	f1, 0.693147180559945309417232121458
+	div		f0, f1
 #end_func	log10
 
 #def_func	pow(x,y)
-	push	f1
-	load	f0,x
-	load	f1,y
+	load	f1, x
+	load	f2, y
 	int		iPOW
-	pop		f1
 #end_func	pow
 
 // base is integer, power is integer (non-negtive)
@@ -109,17 +105,17 @@ jump	@MATH_ASM_END
 	load	p, power
 	move	square, b
 	move	product, 1
-	jump	@LOOP_END
-LOOP_START:
+	jump	$LOOP_END
+$LOOP_START:
 	and		r0, p, 0x1
-	jump	z, @LOOP_NEXT
+	jump	z, $LOOP_NEXT
 	mult	product, square
-LOOP_NEXT:
+$LOOP_NEXT:
 	mult	square, square
 	rshift	p, 1
-LOOP_END:
+$LOOP_END:
 	test	p
-	jump	nz, @LOOP_START
+	jump	nz, $LOOP_START
 	move	r0, product
 #end_func	ifastpow
 
@@ -131,28 +127,29 @@ LOOP_END:
 	load	p, power
 	move	negPower, FALSE
 	test	p
-	jump	nn, @SKIP_NEG
+	jump	nn, $SKIP_NEG
 	neg		p
 	move	negPower, TRUE
-SKIP_NEG:
+$SKIP_NEG:
 	move	square, b
 	move	product, 1
-	jump	@LOOP_END
-LOOP_START:
+	jump	$LOOP_END
+$LOOP_START:
 	and		r0, p, 0x1
-	jump	z, @LOOP_NEXT
+	jump	z, $LOOP_NEXT
 	mult	product, square
-LOOP_NEXT:
+$LOOP_NEXT:
 	mult	square, square
 	rshift	p, 1
-LOOP_END:
+$LOOP_END:
 	test	p
-	jump	nz, @LOOP_START
+	jump	nz, $LOOP_START
 	move	f0, product
 	test	negPower
-	jump	z, @SKIP_NEG2
+	jump	z, $SKIP_NEG2
 	recip	f0
-SKIP_NEG2:
+$SKIP_NEG2:
+	move	f0, product
 #end_func	fastpow
 
 #def_func	random()
@@ -160,11 +157,9 @@ SKIP_NEG2:
 #end_func	random
 
 #def_func	rand(low,high)
-	push	r1
-	load	r0,low
-	load	r1,high
+	load	r1, low
+	load	r2, high
 	int		iRAND
-	pop		r1
 #end_func	random
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -228,50 +223,48 @@ SKIP_NEG2:
 #end_func						// This cleans up the stack and returns
 
 ///////////////////////////////////////////////////////////////////////////////
-// sum(count, array) computes the sum of an integer array
-// count	number of elements in the array
-// array	address of integer array to sum
+// sum(array) computes the sum of an INTEGER array
+// array	address of INTEGER array to sum
 // returns result in f0
 ///////////////////////////////////////////////////////////////////////////////
-#def_func	sum(count, array)
+#def_func	sum(array)
 	#var	i, max, addr, sum
-	load	max, count			// Load count argument from stack
 	load	addr, array			// Load array argument from stack
+	load	max, addr[0]		// Load count argument from array
 	clear	sum
-	clear	i
-	jump	@END_LOOP1
-LOOP1:
+	move	i, 1
+	jump	$END_LOOP
+$LOOP:
 	load	r0, addr[i]			// Load what is in addr[i] to temp f0
 	add		sum, r0
 	add		i, 1
-END_LOOP1:
+$END_LOOP:
 	cmp		i, max
-	jump	lt, @LOOP1
+	jump	le, $LOOP
 	#return	sum
 #end_func
 
 ///////////////////////////////////////////////////////////////////////////////
-// fsum(count, array) computes the sum of an FP array
-// count	number of elements in the array
+// fsum(array) computes the sum of an FP array
 // array	address of FP array to sum
 // returns result in f0
 ///////////////////////////////////////////////////////////////////////////////
-#def_func	fsum(count, array)
+#def_func	fsum(array)
 	#var	i, max, addr
 	#fvar	sum
-	load	max, count			// Load count argument from stack
 	load	addr, array			// Load array argument from stack
+	load	max, addr[0]		// Load count argument from array
 	clear	sum
-	clear	i
-	jump	@END_LOOP1
-LOOP1:
+	move	i, 1
+	jump	$END_LOOP
+$LOOP:
 	load	f0, addr[i]			// Load what is in addr[i] to temp f0
 	add		sum, f0
 	add		i, 1
-END_LOOP1:
+$END_LOOP:
 	cmp		i, max
-	jump	lt, @LOOP1
+	jump	le, $LOOP
 	#freturn	sum
-#end_func
+#end_funcs
 
 MATH_ASM_END: nop

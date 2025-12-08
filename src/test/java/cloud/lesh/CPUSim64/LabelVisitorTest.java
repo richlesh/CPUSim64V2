@@ -24,9 +24,9 @@ public class LabelVisitorTest {
 		String noLabels = labelVisitor.gatherLabels(src);
 		assertEquals(expected, noLabels);
 		var labelMap = labelVisitor.getLabelMap();
-		assertEquals(3, labelMap.size());
-		assertEquals(2, labelMap.get("__DATA__"));
+		assertEquals(6, labelMap.size());
 		assertEquals(2, labelMap.get("__CODE_END__"));
+		assertEquals(2, labelMap.get("__DATA__"));
 		assertEquals(2, labelMap.get("__HEAP_START__"));
 		var errors = labelVisitor.getErrors();
 		assertTrue(errors.isEmpty());
@@ -55,11 +55,15 @@ public class LabelVisitorTest {
 		String noLabels = labelVisitor.gatherLabels(src);
 		assertEquals(expected, noLabels);
 		var labelMap = labelVisitor.getLabelMap();
-		assertEquals(5, labelMap.size());
+		assertEquals(8, labelMap.size());
+		assertEquals(0, labelMap.get("__START__"));
+		assertEquals(0, labelMap.get("__CODE__"));
+		assertEquals(1, labelMap.get("LABEL1"));
 		assertEquals(1, labelMap.get("LABEL1"));
 		assertEquals(3, labelMap.get("LABEL2"));
-		assertEquals(6, labelMap.get("__DATA__"));
 		assertEquals(6, labelMap.get("__CODE_END__"));
+		assertEquals(6, labelMap.get("__DATA__"));
+		assertEquals(6, labelMap.get("__DATA_END__"));
 		assertEquals(6, labelMap.get("__HEAP_START__"));
 		var errors = labelVisitor.getErrors();
 		assertTrue(errors.isEmpty());
@@ -105,7 +109,7 @@ public class LabelVisitorTest {
 		String noLabels = labelVisitor.gatherLabels(src);
 		assertEquals(expected, noLabels);
 		var labelMap = labelVisitor.getLabelMap();
-		assertEquals(13, labelMap.size());
+		assertEquals(16, labelMap.size());
 		assertEquals(1, labelMap.get("LABEL1"));
 		assertEquals(3, labelMap.get("LABEL2"));
 		assertEquals(4, labelMap.get("DATA1"));
@@ -116,8 +120,8 @@ public class LabelVisitorTest {
 		assertEquals(18, labelMap.get("DATA6"));
 		assertEquals(22, labelMap.get("DATA7"));
 		assertEquals(27, labelMap.get("END"));
-		assertEquals(29, labelMap.get("__DATA__"));
 		assertEquals(29, labelMap.get("__CODE_END__"));
+		assertEquals(29, labelMap.get("__DATA__"));
 		assertEquals(29, labelMap.get("__HEAP_START__"));
 		var errors = labelVisitor.getErrors();
 		assertTrue(errors.isEmpty());
@@ -152,13 +156,13 @@ public class LabelVisitorTest {
 		String noLabels = labelVisitor.gatherLabels(src);
 		assertEquals(expected, noLabels);
 		var labelMap = labelVisitor.getLabelMap();
-		assertEquals(7, labelMap.size());
+		assertEquals(10, labelMap.size());
 		assertEquals(1, labelMap.get("LABEL1"));
 		assertEquals(3, labelMap.get("LABEL2"));
 		assertEquals(101, labelMap.get("LABEL3"));
 		assertEquals(200, labelMap.get("END"));
-		assertEquals(202, labelMap.get("__DATA__"));
 		assertEquals(202, labelMap.get("__CODE_END__"));
+		assertEquals(202, labelMap.get("__DATA__"));
 		assertEquals(202, labelMap.get("__HEAP_START__"));
 		var errors = labelVisitor.getErrors();
 		assertTrue(errors.isEmpty());
@@ -201,15 +205,15 @@ public class LabelVisitorTest {
 		String noLabels = labelVisitor.gatherLabels(src);
 		assertEquals(expected, noLabels);
 		var labelMap = labelVisitor.getLabelMap();
-		assertEquals(9, labelMap.size());
+		assertEquals(12, labelMap.size());
 		assertEquals(1, labelMap.get("$LABEL1"));
 		assertEquals(3, labelMap.get("BLOCK1$LABEL2"));
 		assertEquals(4, labelMap.get("BLOCK1$BLOCK2$LABEL3"));
 		assertEquals(5, labelMap.get("BLOCK1$LABEL4"));
 		assertEquals(6, labelMap.get("$LABEL5"));
 		assertEquals(7, labelMap.get("END"));
-		assertEquals(9, labelMap.get("__DATA__"));
 		assertEquals(9, labelMap.get("__CODE_END__"));
+		assertEquals(9, labelMap.get("__DATA__"));
 		assertEquals(9, labelMap.get("__HEAP_START__"));
 		var errors = labelVisitor.getErrors();
 		assertTrue(errors.isEmpty());
@@ -231,7 +235,7 @@ public class LabelVisitorTest {
 				.DCW 0x1234, 0x5678, 0x9ABC, 0xDEF0
 				alfalfa
 				.DCW 3.1415926, -2.7182818, 0.
-				.DCB 'a', '\\n', 'é', '\\u1234'
+				.DCB 'a', '\\n', 'é', '\\u{1234}'
 			#CALL func(r1, r2, r3)
 				MOVE	r2, 123
 				darla
@@ -249,9 +253,6 @@ public class LabelVisitorTest {
 		preprocessed = rw.rewrite(preprocessed);
 		LabelVisitor labelVisitor = new LabelVisitor();
 		String noLabels = labelVisitor.gatherLabels(preprocessed);
-//		var asm = new AssemblerVisitor(labelVisitor.getLabelMap());
-//		asm.assemble(noLabels);
-//		List<Long> words = asm.result();
 		List<String> errors = labelVisitor.getErrors();
 		String actualErrors = errors.stream().collect(Collectors.joining(System.lineSeparator())) + System.lineSeparator();
 		assertEquals(errorsString, actualErrors);

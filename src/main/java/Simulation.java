@@ -16,8 +16,8 @@ public class Simulation {
 
 		boolean debug = false;
 		boolean verbose = false;
-		int memorySize = 1024 * 1024;	// default value
-		int stackSize = 4096; 			// default value
+		int memorySize = 1048576;		// default 1M
+		int stackSize = 8192; 			// default 8k
 		String filespec = "";
 
 		List<String> simulatorArgs = new ArrayList<String>();
@@ -29,33 +29,35 @@ public class Simulation {
 					verbose = true;
 				} else if (arg.startsWith("--mem=")) {
 					try {
-						memorySize = Integer.parseInt(arg.substring("--mem=".length()));
+						memorySize = Integer.decode(arg.substring("--mem=".length()));
 					} catch (NumberFormatException e) {
 						System.err.println("Invalid memory size: " + arg);
 						System.exit(1);
 					}
 				} else if (arg.startsWith("--stack=")) {
 					try {
-						stackSize = Integer.parseInt(arg.substring("--stack=".length()));
+						stackSize = Integer.decode(arg.substring("--stack=".length()));
 					} catch (NumberFormatException e) {
 						System.err.println("Invalid stack size: " + arg);
 						System.exit(1);
 					}
 				} else {
-					System.err.println("Unknown option: " + arg);
-					System.exit(1);
+					simulatorArgs.add(arg);
 				}
 			} else  {
 				simulatorArgs.add(arg);
 			}
 		}
 
-		if (verbose) {
-			System.out.println("CPUSim64 Simulator");
+		if (verbose || debug) {
+			System.out.println("=".repeat(80));
+			System.out.println("CPUSim64 2.0 Emulator");
 			System.out.println("By Richard Lesh ©2025");
-			System.out.println("CPUSim64 Virtual Machine");
+			System.out.println("Implements a CPUSim64 Virtual Machine.");
+			System.out.println("=".repeat(80));
 			System.out.println("Debug: " + debug);
 			System.out.println("Memory size: " + memorySize);
+			System.out.println("Stack size: " + stackSize);
 		}
 		Path originalPath = Path.of(simulatorArgs.get(0)).toAbsolutePath();
 		Path newPath = originalPath;
@@ -74,24 +76,19 @@ public class Simulation {
 				throw new RuntimeException("Can't locate object file for program: " + baseName);
 			}
 		}
-		symbolPath = originalPath.resolveSibling(baseName + ".sym");
+		symbolPath = originalPath.resolveSibling(baseName + ".sym1");
 		if (!Files.isRegularFile(symbolPath)) {
-			System.out.println("Can't locate symbol file for program: " + baseName);
+			System.out.println("Can't locate reverse label file for program: " + baseName);
 		} else {
-			symbolMap = Simulator.readLabelMapFromFile(symbolPath.toFile());
-			// Create reverse map
-			reverseSymbolMap = new java.util.HashMap<>();
-			for (var entry : symbolMap.entrySet()) {
-				reverseSymbolMap.put(entry.getValue(), entry.getKey());
-			}
+			reverseSymbolMap = Simulator.readReverseLabelMapFromFile(symbolPath.toFile());
 			if (reverseSymbolMap.get(0L) == null) {
-				reverseSymbolMap.put(0L, "__START");
+				reverseSymbolMap.put(0L, "__START__");
 			}
 		}
 
 		// 1) Read object file
 		var program = cloud.lesh.CPUSim64.AsmIO.readU64BE(newPath.toFile());
-		if (verbose) {
+		if (verbose || debug) {
 			System.out.println("Read " + program.size() + " words from " + newPath.getFileName().toString());
 		}
 
@@ -101,6 +98,11 @@ public class Simulation {
 		long result = sim.run(program.get(0), reverseSymbolMap);
 		if (verbose) {
 			System.out.println("Result: " + result);
+			var totalTime = sim.getClock();
+			System.out.printf("User CPU Cycles: %d\n", sim.getCycles());
+			System.out.printf("User Time: %.3f sec\n", (totalTime - sim.getSystemClock()) / 1.e9);
+			System.out.printf("System Time: %.3f sec\n", sim.getSystemClock() / 1.e9);
+			System.out.printf("Total Time: %.3f sec\n", totalTime / 1.e9);
 		}
 	}
 }

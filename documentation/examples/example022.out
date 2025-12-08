@@ -1,6 +1,7 @@
 > run.sh example022
 Array Size: 16
-Allocated Size: 18
+Allocated Size: 21
+16
 15
 14
 13
@@ -16,4 +17,3 @@ Allocated Size: 18
 3
 2
 1
-0

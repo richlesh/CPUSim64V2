@@ -1,3 +1,4 @@
+MAIN:
 // Two register arithmetic
 	move	r0,1
 	move	r1,2

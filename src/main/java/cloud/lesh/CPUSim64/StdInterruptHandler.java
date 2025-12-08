@@ -833,19 +833,39 @@ public class StdInterruptHandler extends InterruptHandler
 				break;
 			case iPARSE_INT:
 				s = cpu.convertString(cpu.getR(1));
-				cpu.setR(0,Long.decode(s));
+				try {
+					cpu.setR(0, Long.decode(s));
+				} catch (Exception ex) {
+					System.out.println("Can't parse int '" + s + "'");
+					System.exit(1);
+				}
 				break;
 			case iPARSE_DEC:
 				s = cpu.convertString(cpu.getR(1));
-				cpu.setR(0,Long.parseLong(s,10));
-				break;
+				try {
+					cpu.setR(0,Long.parseLong(s,10));
+				} catch (Exception ex) {
+					System.out.println("Can't parse dec '" + s + "'");
+					System.exit(1);
+				}
+		break;
 			case iPARSE_HEX:
 				s = cpu.convertString(cpu.getR(1));
-				cpu.setR(0,Long.parseLong(s,16));
+				try {
+					cpu.setR(0,Long.parseLong(s,16));
+				} catch (Exception ex) {
+					System.out.println("Can't parse hex '" + s + "'");
+					System.exit(1);
+				}
 				break;
 			case iPARSE_FLOAT:
 				s = cpu.convertString(cpu.getR(1));
-				cpu.setFP(0,Double.parseDouble(s));
+				try {
+					cpu.setFP(0,Double.parseDouble(s));
+				} catch (Exception ex) {
+					System.out.println("Can't parse float '" + s + "'");
+					System.exit(1);
+				}
 				break;
 			case iSPRINTF:
 				s = sprintf(3);

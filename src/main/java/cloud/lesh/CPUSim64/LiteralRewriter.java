@@ -98,6 +98,7 @@ public class LiteralRewriter extends LiteralSubstitutionBaseVisitor<Void> {
 		if (s.length() == 1) return 0xFFFD; // lone backslash is invalid
 		char next = s.charAt(1);
 		switch (next) {
+			case '0':  return '\0';
 			case 'n':  return '\n';
 			case 't':  return '\t';
 			case 'r':  return '\r';
@@ -107,22 +108,11 @@ public class LiteralRewriter extends LiteralSubstitutionBaseVisitor<Void> {
 			case '\'': return '\'';
 			case '\"': return '\"';
 
-			// Octal escapes: \0 .. \377 (up to 3 octal digits, C/Java-style)
-			case '0': case '1': case '2': case '3': case '4': case '5': case '6': case '7': {
-				int i = 1, val = 0, count = 0;
-				while (i < s.length() && count < 3) {
-					char c = s.charAt(i);
-					if (c < '0' || c > '7') break;
-					val = (val << 3) + (c - '0');
-					i++; count++;
-				}
-				return val & 0xFF;
-			}
-
-			// Unicode escape: \\uXXXX (exactly 4 hex digits)
+			// Unicode escape: \\u{XXXX} (xxxx is 1-6 hex digits)
 			case 'u': case 'U': {
-				if (s.length() >= 6) {
-					String hex = s.substring(2, 6);
+				int len = s.length();
+				if (len > 4 && len <= 10) {
+					String hex = s.substring(3, len - 1);
 					if (hex.chars().allMatch(ch -> Character.digit(ch, 16) != -1)) {
 						return Integer.parseInt(hex, 16);
 					}

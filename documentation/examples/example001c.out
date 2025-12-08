@@ -1,34 +1,6 @@
-CPU Simulator 64 Assembler 1.6
-© 2002-2003,2011,2017,2022,2023 Richard Lesh
-All rights reserved.
-
-Loading /Users/rich/Desktop/Resources/CPUSim64/documentation/examples/example001.asm...
-Saved 3 lines!
-
-Preprocessing Complete
-
-Loading /Users/rich/Desktop/Resources/CPUSim64/documentation/examples/example001.preprocessed...
-
-Parsing...
-0:nop
-1:mov	SP,-1
-2:nop
-3:stop
-4:stop
-
-Assembling...
-00000000 @START+0:                        nop   
-00000001 @START+1:                        move  sp,-1
-00000002 @START+2:                        nop   
-00000003 @START+3:                        stop  
-00000004 @START+4:                        stop  
-Saved 5 words!
-
-Assembly Complete
-
-
-===============================================================================
-Labels
-===============================================================================
-0000000000000005: @HEAP_START
-0000000000000000: @START
+================================================================================
+CPUSim64 2.0 Assembler
+By Richard Lesh ©2025
+Assembles .asm source files into .obj.gz binary files.
+================================================================================
+Wrote 5 words to /Users/rich/Desktop/Resources/CPUSim64V2/documentation/examples/example001.obj.gz

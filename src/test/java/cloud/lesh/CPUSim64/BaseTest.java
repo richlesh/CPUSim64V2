@@ -49,7 +49,7 @@ public class BaseTest {
 		LiteralRewriter rewriter = new LiteralRewriter();
 		preprocessed = rewriter.rewrite(preprocessed);
 
-		preprocessed = PreprocessorVisitor.addGlobals(preprocessed);
+		preprocessed = PreprocessorVisitor.addGlobals(preprocessed, false);
 
 		LabelVisitor labelVisitor = new LabelVisitor();
 		String noLabels = labelVisitor.gatherLabels(preprocessed);
@@ -60,7 +60,7 @@ public class BaseTest {
 			return Triple.of(-1, null, null);
 		}
 
-		var asm = new AssemblerVisitor(labelVisitor.getLabelMap());
+		var asm = new AssemblerVisitor(labelVisitor.getLabelMap(), labelVisitor.getReverseLabelMap());
 		asm.assemble(noLabels);
 		List<Long> prog = asm.result();
 		errors = asm.getErrors();
@@ -77,7 +77,7 @@ public class BaseTest {
 		sim.loadProgram(prog, 0L);
 		sim.SR = 0xF;
 		var startState = sim.getState();
-		int result = sim.run(0L);
+		int result = sim.run(1L);
 		var diff = new SimStateDiff(sim, startState);
 		return Triple.of(result, sim, diff);
 	}

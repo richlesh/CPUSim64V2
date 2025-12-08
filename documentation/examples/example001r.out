@@ -1,12 +1,20 @@
-CPUSim64 Assembler
+================================================================================
+CPUSim64 2.0 Assembler
 By Richard Lesh ©2025
-Assembles .asm source files into .obj.gz binary files
-Wrote 5 words to /Users/rich/Desktop/Resources/CPUSim64/documentation/examples/example001.obj.gz
-CPUSim64 Simulator
+Assembles .asm source files into .obj.gz binary files.
+================================================================================
+Wrote 5 words to /Users/rich/Desktop/Resources/CPUSim64V2/documentation/examples/example001.obj.gz
+================================================================================
+CPUSim64 2.0 Emulator
 By Richard Lesh ©2025
-CPUSim64 Virtual Machine
+Implements a CPUSim64 Virtual Machine.
+================================================================================
 Debug: false
 Memory size: 1048576
-Reading symbol file: /Users/rich/Desktop/Resources/CPUSim64/documentation/examples/example001.sym
+Stack size: 8192
 Read 5 words from example001.obj.gz
 Result: 0
+User CPU Cycles: 3
+User Time: 0.001 sec
+System Time: 0.000 sec
+Total Time: 0.001 sec

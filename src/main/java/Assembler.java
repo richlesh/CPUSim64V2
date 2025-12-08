@@ -5,6 +5,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -20,18 +22,26 @@ import java.util.stream.Collectors;
 
 public class Assembler {
 	public static void main(String[] args) throws Exception {
-		System.out.println("CPUSim64 Assembler");
+		System.out.println("=".repeat(80));
+		System.out.println("CPUSim64 2.0 Assembler");
 		System.out.println("By Richard Lesh ©2025");
-		System.out.println("Assembles .asm source files into .obj.gz binary files");
+		System.out.println("Assembles .asm source files into .obj.gz binary files.");
+		System.out.println("=".repeat(80));
 		if (args.length < 1) {
-			System.err.println("Usage: assemble [--DEBUG] [-Dsymbol[=value]] <input.asm>");
+			System.err.println("Usage: assemble [--DEBUG] [--hasMain] [-Dsymbol[=value]] <input.asm>");
 			System.exit(2);
 		}
+
+		boolean hasMain = false;
 
 		Path inPath = Path.of("");
 		for (int i = 0; i < args.length; ++i) {
 			String arg = args[i];
-			if (arg.charAt(0) != '-') {
+			if (arg.charAt(0) == '-') {
+				if (arg.equals("--hasMain")) {
+					hasMain = true;
+				}
+			} else {
 				inPath = Path.of(arg).toAbsolutePath();
 			}
 		}
@@ -82,9 +92,7 @@ public class Assembler {
 		}
 */
 		// 4) Add global declarations
-		preprocessed = PreprocessorVisitor.addGlobals(preprocessed);
-
-		preprocessed = ".org 1" + System.lineSeparator() + preprocessed;
+		preprocessed = PreprocessorVisitor.addGlobals(preprocessed, hasMain);
 
 		// 5) Gather labels
 		LabelVisitor labelVisitor = new LabelVisitor();
@@ -97,6 +105,25 @@ public class Assembler {
 		}
 		// 6) Assemble
 		Map<String, Long> labelMap = labelVisitor.getLabelMap();
+		Map<Long, String> reverseLabelMap = labelVisitor.getReverseLabelMap();
+		var asm = new AssemblerVisitor(labelMap, reverseLabelMap);
+		asm.assemble(noLabels);
+		List<Long> words = asm.result();
+		if (labelMap.containsKey("__MAIN__")) {
+			words.set(0, labelMap.get("__MAIN__"));	// Set start of program
+		} else {
+			words.set(0, 1L);					// Set start of program
+		}
+		errors = asm.getErrors();
+
+		if (errors.size() > 0) {
+			System.out.println(errors.stream().collect(Collectors.joining(System.lineSeparator())));
+			System.exit(2);
+		}
+
+		cloud.lesh.CPUSim64.AsmIO.writeU64BE(outPath, words);
+		System.out.println("Wrote " + words.size() + " words to " + outPath.toString());
+
 		// Write label map for debugging
 		Path symbolFile = inPath.getParent().resolve(filename + ".sym");
 		try (BufferedWriter writer = new BufferedWriter(new FileWriter(symbolFile.toFile()))) {
@@ -108,19 +135,26 @@ public class Assembler {
 			System.err.println("Error writing label map: " + e.getMessage());
 		}
 
-		var asm = new AssemblerVisitor(labelMap);
-		asm.assemble(noLabels);
-		List<Long> words = asm.result();
-		words.set(0, 1L);				// Set start of program
-		errors = asm.getErrors();
-
-		if (errors.size() > 0) {
-			System.out.println(errors.stream().collect(Collectors.joining(System.lineSeparator())));
-			System.exit(2);
+		Path symbolFile1 = inPath.getParent().resolve(filename + ".sym1");
+		try (BufferedWriter writer = new BufferedWriter(new FileWriter(symbolFile1.toFile()))) {
+			for (var entry : reverseLabelMap.entrySet()) {
+				writer.write(entry.getKey() + ": " + entry.getValue());
+				writer.newLine();
+			}
+		} catch (IOException e) {
+			System.err.println("Error writing reverse label map: " + e.getMessage());
 		}
 
-		cloud.lesh.CPUSim64.AsmIO.writeU64BE(outPath, words);
-		System.out.println("Wrote " + words.size() + " words to " + outPath.toString());
+		var types = asm.getLabelTypes();
+		Path symbolFile2 = inPath.getParent().resolve(filename + ".sym2");
+		try (BufferedWriter writer = new BufferedWriter(new FileWriter(symbolFile2.toFile()))) {
+			for (var entry : types.entrySet()) {
+				writer.write(entry.getKey() + ": " + entry.getValue());
+				writer.newLine();
+			}
+		} catch (IOException e) {
+			System.err.println("Error writing label type map: " + e.getMessage());
+		}
 		System.exit(0);
 	}
 }

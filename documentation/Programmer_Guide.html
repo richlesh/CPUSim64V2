@@ -19,6 +19,7 @@
 			var filename = name.substring(0,pos)+"."+name.substring(pos+1);
 			$.ajax({
 				url: "examples/" + filename,
+				cache: false,
 				success: function( result ) {
 					$("#"+destID).text(result);
 				}
@@ -72,31 +73,26 @@ Java HotSpot(TM) 64-Bit Server VM (build 17.0.5+9-LTS-191, mixed mode, sharing)
 <script>register("example001_asm")</script>
 <p>Our simple program only has three instructions.  The <code>NOP</code> instruction is called a No-Op because it doesn't do anything but take up one CPU cycle.  The <code>STOP</code> instruction tells the CPU to stop executing your program and return to the command line.  At the very end of all your programs you must place two <code>STOP</code> instructions as this tells the disassembler to stop de-compiling instructions.</p>
 <p>Once the program source file is saved you can run the assembler to compile your assembly language program into CPUSim64 machine code.  This is done with the compile.sh (or compile.bat for Windows) script.  Using the terminal window, navigate to the directory where your source file is saved.  Then run the compile script by typing the script filename followed by the name of your source file.  Do not include the ".asm" extension as that is assumed by the script.  You should see output similar to the output below.</p>
-<div class="console">&gt; <b>compile.sh example001</b></div>
+<div class="console">&gt; <b>assemble.sh example001</b></div>
 <div id="example001c_out"></div>
 <script>register("example001c_out")</script>
-<p>The program will compile your assembly language source file and create a machine lanugage object file with an ".obj.gz" extension.  It will print how many words were compiled from your source when it is complete.  If there are errors, they will be displayed.  The symbols used and the labels used in your source will be listed.</p>
-<p>To run the program use the run.sh (or run.bat for Windows) script name followed by the base name of your program source file.  Like the compile script, the run script will first compile your source into an object file.  It does this in a quiet mode so you don't get the same verbose output as the compile script.  Then the run script will execute your object file on the CPUSim64 emulator.  It will print statistics related to your program before it runs such as code size, heap size and maximum stack size.  Then your program will run.  After it runs, the message "System Halted!" will be printed and statistics related to the run will be printed such as the number of user CPU cycles used, the wall clock time it took to execut and the return code from your program.
+<p>The program will compile your assembly language source file and create a machine lanugage object file with an ".obj.gz" extension.  It will print how many words were compiled from your source when it is complete.  If there are errors, they will be displayed.</p>
+<p>To run the program use the run.sh (or run.bat for Windows) script name followed by the base name of your program source file.  Like the compile script, the run script will first compile your source into an object file.  Then the run script will execute your object file on the CPUSim64 emulator.  It will print statistics related to your program before it runs such as code size, heap size and maximum stack size.  Then your program will run.  After it runs, statistics related to the run will be printed such as the number of user CPU cycles used, the wall clock time it took to execute and the return code from your program.
 <div class="console">&gt; <b>run.sh example001</b></div>
 <div id="example001r_out"></div>
 <script>register("example001r_out")</script>
-<p>If your program doesn't work as expected you can run it in debug mode using the debug.sh (or debug.bat for Windows) script name followed by the base name of your program source file.  Like the run script your program will be compiled and run, but this time the assembler and emulator will be run in debug mode.  The assembler will print out your source program as it understands it, complete with addresses and symbolic addresses.  You can use this as a reference when you are debugging and can also use it to make sure that the assembler generates the instructions that you expect.  When the CPUSim64 emulator runs your program in debug mode it will print out the entire state of the emulated CPU everytime it encounters a <code>NOP</code> instruction.  It will also print the final state of the CPU when your program ends.</p>
+<p>If your program doesn't work as expected you can run it in debug mode using the debug.sh (or debug.bat for Windows) script name followed by the base name of your program source file.  Like the run script your program will be compiled and run, but this time the assembler and emulator will be run in debug mode. When running in this debug mode, each instruction will be printed as it is executed.  In debug mode the entire state of the emulated CPU will be printed every time it encounters a <code>DEBUG</code> instruction.  It will also print the final state of the CPU when your program ends.</p>
 <div class="console">&gt; <b>debug.sh example001</b></div>
 <div id="example001d_out"></div>
 <script>register("example001d_out")</script>
 
-<p>For more information about how your program runs, you can debug your program in trace mode with trace.sh (or trace.bat for Windows) script name followed by the base name of your program source file.  In this mode, each instruction will be printed as it is executed.</p>
-<div class="console">&gt; <b>trace.sh example001</b></div>
-<div id="example001t_out"></div>
-<script>register("example001t_out")</script>
-
 <h2>Comments</h2>
-<p>Because assembly language can be hard to read, it is important to put plenty of documentation in your source code in the form of comments.  A comment line starts with two slashes (<code>//</code>) and causes the line to be ignored by the assembler.  You can also put comments using double slashes at the end of instruction lines which causes everything from the double slashes to the end of the line to be ignored.  It is good practice to put a documentation block at the beginning of the program, functions or other important units of code to explain what the code is supposed to do when it works properly.  This way someone (perhaps yourself six months from now) can debug errant code because the documentation will tell them what the correct operation should be.</p>
+<p>Because assembly language can be hard to read, it is important to put plenty of documentation in your source code in the form of comments.  A comment line starts with two slashes (<code>//</code>) and causes the line to be ignored by the assembler.  You can also put comments using double slashes at the end of instruction lines which causes everything from the double slashes to the end of the line to be ignored.  It is good practice to put a documentation block at the beginning of the program, functions or other important units of code to explain what the code is supposed to do when it works properly.  This can easily be done with a multi-line comment that starts with <code>/*</code> and ends with <code>*/</code>.  This way someone (perhaps yourself six months from now) can debug errant code because the documentation will tell them what the correct operation should be.</p>
 <div id="example002_asm"></div>
 <script>register("example002_asm")</script>
 
 <h2>Move Operations</h2>
-<p>One of the most basic operations available is to move a constant into either an integer register or a floating point register.  This is done with the <code>MOVE</code> operation.  It can take two arguments, the first is the destination register and the second is the constant to move into the register.  Constants can be 16-bit Unicode character constants, integer constants (in decimal or hexadecimal), or floating point constants.  Characters constants are formed using a single character in single quotes.  It is also possible to use special escape sequences for special characters and Unicode characters whose codepoint is known.  The special characters are as follows:</p>
+<p>One of the most basic operations available is to move a constant into either an integer register or a floating point register.  Integer or floating point registers can be set to an integer with the <code>MOVE</code> instruction.  It will take two arguments, the first is the destination register and the second is the constant to move into the register.  Constants can be 21-bit Unicode character constants, or integer constants.  Characters constants are formed using a single character in single quotes.  It is also possible to use special escape sequences for special characters and Unicode characters whose codepoint is known.  The special characters are as follows:</p>
 <dl>
 	<dt><code>'\0'</code></dt><dd>NULL Character, codepoint 0</dd>
 	<dt><code>'\b'</code></dt><dd>Backspace Character, codepoint 8</dd>
@@ -108,15 +104,15 @@ Java HotSpot(TM) 64-Bit Server VM (build 17.0.5+9-LTS-191, mixed mode, sharing)
 	<dt><code>'\''</code></dt><dd>Single Quote, codepoint 39</dd>
 	<dt><code>'\\'</code></dt><dd>Backslash, codepoint 92</dd>
 </dl>
-<p>Given the Unicode codepoint you can also specify a character using the escape sequence of the form <code>\uxxxx</code> where 'xxxx' is the four hexadecimal digit value for the codepoint.</p>
-<p>Integer constants can be positive or negative.  They can be in decimal format or hexadecimal format.  Hexadecimal constants are always preceeded by <code>Ox</code>.</p>
-<p>Floating point constants can be positive or negative.  They are written using floating point notation (a decimal point is required) of up to 16 decimal significant digits.  They can also be written using scientific notation such as 1.23e10 or 3.456e-20.</p>
+<p>Given the Unicode codepoint you can also specify a character using the escape sequence of the form <code>\u{xxxx}</code> where 'xxxx' is the 1-6 hexadecimal digit value for the codepoint.</p>
+<p>Integer constants can be positive or negative.  They can be in decimal format or hexadecimal format.  Hexadecimal constants are always preceeded by <code>Ox</code>.  Integer constants used in the <code>MOVE</code> instruction must fit into 42-bits (signed), i.e. in the range [-2_199_023_255_552, 2_199_023_255_551] ([-0x20000000000, 0x1ffffffffff])</p>
+<p>Floating point registers can be set to a floating point constant using the <code>LOAD</code> instruction.  It will take two arguments, the first is the destination register and the second is the constant to move into the register.  Floating point constants can be positive or negative.  They are written using floating point notation (a decimal point is required) of up to 16 decimal significant digits.  They can also be written using scientific notation such as 1.23e10 or 3.456e-20.</p>
 <div id="example003_asm"></div>
 <script>register("example003_asm")</script>
 <div id="example003_out"></div>
 <script>register("example003_out")</script>
 
-<div class="note">CPUSim64 stores the constants to move inside the 64-bit instruction.  It turns out that very large integers can not fit inside the the instruction so they are instead stored in the data segement at the end of your code.  A <code>LOAD</code> instruction is substituted for your <code>MOVE</code> instruction to load it into the register by the assembler.  This same process applies to all floating point <code>MOVE</code> instructions that specify constants since the 64-bit floating point constant can not fit inside the <code>MOVE</code> instruction.</div>
+<div class="note">CPUSim64 stores integer constants to move inside the 64-bit instruction.  It turns out that very large integers can not fit inside the the instruction so they instead must be stored in the data segement at the end of your code.  A <code>LOAD</code> instruction must be used to load these large integer constants from memory into a register.  This is what applies to all floating point constants.  They must be stored in the data segment and loaded with a <code>LOAD</code> instruction.  When you specify a floating point constant in a <code>LOAD</code> instruction, the assembler automatically puts it into the data segment and substitues the address into the <code>LOAD</code> instruction for you.</div>
 <p>You can also use the <code>MOVE</code> instruction to move data from one general purpose register to another or from one floating point register to another.  You can also use it to move data between general purpose registers and floating point registers.</p>
 <div id="example004_asm"></div>
 <script>register("example004_asm")</script>

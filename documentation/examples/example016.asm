@@ -8,39 +8,39 @@
 	#call	puts("Must supply one argument to convert.")
 	jump	@FINIS
 ONE_ARG_GOOD:
-	move	r0, 1
+	move	r1, 1
 	int		iARGS
-	move	r1, r0		// save for later
+	move	r4, r0			// save for later
 	#call	puts("Input:")
-	#call	puts(r1)
+	#call	puts(r4)
 	#call	put_nl()
 
 	#call	puts("iPARSE_INT+1:")
-	move	r0, r1
+	move	r1, r4
 	int		iPARSE_INT		// convert cmd arg string to integer
 	add		r0, 1			// We can do arithmetic on it now
 	#call	put_dec(r0)
 	#call	put_nl()
 
 	#call	puts("iPARSE_DEC+1:")
-	move	r0, r1
+	move	r1, r4
 	int		iPARSE_DEC		// convert cmd arg string to integer base 10
 	add		r0, 1			// We can do arithmetic on it now
 	#call	put_dec(r0)
 	#call	put_nl()
 
 	#call	puts("iPARSE_HEX+1:0x")
-	move	r0, r1
+	move	r1, r4
 	int		iPARSE_HEX		// convert cmd arg string to integer base 16
 	add		r0, 1			// We can do arithmetic on it now
 	#call	put_hex(r0)
 	#call	put_nl()
 
 	#call	puts("iPARSE_FP+1:")
-	move	r0, r1
+	move	r1, r4
 	int		iPARSE_FLOAT	// convert cmd arg string to floating point
 	add		f0, 1			// We can do arithmetic on it now
-	#call	put_fp(f0)
+	#call	put_fp(f0, 2)
 	#call	put_nl()
 	
 FINIS:

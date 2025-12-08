@@ -16,13 +16,13 @@ public class LiteralRewriterTest {
 			LOAD F4, -2.71e2
 			ADD R2, R0, R1
 			LOAD R4, "Hølá, World!"
-			LOAD R5, "\\u007a, \\b\\n\\t\\r\\f\\\\\\""
+			LOAD R5, "\\u{007a}, \\b\\n\\t\\r\\f\\\\\\""
 			LOAD R6, "This is not a float 3.14"
 			LOAD F5, 1.6E-19
 			LOAD F6, 3.14
 			LOAD R7, "Hello, World!"
 			LOAD R8, 'r'
-			LOAD R9, '\\u1234'
+			LOAD R9, '\\u{1234}'
 			STOP
 			STOP
 			STR_A: .DCS "This is a string"
@@ -71,7 +71,7 @@ public class LiteralRewriterTest {
 			__FP_5: .DCF 1.6E-19
 			__STR_1: .DCS "Hello, World!"
 			__STR_2: .DCS "Hølá, World!"
-			__STR_3: .DCS "\\u007a, \\b\\n\\t\\r\\f\\\\\\""
+			__STR_3: .DCS "\\u{007a}, \\b\\n\\t\\r\\f\\\\\\""
 			__STR_4: .DCS "This is not a float 3.14"
 			""";
 		LiteralRewriter rewriter = new LiteralRewriter();

@@ -64,7 +64,7 @@ CHAR  : '\'' ( ESC | ~['\\\r\n] ) '\'' ;
 STRING: '"' ( ESC | ~["\\\r\n] )* '"' ;
 ANGLE_PATH : '<' (~[>\r\n])+ '>' ;
 // Fragments: **no** actions/commands here
-fragment ESC : '\\' [btnfr"'\\] | '\\' [uU] LCURLY (HEX)+ RCURLY ;
+fragment ESC : '\\' [0btnfr"'\\] | '\\' [uU] LCURLY (HEX)+ RCURLY ;
 fragment HEX : [0-9A-Fa-f] ;
 EQEQ : '==' | [eE][qQ] ;
 NEQ : '!=' | [nN][eE] ;

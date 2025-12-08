@@ -3,35 +3,32 @@ import cloud.lesh.CPUSim64.Simulator;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
 public class Disassembler {
+	private final static String fmtLabel = "%08x: %s";
+
 	public static void main(String[] args) throws Exception {
-		System.out.println("CPUSim64 Simulator");
+		System.out.println("=".repeat(80));
+		System.out.println("CPUSim64 2.0 Disassembler");
 		System.out.println("By Richard Lesh ©2025");
-		System.out.println("CPUSim64 Disassembler");
+		System.out.println("Disassembles .obj.gz object files into source code.");
+		System.out.println("=".repeat(80));
 		if (args.length < 1) {
-			System.err.println("Usage: disassemble <input.obj.gz>");
+			System.err.println("Usage: disassemble [-mainOnly] <input.obj.gz>");
 			System.exit(2);
 		}
 
-		boolean debug = false;
-		int memorySize = 1024; // default value
+		boolean mainOnly = false;
 		String filespec = "";
 
 		List<String> simulatorArgs = new ArrayList<String>();
 		for (String arg : args) {
 			if (arg.charAt(0) == '-') {
-				if (arg.equals("--debug")) {
-					debug = true;
-				} else if (arg.startsWith("--mem=")) {
-					try {
-						memorySize = Integer.parseInt(arg.substring("--mem=".length()));
-					} catch (NumberFormatException e) {
-						System.err.println("Invalid memory size: " + arg);
-						System.exit(1);
-					}
+				if (arg.equals("--mainOnly")) {
+					mainOnly = true;
 				} else {
 					System.err.println("Unknown option: " + arg);
 					System.exit(1);
@@ -41,14 +38,12 @@ public class Disassembler {
 			}
 		}
 
-		System.out.println("Debug: " + debug);
-		System.out.println("Memory size: " + memorySize);
-
 		Path originalPath = Path.of(simulatorArgs.get(0)).toAbsolutePath();
 		Path newPath = originalPath;
 		Path symbolPath = originalPath;
 		Map<String, Long> symbolMap = null;
 		Map<Long, String> reverseSymbolMap = null;
+		Map<String, Simulator.LabelType> symbolTypes = null;
 		// Get filename without extension
 		String fileName = newPath.getFileName().toString();
 		int dot = fileName.indexOf('.');
@@ -64,26 +59,41 @@ public class Disassembler {
 		}
 		symbolPath = originalPath.resolveSibling(baseName + ".sym");
 		if (!Files.isRegularFile(symbolPath)) {
-			System.out.println("Can't locate symbol file for program: " + baseName);
+			System.out.println("Can't locate label file for program: " + baseName);
 		} else {
 			symbolMap = Simulator.readLabelMapFromFile(symbolPath.toFile());
-			// Create reverse map
-			reverseSymbolMap = new java.util.HashMap<>();
-			for (var entry : symbolMap.entrySet()) {
-				reverseSymbolMap.put(entry.getValue(), entry.getKey());
-			}
+		}
+		symbolPath = originalPath.resolveSibling(baseName + ".sym1");
+		if (!Files.isRegularFile(symbolPath)) {
+			System.out.println("Can't locate reverse label file for program: " + baseName);
+		} else {
+			reverseSymbolMap = Simulator.readReverseLabelMapFromFile(symbolPath.toFile());
 			if (reverseSymbolMap.get(0L) == null) {
-				reverseSymbolMap.put(0L, "__START");
+				reverseSymbolMap.put(0L, "__START__");
 			}
+		}
+		symbolPath = originalPath.resolveSibling(baseName + ".sym2");
+		if (!Files.isRegularFile(symbolPath)) {
+			System.out.println("Can't locate label type file for program: " + baseName);
+		} else {
+			symbolTypes = Simulator.readLabelTypesFromFile(symbolPath.toFile());
 		}
 
 		// 1) Read object file
 		var program = cloud.lesh.CPUSim64.AsmIO.readU64BE(newPath.toFile());
 		System.out.println("Read " + program.size() + " words from " + newPath.getFileName().toString());
 
-		var sim = new Simulator(memorySize, 0, 1024, simulatorArgs.toArray(String[]::new));
-		if (debug) sim.setDebug(true);
+		var sim = new Simulator(program.size(), 0, 1024, simulatorArgs.toArray(String[]::new));
 		sim.loadProgram(program, 0L);
-		System.out.println(sim.disassemble(reverseSymbolMap));
+		System.out.println(sim.disassemble(mainOnly ? program.get(0) : 1L, reverseSymbolMap, symbolTypes));
+
+		System.out.println("=".repeat(80));
+		System.out.println("Labels");
+		System.out.println("=".repeat(80));
+		List<String> keys = new ArrayList<>(symbolMap.keySet());
+		Collections.sort(keys);
+		for (var key : keys) {
+			System.out.println(String.format(fmtLabel, symbolMap.get(key) , key));
+		}
 	}
 }

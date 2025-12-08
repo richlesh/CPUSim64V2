@@ -618,7 +618,7 @@ R27: 000000000000001b                    27 F27:       27.00000000000000
 R28: 000000000000001c                    28 F28:       28.00000000000000
  SF: 00000000000024ff                       F29:       29.00000000000000
  SP: 00000000000024fd                       F30:       30.00000000000000
- PC: 000000000000003f                       F31:       31.00000000000000
+ PC: 0000000000000040                       F31:       31.00000000000000
 """;
 		ConsoleOutputCapturer capturer = new ConsoleOutputCapturer();
 		capturer.start(ConsoleOutputCapturer.StdStream.STDOUT);

@@ -8,18 +8,17 @@
 	#call	put_nl()
 	
 	clear	r1
-	jump	@LOOP_END
+	jump	LOOP_END
 LOOP:
 	#call	put_dec(r1)
 	#call	putc(':')
-	move	r0, r1
 	int		iARGS
 	#call	puts(r0)
 	#call	put_nl()
 	add		r1, 1
 LOOP_END:
 	cmp		r1, r2
-	jump	ne, @LOOP
+	jump	ne, LOOP
 	
 	stop
 	stop

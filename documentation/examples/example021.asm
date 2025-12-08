@@ -2,7 +2,7 @@
 #include <system/string.def>
 #include <system/system.def>
 
-	jump	@PROGRAM_START		// must jump to PROGRAM_START
+	jump	PROGRAM_START		// must jump to PROGRAM_START
 								// to avoid executing the function
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -24,38 +24,39 @@ PROGRAM_START:
 IF1:// if (argc >= 3)
 	int		iARGC
 	cmp		r0, 3
-	jump	lt, @ELSE1			// we need two command arguments
+	jump	lt, ELSE1			// we need two command arguments
 THEN1:
-	move	r0, 1
+	move	r1, 1
 	int		iARGS
+	move	r1, r0
 	int		iPARSE_INT
-	move	r1, r0				// save A
-	move	r0, 2
+	move	r4, r0				// save A
+	move	r1, 2
 	int		iARGS
+	move	r1, r0
 	int		iPARSE_INT
-	move	r2, r0				// save B
+	move	r5, r0				// save B
 	#call	puts("Min: ")
-	#call	min(r1,r2)			// return will be in r0
+	#call	min(r4, r5)			// return will be in r0
 	#call	put_dec(r0)
 	#call	put_nl()
 	#call	puts("Max: ")
-	#call	max(r1,r2)			// return will be in r0
+	#call	max(r4, r5)			// return will be in r0
 	#call	put_dec(r0)
 	#call	put_nl()
-	jump	@ENDIF1
+	jump	ENDIF1
 ELSE1:
 	#call	puts("You must supply two command line arguments!")
 ENDIF1:
 
 	#call	puts("FPArray Sum: ")
-	load	r0, FPArray[-1]
-	#call	sum(r0, @FPArray)
-	#call	put_fp(f0)
+	#call	sum(FPArray)
+	#call	put_fp(f0, 2)
 	#call	put_nl()
 	stop						// must stop the program so we don't
 								// run into the functions defined below
 FPArray:
-	DCA		1.1, 2.2, 3.3, 4.4, 5.5
+	.DCW		1.1, 2.2, 3.3, 4.4, 5.5
 
 ///////////////////////////////////////////////////////////////////////////////
 // max(first, second) computes minimum of two integer values
@@ -74,25 +75,24 @@ FPArray:
 
 ///////////////////////////////////////////////////////////////////////////////
 // sum(count, array) computes the sum of an FP array
-// count	number of elements in the array
 // array	address of FP array to sum
 // returns result in f0
 ///////////////////////////////////////////////////////////////////////////////
-#def_func	sum(count, array)
+#def_func	sum(array)
 	#var	i, max, addr
 	#fvar	sum
-	load	max, count			// Load count argument from stack
 	load	addr, array			// Load array argument from stack
+	load	max, addr[0]		// Load count argument from stack
 	clear	sum
-	clear	i
-	jump	@END_LOOP1
+	move	i, 1
+	jump	END_LOOP1
 LOOP1:
 	load	f0, addr[i]			// Load what is in addr[i] to temp f0
 	add		sum, f0
 	add		i, 1
 END_LOOP1:
 	cmp		i, max
-	jump	lt, @LOOP1
+	jump	le, LOOP1
 	#freturn	sum
 #end_func
 

@@ -1,13 +1,14 @@
 #include <system/system.def>
 
+MAIN:
 	move	r0,' '
 	debug	r0
 	move	r1,'A'
-	move	r2,'\u263A'
+	move	r2,'\u{263A}'
 	debug	r1,r2
 	move	r3,-5
 	move	r4,326
-	move	r5,0x123456789abcd
+	move	r5,0x123456789
 	debug	r3,r4,r5
 	int		iPrintCPUState
 	move	f0,-10

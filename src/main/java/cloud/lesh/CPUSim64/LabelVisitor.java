@@ -12,6 +12,7 @@ import java.util.regex.*;
 public class LabelVisitor extends CPUSim64BaseVisitor<Void> implements HasLocation {
 	private final StringBuilder out = new StringBuilder();
 	private final Map<String, Long> labelMap = new HashMap<>();
+	private final Map<Long, String> reverseLabelMap = new HashMap<>();
 	private final Set<String> definedLabels = new HashSet<>();
 	private final Stack<String> blockNames = new Stack<>();
 	private long currentAddress = 0;
@@ -32,7 +33,17 @@ public class LabelVisitor extends CPUSim64BaseVisitor<Void> implements HasLocati
 	public Map<Integer, String> getLineMap() { return lineMap; }
 
 	public Map<String, Long> getLabelMap() {
+		labelMap.putIfAbsent("__START__", 0L);
+		labelMap.putIfAbsent("__CODE__", 0L);
+		labelMap.putIfAbsent("__CODE_END__", currentAddress);
+		labelMap.putIfAbsent("__DATA__", currentAddress);
+		labelMap.putIfAbsent("__DATA_END__", currentAddress);
+		labelMap.putIfAbsent("__HEAP_START__", currentAddress);
 		return labelMap;
+	}
+
+	public Map<Long, String> getReverseLabelMap() {
+		return reverseLabelMap;
 	}
 
 	private static Token startToken(ParseTree node) {
@@ -131,9 +142,6 @@ public class LabelVisitor extends CPUSim64BaseVisitor<Void> implements HasLocati
 			}
 			if (!pauseLineIncrement) ++lineNum;
 		}
-		labelMap.putIfAbsent("__CODE_END__", currentAddress);
-		labelMap.putIfAbsent("__DATA__", currentAddress);
-		labelMap.putIfAbsent("__HEAP_START__", currentAddress);
 		return null;
 	}
 
@@ -151,6 +159,7 @@ public class LabelVisitor extends CPUSim64BaseVisitor<Void> implements HasLocati
 				labelName = getScopeName() + labelName;
 			definedLabels.add(labelName);
 			labelMap.put(labelName, currentAddress);
+			reverseLabelMap.put(currentAddress, labelName);
 		}
 		return null;
 	}
@@ -189,6 +198,8 @@ public class LabelVisitor extends CPUSim64BaseVisitor<Void> implements HasLocati
 				currentAddress += 1 + b;
 			} else if (ctx.dataDirective().DCB() != null) {
 				currentAddress += 1 + (ctx.dataDirective().byteList().bLiteral().size() + 7) / 8;
+			} else if (ctx.dataDirective().DCC() != null) {
+				currentAddress += 1 + (ctx.dataDirective().byteList().bLiteral().size() + 3) / 4;
 			} else if (ctx.dataDirective().DCW() != null) {
 				int count = 0;
 				if (ctx.dataDirective().intList() != null) {

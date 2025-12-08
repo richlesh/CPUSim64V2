@@ -437,8 +437,8 @@ JUMP $BEGIN
 			#global GLOBAL_FLOATS:	.dcw 1.2, 2.3, 3.4	// Comment
 			""";
 		String expected = """
-__CODE__:
-READONLY __CODE_END__
+.ORG 1
+__CODE__: READONLY __CODE_END__
 .LINE «TEST.ASM», 5
 MOVE	R0, R1
 MOVE	R1, __STR_1
@@ -464,7 +464,7 @@ __HEAP_START__:
 		String preprocessed = PreprocessorVisitor.preprocessText("Test.asm", src, loader);
 		LiteralRewriter rw = new LiteralRewriter();
 		preprocessed = rw.rewrite(preprocessed);
-		preprocessed = PreprocessorVisitor.addGlobals(preprocessed);
+		preprocessed = PreprocessorVisitor.addGlobals(preprocessed, false);
 		assertEquals(expected, preprocessed.toUpperCase());
 	}
 

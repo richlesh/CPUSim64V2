@@ -1,6 +1,7 @@
 #include <system/io.asm>
 
 MAIN:
+	#call	putline("\b\t\n\r\f\0")
 	#call	putline("!مرحبا أيها العالم")
 	#call	putline("你好, 世界!")
 	#call	putline("Hello, world!")
@@ -15,3 +16,9 @@ MAIN:
 	#call	putline("¡Hola mundo!")
 	stop
 	stop
+ARRAY:	.DCA	5
+INTEGER:.DCI	326
+HEX1:	.DCI	0x1000
+FLOAT:	.DCF	3.1415
+WORD1:	.DCW	1,2,0xff,0x314
+CHAR1:  .DCC	'a', 'b', 52

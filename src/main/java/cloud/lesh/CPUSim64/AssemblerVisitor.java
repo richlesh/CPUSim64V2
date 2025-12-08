@@ -9,12 +9,14 @@ import org.antlr.v4.runtime.tree.ParseTree;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.*;
+import static cloud.lesh.CPUSim64.Simulator.LabelType;
 
 public class AssemblerVisitor extends CPUSim64BaseVisitor<Void> implements HasLocation {
-	Map<String, Long> labelMap;
+	private Map<String, Long> labelMap;
+	private Map<Long, String> reverseLabelMap;
+	private Map<String, LabelType> labelTypes = new HashMap<>();
 	private final Stack<String> blockNames = new Stack<>();
-
-	String filename = null;
+	private String filename = null;
 	int lineNum = 1;
 	boolean pauseLineIncrement = false;
 	private final LinkedList errors = new LinkedList<String>();
@@ -31,8 +33,9 @@ public class AssemblerVisitor extends CPUSim64BaseVisitor<Void> implements HasLo
 		}
 	}
 
-	public AssemblerVisitor(Map<String, Long> labelMap) {
+	public AssemblerVisitor(Map<String, Long> labelMap, Map<Long, String> reverseLabelMap) {
 		this.labelMap = labelMap;
+		this.reverseLabelMap = reverseLabelMap;
 	}
 
 	// Result: one 64-bit word per assembled instruction
@@ -59,6 +62,18 @@ public class AssemblerVisitor extends CPUSim64BaseVisitor<Void> implements HasLo
 	private static final int OT_CONST = 1;
 	private static final int OT_REG = 2;
 	private static final int OT_FP = 3;
+
+	void addWord(LabelType type, long word) {
+		if (type != LabelType.CODE) {
+			String lastLabel = Simulator.Decoded.findNearestLabel(reverseLabelMap, out.size());
+			if (lastLabel != null) {
+				labelTypes.put(lastLabel, type);
+			}
+		}
+		out.add(word);
+	}
+
+	public Map<String, LabelType> getLabelTypes() { return labelTypes; }
 
 	// ---- packers for each format (bit layout chosen to match your 64-bit diagrams) ----
 	// 64-bit Type-0:
@@ -361,7 +376,7 @@ public class AssemblerVisitor extends CPUSim64BaseVisitor<Void> implements HasLo
 	@Override
 	public Void visitInstrNOP(CPUSim64Parser.InstrNOPContext ctx) {
 		long w = encType0(Opcode.NOP.code, OT_NONE, OT_NONE, OT_NONE, OT_NONE, 0, 0, 0, 0);
-		out.add(w);
+		addWord(LabelType.CODE, w);
 		return null;
 	}
 
@@ -369,7 +384,7 @@ public class AssemblerVisitor extends CPUSim64BaseVisitor<Void> implements HasLo
 	public Void visitInstrDEBUG(CPUSim64Parser.InstrDEBUGContext ctx) {
 		if (ctx.children.size() == 1) {
 			// No operands: just DEBUG
-			out.add(encType1C1(Opcode.DEBUG.code, -1));
+			addWord(LabelType.CODE, encType1C1(Opcode.DEBUG.code, -1));
 		} else if (ctx.y1to4() != null) {
 			var ys = ctx.y1to4().yOperand();
 			int a = OT_NONE, b = OT_NONE, c = OT_NONE, d = OT_NONE;
@@ -394,7 +409,7 @@ public class AssemblerVisitor extends CPUSim64BaseVisitor<Void> implements HasLo
 					v3 = v;
 				}
 			}
-			out.add(encType0(Opcode.DEBUG.code, a, b, c, d, v0, v1, v2, v3));
+			addWord(LabelType.CODE, encType0(Opcode.DEBUG.code, a, b, c, d, v0, v1, v2, v3));
 		} else {
 			// TODO Is this really the best way to do this?
 			// AC form: treat as Type-3: op0=addr (A), op1 unused, imm28=count
@@ -404,11 +419,11 @@ public class AssemblerVisitor extends CPUSim64BaseVisitor<Void> implements HasLo
 			long k;
 			if (ctx.aOperand() != null) {
 				op0 = aIndexFromToken(ctx.aOperand().start);
-				out.add(encType0(Opcode.DEBUG.code, aType, OT_CONST, OT_NONE, OT_NONE,
+				addWord(LabelType.CODE, encType0(Opcode.DEBUG.code, aType, OT_CONST, OT_NONE, OT_NONE,
 						op0, (int)cnt, 0, 0));
 			} else if (ctx.aLiteral() != null) {
 				k = parseIntLike(ctx.aLiteral().getText());
-				out.add(encType2RC2(Opcode.DEBUG.code, OT_CONST, (int)cnt, k));
+				addWord(LabelType.CODE, encType2RC2(Opcode.DEBUG.code, OT_CONST, (int)cnt, k));
 			} else {
 				throw new AssemblerException("DEBUG with C literal needs A or R operand");
 			}
@@ -445,7 +460,7 @@ public class AssemblerVisitor extends CPUSim64BaseVisitor<Void> implements HasLo
 			}
 		}
 		long w = encType0(Opcode.CLEAR.code, a, b, c, d, v0, v1, v2, v3);
-		out.add(w);
+		addWord(LabelType.CODE, w);
 		return null;
 	}
 
@@ -490,7 +505,7 @@ public class AssemblerVisitor extends CPUSim64BaseVisitor<Void> implements HasLo
 				d = OT_CONST;
 				v3 = (int)parseIntLike(q2.cLiteral().getText());
 			}
-			out.add(encType0(Opcode.MOVE.code, a, b, c, d, v0, v1, v2, v3));
+			addWord(LabelType.CODE, encType0(Opcode.MOVE.code, a, b, c, d, v0, v1, v2, v3));
 		} else if (ctx.yOperand().size() == 2) {
 			// YY
 			CPUSim64Parser.YOperandContext y0 = ctx.yOperand(0);
@@ -503,7 +518,7 @@ public class AssemblerVisitor extends CPUSim64BaseVisitor<Void> implements HasLo
 			b = (y1.fOperand() != null) ? OT_FP : OT_REG;
 			v1 = (y1.fOperand() != null) ? fpIndex(y1.fOperand().REG_F().getText())
 					: aIndexFromToken(y1.aOperand().start);
-			out.add(encType0(Opcode.MOVE.code, a, b, c, d, v0, v1, v2, v3));
+			addWord(LabelType.CODE, encType0(Opcode.MOVE.code, a, b, c, d, v0, v1, v2, v3));
 		} else if (ctx.yOperand().size() == 1 && ctx.cLiteral() != null) {
 			// YC
 			CPUSim64Parser.YOperandContext y = ctx.yOperand(0);
@@ -512,7 +527,7 @@ public class AssemblerVisitor extends CPUSim64BaseVisitor<Void> implements HasLo
 					: aIndexFromToken(y.aOperand().start);
 			b = OT_CONST;
 			k =parseIntLike(ctx.cLiteral().getText());
-			out.add(encType2RC2(Opcode.MOVE.code, a, v0, k));
+			addWord(LabelType.CODE, encType2RC2(Opcode.MOVE.code, a, v0, k));
 		} else if (ctx.aOperand(0) != null && ctx.aOperand(1) != null && ctx.rOperand() != null) {
 			// AAR
 			a = OT_REG;
@@ -521,7 +536,7 @@ public class AssemblerVisitor extends CPUSim64BaseVisitor<Void> implements HasLo
 			v1 = aIndexFromToken(ctx.aOperand(1).start);
 			c = OT_REG;
 			v2 = regIndex(ctx.rOperand().REG_R().getText());
-			out.add(encType0(Opcode.MOVE.code, a, b, c, d, v0, v1, v2, v3));
+			addWord(LabelType.CODE, encType0(Opcode.MOVE.code, a, b, c, d, v0, v1, v2, v3));
 		} else if (ctx.aOperand(0) != null && ctx.aOperand(1) != null && ctx.aLiteral() != null) {
 			// AAC
 			a = OT_REG;
@@ -530,7 +545,7 @@ public class AssemblerVisitor extends CPUSim64BaseVisitor<Void> implements HasLo
 			v1 = aIndexFromToken(ctx.aOperand(1).start);
 			c = OT_CONST;
 			v2 = (int)parseIntLike(ctx.aLiteral().getText());
-			out.add(encType3ZZC3(Opcode.MOVE.code, a, v0, b, v1, v2));
+			addWord(LabelType.CODE, encType3ZZC3(Opcode.MOVE.code, a, v0, b, v1, v2));
 		} else if (ctx.aOperand().size() == 2 && ctx.aLiteral() != null) {
 			// ACA
 			a = OT_REG;
@@ -539,7 +554,7 @@ public class AssemblerVisitor extends CPUSim64BaseVisitor<Void> implements HasLo
 			v2 = (int)parseIntLike(ctx.aLiteral().getText());
 			b = OT_REG;
 			v1 = aIndexFromToken(ctx.aOperand(1).start);
-			out.add(encType3ZZC3(Opcode.MOVE.code, a, v0, b, v1, v2));
+			addWord(LabelType.CODE, encType3ZZC3(Opcode.MOVE.code, a, v0, b, v1, v2));
 		} else {
 			throw new AssemblerException("Unhandled MOVE form");
 		}
@@ -564,23 +579,23 @@ public class AssemblerVisitor extends CPUSim64BaseVisitor<Void> implements HasLo
 		v2 = memRef.getRight().getRight();
 
 		if (b == OT_CONST && c == OT_NONE) {     			// Y[C]
-			out.add(encType2RC2(Opcode.LOAD.code, a, v0, v1));
+			addWord(LabelType.CODE, encType2RC2(Opcode.LOAD.code, a, v0, v1));
 		} else if (b == OT_REG && c == OT_NONE) {           // Y[A]
-			out.add(encType0(Opcode.LOAD.code, a, b, c, d, v0, (int)v1, (int)v2, (int)v3));
+			addWord(LabelType.CODE, encType0(Opcode.LOAD.code, a, b, c, d, v0, (int)v1, (int)v2, (int)v3));
 		} else if (b == OT_REG && c == OT_CONST) {      	// Y[A+C]
-			out.add(encType3ZZC3(Opcode.LOAD.code, a, v0, b, (int)v1, (int)v2));
+			addWord(LabelType.CODE, encType3ZZC3(Opcode.LOAD.code, a, v0, b, (int)v1, (int)v2));
 		} else if (b == OT_CONST && c == OT_REG) {			// Y[C+A]
-			out.add(encType3ZZC3(Opcode.LOAD.code, a, v0, c, (int)v2, (int)v1));
+			addWord(LabelType.CODE, encType3ZZC3(Opcode.LOAD.code, a, v0, c, (int)v2, (int)v1));
 		} else if (b == OT_CONST && c == OT_CONST) {  		// Y[C+C]
 			if (fitsIn(v2, C0_BITS, true)) {
-				out.add(encType3ZZC3(Opcode.LOAD.code, a, v0, c, (int)v2, (int)v1));
+				addWord(LabelType.CODE, encType3ZZC3(Opcode.LOAD.code, a, v0, c, (int)v2, (int)v1));
 			} else if (fitsIn(v1, C0_BITS, true)) {
-				out.add(encType3ZZC3(Opcode.LOAD.code, a, v0, b, (int)v1, (int)v2));
+				addWord(LabelType.CODE, encType3ZZC3(Opcode.LOAD.code, a, v0, b, (int)v1, (int)v2));
 			} else {
 				throw new AssemblerException("LOAD [C+C] requires one constant to fit in 12 bits");
 			}
 		} else if (b == OT_REG && c == OT_REG) {      		// Y[A+R]
-			out.add(encType0(Opcode.LOAD.code, a, b, c, d, v0, (int)v1, (int)v2, (int)v3));
+			addWord(LabelType.CODE, encType0(Opcode.LOAD.code, a, b, c, d, v0, (int)v1, (int)v2, (int)v3));
 		} else {
 			throw new AssemblerException("Unhandled LOAD form");
 		}
@@ -613,23 +628,23 @@ public class AssemblerVisitor extends CPUSim64BaseVisitor<Void> implements HasLo
 		v2 = memRef.getRight().getRight();
 
 		if (b == OT_CONST && c == OT_NONE) {       			// [C]
-			out.add(encType2RC2(Opcode.STORE.code, a, v0, v1));
+			addWord(LabelType.CODE, encType2RC2(Opcode.STORE.code, a, v0, v1));
 		} else if (b == OT_REG && c == OT_NONE) {           // [A]
-			out.add(encType0(Opcode.STORE.code, a, b, c, d, v0, (int)v1, (int)v2, (int)v3));
+			addWord(LabelType.CODE, encType0(Opcode.STORE.code, a, b, c, d, v0, (int)v1, (int)v2, (int)v3));
 		} else if (b == OT_REG && c == OT_CONST) {      	// [A+C]
-			out.add(encType3ZZC3(Opcode.STORE.code, a, v0, b, (int)v1, (int)v2));
+			addWord(LabelType.CODE, encType3ZZC3(Opcode.STORE.code, a, v0, b, (int)v1, (int)v2));
 		} else if (b == OT_CONST && c == OT_REG) {      	// [C+A]
-			out.add(encType3ZZC3(Opcode.STORE.code, a, v0, c, (int)v2, (int)v1));
+			addWord(LabelType.CODE, encType3ZZC3(Opcode.STORE.code, a, v0, c, (int)v2, (int)v1));
 		} else if (b == OT_CONST && c == OT_CONST) {      	// [C+C]
 			if (fitsIn(v2, C0_BITS, true)) {
-				out.add(encType3ZZC3(Opcode.STORE.code, a, v0, b, (int)v2, (int)v1));
+				addWord(LabelType.CODE, encType3ZZC3(Opcode.STORE.code, a, v0, b, (int)v2, (int)v1));
 			} else if (fitsIn(v1, C0_BITS, true)) {
-				out.add(encType3ZZC3(Opcode.STORE.code, a, v0, b, (int)v1, (int)v2));
+				addWord(LabelType.CODE, encType3ZZC3(Opcode.STORE.code, a, v0, b, (int)v1, (int)v2));
 			} else {
 				throw new AssemblerException("LOAD [C+C] requires one constant to fit in 12 bits");
 			}
 		} else if (b == OT_REG && c == OT_REG) {      		// [A+R]
-			out.add(encType0(Opcode.STORE.code, a, b, c, d, v0, (int)v1, (int)v2, (int)v3));
+			addWord(LabelType.CODE, encType0(Opcode.STORE.code, a, b, c, d, v0, (int)v1, (int)v2, (int)v3));
 		} else {
 			throw new AssemblerException("Unhandled LOAD form");
 		}
@@ -639,14 +654,14 @@ public class AssemblerVisitor extends CPUSim64BaseVisitor<Void> implements HasLo
 	@Override
 	public Void visitInstrPOP(CPUSim64Parser.InstrPOPContext ctx) {
 		if (ctx.yOperand() == null) {
-			out.add(encType0(Opcode.POP.code, OT_NONE, OT_NONE, OT_NONE, OT_NONE, 0, 0, 0, 0));
+			addWord(LabelType.CODE, encType0(Opcode.POP.code, OT_NONE, OT_NONE, OT_NONE, OT_NONE, 0, 0, 0, 0));
 		} else {
 			var y = ctx.yOperand();
 			boolean isFp = y.fOperand() != null;
 			int t = isFp ? OT_FP : OT_REG;
 			int v = isFp ? fpIndex(y.fOperand().REG_F().getText())
 					: aIndexFromToken(y.aOperand().start);
-			out.add(encType0(Opcode.POP.code, t, OT_NONE, OT_NONE, OT_NONE, v, 0, 0, 0));
+			addWord(LabelType.CODE, encType0(Opcode.POP.code, t, OT_NONE, OT_NONE, OT_NONE, v, 0, 0, 0));
 		}
 		return null;
 	}
@@ -660,10 +675,10 @@ public class AssemblerVisitor extends CPUSim64BaseVisitor<Void> implements HasLo
 			aType = isFp ? OT_FP : OT_REG;
 			v0 = isFp ? fpIndex(y.fOperand().REG_F().getText())
 					: aIndexFromToken(y.aOperand().start);
-			out.add(encType0(Opcode.PUSH.code, aType, OT_NONE, OT_NONE, OT_NONE, v0, 0, 0, 0));
+			addWord(LabelType.CODE, encType0(Opcode.PUSH.code, aType, OT_NONE, OT_NONE, OT_NONE, v0, 0, 0, 0));
 		} else {
 			long k =parseIntLike(ctx.cLiteral().getText());
-			out.add(encType1C1(Opcode.PUSH.code, k));
+			addWord(LabelType.CODE, encType1C1(Opcode.PUSH.code, k));
 		}
 		return null;
 	}
@@ -687,10 +702,10 @@ public class AssemblerVisitor extends CPUSim64BaseVisitor<Void> implements HasLo
 			if (ctx.aOperand() != null) {
 				aType = OT_REG;
 				v0 = aIndexFromToken(ctx.aOperand().start);
-				out.add(encType0(opc.code, aType, OT_NONE, OT_NONE, OT_NONE, v0, 0, 0, 0));
+				addWord(LabelType.CODE, encType0(opc.code, aType, OT_NONE, OT_NONE, OT_NONE, v0, 0, 0, 0));
 			} else {
 				long k = parseIntLike(ctx.cLiteral(0).getText());
-				out.add(encType1C1(opc.code, k));
+				addWord(LabelType.CODE, encType1C1(opc.code, k));
 			}
 			return null;
 		}
@@ -712,17 +727,17 @@ public class AssemblerVisitor extends CPUSim64BaseVisitor<Void> implements HasLo
 			// ZA
 			bType = OT_REG;
 			v1 = aIndexFromToken(ctx.aOperand().start);
-			out.add(encType0(opc.code, aType, bType, OT_NONE, OT_NONE, v0, v1, 0, 0));
+			addWord(LabelType.CODE, encType0(opc.code, aType, bType, OT_NONE, OT_NONE, v0, v1, 0, 0));
 		} else if (!hasA && nC == 1 && !hasR) {
 			// ZC
 			imm42 =parseIntLike(ctx.cLiteral(0).getText());
-			out.add(encType2RC2(opc.code, aType, v0, imm42));
+			addWord(LabelType.CODE, encType2RC2(opc.code, aType, v0, imm42));
 		} else if (hasA && nC == 1 && !hasR) {
 			// ZAC or ZCA → encode A in op1, C in imm28 (signed 28)
 			bType = OT_REG;
 			v1 = aIndexFromToken(ctx.aOperand().start);
 			imm28 = (int)parseIntLike(ctx.cLiteral(0).getText());
-			out.add(encType3ZZC3(opc.code, aType, v0, bType, v1, imm28));
+			addWord(LabelType.CODE, encType3ZZC3(opc.code, aType, v0, bType, v1, imm28));
 		} else if (!hasA && nC == 2 && !hasR) {
 			// ZCC → first C in op1 (12-bit), second C in imm28 (signed 28)
 			long c1 = parseIntLike(ctx.cLiteral(0).getText());
@@ -738,12 +753,12 @@ public class AssemblerVisitor extends CPUSim64BaseVisitor<Void> implements HasLo
 			} else {
 				throw new AssemblerException("JUMP ZCC requires one constant to fit in 12 bits");
 			}
-			out.add(encType3ZZC3(opc.code, aType, v0, bType, v1, imm28));
+			addWord(LabelType.CODE, encType3ZZC3(opc.code, aType, v0, bType, v1, imm28));
 		} else if (hasA && hasR) {
 			// ZAR
 			v1 = aIndexFromToken(ctx.aOperand().start);
 			int v2 = regIndex(ctx.rOperand().REG_R().getText());
-			out.add(encType0(opc.code, aType, OT_REG, OT_REG, OT_NONE, v0, v1, v2, 0));
+			addWord(LabelType.CODE, encType0(opc.code, aType, OT_REG, OT_REG, OT_NONE, v0, v1, v2, 0));
 		} else {
 			throw new IllegalStateException("Unhandled JUMP conditional form");
 		}
@@ -753,7 +768,7 @@ public class AssemblerVisitor extends CPUSim64BaseVisitor<Void> implements HasLo
 	@Override
 	public Void visitInstrRETURN(CPUSim64Parser.InstrRETURNContext ctx) {
 		long w = encType0(Opcode.RETURN.code, OT_NONE, OT_NONE, OT_NONE, OT_NONE, 0, 0, 0, 0);
-		out.add(w);
+		addWord(LabelType.CODE, w);
 		return null;
 	}
 
@@ -765,15 +780,15 @@ public class AssemblerVisitor extends CPUSim64BaseVisitor<Void> implements HasLo
 		if (ctx.rOperand() != null) {
 			aType = OT_REG;
 			v0 = regIndex(ctx.rOperand().REG_R().getText());
-			out.add(encType0(Opcode.INTERRUPT.code, aType, OT_NONE, OT_NONE, OT_NONE, (int) v0, 0, 0, 0));
+			addWord(LabelType.CODE, encType0(Opcode.INTERRUPT.code, aType, OT_NONE, OT_NONE, OT_NONE, (int) v0, 0, 0, 0));
 		} else {
 			v0 = parseIntLike(ctx.cLiteral().getText());
 			if (fitsIn(v0, C0_BITS, false)) {
 				aType = OT_CONST;
 				v0 = v0;
-				out.add(encType0(Opcode.INTERRUPT.code, aType, OT_NONE, OT_NONE, OT_NONE, (int) v0, 0, 0, 0));
+				addWord(LabelType.CODE, encType0(Opcode.INTERRUPT.code, aType, OT_NONE, OT_NONE, OT_NONE, (int) v0, 0, 0, 0));
 			} else {
-				out.add(encType1C1(Opcode.INTERRUPT.code, v0));
+				addWord(LabelType.CODE, encType1C1(Opcode.INTERRUPT.code, v0));
 			}
 		}
 		return null;
@@ -782,7 +797,7 @@ public class AssemblerVisitor extends CPUSim64BaseVisitor<Void> implements HasLo
 	@Override
 	public Void visitInstrSTOP(CPUSim64Parser.InstrSTOPContext ctx) {
 		long w = encType0(Opcode.STOP.code, OT_NONE, OT_NONE, OT_NONE, OT_NONE, 0, 0, 0, 0);
-		out.add(w);
+		addWord(LabelType.CODE, w);
 		return null;
 	}
 
@@ -806,7 +821,7 @@ public class AssemblerVisitor extends CPUSim64BaseVisitor<Void> implements HasLo
 			throw new IllegalStateException("NEG: xOperand is neither rOperand nor fOperand");
 		}
 
-		out.add(encType0(Opcode.NEGATE.code, aType, OT_NONE, OT_NONE, OT_NONE, v0, 0, 0, 0
+		addWord(LabelType.CODE, encType0(Opcode.NEGATE.code, aType, OT_NONE, OT_NONE, OT_NONE, v0, 0, 0, 0
 		));
 		return null;
 	}
@@ -834,7 +849,7 @@ public class AssemblerVisitor extends CPUSim64BaseVisitor<Void> implements HasLo
 			v0 = aIndexFromToken(ctx.aOperand(0).start);
 			b = OT_REG;
 			v1 = regIndex(ctx.rOperand().getStart().getText());
-			out.add(encType0(opc.code, a, b, c, d, v0, v1, v2, v3));
+			addWord(LabelType.CODE, encType0(opc.code, a, b, c, d, v0, v1, v2, v3));
 		}
 		// FX  (F , X)  where X is R|F
 		else if (nF == 1 && nX == 1) {
@@ -847,7 +862,7 @@ public class AssemblerVisitor extends CPUSim64BaseVisitor<Void> implements HasLo
 				b = OT_REG;
 				v1 = regIndex(ctx.xOperand().rOperand().getStart().getText());
 			}
-			out.add(encType0(opc.code, a, b, c, d, v0, v1, v2, v3));
+			addWord(LabelType.CODE, encType0(opc.code, a, b, c, d, v0, v1, v2, v3));
 		}
 		// YC  (Y , C)  where Y is A|F
 		else if (nY == 1 && nC == 1) {
@@ -857,7 +872,7 @@ public class AssemblerVisitor extends CPUSim64BaseVisitor<Void> implements HasLo
 					? fpIndex(ctx.yOperand().fOperand().getStart().getText())
 					: aIndexFromToken(ctx.yOperand().aOperand().start);
 			k =parseIntLike(ctx.cLiteral().getText());
-			out.add(encType2RC2(opc.code, a, v0, k));
+			addWord(LabelType.CODE, encType2RC2(opc.code, a, v0, k));
 		}
 		// AAR (A, A, R)
 		else if (nA == 2 && nR == 1 && nC == 0 && nF <= 1 && nX == 0) {
@@ -867,7 +882,7 @@ public class AssemblerVisitor extends CPUSim64BaseVisitor<Void> implements HasLo
 			v1 = aIndexFromToken(ctx.aOperand(1).start);
 			c = OT_REG;
 			v2 = regIndex(ctx.rOperand().getStart().getText());
-			out.add(encType0(opc.code, a, b, c, d, v0, v1, v2, v3));
+			addWord(LabelType.CODE, encType0(opc.code, a, b, c, d, v0, v1, v2, v3));
 		}
 		// FFX (F, F, X)
 		else if (nF == 2 && nX == 1) {
@@ -882,7 +897,7 @@ public class AssemblerVisitor extends CPUSim64BaseVisitor<Void> implements HasLo
 				c = OT_REG;
 				v2 = regIndex(ctx.xOperand().rOperand().getStart().getText());
 			}
-			out.add(encType0(opc.code, a, b, c, d, v0, v1, v2, v3));
+			addWord(LabelType.CODE, encType0(opc.code, a, b, c, d, v0, v1, v2, v3));
 		}
 		// AAC vs ACA  (both have nA==2 and nC==1) → decide by token order
 		else if (nA == 2 && nC == 1 && nF == 0 && nX == 0) {
@@ -891,7 +906,7 @@ public class AssemblerVisitor extends CPUSim64BaseVisitor<Void> implements HasLo
 			b = OT_REG;
 			v1 = aIndexFromToken(ctx.aOperand(1).start);
 			v2 = (int)parseIntLike(ctx.cLiteral().getText());
-			out.add(encType3ZZC3(opc.code, a, v0, b, v1, v2));
+			addWord(LabelType.CODE, encType3ZZC3(opc.code, a, v0, b, v1, v2));
 		}
 		// FFC vs FCF (nF==2, nC==1)
 		else if (nF == 2 && nC == 1 && nX == 0) {
@@ -900,7 +915,7 @@ public class AssemblerVisitor extends CPUSim64BaseVisitor<Void> implements HasLo
 			b = OT_FP;
 			v1 = fpIndex(ctx.fOperand(1).getStart().getText());
 			v2 = (int)parseIntLike(ctx.cLiteral().getText());
-			out.add(encType3ZZC3(opc.code, a, v0, b, v1, v2));
+			addWord(LabelType.CODE, encType3ZZC3(opc.code, a, v0, b, v1, v2));
 		} else {
 			throw new AssemblerException("Unhandled " + opc.name() + " form");
 		}
@@ -940,7 +955,7 @@ public class AssemblerVisitor extends CPUSim64BaseVisitor<Void> implements HasLo
 			v2 = regIndex(ctx.rOperand(2).getStart().getText());
 			d = OT_REG;
 			v3 = regIndex(ctx.rOperand(3).getStart().getText());
-			out.add(encType0(Opcode.DIVIDE.code, a, b, c, d, v0, v1, v2, v3)); // use Opcode.DIV if that's your enum
+			addWord(LabelType.CODE, encType0(Opcode.DIVIDE.code, a, b, c, d, v0, v1, v2, v3)); // use Opcode.DIV if that's your enum
 		}
 		// 11) RRRC (R, R, R, C)
 		else if (nR == 3 && nC == 1) {
@@ -952,7 +967,7 @@ public class AssemblerVisitor extends CPUSim64BaseVisitor<Void> implements HasLo
 			v2 = regIndex(ctx.rOperand(2).getStart().getText());
 			d = OT_CONST;
 			v3 = (int)parseIntLike(ctx.cLiteral().getText());
-			out.add(encType0(Opcode.DIVIDE.code, a, b, c, d, v0, v1, v2, v3)); // use Opcode.DIV if that's your enum
+			addWord(LabelType.CODE, encType0(Opcode.DIVIDE.code, a, b, c, d, v0, v1, v2, v3)); // use Opcode.DIV if that's your enum
 		} else {
 			visitArithmeticModes(Opcode.DIVIDE, ctx.arithmeticModes());
 		}
@@ -963,7 +978,7 @@ public class AssemblerVisitor extends CPUSim64BaseVisitor<Void> implements HasLo
 	public Void visitInstrRECIP(CPUSim64Parser.InstrRECIPContext ctx) {
 		// RECIP R
 		int v0 = fpIndex(ctx.fOperand().REG_F().getText());
-		out.add(encType0(Opcode.RECIP.code, OT_FP, OT_NONE, OT_NONE, OT_NONE,
+		addWord(LabelType.CODE, encType0(Opcode.RECIP.code, OT_FP, OT_NONE, OT_NONE, OT_NONE,
 				v0, 0, 0, 0));
 		return null;
 	}
@@ -976,7 +991,7 @@ public class AssemblerVisitor extends CPUSim64BaseVisitor<Void> implements HasLo
 	public Void visitInstrCOMPL(CPUSim64Parser.InstrCOMPLContext ctx) {
 		// COMPL R
 		int v0 = regIndex(ctx.rOperand().REG_R().getText());
-		out.add(encType0(Opcode.COMPL.code, OT_REG, OT_NONE, OT_NONE, OT_NONE,
+		addWord(LabelType.CODE, encType0(Opcode.COMPL.code, OT_REG, OT_NONE, OT_NONE, OT_NONE,
 				v0, 0, 0, 0));
 		return null;
 	}
@@ -991,25 +1006,25 @@ public class AssemblerVisitor extends CPUSim64BaseVisitor<Void> implements HasLo
 			// RR
 			b = OT_REG;
 			v1 = regIndex(ctx.rOperand(1).REG_R().getText());
-			out.add(encType0(opc.code, a, b, c, OT_NONE, v0, v1, v2, 0));
+			addWord(LabelType.CODE, encType0(opc.code, a, b, c, OT_NONE, v0, v1, v2, 0));
 		} else if (ctx.rOperand().size() == 1 && ctx.cLiteral() != null) {
 			// RC
 			b = OT_CONST;
 			k =parseIntLike(ctx.cLiteral().getText());
-			out.add(encType2RC2(opc.code, a, v0, k));
+			addWord(LabelType.CODE, encType2RC2(opc.code, a, v0, k));
 		} else if (ctx.rOperand().size() == 3 && ctx.cLiteral() == null) {
 			// RRR
 			b = OT_REG;
 			v1 = regIndex(ctx.rOperand(1).REG_R().getText());
 			c = OT_REG;
 			v2 = regIndex(ctx.rOperand(2).REG_R().getText());
-			out.add(encType0(opc.code, a, b, c, OT_NONE, v0, v1, v2, 0));
+			addWord(LabelType.CODE, encType0(opc.code, a, b, c, OT_NONE, v0, v1, v2, 0));
 		} else {
 			// RRC
 			b = OT_REG;
 			v1 = regIndex(ctx.rOperand(1).REG_R().getText());
 			v2 = (int)parseIntLike(ctx.cLiteral().getText());
-			out.add(encType3ZZC3(opc.code, a, v0, b, v1, v2));
+			addWord(LabelType.CODE, encType3ZZC3(opc.code, a, v0, b, v1, v2));
 		}
 		return null;
 	}
@@ -1039,7 +1054,7 @@ public class AssemblerVisitor extends CPUSim64BaseVisitor<Void> implements HasLo
 		var x = ctx.xOperand();
 		if (x.fOperand()!=null) { a=OT_FP; v0=fpIndex(x.fOperand().REG_F().getText()); }
 		else if (x.rOperand()!=null) { a=OT_REG; v0=regIndex(x.rOperand().REG_R().getText()); }
-		out.add(encType0(Opcode.TEST.code, a, OT_NONE, OT_NONE, OT_NONE,
+		addWord(LabelType.CODE, encType0(Opcode.TEST.code, a, OT_NONE, OT_NONE, OT_NONE,
 				v0, 0, 0, 0));
 		return null;
 	}
@@ -1054,25 +1069,25 @@ public class AssemblerVisitor extends CPUSim64BaseVisitor<Void> implements HasLo
 			// AA
 			a=OT_REG; v0=aIndexFromToken(ctx.aOperand(0).start);
 			b=OT_REG; v1=aIndexFromToken(ctx.aOperand(1).start);
-			out.add(encType0(Opcode.CMP.code, a,b, OT_NONE, OT_NONE, v0, v1, 0, 0));
+			addWord(LabelType.CODE, encType0(Opcode.CMP.code, a,b, OT_NONE, OT_NONE, v0, v1, 0, 0));
 		} else if (ctx.aOperand()!=null && ctx.cLiteral()!=null) {
 			// AC, CA
 			if (ctx.rightC != null) {
 				// AC
 				a = OT_REG; v0 = aIndexFromToken(ctx.aOperand(0).start);
 				k = parseIntLike(ctx.cLiteral().getText());
-				out.add(encType2RC2(Opcode.CMP.code, a, v0, k));
+				addWord(LabelType.CODE, encType2RC2(Opcode.CMP.code, a, v0, k));
 			} else {
 				// CA
 				a = OT_CONST; v0 = (int)parseIntLike(ctx.cLiteral().getText());
 				b = OT_REG; v1 = aIndexFromToken(ctx.aOperand(0).start);
-				out.add(encType0(Opcode.CMP.code, a,b, OT_NONE, OT_NONE, v0, v1, 0, 0));
+				addWord(LabelType.CODE, encType0(Opcode.CMP.code, a,b, OT_NONE, OT_NONE, v0, v1, 0, 0));
 			}
 		} else {
 			// FF
 			a=OT_FP; v0=fpIndex(ctx.fOperand(0).REG_F().getText());
 			b=OT_FP; v1=fpIndex(ctx.fOperand(1).REG_F().getText());
-			out.add(encType0(Opcode.CMP.code, a,b, OT_NONE, OT_NONE, v0, v1, 0, 0));
+			addWord(LabelType.CODE, encType0(Opcode.CMP.code, a,b, OT_NONE, OT_NONE, v0, v1, 0, 0));
 		}
 
 		return null;
@@ -1124,7 +1139,7 @@ public class AssemblerVisitor extends CPUSim64BaseVisitor<Void> implements HasLo
 		if (ctx.rOperand().size() >= 2) { b=OT_REG; v1=regIndex(ctx.rOperand(1).REG_R().getText()); }
 		if (ctx.rOperand().size() >= 3) { c=OT_REG; v2=regIndex(ctx.rOperand(2).REG_R().getText()); }
 		if (ctx.rOperand().size() >= 4) { d=OT_REG; v3=regIndex(ctx.rOperand(3).REG_R().getText()); }
-		out.add(encType0(Opcode.PACK.code, a,b,c,d, v0, v1, v2, v3));
+		addWord(LabelType.CODE, encType0(Opcode.PACK.code, a,b,c,d, v0, v1, v2, v3));
 		return null;
 	}
 
@@ -1135,7 +1150,7 @@ public class AssemblerVisitor extends CPUSim64BaseVisitor<Void> implements HasLo
 		if (ctx.rOperand().size() >= 2) { b=OT_REG; v1=regIndex(ctx.rOperand(1).REG_R().getText()); }
 		if (ctx.rOperand().size() >= 3) { c=OT_REG; v2=regIndex(ctx.rOperand(2).REG_R().getText()); }
 		if (ctx.rOperand().size() >= 4) { d=OT_REG; v3=regIndex(ctx.rOperand(3).REG_R().getText()); }
-		out.add(encType0(Opcode.PACK64.code, a,b,c,d, v0, v1, v2, v3));
+		addWord(LabelType.CODE, encType0(Opcode.PACK64.code, a,b,c,d, v0, v1, v2, v3));
 		return null;
 	}
 
@@ -1147,7 +1162,7 @@ public class AssemblerVisitor extends CPUSim64BaseVisitor<Void> implements HasLo
 		if (ctx.rOperand().size() >= 2) { b=OT_REG; v1=regIndex(ctx.rOperand(1).REG_R().getText()); }
 		if (ctx.rOperand().size() >= 3) { c=OT_REG; v2=regIndex(ctx.rOperand(2).REG_R().getText()); }
 		if (ctx.rOperand().size() >= 4) { d=OT_REG; v3=regIndex(ctx.rOperand(3).REG_R().getText()); }
-		out.add(encType0(Opcode.UNPACK.code, a,b,c,d, v0, v1, v2, v3));
+		addWord(LabelType.CODE, encType0(Opcode.UNPACK.code, a,b,c,d, v0, v1, v2, v3));
 		return null;
 	}
 
@@ -1159,7 +1174,7 @@ public class AssemblerVisitor extends CPUSim64BaseVisitor<Void> implements HasLo
 		if (ctx.rOperand().size() >= 2) { b=OT_REG; v1=regIndex(ctx.rOperand(1).REG_R().getText()); }
 		if (ctx.rOperand().size() >= 3) { c=OT_REG; v2=regIndex(ctx.rOperand(2).REG_R().getText()); }
 		if (ctx.rOperand().size() >= 4) { d=OT_REG; v3=regIndex(ctx.rOperand(3).REG_R().getText()); }
-		out.add(encType0(Opcode.UNPACK64.code, a,b,c,d, v0, v1, v2, v3));
+		addWord(LabelType.CODE, encType0(Opcode.UNPACK64.code, a,b,c,d, v0, v1, v2, v3));
 		return null;
 	}
 
@@ -1176,7 +1191,7 @@ public class AssemblerVisitor extends CPUSim64BaseVisitor<Void> implements HasLo
 		var oldVal = parseOOperand(ctx.oOperand(0));
 		var newVal = parseOOperand(ctx.oOperand(1));
 		var memRef = parseMemRef(ctx.memRef());
-		out.add(encType0(Opcode.CAS.code,
+		addWord(LabelType.CODE, encType0(Opcode.CAS.code,
 				oldVal.getLeft(), newVal.getLeft(), memRef.getLeft().getLeft(), memRef.getRight().getLeft(),
 				oldVal.getRight().intValue(), newVal.getRight().intValue(),
 				memRef.getLeft().getRight().intValue(), memRef.getRight().getRight().intValue()));
@@ -1221,7 +1236,7 @@ public class AssemblerVisitor extends CPUSim64BaseVisitor<Void> implements HasLo
 			throw new AssemblerException("ENDIAN invalid operand types");
 		}
 
-		out.add(encType0(Opcode.ENDIAN.code, a,b,OT_NONE,OT_NONE, v0, v1, 0, 0));
+		addWord(LabelType.CODE, encType0(Opcode.ENDIAN.code, a,b,OT_NONE,OT_NONE, v0, v1, 0, 0));
 		return null;
 	}
 
@@ -1265,7 +1280,7 @@ public class AssemblerVisitor extends CPUSim64BaseVisitor<Void> implements HasLo
 			throw new AssemblerException("IN invalid operand types");
 		}
 
-		out.add(encType0(Opcode.IN.code, a,b,c,d, v0, v1, v2, v3));
+		addWord(LabelType.CODE, encType0(Opcode.IN.code, a,b,c,d, v0, v1, v2, v3));
 		return null;
 	}
 
@@ -1315,7 +1330,7 @@ public class AssemblerVisitor extends CPUSim64BaseVisitor<Void> implements HasLo
 			throw new AssemblerException("OUT invalid operand types");
 		}
 
-		out.add(encType0(Opcode.OUT.code, a,b,c,d, v0, v1, v2, v3));
+		addWord(LabelType.CODE, encType0(Opcode.OUT.code, a,b,c,d, v0, v1, v2, v3));
 		return null;
 	}
 
@@ -1340,7 +1355,7 @@ public class AssemblerVisitor extends CPUSim64BaseVisitor<Void> implements HasLo
 			}
 			if (v0 > v1)
 				throw new AssemblerException("SAVE first operand must be less than second");
-			out.add(encType0(Opcode.SAVE.code, a, b, 0, 0, v0, v1, 0, 0));
+			addWord(LabelType.CODE, encType0(Opcode.SAVE.code, a, b, 0, 0, v0, v1, 0, 0));
 			return null;
 		}
 		throw new AssemblerException("SAVE invalid operand types");
@@ -1367,7 +1382,7 @@ public class AssemblerVisitor extends CPUSim64BaseVisitor<Void> implements HasLo
 			}
 			if (v0 > v1)
 				throw new AssemblerException("RESTORE first operand must be less than second");
-			out.add(encType0(Opcode.RESTORE.code, a, b, 0, 0, v0, v1, 0, 0));
+			addWord(LabelType.CODE, encType0(Opcode.RESTORE.code, a, b, 0, 0, v0, v1, 0, 0));
 			return null;
 		}
 		throw new AssemblerException("RESTORE invalid operand types");
@@ -1377,7 +1392,7 @@ public class AssemblerVisitor extends CPUSim64BaseVisitor<Void> implements HasLo
 	public Void visitInstrREADONLY(CPUSim64Parser.InstrREADONLYContext ctx) {
 		if (ctx.cLiteral() != null) {
 			long k = parseIntLike(ctx.cLiteral().getText());
-			out.add(encType1C1(Opcode.READONLY.code, k));
+			addWord(LabelType.CODE, encType1C1(Opcode.READONLY.code, k));
 		} else {
 			throw new AssemblerException("READONLY invalid operand types");
 		}
@@ -1388,15 +1403,15 @@ public class AssemblerVisitor extends CPUSim64BaseVisitor<Void> implements HasLo
 		CPUSim64Parser.DataDirectiveContext ctx = ddctx.dataDirective();
 		if (ctx.DCI() != null) {
 			if (ctx.INTLIT() != null) {
-				out.add(parseIntLike(ctx.INTLIT().getText()));
+				addWord(LabelType.INT, parseIntLike(ctx.INTLIT().getText()));
 			} else if (ctx.HEXLIT() != null) {
-				out.add(parseIntLike(ctx.HEXLIT().getText()));
+				addWord(LabelType.HEX, parseIntLike(ctx.HEXLIT().getText()));
 			} else {
 				throw new IllegalStateException("Invalid DCI literal");
 			}
 		} else if (ctx.DCF() != null) {
 			if (ctx.FLOATLIT() != null) {
-				out.add(Double.doubleToRawLongBits(Double.parseDouble(ctx.FLOATLIT().getText())));
+				addWord(LabelType.FLOAT, Double.doubleToRawLongBits(Double.parseDouble(ctx.FLOATLIT().getText())));
 			} else {
 				throw new IllegalStateException("Invalid DCF literal");
 			}
@@ -1408,13 +1423,13 @@ public class AssemblerVisitor extends CPUSim64BaseVisitor<Void> implements HasLo
 				b = parseIntLike(ctx.HEXLIT().getText());
 			}
 			if (b != 0) {
-				out.add(b);
+				addWord(LabelType.INT, b);
 				for (int i = 0; i < b; ++i)
-					out.add(0L);
+					addWord(LabelType.INT, 0L);
 			}
 		} else if (ctx.DCB() != null) {
 			if (ctx.byteList() != null) {
-				out.add((long) ctx.byteList().bLiteral().size());
+				addWord(LabelType.INT, (long) ctx.byteList().bLiteral().size());
 				long buffer = 0;
 				int index = 7;
 				for (var bctx : ctx.byteList().bLiteral()) {
@@ -1432,20 +1447,20 @@ public class AssemblerVisitor extends CPUSim64BaseVisitor<Void> implements HasLo
 					buffer |= (b & 0xFFL) << (index * 8);
 					--index;
 					if (index < 0) {
-						out.add(buffer);
+						addWord(LabelType.HEX, buffer);
 						buffer = 0;
 						index = 7;
 					}
 				}
 				if (index != 7) {
-					out.add(buffer);
+					addWord(LabelType.HEX, buffer);
 				}
 			} else {
 				throw new IllegalStateException("Invalid DCB directive");
 			}
 		} else if (ctx.DCC() != null) {
 			if (ctx.byteList() != null) {
-				out.add((long) ctx.byteList().bLiteral().size());
+				addWord(LabelType.INT, (long) ctx.byteList().bLiteral().size());
 				long buffer = 0;
 				int index = 3;
 				for (var bctx : ctx.byteList().bLiteral()) {
@@ -1463,42 +1478,45 @@ public class AssemblerVisitor extends CPUSim64BaseVisitor<Void> implements HasLo
 					buffer |= (b & 0xFFFFL) << (index * 16);
 					--index;
 					if (index < 0) {
-						out.add(buffer);
+						addWord(LabelType.HEX, buffer);
 						buffer = 0;
 						index = 3;
 					}
 				}
 				if (index != 3) {
-					out.add(buffer);
+					addWord(LabelType.HEX, buffer);
 				}
 			} else {
 				throw new IllegalStateException("Invalid DCC directive");
 			}
 		} else if (ctx.DCW() != null) {
 			if (ctx.intList() != null) {
-				out.add((long) ctx.intList().kLiteral().size());
+				addWord(LabelType.INT, (long) ctx.intList().kLiteral().size());
+				LabelType type;
 				for (var kctx : ctx.intList().kLiteral()) {
 					long k = 0;
 					if (kctx.INTLIT() != null) {
+						type = LabelType.INT;
 						k = parseIntLike(kctx.INTLIT().getText());
 					} else if (kctx.HEXLIT() != null) {
+						type = LabelType.HEX;
 						k = parseIntLike(kctx.HEXLIT().getText());
 					} else {
 						throw new IllegalStateException("Invalid DCW literal");
 					}
-					out.add(k);
+					addWord(type, k);
 				}
 			} else if (ctx.floatList() != null) {
-				out.add((long) ctx.floatList().FLOATLIT().size());
+				addWord(LabelType.INT, (long) ctx.floatList().FLOATLIT().size());
 				for (var fctx : ctx.floatList().FLOATLIT()) {
-					out.add(Double.doubleToRawLongBits(Double.parseDouble(fctx.getText())));
+					addWord(LabelType.FLOAT, Double.doubleToRawLongBits(Double.parseDouble(fctx.getText())));
 				}
 			} else if (ctx.charList() != null) {
-				out.add((long) ctx.charList().CHARLIT().size());
+				addWord(LabelType.INT, (long) ctx.charList().CHARLIT().size());
 				for (var kctx : ctx.charList().CHARLIT()) {
 					String s = kctx.getText();
 					long k = Utils.parseCharLiteral(s);
-					out.add(k);
+					addWord(LabelType.CHAR, k);
 				}
 			} else {
 				throw new IllegalStateException("Invalid DCW directive");
@@ -1509,20 +1527,20 @@ public class AssemblerVisitor extends CPUSim64BaseVisitor<Void> implements HasLo
 			if (s != null && s.length() >= 2) {
 				s = s.substring(1, s.length() - 1);
 				byte[] utf8 = Utils.parseStringLiteral(s);
-				out.add((long)utf8.length);
+				addWord(LabelType.STRING, (long)utf8.length);
 				long buffer = 0;
 				int index = 7;
 				for (var c : utf8) {
 					buffer |= (c & 0xFFL) << (index * 8);
 					--index;
 					if (index < 0) {
-						out.add(buffer);
+						addWord(LabelType.STRING, buffer);
 						buffer = 0;
 						index = 7;
 					}
 				}
 				if (index != 7) {
-					out.add(buffer);
+					addWord(LabelType.STRING, buffer);
 				}
 			} else {
 				throw new IllegalStateException("Invalid DCS directive");
@@ -1543,7 +1561,7 @@ public class AssemblerVisitor extends CPUSim64BaseVisitor<Void> implements HasLo
 		}
 		currentAddress = Math.max(out.size(), currentAddress); // prevent negative addresses
 		for (int i = out.size(); i < currentAddress; ++i) {
-			out.add(0L);
+			addWord(LabelType.INT, 0L);
 		}
 		return null;
 	}

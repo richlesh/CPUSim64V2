@@ -10,7 +10,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #define	PI					3.14159265358979323846
-#define	NATURAL_LOG_BASE	2.71828182845904523536
+#define	__NATURAL_LOG_BASE	2.71828182845904523536
 
 BEGIN:
 // Mode XC
@@ -36,7 +36,7 @@ BEGIN:
 	mul		r5,r4,r3
 	mul		f5,f4,r3
 	move	f6,PI
-	move	f7,NATURAL_LOG_BASE
+	move	f7,__NATURAL_LOG_BASE
 	mul		f8,f7,f6
 
 END:

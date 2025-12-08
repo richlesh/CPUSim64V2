@@ -5,7 +5,7 @@
 
 // min(a,b) = (a + b - |a - b|)/2
 #def_macro MIN(dest, a, b)
-	sub		r0, ${a}, ${b}
+	sub		r1, ${a}, ${b}
 	int		iABS
 	mov		${dest}, r0
 	neg		${dest}
@@ -16,8 +16,9 @@
 
 // max(a,b) = (a + b + |a - b|)/2
 #def_macro MAX(dest, a, b)
-	sub		r0, ${a}, ${b}
+	sub		r1, ${a}, ${b}
 	int		iABS
+	debug	r0
 	mov		${dest}, r0
 	add		${dest}, ${a}
 	add		${dest}, ${b}
@@ -28,25 +29,27 @@ PROGRAM_START:
 IF1:// if (argc >= 3)
 	int		iARGC
 	cmp		r0, 3
-	jump	lt, @ELSE1			// we need two command arguments
+	jump	lt, ELSE1			// we need two command arguments
 THEN1:
-	move	r0, 1
+	move	r1, 1
 	int		iARGS
+	move	r1, r0
 	int		iPARSE_INT
-	move	r1, r0				// save A
-	move	r0, 2
+	move	r4, r0				// save A
+	move	r1, 2
 	int		iARGS
+	move	r1, r0
 	int		iPARSE_INT
-	move	r2, r0				// save B
+	move	r5, r0				// save B
 	#call	puts("Min: ")
-	MIN(r3, r1, r2)
-	#call	put_dec(r3)
+	#macro	MIN(r6, r4, r5)
+	#call	put_dec(r6)
 	#call	put_nl()
 	#call	puts("Max: ")
-	MAX(r3, r1, r2)
-	#call	put_dec(r3)
+	#macro	MAX(r6, r4, r5)
+	#call	put_dec(r6)
 	#call	put_nl()
-	jump	@ENDIF1
+	jump	ENDIF1
 ELSE1:
 	#call	puts("You must supply two command line arguments!")
 ENDIF1:

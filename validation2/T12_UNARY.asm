@@ -12,7 +12,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #define	PI					3.14159265358979323846
-#define	NATURAL_LOG_BASE	2.71828182845904523536
+#define	__NATURAL_LOG_BASE	2.71828182845904523536
 
 BEGIN:
 // Negagte Test
@@ -42,7 +42,7 @@ BEGIN:
 // Reciprocal Test
 	mov		f4,PI
 	rcp		f4
-	mov		f5,NATURAL_LOG_BASE
+	mov		f5,__NATURAL_LOG_BASE
 	recip	f5
 	move	f6,0
 	reciprocal	f6

@@ -7,18 +7,29 @@ import java.nio.file.Path;
 
 public class Preprocessor {
 	public static void main(String[] args) throws Exception {
-		System.out.println("CPUSim64 Preprocessor");
+		System.out.println("=".repeat(80));
+		System.out.println("CPUSim64 2.0 Preprocessor");
 		System.out.println("By Richard Lesh ©2025");
-		System.out.println("Preprocesses .asm source files into .pp.asm files");
+		System.out.println("Preprocesses .asm source files into .pp.asm files.");
+		System.out.println("=".repeat(80));
 		if (args.length < 1) {
 			System.err.println("Usage: preprocessor <input.asm>");
 			System.exit(2);
 		}
 
+		boolean hasMain = false;
+
 		Path inPath = Path.of("");
 		for (int i = 0; i < args.length; ++i) {
 			String arg = args[i];
-			if (arg.charAt(0) != '-') {
+			if (arg.charAt(0) == '-') {
+				if (arg.equals("--hasMain")) {
+					hasMain = true;
+				} else {
+					System.err.println("Unknown option: " + arg);
+					System.exit(1);
+				}
+			} else {
 				inPath = Path.of(arg).toAbsolutePath();
 			}
 		}
@@ -49,9 +60,7 @@ public class Preprocessor {
 		preprocessed = rw.rewrite(preprocessed);
 
 		// 4) Add global declarations
-		preprocessed = PreprocessorVisitor.addGlobals(preprocessed);
-
-		preprocessed = ".org 1" + System.lineSeparator() + preprocessed;
+		preprocessed = PreprocessorVisitor.addGlobals(preprocessed, hasMain);
 
 		// 5) Write preprocessed output	}
 		Files.writeString(outPath, preprocessed);

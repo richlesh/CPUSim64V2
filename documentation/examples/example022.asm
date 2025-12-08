@@ -5,15 +5,15 @@
 	int		iEXIT
 	
 #def_func	main()
-	#var	arrayAddr, i, max, result
-	clear	result
+	#var	arrayAddr, i, max
 	move	max, 0x10
 	#call	puts("Array Size: ")
 	#call	put_dec(max)
 	#call	put_nl()
-	move	r0, max
-	int		iALLOC			// Allocate a block in the heap
-	jump	z, @ALLOC_FAILED
+	move	r1, max
+	add		r1, 1
+	int		iALLOC				// Allocate a block in the heap
+	jump	z, ALLOC_FAILED
 	move	arrayAddr, r0
 	#call	puts("Allocated Size: ")
 	load	r0, arrayAddr[-1]
@@ -21,19 +21,19 @@
 	#call	put_nl()
 
 // Initialize values in array
-	clear	i
-	jump	@LOOP_END1
+	store	max, arrayAddr[0]
+	move	i, 1
+	jump	LOOP_END1
 LOOP1:
 	store	i, arrayAddr[i]
 	add		i, 1
 LOOP_END1:
 	cmp		i, max
-	jump	lt, @LOOP1
+	jump	le, LOOP1
 
 // Print out array in reverse order
-	move	i, max
-	sub		i, 1
-	jump	@LOOP_END2
+	load	i, arrayAddr[0]
+	jump	LOOP_END2
 LOOP2:
 	load	r0, arrayAddr[i]
 	#call	put_dec(r0)
@@ -41,15 +41,12 @@ LOOP2:
 	sub		i, 1
 LOOP_END2:
 	cmp		i, 0
-	jump	ge, @LOOP2
+	jump	gt, LOOP2
 
-	move	r0, arrayAddr
+	move	r1, arrayAddr
 	int		iFREE			// Free block when we are done with it
-	jump	@FINIS
+	#return 0
 ALLOC_FAILED:
 	#call	puts("Allocation Failed!")
-	move	result, 1		// Non-zero error code to indicate failure	
-
-FINIS:
-	#return	result
+	#return 1				// Non-zero error code to indicate failure	
 #end_func
