@@ -173,18 +173,6 @@ public class PreprocessorParserBaseListener implements PreprocessorParserListene
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterCodeLineOrDirective(PreprocessorParser.CodeLineOrDirectiveContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitCodeLineOrDirective(PreprocessorParser.CodeLineOrDirectiveContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
 	@Override public void enterGlobalDir(PreprocessorParser.GlobalDirContext ctx) { }
 	/**
 	 * {@inheritDoc}

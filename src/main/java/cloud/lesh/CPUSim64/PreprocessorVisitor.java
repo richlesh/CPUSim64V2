@@ -170,11 +170,13 @@ public class PreprocessorVisitor extends PreprocessorParserBaseVisitor<Void> {
 		if (pauseLineSync <= 0 && sourceLineNum != lineNum) {
 			emitLineDirective(filename, sourceLineNum);
 		}
-		if (ctx.IDENT() != null) {
-			emitLine(ctx.IDENT().getText(), true);
-		} else if (ctx.CODE_TEXT() != null && !ctx.CODE_TEXT().getText().isEmpty()) {
-			emitLine(ctx.CODE_TEXT().getText(), true); // apply #define substitution on code lines
+		StringBuilder logical = new StringBuilder();
+		logical.append(ctx.line.getText());
+		for (var seg : ctx.more) {
+			logical.append(' ');
+			logical.append(seg.getText());
 		}
+		emitLine(logical.toString(), true);
 		return null;
 	}
 
@@ -445,9 +447,7 @@ public class PreprocessorVisitor extends PreprocessorParserBaseVisitor<Void> {
 
 		// Accumulate directives and codelines
 		StringBuilder body = new StringBuilder();
-		for (PreprocessorParser.CodeLineOrDirectiveContext lineCtx : ctx.codeLineOrDirective()) {
-			body.append(reflowTokens(lineCtx)); // see note below about whitespace
-		}
+		visit(ctx.block());   // emit only this block
 
 		macros.put(macroDefName, Pair.of(params, body.toString()));
 		return null;

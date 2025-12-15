@@ -1,9 +1,9 @@
-#include <system/io.asm>
+#include <system/io.def>
 #include <system/string.def>
 #include <system/system.def>
 
 	#call	main()
-	move	r0, TRUE
+	move	r0, 0
 	int		iEXIT
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -14,11 +14,12 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #def_func	main()
-	#var	filename, port
+	#var	filename, port		// Filename and port variables
 // if (argc < 2)
-	int		iARGC
-	cmp		r0, 2
-	jump	ge, @PROCESS_FILE
+	int		\
+	iARG
+	cmp		r0, 2				// Must have one args
+	jump	ge, @PROCESS_FILE	/* multi-line */
 // then we don't have command args use STDOUT.
 	#call	write_data(STDOUT)
 	jump	@ENDIF1
@@ -44,21 +45,21 @@ ENDIF1:
 #def_func	write_data(port)
 	#var	p, i, end
 	load	p, port
-	OUT1(0x46,p)
-	OUT1(0x6f,p)
-	OUT1(0x75,p)
-	OUT1(0x72,p)
-	OUT2(0x2073,p)
-	OUT2(0x636f,p)
-	OUT2(0x7265,p)
-	OUT2(0x2061,p)
+	#macro	OUT1(0x46,p)
+	#macro	OUT1(0x6f,p)
+	#macro	OUT1(0x75,p)
+	#macro	OUT1(0x72,p)
+	#macro	OUT2(0x2073,p)
+	#macro	OUT2(0x636f,p)
+	#macro	OUT2(0x7265,p)
+	#macro	OUT2(0x2061,p)
 
 	load	end, BIG_4INTS[-1]
 	clear	i
 	jump	@LOOP1_END
 LOOP1:
 	load	r0, BIG_4INTS[i]
-	OUT4(r0,p)
+	#macro	OUT4(r0,p)
 	add		i, 1
 LOOP1_END:
 	cmp		i, end
@@ -69,15 +70,15 @@ LOOP1_END:
 	jump	@LOOP2_END
 LOOP2:
 	load	r0, BIG_8INTS[i]
-	OUT8(r0,p)
+	#macro	OUT8(r0,p)
 	add		i, 1
 LOOP2_END:
 	cmp		i, end
 	jump	nz, @LOOP2
 #end_func
 
-BIG_4INTS: dca	0x6e642073,0x6576656e,0x20796561,0x72732061
-BIG_8INTS: dca	0x676f206f75722066,0x6174686572732062, \
+BIG_4INTS: .dcw	0x6e642073,0x6576656e,0x20796561,0x72732061
+BIG_8INTS: .dcw	0x676f206f75722066,0x6174686572732062, \
 				0x726f756768742066,0x6f727468206f6e20
 	stop
 	stop

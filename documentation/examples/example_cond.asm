@@ -14,7 +14,7 @@ MAIN:
 	stop
 	stop
 
-#deffunc func1(v1, v2)
+#def_func func1(v1, v2)
 	push	r1
 	push	r2
 	load	r1, v1
@@ -36,23 +36,20 @@ MAIN:
 	#end_cond
 	pop		r2
 	pop		r1
-#end_forunc
+#end_func
 
-#deffunc func2(v1)
+#def_func func2(v1)
 	#var	i
 	load	i, v1
-	#ifcond	i, lt, 10
+	#if_cond	i, lt, 10
 		#call	puts("i lt 10\n")
-	#elseifcond	i, lt, 20
+	#else_if_cond	i, lt, 20
 		#call	puts("i lt 20\n")
-	#elseifcond	i, lt, 30
+	#else_if_cond	i, lt, 30
 		#call	puts("i lt 30\n")
-	#elseifcond	i, lt, 40
+	#else_if_cond	i, lt, 40
 		#call	puts("i lt 40\n")
 	#else_cond
 		#call	puts("i ge 40\n")
 	#end_cond
-	#end_cond
-	#end_cond
-	#end_cond
-#end_forunc
+#end_func

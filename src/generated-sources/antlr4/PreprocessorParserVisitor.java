@@ -89,12 +89,6 @@ public interface PreprocessorParserVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitParamList(PreprocessorParser.ParamListContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link PreprocessorParser#codeLineOrDirective}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitCodeLineOrDirective(PreprocessorParser.CodeLineOrDirectiveContext ctx);
-	/**
 	 * Visit a parse tree produced by {@link PreprocessorParser#globalDir}.
 	 * @param ctx the parse tree
 	 * @return the visitor result

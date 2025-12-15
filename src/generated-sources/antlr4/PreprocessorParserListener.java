@@ -138,16 +138,6 @@ public interface PreprocessorParserListener extends ParseTreeListener {
 	 */
 	void exitParamList(PreprocessorParser.ParamListContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link PreprocessorParser#codeLineOrDirective}.
-	 * @param ctx the parse tree
-	 */
-	void enterCodeLineOrDirective(PreprocessorParser.CodeLineOrDirectiveContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link PreprocessorParser#codeLineOrDirective}.
-	 * @param ctx the parse tree
-	 */
-	void exitCodeLineOrDirective(PreprocessorParser.CodeLineOrDirectiveContext ctx);
-	/**
 	 * Enter a parse tree produced by {@link PreprocessorParser#globalDir}.
 	 * @param ctx the parse tree
 	 */

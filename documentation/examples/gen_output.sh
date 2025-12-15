@@ -1,5 +1,6 @@
-rm *.out.gz
+rm *.obj.gz
 rm *.sym*
+rm *.out
 ./runout.sh hello_world > hello_world.out
 ../../assemble.sh example001 > example001c.out
 ../../debug.sh example001 > example001d.out

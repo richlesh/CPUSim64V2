@@ -17,10 +17,10 @@ preproc
 
 // Any line that does not start with '#' is passed through as code
 codeLine
-  : IDENT NL				// for Pnuemonics without arguments like STOP
-  | CODE_TEXT NL
+  : line=(IDENT | CODE_TEXT)
+    ( LINE_CONT NL more+=(IDENT | CODE_TEXT) )*
+    NL
   ;
-
 /* ----- Directives ----- */
 
 directive
@@ -52,27 +52,27 @@ directive
 
 /* #include <path> | #include "path" */
 includeDir
-  : PP_INCLUDE ( ANGLE_PATH | STRING ) NL
+  : PP_INCLUDE ( ANGLE_PATH | STRING ) NL+
   ;
 
 /* #define NAME [literal] */
 defineDir
-  : PP_DEFINE IDENT ( literal )? NL
+  : PP_DEFINE IDENT ( literal )? NL+
   ;
 
 /* #undef NAME */
 undefDir
-  : PP_UNDEF IDENT NL
+  : PP_UNDEF IDENT NL+
   ;
 
 /* #call funcName '(' argList? ')' */
 callDir
-  : PP_CALL IDENT LPAREN ( argList )? RPAREN NL
+  : PP_CALL IDENT LPAREN ( argList )? RPAREN NL+
   ;
 
 /* #macro macroName '(' argList? ')' */
 macroDir
-  : PP_MACRO IDENT LPAREN ( argList )? RPAREN NL
+  : PP_MACRO IDENT LPAREN ( argList )? RPAREN NL+
   ;
 
 argList
@@ -90,24 +90,20 @@ callArg
 
 /* #def_func name '(' paramList? ')' ... #end_func */
 defFuncDir
-  : PP_DEF_FUNC IDENT LPAREN ( paramList )? RPAREN NL
-      ( codeLineOrDirective )*
-    PP_END_FUNC NL
+  : PP_DEF_FUNC IDENT LPAREN ( paramList )? RPAREN NL+
+      block
+    PP_END_FUNC NL+
   ;
 
 /* #def_macro name '(' paramList? ')' ... #end_macro */
 defMacroDir
-  : PP_DEF_MACRO IDENT LPAREN ( paramList )? RPAREN NL
-      ( codeLineOrDirective )*
-    PP_END_MACRO NL
+  : PP_DEF_MACRO IDENT LPAREN ( paramList )? RPAREN NL+
+      block
+    PP_END_MACRO NL+
   ;
 
 paramList
   : IDENT? ( COMMA IDENT )* ( COMMA? ELLIPSIS )?
-  ;
-
-codeLineOrDirective
-  : directive | codeLine | NL
   ;
 
 /* #global IDENT .dc? .* */
@@ -117,17 +113,17 @@ globalDir
 
 /* #svar a, b, c      (stack variables / aliases) */
 svarDir
-  : PP_SVAR identList NL
+  : PP_SVAR identList NL+
   ;
 
 /* #var a, b          (integer register aliases) */
 varDir
-  : PP_VAR identList NL
+  : PP_VAR identList NL+
   ;
 
 /* #fvar a, b         (float register aliases) */
 fvarDir
-  : PP_FVAR identList NL
+  : PP_FVAR identList NL+
   ;
 
 identList
@@ -136,77 +132,77 @@ identList
 
 /* #return name */
 returnDir
-  : PP_RETURN primary NL
+  : PP_RETURN primary NL+
   ;
 
 /* #freturn name */
 freturnDir
-  : PP_FRETURN primary NL
+  : PP_FRETURN primary NL+
   ;
 
 /* ----- Preprocessor Conditional blocks (explicit arms) ----- */
 
 ifBlock
-  : PP_IF expr NL block (elseifClause)* (elseClause)? PP_ENDIF NL
+  : PP_IF expr NL+ block (elseifClause)* (elseClause)? PP_ENDIF NL+
   ;
 
 ifDefBlock
-  : PP_IFDEF primary NL block (elseClause)? PP_ENDIF NL
+  : PP_IFDEF primary NL+ block (elseClause)? PP_ENDIF NL+
   ;
 
 ifNDefBlock
-  : PP_IFNDEF primary NL block (elseClause)? PP_ENDIF NL
+  : PP_IFNDEF primary NL+ block (elseClause)? PP_ENDIF NL+
   ;
 
 elseifClause
-  : PP_ELSEIF expr NL block
+  : PP_ELSEIF expr NL+ block
   ;
 
 elseClause
-  : PP_ELSE NL block
+  : PP_ELSE NL+ block
   ;
 
 /* ---- Higher level control structures ---- */
 
 forBlock
-  : PP_FOR init=primary? COMMA? cond=expr COMMA? incr=primary? NL block PP_ENDFOR NL
+  : PP_FOR init=primary? COMMA? cond=expr COMMA? incr=primary? NL+ block PP_ENDFOR NL+
   ;
 
 whileBlock
-  : PP_WHILE cond=expr NL block PP_ENDWHILE NL
+  : PP_WHILE cond=expr NL+ block PP_ENDWHILE NL+
   ;
 
 doWhileBlock
-  : PP_DOWHILE NL block PP_ENDDOWHILE cond=expr NL
+  : PP_DOWHILE NL+ block PP_ENDDOWHILE cond=expr NL+
   ;
 
 breakDir
-  : PP_BREAK NL
+  : PP_BREAK NL+
   ;
 
 continueDir
-  : PP_CONTINUE NL
+  : PP_CONTINUE NL+
   ;
 /* ----- assembly conditional blocks (explicit arms) ----- */
 
 ifCondBlock
-  : PP_IFCOND cond=expr NL block (elseifCondClause)* (elseCondClause)? PP_ENDCOND NL
+  : PP_IFCOND cond=expr NL+ block (elseifCondClause)* (elseCondClause)? PP_ENDCOND NL+
   ;
 
 ifCondSRBlock
-  : PP_IFCONDSR IDENT NL block (elseCondClause)? PP_ENDCOND NL
+  : PP_IFCONDSR IDENT NL+ block (elseCondClause)? PP_ENDCOND NL+
   ;
 
 elseifCondClause
-  : PP_ELSEIFCOND cond=expr NL block
+  : PP_ELSEIFCOND cond=expr NL+ block
   ;
 
 elseCondClause
-  : PP_ELSECOND NL block
+  : PP_ELSECOND NL+ block
   ;
 
 syncBlock
-  : PP_SYNC LPAREN? IDENT RPAREN? NL block PP_ENDSYNC NL
+  : PP_SYNC LPAREN? IDENT RPAREN? NL+ block PP_ENDSYNC NL+
   ;
 
 block

@@ -109,13 +109,6 @@ public class PreprocessorParserBaseVisitor<T> extends AbstractParseTreeVisitor<T
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitCodeLineOrDirective(PreprocessorParser.CodeLineOrDirectiveContext ctx) { return visitChildren(ctx); }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.</p>
-	 */
 	@Override public T visitGlobalDir(PreprocessorParser.GlobalDirContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}

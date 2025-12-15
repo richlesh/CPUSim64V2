@@ -2,13 +2,15 @@ lexer grammar PreprocessorLexer;
 
 // ---- Default mode rules first ----
 // Comments
-BLOCK_COMMENT : '/*' ( . | '\r' | '\n' )*? '*/' NL? -> channel(HIDDEN) ;
+BLOCK_COMMENT : '/*' .*? '*/' NL? -> channel(HIDDEN) ;
 LINE_COMMENT  : [ \t]* '//' ~[\r\n]* -> channel(HIDDEN) ;
+
+// backslash at end of physical line (plus optional spaces)
+LINE_CONT :  [ \t]* '\\' [ \t]* ;     // backslash at end of physical line (plus optional spaces)
 
 // Whitespace and newlines
 WS : [ \t]+ -> channel(HIDDEN) ;
-NL : ('\r'? '\n')+ ;
-
+NL : ('\r'? '\n') ;
 
 // Use a mode for processing arguments to preprocessor directives
 PP_INCLUDE  : '#' [iI][nN][cC][lL][uU][dD][eE]       -> pushMode(DIRECTIVE_ARGS) ;
@@ -84,8 +86,13 @@ COLON: ':' ;
 // stop CODE_TEXT at newline OR before '//' or '/*'
 // Must contain at least one non-# non-newline char
 CODE_TEXT
-  : ( ~[#\r\n/] | '/' ~[/*\r\n] )+   // match anything except start of comment or newline
-   { setText(getText().trim()); }
+  : ~[# \t\r\n/\\] ( [ \t]* CODE_CHAR )*
+  ;
+
+fragment CODE_CHAR
+  : ~[\r\n/\\ \t]
+  | '/' ~[/*\r\n]		// Not a comment start
+  | '\\' ~[ \t\r\n]		// backslash not followed by newline
   ;
 
 // ---- Then the mode block ----
