@@ -18,7 +18,7 @@ test.*
 *.obj.gz
 *.pp.asm
 *.bin
-*.sym
+*.sym*
 *.jar
 *.zip
 old

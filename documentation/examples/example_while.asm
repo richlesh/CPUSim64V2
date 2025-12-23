@@ -8,9 +8,9 @@ MAIN:
 		#while	r2, lt, 2		
 			#call	put_nl()
 			add	r2, 1
-		#endwhile
+		#end_while
 		mult	r1, 2
-	#endwhile
+	#end_while
 	#call	func1(15)
 	mov		f1, 1.0
 	mov		f2, 0.1
@@ -18,7 +18,7 @@ MAIN:
 	stop
 	stop
 
-#deffunc func1(max)
+#def_func func1(max)
 	#var	i, j, m
 	load	m, max
 	move	i, m
@@ -26,11 +26,11 @@ MAIN:
 		#call	put_hex(i)
 		#call	putc(' ')
 		sub	i, 1
-	#endwhile
+	#end_while
 	#call	put_nl()
-#end_forunc
+#end_func
 
-#deffunc func2(max, inc)
+#def_func func2(max, inc)
 	#fvar	i, j, m, incr
 	load	m, max
 	load	incr, inc
@@ -39,6 +39,6 @@ MAIN:
 		#call	put_fp(i)
 		#call	putc(' ')
 		add		i, incr
-	#endwhile
+	#end_while
 	#call	put_nl()
-#end_forunc
+#end_func

@@ -2,6 +2,7 @@
 #include <system/thread.def>
 #include <system/io.asm>
 
+THREAD_ASM_START:
     jump    THREAD_ASM_END
 
 #def_func	initializeSpinLock(mutexAddr)
@@ -67,6 +68,7 @@ $loop:
 // 1: Re-entry count, decrement to 0 releases lock
 // 2: Heap allocated array of waiting PIDs
 // 3: SpinLock to protect array of waiting PIDs
+// TODO: This won't work for mutex allocated in shared mem.
 #def_func	initializeMutex(mutexAddr)
     #var    addr
 	load	addr, mutexAddr
@@ -99,7 +101,7 @@ $loop:
 				load	r0, queue[i]
 				#if_cond r0 == pid							// If our PID is found, break
 					#break
-				#end_if
+				#end_cond
 			#end_for
 			#if_cond	i > queueSize						// If we didn't find it, add it
 				add		queueSize, 1						// Compute new queue size to hold our PID
@@ -110,10 +112,10 @@ $loop:
 					#macro	REALLOC(queue, r0)
 					move	queue, r0
 					store	queue, addr[2]					// Store the realloc block
-				#end_if
+				#end_cond
 				store	queueSize, queue[0]					// Store the new queue size
 				store	pid, queue[queueSize]				// Add our PID to the end of the queue
-			#end_if
+			#end_cond
 			move	r0, addr[3]
 			#call	releaseSpinLock(r0)
 			#macro   sleep(10000)							// Sleep until awoken or 10 sec.
@@ -149,7 +151,7 @@ $loop:
 				store	queueSize, queue[0]					// Store new queue size
 				int		iMEMMOVE							// Move the back portion of queue up one.
 				#macro  wake_thread(pid)					// Wake waiting thread
-			#end_if
+			#end_cond
 			move	r0, addr[3]
 			#call	releaseSpinLock(r0)
 		#end_cond

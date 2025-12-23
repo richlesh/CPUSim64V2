@@ -3,6 +3,7 @@
 #include <system/system.def>
 
 	#call	main()
+	move	r0, 0
 	int		iEXIT
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -14,16 +15,16 @@
 
 #def_func	main()
 	#var	filename, port
-// if (argc < 2)
+// Check if one arg1
 	int		iARGC
 	cmp		r0, 2
-	jump	ge, @PROCESS_FILE
+	jump	ge, $PROCESS_FILE
 // then we don't have command args use STDIN.
-	#call	output_lower(STDIN)
-	jump	@ENDIF1
-PROCESS_FILE:
+	#call	output_upper(STDIN)
+	jump	$ENDIF1
+$PROCESS_FILE:
 // Get first command line argument and put it in filename.
-	move	r0, 1
+	move	r1, 1
 	int		iARGS
 	move	filename, r0
 // Open text file in read mode.
@@ -32,30 +33,30 @@ PROCESS_FILE:
 	move	port, r0
 // If the port returned is -1 we failed.
 	cmp		port, -1
-	jump	z, @ENDIF1
+	jump	z, $ENDIF1
 // Process the input stream
-	#call	output_lower(port)
+	#call	output_upper(port)
 // Close the file
 	#call	closeFile(port)
-ENDIF1:
+$ENDIF1:
 #end_func
 
-#def_func	output_lower(port)
+#def_func	output_upper(port)
 	#var	charRead,p
 	load	p, port
-LOOP1:
+$LOOP1:
 // Read a character
-	IN0(charRead,p)
+	#macro	IN0(charRead,p)
 // If it is -1 we are at EOF.
 	cmp		charRead, -1
-	jump	eq, @LOOP_END1
+	jump	eq, $LOOP_END1
 // Convert the read character to uppercase.
-	move	r0, charRead
+	move	r1, charRead
 	int		iTO_UPPER
 // Output the character
 	#call	putc(r0)
-	jump	@LOOP1
-LOOP_END1:
+	jump	$LOOP1
+$LOOP_END1:
 #end_func
 
 	stop

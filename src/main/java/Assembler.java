@@ -59,19 +59,20 @@ public class Assembler {
 		// Put it in the same directory as the input file
 		Path outPath = inPath.getParent().resolve(outName);
 
-		// 1) Read source text
-		String source = Files.readString(inPath);
+		try {
+			// 1) Read source text
+			String source = Files.readString(inPath);
 
-		// 2) Preprocess
-		var loader = new IncludeLoader(inPath.getParent());
-		PreprocessorVisitor.resetGlobals();
-		String preprocessed = PreprocessorVisitor.preprocessText(inPath.getFileName().toString(), source, loader, args);
+			// 2) Preprocess
+			var loader = new IncludeLoader(inPath.getParent());
+			PreprocessorVisitor.resetGlobals();
+			String preprocessed = PreprocessorVisitor.preprocessText(inPath.getFileName().toString(), source, loader, args);
 
-		// 3) Rewrite literals
-		LiteralRewriter rw = new LiteralRewriter();
-		preprocessed = rw.rewrite(preprocessed);
+			// 3) Rewrite literals
+			LiteralRewriter rw = new LiteralRewriter();
+			preprocessed = rw.rewrite(preprocessed);
 
-		// 3) Lex/parse the preprocessed source
+			// 3) Lex/parse the preprocessed source
 /*
 		CharStream input = CharStreams.fromString(preprocessed);
 		var lex = new cloud.lesh.CPUSim64.CPUSim64Lexer(input);
@@ -91,69 +92,72 @@ public class Assembler {
 			System.exit(1);
 		}
 */
-		// 4) Add global declarations
-		preprocessed = PreprocessorVisitor.addGlobals(preprocessed, hasMain);
+			// 4) Add global declarations
+			preprocessed = PreprocessorVisitor.addGlobals(preprocessed, hasMain);
 
-		// 5) Gather labels
-		LabelVisitor labelVisitor = new LabelVisitor();
-		String noLabels = labelVisitor.gatherLabels(preprocessed);
-		List<String> errors = labelVisitor.getErrors();
+			// 5) Gather labels
+			LabelVisitor labelVisitor = new LabelVisitor();
+			String noLabels = labelVisitor.gatherLabels(preprocessed);
+			List<String> errors = labelVisitor.getErrors();
 
-		if (errors.size() > 0) {
-			System.out.println(errors.stream().collect(Collectors.joining(System.lineSeparator())));
-			System.exit(2);
-		}
-		// 6) Assemble
-		Map<String, Long> labelMap = labelVisitor.getLabelMap();
-		Map<Long, String> reverseLabelMap = labelVisitor.getReverseLabelMap();
-		var asm = new AssemblerVisitor(labelMap, reverseLabelMap);
-		asm.assemble(noLabels);
-		List<Long> words = asm.result();
-		if (labelMap.containsKey("__MAIN__")) {
-			words.set(0, labelMap.get("__MAIN__"));	// Set start of program
-		} else {
-			words.set(0, 1L);					// Set start of program
-		}
-		errors = asm.getErrors();
-
-		if (errors.size() > 0) {
-			System.out.println(errors.stream().collect(Collectors.joining(System.lineSeparator())));
-			System.exit(2);
-		}
-
-		cloud.lesh.CPUSim64.AsmIO.writeU64BE(outPath, words);
-		System.out.println("Wrote " + words.size() + " words to " + outPath.toString());
-
-		// Write label map for debugging
-		Path symbolFile = inPath.getParent().resolve(filename + ".sym");
-		try (BufferedWriter writer = new BufferedWriter(new FileWriter(symbolFile.toFile()))) {
-			for (Map.Entry<String, Long> entry : labelMap.entrySet()) {
-				writer.write(entry.getKey() + ": " + entry.getValue());
-				writer.newLine();
+			if (errors.size() > 0) {
+				System.out.println(errors.stream().collect(Collectors.joining(System.lineSeparator())));
+				System.exit(2);
 			}
-		} catch (IOException e) {
-			System.err.println("Error writing label map: " + e.getMessage());
-		}
-
-		Path symbolFile1 = inPath.getParent().resolve(filename + ".sym1");
-		try (BufferedWriter writer = new BufferedWriter(new FileWriter(symbolFile1.toFile()))) {
-			for (var entry : reverseLabelMap.entrySet()) {
-				writer.write(entry.getKey() + ": " + entry.getValue());
-				writer.newLine();
+			// 6) Assemble
+			Map<String, Long> labelMap = labelVisitor.getLabelMap();
+			Map<Long, String> reverseLabelMap = labelVisitor.getReverseLabelMap();
+			var asm = new AssemblerVisitor(labelMap, reverseLabelMap);
+			asm.assemble(noLabels);
+			List<Long> words = asm.result();
+			if (labelMap.containsKey("__MAIN__")) {
+				words.set(0, labelMap.get("__MAIN__"));    // Set start of program
+			} else {
+				words.set(0, 1L);                    // Set start of program
 			}
-		} catch (IOException e) {
-			System.err.println("Error writing reverse label map: " + e.getMessage());
-		}
+			errors = asm.getErrors();
 
-		var types = asm.getLabelTypes();
-		Path symbolFile2 = inPath.getParent().resolve(filename + ".sym2");
-		try (BufferedWriter writer = new BufferedWriter(new FileWriter(symbolFile2.toFile()))) {
-			for (var entry : types.entrySet()) {
-				writer.write(entry.getKey() + ": " + entry.getValue());
-				writer.newLine();
+			if (errors.size() > 0) {
+				System.out.println(errors.stream().collect(Collectors.joining(System.lineSeparator())));
+				System.exit(2);
 			}
-		} catch (IOException e) {
-			System.err.println("Error writing label type map: " + e.getMessage());
+
+			cloud.lesh.CPUSim64.AsmIO.writeU64BE(outPath, words);
+			System.out.println("Wrote " + words.size() + " words to " + outPath.toString());
+
+			// Write label map for debugging
+			Path symbolFile = inPath.getParent().resolve(filename + ".sym");
+			try (BufferedWriter writer = new BufferedWriter(new FileWriter(symbolFile.toFile()))) {
+				for (Map.Entry<String, Long> entry : labelMap.entrySet()) {
+					writer.write(entry.getKey() + ": " + entry.getValue());
+					writer.newLine();
+				}
+			} catch (IOException e) {
+				System.err.println("Error writing label map: " + e.getMessage());
+			}
+
+			Path symbolFile1 = inPath.getParent().resolve(filename + ".sym1");
+			try (BufferedWriter writer = new BufferedWriter(new FileWriter(symbolFile1.toFile()))) {
+				for (var entry : reverseLabelMap.entrySet()) {
+					writer.write(entry.getKey() + ": " + entry.getValue());
+					writer.newLine();
+				}
+			} catch (IOException e) {
+				System.err.println("Error writing reverse label map: " + e.getMessage());
+			}
+
+			var types = asm.getLabelTypes();
+			Path symbolFile2 = inPath.getParent().resolve(filename + ".sym2");
+			try (BufferedWriter writer = new BufferedWriter(new FileWriter(symbolFile2.toFile()))) {
+				for (var entry : types.entrySet()) {
+					writer.write(entry.getKey() + ": " + entry.getValue());
+					writer.newLine();
+				}
+			} catch (IOException e) {
+				System.err.println("Error writing label type map: " + e.getMessage());
+			}
+		} catch (Exception ex) {
+			System.err.println(ex.getMessage());
 		}
 		System.exit(0);
 	}

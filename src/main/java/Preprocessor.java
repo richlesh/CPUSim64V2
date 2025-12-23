@@ -47,22 +47,26 @@ public class Preprocessor {
 		// Put it in the same directory as the input file
 		Path outPath = inPath.getParent().resolve(outName);
 
-		// 1) Read source text
-		String source = Files.readString(inPath);
+		try {
+			// 1) Read source text
+			String source = Files.readString(inPath);
 
-		// 2) Preprocess
-		var loader = new IncludeLoader(inPath.getParent());
-		PreprocessorVisitor.resetGlobals();
-		String preprocessed = PreprocessorVisitor.preprocessText(inPath.getFileName().toString(), source, loader, args);
+			// 2) Preprocess
+			var loader = new IncludeLoader(inPath.getParent());
+			PreprocessorVisitor.resetGlobals();
+			String preprocessed = PreprocessorVisitor.preprocessText(inPath.getFileName().toString(), source, loader, args);
 
-		// 3) Rewrite literals
-		LiteralRewriter rw = new LiteralRewriter();
-		preprocessed = rw.rewrite(preprocessed);
+			// 3) Rewrite literals
+			LiteralRewriter rw = new LiteralRewriter();
+			preprocessed = rw.rewrite(preprocessed);
 
-		// 4) Add global declarations
-		preprocessed = PreprocessorVisitor.addGlobals(preprocessed, hasMain);
+			// 4) Add global declarations
+			preprocessed = PreprocessorVisitor.addGlobals(preprocessed, hasMain);
 
-		// 5) Write preprocessed output	}
-		Files.writeString(outPath, preprocessed);
+			// 5) Write preprocessed output	}
+			Files.writeString(outPath, preprocessed);
+		} catch (Exception ex) {
+			System.err.println(ex.getMessage());
+		}
 	}
 }

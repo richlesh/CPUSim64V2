@@ -1,36 +1,36 @@
 #include <system/io.asm>
 
 MAIN:
-	#for r1, 0, lt, 10, 1
+	#for 0, r1, lt, 10, 1
 		#call	put_dec(r1)
-		#for	r2, 0, lt, 2, 1		
+		#for	0, r2, lt, 2, 1		
 			#call	put_nl()
 		#end_for
 	#end_for
 	#call	func1(15)
-	mov		f1, 1.0
-	mov		f2, 0.1
+	load	f1, 1.0
+	load	f2, 0.1
 	#call	func2(f1, f2)
 	stop
 	stop
 
-#deffunc func1(max)
+#def_func func1(max)
 	#var	i, j, m
 	load	m, max
-	#for	i, m, gt, 0, -1
+	#for	m, i, gt, 0, -1
 		#call	put_hex(i)
 		#call	putc(' ')
 	#end_for
 	#call	put_nl()
-#end_forunc
+#end_func
 
-#deffunc func2(max, inc)
-	#fvar	i, j, m, incr
+#def_func func2(max, increment)
+	#fvar	i, m, incr
 	load	m, max
-	load	incr, inc
-	#for	i, 0, le, m, incr
-		#call	put_fp(i)
+	load	incr, increment
+	#for	0, i, le, m, incr
+		#call	put_fp(i, 6)
 		#call	putc(' ')
 	#end_for
 	#call	put_nl()
-#end_forunc
+#end_func

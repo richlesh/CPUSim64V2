@@ -493,7 +493,7 @@ _VECTOR_SIZE_FACTOR: 	.dcf	1.2		// Ratio to increase data block size.
 		load	len, data[0]
 		#if_cond	i < 0
 			move	i, len
-		#else
+		#else_cond
 			add		i, 1
 		#end_cond
 		#for	i, j >= 1, -1

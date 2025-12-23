@@ -153,7 +153,7 @@ public class LabelVisitor extends CPUSim64BaseVisitor<Void> implements HasLocati
 	public Void visitLabelDef(CPUSim64Parser.LabelDefContext ctx) {
 		String labelName = ctx.IDENT().getText().toUpperCase();
 		if (definedLabels.contains(labelName)) {
-			errors.add(getLocation() + ": Error: Duplicate label '" + labelName + "'");
+			errors.add(getLocation() + ":ERROR:Duplicate label '" + labelName + "'");
 		} else {
 			if (labelName.charAt(0) == '$')
 				labelName = getScopeName() + labelName;
@@ -181,7 +181,7 @@ public class LabelVisitor extends CPUSim64BaseVisitor<Void> implements HasLocati
 			} else if (ctx.dataDirective().DCS() != null) {
 				if (ctx.dataDirective().STRINGLIT() == null || ctx.dataDirective().STRINGLIT().getText().length() < 2)
 				{
-					errors.add(getLocation() + ": Error: Missing string literal for .DCS directive");
+					errors.add(getLocation() + ":ERROR:Missing string literal for .DCS directive");
 					return null;
 				}
 				String s = ctx.dataDirective().STRINGLIT().getText();
@@ -223,7 +223,7 @@ public class LabelVisitor extends CPUSim64BaseVisitor<Void> implements HasLocati
 		} else if (ctx.HEXLIT() != null) {
 			currentAddress = Long.parseLong(ctx.HEXLIT().getText().substring(2), 16);
 		} else {
-			errors.add(getLocation() + ": Error: Missing integer literal for .ORG directive");
+			errors.add(getLocation() + ":ERROR:Missing integer literal for .ORG directive");
 		}
 		currentAddress = Math.max(0, currentAddress); // prevent negative addresses
 		out.append(reflowTokens(ctx) + System.lineSeparator());
@@ -261,10 +261,6 @@ public class LabelVisitor extends CPUSim64BaseVisitor<Void> implements HasLocati
 		String blockname = null;
 		if (ctx.IDENT() != null) {
 			blockname = ctx.IDENT().getText();
-			if (blockname.contains("$"))
-				blockname = null;
-		} else if (ctx.BLOCK_IDENT() != null) {
-			blockname = ctx.BLOCK_IDENT().getText();
 		}
 		if (blockname == null)
 			throw new IllegalArgumentException(".block directive must have an argument!");
@@ -299,14 +295,14 @@ public class LabelVisitor extends CPUSim64BaseVisitor<Void> implements HasLocati
 	public String gatherLabels(String src) {
 		CharStream input = CharStreams.fromString(src);
 		var lex = new cloud.lesh.CPUSim64.CPUSim64Lexer(input);
-		var lexerListener = new CollectingErrorListener(errors, null);
+		var lexerListener = new CollectingErrorListener(errors, null, filename);
 		lex.removeErrorListeners();                // remove ConsoleErrorListener
 		lex.addErrorListener(lexerListener);       // collect lexer errors
 		CommonTokenStream toks = new CommonTokenStream(lex);
 //		if (errors.size() > 0) return "";
 
 		var parser = new cloud.lesh.CPUSim64.CPUSim64Parser(toks);
-		var parserListener = new CollectingErrorListener(errors, null);
+		var parserListener = new CollectingErrorListener(errors, null, filename);
 		parser.removeErrorListeners();             // remove ConsoleErrorListener
 		parser.addErrorListener(parserListener);   // collect parser errors
 		ParseTree tree = parser.program();
@@ -323,7 +319,7 @@ public class LabelVisitor extends CPUSim64BaseVisitor<Void> implements HasLocati
 					String mapped = lineMap.get(preLine);
 					if (mapped != null) {
 						// Replace with the mapped value
-						errors.set(i, m.replaceAll("Line " + mapped));
+						errors.set(i, m.replaceAll(mapped));
 					}
 				}
 			}

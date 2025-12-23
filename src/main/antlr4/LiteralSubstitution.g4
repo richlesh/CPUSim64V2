@@ -10,6 +10,7 @@ file
 
 piece
   : DIRECTIVE_LINE      // <- keep these lines intact
+  | FILENAME
   | STRING
   | CHARLIT
   | FLOAT
@@ -32,6 +33,9 @@ DIRECTIVE_LINE
   | {getCharPositionInLine()==0}? SP* '.' [lL][iI][nN][eE] SP+ ~[\r\n]*
   ;
 
+FILENAME
+  : '\u00ab' ( ESC | ~["\\\r\n] )*? '\u00bb'
+  ;
 /*
  * String literal:
  * " ... " with escapes for \" and \\ (and general backslash-escape for any char).

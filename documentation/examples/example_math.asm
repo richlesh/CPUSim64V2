@@ -3,6 +3,7 @@
 #include <system/math.asm>
 
 	#call	main()
+	move	r0, 0
 	int		iEXIT
 
 FMT_f:		.DCS		"(): %f"

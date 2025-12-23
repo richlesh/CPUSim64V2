@@ -38,6 +38,26 @@ public interface PreprocessorParserListener extends ParseTreeListener {
 	 */
 	void exitDirective(PreprocessorParser.DirectiveContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link PreprocessorParser#infoDir}.
+	 * @param ctx the parse tree
+	 */
+	void enterInfoDir(PreprocessorParser.InfoDirContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link PreprocessorParser#infoDir}.
+	 * @param ctx the parse tree
+	 */
+	void exitInfoDir(PreprocessorParser.InfoDirContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link PreprocessorParser#errorDir}.
+	 * @param ctx the parse tree
+	 */
+	void enterErrorDir(PreprocessorParser.ErrorDirContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link PreprocessorParser#errorDir}.
+	 * @param ctx the parse tree
+	 */
+	void exitErrorDir(PreprocessorParser.ErrorDirContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link PreprocessorParser#includeDir}.
 	 * @param ctx the parse tree
 	 */

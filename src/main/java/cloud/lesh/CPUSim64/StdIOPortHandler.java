@@ -26,7 +26,7 @@ public class StdIOPortHandler extends PortHandler
 
 	@Override
 	public int readChar() throws Simulator.CPUException {
-		if (port()!=0) throw cpu.new CPUException("Can't read from STDOUT or STDERR!");
+		if (port() != 0) throw cpu.new CPUException("Can't read from STDOUT or STDERR!");
 		int codePoint = -1;
 		try {
 			int ch1;

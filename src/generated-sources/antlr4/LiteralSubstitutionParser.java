@@ -17,7 +17,8 @@ public class LiteralSubstitutionParser extends Parser {
 	protected static final PredictionContextCache _sharedContextCache =
 		new PredictionContextCache();
 	public static final int
-		DIRECTIVE_LINE=1, STRING=2, CHARLIT=3, FLOAT=4, NEWLINE=5, OTHER=6;
+		DIRECTIVE_LINE=1, FILENAME=2, STRING=3, CHARLIT=4, FLOAT=5, NEWLINE=6, 
+		OTHER=7;
 	public static final int
 		RULE_file = 0, RULE_piece = 1;
 	private static String[] makeRuleNames() {
@@ -34,7 +35,8 @@ public class LiteralSubstitutionParser extends Parser {
 	private static final String[] _LITERAL_NAMES = makeLiteralNames();
 	private static String[] makeSymbolicNames() {
 		return new String[] {
-			null, "DIRECTIVE_LINE", "STRING", "CHARLIT", "FLOAT", "NEWLINE", "OTHER"
+			null, "DIRECTIVE_LINE", "FILENAME", "STRING", "CHARLIT", "FLOAT", "NEWLINE", 
+			"OTHER"
 		};
 	}
 	private static final String[] _SYMBOLIC_NAMES = makeSymbolicNames();
@@ -126,7 +128,7 @@ public class LiteralSubstitutionParser extends Parser {
 			setState(7);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & 126L) != 0)) {
+			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & 254L) != 0)) {
 				{
 				{
 				setState(4);
@@ -155,6 +157,7 @@ public class LiteralSubstitutionParser extends Parser {
 	@SuppressWarnings("CheckReturnValue")
 	public static class PieceContext extends ParserRuleContext {
 		public TerminalNode DIRECTIVE_LINE() { return getToken(LiteralSubstitutionParser.DIRECTIVE_LINE, 0); }
+		public TerminalNode FILENAME() { return getToken(LiteralSubstitutionParser.FILENAME, 0); }
 		public TerminalNode STRING() { return getToken(LiteralSubstitutionParser.STRING, 0); }
 		public TerminalNode CHARLIT() { return getToken(LiteralSubstitutionParser.CHARLIT, 0); }
 		public TerminalNode FLOAT() { return getToken(LiteralSubstitutionParser.FLOAT, 0); }
@@ -188,7 +191,7 @@ public class LiteralSubstitutionParser extends Parser {
 			{
 			setState(12);
 			_la = _input.LA(1);
-			if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & 126L) != 0)) ) {
+			if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & 254L) != 0)) ) {
 			_errHandler.recoverInline(this);
 			}
 			else {
@@ -210,10 +213,10 @@ public class LiteralSubstitutionParser extends Parser {
 	}
 
 	public static final String _serializedATN =
-		"\u0004\u0001\u0006\u000f\u0002\u0000\u0007\u0000\u0002\u0001\u0007\u0001"+
+		"\u0004\u0001\u0007\u000f\u0002\u0000\u0007\u0000\u0002\u0001\u0007\u0001"+
 		"\u0001\u0000\u0005\u0000\u0006\b\u0000\n\u0000\f\u0000\t\t\u0000\u0001"+
 		"\u0000\u0001\u0000\u0001\u0001\u0001\u0001\u0001\u0001\u0000\u0000\u0002"+
-		"\u0000\u0002\u0000\u0001\u0001\u0000\u0001\u0006\r\u0000\u0007\u0001\u0000"+
+		"\u0000\u0002\u0000\u0001\u0001\u0000\u0001\u0007\r\u0000\u0007\u0001\u0000"+
 		"\u0000\u0000\u0002\f\u0001\u0000\u0000\u0000\u0004\u0006\u0003\u0002\u0001"+
 		"\u0000\u0005\u0004\u0001\u0000\u0000\u0000\u0006\t\u0001\u0000\u0000\u0000"+
 		"\u0007\u0005\u0001\u0000\u0000\u0000\u0007\b\u0001\u0000\u0000\u0000\b"+

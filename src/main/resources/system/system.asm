@@ -1,6 +1,7 @@
 #include <system/system.def>
 
-	jump	@SYSTEM_ASM_END
+SYSTEM_ASM_START:
+	jump	SYSTEM_ASM_END
 
 ///////////////////////////////////////////////////////////////////////////////
 // intPrintArray(a, size)
@@ -13,17 +14,17 @@
 	load	base, a
 	load	len, size
 	clear	i
-	jump	@LOOP1_END
-LOOP1:
+	jump	$LOOP1_END
+$LOOP1:
 	load	v, base[i]
 	#call	put_dec(i)
 	#call	putc(':')
 	#call	put_dec(v)
 	#call	put_nl()
 	add		i, 1
-LOOP1_END:
+$LOOP1_END:
 	cmp		i, len
-	jump	ne, @LOOP1
+	jump	ne, $LOOP1
 #end_func
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -38,17 +39,17 @@ LOOP1_END:
 	load	base, a
 	load	len, size
 	clear	i
-	jump	@LOOP1_END
-LOOP1:
+	jump	$LOOP1_END
+$LOOP1:
 	load	v, base[i]
 	#call	put_dec(i)
 	#call	putc(':')
 	#call	put_fp(v)
 	#call	put_nl()
 	add		i, 1
-LOOP1_END:
+$LOOP1_END:
 	cmp		i, len
-	jump	ne, @LOOP1
+	jump	ne, $LOOP1
 #end_func
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -61,9 +62,9 @@ LOOP1_END:
 #def_func memmove(dest, src, count)
 	push	r1
 	push	r2
-	load	r0, dest
-	load	r1, src
-	load	r2,	count
+	load	r1, dest
+	load	r2, src
+	load	r3,	count
 	int		iMEMMOVE
 	pop		r2
 	pop		r1
@@ -77,8 +78,8 @@ LOOP1_END:
 ///////////////////////////////////////////////////////////////////////////////
 #def_func memclear(dest, count)
 	push	r1
-	load	r0, dest
-	load	r1, count
+	load	r1, dest
+	load	r2, count
 	int		iMEMCLEAR
 	pop		r1
 #end_func
@@ -88,35 +89,35 @@ LOOP1_END:
 // Pauses the current thread for delay milliseconds
 ///////////////////////////////////////////////////////////////////////////////
 #def_func sleep(delay)
-	load	r0, delay
+	load	r1, delay
 	int		iSLEEP
 #end_func
 
 #def_func exit(code)
-	load	r0, code
+	load	r1, code
 	int		iEXIT
 #end_func
 
 #def_func system(cmd)
-	load	r0, cmd
+	load	r1, cmd
 	int		iSYSTEM
 #end_func
 
 #def_func alloc(size)
-	load	r0, size
+	load	r1, size
 	int		iALLOC
 #end_func
 
 #def_func realloc(addr, size)
 	push	r1
-	load	r0, addr
-	load	r1, size
+	load	r1, addr
+	load	r2, size
 	int		iREALLOC
 	pop		r1
 #end_func
 
 #def_func free(addr)
-	load	r0, addr
+	load	r2, addr
 	int		iFREE
 #end_func
 
@@ -124,17 +125,87 @@ LOOP1_END:
 	#var	a, o
 	load	a, addr
 	load	o, offset
-	move	r0, a, o
+	move	r2, a, o
 	int		iFREE
 #end_func
 
 #def_func args(index)
-	load	r0, index
+	load	r2, index
 	int		iARGS
 #end_func
 
-_MUTEX_EXP_WAIT_FACTOR: dcf 1.2
-_MUTEX_MAX_EXP_WAIT: dcf 500.
+_fibonacci: .DCW 13, 21, 34, 55, 89, 144, 233, 377, 610, 987, 1597, 2584, \
+				4181, 6765, 10946, 17711, 28657, 46368, 75025, 121393
+#def_func _fibonacciAlloc(x0)
+	#var	x, i, f, fib, fiblen
+	load	x, x0
+	load	fiblen, _fibonacci[-1]
+	#for	0, i, lt, fiblen, 1
+		load	f, _fibonacci[i]
+		#if_cond	f, ge, x
+			#break
+		#end_cond
+	#end_for
+	#macro COMPARE(i, eq, fiblen)
+	move	nz, r0, x, f
+#end_func
+
+// Computes the minimum size of a heap allocated block
+// that will be returned by iALLOC for the given size.
+#def_func miniumAllocSize(size)
+	#var	s
+	load	s, size
+	add		s, 3
+	#call	_fibonacciAlloc(s)
+	sub		r0, 3
+#end_func
+
+_MUTEX_EXP_WAIT_FACTOR: .dcf 1.2
+_MUTEX_MAX_EXP_WAIT: .dcf 500.
+
+///////////////////////////////////////////////////////////////////////////////
+// mutex_unlock2(addr, offset)
+// Unlocks the mutex at addr[offset].
+// Returns TRUE if successful.
+///////////////////////////////////////////////////////////////////////////////
+#def_func mutex_unlock2(addr, offset)
+	#var	a, o
+	load	a, addr
+	load	o, offset
+	add		a, o
+	#call	mutex_unlock(a)
+#end_func
+
+///////////////////////////////////////////////////////////////////////////////
+// mutex_unlock(addr)
+// Unlocks the mutex at addr.
+// Returns TRUE if successful.
+///////////////////////////////////////////////////////////////////////////////
+#def_func mutex_unlock(addr)
+	#var	a, v, ov, newValue, oldValue, pid, oldPID
+	load	a, addr
+	int		iGET_PID
+	move	pid, r0
+	load	ov, a
+	move	oldPID, ov
+	unpack	oldPID, oldValue
+	#if_cond	oldPID, eq, pid
+		sub	newValue, oldValue, 1
+		#if_cond_sr	nz
+			move	v, oldPID
+			pack	v, newValue
+		#else_cond
+			move	v, 0
+		#end_cond
+		cas		ov, v, a
+		#if_cond_sr	nz
+//#call puts("Unlock succeeded\n")
+			#return	TRUE
+		#end_cond
+	#end_cond
+//#call puts("Unlock failed\n")
+	#return	FALSE
+#end_func
 
 ///////////////////////////////////////////////////////////////////////////////
 // mutex_lock2(addr, offset, timeout)
@@ -193,7 +264,7 @@ _MUTEX_MAX_EXP_WAIT: dcf 500.
 			#if_cond_sr	nz
 				#break
 			#end_cond
-		#elseifcond	oldPID, eq, pid
+		#else_if_cond	oldPID, eq, pid
 			pack	oldPID, oldValue
 			move	newValue, pid
 			add		oldValue, 1
@@ -203,7 +274,6 @@ _MUTEX_MAX_EXP_WAIT: dcf 500.
 			#if_cond_sr	nz
 				#break
 			#end_cond
-		#end_cond
 		#end_cond
 //#call debug(STDOUT, "Sleeping: %d...\n", sleepDuration)
 		#call	sleep(sleepDuration)
@@ -215,7 +285,7 @@ _MUTEX_MAX_EXP_WAIT: dcf 500.
 		move	sleepDuration, f0
 		int	iCLOCK
 		sub	duration, r0, start
-	#endwhile
+	#end_while
 	#if_cond	duration, le, endDuration
 //#call puts("Lock succeeded\n")
 		#return	TRUE
@@ -223,78 +293,6 @@ _MUTEX_MAX_EXP_WAIT: dcf 500.
 //#call puts("Lock failed\n")
 		#return	FALSE
 	#end_cond
-END:
 #end_func
 
-///////////////////////////////////////////////////////////////////////////////
-// mutex_unlock2(addr, offset)
-// Unlocks the mutex at addr[offset].
-// Returns TRUE if successful.
-///////////////////////////////////////////////////////////////////////////////
-#def_func mutex_unlock2(addr, offset)
-	#var	a, o
-	load	a, addr
-	load	o, offset
-	add		a, o
-	#call	mutex_unlock(a)
-#end_func
-
-///////////////////////////////////////////////////////////////////////////////
-// mutex_unlock(addr)
-// Unlocks the mutex at addr.
-// Returns TRUE if successful.
-///////////////////////////////////////////////////////////////////////////////
-#def_func mutex_unlock(addr)
-	#var	a, v, ov, newValue, oldValue, pid, oldPID
-	load	a, addr
-	int		iGET_PID
-	move	pid, r0
-	load	ov, a
-	move	oldPID, ov
-	unpack	oldPID, oldValue
-	#if_cond	oldPID, eq, pid
-		sub	newValue, oldValue, 1
-		#if_cond_sr	nz
-			move	v, oldPID
-			pack	v, newValue
-		#else_cond
-			move	v, 0
-		#end_cond
-		cas		ov, v, a
-		#if_cond_sr	nz
-//#call puts("Unlock succeeded\n")
-			#return	TRUE
-			jump	@END
-		#end_cond
-	#end_cond
-//#call puts("Unlock failed\n")
-	#return	0
-END:
-#end_func
-
-_fibonacci: DCA 13, 21, 34, 55, 89, 144, 233, 377, 610, 987, 1597, 2584, \
-				4181, 6765, 10946, 17711, 28657, 46368, 75025, 121393
-#def_func _fibonacciAlloc(x0)
-	#var	x, i, f, fib, fiblen
-	load	x, x0
-	load	fiblen, _fibonacci[-1]
-	#for	i, 0, lt, fiblen, 1
-		load	f, _fibonacci[i]
-		#if_cond	f, ge, x
-			#break
-		#end_cond
-	#end_for
-	COMPARE(i, eq, fiblen)
-	move	nz, r0, x, f
-#end_func
-
-// Computes the minimum size of a heap allocated block
-// that will be returned by iALLOC for the given size.
-#def_func miniumAllocSize(size)
-	#var	s
-	load	s, size
-	add		s, 3
-	#call	_fibonacciAlloc(s)
-	sub		r0, 3
-#end_func
 SYSTEM_ASM_END: nop

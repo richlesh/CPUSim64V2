@@ -29,6 +29,18 @@ public interface PreprocessorParserVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitDirective(PreprocessorParser.DirectiveContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link PreprocessorParser#infoDir}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitInfoDir(PreprocessorParser.InfoDirContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link PreprocessorParser#errorDir}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitErrorDir(PreprocessorParser.ErrorDirContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link PreprocessorParser#includeDir}.
 	 * @param ctx the parse tree
 	 * @return the visitor result

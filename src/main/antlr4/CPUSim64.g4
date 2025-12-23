@@ -23,8 +23,8 @@ directive
   | LINE FILENAMELIT ','? INTLIT			# LINE_Directive
   | LINE_BEGIN FILENAMELIT ','? INTLIT		# LINE_BEGIN_Directive
   | LINE_END								# LINE_END_Directive
-  | BLOCK_BEGIN (IDENT | BLOCK_IDENT)		# BLOCK_BEGIN_Directive
-  | BLOCK_END (IDENT | BLOCK_IDENT)?		# BLOCK_END_Directive
+  | BLOCK_BEGIN IDENT						# BLOCK_BEGIN_Directive
+  | BLOCK_END IDENT?						# BLOCK_END_Directive
   ;
 
 dataDirective
@@ -214,7 +214,9 @@ logicModes
   : rOperand ',' rOperand
   | rOperand ',' cLiteral
   | rOperand ',' rOperand ',' rOperand
-  | rOperand ',' rOperand ',' cLiteral
+  | rOperand ',' rOperand ',' rightC=cLiteral
+  | rOperand ',' leftC=cLiteral ',' rOperand
+  | rOperand ',' cLiteral ',' cLiteral
   ;
 
 instrAND : AND logicModes ;
@@ -462,7 +464,7 @@ STRINGLIT
   ;
 
 FILENAMELIT
-  : '\u00ab' ( ESC | ~["\\\r\n] )* '\u00bb'
+  : '\u00ab' ( ESC | ~["\\\r\n] )*? '\u00bb'
   ;
 
 fragment ESC
@@ -473,8 +475,7 @@ fragment ESC
 fragment HEX : [0-9A-Fa-f];
 
 /* Identifiers (labels/symbols) */
-IDENT : [\p{L}_$] [\p{L}\p{Nd}_$]* ;
-BLOCK_IDENT : [\p{L}_] [\p{L}\p{Nd}_{}]* ;
+IDENT : [\p{L}_$] [\p{L}\p{Nd}_${}]* ;
 
 /* Data directives */
 DCI : '.' [dD][cC][iI] ;

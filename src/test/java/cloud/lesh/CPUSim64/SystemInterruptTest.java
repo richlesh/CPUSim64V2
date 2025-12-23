@@ -7,6 +7,7 @@ import java.util.Comparator;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 public class SystemInterruptTest extends BaseTest {
 	@Test
@@ -1039,8 +1040,8 @@ R28: 000000000000001c                    28 F28:       28.00000000000000
 			#include <system/system.def>
 			#include <system/io.def>
 			#def_macro put_dec(i)
-				move R1, ${i}
-				move R0, 1
+				move R2, ${i}
+				move R1, 1
 				int iPUT_DEC
 				int iPUT_NL
 			#end_macro
@@ -1054,7 +1055,7 @@ R28: 000000000000001c                    28 F28:       28.00000000000000
 				jump	z, @CHILD_FORK
 				#macro	put_dec(child_pid)		// Parent prints child's PID (positive int)
 				#macro	SLEEP(1000)
-				move	r0, child_pid
+				move	r1, child_pid
 				int		iWAIT_PID
 				move	r0, child_pid
 				neg		r0
@@ -1085,18 +1086,18 @@ R28: 000000000000001c                    28 F28:       28.00000000000000
 				var result = tuple.getLeft();
 				var sim = tuple.getMiddle();
 				var diff = tuple.getRight();
-				assertEquals(6, diff.size());
+				assertEquals(7, diff.size());
 				assertTrue("-1000".equals(lines[0]));
 				assertTrue(0 > Integer.parseInt(lines[1]));
 				assertTrue(0 < Integer.parseInt(lines[2]));
 				assertEquals(Integer.parseInt(lines[3]), Integer.parseInt(lines[2]));
 				assertEquals("1000", lines[4]);
+				return;
 			} catch (Exception e) {
 				System.out.println("Iteration " + i + " failed");
-				continue;
 			}
-			break;  // Success
 		}
+		fail("Too many failures!");
 	}
 
 	/* This test will create 7 children
@@ -1178,8 +1179,8 @@ R28: 000000000000001c                    28 F28:       28.00000000000000
 			#include <system/io.def>
 			
 			#def_macro put_dec(i)
-				move R1, ${i}
-				move R0, 1
+				move R2, ${i}
+				move R1, 1
 				int iPUT_DEC
 				int	iPUT_NL
 			#end_macro
@@ -1188,30 +1189,30 @@ R28: 000000000000001c                    28 F28:       28.00000000000000
 				move	r0, 0
 				int		iEXIT
 			
-			PIDS: .dca	3
+			#global	PIDS: .dca	3
 			#def_func	MAIN()
 				#var	pid, i
-				move	r0, run
-				move	r1, 1
+				move	r1, run
+				move	r2, 1
 				int		iTHREAD
 				store	r0, PIDS[1]
-				move	r0, run
-				move	r1, 2
+				move	r1, run
+				move	r2, 2
 				int		iTHREAD
 				store	r0, PIDS[2]
-				move	r0, run
-				move	r1, 3
+				move	r1, run
+				move	r2, 3
 				int		iTHREAD
 				store	r0, PIDS[3]
-				load	r0, PIDS[1]
+				load	r1, PIDS[1]
 				int		iJOIN_THREAD
 				move	r0, -1
 				#macro	put_dec(r0)
-				load	r0, PIDS[2]
+				load	r1, PIDS[2]
 				int		iJOIN_THREAD
 				move	r0, -2
 				#macro	put_dec(r0)
-				load	r0, PIDS[3]
+				load	r1, PIDS[3]
 				int		iJOIN_THREAD
 				move	r0, -3
 				#macro	put_dec(r0)
@@ -1224,7 +1225,6 @@ R28: 000000000000001c                    28 F28:       28.00000000000000
 				move	r0, d
 				mult	r0, 1000				
 				#macro	SLEEP(r0)
-				move	r0, d
 				#macro	put_dec(d)
 			#end_func
 				stop
@@ -1241,7 +1241,7 @@ R28: 000000000000001c                    28 F28:       28.00000000000000
 				var result = tuple.getLeft();
 				var sim = tuple.getMiddle();
 				var diff = tuple.getRight();
-				assertEquals(3, diff.size());
+				assertEquals(5, diff.size());
 				assertEquals("-3", lines[0]);
 				assertEquals("-2", lines[1]);
 				assertEquals("-1", lines[2]);
@@ -1251,11 +1251,11 @@ R28: 000000000000001c                    28 F28:       28.00000000000000
 				assertEquals("2", lines[6]);
 				assertEquals("3", lines[7]);
 				assertEquals("3", lines[8]);
+				return;
 			} catch (Exception e) {
 				System.out.println("Iteration " + i + " failed");
-				continue;
 			}
-			break;  // Success
 		}
+		fail("Too many failures!");
 	}
 }

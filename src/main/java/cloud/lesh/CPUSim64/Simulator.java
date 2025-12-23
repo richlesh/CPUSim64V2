@@ -39,6 +39,53 @@ import java.util.stream.Collectors;
  * References:
  *  - Instruction format & programmer’s model (registers/flags): Simulator docs.  (see inline citations in readme)
  */
+
+final class LongArray {
+	private long[] data;
+	private int size;
+
+	public LongArray() {
+		this(1024);
+	}
+
+	public LongArray(int capacity) {
+		if (capacity < 1024)
+			capacity = 1024;
+		data = new long[capacity];
+	}
+
+	public synchronized void setSize(int newSize) {
+		for (int i = size; i < newSize; ++i) {
+			add(0);
+		}
+	}
+
+	public synchronized void add(long v) {
+		if (size == data.length) {
+			data = Arrays.copyOf(data, (int)(size * 1.2));
+		}
+		data[size++] = v;
+	}
+
+	public long get(int i) {
+		if (i < 0 || i >= size) throw new IndexOutOfBoundsException();
+		return data[i];
+	}
+
+	public synchronized void set(int i, long val) {
+		if (i < 0 || i >= size) throw new IndexOutOfBoundsException();
+		data[i] = val;
+	}
+
+	public int size() {
+		return size;
+	}
+
+	public long[] toArray() {
+		return Arrays.copyOf(data, size);
+	}
+}
+
 public class Simulator {
 	public enum LabelType {CODE, CHAR, INT, HEX, FLOAT, STRING};
 
@@ -55,7 +102,7 @@ public class Simulator {
 	// ===== CPU STATE =====
 	public static final int GPR_COUNT = 32;  // We store R0..R31 (R29=SF, R30=SP, R31=PC)
 	public static final int FPR_COUNT = 32;
-	public static final int NUM_PORTS = 255;
+	public static final int NUM_PORTS = 256;
 
 	// Index aliases
 	public static final int R_SF = 29;
@@ -72,6 +119,7 @@ public class Simulator {
 	long[] mem;
 	long[] stack;
 	VarHandle atomicMem;
+	static LongArray sharedMem = new LongArray(1024);
 	long heapStart = 0;        // End of code / beginning of free heap
 	long heapLimit = 0;        // End of free heap / max stack limit
 	long stackSize = 2048;    // Maximum stack size
@@ -183,6 +231,7 @@ public class Simulator {
 			if (makeProcess) {    // for processes
 				freeList = (LinkedList<Long>) cloneMe.freeList.clone();
 				mem = cloneMe.mem.clone();
+				stack = cloneMe.stack.clone();
 				atomicMem = MethodHandles.arrayElementVarHandle(long[].class);
 			} else {            // for threads
 				freeList = cloneMe.freeList;
@@ -558,38 +607,64 @@ public class Simulator {
 		};
 	}
 
+	public static synchronized long sharedMemRead(long addr) {
+		int a = Math.toIntExact(addr - Long.MIN_VALUE);
+		if (a < 0 || a >= sharedMem.size())
+			throw new RuntimeException(String.format("Illegal shared memory read access of " + fmtAddress, addr));
+		return sharedMem.get(a);
+	}
+
 	public long memRead(long addr) {
 		long val = 0;
-		try {
-			int a = Math.toIntExact(addr);
-			if (a < heapLimit)
-				val = (long)atomicMem.getVolatile(mem, a);						// val = mem[a];
-			else
-				val = (long)atomicMem.getVolatile(stack, a - (int) heapLimit);	// val = stack[a - (int) heapLimit];
-			++cycles;
-		} catch (Exception ex) {
-			throw new CPUException(String.format("Illegal memory access of " + fmtAddress, addr));
+		if (addr < 0) {
+			val = sharedMemRead(addr);
+		} else {
+			try {
+				int a = Math.toIntExact(addr);
+				if (a < heapLimit)
+					val = (long) atomicMem.getVolatile(mem, a);                        // val = mem[a];
+				else
+					val = (long) atomicMem.getVolatile(stack, a - (int) heapLimit);    // val = stack[a - (int) heapLimit];
+				++cycles;
+			} catch (Exception ex) {
+				throw new CPUException(String.format("Illegal memory read access of " + fmtAddress, addr));
+			}
 		}
 		return val;
 	}
 
+	public static synchronized void sharedMemWrite(long addr, long val) {
+		int a = Math.toIntExact(addr - Long.MIN_VALUE);
+		if (a < 0 || a >= sharedMem.size())
+			throw new RuntimeException(String.format("Illegal shared memory write access of " + fmtAddress, addr));
+		sharedMem.set(a, val);
+	}
+
 	public void memWrite(long addr, long val) {
-		if (addr < 0 || addr >= stackBase)
-			throw new CPUException(String.format("Illegal memory access of " + fmtAddress, addr));
-		for (var p : protectedMemory) {
-			if (addr >= p.first && addr < p.second) {
-				throw new CPUException(String.format("Write access violation of " + fmtAddress, addr));
+		if (addr < 0) {
+			try {
+				sharedMemWrite(addr, val);
+			} catch (RuntimeException ex) {
+				throw new CPUException(String.format("Illegal shared memory write access of " + fmtAddress, addr));
 			}
-		}
-		try {
-			int a = Math.toIntExact(addr);
-			if (a < heapLimit)
-				atomicMem.setVolatile(mem, a, val);							// mem[a] = val;
-			else
-				atomicMem.setVolatile(stack, a - (int) heapLimit, val); 	// stack[a - (int) heapLimit] = val;
-			++cycles;
-		} catch (Exception ex) {
-			throw new CPUException(String.format("Illegal memory access of " + fmtAddress, addr));
+		} else {
+			if (addr >= stackBase)
+				throw new CPUException(String.format("Illegal stack write access of " + fmtAddress, addr));
+			for (var p : protectedMemory) {
+				if (addr >= p.first && addr < p.second) {
+					throw new CPUException(String.format("Write access violation of " + fmtAddress, addr));
+				}
+			}
+			try {
+				int a = Math.toIntExact(addr);
+				if (a < heapLimit)
+					atomicMem.setVolatile(mem, a, val);                            // mem[a] = val;
+				else
+					atomicMem.setVolatile(stack, a - (int) heapLimit, val);    // stack[a - (int) heapLimit] = val;
+				++cycles;
+			} catch (Exception ex) {
+				throw new CPUException(String.format("Illegal memory write access of " + fmtAddress, addr));
+			}
 		}
 	}
 
@@ -1443,7 +1518,7 @@ public class Simulator {
 					long before = R[rd];
 					long rhs = R[toRegIndex(d.b, d.v1)];
 					long res = before * rhs;
-					boolean of = res / rhs != before;
+					boolean of = res != 0 && res / rhs != before;
 					R[rd] = res;
 					setFlags(res, of);
 					return;
@@ -1464,7 +1539,7 @@ public class Simulator {
 					long before = R[rd];
 					long rhs = R[toRegIndex(d.c, d.v2)];
 					long res = before * rhs;
-					boolean of = res / rhs != before;
+					boolean of = res != 0 && res / rhs != before;
 					R[toRegIndex(d.a, d.v0)] = res;
 					setFlags(res, of);
 					return;
@@ -1487,7 +1562,7 @@ public class Simulator {
 				long before = R[rd];
 				long rhs = d.c2;
 				long res = before * rhs;
-				boolean of = res / rhs != before;
+				boolean of = res == 0 && res / rhs != before;
 				R[rd] = res;
 				setFlags(res, of);
 				return;
@@ -1509,7 +1584,7 @@ public class Simulator {
 				long before = R[rd];
 				long rhs = d.c3;
 				long res = before * rhs;
-				boolean of = res / rhs != before;
+				boolean of = res == 0 && res / rhs != before;
 				R[toRegIndex(d.a, d.v0)] = res;
 				setFlags(res, of);
 				return;
@@ -1658,16 +1733,16 @@ public class Simulator {
 		assert (Opcode.RROTATE.code == 27);
 		boolean isGood = false;
 		long lhs = 0, rhs = 0;
-		if (d.tt == 0 && isRegKind(d.a) && isRegKind(d.b)) {
-			// RR, RRR
+		if (d.tt == 0) {
+			// RR, RRR, RCR, RCC
 			int count = d.getArgCount();
 			if (count == 2 || count == 3) {
 				if (count == 2) {
 					lhs = getR(d.a, d.v0);
 					rhs = getR(d.b, d.v1);
 				} else {
-					lhs = getR(d.b, d.v1);
-					rhs = getR(d.c, d.v2);
+					lhs = getO(d.b, d.v1);
+					rhs = getO(d.c, d.v2);
 				}
 				isGood = true;
 			}
@@ -1696,8 +1771,9 @@ public class Simulator {
 				default -> throw new CPUException("Illegal bitwise operator");
 			};
 			setR(d.a, d.v0, res);
-		} else
+		} else {
 			throw new CPUException("Illegal bitwise arguments");
+		}
 	}
 
 	// ---- 21: TEST (sets SR from X) ----
@@ -1780,6 +1856,7 @@ public class Simulator {
 				else if (bytes < 0 || bytes > 8)
 					throw new CPUException("IN number of bytes must be 0-8");
 				var ph = getPortHandler(port);
+				ph.setPort(port);
 				if (ph == null)
 					throw new CPUException("IN port " + port + " handler not set");
 				long val = 0;
@@ -1887,17 +1964,28 @@ public class Simulator {
 				long newVal = getO(d.b, d.v1);
 				long base = getR(d.c, d.v2);
 				long offset = (count == 4) ? getO(d.d, d.v3) : 0;
-				int addr = Math.toIntExact(base + offset);
+				long addr = base + offset;
 				try {
 					boolean ok;
-					if (addr < heapLimit)
-						ok = atomicMem.compareAndSet(mem, addr, oldVal, newVal);
-					else
-						ok = atomicMem.compareAndSet(stack, addr - (int) heapLimit, oldVal, newVal);
+					if (addr < 0) {
+						synchronized (Simulator.class) {
+							long curVal = memRead(addr);
+							if (curVal == oldVal) {
+								memWrite(addr, newVal);
+								ok = true;
+							} else {
+								ok = false;
+							}
+						}
+					} else if (addr < heapLimit) {
+						ok = atomicMem.compareAndSet(mem, Math.toIntExact(addr), oldVal, newVal);
+					} else {
+						ok = atomicMem.compareAndSet(stack, Math.toIntExact(addr - heapLimit), oldVal, newVal);
+					}
 					setFlags(newVal, ok);
 					return;
 				} catch (Exception ex) {
-					throw new CPUException(String.format("Illegal memory access of " + fmtAddress, addr));
+					throw new CPUException(String.format("Illegal CAS access of " + fmtAddress, addr));
 				}
 			}
 		}
@@ -2450,9 +2538,17 @@ public class Simulator {
 		}
 	}
 
+	public static synchronized long allocShared(long allocSize) {
+		int newAlloc = sharedMem.size();
+		sharedMem.setSize(newAlloc + (int)allocSize);
+		return Long.MIN_VALUE + newAlloc;
+	}
+
 	private HashMap<Integer, PortHandler> ports = new HashMap<>();
 	public PortHandler getPortHandler(int port) {
-		return ports.get(port);
+		var ph = ports.get(port);
+		if (ph != null) ph.setPort(port);
+		return ph;
 	}
 
 	public void setPortHandler(int port, PortHandler ph) {

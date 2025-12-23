@@ -17,8 +17,8 @@ preproc
 
 // Any line that does not start with '#' is passed through as code
 codeLine
-  : line=(IDENT | CODE_TEXT)
-    ( LINE_CONT NL more+=(IDENT | CODE_TEXT) )*
+  : more+=(LABEL | IDENT | COMP_DIR)
+    ( LINE_CONT? more+=(COMMA | IDENT | COMP_DIR | PLACEHOLDER | REG_R | REG_F | INT | FLOAT | STRING | CHAR) )*
     NL
   ;
 /* ----- Directives ----- */
@@ -48,6 +48,16 @@ directive
   | ifCondBlock
   | ifCondSRBlock
   | syncBlock
+  | infoDir
+  | errorDir
+  ;
+
+infoDir
+  : PP_INFO INFO_TEXT? NL+
+  ;
+
+errorDir
+  : PP_ERROR INFO_TEXT? NL+
   ;
 
 /* #include <path> | #include "path" */
@@ -57,7 +67,7 @@ includeDir
 
 /* #define NAME [literal] */
 defineDir
-  : PP_DEFINE IDENT ( literal )? NL+
+  : PP_DEFINE id=IDENT ( lit=literal | symbol=IDENT )? NL+
   ;
 
 /* #undef NAME */
@@ -67,16 +77,16 @@ undefDir
 
 /* #call funcName '(' argList? ')' */
 callDir
-  : PP_CALL IDENT LPAREN ( argList )? RPAREN NL+
+  : PP_CALL (IDENT | PLACEHOLDER) LPAREN ( argList )? RPAREN NL+
   ;
 
 /* #macro macroName '(' argList? ')' */
 macroDir
-  : PP_MACRO IDENT LPAREN ( argList )? RPAREN NL+
+  : PP_MACRO (IDENT | PLACEHOLDER) LPAREN ( argList )? RPAREN NL+
   ;
 
 argList
-  : callArg ( COMMA callArg )*
+  : callArg ( COMMA (LINE_CONT)? callArg )*
   ;
 
 callArg
@@ -108,7 +118,7 @@ paramList
 
 /* #global IDENT .dc? .* */
 globalDir
-  : PP_GLOBAL CODE_TEXT
+  : PP_GLOBAL codeLine
   ;
 
 /* #svar a, b, c      (stack variables / aliases) */
@@ -127,7 +137,7 @@ fvarDir
   ;
 
 identList
-  : IDENT ( COMMA IDENT )*
+  : IDENT ( COMMA (LINE_CONT)? IDENT )*
   ;
 
 /* #return name */
@@ -190,7 +200,7 @@ ifCondBlock
   ;
 
 ifCondSRBlock
-  : PP_IFCONDSR IDENT NL+ block (elseCondClause)? PP_ENDCOND NL+
+  : PP_IFCONDSR (IDENT|cmpOp) NL+ block (elseCondClause)? PP_ENDCOND NL+
   ;
 
 elseifCondClause
@@ -202,7 +212,7 @@ elseCondClause
   ;
 
 syncBlock
-  : PP_SYNC LPAREN? IDENT RPAREN? NL+ block PP_ENDSYNC NL+
+  : PP_SYNC LPAREN? IDENT (LBRACKET offset=(IDENT|INT) RBRACKET?)? RPAREN? NL+ block PP_ENDSYNC NL+
   ;
 
 block

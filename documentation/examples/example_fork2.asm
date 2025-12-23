@@ -1,31 +1,32 @@
 #include <system/io.asm>
-#include <system/system.asm>
+#include <system/system.def>
 	#call	main()
+	move	r1, 0
 	int		iEXIT
 
-PIDS: dca	3
+#global PIDS: .dca	3
 #def_func	main()
 	#var	pid, i
 	#call	spawnChild("A")
 	move	pid, r0
 	#if_cond	pid, gt, 0
-		store	pid, PIDS[0]
+		store	pid, PIDS[1]
 		#call	spawnChild("B")
 		move	pid, r0
 		#if_cond	pid, gt, 0
-			store	pid, PIDS[1]
+			store	pid, PIDS[2]
 			#call	spawnChild("C")
 			move	pid, r0
 			#if_cond	pid, gt, 0
-				store	pid, PIDS[2]
+				store	pid, PIDS[3]
 			#end_cond
 		#end_cond
 	#end_cond
-	#for	i, 0, lt, 3, 1
+	#for	1, i, le, 3, 1
 		load	pid, PIDS[i]
 		#if_cond	pid, gt, 0
-			#call	fprintf(STDOUT, "Waiting for %d...\n", pid)
-			move	r0, pid
+			#call	printf("Waiting for %d...\n", pid)
+			move	r1, pid
 			int		iWAIT_PID
 		#end_cond
 	#end_for
@@ -37,24 +38,24 @@ PIDS: dca	3
 	int		iFORK
 	move	child_pid, r0
 	cmp		child_pid, -1
-	jump	eq, @FORK_FAILED
+	jump	eq, $FORK_FAILED
 	test	child_pid
-	jump	z, @CHILD_FORK
-	#call	fprintf(STDOUT,"Child %s forked: %d\n", childName, r0)
+	jump	z, $CHILD_FORK
+	#call	printf("Child %s forked: %d\n", childName, child_pid)
 	#return	child_pid
-	jump	@END
-CHILD_FORK:
-	#call	fprintf(STDOUT,"Child %s executing...\n", childName)
-	#for	r1, 0, lt, 10, 1
-		#call	fprintf(STDOUT, "%s %d...\n", childName, r1)
-		#call	sleep(1000)
+	jump	$END
+$CHILD_FORK:
+	#call	printf("Child %s executing...\n", childName)
+	#for	0, r1, lt, 10, 1
+		#call	printf("%s %d...\n", childName, r1)
+		#macro	sleep(1000)
 	#end_for
-	#call	fprintf(STDOUT, "Child %s done!\n", childName)
+	#call	printf("Child %s done!\n", childName)
 	stop
-FORK_FAILED:
-	#call	fprintf(STDOUT, "Fork %s failed!\n", childName)
+$FORK_FAILED:
+	#call	printf("Fork %s failed!\n", childName)
 	#return	-1
-END:
+$END:
 #end_func
 
 	stop

@@ -3,6 +3,7 @@
 #include <system/system.def>
 
 	#call	main()
+	move	r0, 0
 	int		iEXIT
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -14,16 +15,16 @@
 
 #def_func	main()
 	#var	filename, port
-// if (argc < 2)
+// Check if one arg1
 	int		iARGC
 	cmp		r0, 2
-	jump	ge, @PROCESS_FILE
+	jump	ge, $PROCESS_FILE
 // then we don't have command args use STDIN.
 	#call	read_lines(STDIN)
-	jump	@ENDIF1
-PROCESS_FILE:
+	jump	$ENDIF1
+$PROCESS_FILE:
 // Get first command line argument and put it in filename.
-	move	r0, 1
+	move	r1, 1
 	int		iARGS
 	move	filename, r0
 // Open text file in read mode.
@@ -32,28 +33,30 @@ PROCESS_FILE:
 	move	port, r0
 // If the port returned is -1 we failed.
 	cmp		port, -1
-	jump	z, @ENDIF1
+	jump	z, $ENDIF1
 // Process the input stream
 	#call	read_lines(port)
 // Close the file
 	#call	closeFile(port)
-ENDIF1:
+$ENDIF1:
 	stop
 #end_func
 
 // Read lines from port and double space them to STDOUT
 #def_func	read_lines(port)
-	#var	line,p
+	#var	line, p
+	move	line, 0
 	load	p, port
-	jump	@LOOP1_END
-LOOP1:
+	jump	$LOOP1_END
+$LOOP1:
 	#call	puts(line)
 	#call	put_nl()
 	#call	put_nl()
-LOOP1_END:
-	#call	fgetline(p)
+$LOOP1_END:
+	#call	fgetline(p, line)
 	move	line, r0
-	jump	nz, @LOOP1
+	jump	nz, $LOOP1
+	#macro	free(line)
 #end_func
 
 

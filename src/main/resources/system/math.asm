@@ -1,6 +1,7 @@
 #include <system/math.def>
 #include <system/system.def>
 
+MATH_ASM_START:
 jump	MATH_ASM_END
 
 #def_func	pi()

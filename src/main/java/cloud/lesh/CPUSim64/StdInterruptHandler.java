@@ -57,6 +57,7 @@ public class StdInterruptHandler extends InterruptHandler
 	public static final int iJOIN_THREAD=41;
 	public static final int iSLEEP=42;
 	public static final int iWAKE_THREAD=43;
+	public static final int iALLOC_SHARED=44;
 
 	public static final int iPI=100;
 	public static final int iE=101;		
@@ -140,20 +141,21 @@ public class StdInterruptHandler extends InterruptHandler
 	public static final int iTO_UPPER=311;
 	public static final int iTO_LOWER_STR=312;
 	public static final int iTO_UPPER_STR=313;
-	public static final int iSTRCMP=314;
-	public static final int iSUBSTRING=315;
-    public static final int iPREFIX=316;
-    public static final int iSUFFIX=317;
-    public static final int iCHAR_SEARCH=318;
-    public static final int iLAST_CHAR_SEARCH=319;
-    public static final int iSUBSTRING_SEARCH=320;
-    public static final int iLAST_SUBSTRING_SEARCH=321;
-	public static final int iSTRICMP=322;
-	public static final int iGET_CODEPOINTS=323;
-	public static final int iFROM_CODEPOINTS=324;
-	public static final int iCOUNT_GLHYPHS=325;
-	public static final int iHASHCODE=326;
-	public static final int iTRIM=327;
+	public static final int iSTRCOPY=314;
+	public static final int iSTRCMP=315;
+	public static final int iSTRICMP=316;
+	public static final int iSUBSTRING=317;
+    public static final int iPREFIX=318;
+    public static final int iSUFFIX=319;
+    public static final int iCHAR_SEARCH=320;
+    public static final int iLAST_CHAR_SEARCH=321;
+    public static final int iSUBSTRING_SEARCH=322;
+    public static final int iLAST_SUBSTRING_SEARCH=323;
+	public static final int iGET_CODEPOINTS=324;
+	public static final int iFROM_CODEPOINTS=325;
+	public static final int iCOUNT_GLHYPHS=326;
+	public static final int iHASHCODE=327;
+	public static final int iTRIM=328;
 
 	public static final int iMATCHES=350;
 	public static final int iREPLACE_FIRST=351;
@@ -329,6 +331,9 @@ public class StdInterruptHandler extends InterruptHandler
 				break;
 			case iWAKE_THREAD:
 				cpu.wakeThread((int)cpu.getR(1));
+				break;
+			case iALLOC_SHARED:
+				cpu.setR(0, cpu.allocShared((int)cpu.getR(1)));
 				break;
 			case iGET_PID:
 				cpu.setR(0, cpu.getPID());
@@ -614,8 +619,8 @@ public class StdInterruptHandler extends InterruptHandler
 				break;
 			case iPRINTF:
 				v = cpu.memRead(cpu.getR(Simulator.R_SF) + 3);		// get port
-				ph=cpu.getPortHandler((int)v);
-				if (ph!=null) {
+				ph = cpu.getPortHandler((int)v);
+				if (ph != null) {
 					ph.setPort(v);
 					s = sprintf(4);
 					s.codePoints().forEach(cp -> {
@@ -690,7 +695,7 @@ public class StdInterruptHandler extends InterruptHandler
 				ph = cpu.getPortHandler(i);
 				if (ph == null) {
 					try {
-						cpu.setPortHandler(i, new RawFilePortHandler(cpu, cpu.convertString(cpu.getR(2)),0));
+						cpu.setPortHandler(i, new RawFilePortHandler(cpu, cpu.convertString(cpu.getR(2)), 0));
 						cpu.setR(0, -1);
 					} catch (Simulator.CPUException ex) {
 						cpu.setR(0, 0);
@@ -902,14 +907,18 @@ public class StdInterruptHandler extends InterruptHandler
 					cpu.setR(0, s1.compareTo(s2));
 				}
 				break;
-			case iSUBSTRING:    //r1 string, r2 start, r3 length
+			case iSUBSTRING:    //r1 string, r2 start, r3 length (-1)
 				{
 					s = cpu.convertString((int)cpu.getR(1));
-					int start = Math.max(0, (int)cpu.getR(2));
-					int stop = Math.max(0, (int)(cpu.getR(2) + cpu.getR(3)));
 					int len = s.length();
+					int start = (int)cpu.getR(2);
 					start = Math.min(len, start);
+					start = Math.max(0, start);
+					int stop = (int)cpu.getR(3);
+					if (stop < 0) stop = len;
+					stop += start;
 					stop = Math.min(len, stop);
+					stop = Math.max(start, stop);
 					String sub = s.substring(start, stop);
 					cpu.setR(0, cpu.allocString(sub));
 				}

@@ -3,22 +3,110 @@
 #include <system/string.def>
 #include <system/thread.asm>
 
-#macro DEFINE_RECURSIVE_SPINLOCK(STDOUT_LOCK)
-#call initializeRecursiveSpinLock(STDOUT_LOCK)
+IO_ASM_START:
+#macro DEFINE_SHARED_RECURSIVE_SPINLOCK(STDOUT_LOCK_HANDLE)
+load	r0, STDOUT_LOCK_HANDLE
+#call initializeRecursiveSpinLock(r0)
+#macro DEFINE_SHARED_RECURSIVE_SPINLOCK(PORTMAP_LOCK_HANDLE)
+load	r0, PORTMAP_LOCK_HANDLE
+#call initializeRecursiveSpinLock(r0)
+
+#global __PORT_MAP_HANDLE:   .dci    0
+#macro	ALLOC_SHARED(4)			// Must match Architecture.NUM_PORTS / 64
+store	r0, __PORT_MAP_HANDLE
+#call	__setPortMap(0)			// STDIN
+#call	__setPortMap(1)			// STDOUT
+#call	__setPortMap(2)			// STDERR
+
 jump	@IO_ASM_END
+
+#def_func	__setPortMap(bit)
+	#var	b, addr, offset, mask, lock
+	load	b, bit
+	#macro	COMPARE_RANGE(3, le, b, lt, 256)
+	#if_cond_sr z
+		#return FALSE
+	#end_cond
+	load	lock, PORTMAP_LOCK_HANDLE
+	#call	acquireRecursiveSpinLock(lock)
+	load	addr, __PORT_MAP_HANDLE
+	div		offset, mask, b, 64
+	debug	b, addr, offset, mask
+	lsh		mask, 1, mask
+	load	r0, addr[offset]
+	or		r0, mask
+	store	r0, addr[offset]
+	#call	releaseRecursiveSpinLock(lock)
+	#return	TRUE
+#end_func
+
+#def_func	__unsetPortMap(bit)
+	#var	b, addr, offset, mask, lock
+	load	b, bit
+	#macro	COMPARE_RANGE(3, le, b, lt, 256)
+	#if_cond_sr z
+		#return FALSE
+	#end_cond
+	load	lock, PORTMAP_LOCK_HANDLE
+	#call	acquireRecursiveSpinLock(lock)
+	load	addr, __PORT_MAP_HANDLE
+	div		offset, mask, b, 64
+	lsh		mask, 1, mask
+	compl	mask
+	load	r0, addr[offset]
+	and		r0, mask
+	store	r0, addr[offset]
+	#call	releaseRecursiveSpinLock(lock)
+	#return	TRUE
+#end_func
+
+#def_func	__getPortMap(bit)
+	#var	b, addr, offset, mask
+	load	b, bit
+	#macro	COMPARE_RANGE(3, le, b, lt, 256)
+	#if_cond_sr z
+		#return TRUE
+	#end_cond
+	load	addr, __PORT_MAP_HANDLE
+	div		offset, mask, b, 64
+	lsh		mask, 1, mask
+	load	r0, addr[offset]
+	and		r0, mask
+	move	z, r0, FALSE, TRUE
+#end_func
+
+#def_func	__getFreePort()
+	#var	i, result, lock
+	load	lock, PORTMAP_LOCK_HANDLE
+	#call	acquireRecursiveSpinLock(lock)
+	move	result, -1
+	#for	3, i, lt, 256, 1
+		#call	__getPortMap(i)
+		test	r0
+		#if_cond_sr z
+			move	result, i
+			#call	__setPortMap(i)
+			#break
+		#end_cond_sr
+	#end_for
+	#call	releaseRecursiveSpinLock(lock)
+	#return	result
+#end_func
 
 // PUTS
 // sends a string to STDOUT atomically
 // str	String Address
 #def_func puts(str)
 	save	r1, r2
-	#call	acquireRecursiveSpinLock(STDOUT_LOCK)
+	load	r0, STDOUT_LOCK_HANDLE
+	#call	acquireRecursiveSpinLock(r0)
 	load	r2, str
 	mov		r1, STDOUT
 	int		iPUTS
-	#call	releaseRecursiveSpinLock(STDOUT_LOCK)
+	load	r0, STDOUT_LOCK_HANDLE
+	#call	releaseRecursiveSpinLock(r0)
 	restore	r1, r2
-#end_func	puts
+#end_func
 
 // FPUTS 
 // sends a string to the specified I/O port
@@ -31,20 +119,22 @@ jump	@IO_ASM_END
 	load	r1, port
 	int		iPUTS
 	restore	r1, r2
-#end_func	fputs
+#end_func
 
 // PUTLINE
 // sends a string to STDOUT atomically and adds a newline
 // str	String Address
 #def_func putline(str)
 	save	r1, r2
-	#call	acquireRecursiveSpinLock(STDOUT_LOCK)
+	load	r0, STDOUT_LOCK_HANDLE
+	#call	acquireRecursiveSpinLock(r0)
 	load	r2, str
 	mov		r1, STDOUT
 	int		iPUT_LINE
-	#call	releaseRecursiveSpinLock(STDOUT_LOCK)
+	load	r0, STDOUT_LOCK_HANDLE
+	#call	releaseRecursiveSpinLock(r0)
 	restore	r1, r2
-#end_func	puts
+#end_func
 
 // FPUTLINE
 // sends a string to the specified I/O port and adds a newline
@@ -57,19 +147,21 @@ jump	@IO_ASM_END
 	load	r1, port
 	int		iPUT_LINE
 	restore	r1, r2
-#end_func	fputs
+#end_func
 
 // PUTC
 // Sends the character to the STDOUT port atomically.  This outputs a 32-bit codepoint not a byte.
 // value	Character to output
 #def_func	putc(value)
 	push	r1
-	#call	acquireRecursiveSpinLock(STDOUT_LOCK)
+	load	r0, STDOUT_LOCK_HANDLE
+	#call	acquireRecursiveSpinLock(R0)
 	load	r1, value
 	#macro	out0(r1, STDOUT)
-	#call	releaseRecursiveSpinLock(STDOUT_LOCK)
+	load	r0, STDOUT_LOCK_HANDLE
+	#call	releaseRecursiveSpinLock(r0)
 	pop		r1
-#end_func putc
+#end_func
 
 // FPUTC
 // Sends the character to the specified I/O port.  This outputs a 32-bit codepoint not a byte.
@@ -81,7 +173,7 @@ jump	@IO_ASM_END
 	load	r2, value
 	#macro	out0(r2, r1)
 	restore	r1, r2
-#end_func fputc
+#end_func
 
 // PUT_INT
 // Formats the integer value as a string and then sends to STDOUT atomically
@@ -89,14 +181,16 @@ jump	@IO_ASM_END
 // base		Base for formatting
 #def_func	put_int(value,base)
 	save	r1,r3
-	#call	acquireRecursiveSpinLock(STDOUT_LOCK)
+	load	r0, STDOUT_LOCK_HANDLE
+	#call	acquireRecursiveSpinLock(r0)
 	move	r1,STDOUT
 	load	r2,value
 	load	r3,base
 	int		iPUT_INT
-	#call	releaseRecursiveSpinLock(STDOUT_LOCK)
+	load	r0, STDOUT_LOCK_HANDLE
+	#call	releaseRecursiveSpinLock(r0)
 	restore	r1,r3
-#end_func put_int
+#end_func
 
 // FPUT_INT
 // Formats the integer value as a string and then sends to the specified I/O port
@@ -110,20 +204,22 @@ jump	@IO_ASM_END
 		load	r3,base
 		int		iPUT_INT
 		restore	r1,r3
-#end_func fput_int
+#end_func
 
 // PUT_DEC 
 // Formats the integer value as a string and then sends to STDOUT atomically
 // value	Value to format
 #def_func	put_dec(value)
 	save	r1,r2
-	#call	acquireRecursiveSpinLock(STDOUT_LOCK)
+	load	r0, STDOUT_LOCK_HANDLE
+	#call	acquireRecursiveSpinLock(r0)
 	move	r1,STDOUT
 	load	r2,value
 	int		iPUT_DEC
-	#call	releaseRecursiveSpinLock(STDOUT_LOCK)
+	load	r0, STDOUT_LOCK_HANDLE
+	#call	releaseRecursiveSpinLock(r0)
 	restore	r1,r2
-#end_func put_dec
+#end_func
 
 // FPUT_DEC 
 // Formats the integer value as a string and then sends to the specified I/O port
@@ -135,21 +231,23 @@ jump	@IO_ASM_END
 	load	r2,value
 	int		iPUT_DEC
 	restore	r1,r2
-#end_func fput_dec
+#end_func
 
 // PUT_HEX
 // Formats the integer value as a string and then sends to STDOUT atomically
 // value	Value to format
 #def_func	put_hex(value)
 	save	r1, r3
-	#call	acquireRecursiveSpinLock(STDOUT_LOCK)
+	load	r0, STDOUT_LOCK_HANDLE
+	#call	acquireRecursiveSpinLock(r0)
 	move	r1, STDOUT
 	load	r2, value
 	move	r3, 0
 	int		iPUT_HEX
-	#call	releaseRecursiveSpinLock(STDOUT_LOCK)
+	load	r0, STDOUT_LOCK_HANDLE
+	#call	releaseRecursiveSpinLock(r0)
 	restore	r1, r3
-#end_func put_hex
+#end_func
 
 // PUT_HEX_SIZE
 // Formats the integer value as a string and then sends to STDOUT atomically
@@ -157,14 +255,16 @@ jump	@IO_ASM_END
 // size		Minimum number of digits to print, pads with 0
 #def_func	put_hex_size(value, size)
 	save	r1, r3
-	#call	acquireRecursiveSpinLock(STDOUT_LOCK)
+	load	r0, STDOUT_LOCK_HANDLE
+	#call	acquireRecursiveSpinLock(r0)
 	move	r1, STDOUT
 	load	r2,value
 	load	r3, size
 	int		iPUT_HEX
-	#call	releaseRecursiveSpinLock(STDOUT_LOCK)
+	load	r0, STDOUT_LOCK_HANDLE
+	#call	releaseRecursiveSpinLock(r0)
 	restore	r1, r3
-#end_func put_hex
+#end_func
 
 // FPUT_HEX
 // Formats the integer value as a string and then sends to the specified I/O port
@@ -176,7 +276,7 @@ jump	@IO_ASM_END
 	load	r2,value
 	int		iPUT_HEX
 	restore	r1,r2
-#end_func fput_hex
+#end_func
 
 // FPUT_HEX_SIZE
 // Formats the integer value as a string and then sends to the specified I/O port
@@ -190,7 +290,7 @@ jump	@IO_ASM_END
 	load	r3,size
 	int		iPUT_HEX
 	restore	r1,r3
-#end_func put_hex
+#end_func
 
 // PUT_FP
 // Formats the IEEE754 floating point value as a string and then sends to STDOUT atomically
@@ -198,15 +298,17 @@ jump	@IO_ASM_END
 #def_func	put_fp(fpvalue, prec)
 	save	r1, r2
 	push	f1
-	#call	acquireRecursiveSpinLock(STDOUT_LOCK)
+	load	r0, STDOUT_LOCK_HANDLE
+	#call	acquireRecursiveSpinLock(r0)
 	move	r1, STDOUT
 	load	r2, prec
 	load	f1, fpvalue
 	int		iPUT_FP
-	#call	releaseRecursiveSpinLock(STDOUT_LOCK)
+	load	r0, STDOUT_LOCK_HANDLE
+	#call	releaseRecursiveSpinLock(r0)
 	pop		f1
 	restore	r1, r2
-#end_func put_fp
+#end_func
 
 // FPUT_FP
 // Formats the IEEE754 floating point value as a string and then sends to the specified I/O port
@@ -221,17 +323,19 @@ jump	@IO_ASM_END
 	int		iPUT_FP
 	pop		f1
 	restore	r1, r2
-#end_func fput_fp
+#end_func
 
 // PUT_NL
 // Outputs the newline character to STDOUT atomically
 // port	I/O Port
 
 #def_func	put_nl()
-	#call	acquireRecursiveSpinLock(STDOUT_LOCK)
+	load	r0, STDOUT_LOCK_HANDLE
+	#call	acquireRecursiveSpinLock(r0)
 	#macro	out0('\n', STDOUT)
-	#call	releaseRecursiveSpinLock(STDOUT_LOCK)
-#end_func put_nl
+	load	r0, STDOUT_LOCK_HANDLE
+	#call	releaseRecursiveSpinLock(r0)
+#end_func
 
 // FPUT_NL
 // Outputs the newline character to the port specified
@@ -241,7 +345,7 @@ jump	@IO_ASM_END
 	#var	port_arg
 	load	port_arg,port
 	#macro	out0('\n', port_arg)
-#end_func put_nl
+#end_func
 
 // fprintf(port, fmt, values...)
 // Formats the values on the stack and then sends to the specified I/O port
@@ -260,9 +364,11 @@ jump	@IO_ASM_END
 	#var	str
 	int		iSPRINTF
 	move	str, r0
-	#call	acquireRecursiveSpinLock(STDOUT_LOCK)
+	load	r0, STDOUT_LOCK_HANDLE
+	#call	acquireRecursiveSpinLock(r0)
 	#call	puts(str)
-	#call	releaseRecursiveSpinLock(STDOUT_LOCK)
+	load	r0, STDOUT_LOCK_HANDLE
+	#call	releaseRecursiveSpinLock(r0)
 #end_func
 
 // cond_fprintf(cond, port, fmt, values...)
@@ -284,10 +390,12 @@ jump	@IO_ASM_END
 	#var	str
 	int		iSPRINTF
 	move	str, r0
-	#call	acquireRecursiveSpinLock(STDOUT_LOCK)
+	load	r0, STDOUT_LOCK_HANDLE
+	#call	acquireRecursiveSpinLock(r0)
 	#call	fputs(STDERR, "\nFATAL: ")
 	#call	fputs(STDERR, str)
-	#call	releaseRecursiveSpinLock(STDOUT_LOCK)
+	load	r0, STDOUT_LOCK_HANDLE
+	#call	releaseRecursiveSpinLock(r0)
 	move	r1, 1
 	int		iEXIT
 #end_func
@@ -309,11 +417,13 @@ jump	@IO_ASM_END
 		move	SF, SP				// Update SF
 		int		iSPRINTF
 		push	r0
-		#call	acquireRecursiveSpinLock(STDOUT_LOCK)
+		load	r0, STDOUT_LOCK_HANDLE
+		#call	acquireRecursiveSpinLock(r0)
 		#call	fputs(STDERR, "\nFATAL: ")
 		pop		r1
 		#call	fputs(STDERR, r1)
-		#call	releaseRecursiveSpinLock(STDOUT_LOCK)
+		load	r0, STDOUT_LOCK_HANDLE
+		#call	releaseRecursiveSpinLock(r0)
 		move	r1, 1
 		int		iEXIT
 	#end_cond_sr
@@ -323,126 +433,81 @@ jump	@IO_ASM_END
 // Read an entire line from the specified I/O port
 // port		I/O Port
 // Returns address of the line as a string.  Do not free this address.
+// Returns the (re)allocated buffer or 0 if EOF
 #def_func	fgetline(port, buffer)
 	load	r1, port
 	load	r2, buffer
 	int		iGET_LINE
+	cmp		r0, -1
+	move	z, r0, 0, r2
 #end_func
 
-/*
-_PORT_MAP: .dca	256			// Must match Architecture.NUM_PORTS
-
 #def_func	openTextFile(filename, mode)
-	#var	fn, m, i, maxPort, foundPort
-	save	r1,r2
+	#var	fn, m, foundPort
 	load	fn, filename
 	load	m, mode
 	// find available port in _PORT_MAP
-	move	i, 3		// Skip three for STDIN, STDOUT and STDERR
-	load	maxPort, _PORT_MAP[-1]
-	jump	$FIND_PORT_END
-$FIND_PORT:
-	load	r1, _PORT_MAP[i]
-	jump	z, $FOUND_PORT
-	add		i, 1
-$FIND_PORT_END:
-	cmp		i, maxPort
-	jump	lt, $FIND_PORT
-// all ports used
-	#return	-1
-	jump	$FINIS
-$FOUND_PORT:
-	move	foundPort, i
-	
-	cmp		m, READ_MODE
-	jump	nz, $NOT_READ_MODE
-	move	r1, foundPort
-	move	r2, fn
-	int		iOPEN_FILE_READ
-	move	r0, foundPort
-	store	TRUE, _PORT_MAP[foundPort]
-	jump	$FINIS
-$NOT_READ_MODE:
-	cmp		m, WRITE_MODE
-	jump	nz, $NOT_WRITE_MODE
-	move	r1, foundPort
-	move	r2, fn
-	int		iOPEN_FILE_WRITE
-	move	r0, foundPort
-	store	TRUE, _PORT_MAP[foundPort]
-	jump	$FINIS
-$NOT_WRITE_MODE:
-	cmp		m, APPEND_MODE
-	jump	nz, $NOT_APPEND_MODE
-	move	r1, foundPort
-	move	r2, fn
-	int		iOPEN_FILE_APPEND
-	move	r0, foundPort
-	store	TRUE, _PORT_MAP[foundPort]
-	jump	$FINIS
-$NOT_APPEND_MODE:
-	move	r0, -1
-$FINIS:
-	restore	r1,r2
+	#call	__getFreePort()
+	#if_cond	r0, eq, -1
+		#return	-1				// all ports used
+	#end_cond
+	move	foundPort, r0
+	#if_cond	m, eq, READ_MODE
+		move	r1, foundPort
+		move	r2, fn
+		int		iOPEN_FILE_READ
+		#return foundPort
+	#else_if_cond	m, eq, WRITE_MODE
+		move	r1, foundPort
+		move	r2, fn
+		int		iOPEN_FILE_WRITE
+		#return foundPort
+	#else_if_cond	m, eq, APPEND_MODE
+		move	r1, foundPort
+		move	r2, fn
+		int		iOPEN_FILE_APPEND
+		#return foundPort
+	#else_cond
+		#return	-1				// not a valid mode
+	#end_cond
 #end_func
 
 #def_func	openRawFile(filename, mode)
-	#var	fn, m, i, maxPort, foundPort
-	save	r1,r2
+	#var	fn, m, foundPort
 	load	fn, filename
 	load	m, mode
 	// find available port in _PORT_MAP
-	move	i, 3		// Skip three for STDIN, STDOUT and STDERR
-	load	maxPort, _PORT_MAP[-1]
-	jump	$FIND_PORT_END
-$FIND_PORT:
-	load	r1, _PORT_MAP[i]
-	jump	z, $FOUND_PORT
-	add		i, 1
-$FIND_PORT_END:
-	cmp		i, maxPort
-	jump	lt, $FIND_PORT
-// all ports used
-	#return	-1
-	jump	$FINIS
-$FOUND_PORT:
-	move	foundPort, i
-	
-	cmp		m, READ_MODE
-	jump	nz, @NOT_READ_MODE
-	move	r1, foundPort
-	move	r2, fn
-	int		iOPEN_RAW_FILE_READ
-	move	r0, foundPort
-	store	TRUE, _PORT_MAP[foundPort]
-	jump	$FINIS
-$NOT_READ_MODE:
-	cmp		m, WRITE_MODE
-	jump	nz, $NOT_WRITE_MODE
-	move	r1, foundPort
-	move	r2, fn
-	int		iOPEN_RAW_FILE_WRITE
-	move	r0, foundPort
-	store	TRUE, _PORT_MAP[foundPort]
-	jump	$FINIS
-$NOT_WRITE_MODE:
-	cmp		m, APPEND_MODE
-	jump	nz, @NOT_APPEND_MODE
-	move	r1, foundPort
-	move	r2, fn
-	int		iOPEN_RAW_FILE_APPEND
-	move	r0, foundPort
-	store	TRUE, _PORT_MAP[foundPort]
-	jump	$FINIS
-$NOT_APPEND_MODE:
-	move	r0, -1
-$FINIS:
-	restore	r1,r2
+	#call	__getFreePort()
+	#if_cond	r0, eq, -1
+		#return	-1				// all ports used
+	#end_cond
+	move	foundPort, r0
+	#if_cond	m, eq, READ_MODE
+		move	r1, foundPort
+		move	r2, fn
+		int		iOPEN_RAW_FILE_READ
+		#return foundPort
+	#else_if_cond	m, eq, WRITE_MODE
+		move	r1, foundPort
+		move	r2, fn
+		int		iOPEN_RAW_FILE_WRITE
+		#return foundPort
+	#else_if_cond	m, eq, APPEND_MODE
+		move	r1, foundPort
+		move	r2, fn
+		int		iOPEN_RAW_FILE_APPEND
+		#return foundPort
+	#else_cond
+		#call	__unsetPortMap(foundPort)
+		#return	-1				// not a valid mode
+	#end_cond
 #end_func
 
 #def_func	closeFile(port)
-	load	r1, port
-	store	FALSE, _PORT_MAP[r0]
+	#var	p
+	load	p, port
+	#call	__unsetPortMap(p)
+	move	r1, p
 	int		iCLOSE_FILE
 #end_func
 
@@ -464,6 +529,19 @@ $FINIS:
 #def_func	deleteDirectory(filespec)
 	load	r1, filespec
 	int		iDELETE_DIR
+#end_func
+
+#def_func	deleteFiles(strList)
+	#var	i, len, list, result
+	move	result, TRUE
+	load	list, strList
+	load	len, list[0]
+	#for	1, i, le, len, 1
+		load	r1, list[i]
+		int		iDELETE_FILE
+		and		result, r0
+	#end_for
+	#return	result
 #end_func
 
 #def_func	isDirectory(filespec)
@@ -492,11 +570,11 @@ $FINIS:
 #end_func
 
 #def_func	tempFile(prefix, suffix)
-	save	r1,r2
+	save	r1, r2
 	load	r1, prefix
 	load	r2, suffix
 	int		iTEMP_FILE
-	restore	r1,r2
+	restore	r1, r2
 #end_func
 
 #def_func	copy_text_file(fromPort, toPort)
@@ -510,18 +588,39 @@ $FINIS:
 		#call	fput_nl(tp)
 		#call	fgetline(fp)
 		move	line, r0
-	#endwhile
+	#end_while
 #end_func
 
 #def_func	copy_raw_file(fromPort, toPort)
 	#var	ch, fp, tp
 	load	fp, fromPort
 	load	tp, toPort
-	IN1(ch, fp)
+	#macro	IN1(ch, fp)
 	#while	ch, ne, -1
-		OUT1(ch, tp)
-		IN1(ch, fp)
-	#endwhile
+		#macro	OUT1(ch, tp)
+		#macro	IN1(ch, fp)
+	#end_while
 #end_func
-*/
+
+///////////////////////////////////////////////////////////////////////////////
+// printIntArray(a)
+// Prints an array of integers as decimal.
+// a	Base address of the array to print
+///////////////////////////////////////////////////////////////////////////////
+#def_func printIntArray(addrArg)
+	#var	len, i, addr
+	load	addr, addrArg
+	load	len, addr[0]
+	#for	1, i <= len, 1
+		#if_cond	i, ne, 1
+			move	r1, STDOUT
+			move	r2, ","
+			int		iPUTS
+		#end_cond
+		move	r1, STDOUT
+		load	r2, addr[i]
+		int		iPUT_DEC
+	#end_for
+#end_func
+
 IO_ASM_END:	nop

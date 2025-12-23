@@ -4,6 +4,7 @@
 #include <system/system.asm>
 
 	#call	main()
+	move	r1, 0
 	int		iEXIT
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -46,7 +47,7 @@
 	int		iAlloc
 	store	r0, SMALL_GETS_BUFFER
 	load	r1, SMALL_GETS_BUFFER[-1]
-	#call	fprintf(STDOUT, "Small buffer: %8x (%d)\n", SMALL_GETS_BUFFER, r1)
+	#call	printf("Small buffer: %8x (%d)\n", SMALL_GETS_BUFFER, r1)
 	move	r1, STDOUT
 	move	r2, "What is your quest? "
 	int		iPUTS
@@ -59,7 +60,7 @@
 	move	r1, STDOUT
 	int		iPUT_NL
 	load	r1, r2[-1]
-	#call	fprintf(STDOUT, "Final buffer: %8x (%d)\n", r2, r1)
+	#call	printf("Final buffer: %8x (%d)\n", r2, r1)
 	move	r1, r2
 	int		iFREE
 	
@@ -107,9 +108,9 @@
 	int		iPUTS
 	move	r1, STDIN
 	int		iGET_FP
-	move	r2, r0
+	move	r2, 6
 	move	r1, STDOUT
-	move	r3, 6
+	move	f1, f0
 	int		iPUT_FP
 	move	r1, STDOUT
 	int		iPUT_NL
@@ -225,6 +226,7 @@
 	int		iPUT_NL
 	in		f2, DOUBLE, 3
 	move	r1, STDOUT
+	move	r2, 6
 	int		iPUT_FP
 	move	r1, STDOUT
 	int		iPUT_NL
@@ -233,59 +235,63 @@
 
 	// Test Filesystem interrupts
 	#call	tempDirectory("CPUSim64")
-	move	r5, r1
-	#call	fprintf(STDOUT, "Created temp directory: %s\n", r5)
+	move	r5, r0
+	#call	printf("Created temp directory: %s\n", r5)
 	#call	fileExists(r5)
-	#call	fprintf(STDOUT, "Dir exists: %d\n", r1)
+	#call	printf("Dir exists: %d\n", r0)
 	#call	deleteDirectory(r5)
-	#call	fprintf(STDOUT, "Deleted temp directory: %d\n", r1)
+	#call	printf("Deleted temp directory: %d\n", r0)
 	#call	fileExists(r5)
-	#call	fprintf(STDOUT, "Dir exists: %d\n", r1)
+	#call	printf("Dir exists: %d\n", r0)
 	
 	#call	tempFile("CPUSim64",".txt")
-	move	r5, r1
-	#call	fprintf(STDOUT, "Created temp file: %s\n", r5)
+	move	r5, r0
+	#call	printf("Created temp file: %s\n", r5)
 	#call	fileExists(r5)
-	#call	fprintf(STDOUT, "File exists: %d\n", r1)
+	#call	printf("File exists: %d\n", r0)
 	#call	deleteFile(r5)
-	#call	fprintf(STDOUT, "Deleted temp file: %d\n", r1)
+	#call	printf("Deleted temp file: %d\n", r0)
 	#call	fileExists(r5)
-	#call	fprintf(STDOUT, "File exists: %d\n", r1)
+	#call	printf("File exists: %d\n", r0)
 
 	#call	makeDirectory("temp")
-	move	r5, r1
-	#call	fprintf(STDOUT, "Created directory: temp %d\n", r5)
+	move	r5, r0
+	#call	printf("Created directory: temp %d\n", r5)
 	#call	fileExists("temp")
-	#call	fprintf(STDOUT, "Dir exists: %d\n", r1)
+	#call	printf("Dir exists: %d\n", r0)
 	
 	#call	openTextFile("temp/temp.txt", WRITE_MODE)
-	move	r5, r1
-	#call	fprintf(STDOUT, "Created temp file: temp/temp.txt\n")
+	move	r5, r0
+	#call	printf("Created temp file: temp/temp.txt\n")
 	#call	fileExists("temp/temp.txt")
-	#call	fprintf(STDOUT, "File exists: %d\n", r1)
+	#call	printf("File exists: %d\n", r0)
 	#call	closeFile(r5)
 	#call	openTextFile("temp/temp2.txt", WRITE_MODE)
-	move	r5, r1
-	#call	fprintf(STDOUT, "Created temp file: temp/temp2.txt\n")
+	move	r5, r0
+	#call	printf("Created temp file: temp/temp2.txt\n")
 	#call	fileExists("temp/temp2.txt")
-	#call	fprintf(STDOUT, "File exists: %d\n", r1)
+	#call	printf("File exists: %d\n", r0)
 	#call	closeFile(r5)
 	#call	listFiles("temp")
-	move	r5, r1
-	load	r4, r1[-1]
-	#call	fprintf(STDOUT, "listFiles: %d\n", r4)
-	#for	r2, 0, lt, r4, 1
+	move	r5, r0
+	load	r4, r5[0]
+	#call	printf("listFiles: %d\n", r4)
+	#for	1, r2, le, r4, 1
 		load	r3, r5[r2]
-		#if_cond	r3, eq, 0
-			#break
-		#end_cond
 		#call	puts(r3)
 		#call	put_nl()
 	#end_for
-	#call	freeArrayOfStrings(r5)
+	#call	puts("List Done\n")
+	#call	deleteFiles(r5)
+	#call	printf("Deleted temp files: %d\n", r0)
+	#call	deleteDirectory("temp")
+	#call	printf("Deleted temp directory: %d\n", r0)
+	#call	fileExists("temp")
+	#call	printf("Dir exists: %d\n", r0)
+	#call	freeStrArray(r5)
 #end_func
 
-#global SMALL_GETS_BUFFER: dci 0
+#global SMALL_GETS_BUFFER: .dci 0
 	stop
 	stop
 

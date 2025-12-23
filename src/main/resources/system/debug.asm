@@ -3,6 +3,8 @@
 #include <system/io.asm>
 #include <system/thread.asm>
 
+DEBUG_ASM_START:
+
 jump	DEBUG_ASM_END
 
 #ifdef __DEBUG__

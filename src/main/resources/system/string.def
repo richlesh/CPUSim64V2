@@ -12,20 +12,21 @@
 #define	iTO_UPPER			311
 #define	iTO_LOWER_STR		312
 #define	iTO_UPPER_STR		313
-#define iSTRCMP				314
-#define iSUBSTRING			315
-#define	iPREFIX				316
-#define iSUFFIX				317
-#define iCHAR_SEARCH		318
-#define iLAST_CHAR_SEARCH	319
-#define iSUBSTRING_SEARCH	320
-#define iLAST_SUBSTRING_SEARCH	321
-#define	iSTRICMP			322
-#define iGET_CODEPOINTS		323
-#define iFROM_CODEPOINTS	324
-#define iCOUNT_GLPYHS		325
-#define iHASHCODE			326
-#define iTRIM				327
+#define iSTRCOPY			314
+#define iSTRCMP				315
+#define	iSTRICMP			316
+#define iSUBSTRING			317
+#define	iPREFIX				318
+#define iSUFFIX				319
+#define iCHAR_SEARCH		320
+#define iLAST_CHAR_SEARCH	321
+#define iSUBSTRING_SEARCH	322
+#define iLAST_SUBSTRING_SEARCH	323
+#define iGET_CODEPOINTS		324
+#define iFROM_CODEPOINTS	325
+#define iCOUNT_GLPYHS		326
+#define iHASHCODE			327
+#define iTRIM				328
 
 #define	iMATCHES			350
 #define	iREPLACE_FIRST		351
@@ -87,6 +88,15 @@
 #def_macro	TO_UPPER_STR(x)
 	move	r1, ${x}
 	int		iTO_UPPER_STR
+#end_macro
+
+#def_macro	STRLEN(s1)
+	load	r0, ${s1}[0]
+#end_macro
+
+#def_macro	STRCOPY(s1)
+	move	r1, ${s1}
+	int		iSTRCOPY
 #end_macro
 
 #def_macro	STRCMP(s1, s2)
@@ -163,7 +173,9 @@
 	load	r1, ${str}[0]
 	load	r2, ${suffix}[0]
 	sub		r3, r1, r2
-	#macro	LAST_SUBSTRING_SEARCH(${str}, ${suffix}, r3)
+	move	r1, ${str}
+	move	r2, ${suffix}
+	int		iLAST_SUBSTRING_SEARCH
 	cmp		r0, r3
 	move	z, r0, TRUE, FALSE
 #end_macro
@@ -189,7 +201,7 @@
 	int		iCOUNT_GLPYHS
 #end_macro
 
-#def_macro	HASHCODE(str)
+#def_macro	HASH_CODE(str)
 	move	r1, ${str}
 	int		iHASHCODE
 #end_macro

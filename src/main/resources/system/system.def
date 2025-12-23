@@ -39,6 +39,7 @@
 #define	iJOIN_THREAD	41
 #define	iSLEEP			42
 #define iWAKE_THREAD    43
+#define iALLOC_SHARED	44
 
 #define	TRUE	-1
 #define	FALSE	0
@@ -101,6 +102,13 @@
 	pop		r1
 #end_macro
 
+#def_macro	ALLOC_SHARED(size)
+	push	r1
+	move	r1, ${size}
+	int		iALLOC_SHARED
+	pop		r1
+#end_macro
+
 #def_macro	MEMMOVE(dest, src, size)
 	save	r1,r3
 	move	r1, ${dest}
@@ -116,4 +124,9 @@
 	move	r2, ${size}
 	int		iMEMCLEAR
 	restore	r1,r2
+#end_macro
+
+#def_macro	SLEEP(ms)
+	move	r1, ${ms}
+	int		iSLEEP
 #end_macro

@@ -56,7 +56,7 @@
 		<tr><td>#continue</td><td>none</td><td>Continues to the next iteration of the innermost loop.</td></tr>
 		<tr><td>#if_cond<br/>#else_if_cond<br/>#else_cond<br/>#end_cond</td><td>IDENT cmpOp IDENT/literal<br/>IDENT cmpOp IDENT/literal</br>none</br>none</td><td>Generates assembler code for an <code>if/else</code> construct.</td></tr>
 		<tr><td>#if_cond_sr<br/>#else_cond<br/>#end_cond</td><td>z|nz|n|p|nn|np|pe|po|o|no</br>none</br>none</td><td>Generates assembler code for an <code>if/else</code> construct based on the conditions in the status register (SR)</td></tr>
-		<tr><td>#sync<br/>#end_sync</td><td>IDENT</td><td>Acquires a lock on the mutex IDENT and releases it at the end of the block.  Need to declare the mutex with<br/><code>#macro DEFINE_MUTEX(IDENT)</code><br/>and initialize it with<br/><code>#call initializeMutex(IDENT)</code><br/>Include <code>threadlib.asm</code> to get access to these macros/functions.</td></tr>
+		<tr><td>#sync<br/>#end_sync</td><td>IDENT<br>IDENT[OFFSET]</td><td>Acquires a lock on the mutex at IDENT (or IDENT[OFFSET]) and releases it at the end of the block.  Need to declare the mutex with<br/><code>#macro DEFINE_MUTEX(IDENT)</code><br/>and initialize it with<br/><code>#call initializeMutex(IDENT)</code><br/>Include <code>threadlib.asm</code> to get access to these macros/functions.</td></tr>
 	</tbody>
 </table>
 

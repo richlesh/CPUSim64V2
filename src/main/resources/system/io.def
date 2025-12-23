@@ -52,46 +52,36 @@
 #define	APPEND_MODE	2
 
 #def_macro	IN0(register,port)
-	in	${register},CHAR,${port}
+	in	${register}, CHAR, ${port}
 #end_macro
-#define	INC		IN0
 #def_macro	IN1(register,port)
-	in	${register},BYTE,${port}
+	in	${register}, BYTE, ${port}
 #end_macro
-#define	INB		IN1
 #def_macro	IN2(register,port)
-	in	${register},SHORT,${port}
+	in	${register}, SHORT, ${port}
 #end_macro
-#define INS		IN2
 #def_macro	IN4(register,port)
-	in	${register},WORD,${port}
+	in	${register}, WORD, ${port}
 #end_macro
-#define	INW		IN4
 #def_macro	IN8(register,port)
-	in	${register},LONG,${port}
+	in	${register}, LONG, ${port}
 #end_macro
-#define	INL		IN8
 
 #def_macro	OUT0(register, port)
 	out		${register}, CHAR, ${port}
 #end_macro
-#define	OUTC	OUT0
 #def_macro	OUT1(register, port)
 	out		${register}, BYTE, ${port}
 #end_macro
-#define	OUTB	OUT1
 #def_macro	OUT2(register, port)
 	out		${register}, SHORT, ${port}
 #end_macro
-#define	OUTS	OUT2
 #def_macro	OUT4(register, port)
 	out		${register}, WORD, ${port}
 #end_macro
-#define	OUTW	OUT4
 #def_macro	OUT8(register, port)
 	out		${register}, LONG, ${port}
 #end_macro
-#define	OUTL	OUT8
 
 #def_macro	PUT_NL()
 	move	r1, STDOUT

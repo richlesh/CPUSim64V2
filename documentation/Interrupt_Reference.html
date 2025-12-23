@@ -129,20 +129,21 @@
 		<tr><td>311</td><td>iTO_UPPER</td><td>r1: character</td><td>Returns the uppercase version of the character.</td></tr>
 		<tr><td>312</td><td>iTO_LOWER_STR</td><td>r1: string address</td><td>Returns lowercase version of string as a heap allocated string.</td></tr>
 		<tr><td>313</td><td>iTO_UPPER_STR</td><td>r1: string address</td><td>Returns uppercase version of string as a heap allocated string.</td></tr>
-		<tr><td>314</td><td>iSTRCMP</td><td>r1: string 1<br>r2: string 2</td><td>Compares string 1 to string 2 and returns 0 if equal, <0 if string 1 is less than string 2, and >0 if string 1 is greater than string 2.</td></tr>
-		<tr><td>315</td><td>iSUBSTRING</td><td>r1: string<br>r2: start index<br>r3: length</td><td>Returns a substring of a string as a heap allocated string.</td></tr>
-		<tr><td>316</td><td>iPREFIX</td><td>r1: String<br>r2: length</td><td>Returns length character prefix of the string as a heap allocated string.</td></tr>
-		<tr><td>317</td><td>iSUFFIX</td><td>r1: String<br>r2: length</td><td>Returns length character suffix of the string as a heap allocated string.</td></tr>
-		<tr><td>318</td><td>iCHAR_SEARCH</td><td>r1: string<br>r2: search char<br>r3: start pos</td><td>Returns the index of the location of the character in the string or -1 if not found.</td></tr>
-		<tr><td>318</td><td>iLAST_CHAR_SEARCH</td><td>r1: string<br>r2: search char<br>r3: start pos</td><td>Returns the index of the location of the character in the string searching from the end or -1 if not found.</td></tr>
-		<tr><td>320</td><td>iSUBSTRING_SEARCH</td><td>r1: string to search<br>r2: string to find<br>r3: start pos</td><td>Searches a string for the specified substring and returns the index into the string if found or -1 if not found.</td></tr>
-		<tr><td>321</td><td>iLAST_SUBSTRING_SEARCH</td><td>r1: string to search<br>r2: string to find<br>r3: start pos</td><td>Searches a string from the end for the specified substring and returns the index into the string if found or -1 if not found.</td></tr>
-		<tr><td>322</td><td>iSTRICMP</td><td>r1: string 1<br>r2: string 2</td><td>Ignoring case, compares string 1 to string 2 and returns 0 if equal, <0 if string 1 is less than string 2, and >0 if string 1 is greater than string 2.</td></tr>
-		<tr><td>323</td><td>iGET_CODEPOINTS</td><td>r1: string 1</td><td>Returns a heap allocated array of the codepoints in the string.</td></tr>
-		<tr><td>324</td><td>iFROM_CODEPOINTS</td><td>r1: array of codepoints</td><td>Returns a heap allocated string based on the passed array of codepoints.</td></tr>
-		<tr><td>325</td><td>iCOUNT_GLPYHS</td><td>r1: string</td><td>Returns the number of glyphs (graphemes) in the string.</td></tr>
-		<tr><td>326</td><td>iHASHCODE</td><td>r1: string</td><td>Returns the hashcode for the passed string.</td></tr>
-		<tr><td>327</td><td>iTRIM</td><td>r1: string</td><td>Returns a heap allocatd string with the leading and trailing whitespace removed.</td></tr>
+		<tr><td>314</td><td>iSTRCOPY</td><td>r1: string</td><td>Allocates a new string and copies the argument.  Returns the new string pointer in r0.</td></tr>
+		<tr><td>315</td><td>iSTRCMP</td><td>r1: string 1<br>r2: string 2</td><td>Compares string 1 to string 2 and returns 0 if equal, <0 if string 1 is less than string 2, and >0 if string 1 is greater than string 2.</td></tr>
+		<tr><td>316</td><td>iSTRICMP</td><td>r1: string 1<br>r2: string 2</td><td>Ignoring case, compares string 1 to string 2 and returns 0 if equal, <0 if string 1 is less than string 2, and >0 if string 1 is greater than string 2.</td></tr>
+		<tr><td>317</td><td>iSUBSTRING</td><td>r1: string<br>r2: start index<br>r3: length (-1 to end of string)</td><td>Returns a substring of a string as a heap allocated string.</td></tr>
+		<tr><td>318</td><td>iPREFIX</td><td>r1: String<br>r2: length</td><td>Returns length character prefix of the string as a heap allocated string.</td></tr>
+		<tr><td>319</td><td>iSUFFIX</td><td>r1: String<br>r2: length</td><td>Returns length character suffix of the string as a heap allocated string.</td></tr>
+		<tr><td>320</td><td>iCHAR_SEARCH</td><td>r1: string<br>r2: search char<br>r3: start pos</td><td>Returns the index of the location of the character in the string or -1 if not found.</td></tr>
+		<tr><td>321</td><td>iLAST_CHAR_SEARCH</td><td>r1: string<br>r2: search char<br>r3: start pos</td><td>Returns the index of the location of the character in the string searching from the end or -1 if not found.</td></tr>
+		<tr><td>322</td><td>iSUBSTRING_SEARCH</td><td>r1: string to search<br>r2: string to find<br>r3: start pos</td><td>Searches a string for the specified substring and returns the index into the string if found or -1 if not found.</td></tr>
+		<tr><td>323</td><td>iLAST_SUBSTRING_SEARCH</td><td>r1: string to search<br>r2: string to find<br>r3: start pos</td><td>Searches a string from the end for the specified substring and returns the index into the string if found or -1 if not found.</td></tr>
+		<tr><td>324</td><td>iGET_CODEPOINTS</td><td>r1: string 1</td><td>Returns a heap allocated array of the codepoints in the string.</td></tr>
+		<tr><td>325</td><td>iFROM_CODEPOINTS</td><td>r1: array of codepoints</td><td>Returns a heap allocated string based on the passed array of codepoints.</td></tr>
+		<tr><td>326</td><td>iCOUNT_GLPYHS</td><td>r1: string</td><td>Returns the number of glyphs (graphemes) in the string.</td></tr>
+		<tr><td>327</td><td>iHASHCODE</td><td>r1: string</td><td>Returns the hashcode for the passed string.</td></tr>
+		<tr><td>328</td><td>iTRIM</td><td>r1: string</td><td>Returns a heap allocatd string with the leading and trailing whitespace removed.</td></tr>
 		<tr><td>350</td><td>iMATCHES</td><td>r1: string to search<br>r2: regex to find</td><td>Searches a string for the specified regular expression and returns TRUE if found or FALSE if not found.</td></tr>
 		<tr><td>351</td><td>iREPLACE_FIRST</td><td>r1: string to search<br>r2: regex to find<br>r3: replacement string</td><td>Searches a string for the specified regular expression and returns the heap allocated string that has the first occurance replaced by the replacement string.</td></tr>
 		<tr><td>352</td><td>iREPLACE_ALL</td><td>r1: string to search<br>r2: regex to find<br>r3: replacement string</td><td>Searches a string for the specified regular expression and returns the heap allocated string that has all the occurances replaced by the replacement string.</td></tr>
@@ -199,6 +200,8 @@
 		<tr><td>40</td><td>iTHREAD</td><td>r1: function, r2: data</td><td>Starts a thread running the function passed in r1 and the data in r2. Returns the PID of the thread in r1.</td></tr>
 		<tr><td>41</td><td>iJOIN_THREAD</td><td>r1: PID</td><td>Waits for the thread with PID to complete.</td></tr>
 		<tr><td>42</td><td>iSLEEP</td><td>r1: delay in ms</td><td>Pauses execution for the specified milliseconds.</td></tr>
+		<tr><td>43</td><td>iWAKE_THREAD</td><td>r1: PID</td><td>Wakes a thread from sleep.</td></tr>
+		<tr><td>44</td><td>iALLOC_SHARED</td><td>r1: allocation size</td><td>Returns a shared block of memory.</td></tr>
 	</tbody>
 </table>
 

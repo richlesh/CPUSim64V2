@@ -24,13 +24,13 @@ import org.apache.commons.lang3.tuple.Pair;
 public class PreprocessorVisitor extends PreprocessorParserBaseVisitor<Void> {
 	public class PreprocessorException extends RuntimeException {
 		PreprocessorException(String msg) {
-			super(getLocation() + " -> " + msg);
+			super(getLocation() + ":ERROR:" + msg);
 		}
 		PreprocessorException(String msg, Object... args) {
-			super(String.format(getLocation() + " -> " + msg, args));
+			super(String.format(getLocation() + ":ERROR:" + msg, args));
 		}
 		PreprocessorException(Exception ex) {
-			super(getLocation() + " -> " + ex.getMessage());
+			super(getLocation() + ":ERROR:" + ex.getMessage());
 		}
 	}
 
@@ -42,7 +42,7 @@ public class PreprocessorVisitor extends PreprocessorParserBaseVisitor<Void> {
 	String funcName = "";			// current function name for return handling
 
 	String getLocation() {
-		return (filename == null ? "" : filename + ":") + lineNum;
+		return ("«" + (filename == null ? "" : filename) + "»:") + lineNum;
 	}
 
 	/** Provide include contents for a path like <system/io.asm> or "path". */
@@ -54,8 +54,8 @@ public class PreprocessorVisitor extends PreprocessorParserBaseVisitor<Void> {
 	/** Holds a #define value and kind so we can coerce in conditions. */
 	public static final class DefVal {
 		public enum Kind { INT, FLOAT, CHAR, STRING, SYMBOL }
-		final Kind kind;
-		final String text; // original text (e.g., "123", "3.14", "'c'", "\"str\"", or "1" for symbol-only)
+		public final Kind kind;
+		public final String text; // original text (e.g., "123", "3.14", "'c'", "\"str\"", or "1" for symbol-only)
 		public DefVal(Kind kind, String text) { this.kind = kind; this.text = text; }
 	}
 
@@ -95,7 +95,7 @@ public class PreprocessorVisitor extends PreprocessorParserBaseVisitor<Void> {
 			throw new PreprocessorException("Define name and value must be non-null");
 		}
 		if (defines.containsKey(name.toUpperCase())) {
-			System.err.println(getLocation() + "-> Define name already exists: " + name);
+			System.err.println(getLocation() + ":ERROR:Define name already exists: " + name);
 		}
 		defines.put(name.toUpperCase(), value);
 	}
@@ -171,10 +171,11 @@ public class PreprocessorVisitor extends PreprocessorParserBaseVisitor<Void> {
 			emitLineDirective(filename, sourceLineNum);
 		}
 		StringBuilder logical = new StringBuilder();
-		logical.append(ctx.line.getText());
+		boolean addSpace = false;
 		for (var seg : ctx.more) {
-			logical.append(' ');
+			if (addSpace) logical.append(' ');
 			logical.append(seg.getText());
+			addSpace = true;
 		}
 		emitLine(logical.toString(), true);
 		return null;
@@ -185,6 +186,20 @@ public class PreprocessorVisitor extends PreprocessorParserBaseVisitor<Void> {
        ========================================================= */
 
 	Set<String> previouslyIncluded = new HashSet<String>();
+	@Override
+	public Void visitInfoDir(PreprocessorParser.InfoDirContext ctx) {
+
+		System.out.println(getLocation() + ":INFO:" + applyPlaceholders(ctx.INFO_TEXT().getText().trim()));
+		return null;
+	}
+
+	@Override
+	public Void visitErrorDir(PreprocessorParser.ErrorDirContext ctx) {
+		System.err.println(getLocation() + ":ERROR: " + applyPlaceholders(ctx.INFO_TEXT().getText().trim()));
+		System.exit(1);
+		return null;
+	}
+
 	@Override
 	public Void visitIncludeDir(PreprocessorParser.IncludeDirContext ctx) {
 		final boolean isSystem = ctx.ANGLE_PATH() != null;
@@ -220,24 +235,24 @@ public class PreprocessorVisitor extends PreprocessorParserBaseVisitor<Void> {
 
 	@Override
 	public Void visitDefineDir(PreprocessorParser.DefineDirContext ctx) {
-		String name = ctx.IDENT().getText();
-		PreprocessorParser.LiteralContext lit = ctx.literal();
+		String name = ctx.id.getText();
+		PreprocessorParser.LiteralContext lit = ctx.lit;
 
-		if (lit == null) {
-			addDefine(name, new DefVal(DefVal.Kind.SYMBOL, "1")); // bare symbol → truthy, expands to 1
-		} else if (lit.INT() != null) {
-			addDefine(name, new DefVal(DefVal.Kind.INT, lit.INT().getText()));
-		} else if (lit.FLOAT() != null) {
-			addDefine(name, new DefVal(DefVal.Kind.FLOAT, lit.FLOAT().getText()));
-		} else if (lit.CHAR() != null) {
-			addDefine(name, new DefVal(DefVal.Kind.CHAR, lit.CHAR().getText()));
-		} else if (lit.STRING() != null) {
-			addDefine(name, new DefVal(DefVal.Kind.STRING, lit.STRING().getText()));
+		if (lit != null) {
+			if (lit.INT() != null) {
+				addDefine(name, new DefVal(DefVal.Kind.INT, lit.INT().getText()));
+			} else if (lit.FLOAT() != null) {
+				addDefine(name, new DefVal(DefVal.Kind.FLOAT, lit.FLOAT().getText()));
+			} else if (lit.CHAR() != null) {
+				addDefine(name, new DefVal(DefVal.Kind.CHAR, lit.CHAR().getText()));
+			} else if (lit.STRING() != null) {
+				addDefine(name, new DefVal(DefVal.Kind.STRING, lit.STRING().getText()));
+			}
+		} else if (ctx.symbol != null ) {
+			addDefine(name, new DefVal(DefVal.Kind.SYMBOL, ctx.symbol.getText()));
 		} else {
-			// Fallback: store text
-			addDefine(name, new DefVal(DefVal.Kind.SYMBOL, lit.getText()));
+			addDefine(name, new DefVal(DefVal.Kind.SYMBOL, "1")); // bare symbol → truthy, expands to 1
 		}
-		// We do not emit the #define line; it only affects substitutions.
 		return null;
 	}
 
@@ -268,7 +283,7 @@ public class PreprocessorVisitor extends PreprocessorParserBaseVisitor<Void> {
 
 	@Override
 	public Void visitGlobalDir(PreprocessorParser.GlobalDirContext ctx) {
-		globals.add(ctx.CODE_TEXT().getText());
+		globals.add(ctx.codeLine().getText());
 		return null;
 	}
 
@@ -401,7 +416,7 @@ public class PreprocessorVisitor extends PreprocessorParserBaseVisitor<Void> {
 						++i;
 					}
 				}
-				emitLine(".BLOCK " + funcName, false);
+				emitLine(".BLOCK _" + funcName, false);
 			} else if (child == ctx.PP_END_FUNC()) {
 				emitLineBeginDirective(filename, lineNum);
 				emitLine(funcName + "$_RETURN:", false);
@@ -416,7 +431,7 @@ public class PreprocessorVisitor extends PreprocessorParserBaseVisitor<Void> {
 				if (svarSet.size() > 0)
 					emitLine("add sp, " + (svarSet.size()), false);
 				emitLine("return", false);
-				emitLine(".BLOCK_END " + ctx.IDENT().getText().toUpperCase(), false);
+				emitLine(".BLOCK_END", false);
 				emitLineEndDirective(filename, lineNum);
 				popScope();
 				funcName = "";
@@ -447,7 +462,9 @@ public class PreprocessorVisitor extends PreprocessorParserBaseVisitor<Void> {
 
 		// Accumulate directives and codelines
 		StringBuilder body = new StringBuilder();
-		visit(ctx.block());   // emit only this block
+		for (var child : ctx.block().children) {
+			body.append(child.getText()); // see note below about whitespace
+		}
 
 		macros.put(macroDefName, Pair.of(params, body.toString()));
 		return null;
@@ -848,15 +865,20 @@ public class PreprocessorVisitor extends PreprocessorParserBaseVisitor<Void> {
 
 	@Override
 	public Void visitIfCondSRBlock(PreprocessorParser.IfCondSRBlockContext ctx) {
-		if (ctx.IDENT() != null && ctx.block() != null) {
+		if ((ctx.IDENT() != null || ctx.cmpOp() != null) && ctx.block() != null) {
 			String blockName = "CONDSR_{}";
 			emitLineBeginDirective(filename, lineNum);
 			emitLine(".BLOCK " + blockName, false);
 
 			// If Cond SR IDENT
 			// IDENT is z, nz, n, p, nn, np, o or no
-			String conditionOp = ctx.IDENT().getText().toUpperCase();
-			if (!conditionOp.matches("Z|NZ|N|P|NN|NP|PE|PO|O|NO")) {
+			String conditionOp ="x";
+			if (ctx.IDENT() != null) {
+				conditionOp = ctx.IDENT().getText().toUpperCase();
+			} else {
+				conditionOp = ctx.cmpOp().getText().toUpperCase();
+			}
+			if (!conditionOp.matches("Z|NZ|N|P|NN|NP|PE|PO|O|NO|EQ|NE|LT|GT|GE|LE")) {
 				throw new PreprocessorException("If condition SR IDENT must be one of: z, nz, n, p, nn, np, pe, po, o, no");
 			}
 			emitLine("jump " + getNotConditionCode(conditionOp) + ", $_SKIP", false);
@@ -888,10 +910,15 @@ public class PreprocessorVisitor extends PreprocessorParserBaseVisitor<Void> {
 	public Void visitSyncBlock(PreprocessorParser.SyncBlockContext ctx) {
 		if (ctx.IDENT() != null && ctx.block() != null) {
 			String blockName = "SYNC_{}";
-			String mutex = ctx.IDENT().getText().toUpperCase();
+			String mutex = ctx.IDENT(0).getText().toUpperCase();
 			emitLineBeginDirective(filename, lineNum);
 			emitLine(".BLOCK " + blockName, false);
-			emitLine("push " + mutex, true);
+			if (ctx.offset != null) {
+				emitLine("move r0, " + mutex + "[" + ctx.offset.getText() + "]", true);
+				emitLine("push r0", true);
+			} else {
+				emitLine("push " + mutex, true);
+			}
 			emitLine("call acquireMutex", false);
 			emitLine("add sp, 1", false);
 			emitLineEndDirective(filename, lineNum);
@@ -1142,6 +1169,22 @@ public class PreprocessorVisitor extends PreprocessorParserBaseVisitor<Void> {
 		return sb.toString();
 	}
 
+	private String applyPlaceholders(String line) {
+		if (line.isEmpty()) return line;
+		Matcher m = PLACEHOLDER.matcher(line);
+		StringBuffer sb = new StringBuffer(line.length());
+		while (m.find()) {
+			String ident = m.group(1).toUpperCase();
+			String replacement = defines.get(ident).text;
+			if (replacement == null) continue;
+			// Escape backslashes and dollars for appendReplacement
+			replacement = replacement.replace("\\", "\\\\").replace("$", "\\$");
+			m.appendReplacement(sb, replacement);
+		}
+		m.appendTail(sb);
+		return sb.toString();
+	}
+
 	public DefVal getDefine(String symbol) {
 		DefVal dv = defines.get(symbol);
 		return dv;
@@ -1256,10 +1299,13 @@ public class PreprocessorVisitor extends PreprocessorParserBaseVisitor<Void> {
 										int pauseLineSync) {
 		CharStream input = CharStreams.fromString(source);
 		PreprocessorLexer lexer = new PreprocessorLexer(input);
+		lexer.removeErrorListeners();
+		lexer.addErrorListener(new MyLexerErrorListener(filename));
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
 		PreprocessorParser parser = new PreprocessorParser(tokens);
 		parser.removeErrorListeners();
-		parser.addErrorListener(new DiagnosticErrorListener());
+		parser.addErrorListener(new MyParserErrorListener(filename));
+//		parser.addErrorListener(new DiagnosticErrorListener());
 
 		PreprocessorVisitor v = new PreprocessorVisitor(filename, lineNum, loader, substituteInsideDirectives, pauseLineSync);
 		v.defines = seedDefines != null ? seedDefines : new HashMap<>();
@@ -1267,5 +1313,66 @@ public class PreprocessorVisitor extends PreprocessorParserBaseVisitor<Void> {
 		v.previouslyIncluded = seedIncludes != null ? seedIncludes : new HashSet<>();
 		v.visit(parser.preproc());
 		return v.getOutput();
+	}
+}
+
+final class MyLexerErrorListener extends BaseErrorListener {
+	private String filename;
+
+	public MyLexerErrorListener(String filename) {
+		this.filename = filename;
+	}
+
+	@Override
+	public void syntaxError(Recognizer<?, ?> recognizer,
+							Object offendingSymbol,
+							int line, int charPositionInLine,
+							String msg,
+							RecognitionException e) {
+
+		// For a lexer error, offendingSymbol is usually null.
+		// msg is ANTLR's message; e may be LexerNoViableAltException.
+
+		String where = String.format("«%s»:%d:%d", filename, line, charPositionInLine);
+
+		// Example: pull the exact bad character(s) if possible
+		String snippet = "";
+		if (recognizer instanceof Lexer lx) {
+			CharStream cs = lx.getInputStream();
+			int i = cs.index();
+			if (i >= 0 && i < cs.size()) {
+				int cp = cs.LA(1);
+				if (cp != IntStream.EOF) {
+					snippet = " (saw '" + (char)cp + "')";
+				}
+			}
+		}
+		// Now format however you want:
+		System.err.println(where + ":PLERROR:" + msg);
+	}
+}
+
+final class MyParserErrorListener extends BaseErrorListener {
+	private String filename;
+
+	public MyParserErrorListener(String filename) {
+		this.filename = filename;
+	}
+
+	@Override
+	public void syntaxError(Recognizer<?, ?> recognizer,
+							Object offendingSymbol,
+							int line,
+							int charPositionInLine,
+							String msg,
+							RecognitionException e) {
+
+		String where = String.format("«%s»:%d:%d", filename, line, charPositionInLine);
+
+		String tokenText = "";
+		if (offendingSymbol instanceof Token t) {
+			tokenText = " near '" + t.getText() + "'";
+		}
+		System.err.println(where + ":PPERROR:" + msg);
 	}
 }

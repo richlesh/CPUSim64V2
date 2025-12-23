@@ -29,7 +29,7 @@ public class AssemblerVisitor extends CPUSim64BaseVisitor<Void> implements HasLo
 
 	public class AssemblerException extends RuntimeException {
 		public AssemblerException(String msg) {
-			super("[" + getLocation() + "] " + msg);
+			super(getLocation() + ":ERROR:" + msg);
 		}
 	}
 
@@ -997,34 +997,45 @@ public class AssemblerVisitor extends CPUSim64BaseVisitor<Void> implements HasLo
 	}
 
 	public Void visitLogicModes(Opcode opc, CPUSim64Parser.LogicModesContext ctx) {
-		// RR | RC | RRR | RRC
+		// RR | RC | RRR | RRC | RCR | RCC
 		int a = OT_REG, v0 = regIndex(ctx.rOperand(0).REG_R().getText());
 		int b, v1, c = OT_NONE, v2 = 0;
 		long k;
 
-		if (ctx.rOperand().size() == 2 && ctx.cLiteral() == null) {
+		if (ctx.rOperand().size() == 2 && ctx.cLiteral().size() == 0) {
 			// RR
 			b = OT_REG;
 			v1 = regIndex(ctx.rOperand(1).REG_R().getText());
 			addWord(LabelType.CODE, encType0(opc.code, a, b, c, OT_NONE, v0, v1, v2, 0));
-		} else if (ctx.rOperand().size() == 1 && ctx.cLiteral() != null) {
+		} else if (ctx.rOperand().size() == 1 && ctx.cLiteral().size() == 1) {
 			// RC
 			b = OT_CONST;
-			k =parseIntLike(ctx.cLiteral().getText());
+			k =parseIntLike(ctx.cLiteral(0).getText());
 			addWord(LabelType.CODE, encType2RC2(opc.code, a, v0, k));
-		} else if (ctx.rOperand().size() == 3 && ctx.cLiteral() == null) {
+		} else if (ctx.rOperand().size() == 3 && ctx.cLiteral().size() == 0) {
 			// RRR
 			b = OT_REG;
 			v1 = regIndex(ctx.rOperand(1).REG_R().getText());
 			c = OT_REG;
 			v2 = regIndex(ctx.rOperand(2).REG_R().getText());
 			addWord(LabelType.CODE, encType0(opc.code, a, b, c, OT_NONE, v0, v1, v2, 0));
-		} else {
-			// RRC
+		} else if (ctx.rOperand().size() == 2 && ctx.cLiteral().size() == 1) {
+			// RRC or RCR
 			b = OT_REG;
 			v1 = regIndex(ctx.rOperand(1).REG_R().getText());
-			v2 = (int)parseIntLike(ctx.cLiteral().getText());
-			addWord(LabelType.CODE, encType3ZZC3(opc.code, a, v0, b, v1, v2));
+			if (ctx.rightC != null) {
+				v2 = (int) parseIntLike(ctx.rightC.getText());
+				addWord(LabelType.CODE, encType3ZZC3(opc.code, a, v0, b, v1, v2));
+			} else {
+				v2 = (int) parseIntLike(ctx.leftC.getText());
+				addWord(LabelType.CODE, encType0(opc.code, a, OT_CONST, b, OT_NONE, v0, v2, v1, 0));
+			}
+		} else if (ctx.rOperand().size() == 1 && ctx.cLiteral().size() == 2) {
+			// RCC
+			b = OT_CONST;
+			v1 = (int) parseIntLike(ctx.cLiteral(0).getText());
+			v2 = (int) parseIntLike(ctx.cLiteral(1).getText());
+			addWord(LabelType.CODE, encType0(opc.code, a, b, b, OT_NONE, v0, v1, v2, 0));
 		}
 		return null;
 	}
@@ -1557,7 +1568,7 @@ public class AssemblerVisitor extends CPUSim64BaseVisitor<Void> implements HasLo
 		} else if (ctx.HEXLIT() != null) {
 			currentAddress = Long.parseLong(ctx.HEXLIT().getText().substring(2), 16);
 		} else {
-			throw new AssemblerException(getLocation() + ": Error: Missing integer literal for .ORG directive");
+			throw new AssemblerException(getLocation() + ":ERROR:Missing integer literal for .ORG directive");
 		}
 		currentAddress = Math.max(out.size(), currentAddress); // prevent negative addresses
 		for (int i = out.size(); i < currentAddress; ++i) {
@@ -1595,8 +1606,6 @@ public class AssemblerVisitor extends CPUSim64BaseVisitor<Void> implements HasLo
 			blockname = ctx.IDENT().getText();
 			if (blockname.contains("$"))
 				throw new AssemblerException("Blocknames can not contain $: " + blockname);
-		} else if (ctx.BLOCK_IDENT() != null) {
-			blockname = ctx.BLOCK_IDENT().getText();
 		}
 		if (blockname == null)
 			throw new AssemblerException(".block directive must have an argument@");
@@ -1615,14 +1624,14 @@ public class AssemblerVisitor extends CPUSim64BaseVisitor<Void> implements HasLo
 	public void assemble(String src) {
 		CharStream input = CharStreams.fromString(src);
 		var lex = new cloud.lesh.CPUSim64.CPUSim64Lexer(input);
-		var lexerListener = new CollectingErrorListener(errors, null);
+		var lexerListener = new CollectingErrorListener(errors, null, filename);
 		lex.removeErrorListeners(); 				// remove ConsoleErrorListener
 		lex.addErrorListener(lexerListener); 		// collect lexer errors
 		CommonTokenStream toks = new CommonTokenStream(lex);
 //		if (errors.size() > 0) return;
 
 		var parser = new cloud.lesh.CPUSim64.CPUSim64Parser(toks);
-		var parserListener = new CollectingErrorListener(errors, null);
+		var parserListener = new CollectingErrorListener(errors, null, filename);
 		parser.removeErrorListeners();				// remove ConsoleErrorListener
 		parser.addErrorListener(parserListener);	// collect parser errors
 		ParseTree tree = parser.program();

@@ -8,9 +8,11 @@ import java.util.List;
 public final class CollectingErrorListener extends BaseErrorListener {
 	private List<String> errors;
 	HasLocation locator;
-	public CollectingErrorListener(List<String> errors, HasLocation locator) {
+	String filename;
+	public CollectingErrorListener(List<String> errors, HasLocation locator, String filename) {
 		this.errors = errors;
 		this.locator = locator;
+		this.filename = filename;
 	}
 
 	@Override
@@ -36,13 +38,11 @@ public final class CollectingErrorListener extends BaseErrorListener {
 
 		String formatted;
 		if (locator == null ) {
-			formatted = String.format("Preprocessed line %d:%d %s%s",
-					line, charPositionInLine, msg,
-					offendingText.isEmpty() ? "" : " (offending: " + escape(offendingText) + ")");
+			formatted = String.format("Preprocessed line %d:%d:ERROR:%s",
+				line, charPositionInLine, msg);
 		} else {
-			formatted = String.format("%s:%d %s%s",
-					locator.getLocation(), charPositionInLine, msg,
-					offendingText.isEmpty() ? "" : " (offending: " + escape(offendingText) + ")");
+			formatted = String.format("%s:%d:ERROR:%s",
+					locator.getLocation(), charPositionInLine, msg);
 		}
 		errors.add(formatted);
 	}

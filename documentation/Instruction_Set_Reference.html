@@ -582,6 +582,18 @@ SF &lt;- SP</pre>
 	</tbody>
 </table>
 
+	<h3>Compare and Set</h3>
+	<p>Performs atomic set of a memory location.  Only if the current value of the memory location matches the old value does it then set it to the new value.  Sets status register bit Overflow if successful.</p>
+<table class="instruction">
+    <colgroup><col span="3" class="instruction"><col></colgroup>
+	<thead>
+		<tr><th>Opcode</th><th>Pneumonic</th><th>Operands</th><th>Operation</th></tr>
+	</thead>
+	<tbody>
+		<tr><td>34</td><td>CAS</td><td style="line-height: 1.5em;">RRAO<br>CCAO<br>RCAO<br>CRAO</td><td>Atomic compare and set<br>First operand is old value<br>Second operand is new value<br>Remaining arguments are address + offset.<br>Sets overflow flag if successful.</td></tr>
+	</tbody>
+</table>
+
 	<h3>Endian Mode</h3>
 	<p></p>
 <table class="instruction">
@@ -615,18 +627,6 @@ SF &lt;- SP</pre>
 	</thead>
 	<tbody>
 		<tr><td>37</td><td>Restore</td><td style="line-height: 1.5em;">RR<br />FF</td><td>Restores registers R<sub>1</sub> through R<sub>2</sub> from the stack.<br />Restores registers F<sub>1</sub> through F<sub>2</sub> from the stack.</td></tr>
-	</tbody>
-</table>
-
-	<h3>Compare and Set</h3>
-	<p>Performs atomic set of a memory location.  Only if the current value of the memory location matches the old value does it then set it to the new value.  Sets status register bit Overflow if successful.</p>
-<table class="instruction">
-    <colgroup><col span="3" class="instruction"><col></colgroup>
-	<thead>
-		<tr><th>Opcode</th><th>Pneumonic</th><th>Operands</th><th>Operation</th></tr>
-	</thead>
-	<tbody>
-		<tr><td>34</td><td>CAS</td><td style="line-height: 1.5em;">RRAO<br>CCAO<br>RCAO<br>CRAO</td><td>Atomic compare and set<br>First operand is old value<br>Second operand is new value<br>Remaining arguments are address + offset.<br>Sets overflow flag if successful.</td></tr>
 	</tbody>
 </table>
 
