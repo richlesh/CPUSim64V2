@@ -1,0 +1,91 @@
+> run.sh example_string
+strlen("Hello, world!"): 13
+strlen("Hello"): 5
+strlen("Hello, world!!!..."): 18
+strcmp("Hello, world!","Hello, world!"): 0
+strcmp("Hello, world!","Hello"): 8
+strcmp("Hello, world!","Hello, world!!!..."): -5
+strcmp("Hello, world!","Hello, Rich!"): 37
+strcmp("Hello","Hello, world!"): -8
+strcmp("Hello, world!!!...","Hello, world!"): 5
+strcmp("Hello, Rich!","Hello, world!"): -37
+stricmp("Hello, world!","Hello, world!"): 0
+stricmp("Hello","HELLO"): 0
+stricmp("Hello, world!","Hello, Rich!"): 5
+STARTS_WITH("Hello","Hello, world!"): 0
+STARTS_WITH("Hello, world!","Hello"): -1
+STARTS_WITH("Hello, world!","Hello, world!!!..."): 0
+STARTS_WITH("Hello, world!!!...","Hello, world!"): -1
+STARTS_WITH("Hello, world!","Hello, Rich!"): 0
+ENDS_WITH("Hello, world!","Hello"): 0
+ENDS_WITH("Hello","Hello, world!"): 0
+ENDS_WITH("Hello, world!","world!"): -1
+HASH_CODE(""): 0
+HASH_CODE("Hello, world!"): ffffffff8ff0cbf5
+HASH_CODE("Hello"): 42628b2
+HASH_CODE("Hello, world!!!..."): fffffffff1ca1f79
+HASH_CODE("Hello, Rich!"): ffffffffe19010bf
+CHAR_SEARCH("Hello, world!",' ',0): 6
+CHAR_SEARCH("Hello, world!",'H',0): 0
+CHAR_SEARCH("Hello, world!",'w',0): 7
+CHAR_SEARCH("Hello, world!",'!',0): 12
+CHAR_SEARCH("Hello, world!",'l',1): 2
+CHAR_SEARCH("Hello, world!",'l',3): 3
+CHAR_SEARCH("Hello, world!",'o',0): 4
+CHAR_SEARCH("Hello, world!",'o',7): 8
+CHAR_SEARCH("Hello, world!",'o',13): -1
+CHAR_SEARCH("Hello, world!",'z',4): -1
+SUBSTRING_SEARCH("Hello, world!","Hello",0): 0
+SUBSTRING_SEARCH("Hello, world!","world!",0): 7
+SUBSTRING_SEARCH("Hello, world!","HELLO",0): -1
+SUBSTRING_SEARCH("Hello, world!","Hello",0): 0
+SUBSTRING_SEARCH("Hello, world!","world!",8): -1
+SUBSTRING_SEARCH("Hello, world!!!...","!!",5): 12
+SUBSTRING_SEARCH("Hello, world!!!...","!!",13): 13
+SUBSTRING_SEARCH("Hello","Hello, world!!!...",5): -1
+LAST_CHAR_SEARCH("Hello, world!",' ',0): -1
+LAST_CHAR_SEARCH("Hello, world!",'H',0): 0
+LAST_CHAR_SEARCH("Hello, world!",'l',0): -1
+LAST_CHAR_SEARCH("Hello, world!",'!',0): -1
+LAST_CHAR_SEARCH("Hello, world!",'z',0): -1
+LAST_CHAR_SEARCH("Hello, world!",'l',10): 10
+LAST_CHAR_SEARCH("Hello, world!",'l',9): 3
+LAST_CHAR_SEARCH("Hello, world!",'o',10): 8
+LAST_CHAR_SEARCH("Hello, world!",'o',8): 8
+LAST_CHAR_SEARCH("Hello, world!",'o',6): 4
+LAST_CHAR_SEARCH("Hello, world!",'z',4): -1
+LAST_SUBSTRING_SEARCH("Hello, world!","Hello",0): 0
+LAST_SUBSTRING_SEARCH("Hello, world!!!...","world!",0): -1
+LAST_SUBSTRING_SEARCH("Hello, world!","HELLO",0): -1
+LAST_SUBSTRING_SEARCH("Hello, world!","Hello",10): 0
+LAST_SUBSTRING_SEARCH("Hello, world!!!...","world!",13): 7
+LAST_SUBSTRING_SEARCH("Hello, world!!!...","!!",14): 13
+LAST_SUBSTRING_SEARCH("Hello, world!!!...","!!",13): 13
+LAST_SUBSTRING_SEARCH("Hello, world!!!...","!!",12): 12
+LAST_SUBSTRING_SEARCH("Hello","Hello, world!!!...",5): -1
+substring("Hello, world!!!...",0,5): "Hello"
+substring("Hello, Rich!",7,11): "Rich!"
+substring("Hello, Rich!",-3,27): "Hello, Rich!"
+substring("Hello, Rich!",27,0): ""
+substring("Hello, world!!!...",7,-1): "world!!!..."
+substring("Hello, world!!!...",27,-1): ""
+substring("Hello, world!!!...",-3,-1): "Hello, world!!!..."
+strcat("Hello","world!"): "Helloworld!"
+MATCHES("Hello, world!","."): -1
+MATCHES("Hello, world!!!...","[,\.!]"): -1
+MATCHES("Hello",","): 0
+REPLACE_FIRST("Hello, world!",".","?"): "?ello, world!"
+REPLACE_FIRST("Hello, world!!!...","[,\.!]","?"): "Hello? world!!!..."
+REPLACE_FIRST("Hello, world!!!...",",","?"): "Hello? world!!!..."
+REPLACE_ALL("Hello, world!",".","?"): "?????????????"
+REPLACE_ALL("Hello, world!!!...","[,\.!]","?"): "Hello? world??????"
+REPLACE_ALL("Hello, world!!!...","!","?"): "Hello, world???..."
+strSplit("Hello, world!!!...", "[od]"):
+Hell
+, w
+rl
+!!!...
+TRIM("Hello, world!"): "Hello, world!"
+TRIM(" 	trimmed	 "): "trimmed"
+TRIM(" 	
+trimmed	 "): "trimmed"

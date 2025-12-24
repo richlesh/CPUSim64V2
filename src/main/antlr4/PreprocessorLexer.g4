@@ -57,6 +57,7 @@ REG_F : [fF] [0-9]+ ;
 PLACEHOLDER: '$' '{' ([\p{L}_] [\p{L}\p{Nd}_]* | ELLIPSIS)'}' ;
 LABEL : [\p{L}_$] [\p{L}\p{Nd}_${}]* ':' ;
 IDENT : [\p{L}_$] [\p{L}\p{Nd}_${}]* ;
+MEMREF : (IDENT | PLACEHOLDER | INT) [+[] (IDENT | INT | PLACEHOLDER) ']' ;
 COMP_DIR : '.' [a-zA-Z]+ ;
 
 INT   : '-'? ([0-9]+ | ('0' [xX] [0-9a-fA-F]+)) ;

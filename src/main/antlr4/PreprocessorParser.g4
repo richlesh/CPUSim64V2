@@ -18,7 +18,7 @@ preproc
 // Any line that does not start with '#' is passed through as code
 codeLine
   : more+=(LABEL | IDENT | COMP_DIR)
-    ( LINE_CONT? more+=(COMMA | IDENT | COMP_DIR | PLACEHOLDER | REG_R | REG_F | INT | FLOAT | STRING | CHAR) )*
+    ( LINE_CONT? more+=(COMMA | IDENT | COMP_DIR | PLACEHOLDER | REG_R | REG_F | MEMREF| INT | FLOAT | STRING | CHAR) )*
     NL
   ;
 /* ----- Directives ----- */

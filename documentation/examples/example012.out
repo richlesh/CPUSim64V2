@@ -1,0 +1,26 @@
+> run.sh example012
+AND Truth Table
+ A   B   A AND B
+ 0   0   0
+ 0  -1   0
+-1   0   0
+-1  -1  -1
+
+OR Truth Table
+ A   B   A OR B
+ 0   0   0
+ 0  -1  -1
+-1   0  -1
+-1  -1  -1
+
+XOR Truth Table
+ A   B   A XOR B
+ 0   0   0
+ 0  -1  -1
+-1   0  -1
+-1  -1   0
+
+NOT Truth Table
+ A   NOT A
+ 0  -1
+-1   0

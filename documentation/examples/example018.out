@@ -1,0 +1,16 @@
+> run.sh example018
+ 2   0   0
+ 2  -1   0
+-1   0   0
+-1  -1   0
+
+AND Truth Table
+ A   B   A AND B
+OR Truth Table
+ A   B   A OR B
+XOR Truth Table
+ A   B   A XOR B
+NOT Truth Table
+ A   NOT A
+ 0  -1
+-1   0

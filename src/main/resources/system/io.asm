@@ -18,7 +18,7 @@ store	r0, __PORT_MAP_HANDLE
 #call	__setPortMap(1)			// STDOUT
 #call	__setPortMap(2)			// STDERR
 
-jump	@IO_ASM_END
+jump	IO_ASM_END
 
 #def_func	__setPortMap(bit)
 	#var	b, addr, offset, mask, lock

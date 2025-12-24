@@ -34,6 +34,7 @@ public class PreprocessorVisitor extends PreprocessorParserBaseVisitor<Void> {
 		}
 	}
 
+	CommonTokenStream tokens;
 	String filename = null;
 	int lineNum = 1;
 	int sourceLineNum = 1;
@@ -72,16 +73,17 @@ public class PreprocessorVisitor extends PreprocessorParserBaseVisitor<Void> {
 	private static final Pattern TOKEN = Pattern.compile("[A-Za-z_.$][A-Za-z0-9_.$]*");
 	private static final Pattern PLACEHOLDER = Pattern.compile("\\$\\{(([A-Za-z_.$][A-Za-z0-9_.$]*)|\\.\\.\\.)\\}");
 
-	public PreprocessorVisitor(String filename, IncludeLoader loader) {
-		this(filename, 1, loader, /*substituteInsideDirectives*/ false, 0);
+	public PreprocessorVisitor(String filename, IncludeLoader loader, CommonTokenStream tokens) {
+		this(filename, 1, loader, /*substituteInsideDirectives*/ false, 0, tokens);
 	}
 
-	public PreprocessorVisitor(String filename, int lineNum, IncludeLoader loader, boolean substituteInsideDirectives, int pauseLineSync) {
+	public PreprocessorVisitor(String filename, int lineNum, IncludeLoader loader, boolean substituteInsideDirectives, int pauseLineSync, CommonTokenStream tokens) {
 		this.filename = filename;
 		this.lineNum = lineNum;
 		this.includeLoader = Objects.requireNonNull(loader, "IncludeLoader is required");
 		this.substituteInsideDirectives = substituteInsideDirectives;
 		this.pauseLineSync = pauseLineSync;
+		this.tokens = tokens;
 		pushScope();
 	}
 
@@ -173,7 +175,8 @@ public class PreprocessorVisitor extends PreprocessorParserBaseVisitor<Void> {
 		StringBuilder logical = new StringBuilder();
 		boolean addSpace = false;
 		for (var seg : ctx.more) {
-			if (addSpace) logical.append(' ');
+			if (addSpace && seg.getType() != PreprocessorLexer.COMMA)
+				logical.append(' ');
 			logical.append(seg.getText());
 			addSpace = true;
 		}
@@ -463,7 +466,17 @@ public class PreprocessorVisitor extends PreprocessorParserBaseVisitor<Void> {
 		// Accumulate directives and codelines
 		StringBuilder body = new StringBuilder();
 		for (var child : ctx.block().children) {
-			body.append(child.getText()); // see note below about whitespace
+			String s = rebuildWithSingleSpaces(tokens, child);
+			if (s.length() > 0) {
+				body.append(s);
+				body.append('\n');
+			}
+//			if (child instanceof ParserRuleContext prc) {
+//				body.append(reflowTokens(prc));
+//			} else {
+//				body.append(child.getText());
+//			}
+//			body.append(child.getText()); // see note below about whitespace
 		}
 
 		macros.put(macroDefName, Pair.of(params, body.toString()));
@@ -1247,7 +1260,62 @@ public class PreprocessorVisitor extends PreprocessorParserBaseVisitor<Void> {
 		Token stop  = ctx.getStop();
 		if (start == null || stop == null) return "";
 		// CharStream slice from the original input
-		return start.getInputStream().getText(Interval.of(start.getStartIndex(), stop.getStopIndex()));
+		System.out.println("orig: " + ctx.getText());
+		String result = start.getInputStream().getText(Interval.of(start.getStartIndex(), stop.getStopIndex()));
+		System.out.println("reflow: " + result);
+		return result;
+	}
+
+	static String rebuildWithSingleSpaces(
+			CommonTokenStream tokens,
+			ParserRuleContext ctx
+	) {
+		Token start = ctx.getStart();
+		Token stop  = ctx.getStop();
+		if (start == null || stop == null) return "";
+
+		int a = start.getTokenIndex();
+		int b = stop.getTokenIndex();
+
+		StringBuilder out = new StringBuilder();
+		boolean pendingSpace = false;
+
+		for (int i = a; i <= b; i++) {
+			Token t = tokens.get(i);
+
+			// Any hidden token (WS, comments) ⇒ one space
+			if (t.getChannel() == Token.HIDDEN_CHANNEL) {
+				pendingSpace = true;
+				continue;
+			}
+
+			if (pendingSpace && out.length() > 0 &&
+				t.getType() != PreprocessorLexer.COMMA) {
+				out.append(' ');
+			}
+			pendingSpace = false;
+
+			out.append(t.getText());
+		}
+
+		return out.toString().trim();
+	}
+
+	static String rebuildWithSingleSpaces(
+			CommonTokenStream tokens,
+			ParseTree node
+	) {
+		if (node == null) return "";
+
+		if (node instanceof ParserRuleContext prc) {
+			return rebuildWithSingleSpaces(tokens, prc);
+		}
+
+		if (node instanceof TerminalNode tn) {
+			return tn.getText().trim();
+		}
+
+		return node.getText();
 	}
 
     /* =========================================================
@@ -1307,7 +1375,7 @@ public class PreprocessorVisitor extends PreprocessorParserBaseVisitor<Void> {
 		parser.addErrorListener(new MyParserErrorListener(filename));
 //		parser.addErrorListener(new DiagnosticErrorListener());
 
-		PreprocessorVisitor v = new PreprocessorVisitor(filename, lineNum, loader, substituteInsideDirectives, pauseLineSync);
+		PreprocessorVisitor v = new PreprocessorVisitor(filename, lineNum, loader, substituteInsideDirectives, pauseLineSync, tokens);
 		v.defines = seedDefines != null ? seedDefines : new HashMap<>();
 		v.macros = seedMacros != null ? seedMacros : new HashMap<>();
 		v.previouslyIncluded = seedIncludes != null ? seedIncludes : new HashSet<>();

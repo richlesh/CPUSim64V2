@@ -1,0 +1,41 @@
+> run.sh example_io
+IO Interrupts Tests
+
+101000110
+326
+146
+Small buffer:      5fb (0)
+What is your quest? coconuts
+Final buffer:      5ff (8)
+What is your favorite binary number? 11001100
+What is your favorite decimal number? 326
+What is your favorite hexadecimal number? ABCDEF
+What is your favorite floating point number? 3.141500
+Hello ☺ 146 3.14159
+326
+326
+623
+326
+326
+3.141500
+Created temp directory: /var/folders/cq/xyxjbx311jlgrtj_2hbwc9l80000gn/T/CPUSim6410452010801855331405
+Dir exists: -1
+Deleted temp directory: -1
+Dir exists: 0
+Created temp file: /var/folders/cq/xyxjbx311jlgrtj_2hbwc9l80000gn/T/CPUSim6417662188762402643828.txt
+File exists: -1
+Deleted temp file: -1
+File exists: 0
+Created directory: temp -1
+Dir exists: -1
+Created temp file: temp/temp.txt
+File exists: -1
+Created temp file: temp/temp2.txt
+File exists: -1
+listFiles: 2
+temp/temp.txt
+temp/temp2.txt
+List Done
+Deleted temp files: -1
+Deleted temp directory: -1
+Dir exists: 0
