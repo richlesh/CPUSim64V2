@@ -100,7 +100,7 @@ public class MathInterruptTest extends BaseTest {
 			MOVE	R2, -2
 			INT		iMIN
 			MOVE	R22, R0
-			
+			STOP
 			STOP
 			""";
 		var tuple = runProgram(src);

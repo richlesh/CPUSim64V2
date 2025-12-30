@@ -3,7 +3,7 @@
 #include <system/system.asm>
 #include <adt/vector.asm>
 
-	jump	@HEAP_ASM_END
+	jump	HEAP_ASM_END
 
 ///////////////////////////////////////////////////////////////////////////////
 // Block List / Block Data Structure
@@ -37,10 +37,10 @@
 #define	_HEAP_BLOCK_NUM_ELEMENTS	3	// Number of elements in a block
 #define	_HEAP_BLOCK_ELEMENT_SIZE	4	// Size of a block element
 #define	_HEAP_BLOCK_SIZE			5	// Size in words of a block (computed)
-#define	_HEAP_MUTEX					6	// Mutex used for concurrent access
-#define	_HEAP_INIT_FUNCTION			7	// Init function for new elements
-#define	_HEAP_DESTROY_FUNCTION		8	// Destroy function for elements
-#define	_HEAP_END					9
+#define	_HEAP_INIT_FUNCTION			6	// Init function for new elements
+#define	_HEAP_DESTROY_FUNCTION		7	// Destroy function for elements
+#define	_HEAP_MUTEX					8	// Mutex used for concurrent access
+#define	_HEAP_END					8 + MUTEX_SIZE
 
 #global _HEAP_DEFAULT_BLOCK_LIST_SIZE: .dci 10		// Smallest size of block list
 #global _HEAP_DEFAULT_BLOCK_NUM_ELEMENTS: .dci 100	// Smallest number of elements/block
@@ -57,13 +57,11 @@
 ///////////////////////////////////////////////////////////////////////////////
 #def_func newHeap(numElements, elementSize, initFunc, destroyFunc)
 	#var	s, \
-			addr, \					// this is a test
+			addr, \
 			blockElementSize, \
-			blockListSize, \		/* This is a test */
+			blockListSize, \
 			blockNumElem, \
-			destroy, \				/* a
-										b
-										c */
+			destroy, \
 			init
 	load	s, numElements
 	load	blockElementSize, elementSize
@@ -98,6 +96,8 @@
 	#call	maximizeVector(r0)
 	// Compute capacity of allocated block list (may be larger than requested)
 	#call	_heapComputeCapacity(addr)
+	move	r0, addr[_HEAP_MUTEX]
+	initializeMutex(r0)
 	#return	addr
 #end_func
 

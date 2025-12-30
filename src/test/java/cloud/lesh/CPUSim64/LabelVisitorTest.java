@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 public class LabelVisitorTest {
 	@Test
@@ -28,8 +29,7 @@ public class LabelVisitorTest {
 		assertEquals(2, labelMap.get("__CODE_END__"));
 		assertEquals(2, labelMap.get("__DATA__"));
 		assertEquals(2, labelMap.get("__HEAP_START__"));
-		var errors = labelVisitor.getErrors();
-		assertTrue(errors.isEmpty());
+		assertFalse(labelVisitor.hasErrors());
 	}
 
 	@Test
@@ -65,8 +65,7 @@ public class LabelVisitorTest {
 		assertEquals(6, labelMap.get("__DATA__"));
 		assertEquals(6, labelMap.get("__DATA_END__"));
 		assertEquals(6, labelMap.get("__HEAP_START__"));
-		var errors = labelVisitor.getErrors();
-		assertTrue(errors.isEmpty());
+		assertFalse(labelVisitor.hasErrors());
 	}
 
 	@Test
@@ -123,8 +122,7 @@ public class LabelVisitorTest {
 		assertEquals(29, labelMap.get("__CODE_END__"));
 		assertEquals(29, labelMap.get("__DATA__"));
 		assertEquals(29, labelMap.get("__HEAP_START__"));
-		var errors = labelVisitor.getErrors();
-		assertTrue(errors.isEmpty());
+		assertFalse(labelVisitor.hasErrors());
 	}
 
 	@Test
@@ -164,8 +162,7 @@ public class LabelVisitorTest {
 		assertEquals(202, labelMap.get("__CODE_END__"));
 		assertEquals(202, labelMap.get("__DATA__"));
 		assertEquals(202, labelMap.get("__HEAP_START__"));
-		var errors = labelVisitor.getErrors();
-		assertTrue(errors.isEmpty());
+		assertFalse(labelVisitor.hasErrors());
 	}
 
 	@Test
@@ -215,8 +212,7 @@ public class LabelVisitorTest {
 		assertEquals(9, labelMap.get("__CODE_END__"));
 		assertEquals(9, labelMap.get("__DATA__"));
 		assertEquals(9, labelMap.get("__HEAP_START__"));
-		var errors = labelVisitor.getErrors();
-		assertTrue(errors.isEmpty());
+		assertFalse(labelVisitor.hasErrors());
 	}
 
 	@Test
@@ -242,19 +238,22 @@ public class LabelVisitorTest {
 				FINIS:
 				""";
 		String errorsString = """
-				Line «test.asm»:8:9 missing ':' at '\\n' (offending: \\n)
-				Line «test.asm»:10:6 missing ':' at '\\n' (offending: \\n)
-				Line «test.asm»:12:7 missing ':' at '\\n' (offending: \\n)
-				Line «test.asm»:17:5 missing ':' at '\\n' (offending: \\n)
+«Test.asm», 8:ASMERROR:missing ':' at '\\n'
+«Test.asm», 10:ASMERROR:missing ':' at '\\n'
+«Test.asm», 12:ASMERROR:missing ':' at '\\n'
+«Test.asm», 17:ASMERROR:missing ':' at '\\n'
 				""";
 		var loader = new IncludeLoader(Path.of("."));
-		String preprocessed = PreprocessorVisitor.preprocessText("test.asm", src, loader);
+		PreprocessorVisitor pp = new PreprocessorVisitor("Test.asm", loader);
+		String preprocessed = pp.preprocessText(src);
 		LiteralRewriter rw = new LiteralRewriter();
-		preprocessed = rw.rewrite(preprocessed);
+		preprocessed = rw.rewrite(preprocessed, pp.getSourceLocations());
 		LabelVisitor labelVisitor = new LabelVisitor();
+		ConsoleOutputCapturer capturer = new ConsoleOutputCapturer();
+		capturer.start(ConsoleOutputCapturer.StdStream.STDERR);
 		String noLabels = labelVisitor.gatherLabels(preprocessed);
-		List<String> errors = labelVisitor.getErrors();
-		String actualErrors = errors.stream().collect(Collectors.joining(System.lineSeparator())) + System.lineSeparator();
-		assertEquals(errorsString, actualErrors);
+		String output = capturer.stop();
+		assertEquals(errorsString, output);
+		assertTrue(labelVisitor.hasErrors());
 	}
 }

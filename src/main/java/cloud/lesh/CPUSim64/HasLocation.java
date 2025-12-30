@@ -1,5 +1,5 @@
 package cloud.lesh.CPUSim64;
 
 public interface HasLocation {
-	String getLocation();
+	String getLocation(int offendingLine);
 }

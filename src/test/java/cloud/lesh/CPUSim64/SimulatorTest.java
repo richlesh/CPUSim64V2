@@ -637,10 +637,10 @@ public class SimulatorTest {
 		List<Long> prog = new ArrayList<Long>();
 
 		// C
-		prog.add(Simulator.encT1(Opcode.CALL.code, 3));                        // CALL 3
-		prog.add(Simulator.encT2(Opcode.MOVE.code, 2, 1, 31415));            // MOVE R1,31415
+		prog.add(Simulator.encT1(Opcode.CALL.code, 3));                       						// CALL 3
+		prog.add(Simulator.encT2(Opcode.MOVE.code, 2, 1, 31415));          							// MOVE R1,31415
 		prog.add(Simulator.encT0(Opcode.STOP.code, 0, 0, 0, 0, 0, 0, 0, 0));
-		prog.add(Simulator.encT2(Opcode.MOVE.code, 2, 1, 326));                // MOVE R1,326
+		prog.add(Simulator.encT2(Opcode.MOVE.code, 2, 1, 326));             						// MOVE R1,326
 		prog.add(Simulator.encT0(Opcode.STOP.code, 0, 0, 0, 0, 0, 0, 0, 0));
 		var diff = runProg(prog);
 		assertEquals(5, diff.size());
@@ -651,11 +651,11 @@ public class SimulatorTest {
 
 		// A
 		prog.clear();
-		prog.add(Simulator.encT2(Opcode.MOVE.code, 2, 2, 4));                // MOVE R2,4
-		prog.add(Simulator.encT0(Opcode.CALL.code, 2, 0, 0, 0, 2, 0, 0, 0));        // CALL R2
-		prog.add(Simulator.encT2(Opcode.MOVE.code, 2, 1, 31415));            // MOVE R1,31415
+		prog.add(Simulator.encT2(Opcode.MOVE.code, 2, 2, 4));                						// MOVE R2,4
+		prog.add(Simulator.encT0(Opcode.CALL.code, 2, 0, 0, 0, 2, 0, 0, 0)); 						// CALL R2
+		prog.add(Simulator.encT2(Opcode.MOVE.code, 2, 1, 31415));            						// MOVE R1,31415
 		prog.add(Simulator.encT0(Opcode.STOP.code, 0, 0, 0, 0, 0, 0, 0, 0));
-		prog.add(Simulator.encT2(Opcode.MOVE.code, 2, 1, 326));                // MOVE R1,326
+		prog.add(Simulator.encT2(Opcode.MOVE.code, 2, 1, 326));              						// MOVE R1,326
 		prog.add(Simulator.encT0(Opcode.STOP.code, 0, 0, 0, 0, 0, 0, 0, 0));
 		diff = runProg(prog);
 		assertEquals(6, diff.size());
@@ -666,53 +666,53 @@ public class SimulatorTest {
 
 		// ZC
 		prog.clear();
-		prog.add(Simulator.encT2(Opcode.MOVE.code, 2, 2, 4));                        // MOVE R2,4
-		prog.add(Simulator.encT2(Opcode.CALL.code, 1, Condition.NE.ordinal(), 4));    // CALL NZ,4
-		prog.add(Simulator.encT2(Opcode.MOVE.code, 2, 1, 31415));                    // MOVE R1,31415
+		prog.add(Simulator.encT2(Opcode.MOVE.code, 2, 2, 4));                      					// MOVE R2,4
+		prog.add(Simulator.encT2(Opcode.CALL.code, 1, Condition.NE.ordinal(), 4));					// CALL NZ,4
+		prog.add(Simulator.encT2(Opcode.MOVE.code, 2, 1, 31415));                  					// MOVE R1, 31415
 		prog.add(Simulator.encT0(Opcode.STOP.code, 0, 0, 0, 0, 0, 0, 0, 0));
-		prog.add(Simulator.encT2(Opcode.MOVE.code, 2, 1, 326));                        // MOVE R1,326
-		prog.add(Simulator.encT2(Opcode.MOVE.code, 2, 2, 9));                        // MOVE R2,9
-		prog.add(Simulator.encT2(Opcode.CALL.code, 1, Condition.EQ.ordinal(), 9));    // CALL Z,R2
-		prog.add(Simulator.encT2(Opcode.MOVE.code, 2, 3, 31415));                    // MOVE R3,31415
+		prog.add(Simulator.encT2(Opcode.MOVE.code, 2, 1, 326));                						// MOVE R1,326
+		prog.add(Simulator.encT2(Opcode.MOVE.code, 2, 2, 9));               						// MOVE R2, 9
+		prog.add(Simulator.encT0(Opcode.CALL.code, 1, 2, 0, 0, Condition.EQ.ordinal(), 2, 0, 0));	// CALL Z, R2
+		prog.add(Simulator.encT2(Opcode.MOVE.code, 2, 3, 31415));                 					// MOVE R3,31415
 		prog.add(Simulator.encT0(Opcode.STOP.code, 0, 0, 0, 0, 0, 0, 0, 0));
-		prog.add(Simulator.encT2(Opcode.MOVE.code, 2, 3, 326));                        // MOVE R3,326
+		prog.add(Simulator.encT2(Opcode.MOVE.code, 2, 3, 326));                   					// MOVE R3,326
 		prog.add(Simulator.encT0(Opcode.STOP.code, 0, 0, 0, 0, 0, 0, 0, 0));
 		diff = runProg(prog);
 		assertEquals(7, diff.size());
 		diff.assertDiff(1, 326);
 		diff.assertDiff(3, 31415);
-		diff.assertDiff(Simulator.R_SP, 1095);
-		diff.assertDiff(Simulator.R_SF, 1095);
+		diff.assertDiff(Simulator.R_SP, 1097);
+		diff.assertDiff(Simulator.R_SF, 1097);
 		diff.assertSRDiff(Simulator.SR_P);
 
 		// ZA
 		prog.clear();
-		prog.add(Simulator.encT2(Opcode.MOVE.code, 2, 2, 4));                                // MOVE R2,4
-		prog.add(Simulator.encT0(Opcode.CALL.code, 1, 2, 0, 0, Condition.NE.ordinal(), 2, 0, 0));    // CALL NZ,R2
-		prog.add(Simulator.encT2(Opcode.MOVE.code, 2, 1, 31415));                            // MOVE R1,31415
+		prog.add(Simulator.encT2(Opcode.MOVE.code, 2, 2, 4));                           			// MOVE R2,4
+		prog.add(Simulator.encT0(Opcode.CALL.code, 1, 2, 0, 0, Condition.NE.ordinal(), 2, 0, 0));	// CALL NZ,R2
+		prog.add(Simulator.encT2(Opcode.MOVE.code, 2, 1, 31415));                     				// MOVE R1,31415
 		prog.add(Simulator.encT0(Opcode.STOP.code, 0, 0, 0, 0, 0, 0, 0, 0));
-		prog.add(Simulator.encT2(Opcode.MOVE.code, 2, 1, 326));                                // MOVE R1,326
-		prog.add(Simulator.encT2(Opcode.MOVE.code, 2, 2, 9));                                // MOVE R2,9
-		prog.add(Simulator.encT0(Opcode.CALL.code, 1, 2, 0, 0, Condition.EQ.ordinal(), 2, 0, 0));    // CALL Z,R2
-		prog.add(Simulator.encT2(Opcode.MOVE.code, 2, 3, 31415));                            // MOVE R3,31415
+		prog.add(Simulator.encT2(Opcode.MOVE.code, 2, 1, 326));                      				// MOVE R1,326
+		prog.add(Simulator.encT2(Opcode.MOVE.code, 2, 2, 9));                         				// MOVE R2,9
+		prog.add(Simulator.encT0(Opcode.CALL.code, 1, 2, 0, 0, Condition.EQ.ordinal(), 2, 0, 0));	// CALL Z,R2
+		prog.add(Simulator.encT2(Opcode.MOVE.code, 2, 3, 31415));                     				// MOVE R3,31415
 		prog.add(Simulator.encT0(Opcode.STOP.code, 0, 0, 0, 0, 0, 0, 0, 0));
-		prog.add(Simulator.encT2(Opcode.MOVE.code, 2, 3, 326));                                // MOVE R3,326
+		prog.add(Simulator.encT2(Opcode.MOVE.code, 2, 3, 326));                    					// MOVE R3,326
 		prog.add(Simulator.encT0(Opcode.STOP.code, 0, 0, 0, 0, 0, 0, 0, 0));
 		diff = runProg(prog);
 		assertEquals(7, diff.size());
 		diff.assertDiff(1, 326);
 		diff.assertDiff(3, 31415);
-		diff.assertDiff(Simulator.R_SP, 1095);
-		diff.assertDiff(Simulator.R_SF, 1095);
+		diff.assertDiff(Simulator.R_SP, 1097);
+		diff.assertDiff(Simulator.R_SF, 1097);
 		diff.assertSRDiff(Simulator.SR_P);
 
 		// AC
 		prog.clear();
-		prog.add(Simulator.encT2(Opcode.MOVE.code, 2, 2, 3));                // MOVE R2,3
-		prog.add(Simulator.encT2(Opcode.CALL.code, 2, 2, 1));                // CALL R2 + 1
-		prog.add(Simulator.encT2(Opcode.MOVE.code, 2, 1, 31415));            // MOVE R1,31415
+		prog.add(Simulator.encT2(Opcode.MOVE.code, 2, 2, 3));                						// MOVE R2,3
+		prog.add(Simulator.encT2(Opcode.CALL.code, 2, 2, 1));                						// CALL R2 + 1
+		prog.add(Simulator.encT2(Opcode.MOVE.code, 2, 1, 31415));            						// MOVE R1,31415
 		prog.add(Simulator.encT0(Opcode.STOP.code, 0, 0, 0, 0, 0, 0, 0, 0));
-		prog.add(Simulator.encT2(Opcode.MOVE.code, 2, 1, 326));                // MOVE R1,326
+		prog.add(Simulator.encT2(Opcode.MOVE.code, 2, 1, 326));                						// MOVE R1,326
 		prog.add(Simulator.encT0(Opcode.STOP.code, 0, 0, 0, 0, 0, 0, 0, 0));
 		diff = runProg(prog);
 		assertEquals(6, diff.size());
@@ -723,12 +723,12 @@ public class SimulatorTest {
 
 		// AR
 		prog.clear();
-		prog.add(Simulator.encT2(Opcode.MOVE.code, 2, 2, 3));                // MOVE R2,3
-		prog.add(Simulator.encT2(Opcode.MOVE.code, 2, 0, 2));                // MOVE R0,1
-		prog.add(Simulator.encT0(Opcode.CALL.code, 2, 2, 0, 0, 2, 0, 0, 0));        // CALL R2 + R0
-		prog.add(Simulator.encT2(Opcode.MOVE.code, 2, 1, 31415));            // MOVE R1,31415
+		prog.add(Simulator.encT2(Opcode.MOVE.code, 2, 2, 3));                						// MOVE R2,3
+		prog.add(Simulator.encT2(Opcode.MOVE.code, 2, 0, 2));                						// MOVE R0,1
+		prog.add(Simulator.encT0(Opcode.CALL.code, 2, 2, 0, 0, 2, 0, 0, 0));        				// CALL R2 + R0
+		prog.add(Simulator.encT2(Opcode.MOVE.code, 2, 1, 31415));            						// MOVE R1,31415
 		prog.add(Simulator.encT0(Opcode.STOP.code, 0, 0, 0, 0, 0, 0, 0, 0));
-		prog.add(Simulator.encT2(Opcode.MOVE.code, 2, 1, 326));                // MOVE R1,326
+		prog.add(Simulator.encT2(Opcode.MOVE.code, 2, 1, 326));                						// MOVE R1,326
 		prog.add(Simulator.encT0(Opcode.STOP.code, 0, 0, 0, 0, 0, 0, 0, 0));
 		diff = runProg(prog);
 		assertEquals(7, diff.size());
@@ -739,64 +739,64 @@ public class SimulatorTest {
 
 		// ZAC,ZCA
 		prog.clear();
-		prog.add(Simulator.encT2(Opcode.MOVE.code, 2, 2, 3));                                // MOVE R2,3
-		prog.add(Simulator.encT3(Opcode.CALL.code, 1, 2, Condition.NE.ordinal(), 2, 1));        // CALL NZ,R2 + 1
-		prog.add(Simulator.encT2(Opcode.MOVE.code, 2, 1, 31415));                            // MOVE R1,31415
+		prog.add(Simulator.encT2(Opcode.MOVE.code, 2, 2, 3));                               		// MOVE R2,3
+		prog.add(Simulator.encT3(Opcode.CALL.code, 1, 2, Condition.NE.ordinal(), 2, 1));    		// CALL NZ,R2 + 1
+		prog.add(Simulator.encT2(Opcode.MOVE.code, 2, 1, 31415));                           		// MOVE R1,31415
 		prog.add(Simulator.encT0(Opcode.STOP.code, 0, 0, 0, 0, 0, 0, 0, 0));
-		prog.add(Simulator.encT2(Opcode.MOVE.code, 2, 1, 326));                                // MOVE R1,326
-		prog.add(Simulator.encT3(Opcode.CALL.code, 1, 2, Condition.EQ.ordinal(), 2, 5));        // CALL Z,R2 + 5
-		prog.add(Simulator.encT2(Opcode.MOVE.code, 2, 3, 31415));                            // MOVE R3,31415
+		prog.add(Simulator.encT2(Opcode.MOVE.code, 2, 1, 326));                             		// MOVE R1,326
+		prog.add(Simulator.encT3(Opcode.CALL.code, 1, 2, Condition.EQ.ordinal(), 2, 5));  			// CALL Z,R2 + 5
+		prog.add(Simulator.encT2(Opcode.MOVE.code, 2, 3, 31415));                        			// MOVE R3,31415
 		prog.add(Simulator.encT0(Opcode.STOP.code, 0, 0, 0, 0, 0, 0, 0, 0));
-		prog.add(Simulator.encT2(Opcode.MOVE.code, 2, 3, 326));                                // MOVE R3,326
+		prog.add(Simulator.encT2(Opcode.MOVE.code, 2, 3, 326));                             		// MOVE R3,326
 		prog.add(Simulator.encT0(Opcode.STOP.code, 0, 0, 0, 0, 0, 0, 0, 0));
 		diff = runProg(prog);
 		assertEquals(7, diff.size());
 		diff.assertDiff(1, 326);
 		diff.assertDiff(3, 31415);
-		diff.assertDiff(Simulator.R_SP, 1095);
-		diff.assertDiff(Simulator.R_SF, 1095);
+		diff.assertDiff(Simulator.R_SP, 1097);
+		diff.assertDiff(Simulator.R_SF, 1097);
 		diff.assertSRDiff(Simulator.SR_P);
 
 		// ZCC
 		prog.clear();
-		prog.add(Simulator.encT2(Opcode.MOVE.code, 2, 2, 3));                                // MOVE R2,3
-		prog.add(Simulator.encT3(Opcode.CALL.code, 1, 1, Condition.NE.ordinal(), 3, 1));        // CALL NZ,3 + 1
-		prog.add(Simulator.encT2(Opcode.MOVE.code, 2, 1, 31415));                            // MOVE R1,31415
+		prog.add(Simulator.encT2(Opcode.MOVE.code, 2, 2, 3));                             			// MOVE R2,3
+		prog.add(Simulator.encT3(Opcode.CALL.code, 1, 1, Condition.NE.ordinal(), 3, 1));   			// CALL NZ,3 + 1
+		prog.add(Simulator.encT2(Opcode.MOVE.code, 2, 1, 31415));                          			// MOVE R1,31415
 		prog.add(Simulator.encT0(Opcode.STOP.code, 0, 0, 0, 0, 0, 0, 0, 0));
-		prog.add(Simulator.encT2(Opcode.MOVE.code, 2, 1, 326));                                // MOVE R1,326
-		prog.add(Simulator.encT3(Opcode.CALL.code, 1, 1, Condition.EQ.ordinal(), 3, 5));        // CALL Z,3 + 5
-		prog.add(Simulator.encT2(Opcode.MOVE.code, 2, 3, 31415));                            // MOVE R3,31415
+		prog.add(Simulator.encT2(Opcode.MOVE.code, 2, 1, 326));                             		// MOVE R1,326
+		prog.add(Simulator.encT3(Opcode.CALL.code, 1, 1, Condition.EQ.ordinal(), 3, 5));    		// CALL Z,3 + 5
+		prog.add(Simulator.encT2(Opcode.MOVE.code, 2, 3, 31415));                           		// MOVE R3,31415
 		prog.add(Simulator.encT0(Opcode.STOP.code, 0, 0, 0, 0, 0, 0, 0, 0));
-		prog.add(Simulator.encT2(Opcode.MOVE.code, 2, 3, 326));                                // MOVE R3,326
+		prog.add(Simulator.encT2(Opcode.MOVE.code, 2, 3, 326));                             		// MOVE R3,326
 		prog.add(Simulator.encT0(Opcode.STOP.code, 0, 0, 0, 0, 0, 0, 0, 0));
 		diff = runProg(prog);
 		assertEquals(7, diff.size());
 		diff.assertDiff(1, 326);
 		diff.assertDiff(3, 31415);
-		diff.assertDiff(Simulator.R_SP, 1095);
-		diff.assertDiff(Simulator.R_SF, 1095);
+		diff.assertDiff(Simulator.R_SP, 1097);
+		diff.assertDiff(Simulator.R_SF, 1097);
 		diff.assertSRDiff(Simulator.SR_P);
 
 		// ZAR
 		prog.clear();
-		prog.add(Simulator.encT2(Opcode.MOVE.code, 2, 2, 3));                                    // MOVE R2,3
-		prog.add(Simulator.encT2(Opcode.MOVE.code, 2, 4, 2));                                    // MOVE R4,2
-		prog.add(Simulator.encT0(Opcode.CALL.code, 1, 2, 2, 0, Condition.NE.ordinal(), 2, 4, 0));        // CALL NZ,R2 + R4
-		prog.add(Simulator.encT2(Opcode.MOVE.code, 2, 1, 31415));                                // MOVE R1,31415
+		prog.add(Simulator.encT2(Opcode.MOVE.code, 2, 2, 3));                  						// MOVE R2,3
+		prog.add(Simulator.encT2(Opcode.MOVE.code, 2, 4, 2));                              			// MOVE R4,2
+		prog.add(Simulator.encT0(Opcode.CALL.code, 1, 2, 2, 0, Condition.NE.ordinal(), 2, 4, 0));	// CALL NZ,R2 + R4
+		prog.add(Simulator.encT2(Opcode.MOVE.code, 2, 1, 31415));                          			// MOVE R1,31415
 		prog.add(Simulator.encT0(Opcode.STOP.code, 0, 0, 0, 0, 0, 0, 0, 0));
-		prog.add(Simulator.encT2(Opcode.MOVE.code, 2, 1, 326));                                    // MOVE R1,326
-		prog.add(Simulator.encT2(Opcode.MOVE.code, 2, 4, 7));                                    // MOVE R4,7
-		prog.add(Simulator.encT0(Opcode.CALL.code, 1, 2, 2, 0, Condition.EQ.ordinal(), 2, 4, 0));        // CALL Z,R2 + R4
-		prog.add(Simulator.encT2(Opcode.MOVE.code, 2, 3, 31415));                                // MOVE R3,31415
+		prog.add(Simulator.encT2(Opcode.MOVE.code, 2, 1, 326));                           			// MOVE R1,326
+		prog.add(Simulator.encT2(Opcode.MOVE.code, 2, 4, 7));                             			// MOVE R4,7
+		prog.add(Simulator.encT0(Opcode.CALL.code, 1, 2, 2, 0, Condition.EQ.ordinal(), 2, 4, 0)); 	// CALL Z,R2 + R4
+		prog.add(Simulator.encT2(Opcode.MOVE.code, 2, 3, 31415));                          			// MOVE R3,31415
 		prog.add(Simulator.encT0(Opcode.STOP.code, 0, 0, 0, 0, 0, 0, 0, 0));
-		prog.add(Simulator.encT2(Opcode.MOVE.code, 2, 3, 326));                                    // MOVE R3,326
+		prog.add(Simulator.encT2(Opcode.MOVE.code, 2, 3, 326));                            			// MOVE R3,326
 		prog.add(Simulator.encT0(Opcode.STOP.code, 0, 0, 0, 0, 0, 0, 0, 0));
 		diff = runProg(prog);
 		assertEquals(8, diff.size());
 		diff.assertDiff(1, 326);
 		diff.assertDiff(3, 31415);
-		diff.assertDiff(Simulator.R_SP, 1095);
-		diff.assertDiff(Simulator.R_SF, 1095);
+		diff.assertDiff(Simulator.R_SP, 1097);
+		diff.assertDiff(Simulator.R_SF, 1097);
 		diff.assertSRDiff(Simulator.SR_P);
 	}
 

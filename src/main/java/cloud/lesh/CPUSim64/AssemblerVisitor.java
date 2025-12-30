@@ -1,9 +1,6 @@
 package cloud.lesh.CPUSim64;
 
-import org.antlr.v4.runtime.CharStream;
-import org.antlr.v4.runtime.CharStreams;
-import org.antlr.v4.runtime.CommonTokenStream;
-import org.antlr.v4.runtime.Token;
+import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.tree.ParseTree;
 
 import org.apache.commons.lang3.tuple.Pair;
@@ -19,17 +16,18 @@ public class AssemblerVisitor extends CPUSim64BaseVisitor<Void> implements HasLo
 	private String filename = null;
 	int lineNum = 1;
 	boolean pauseLineIncrement = false;
-	private final LinkedList errors = new LinkedList<String>();
 	private long blockCount = 0;
+	private boolean hasErrors = false;
+	private Map<Integer, String> originalSourceLocations;
 
-	public String getLocation() {
-		return (filename == null ? "" : filename + ":") + lineNum;
+	public String getLocation(int offendingLine) {
+		return (filename == null ? "" : filename + ":") + offendingLine;
 	}
-	public List<String> getErrors() { return errors; }
+	public boolean hasErrors() { return hasErrors; }
 
 	public class AssemblerException extends RuntimeException {
 		public AssemblerException(String msg) {
-			super(getLocation() + ":ERROR:" + msg);
+			super(getLocation(lineNum) + ":ERROR:" + msg);
 		}
 	}
 
@@ -226,8 +224,9 @@ public class AssemblerVisitor extends CPUSim64BaseVisitor<Void> implements HasLo
 			var v = labelMap.get(text.toUpperCase());
 			if (v != null)
 				return Long.valueOf(v);
+			else
+				throw new AssemblerException("Invalid integer/label: " + text);
 		}
-		throw new AssemblerException("Invalid integer/label: " + text);
 	}
 
 	private Pair<Integer, Long> parseOOperand(CPUSim64Parser.OOperandContext ctx) {
@@ -361,7 +360,8 @@ public class AssemblerVisitor extends CPUSim64BaseVisitor<Void> implements HasLo
 			try {
 				visit(child);
 			} catch (AssemblerException ex) {
-				errors.add(ex.getMessage());
+				System.err.println(ex.getMessage());
+				hasErrors = true;
 			}
 			if (!pauseLineIncrement) ++lineNum;
 		}
@@ -677,7 +677,7 @@ public class AssemblerVisitor extends CPUSim64BaseVisitor<Void> implements HasLo
 					: aIndexFromToken(y.aOperand().start);
 			addWord(LabelType.CODE, encType0(Opcode.PUSH.code, aType, OT_NONE, OT_NONE, OT_NONE, v0, 0, 0, 0));
 		} else {
-			long k =parseIntLike(ctx.cLiteral().getText());
+			long k = parseIntLike(ctx.cLiteral().getText());
 			addWord(LabelType.CODE, encType1C1(Opcode.PUSH.code, k));
 		}
 		return null;
@@ -696,71 +696,68 @@ public class AssemblerVisitor extends CPUSim64BaseVisitor<Void> implements HasLo
 	}
 
 	private Void visitInstrBRANCH(Opcode opc, CPUSim64Parser.BranchModesContext ctx) {
+		int a = OT_NONE, b = OT_NONE, c = OT_NONE, d = OT_NONE;
+		long v0 = 0, v1 = 0, v2 = 0, v3 = 0;
+
+		var memRef = parseMemRef(ctx.memRef());
+
 		// Non-conditional: JUMP A | JUMP C
 		if (ctx.zCond() == null) {
-			int aType, v0;
-			if (ctx.aOperand() != null) {
-				aType = OT_REG;
-				v0 = aIndexFromToken(ctx.aOperand().start);
-				addWord(LabelType.CODE, encType0(opc.code, aType, OT_NONE, OT_NONE, OT_NONE, v0, 0, 0, 0));
+			a = memRef.getLeft().getLeft();
+			b = memRef.getRight().getLeft();
+			v0 = memRef.getLeft().getRight();
+			v1 = memRef.getRight().getRight();
+			if (a == OT_CONST && b == OT_NONE) {     				// C
+				addWord(LabelType.CODE, encType1C1(opc.code, v0));
+			} else if (a == OT_REG && b == OT_NONE) {          		// A
+				addWord(LabelType.CODE, encType0(opc.code, a, b, c, d, (int)v0, (int)v1, (int)v2, (int)v3));
+			} else if (a == OT_REG && b == OT_CONST) {      		// A[C]
+				addWord(LabelType.CODE, encType2RC2(opc.code, a, (int)v0, v1));
+			} else if (a == OT_CONST && b == OT_REG) {				// C[A]
+				addWord(LabelType.CODE, encType2RC2(opc.code, b, (int)v1, v0));
+			} else if (a == OT_CONST && b == OT_CONST) {  			// C[C]
+				if (fitsIn(v0, C0_BITS, true)) {
+					addWord(LabelType.CODE, encType3ZZC3(opc.code, OT_CONST, Condition.U.ordinal(), a, (int)v0, (int)v1));
+				} else if (fitsIn(v1, C0_BITS, true)) {
+					addWord(LabelType.CODE, encType3ZZC3(opc.code, OT_CONST, Condition.U.ordinal(), b, (int)v1, (int)v0));
+				} else {
+					throw new AssemblerException("BRANCH [C+C] requires one constant to fit in 12 bits");
+				}
+			} else if (a == OT_REG && b == OT_REG) {      			// A[R]
+				addWord(LabelType.CODE, encType0(opc.code, a, b, c, d, (int)v0, (int)v1, (int)v2, (int)v3));
 			} else {
-				long k = parseIntLike(ctx.cLiteral(0).getText());
-				addWord(LabelType.CODE, encType1C1(opc.code, k));
+				throw new AssemblerException("Unhandled BRANCH form");
 			}
-			return null;
-		}
-
-		// Conditional forms: Z + (A | C | AC | CA | CC | AR)
-		final int z = parseZSmall(ctx.zCond().getText());
-		final int aType = OT_CONST; // op0 = Z (small)
-		final int v0 = z;
-
-		int bType = OT_NONE, v1 = 0;
-		int imm28 = 0;
-		long imm42 = 0;
-
-		final boolean hasA = (ctx.aOperand() != null);
-		final int nC = (ctx.cLiteral() == null) ? 0 : ctx.cLiteral().size();
-		final boolean hasR = (ctx.rOperand() != null);
-
-		if (hasA && nC == 0 && !hasR) {
-			// ZA
-			bType = OT_REG;
-			v1 = aIndexFromToken(ctx.aOperand().start);
-			addWord(LabelType.CODE, encType0(opc.code, aType, bType, OT_NONE, OT_NONE, v0, v1, 0, 0));
-		} else if (!hasA && nC == 1 && !hasR) {
-			// ZC
-			imm42 =parseIntLike(ctx.cLiteral(0).getText());
-			addWord(LabelType.CODE, encType2RC2(opc.code, aType, v0, imm42));
-		} else if (hasA && nC == 1 && !hasR) {
-			// ZAC or ZCA → encode A in op1, C in imm28 (signed 28)
-			bType = OT_REG;
-			v1 = aIndexFromToken(ctx.aOperand().start);
-			imm28 = (int)parseIntLike(ctx.cLiteral(0).getText());
-			addWord(LabelType.CODE, encType3ZZC3(opc.code, aType, v0, bType, v1, imm28));
-		} else if (!hasA && nC == 2 && !hasR) {
-			// ZCC → first C in op1 (12-bit), second C in imm28 (signed 28)
-			long c1 = parseIntLike(ctx.cLiteral(0).getText());
-			long c2 = parseIntLike(ctx.cLiteral(1).getText());
-			if (fitsIn(c1, C0_BITS, true)) {
-				bType = OT_CONST;
-				v1 = (int)c1;
-				imm28 = (int)c2;
-			} else if (fitsIn(c2, C0_BITS, true)) {
-				bType = OT_CONST;
-				v1 = (int)c2;
-				imm28 = (int)c1;
-			} else {
-				throw new AssemblerException("JUMP ZCC requires one constant to fit in 12 bits");
-			}
-			addWord(LabelType.CODE, encType3ZZC3(opc.code, aType, v0, bType, v1, imm28));
-		} else if (hasA && hasR) {
-			// ZAR
-			v1 = aIndexFromToken(ctx.aOperand().start);
-			int v2 = regIndex(ctx.rOperand().REG_R().getText());
-			addWord(LabelType.CODE, encType0(opc.code, aType, OT_REG, OT_REG, OT_NONE, v0, v1, v2, 0));
 		} else {
-			throw new IllegalStateException("Unhandled JUMP conditional form");
+			// Conditional forms: Z + (A | C | AC | CA | CC | AR)
+			final int z = parseZSmall(ctx.zCond().getText());
+			final int zt = OT_CONST; // op0 = Z (small)
+
+			a = memRef.getLeft().getLeft();
+			b = memRef.getRight().getLeft();
+			v0 = memRef.getLeft().getRight();
+			v1 = memRef.getRight().getRight();
+			if (a == OT_CONST && b == OT_NONE) {                	// Z,C
+				addWord(LabelType.CODE, encType2RC2(opc.code, zt, z, v0));
+			} else if (a == OT_REG && b == OT_NONE) {           	// Z,A
+				addWord(LabelType.CODE, encType0(opc.code, zt, a, b, c, z, (int) v0, (int) v1, (int) v2));
+			} else if (a == OT_REG && b == OT_CONST) {        		// Z,A[C]
+				addWord(LabelType.CODE, encType3ZZC3(opc.code, zt, z, a, (int) v0, (int)v1));
+			} else if (a == OT_CONST && b == OT_REG) {            	// Z,C[A]
+				addWord(LabelType.CODE, encType3ZZC3(opc.code, zt, z, b, (int) v1, (int)v0));
+			} else if (a == OT_CONST && b == OT_CONST) {        	// Z,C[C]
+				if (fitsIn(v0, C0_BITS, true)) {
+					addWord(LabelType.CODE, encType3ZZC3(opc.code, zt, z, a, (int) v0, (int)v1));
+				} else if (fitsIn(v1, C0_BITS, true)) {
+					addWord(LabelType.CODE, encType3ZZC3(opc.code, zt, z, b, (int) v1, (int)v0));
+				} else {
+					throw new AssemblerException("BRANCH [C+C] requires one constant to fit in 12 bits");
+				}
+			} else if (a == OT_REG && b == OT_REG) {            // Y[A+R]
+				addWord(LabelType.CODE, encType0(opc.code, zt, a, b, c, z, (int) v0, (int) v1, (int) v2));
+			} else {
+				throw new AssemblerException("Unhandled BRANCH form");
+			}
 		}
 		return null;
 	}
@@ -1568,7 +1565,7 @@ public class AssemblerVisitor extends CPUSim64BaseVisitor<Void> implements HasLo
 		} else if (ctx.HEXLIT() != null) {
 			currentAddress = Long.parseLong(ctx.HEXLIT().getText().substring(2), 16);
 		} else {
-			throw new AssemblerException(getLocation() + ":ERROR:Missing integer literal for .ORG directive");
+			throw new AssemblerException(getLocation(lineNum) + ":ERROR:Missing integer literal for .ORG directive");
 		}
 		currentAddress = Math.max(out.size(), currentAddress); // prevent negative addresses
 		for (int i = out.size(); i < currentAddress; ++i) {
@@ -1622,20 +1619,40 @@ public class AssemblerVisitor extends CPUSim64BaseVisitor<Void> implements HasLo
 	}
 
 	public void assemble(String src) {
+		originalSourceLocations = Utils.readLineDirectives(src);
 		CharStream input = CharStreams.fromString(src);
 		var lex = new cloud.lesh.CPUSim64.CPUSim64Lexer(input);
-		var lexerListener = new CollectingErrorListener(errors, null, filename);
-		lex.removeErrorListeners(); 				// remove ConsoleErrorListener
-		lex.addErrorListener(lexerListener); 		// collect lexer errors
+		lex.removeErrorListeners();                				// remove ConsoleErrorListener
+		lex.addErrorListener(this.new LabelErrorListener());     // collect lexer errors
 		CommonTokenStream toks = new CommonTokenStream(lex);
-//		if (errors.size() > 0) return;
+		toks.fill();
 
 		var parser = new cloud.lesh.CPUSim64.CPUSim64Parser(toks);
-		var parserListener = new CollectingErrorListener(errors, null, filename);
-		parser.removeErrorListeners();				// remove ConsoleErrorListener
-		parser.addErrorListener(parserListener);	// collect parser errors
+		parser.removeErrorListeners();             				// remove ConsoleErrorListener
+		parser.addErrorListener(this.new LabelErrorListener());  // collect parser errors
 		ParseTree tree = parser.program();
-//		if (errors.size() > 0) return;
 		visit(tree);
+	}
+
+	final class LabelErrorListener extends BaseErrorListener {
+		public LabelErrorListener() {}
+
+		@Override
+		public void syntaxError(Recognizer<?, ?> recognizer,
+								Object offendingSymbol,
+								int line,
+								int charPositionInLine,
+								String msg,
+								RecognitionException e) {
+
+			String where = getLocation(line);
+
+			String tokenText = "";
+			if (offendingSymbol instanceof Token t) {
+				tokenText = " near '" + t.getText() + "'";
+			}
+			System.err.println(where + ":ASMERROR:" + msg);
+			hasErrors = true;
+		}
 	}
 }

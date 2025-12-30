@@ -262,4 +262,34 @@ public interface PreprocessorParserVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitLiteral(PreprocessorParser.LiteralContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link PreprocessorParser#constExpr}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitConstExpr(PreprocessorParser.ConstExprContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link PreprocessorParser#addExpr}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitAddExpr(PreprocessorParser.AddExprContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link PreprocessorParser#mulExpr}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitMulExpr(PreprocessorParser.MulExprContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link PreprocessorParser#unaryExpr}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitUnaryExpr(PreprocessorParser.UnaryExprContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link PreprocessorParser#const}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitConst(PreprocessorParser.ConstContext ctx);
 }

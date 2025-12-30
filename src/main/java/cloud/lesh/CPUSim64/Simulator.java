@@ -735,6 +735,8 @@ public class Simulator {
 			return R[r];
 		} else if (isConstKind(kind)) {
 			return val12;
+		} else if (isNoneKind(kind)) {
+			return 0;
 		}
 		throw new CPUException("Illegal O argument.");
 	}
@@ -1174,93 +1176,37 @@ public class Simulator {
 
 	// ---- 7: JUMP ----
 	private void opJUMP(Decoded d) {
-		if (d.tt == 1) {        // C
+		if (d.tt != 1 && isConstKind(d.a)) {
+			if (!testCond(getConst(d.a, d.v0)))
+				return;
+		}
+		if (d.tt == 1) {        			// C
 			R[R_PC] = d.c1;
 			return;
-		} else if (d.tt == 2) { // AC, ZC
-			if (isRegKind(d.a)) {
-				R[R_PC] = getR(d.v0) + d.c2;
-				return;
-			} else if (isConstKind(d.a)) {
-				if (testCond(getConst(d.a, d.v0)))
-					R[R_PC] = d.c2;
-				return;
-			}
-		} else if (d.tt == 3) { // ZAC, ZCA, ZCC
-			if (testCond(getConst(d.a, d.v0)))
-				R[R_PC] = getO(d.b, d.v1) + d.c3;
-			return;
-		} else if (d.tt == 0) {
-			// A, AR, ZA, ZAR
-			int count = d.getArgCount();
-			if (count == 1 && isRegKind(d.a)) {
-				R[R_PC] = getR(d.a, d.v0);
-				return;
-			} else if (count == 2) {
-				if (isRegKind(d.a)) {
-					R[R_PC] = getR(d.a, d.v0) + getR(d.b, d.v1);
-					return;
-				} else if (isConstKind(d.a)) {
-					if (testCond(getConst(d.a, d.v0)))
-						R[R_PC] = getR(d.b, d.v1);
-					return;
-				}
-			} else if (count == 3) {
-				if (testCond(getConst(d.a, d.v0)))
-					R[R_PC] = getR(d.b, d.v1) + getR(d.c, d.v2);
-				return;
-			}
+		} else if (isConstKind(d.a)) {		// z, memref
+			long addr = getO(d.b, d.v1) + getO(d.c, d.v2) + d.c1 + d.c2 + d.c3;
+			R[R_PC] = addr;
+		} else if (isRegKind(d.a)) {		// memref
+			long addr = getO(d.a, d.v0) + getO(d.b, d.v1) + d.c1 + d.c2 + d.c3;
+			R[R_PC] = addr;
+		} else {
+			throw new IllegalStateException("Illegal JUMP arguments.");
 		}
-		throw new IllegalStateException("Illegal JUMP arguments.");
 	}
 
 	// ---- 8: CALL ----
 	private void opCALL(Decoded d) {
+		if (d.tt != 1 && isConstKind(d.a)) {
+			if (!testCond(getConst(d.a, d.v0)))
+				return;
+		}
 		// Prologue:
 		memWrite(R[R_SP], R[R_PC]);
 		R[R_SP]--;
 		memWrite(R[R_SP], R[R_SF]);
 		R[R_SP]--;
 		R[R_SF] = R[R_SP];
-
-		if (d.tt == 1) {        // C
-			R[R_PC] = d.c1;
-			return;
-		} else if (d.tt == 2) { // AC, ZC
-			if (isRegKind(d.a)) {
-				R[R_PC] = getR(d.v0) + d.c2;
-				return;
-			} else if (isConstKind(d.a)) {
-				if (testCond(getConst(d.a, d.v0)))
-					R[R_PC] = d.c2;
-				return;
-			}
-		} else if (d.tt == 3) { // ZAC, ZCA, ZCC
-			if (testCond(getConst(d.a, d.v0)))
-				R[R_PC] = getO(d.b, d.v1) + d.c3;
-			return;
-		} else if (d.tt == 0) {
-			// A, AR, ZA, ZAR
-			int count = d.getArgCount();
-			if (count == 1 && isRegKind(d.a)) {
-				R[R_PC] = getR(d.a, d.v0);
-				return;
-			} else if (count == 2) {
-				if (isRegKind(d.a)) {
-					R[R_PC] = getR(d.a, d.v0) + getR(d.b, d.v1);
-					return;
-				} else if (isConstKind(d.a)) {
-					if (testCond(getConst(d.a, d.v0)))
-						R[R_PC] = getR(d.b, d.v1);
-					return;
-				}
-			} else if (count == 3) {
-				if (testCond(getConst(d.a, d.v0)))
-					R[R_PC] = getR(d.b, d.v1) + getR(d.c, d.v2);
-				return;
-			}
-		}
-		throw new IllegalStateException("Illegal CALL arguments.");
+		opJUMP(d);
 	}
 
 	// ---- 9: RETURN ----

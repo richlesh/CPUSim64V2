@@ -263,11 +263,11 @@ public class AssemblerVisitorTest {
 			JUMP 0x1234
 			JUMP NZ, R2
 			JUMP NP, 0x1234
-			JUMP NN, R1 + 0x1234
-			JUMP Z, 0x1234 + R1
-			JUMP N, 0x1234 + 3
+			JUMP NN, R1[0x1234]
+			JUMP Z, 0x1234[R1]
+			JUMP N, 0x1234[3]
 			LOOP:
-			JUMP P, R1 + R2
+			JUMP P, R1[R2]
 			.BLOCK B1
 			$LOOP:
 			JUMP $LOOP
@@ -307,10 +307,10 @@ public class AssemblerVisitorTest {
 			CALL 0x1234
 			CALL NZ, R2
 			CALL NP, 0x1234
-			CALL NN, R1 + 0x1234
-			CALL Z, 0x1234 + R1
-			CALL N, 0x1234 + 3
-			CALL P, R1 + R2
+			CALL NN, R1[0x1234]
+			CALL Z, 0x1234[R1]
+			CALL N, 0x1234[3]
+			CALL P, R1[R2]
 			FINIS:
 			""";
 		LabelVisitor labelVisitor = new LabelVisitor();
@@ -983,14 +983,14 @@ public class AssemblerVisitorTest {
 	void testCAS() {
 		String src = """
 			START:
-			CAS R1, R2, R3, R4
-			CAS R1, R2, R3, 0x123
-			CAS 1, 2, R3, R4
-			CAS 1, 2, R3, 0x123
-			CAS R1, 2, R3, R4
-			CAS R1, 2, R3, 0x123
-			CAS 1, R2, R3, R4
-			CAS 1, R2, R3, 0x123
+			CAS R1, R2, R3[R4]
+			CAS R1, R2, R3[0x123]
+			CAS 1, 2, R3[R4]
+			CAS 1, 2, R3[0x123]
+			CAS R1, 2, R3[R4]
+			CAS R1, 2, R3[0x123]
+			CAS 1, R2, R3[R4]
+			CAS 1, R2, R3[0x123]
 			FINIS:
 			""";
 		LabelVisitor labelVisitor = new LabelVisitor();
@@ -1244,7 +1244,8 @@ public class AssemblerVisitorTest {
 			FINIS:
 			""";
 		var loader = new IncludeLoader(Path.of("."));
-		String preprocessed = PreprocessorVisitor.preprocessText("Test.asm", src, loader);
+		PreprocessorVisitor pp = new PreprocessorVisitor("Test.asm", loader);
+		String preprocessed = pp.preprocessText(src);
 		LabelVisitor labelVisitor = new LabelVisitor();
 		String noLabels = labelVisitor.gatherLabels(preprocessed);
 		var asm = new AssemblerVisitor(labelVisitor.getLabelMap(), labelVisitor.getReverseLabelMap());

@@ -1,13 +1,16 @@
 package cloud.lesh.CPUSim64;
 
 import org.antlr.v4.runtime.*;
-import org.antlr.v4.runtime.misc.Interval;
-import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ErrorNode;
+import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.StringReader;
 import java.util.*;
-import java.util.regex.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class LabelVisitor extends CPUSim64BaseVisitor<Void> implements HasLocation {
 	private final StringBuilder out = new StringBuilder();
@@ -17,18 +20,26 @@ public class LabelVisitor extends CPUSim64BaseVisitor<Void> implements HasLocati
 	private final Stack<String> blockNames = new Stack<>();
 	private long currentAddress = 0;
 	private long blockCount = 0;
+	private boolean hasErrors = false;
+	private Map<Integer, String> originalSourceLocations;
 
+	// TODO remove
 	String filename = null;
 	int lineNum = 1;
 	boolean pauseLineIncrement = false;
-	private final Vector<String> errors = new Vector<String>();
 	Map<Integer, String> lineMap = new HashMap<Integer, String>();
+	CommonTokenStream tokens;
 
-	public String getLocation() {
-		return (filename == null ? "" : filename + ":") + lineNum;
+	public void setTokens(CommonTokenStream tokens) {
+		this.tokens = tokens;
 	}
-	public List<String> getErrors() {
-		return errors;
+	public boolean hasErrors() { return hasErrors; }
+	public String getLocation(int offendingLine) {
+		String loc = originalSourceLocations.get(offendingLine);
+		while (loc == null && offendingLine > 0) {
+			loc = originalSourceLocations.get(--offendingLine);
+		}
+		return loc;
 	}
 	public Map<Integer, String> getLineMap() { return lineMap; }
 
@@ -66,70 +77,6 @@ public class LabelVisitor extends CPUSim64BaseVisitor<Void> implements HasLocati
 		}
 	}
 
-	private long parseStringLiteral(String s) {
-		if (s.length() >= 2 && s.charAt(0) == '\'' && s.charAt(s.length() - 1) == '\'') {
-			s = s.substring(1, s.length() - 1);
-		}
-		// Handle escape sequences
-		StringBuilder sb = new StringBuilder();
-		for (int i = 0; i < s.length(); i++) {
-			char ch = s.charAt(i);
-			if (ch == '\\' && i + 1 < s.length()) {
-				char next = s.charAt(i + 1);
-				switch (next) {
-					case 'n' -> {
-						sb.append('\n');
-						i++;
-					}
-					case 't' -> {
-						sb.append('\t');
-						i++;
-					}
-					case 'r' -> {
-						sb.append('\r');
-						i++;
-					}
-					case '\\' -> {
-						sb.append('\\');
-						i++;
-					}
-					case '\'' -> {
-						sb.append('\'');
-						i++;
-					}
-					case '\"' -> {
-						sb.append('\"');
-						i++;
-					}
-					case '0' -> {
-						sb.append('\0');
-						i++;
-					}
-					case 'u', 'U' -> {
-						Pattern p = Pattern.compile("\\{([0-9A-Fa-f]{1,5})\\}");
-						Matcher m = p.matcher(s.substring(i));
-						if (m.find()) {
-							String hex = m.group(1);   // the 4 hex digits
-							int codePoint = Integer.parseInt(hex, 16);
-							return codePoint;
-						} else {
-							sb.append(s); // Incomplete escape, keep as-is
-							i++;
-						}
-					}
-					default -> sb.append(ch); // Unknown escape, keep as-is
-				}
-			} else {
-				sb.append(ch);
-			}
-		}
-		String unescaped = sb.toString();
-		if (unescaped.length() != 1) {
-			throw new IllegalStateException("CHARLIT must be a single character");
-		}
-		return unescaped.codePointAt(0);
-	}
-
 	@Override
 	public Void visitProgram(CPUSim64Parser.ProgramContext ctx) {
 		for (var child : ctx.children) {
@@ -138,9 +85,8 @@ public class LabelVisitor extends CPUSim64BaseVisitor<Void> implements HasLocati
 			if (t != null) {
 				int line = t.getLine();
 				int col  = t.getCharPositionInLine();
-				lineMap.put(line, getLocation());
+				lineMap.put(line, getLocation(lineNum));
 			}
-			if (!pauseLineIncrement) ++lineNum;
 		}
 		return null;
 	}
@@ -153,7 +99,8 @@ public class LabelVisitor extends CPUSim64BaseVisitor<Void> implements HasLocati
 	public Void visitLabelDef(CPUSim64Parser.LabelDefContext ctx) {
 		String labelName = ctx.IDENT().getText().toUpperCase();
 		if (definedLabels.contains(labelName)) {
-			errors.add(getLocation() + ":ERROR:Duplicate label '" + labelName + "'");
+			System.err.println(getLocation(lineNum) + ":ASMERROR:Duplicate label '" + labelName + "'");
+			hasErrors = true;
 		} else {
 			if (labelName.charAt(0) == '$')
 				labelName = getScopeName() + labelName;
@@ -167,7 +114,8 @@ public class LabelVisitor extends CPUSim64BaseVisitor<Void> implements HasLocati
 	@Override
 	public Void visitInstruction(CPUSim64Parser.InstructionContext ctx) {
 		++currentAddress;
-		out.append(reflowTokens(ctx) + System.lineSeparator());
+		String s = reflowTokens(ctx) + System.lineSeparator();
+		out.append(s);
 		return null;
 	}
 
@@ -181,7 +129,8 @@ public class LabelVisitor extends CPUSim64BaseVisitor<Void> implements HasLocati
 			} else if (ctx.dataDirective().DCS() != null) {
 				if (ctx.dataDirective().STRINGLIT() == null || ctx.dataDirective().STRINGLIT().getText().length() < 2)
 				{
-					errors.add(getLocation() + ":ERROR:Missing string literal for .DCS directive");
+					System.err.println(getLocation(lineNum) + ":ASMERROR:Missing string literal for .DCS directive");
+					hasErrors = true;
 					return null;
 				}
 				String s = ctx.dataDirective().STRINGLIT().getText();
@@ -223,7 +172,9 @@ public class LabelVisitor extends CPUSim64BaseVisitor<Void> implements HasLocati
 		} else if (ctx.HEXLIT() != null) {
 			currentAddress = Long.parseLong(ctx.HEXLIT().getText().substring(2), 16);
 		} else {
-			errors.add(getLocation() + ":ERROR:Missing integer literal for .ORG directive");
+			System.err.println(getLocation(lineNum) + ":ASMERROR:Missing integer literal for .ORG directive");
+			hasErrors = true;
+			return null;
 		}
 		currentAddress = Math.max(0, currentAddress); // prevent negative addresses
 		out.append(reflowTokens(ctx) + System.lineSeparator());
@@ -234,7 +185,6 @@ public class LabelVisitor extends CPUSim64BaseVisitor<Void> implements HasLocati
 	public Void visitLINE_Directive(CPUSim64Parser.LINE_DirectiveContext ctx) {
 		filename = ctx.FILENAMELIT().getText();
 		lineNum = ctx.INTLIT() != null ? Integer.parseInt(ctx.INTLIT().getText()) : 1;
-		--lineNum;
 		pauseLineIncrement = false;
 		out.append(reflowTokens(ctx) + System.lineSeparator());
 		return null;
@@ -284,46 +234,68 @@ public class LabelVisitor extends CPUSim64BaseVisitor<Void> implements HasLocati
 	}
 
 	/** Rebuild a directive line with spaces, rather than ctx.getText(). */
-	private static String reflowTokens(ParserRuleContext ctx) {
-		Token start = ctx.getStart();
-		Token stop  = ctx.getStop();
-		if (start == null || stop == null) return "";
-		// CharStream slice from the original input
-		return start.getInputStream().getText(Interval.of(start.getStartIndex(), stop.getStopIndex()));
+	private String reflowTokens(ParserRuleContext ctx) {
+		String s = Utils.rebuildWithSingleSpaces(tokens, ctx);
+		return s;
 	}
 
 	public String gatherLabels(String src) {
+		originalSourceLocations = Utils.readLineDirectives(src);
+
 		CharStream input = CharStreams.fromString(src);
 		var lex = new cloud.lesh.CPUSim64.CPUSim64Lexer(input);
-		var lexerListener = new CollectingErrorListener(errors, null, filename);
-		lex.removeErrorListeners();                // remove ConsoleErrorListener
-		lex.addErrorListener(lexerListener);       // collect lexer errors
+		lex.removeErrorListeners();                				// remove ConsoleErrorListener
+		lex.addErrorListener(this.new LabelErrorListener());     // collect lexer errors
 		CommonTokenStream toks = new CommonTokenStream(lex);
-//		if (errors.size() > 0) return "";
+		toks.fill();
+		setTokens(toks);
 
 		var parser = new cloud.lesh.CPUSim64.CPUSim64Parser(toks);
-		var parserListener = new CollectingErrorListener(errors, null, filename);
-		parser.removeErrorListeners();             // remove ConsoleErrorListener
-		parser.addErrorListener(parserListener);   // collect parser errors
+		parser.removeErrorListeners();             				// remove ConsoleErrorListener
+		parser.addErrorListener(this.new LabelErrorListener());  // collect parser errors
 		ParseTree tree = parser.program();
-//		if (errors.size() > 0) return "";
 		visit(tree);
-		Map<Integer, String> lineMap = getLineMap();
-		for (int i = 0; i < errors.size(); ++i) {
-			String s = (String)errors.get(i);
-			if (s.startsWith("Preprocessed line")) {
-				// Match and capture the line number
-				Matcher m = Pattern.compile("Preprocessed line (\\d+)").matcher(s);
-				if (m.find()) {
-					int preLine = Integer.parseInt(m.group(1));
-					String mapped = lineMap.get(preLine);
-					if (mapped != null) {
-						// Replace with the mapped value
-						errors.set(i, m.replaceAll(mapped));
-					}
-				}
-			}
-		}
 		return out.toString();
 	}
+
+	final class LabelErrorListener extends BaseErrorListener {
+		public LabelErrorListener() {}
+
+		@Override
+		public void syntaxError(Recognizer<?, ?> recognizer,
+								Object offendingSymbol,
+								int line,
+								int charPositionInLine,
+								String msg,
+								RecognitionException e) {
+
+			String where = getLocation(line);
+
+			String tokenText = "";
+			if (offendingSymbol instanceof Token t) {
+				tokenText = " near '" + t.getText() + "'";
+			}
+			System.err.println(where + ":ASMERROR:" + msg);
+			hasErrors = true;
+		}
+	}
 }
+/*
+Map<Integer, String> lineMap = getLineMap();
+		for (int i = 0; i < errors.size(); ++i) {
+String s = (String)errors.get(i);
+			if (s.startsWith("Preprocessed line")) {
+// Match and capture the line number
+Matcher m = Pattern.compile("Preprocessed line (\\d+)").matcher(s);
+				if (m.find()) {
+int preLine = Integer.parseInt(m.group(1));
+String mapped = lineMap.get(preLine);
+					if (mapped != null) {
+		// Replace with the mapped value
+		errors.set(i, m.replaceAll(mapped));
+		}
+		}
+		}
+		}
+
+ */

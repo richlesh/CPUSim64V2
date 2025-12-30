@@ -114,7 +114,7 @@ instrMOVE
   | MOVE aOperand ',' aOperand ('+' | ',' | '[') rOperand ']'?  /* AAR  (A1 <- A2 + R) */
   | MOVE aOperand ',' aOperand ('+' | ',' | '[') aLiteral ']'?  /* AAC  (A1 <- A2 + C) */
   | MOVE aOperand ',' aLiteral ('+' | ',' | '[') aOperand ']'?  /* ACA  (A1 <- C + A2) */
-  | MOVE zCond ',' yOperand ',' qOperand ',' qOperand  /* ZYQQ conditional */
+  | MOVE zCond ',' yOperand ',' qOperand ',' qOperand  			/* ZYQQ conditional */
   ;
 
 /* ----- 3 LOAD (memory -> reg/float) ----- */
@@ -140,14 +140,8 @@ instrPUSH
 
 /* ----- 7 JUMP / 8 CALL ----- */
 branchModes
-  : '@'? aOperand
-  | '@'? cLiteral
-  | zCond ',' '@'? aOperand
-  | zCond ',' '@'? cLiteral
-  | zCond ',' '@'? aOperand '+' cLiteral
-  | zCond ',' '@'? cLiteral '+' aOperand
-  | zCond ',' '@'? cLiteral '+' cLiteral
-  | zCond ',' '@'? aOperand '+' rOperand
+  : memRef
+  | zCond ',' memRef
   ;
 
 instrJUMP : JUMP branchModes ;
@@ -361,8 +355,8 @@ zCond
 
 /* ---- memory shapes used by LOAD/STORE ---- */
 memRef
-  : '@'? (aOperand | aLiteral) ('[' ']')?
-  | '@'? (aOperand | aLiteral) ('+' | ',' | '[') (rOperand | cLiteral) ']'?
+  : (aOperand | aLiteral) ('[' ']')?
+  | (aOperand | aLiteral) '[' (rOperand | cLiteral) ']'?
   ;
 
 /* =======================
@@ -441,7 +435,7 @@ PO  : [pP][oO] ;
 
 /* Literals */
 HEXLIT
-  : '-'? '0' [xX] [0-9A-Fa-f]+
+  : '-'? '0' [xX] HEX+
   ;
 
 INTLIT

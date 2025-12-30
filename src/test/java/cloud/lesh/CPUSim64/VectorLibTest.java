@@ -72,7 +72,7 @@ Heap Blocks:
 		var result = tuple.getLeft();
 		var sim = tuple.getMiddle();
 		var diff = tuple.getRight();
-		assertEquals(6, diff.size());
+		assertEquals(7, diff.size());
 		assertEquals(expected, output);
 	}
 
@@ -198,7 +198,7 @@ Heap Blocks:
 		var result = tuple.getLeft();
 		var sim = tuple.getMiddle();
 		var diff = tuple.getRight();
-		assertEquals(7, diff.size());
+		assertEquals(8, diff.size());
 		assertEquals(expected, output);
 		diff.assertDiff(27, 1);
 		diff.assertDiff(26, 10);
@@ -247,7 +247,7 @@ Heap Blocks:
 		var result = tuple.getLeft();
 		var sim = tuple.getMiddle();
 		var diff = tuple.getRight();
-		assertEquals(8, diff.size());
+		assertEquals(9, diff.size());
 		assertEquals(expected, output);
 		diff.assertDiff(27, 1);
 		diff.assertDiff(26, 10);
@@ -274,7 +274,7 @@ Heap Blocks:
 		var result = tuple.getLeft();
 		var sim = tuple.getMiddle();
 		var diff = tuple.getRight();
-		assertEquals(5, diff.size());
+		assertEquals(6, diff.size());
 		diff.assertDiff(0, 10);
 	}
 
@@ -299,7 +299,7 @@ Heap Blocks:
 		var result = tuple.getLeft();
 		var sim = tuple.getMiddle();
 		var diff = tuple.getRight();
-		assertEquals(5, diff.size());
+		assertEquals(6, diff.size());
 		diff.assertDiff(27, -1);
 		diff.assertDiff(26, 0);
 	}
@@ -320,7 +320,7 @@ Heap Blocks:
 		var result = tuple.getLeft();
 		var sim = tuple.getMiddle();
 		var diff = tuple.getRight();
-		assertEquals(5, diff.size());
+		assertEquals(6, diff.size());
 		diff.assertDiff(0, 140);
 	}
 
@@ -356,7 +356,7 @@ Heap Blocks:
 		var result = tuple.getLeft();
 		var sim = tuple.getMiddle();
 		var diff = tuple.getRight();
-		assertEquals(7, diff.size());
+		assertEquals(8, diff.size());
 		diff.assertDiff(27, 0);
 		diff.assertDiff(26, 1);
 		diff.assertDiff(25, 2);

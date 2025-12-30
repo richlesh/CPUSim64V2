@@ -7,6 +7,9 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import cloud.lesh.CPUSim64.SimStateDiff;
+import cloud.lesh.CPUSim64.ConsoleOutputCapturer;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class BaseTest {
@@ -44,29 +47,26 @@ public class BaseTest {
 	public Triple<Integer, Simulator, SimStateDiff> runProgram(String src, String[] args, byte[] inputData) {
 		var loader = new IncludeLoader(Path.of("."));
 		PreprocessorVisitor.resetGlobals();
-		String preprocessed = PreprocessorVisitor.preprocessText("Test.asm", src, loader, args);
+		PreprocessorVisitor pp = new PreprocessorVisitor("Test.asm", loader);
+		String preprocessed = pp.preprocessText(src, args);
 
 		LiteralRewriter rewriter = new LiteralRewriter();
-		preprocessed = rewriter.rewrite(preprocessed);
+		preprocessed = rewriter.rewrite(preprocessed, pp.getSourceLocations());
 
-		preprocessed = PreprocessorVisitor.addGlobals(preprocessed, false);
+		preprocessed = pp.addGlobals(preprocessed, false);
 
 		LabelVisitor labelVisitor = new LabelVisitor();
 		String noLabels = labelVisitor.gatherLabels(preprocessed);
-		List<String> errors = labelVisitor.getErrors();
 
-		if (errors.size() > 0) {
-			System.out.println(errors.stream().collect(Collectors.joining(System.lineSeparator())));
+		if (noLabels == null) {
 			return Triple.of(-1, null, null);
 		}
 
 		var asm = new AssemblerVisitor(labelVisitor.getLabelMap(), labelVisitor.getReverseLabelMap());
 		asm.assemble(noLabels);
 		List<Long> prog = asm.result();
-		errors = asm.getErrors();
 
-		if (errors.size() > 0) {
-			System.out.println(errors.stream().collect(Collectors.joining(System.lineSeparator())));
+		if (prog == null) {
 			return Triple.of(-1, null, null);
 		}
 

@@ -1,9 +1,12 @@
 import cloud.lesh.CPUSim64.IncludeLoader;
 import cloud.lesh.CPUSim64.LiteralRewriter;
 import cloud.lesh.CPUSim64.PreprocessorVisitor;
+import org.antlr.v4.runtime.CommonTokenStream;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class Preprocessor {
 	public static void main(String[] args) throws Exception {
@@ -13,7 +16,7 @@ public class Preprocessor {
 		System.out.println("Preprocesses .asm source files into .pp.asm files.");
 		System.out.println("=".repeat(80));
 		if (args.length < 1) {
-			System.err.println("Usage: preprocessor <input.asm>");
+			System.err.println("Usage: preprocessor [--DEBUG] [--hasMain] [-Dsymbol[=value]] <input.asm>");
 			System.exit(2);
 		}
 
@@ -25,9 +28,6 @@ public class Preprocessor {
 			if (arg.charAt(0) == '-') {
 				if (arg.equals("--hasMain")) {
 					hasMain = true;
-				} else {
-					System.err.println("Unknown option: " + arg);
-					System.exit(1);
 				}
 			} else {
 				inPath = Path.of(arg).toAbsolutePath();
@@ -54,16 +54,22 @@ public class Preprocessor {
 			// 2) Preprocess
 			var loader = new IncludeLoader(inPath.getParent());
 			PreprocessorVisitor.resetGlobals();
-			String preprocessed = PreprocessorVisitor.preprocessText(inPath.getFileName().toString(), source, loader, args);
+			PreprocessorVisitor pp = new PreprocessorVisitor(inPath.getFileName().toString(), loader);
+			String preprocessed = pp.preprocessText(source, args);
+			if (preprocessed == null || preprocessed.isEmpty()) {
+				System.err.println("Error: too many preprocessor errors!");
+				System.exit(2);
+			}
+			Files.writeString(outPath, preprocessed);
 
 			// 3) Rewrite literals
 			LiteralRewriter rw = new LiteralRewriter();
-			preprocessed = rw.rewrite(preprocessed);
+			preprocessed = rw.rewrite(preprocessed, pp.getSourceLocations());
 
 			// 4) Add global declarations
 			preprocessed = PreprocessorVisitor.addGlobals(preprocessed, hasMain);
 
-			// 5) Write preprocessed output	}
+			// 5) Write preprocessed output
 			Files.writeString(outPath, preprocessed);
 		} catch (Exception ex) {
 			System.err.println(ex.getMessage());

@@ -37,7 +37,7 @@ public class IOLibTest extends BaseTest {
 		var result = tuple.getLeft();
 		var sim = tuple.getMiddle();
 		var diff = tuple.getRight();
-		assertEquals(2, diff.size());
+		assertEquals(3, diff.size());
 		assertEquals(expected, output);
 		assertEquals(expected2, output2);
 	}
@@ -85,7 +85,7 @@ public class IOLibTest extends BaseTest {
 		var result = tuple.getLeft();
 		var sim = tuple.getMiddle();
 		var diff = tuple.getRight();
-		assertEquals(2, diff.size());
+		assertEquals(3, diff.size());
 		assertEquals(expected, output);
 		assertEquals(expected2, output2);
 	}
@@ -124,7 +124,7 @@ public class IOLibTest extends BaseTest {
 		var result = tuple.getLeft();
 		var sim = tuple.getMiddle();
 		var diff = tuple.getRight();
-		assertEquals(4, diff.size());
+		assertEquals(5, diff.size());
 		assertEquals(expected.toString(), output);
 		assertEquals(expected.toString(), output2);
 	}
@@ -163,7 +163,7 @@ public class IOLibTest extends BaseTest {
 		var result = tuple.getLeft();
 		var sim = tuple.getMiddle();
 		var diff = tuple.getRight();
-		assertEquals(4, diff.size());
+		assertEquals(5, diff.size());
 		assertEquals(expected.toString(), output);
 		assertEquals(expected.toString(), output2);
 	}
@@ -202,7 +202,7 @@ public class IOLibTest extends BaseTest {
 		var result = tuple.getLeft();
 		var sim = tuple.getMiddle();
 		var diff = tuple.getRight();
-		assertEquals(4, diff.size());
+		assertEquals(5, diff.size());
 		assertEquals(expected.toString(), output);
 		assertEquals(expected.toString(), output2);
 	}
@@ -241,7 +241,7 @@ public class IOLibTest extends BaseTest {
 		var result = tuple.getLeft();
 		var sim = tuple.getMiddle();
 		var diff = tuple.getRight();
-		assertEquals(4, diff.size());
+		assertEquals(5, diff.size());
 		assertEquals(expected.toString(), output);
 		assertEquals(expected.toString(), output2);
 	}
@@ -284,7 +284,7 @@ public class IOLibTest extends BaseTest {
 		var result = tuple.getLeft();
 		var sim = tuple.getMiddle();
 		var diff = tuple.getRight();
-		assertEquals(6, diff.size());
+		assertEquals(7, diff.size());
 		assertEquals(expected.toString(), output);
 		assertEquals(expected.toString(), output2);
 	}
@@ -321,7 +321,7 @@ public class IOLibTest extends BaseTest {
 		var result = tuple.getLeft();
 		var sim = tuple.getMiddle();
 		var diff = tuple.getRight();
-		assertEquals(6, diff.size());
+		assertEquals(7, diff.size());
 		assertEquals(expected.toString(), output);
 		assertEquals(expected.toString(), output2);
 	}

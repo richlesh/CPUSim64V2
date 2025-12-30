@@ -1,7 +1,19 @@
 package cloud.lesh.CPUSim64;
 
+import org.antlr.v4.runtime.CharStream;
+import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.ParserRuleContext;
+import org.antlr.v4.runtime.Token;
+import org.antlr.v4.runtime.misc.Interval;
+import org.antlr.v4.runtime.tree.ParseTree;
+import org.antlr.v4.runtime.tree.TerminalNode;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.StringReader;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -165,5 +177,122 @@ public class Utils {
 		s = s.replace("\"", "\\\"");
 		s = s.replace("\'", "\\'");
 		return s;
+	}
+
+	public static String rebuildWithSingleSpaces(CommonTokenStream tokens, ParserRuleContext ctx) {
+		Token start = ctx.getStart();
+		Token stop  = ctx.getStop();
+		if (start == null || stop == null) return "";
+
+		int a = start.getTokenIndex();
+		int b = stop.getTokenIndex();
+
+		StringBuilder out = new StringBuilder();
+		boolean pendingSpace = false;
+
+		for (int i = a; i <= b; i++) {
+			Token t = tokens.get(i);
+
+			// Any hidden token (WS, comments) ⇒ one space
+			if (t.getChannel() == Token.HIDDEN_CHANNEL) {
+				pendingSpace = true;
+				continue;
+			}
+
+			if (pendingSpace && out.length() > 0 &&
+					t.getText() != ",") {
+				out.append(' ');
+			}
+			pendingSpace = false;
+
+			out.append(t.getText());
+		}
+
+		return out.toString().trim();
+	}
+
+	public static String rebuildWithSingleSpaces(CommonTokenStream tokens, ParseTree node) {
+		if (node == null) return "";
+
+		if (node instanceof ParserRuleContext prc) {
+			return rebuildWithSingleSpaces(tokens, prc);
+		}
+
+		if (node instanceof TerminalNode tn) {
+			return tn.getText().trim();
+		}
+
+		return node.getText();
+	}
+
+	/** Rebuild a directive line with spaces, rather than ctx.getText(). */
+	@Deprecated
+	public static String reflowTokens(ParserRuleContext ctx) {
+		Token start = ctx.getStart();
+		Token stop  = ctx.getStop();
+		if (start == null || stop == null) return "";
+		// CharStream slice from the original input
+		System.out.println("orig: " + ctx.getText());
+		String result = start.getInputStream().getText(Interval.of(start.getStartIndex(), stop.getStopIndex()));
+		System.out.println("reflow: " + result);
+		return result;
+	}
+
+	// Matches:
+	// .LINE «temp.asm», 12
+	// .LINE_BEGIN «temp.asm», 16
+	private static final Pattern LINE_PATTERN = Pattern.compile(
+			"^\\.(LINE|LINE_BEGIN)\\s+(.*)$"
+	);
+
+	public static HashMap<Integer, String> readLineDirectives(String text) {
+		HashMap<Integer, String> map = new HashMap<>();
+
+		try (BufferedReader br = new BufferedReader(new StringReader(text))) {
+			String line;
+			int fileLineNumber = 0;
+
+			while ((line = br.readLine()) != null) {
+				fileLineNumber++;
+
+				Matcher m = LINE_PATTERN.matcher(line);
+				if (m.matches()) {
+					String payload = m.group(2).trim();
+					map.put(fileLineNumber, payload);
+				}
+			}
+		} catch (IOException impossible) {
+			// StringReader does not throw IOException
+			throw new AssertionError(impossible);
+		}
+		return map;
+	}
+
+	public static String extractSourceLine(Token t) {
+		CharStream input = t.getInputStream();
+		if (input == null) return "";
+
+		int start = t.getStartIndex();
+		int end   = t.getStopIndex();
+
+		int a = start;
+		int b = end;
+
+		// Walk backward to start of line
+		while (a > 0) {
+			char c = input.getText(new Interval(a - 1, a - 1)).charAt(0);
+			if (c == '\n' || c == '\r') break;
+			a--;
+		}
+
+		// Walk forward to end of line
+		int size = input.size();
+		while (b + 1 < size) {
+			char c = input.getText(new Interval(b + 1, b + 1)).charAt(0);
+			if (c == '\n' || c == '\r') break;
+			b++;
+		}
+
+		return input.getText(new Interval(a, b));
 	}
 }

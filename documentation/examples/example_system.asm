@@ -63,7 +63,7 @@ $LOOP1_END:
 
 	#call	printIntArray(intArray, size)
 	
-	move	dest, intArray+10
+	move	dest, intArray[10]
 	#call	memmove(dest, intArray, 10)
 
 	#call	printIntArray(intArray, size)

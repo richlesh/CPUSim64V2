@@ -57,16 +57,12 @@ REG_F : [fF] [0-9]+ ;
 PLACEHOLDER: '$' '{' ([\p{L}_] [\p{L}\p{Nd}_]* | ELLIPSIS)'}' ;
 LABEL : [\p{L}_$] [\p{L}\p{Nd}_${}]* ':' ;
 IDENT : [\p{L}_$] [\p{L}\p{Nd}_${}]* ;
-MEMREF : (IDENT | PLACEHOLDER | INT) [+[] (IDENT | INT | PLACEHOLDER) ']' ;
-COMP_DIR : '.' [a-zA-Z]+ ;
+MEMREF : (IDENT | PLACEHOLDER | INT) LBRACKET (IDENT | INT | PLACEHOLDER) RBRACKET? ;
+COMP_DIR : '.' [_a-zA-Z]+ ;
 
-INT   : '-'? ([0-9]+ | ('0' [xX] [0-9a-fA-F]+)) ;
-FLOAT
-  : '-'? DIGITS '.' DIGITS* ( [eE] [+\-]? DIGITS )?
-  | '-'? '.' DIGITS         ( [eE] [+\-]? DIGITS )?
-  | '-'? DIGITS             ( [eE] [+\-]? DIGITS )
-  ;
-fragment DIGITS : [0-9]+ ;
+INT   : MINUS? (DIGITS+ | ('0' [xX] HEX+)) ;
+FLOAT : MINUS? DIGITS+ '.' DIGITS* ([eE] [+-]? DIGITS+)? ;
+fragment DIGITS : [0-9] ;
 CHAR  : '\'' ( ESC | ~['\\\r\n] ) '\'' ;
 STRING: '"' ( ESC | ~["\\\r\n] )* '"' ;
 ANGLE_PATH : '<' (~[>\r\n])+ '>' ;
@@ -82,13 +78,17 @@ GT : '>' | [gG][tT] ;
 COMMA: ',' ;
 LPAREN: '(' ;
 RPAREN: ')' ;
-LBRACKET: [+[] ;
+LBRACKET: '[' ;
 RBRACKET: ']' ;
 DOLLAR: '$' ;
 LCURLY: '{' ;
 RCURLY: '}' ;
 ELLIPSIS : '.' '.' '.' ;
 COLON: ':' ;
+PLUS: '+' ;
+MINUS: '-' ;
+MULTIPLY: '*' ;
+DIVIDE: '/' ;
 
 // stop CODE_TEXT at newline OR before '//' or '/*'
 // Must contain at least one non-# non-newline char
@@ -123,8 +123,8 @@ LINE_CONT_D		: '\\' [ \t]* ( '//' ~[\r\n]* )? ('/*' ( '\r'? '\n' | . )*? '*/')? 
 ANGLE_PATH_D	: '<' (~[>\r\n])+ '>' -> type(ANGLE_PATH) ;
 STRING_D		: '"' ( ESC | ~["\\\r\n] )* '"' -> type(STRING) ;
 CHAR_D			: '\'' ( ESC | ~['\\\r\n] ) '\'' -> type(CHAR) ;
-FLOAT_D			: '-'? [0-9]+ '.' [0-9]+ ([eE] [+-]? [0-9]+)? -> type(FLOAT) ;
-INT_D        	: '-'? ([0-9]+ | ('0' [xX] [0-9a-fA-F]+)) -> type(INT) ;
+FLOAT_D			: MINUS? DIGITS+ '.' DIGITS* ([eE] [+-]? DIGITS+)? -> type(FLOAT) ;
+INT_D        	: MINUS? (DIGITS+ | ('0' [xX] HEX+)) -> type(INT) ;
 PLACEHOLDER_D	: '$' '{' ([\p{L}_] [\p{L}\p{Nd}_]* | ELLIPSIS)'}' -> type(PLACEHOLDER) ;
 REG_R_D      	: [rR] [0-9]+ -> type(REG_R) ;
 REG_F_D      	: [fF] [0-9]+ -> type(REG_F) ;
@@ -136,16 +136,21 @@ LT_D      		: ('<' | [lL][tT]) -> type(LT) ;
 GT_D     		: ('>' | [gG][tT]) -> type(GT) ;
 LABEL_D			: [\p{L}_$] [\p{L}\p{Nd}_${}]* ':' -> type(IDENT) ;
 IDENT_D			: [\p{L}_$] [\p{L}\p{Nd}_${}]* -> type(IDENT) ;
+MEMREF_D		: (IDENT | PLACEHOLDER | INT) LBRACKET (IDENT | INT | PLACEHOLDER) RBRACKET? -> type(MEMREF);
 COMMA_D   	   	: ',' -> type(COMMA) ;
 LPAREN_D   	  	: '(' -> type(LPAREN) ;
 RPAREN_D   	  	: ')' -> type(RPAREN) ;
-LBRACKET_D	 	: [+[] -> type(LBRACKET) ;
-RBRACKET_D  	 : ']' -> type(RBRACKET) ;
-DOLLAR_D		 : '$' -> type(DOLLAR) ;
-LCURLY_D		 : '{' -> type(LCURLY) ;
-RCURLY_D		 : '}' -> type(RCURLY) ;
-ELLIPSIS_D 		 : '.' '.' '.' -> type(ELLIPSIS) ;
-COLON_D			 : ':' -> type(COLON) ;
+LBRACKET_D	 	: '[' -> type(LBRACKET) ;
+RBRACKET_D  	: ']' -> type(RBRACKET) ;
+DOLLAR_D		: '$' -> type(DOLLAR) ;
+LCURLY_D		: '{' -> type(LCURLY) ;
+RCURLY_D		: '}' -> type(RCURLY) ;
+ELLIPSIS_D 		: '.' '.' '.' -> type(ELLIPSIS) ;
+COLON_D			: ':' -> type(COLON) ;
+PLUS_D			: '+' -> type(PLUS) ;
+MINUS_D			: '-' -> type(MINUS) ;
+MULTIPLY_D		: '*' -> type(MULTIPLY) ;
+DIVIDE_D		: '/' -> type(DIVIDE) ;
 
 mode MODE_MESSAGE;
 INFO_TEXT	: [ \t]* ~[\r\n]+ [ \t]* ;

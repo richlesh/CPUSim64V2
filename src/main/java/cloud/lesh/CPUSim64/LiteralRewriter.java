@@ -6,21 +6,71 @@ import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.tree.ParseTree;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-public class LiteralRewriter extends LiteralSubstitutionBaseVisitor<Void> {
+public class LiteralRewriter extends LiteralSubstitutionBaseVisitor<Void> implements HasLocation {
 	private final StringBuilder out = new StringBuilder();
 	private final List<String> floats = new ArrayList<>();
 	private final List<String> strings = new ArrayList<>();
+	private static Vector<String> errors = new Vector<String>();
+	public static Vector<String> getErrors() { return errors; }
+	private Map<Integer, String> sourceLocations;
+
+	public String getLocation(int offendingLine) {
+		String originalSourceLocation = null;
+		int line = offendingLine;
+		originalSourceLocation = sourceLocations.get(line);
+		while (originalSourceLocation == null && line > 0) {
+			originalSourceLocation = sourceLocations.get(line);
+			if (originalSourceLocation == null) {
+				--line;
+			}
+		}
+		return originalSourceLocation == null ? "" : originalSourceLocation;
+	}
 
 	public String rewrite(String src) {
+		return rewrite(src, new HashMap<Integer, String>());
+	}
+
+	public String rewrite(String src, Map<Integer, String> sourceLocations) {
+		this.sourceLocations = sourceLocations;
+		errors = new Vector<String>();
 		CharStream input = CharStreams.fromString(src);
 		LiteralSubstitutionLexer lexer = new LiteralSubstitutionLexer(input);
+		var lexerListener = new CollectingErrorListener(errors, this);
+		lexer.removeErrorListeners();                // remove ConsoleErrorListener
+		lexer.addErrorListener(lexerListener);       // collect lexer errors
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
+		tokens.fill();
+
 		LiteralSubstitutionParser parser = new LiteralSubstitutionParser(tokens);
+		var parserListener = new CollectingErrorListener(errors, this);
+		parser.removeErrorListeners();             // remove ConsoleErrorListener
+		parser.addErrorListener(parserListener);   // collect parser errors
 		ParseTree tree = parser.file();
 		visit(tree);
+
+		for (int i = 0; i < errors.size(); ++i) {
+			String s = errors.get(i);
+			if (s.startsWith("Preprocessed line")) {
+				// Match and capture the line number
+				Matcher m = Pattern.compile("Preprocessed line (\\d+)").matcher(s);
+				if (m.find()) {
+					int preLine = Integer.parseInt(m.group(1));
+					errors.set(i, m.replaceAll(Integer.toString(preLine)));
+				}
+			}
+		}
+
+		if (errors.size() > 0) {
+			for (int i = 0; i < errors.size(); ++i) {
+				System.err.println(errors.get(i));
+			}
+			System.exit(1);
+		}
 
 		// Append trailer with symbol definitions
 		out.append(System.lineSeparator());

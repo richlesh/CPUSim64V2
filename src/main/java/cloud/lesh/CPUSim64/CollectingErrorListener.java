@@ -8,11 +8,9 @@ import java.util.List;
 public final class CollectingErrorListener extends BaseErrorListener {
 	private List<String> errors;
 	HasLocation locator;
-	String filename;
-	public CollectingErrorListener(List<String> errors, HasLocation locator, String filename) {
+	public CollectingErrorListener(List<String> errors, HasLocation locator) {
 		this.errors = errors;
 		this.locator = locator;
-		this.filename = filename;
 	}
 
 	@Override
@@ -42,7 +40,7 @@ public final class CollectingErrorListener extends BaseErrorListener {
 				line, charPositionInLine, msg);
 		} else {
 			formatted = String.format("%s:%d:ERROR:%s",
-					locator.getLocation(), charPositionInLine, msg);
+					locator.getLocation(line), charPositionInLine, msg);
 		}
 		errors.add(formatted);
 	}

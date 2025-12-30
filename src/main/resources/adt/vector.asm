@@ -3,7 +3,7 @@
 #include <system/system.def>
 #include <adt/vector.def>
 
-	jump	@VECTOR_ASM_END
+	jump	VECTOR_ASM_END
 ///////////////////////////////////////////////////////////////////////////////
 // Vector
 // Implements a growable list of integers.  Is thread safe.

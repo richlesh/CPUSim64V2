@@ -800,9 +800,9 @@ R28: 000000000000001c                    28 F28:       28.00000000000000
 				MOVE R4, R0
 
 				STORE 1, R2
-				STORE 2, R2 + 1
-				STORE 3, R2 + 2
-				STORE 99, R2 + 14
+				STORE 2, R2[1]
+				STORE 3, R2[2]
+				STORE 99, R2[14]
 				MOVE R1, R2
 				MOVE R2, 16
 				INT iREALLOC
@@ -854,9 +854,9 @@ R28: 000000000000001c                    28 F28:       28.00000000000000
 				MOVE R4, R0
 
 				STORE 1, R3
-				STORE 2, R3 + 1
-				STORE 3, R3 + 2
-				STORE 99, R3 + 14
+				STORE 2, R3[1]
+				STORE 3, R3[2]
+				STORE 99, R3[14]
 				MOVE R1, R3
 				MOVE R2, 100
 				INT iREALLOC
@@ -908,9 +908,9 @@ R28: 000000000000001c                    28 F28:       28.00000000000000
 				MOVE R4, R0
 
 				STORE 1, R3
-				STORE 2, R3 + 1
-				STORE 3, R3 + 2
-				STORE 99, R3 + 29
+				STORE 2, R3[1]
+				STORE 3, R3[2]
+				STORE 99, R3[29]
 				MOVE R1, R3
 				MOVE R2, 10
 				INT iREALLOC
@@ -969,7 +969,7 @@ R28: 000000000000001c                    28 F28:       28.00000000000000
 				JUMP LOOP_START
 			LOOP_END:
 				STORE -1, R1			// Add a sentinel of -1 at end of src
-				MOVE R1, R27 + COUNT
+				MOVE R1, R27[COUNT]
 				STORE -2, R1			// Add a sentinel of -2 at end of dest
 				
 				MOVE R1, R27

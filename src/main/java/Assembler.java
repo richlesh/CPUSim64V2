@@ -66,11 +66,16 @@ public class Assembler {
 			// 2) Preprocess
 			var loader = new IncludeLoader(inPath.getParent());
 			PreprocessorVisitor.resetGlobals();
-			String preprocessed = PreprocessorVisitor.preprocessText(inPath.getFileName().toString(), source, loader, args);
+			PreprocessorVisitor pp = new PreprocessorVisitor(inPath.getFileName().toString(), loader);
+			String preprocessed = pp.preprocessText(source, args);
+			if (preprocessed == null || preprocessed.isEmpty()) {
+				System.err.println("Error: too many preprocessor errors!");
+				System.exit(2);
+			}
 
 			// 3) Rewrite literals
 			LiteralRewriter rw = new LiteralRewriter();
-			preprocessed = rw.rewrite(preprocessed);
+			preprocessed = rw.rewrite(preprocessed, pp.getSourceLocations());
 
 			// 3) Lex/parse the preprocessed source
 /*
@@ -98,28 +103,25 @@ public class Assembler {
 			// 5) Gather labels
 			LabelVisitor labelVisitor = new LabelVisitor();
 			String noLabels = labelVisitor.gatherLabels(preprocessed);
-			List<String> errors = labelVisitor.getErrors();
-
-			if (errors.size() > 0) {
-				System.out.println(errors.stream().collect(Collectors.joining(System.lineSeparator())));
+			if (noLabels == null || noLabels.isEmpty() || labelVisitor.hasErrors()) {
+				System.err.println("Error: too many assembler errors!");
 				System.exit(2);
 			}
+
 			// 6) Assemble
 			Map<String, Long> labelMap = labelVisitor.getLabelMap();
 			Map<Long, String> reverseLabelMap = labelVisitor.getReverseLabelMap();
 			var asm = new AssemblerVisitor(labelMap, reverseLabelMap);
 			asm.assemble(noLabels);
 			List<Long> words = asm.result();
+			if (words == null || words.isEmpty() || labelVisitor.hasErrors()) {
+				System.err.println("Error: too many assembler errors!");
+				System.exit(2);
+			}
 			if (labelMap.containsKey("__MAIN__")) {
 				words.set(0, labelMap.get("__MAIN__"));    // Set start of program
 			} else {
 				words.set(0, 1L);                    // Set start of program
-			}
-			errors = asm.getErrors();
-
-			if (errors.size() > 0) {
-				System.out.println(errors.stream().collect(Collectors.joining(System.lineSeparator())));
-				System.exit(2);
 			}
 
 			cloud.lesh.CPUSim64.AsmIO.writeU64BE(outPath, words);

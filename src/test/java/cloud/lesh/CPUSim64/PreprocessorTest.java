@@ -15,17 +15,22 @@ class PreprocessorTest {
 			#include "src/test/resources/include_2.asm"
 			""";
 		String expected = """
+.LINE «Test.asm», 1
 include_1$asm:
 .LINE «include_1.asm», 2
 MOV R0, 1
+.LINE «include_1.asm», 3
 MOV R1, 2
+.LINE «Test.asm», 2
 include_2$asm:
 .LINE «include_2.asm», 2
 ADD R0, R0, R1
+.LINE «include_2.asm», 3
 SUB R1, R1, 1
 			""";
 		var loader = new IncludeLoader(Path.of("."));
-		String preprocessed = PreprocessorVisitor.preprocessText("Test.asm", src, loader);
+		PreprocessorVisitor pp = new PreprocessorVisitor("Test.asm", loader);
+		String preprocessed = pp.preprocessText(src);
 		assertEquals(expected, preprocessed);
 	}
 
@@ -36,17 +41,22 @@ SUB R1, R1, 1
 			#include <include_2.asm>
 			""";
 		String expected = """
+.LINE «Test.asm», 1
 include_1$asm:
 .LINE «include_1.asm», 2
 MOV R0, 1
+.LINE «include_1.asm», 3
 MOV R1, 2
+.LINE «Test.asm», 2
 include_2$asm:
 .LINE «include_2.asm», 2
 ADD R0, R0, R1
+.LINE «include_2.asm», 3
 SUB R1, R1, 1
 			""";
 		var loader = new IncludeLoader(Path.of("."));
-		String preprocessed = PreprocessorVisitor.preprocessText("Test.asm", src, loader);
+		PreprocessorVisitor pp = new PreprocessorVisitor("Test.asm", loader);
+		String preprocessed = pp.preprocessText(src);
 		assertEquals(expected, preprocessed);
 	}
 
@@ -63,7 +73,8 @@ SUB R1, R1, 1
 			SUB R1, R1, 1
 			""";
 		var loader = new IncludeLoader(Path.of("."));
-		assertThrows(PreprocessorVisitor.PreprocessorException.class, () -> PreprocessorVisitor.preprocessText("Test.asm", src, loader));
+		PreprocessorVisitor pp = new PreprocessorVisitor("Test.asm", loader);
+		assertThrows(PreprocessorVisitor.PreprocessorException.class, () -> pp.preprocessText(src));
 	}
 
 	@Test
@@ -72,7 +83,8 @@ SUB R1, R1, 1
 			#include 'src/test/resources/include_bad.asm'
 			""";
 		var loader = new IncludeLoader(Path.of("."));
-		assertThrows(PreprocessorVisitor.PreprocessorException.class, () -> PreprocessorVisitor.preprocessText("Test.asm", src, loader));
+		PreprocessorVisitor pp = new PreprocessorVisitor("Test.asm", loader);
+		assertThrows(PreprocessorVisitor.PreprocessorException.class, () -> pp.preprocessText(src));
 	}
 
 	@Test
@@ -81,18 +93,24 @@ SUB R1, R1, 1
 			#include <include_3.asm>
 			""";
 		String expected = """
+.LINE «Test.asm», 1
 include_3$asm:
+.LINE «include_3.asm», 1
 include_1$asm:
 .LINE «include_1.asm», 2
 MOV R0, 1
+.LINE «include_1.asm», 3
 MOV R1, 2
+.LINE «include_3.asm», 2
 include_2$asm:
 .LINE «include_2.asm», 2
 ADD R0, R0, R1
+.LINE «include_2.asm», 3
 SUB R1, R1, 1
 			""";
 		var loader = new IncludeLoader(Path.of("."));
-		String preprocessed = PreprocessorVisitor.preprocessText("Test.asm", src, loader);
+		PreprocessorVisitor pp = new PreprocessorVisitor("Test.asm", loader);
+		String preprocessed = pp.preprocessText(src);
 		assertEquals(expected, preprocessed);
 	}
 
@@ -117,18 +135,26 @@ SUB R1, R1, 1
 			MOV R3, STR1
 			""";
 		String expected = """
-			.LINE «Test.asm», 9
-			MOV R0, 1
-			MOV R0, 326
-			MOV R1, 0x7f
-			MOV R2, 0X1000
-			MOV F0, 3.14159
-			MOV F1, 2.20264657948067e4
-			MOV R2, 'A'
-			MOV R3, "Hello, World!"
+.LINE «Test.asm», 9
+MOV R0, 1
+.LINE «Test.asm», 10
+MOV R0, 326
+.LINE «Test.asm», 11
+MOV R1, 127
+.LINE «Test.asm», 12
+MOV R2, 4096
+.LINE «Test.asm», 13
+MOV F0, 3.14159
+.LINE «Test.asm», 14
+MOV F1, 22026.4657948067
+.LINE «Test.asm», 15
+MOV R2, 'A'
+.LINE «Test.asm», 16
+MOV R3, "Hello, World!"
 			""";
 		var loader = new IncludeLoader(Path.of("."));
-		String preprocessed = PreprocessorVisitor.preprocessText("Test.asm", src, loader);
+		PreprocessorVisitor pp = new PreprocessorVisitor("Test.asm", loader);
+		String preprocessed = pp.preprocessText(src);
 		assertEquals(expected, preprocessed);
 	}
 
@@ -149,7 +175,8 @@ SUB R1, R1, 1
 			MOV F0, 3.14159
 			""";
 		var loader = new IncludeLoader(Path.of("."));
-		String preprocessed = PreprocessorVisitor.preprocessText("Test.asm", src, loader);
+		PreprocessorVisitor pp = new PreprocessorVisitor("Test.asm", loader);
+		String preprocessed = pp.preprocessText(src);
 		assertEquals(expected, preprocessed);
 	}
 
@@ -176,7 +203,8 @@ SUB R1, R1, 1
 			MOV F0, 3.1415
 			""";
 		var loader = new IncludeLoader(Path.of("."));
-		String preprocessed = PreprocessorVisitor.preprocessText("Test.asm", src, loader);
+		PreprocessorVisitor pp = new PreprocessorVisitor("Test.asm", loader);
+		String preprocessed = pp.preprocessText(src);
 		assertEquals(expected, preprocessed);
 	}
 
@@ -191,6 +219,7 @@ SUB R1, R1, 1
 			#else_if SIZE == 3
 			MOV F0, 3.14
 			#end_if
+			#undef SIZE
 			#define SIZE 2
 			#if SIZE == 1
 			MOV F0, 3
@@ -199,6 +228,7 @@ SUB R1, R1, 1
 			#else_if SIZE == 3
 			MOV F0, 3.14
 			#end_if
+			#undef SIZE
 			#define SIZE 3
 			#if SIZE == 1
 			MOV F0, 3
@@ -217,15 +247,16 @@ SUB R1, R1, 1
 			#endif
 			""";
 		String expected = """
-			.LINE «Test.asm», 3
-			MOV F0, 3
-			.LINE «Test.asm», 13
-			MOV F0, 3.1
-			.LINE «Test.asm», 23
-			MOV F0, 3.14
+.LINE «Test.asm», 3
+MOV F0, 3
+.LINE «Test.asm», 14
+MOV F0, 3.1
+.LINE «Test.asm», 25
+MOV F0, 3.14
 			""";
 		var loader = new IncludeLoader(Path.of("."));
-		String preprocessed = PreprocessorVisitor.preprocessText("Test.asm", src, loader);
+		PreprocessorVisitor pp = new PreprocessorVisitor("Test.asm", loader);
+		String preprocessed = pp.preprocessText(src);
 		assertEquals(expected, preprocessed);
 	}
 
@@ -246,7 +277,8 @@ SUB R1, R1, 1
 			MOV F0, 3.14159
 			""";
 		var loader = new IncludeLoader(Path.of("."));
-		String preprocessed = PreprocessorVisitor.preprocessText("Test.asm", src, loader);
+		PreprocessorVisitor pp = new PreprocessorVisitor("Test.asm", loader);
+		String preprocessed = pp.preprocessText(src);
 		assertEquals(expected, preprocessed);
 	}
 
@@ -273,7 +305,8 @@ SUB R1, R1, 1
 			MOV F0, 3.1415
 			""";
 		var loader = new IncludeLoader(Path.of("."));
-		String preprocessed = PreprocessorVisitor.preprocessText("Test.asm", src, loader);
+		PreprocessorVisitor pp = new PreprocessorVisitor("Test.asm", loader);
+		String preprocessed = pp.preprocessText(src);
 		assertEquals(expected, preprocessed);
 	}
 
@@ -294,7 +327,8 @@ SUB R1, R1, 1
 			MOV F0, 3.14
 			""";
 		var loader = new IncludeLoader(Path.of("."));
-		String preprocessed = PreprocessorVisitor.preprocessText("Test.asm", src, loader);
+		PreprocessorVisitor pp = new PreprocessorVisitor("Test.asm", loader);
+		String preprocessed = pp.preprocessText(src);
 		assertEquals(expected, preprocessed);
 	}
 
@@ -321,7 +355,8 @@ SUB R1, R1, 1
 			MOV F0, 3.1415
 			""";
 		var loader = new IncludeLoader(Path.of("."));
-		String preprocessed = PreprocessorVisitor.preprocessText("Test.asm", src, loader);
+		PreprocessorVisitor pp = new PreprocessorVisitor("Test.asm", loader);
+		String preprocessed = pp.preprocessText(src);
 		assertEquals(expected, preprocessed);
 	}
 
@@ -340,7 +375,8 @@ SUB R1, R1, 1
 			JUMP $_RETURN
 			""";
 		var loader = new IncludeLoader(Path.of("."));
-		String preprocessed = PreprocessorVisitor.preprocessText("Test.asm", src, loader);
+		PreprocessorVisitor pp = new PreprocessorVisitor("Test.asm", loader);
+		String preprocessed = pp.preprocessText(src);
 		assertEquals(expected, preprocessed.toUpperCase());
 	}
 
@@ -362,7 +398,8 @@ SUB R1, R1, 1
 			.LINE_END
 			""";
 		var loader = new IncludeLoader(Path.of("."));
-		String preprocessed = PreprocessorVisitor.preprocessText("Test.asm", src, loader);
+		PreprocessorVisitor pp = new PreprocessorVisitor("Test.asm", loader);
+		String preprocessed = pp.preprocessText(src);
 		assertEquals(expected, preprocessed.toUpperCase());
 	}
 
@@ -389,35 +426,48 @@ SUB R1, R1, 1
 		String expected = """
 .LINE «TEST.ASM», 1
 $BEGIN:
+.LINE «TEST.ASM», 2
 MOVE R0, 42
+.LINE «TEST.ASM», 3
 MYFUNC:
-.BLOCK MYFUNC
+.BLOCK _MYFUNC
 .LINE «TEST.ASM», 4
 ADD SP, -2
+.LINE «TEST.ASM», 5
 SAVE R26, R28
+.LINE «TEST.ASM», 6
 SAVE F30, F31
+.LINE «TEST.ASM», 7
 $LOOP:
+.LINE «TEST.ASM», 8
 LOAD R1, SF[3]
+.LINE «TEST.ASM», 9
 LOAD R2, SF[-1]
+.LINE «TEST.ASM», 10
 ADD R3, R28, R27
+.LINE «TEST.ASM», 11
 ADD F3, F31, F30
+.LINE «TEST.ASM», 12
 STORE R26, SF[5]
+.LINE «TEST.ASM», 13
 JUMP $LOOP
+.LINE «TEST.ASM», 14
 MOVE R0, R3
 JUMP MYFUNC$_RETURN
-.LINE_BEGIN «TEST.ASM», 16
+.LINE_BEGIN «TEST.ASM», 15
 MYFUNC$_RETURN:
 RESTORE F30, F31
 RESTORE R26, R28
 ADD SP, 2
 RETURN
-.BLOCK_END MYFUNC
+.BLOCK_END _MYFUNC
 .LINE_END
 .LINE «TEST.ASM», 16
 JUMP $BEGIN
 			""";
 		var loader = new IncludeLoader(Path.of("."));
-		String preprocessed = PreprocessorVisitor.preprocessText("Test.asm", src, loader);
+		PreprocessorVisitor pp = new PreprocessorVisitor("Test.asm", loader);
+		String preprocessed = pp.preprocessText(src);
 		assertEquals(expected.toUpperCase(), preprocessed.toUpperCase());
 	}
 
@@ -440,10 +490,14 @@ JUMP $BEGIN
 .ORG 1
 __CODE__: READONLY __CODE_END__
 .LINE «TEST.ASM», 5
-MOVE	R0, R1
-MOVE	R1, __STR_1
-MOVE	F0, __FP_1
+MOVE R0, R1
+.LINE «TEST.ASM», 6
+MOVE R1, __STR_1
+.LINE «TEST.ASM», 7
+MOVE F0, __FP_1
+.LINE «TEST.ASM», 8
 STOP
+.LINE «TEST.ASM», 9
 STOP
 
 __FP_1: .DCF 3.14159267
@@ -451,20 +505,27 @@ __STR_1: .DCS "HELLO, WORLD!"
 
 __CODE_END__:
 __DATA__:
-GLOBAL_INT:	.DCI 326
-GLOBAL_FP:	.DCF 3.14
-GLOBAL_ARRAY:	.DCA 10
-GLOBAL_BYTES:	.DCB 1,2,3,4,5
-GLOBAL_WORDS:	.DCW 0X01, 0X02, 0X03
-GLOBAL_FLOATS:	.DCW 1.2, 2.3, 3.4
+.LINE «TEST.ASM», 1
+GLOBAL_INT: .DCI 326
+.LINE «TEST.ASM», 2
+GLOBAL_FP: .DCF 3.14
+.LINE «TEST.ASM», 3
+GLOBAL_ARRAY: .DCA 10
+.LINE «TEST.ASM», 4
+GLOBAL_BYTES: .DCB 1, 2, 3, 4, 5
+.LINE «TEST.ASM», 10
+GLOBAL_WORDS: .DCW 1, 2, 3
+.LINE «TEST.ASM», 11
+GLOBAL_FLOATS: .DCW 1.2, 2.3, 3.4
 __DATA_END__:
 __HEAP_START__:
 			""";
 		var loader = new IncludeLoader(Path.of("."));
-		String preprocessed = PreprocessorVisitor.preprocessText("Test.asm", src, loader);
+		PreprocessorVisitor pp = new PreprocessorVisitor("Test.asm", loader);
+		String preprocessed = pp.preprocessText(src);
 		LiteralRewriter rw = new LiteralRewriter();
-		preprocessed = rw.rewrite(preprocessed);
-		preprocessed = PreprocessorVisitor.addGlobals(preprocessed, false);
+		preprocessed = rw.rewrite(preprocessed, pp.getSourceLocations());
+		preprocessed = pp.addGlobals(preprocessed, false);
 		assertEquals(expected, preprocessed.toUpperCase());
 	}
 
@@ -477,21 +538,23 @@ __HEAP_START__:
 			#end_func
 			""";
 		String expected = """
-			.LINE «TEST.ASM», 1
-			MYFUNC:
-			.BLOCK MYFUNC
-			.LINE «TEST.ASM», 2
-			PUSH 0
-			ADD SP, -3
-			.LINE_BEGIN «TEST.ASM», 4
-			MYFUNC$_RETURN:
-			ADD SP, 4
-			RETURN
-			.BLOCK_END MYFUNC
-			.LINE_END
+.LINE «TEST.ASM», 1
+MYFUNC:
+.BLOCK _MYFUNC
+.LINE «TEST.ASM», 2
+PUSH 0
+.LINE «TEST.ASM», 3
+ADD SP, -3
+.LINE_BEGIN «TEST.ASM», 4
+MYFUNC$_RETURN:
+ADD SP, 4
+RETURN
+.BLOCK_END _MYFUNC
+.LINE_END
 			""";
 		var loader = new IncludeLoader(Path.of("."));
-		String preprocessed = PreprocessorVisitor.preprocessText("Test.asm", src, loader);
+		PreprocessorVisitor pp = new PreprocessorVisitor("Test.asm", loader);
+		String preprocessed = pp.preprocessText(src);
 		assertEquals(expected, preprocessed.toUpperCase());
 	}
 
@@ -499,26 +562,26 @@ __HEAP_START__:
 	void testVar() {
 		String src = """
 			#def_func myFunc()
-			#var a
-			#var b, c, d
+			#var a, \\
+			 	b, c, d
 			#end_func
 			""";
 		String expected = """
-			.LINE «TEST.ASM», 1
-			MYFUNC:
-			.BLOCK MYFUNC
-			.LINE «TEST.ASM», 2
-			PUSH R28
-			SAVE R26, R28
-			.LINE_BEGIN «TEST.ASM», 4
-			MYFUNC$_RETURN:
-			RESTORE R25, R28
-			RETURN
-			.BLOCK_END MYFUNC
-			.LINE_END
+.LINE «TEST.ASM», 1
+MYFUNC:
+.BLOCK _MYFUNC
+.LINE «TEST.ASM», 2
+SAVE R25, R28
+.LINE_BEGIN «TEST.ASM», 4
+MYFUNC$_RETURN:
+RESTORE R25, R28
+RETURN
+.BLOCK_END _MYFUNC
+.LINE_END
 			""";
 		var loader = new IncludeLoader(Path.of("."));
-		String preprocessed = PreprocessorVisitor.preprocessText("Test.asm", src, loader);
+		PreprocessorVisitor pp = new PreprocessorVisitor("Test.asm", loader);
+		String preprocessed = pp.preprocessText(src);
 		assertEquals(expected, preprocessed.toUpperCase());
 	}
 
@@ -531,21 +594,23 @@ __HEAP_START__:
 			#end_func
 			""";
 		String expected = """
-			.LINE «TEST.ASM», 1
-			MYFUNC:
-			.BLOCK MYFUNC
-			.LINE «TEST.ASM», 2
-			PUSH F31
-			SAVE F29, F31
-			.LINE_BEGIN «TEST.ASM», 4
-			MYFUNC$_RETURN:
-			RESTORE F28, F31
-			RETURN
-			.BLOCK_END MYFUNC
-			.LINE_END
+.LINE «TEST.ASM», 1
+MYFUNC:
+.BLOCK _MYFUNC
+.LINE «TEST.ASM», 2
+PUSH F31
+.LINE «TEST.ASM», 3
+SAVE F29, F31
+.LINE_BEGIN «TEST.ASM», 4
+MYFUNC$_RETURN:
+RESTORE F28, F31
+RETURN
+.BLOCK_END _MYFUNC
+.LINE_END
 			""";
 		var loader = new IncludeLoader(Path.of("."));
-		String preprocessed = PreprocessorVisitor.preprocessText("Test.asm", src, loader);
+		PreprocessorVisitor pp = new PreprocessorVisitor("Test.asm", loader);
+		String preprocessed = pp.preprocessText(src);
 		assertEquals(expected, preprocessed.toUpperCase());
 	}
 
@@ -603,12 +668,16 @@ MOVE R1, R0
 MOVE R0, 1
 INT 202
 .LINE_END
+.LINE «TEST.ASM», 23
 STOP
+.LINE «TEST.ASM», 24
 STOP
+.LINE «TEST.ASM», 25
 FINIS:
 			""";
 		var loader = new IncludeLoader(Path.of("."));
-		String preprocessed = PreprocessorVisitor.preprocessText("Test.asm", src, loader);
+		PreprocessorVisitor pp = new PreprocessorVisitor("Test.asm", loader);
+		String preprocessed = pp.preprocessText(src);
 		assertEquals(expected, preprocessed.toUpperCase());
 	}
 
@@ -639,7 +708,8 @@ FINIS:
 			.LINE_END
 			""";
 		var loader = new IncludeLoader(Path.of("."));
-		String preprocessed = PreprocessorVisitor.preprocessText("Test.asm", src, loader);
+		PreprocessorVisitor pp = new PreprocessorVisitor("Test.asm", loader);
+		String preprocessed = pp.preprocessText(src);
 		assertEquals(expected, preprocessed.toUpperCase());
 	}
 
@@ -647,7 +717,7 @@ FINIS:
 	void testIfCond() {
 		String src = """
 			#var x, y
-			move x = 0
+			clear x
 			#if_cond x < 10
 				move y, 10
 			#end_cond
@@ -656,17 +726,17 @@ FINIS:
 		String expected = """
 .LINE «TEST.ASM», 1
 SAVE R27, R28
-MOVE R28 = 0
+.LINE «TEST.ASM», 2
+CLEAR R28
 .LINE_BEGIN «TEST.ASM», 3
 .BLOCK COND_{}
 CMP R28, 10
 JUMP NN, $_SKIP
 .LINE_END
+.LINE «TEST.ASM», 4
 MOVE R27, 10
-.LINE_BEGIN «TEST.ASM», 5
 $_SKIP:
-.LINE_END
-.LINE_BEGIN «TEST.ASM», 6
+.LINE_BEGIN «TEST.ASM», 5
 $_COND_END:
 .BLOCK_END
 .LINE_END
@@ -674,7 +744,8 @@ $_COND_END:
 MOVE R28, 0
 			""";
 		var loader = new IncludeLoader(Path.of("."));
-		String preprocessed = PreprocessorVisitor.preprocessText("Test.asm", src, loader);
+		PreprocessorVisitor pp = new PreprocessorVisitor("Test.asm", loader);
+		String preprocessed = pp.preprocessText(src);
 		assertEquals(expected, preprocessed.toUpperCase());
 	}
 
@@ -682,7 +753,7 @@ MOVE R28, 0
 	void testIfCondElse() {
 		String src = """
 			#var x, y
-			move x = 0
+			clear x
 			#if_cond x < 10
 				move y, 10
 			#else_cond
@@ -693,26 +764,30 @@ MOVE R28, 0
 		String expected = """
 .LINE «TEST.ASM», 1
 SAVE R27, R28
-MOVE R28 = 0
+.LINE «TEST.ASM», 2
+CLEAR R28
 .LINE_BEGIN «TEST.ASM», 3
 .BLOCK COND_{}
 CMP R28, 10
 JUMP NN, $_SKIP
 .LINE_END
+.LINE «TEST.ASM», 4
 MOVE R27, 10
-.LINE_BEGIN «TEST.ASM», 5
+.LINE «TEST.ASM», 5
 JUMP $_COND_END
 $_SKIP:
-.LINE_END
+.LINE «TEST.ASM», 6
 MOVE R27, 20
 .LINE_BEGIN «TEST.ASM», 7
 $_COND_END:
 .BLOCK_END
 .LINE_END
+.LINE «TEST.ASM», 8
 MOVE R28, 0
 			""";
 		var loader = new IncludeLoader(Path.of("."));
-		String preprocessed = PreprocessorVisitor.preprocessText("Test.asm", src, loader);
+		PreprocessorVisitor pp = new PreprocessorVisitor("Test.asm", loader);
+		String preprocessed = pp.preprocessText(src);
 		assertEquals(expected, preprocessed.toUpperCase());
 	}
 
@@ -720,7 +795,7 @@ MOVE R28, 0
 	void testIfCondElseIf() {
 		String src = """
 			#var x, y
-			move x = 0
+			clear x
 			#if_cond x < 10
 				move y, 10
 			#else_if_cond x < 20
@@ -731,27 +806,26 @@ MOVE R28, 0
 		String expected = """
 .LINE «TEST.ASM», 1
 SAVE R27, R28
-MOVE R28 = 0
+.LINE «TEST.ASM», 2
+CLEAR R28
 .LINE_BEGIN «TEST.ASM», 3
 .BLOCK COND_{}
 CMP R28, 10
 JUMP NN, $_SKIP
 .LINE_END
+.LINE «TEST.ASM», 4
 MOVE R27, 10
-.LINE_BEGIN «TEST.ASM», 5
+.LINE «TEST.ASM», 5
 JUMP $_COND_END
 $_SKIP:
-.LINE_END
-.LINE_BEGIN «TEST.ASM», 6
+.LINE_BEGIN «TEST.ASM», 5
 CMP R28, 20
 JUMP NN, $_SKIP_1
 .LINE_END
 .LINE «TEST.ASM», 6
 MOVE R27, 20
-.LINE_BEGIN «TEST.ASM», 7
 $_SKIP_1:
-.LINE_END
-.LINE_BEGIN «TEST.ASM», 8
+.LINE_BEGIN «TEST.ASM», 7
 $_COND_END:
 .BLOCK_END
 .LINE_END
@@ -759,7 +833,8 @@ $_COND_END:
 MOVE R28, 0
 			""";
 		var loader = new IncludeLoader(Path.of("."));
-		String preprocessed = PreprocessorVisitor.preprocessText("Test.asm", src, loader);
+		PreprocessorVisitor pp = new PreprocessorVisitor("Test.asm", loader);
+		String preprocessed = pp.preprocessText(src);
 		assertEquals(expected, preprocessed.toUpperCase());
 	}
 
@@ -767,7 +842,7 @@ MOVE R28, 0
 	void testIfCondElseIf2() {
 		String src = """
 			#var x, y
-			move x = 0
+			clear x
 			#if_cond x < 10
 				move y, 10
 			#else_if_cond x < 20
@@ -780,37 +855,35 @@ MOVE R28, 0
 		String expected = """
 .LINE «TEST.ASM», 1
 SAVE R27, R28
-MOVE R28 = 0
+.LINE «TEST.ASM», 2
+CLEAR R28
 .LINE_BEGIN «TEST.ASM», 3
 .BLOCK COND_{}
 CMP R28, 10
 JUMP NN, $_SKIP
 .LINE_END
+.LINE «TEST.ASM», 4
 MOVE R27, 10
-.LINE_BEGIN «TEST.ASM», 5
+.LINE «TEST.ASM», 5
 JUMP $_COND_END
 $_SKIP:
-.LINE_END
-.LINE_BEGIN «TEST.ASM», 6
+.LINE_BEGIN «TEST.ASM», 5
 CMP R28, 20
 JUMP NN, $_SKIP_1
 .LINE_END
 .LINE «TEST.ASM», 6
 MOVE R27, 20
-.LINE_BEGIN «TEST.ASM», 7
+.LINE «TEST.ASM», 7
 JUMP $_COND_END
 $_SKIP_1:
-.LINE_END
-.LINE_BEGIN «TEST.ASM», 8
+.LINE_BEGIN «TEST.ASM», 7
 CMP R28, 30
 JUMP NN, $_SKIP_2
 .LINE_END
 .LINE «TEST.ASM», 8
 MOVE R27, 30
-.LINE_BEGIN «TEST.ASM», 9
 $_SKIP_2:
-.LINE_END
-.LINE_BEGIN «TEST.ASM», 10
+.LINE_BEGIN «TEST.ASM», 9
 $_COND_END:
 .BLOCK_END
 .LINE_END
@@ -818,14 +891,15 @@ $_COND_END:
 MOVE R28, 0
 			""";
 		var loader = new IncludeLoader(Path.of("."));
-		String preprocessed = PreprocessorVisitor.preprocessText("Test.asm", src, loader);
+		PreprocessorVisitor pp = new PreprocessorVisitor("Test.asm", loader);
+		String preprocessed = pp.preprocessText(src);
 		assertEquals(expected, preprocessed.toUpperCase());
 	}
 	@Test
 	void testIfCondElseIfElse() {
 		String src = """
 			#var x, y
-			move x = 0
+			clear x
 			#if_cond x < 10
 				move y, 10
 			#else_if_cond x < 20
@@ -840,46 +914,48 @@ MOVE R28, 0
 		String expected = """
 .LINE «TEST.ASM», 1
 SAVE R27, R28
-MOVE R28 = 0
+.LINE «TEST.ASM», 2
+CLEAR R28
 .LINE_BEGIN «TEST.ASM», 3
 .BLOCK COND_{}
 CMP R28, 10
 JUMP NN, $_SKIP
 .LINE_END
+.LINE «TEST.ASM», 4
 MOVE R27, 10
-.LINE_BEGIN «TEST.ASM», 5
+.LINE «TEST.ASM», 5
 JUMP $_COND_END
 $_SKIP:
-.LINE_END
-.LINE_BEGIN «TEST.ASM», 6
+.LINE_BEGIN «TEST.ASM», 5
 CMP R28, 20
 JUMP NN, $_SKIP_1
 .LINE_END
 .LINE «TEST.ASM», 6
 MOVE R27, 20
-.LINE_BEGIN «TEST.ASM», 7
+.LINE «TEST.ASM», 7
 JUMP $_COND_END
 $_SKIP_1:
-.LINE_END
-.LINE_BEGIN «TEST.ASM», 8
+.LINE_BEGIN «TEST.ASM», 7
 CMP R28, 30
 JUMP NN, $_SKIP_2
 .LINE_END
 .LINE «TEST.ASM», 8
 MOVE R27, 30
-.LINE_BEGIN «TEST.ASM», 9
+.LINE «TEST.ASM», 9
 JUMP $_COND_END
 $_SKIP_2:
-.LINE_END
+.LINE «TEST.ASM», 10
 MOVE R27, 40
 .LINE_BEGIN «TEST.ASM», 11
 $_COND_END:
 .BLOCK_END
 .LINE_END
+.LINE «TEST.ASM», 12
 MOVE R28, 0
 			""";
 		var loader = new IncludeLoader(Path.of("."));
-		String preprocessed = PreprocessorVisitor.preprocessText("Test.asm", src, loader);
+		PreprocessorVisitor pp = new PreprocessorVisitor("Test.asm", loader);
+		String preprocessed = pp.preprocessText(src);
 		assertEquals(expected, preprocessed.toUpperCase());
 	}
 
@@ -887,7 +963,7 @@ MOVE R28, 0
 	void testIfCondSR() {
 		String src = """
 			#var x, y
-			move x = 0
+			clear x
 			#if_cond_SR nz
 				move y, 10
 			#end_cond
@@ -896,16 +972,16 @@ MOVE R28, 0
 		String expected = """
 .LINE «TEST.ASM», 1
 SAVE R27, R28
-MOVE R28 = 0
+.LINE «TEST.ASM», 2
+CLEAR R28
 .LINE_BEGIN «TEST.ASM», 3
 .BLOCK CONDSR_{}
 JUMP Z, $_SKIP
 .LINE_END
+.LINE «TEST.ASM», 4
 MOVE R27, 10
-.LINE_BEGIN «TEST.ASM», 5
 $_SKIP:
-.LINE_END
-.LINE_BEGIN «TEST.ASM», 6
+.LINE_BEGIN «TEST.ASM», 5
 $_COND_END:
 .BLOCK_END
 .LINE_END
@@ -913,7 +989,8 @@ $_COND_END:
 MOVE R28, 0
 			""";
 		var loader = new IncludeLoader(Path.of("."));
-		String preprocessed = PreprocessorVisitor.preprocessText("Test.asm", src, loader);
+		PreprocessorVisitor pp = new PreprocessorVisitor("Test.asm", loader);
+		String preprocessed = pp.preprocessText(src);
 		assertEquals(expected, preprocessed.toUpperCase());
 	}
 
@@ -921,7 +998,7 @@ MOVE R28, 0
 	void testIfCondSRElse() {
 		String src = """
 			#var x, y
-			move x = 0
+			clear x
 			#if_cond_SR z
 				move y, 10
 			#else_cond
@@ -932,25 +1009,29 @@ MOVE R28, 0
 		String expected = """
 .LINE «TEST.ASM», 1
 SAVE R27, R28
-MOVE R28 = 0
+.LINE «TEST.ASM», 2
+CLEAR R28
 .LINE_BEGIN «TEST.ASM», 3
 .BLOCK CONDSR_{}
 JUMP NZ, $_SKIP
 .LINE_END
+.LINE «TEST.ASM», 4
 MOVE R27, 10
-.LINE_BEGIN «TEST.ASM», 5
+.LINE «TEST.ASM», 5
 JUMP $_COND_END
 $_SKIP:
-.LINE_END
+.LINE «TEST.ASM», 6
 MOVE R27, 20
 .LINE_BEGIN «TEST.ASM», 7
 $_COND_END:
 .BLOCK_END
 .LINE_END
+.LINE «TEST.ASM», 8
 MOVE R28, 0
 			""";
 		var loader = new IncludeLoader(Path.of("."));
-		String preprocessed = PreprocessorVisitor.preprocessText("Test.asm", src, loader);
+		PreprocessorVisitor pp = new PreprocessorVisitor("Test.asm", loader);
+		String preprocessed = pp.preprocessText(src);
 		assertEquals(expected, preprocessed.toUpperCase());
 	}
 }

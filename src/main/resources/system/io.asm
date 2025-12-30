@@ -25,7 +25,7 @@ jump	IO_ASM_END
 	load	b, bit
 	#macro	COMPARE_RANGE(3, le, b, lt, 256)
 	#if_cond_sr z
-		#return FALSE
+	#return FALSE
 	#end_cond
 	load	lock, PORTMAP_LOCK_HANDLE
 	#call	acquireRecursiveSpinLock(lock)

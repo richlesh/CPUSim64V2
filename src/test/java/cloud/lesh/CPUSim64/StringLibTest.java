@@ -96,7 +96,7 @@ public class StringLibTest extends BaseTest {
 		var result = tuple.getLeft();
 		var sim = tuple.getMiddle();
 		var diff = tuple.getRight();
-		assertEquals(7, diff.size());
+		assertEquals(8, diff.size());
 		assertEquals(expected, output);
 	}
 
@@ -126,7 +126,7 @@ public class StringLibTest extends BaseTest {
 		var result = tuple.getLeft();
 		var sim = tuple.getMiddle();
 		var diff = tuple.getRight();
-		assertEquals(7, diff.size());
+		assertEquals(8, diff.size());
 		assertEquals(expected, output);
 	}
 

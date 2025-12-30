@@ -6,7 +6,7 @@
 #end_macro
 
 #def_macro  DEFINE_SHARED_SPINLOCK(name)
-    #global ${name}:   .dcw    0
+    #global ${name}:   .dci    0
 	move	r1, 1
 	int		iALLOC_SHARED
 	store	r0, ${name}
@@ -20,7 +20,7 @@
 #end_macro
 
 #def_macro  DEFINE_SHARED_RECURSIVE_SPINLOCK(name)
-    #global ${name}:   .dcw    0
+    #global ${name}:   .dci    0
 	move	r1, 2
 	int		iALLOC_SHARED
 	store	r0, ${name}
@@ -31,8 +31,11 @@
 // 1: Re-entry count, decrement to 0 releases lock
 // 2: Heap allocated array of waiting PIDs
 // 3: SpinLock to protect array of waiting PIDs
+
+#define		MUTEX_SIZE	4
+
 #def_macro  DEFINE_MUTEX(name)
-    #global ${name}:   .dca    3
+    #global ${name}:   .dca    4 - 1
 #end_macro
 
 #def_macro  DEFINE_SHARED_MUTEX(name)

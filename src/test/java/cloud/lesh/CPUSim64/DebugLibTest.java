@@ -37,7 +37,7 @@ DEBUG: Percent: 12.35%
 		var result = tuple.getLeft();
 		var sim = tuple.getMiddle();
 		var diff = tuple.getRight();
-		assertEquals(3, diff.size());
+		assertEquals(4, diff.size());
 		assertEquals(expected, output);
 	}
 
@@ -99,7 +99,7 @@ DEBUG: Percent: 12.35%
 		var result = tuple.getLeft();
 		var sim = tuple.getMiddle();
 		var diff = tuple.getRight();
-		assertEquals(3, diff.size());
+		assertEquals(4, diff.size());
 		assertEquals(expected, output);
 	}
 
@@ -134,7 +134,7 @@ DEBUG: Percent: 12.35%
 		var result = tuple.getLeft();
 		var sim = tuple.getMiddle();
 		var diff = tuple.getRight();
-		assertEquals(3, diff.size());
+		assertEquals(4, diff.size());
 		assertEquals(expected, output);
 	}
 
@@ -177,7 +177,7 @@ DEBUG: Percent: 12.35%
 		var result = tuple.getLeft();
 		var sim = tuple.getMiddle();
 		var diff = tuple.getRight();
-		assertEquals(5, diff.size());
+		assertEquals(6, diff.size());
 		assertEquals(expected, output);
 	}
 

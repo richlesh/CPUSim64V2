@@ -18,9 +18,11 @@ preproc
 // Any line that does not start with '#' is passed through as code
 codeLine
   : more+=(LABEL | IDENT | COMP_DIR)
-    ( LINE_CONT? more+=(COMMA | IDENT | COMP_DIR | PLACEHOLDER | REG_R | REG_F | MEMREF| INT | FLOAT | STRING | CHAR) )*
+    ( LINE_CONT? (more+=(COMMA | IDENT | COMP_DIR | PLACEHOLDER | REG_R | REG_F | MEMREF| INT | FLOAT | STRING | CHAR)
+    | moreExpr+=constExpr ))*
     NL
   ;
+
 /* ----- Directives ----- */
 
 directive
@@ -248,4 +250,44 @@ literal
   | FLOAT
   | CHAR
   | STRING
+  | constExpr
   ;
+
+/*
+ * Lowest precedence: + -
+ */
+constExpr
+    : addExpr
+    ;
+
+addExpr
+    : addExpr op=(PLUS | MINUS) mulExpr
+    | mulExpr
+    ;
+
+/*
+ * Next precedence: * /
+ */
+mulExpr
+    : mulExpr op=(MULTIPLY | DIVIDE) unaryExpr
+    | unaryExpr
+    ;
+
+/*
+ * Unary negation
+ */
+unaryExpr
+    : MINUS unaryExpr
+    | const
+    ;
+
+/*
+ * Literals and grouping
+ */
+const
+    : IDENT
+    | PLACEHOLDER
+    | INT
+    | FLOAT
+    | LPAREN addExpr RPAREN
+    ;

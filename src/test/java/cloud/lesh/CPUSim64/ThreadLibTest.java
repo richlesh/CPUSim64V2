@@ -25,7 +25,7 @@ public class ThreadLibTest extends BaseTest {
 		var result = tuple.getLeft();
 		var sim = tuple.getMiddle();
 		var diff = tuple.getRight();
-		assertEquals(2, diff.size());
+		assertEquals(3, diff.size());
 		assertEquals(expected, output);
 	}
 

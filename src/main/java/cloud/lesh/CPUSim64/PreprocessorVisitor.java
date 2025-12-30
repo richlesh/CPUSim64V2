@@ -1,17 +1,15 @@
 package cloud.lesh.CPUSim64;
 
 import org.antlr.v4.runtime.*;
-import org.antlr.v4.runtime.tree.*;
-import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.misc.Interval;
-import org.antlr.v4.runtime.Token;
+import org.antlr.v4.runtime.tree.ParseTree;
+import org.antlr.v4.runtime.tree.TerminalNode;
+import org.apache.commons.lang3.tuple.Pair;
 
 import java.nio.file.Path;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import org.apache.commons.lang3.tuple.Pair;
 
 /**
  * Walks a preprocesor.g4 parse tree and produces preprocessed assembly text.
@@ -21,7 +19,7 @@ import org.apache.commons.lang3.tuple.Pair;
  *
  * You provide an IncludeLoader that maps include targets to file contents.
  */
-public class PreprocessorVisitor extends PreprocessorParserBaseVisitor<Void> {
+public class PreprocessorVisitor extends cloud.lesh.CPUSim64.PreprocessorParserBaseVisitor<Void> {
 	public class PreprocessorException extends RuntimeException {
 		PreprocessorException(String msg) {
 			super(getLocation() + ":ERROR:" + msg);
@@ -36,15 +34,20 @@ public class PreprocessorVisitor extends PreprocessorParserBaseVisitor<Void> {
 
 	CommonTokenStream tokens;
 	String filename = null;
-	int lineNum = 1;
 	int sourceLineNum = 1;
+	static int preprocessedLineNum = 1;
 	int pauseLineSync = 0;
 	Stack<String> lineDirectives = new Stack<>();
 	String funcName = "";			// current function name for return handling
+	boolean hasErrors = false;
+	private static Map<Integer, String> sourceLocations = new HashMap<Integer, String>();
 
+	public boolean hasErrors() { return hasErrors; }
+	public void setTokens(CommonTokenStream tok) { tokens = tok; }
 	String getLocation() {
-		return ("«" + (filename == null ? "" : filename) + "»:") + lineNum;
+		return ("«" + (filename == null ? "" : filename) + "»:") + sourceLineNum;
 	}
+	public Map<Integer, String> getSourceLocations() { return sourceLocations; }
 
 	/** Provide include contents for a path like <system/io.asm> or "path". */
 	public interface IncludeLoader {
@@ -54,7 +57,7 @@ public class PreprocessorVisitor extends PreprocessorParserBaseVisitor<Void> {
 
 	/** Holds a #define value and kind so we can coerce in conditions. */
 	public static final class DefVal {
-		public enum Kind { INT, FLOAT, CHAR, STRING, SYMBOL }
+		public enum Kind { INT, FLOAT, CHAR, STRING, EXPR, SYMBOL }
 		public final Kind kind;
 		public final String text; // original text (e.g., "123", "3.14", "'c'", "\"str\"", or "1" for symbol-only)
 		public DefVal(Kind kind, String text) { this.kind = kind; this.text = text; }
@@ -67,23 +70,22 @@ public class PreprocessorVisitor extends PreprocessorParserBaseVisitor<Void> {
 	private Map<String, DefVal> defines = new HashMap<>();
 	private Stack<Map<String, String>> scopes = new Stack<>();
 	/** When true, we also apply #define substitution to directive passthrough lines. */
-	private final boolean substituteInsideDirectives;
+	private boolean substituteInsideDirectives;
 
 	/** Word boundary pattern for safe token replacement */
 	private static final Pattern TOKEN = Pattern.compile("[A-Za-z_.$][A-Za-z0-9_.$]*");
 	private static final Pattern PLACEHOLDER = Pattern.compile("\\$\\{(([A-Za-z_.$][A-Za-z0-9_.$]*)|\\.\\.\\.)\\}");
 
-	public PreprocessorVisitor(String filename, IncludeLoader loader, CommonTokenStream tokens) {
-		this(filename, 1, loader, /*substituteInsideDirectives*/ false, 0, tokens);
+	public PreprocessorVisitor(String filename, IncludeLoader loader) {
+		this(filename, 1, loader);
 	}
 
-	public PreprocessorVisitor(String filename, int lineNum, IncludeLoader loader, boolean substituteInsideDirectives, int pauseLineSync, CommonTokenStream tokens) {
+	public PreprocessorVisitor(String filename, int sourceLineNumber, IncludeLoader loader) {
 		this.filename = filename;
-		this.lineNum = lineNum;
+		this.sourceLineNum = sourceLineNumber;
 		this.includeLoader = Objects.requireNonNull(loader, "IncludeLoader is required");
-		this.substituteInsideDirectives = substituteInsideDirectives;
-		this.pauseLineSync = pauseLineSync;
-		this.tokens = tokens;
+		this.substituteInsideDirectives = true;
+		this.pauseLineSync = 0;
 		pushScope();
 	}
 
@@ -98,6 +100,7 @@ public class PreprocessorVisitor extends PreprocessorParserBaseVisitor<Void> {
 		}
 		if (defines.containsKey(name.toUpperCase())) {
 			System.err.println(getLocation() + ":ERROR:Define name already exists: " + name);
+			hasErrors = true;
 		}
 		defines.put(name.toUpperCase(), value);
 	}
@@ -147,8 +150,8 @@ public class PreprocessorVisitor extends PreprocessorParserBaseVisitor<Void> {
 	}
 
 	@Override
-	public Void visitPreproc(PreprocessorParser.PreprocContext ctx) {
-		emitLineDirective(filename, 1);
+	public Void visitPreproc(cloud.lesh.CPUSim64.PreprocessorParser.PreprocContext ctx) {
+		emitLineDirective(filename, ctx);
 		for (ParseTree child : ctx.children) {
 			child.accept(this);
 		}
@@ -156,30 +159,58 @@ public class PreprocessorVisitor extends PreprocessorParserBaseVisitor<Void> {
 	}
 
 	@Override
-	public Void visitDirective(PreprocessorParser.DirectiveContext ctx) {
-		sourceLineNum = lineOf(ctx);
-//		System.out.println("Visiting directive at source line " + sourceLineNum + ": " + ctx.getText().replace("\n", "\\n"));
-		if (pauseLineSync <= 0 && sourceLineNum != lineNum) {
-			emitLineDirective(filename, sourceLineNum);
-		}
+	public Void visitDirective(cloud.lesh.CPUSim64.PreprocessorParser.DirectiveContext ctx) {
+		emitLineDirective(filename, ctx);
 		return visitChildren(ctx);
 	}
 
 	@Override
-	public Void visitCodeLine(PreprocessorParser.CodeLineContext ctx) {
-		sourceLineNum = lineOf(ctx);
-//		System.out.println("Visiting code line at source line " + sourceLineNum + ": " + ctx.getText().replace("\n", "\\n"));
-		if (pauseLineSync <= 0 && sourceLineNum != lineNum) {
-			emitLineDirective(filename, sourceLineNum);
+	public Void visitCodeLine(cloud.lesh.CPUSim64.PreprocessorParser.CodeLineContext ctx) {
+		emitLineDirective(filename, ctx);
+
+		// Collect "segments" in the order they appear in the input.
+		// A segment is either a Token (from ctx.more) or a constExpr subtree (from ctx.moreExpr).
+		record Seg(int start, int stop, int type, String text) {}
+
+		var segs = new java.util.ArrayList<Seg>(ctx.more.size() + ctx.moreExpr.size());
+
+		// Tokens (ctx.more)
+		for (var t : ctx.more) {
+			segs.add(new Seg(
+					t.getStartIndex(),
+					t.getStopIndex(),
+					t.getType(),      // lexer token type
+					t.getText()
+			));
 		}
+
+		// constExpr subtrees (ctx.moreExpr) — use their start/stop tokens for positions
+		for (var e : ctx.moreExpr) {
+			var a = e.getStart();
+			var b = e.getStop();
+			segs.add(new Seg(
+					a.getStartIndex(),
+					b.getStopIndex(),
+					-1,               // not a token; sentinel
+					e.getText()        // or slice from input if you prefer exact whitespace inside
+			));
+		}
+
+		// Sort by appearance in the original input
+		segs.sort(java.util.Comparator.comparingInt(Seg::start));
+
+		// Rebuild with single spaces between segments, but not before commas
 		StringBuilder logical = new StringBuilder();
-		boolean addSpace = false;
-		for (var seg : ctx.more) {
-			if (addSpace && seg.getType() != PreprocessorLexer.COMMA)
+		boolean pendingSpace = false;
+
+		for (var s : segs) {
+			if (pendingSpace && logical.length() > 0 && s.type != cloud.lesh.CPUSim64.PreprocessorLexer.COMMA) {
 				logical.append(' ');
-			logical.append(seg.getText());
-			addSpace = true;
+			}
+			logical.append(s.text);
+			pendingSpace = true;
 		}
+
 		emitLine(logical.toString(), true);
 		return null;
 	}
@@ -190,21 +221,22 @@ public class PreprocessorVisitor extends PreprocessorParserBaseVisitor<Void> {
 
 	Set<String> previouslyIncluded = new HashSet<String>();
 	@Override
-	public Void visitInfoDir(PreprocessorParser.InfoDirContext ctx) {
+	public Void visitInfoDir(cloud.lesh.CPUSim64.PreprocessorParser.InfoDirContext ctx) {
 
 		System.out.println(getLocation() + ":INFO:" + applyPlaceholders(ctx.INFO_TEXT().getText().trim()));
 		return null;
 	}
 
 	@Override
-	public Void visitErrorDir(PreprocessorParser.ErrorDirContext ctx) {
+	public Void visitErrorDir(cloud.lesh.CPUSim64.PreprocessorParser.ErrorDirContext ctx) {
 		System.err.println(getLocation() + ":ERROR: " + applyPlaceholders(ctx.INFO_TEXT().getText().trim()));
+		hasErrors = true;
 		System.exit(1);
 		return null;
 	}
 
 	@Override
-	public Void visitIncludeDir(PreprocessorParser.IncludeDirContext ctx) {
+	public Void visitIncludeDir(cloud.lesh.CPUSim64.PreprocessorParser.IncludeDirContext ctx) {
 		final boolean isSystem = ctx.ANGLE_PATH() != null;
 		final String raw;
 
@@ -226,8 +258,10 @@ public class PreprocessorVisitor extends PreprocessorParserBaseVisitor<Void> {
 				previouslyIncluded.add(path);
 				final String included = includeLoader.load(path, isSystem);
 				Path filename = Path.of(path).getFileName();
-				final String preprocessed = preprocessText(filename.toString(), 1, included, includeLoader, defines, macros, previouslyIncluded, substituteInsideDirectives, 0);
-				out.append(filename.toString().replace("/","$").replace(".","$") + ":\n");
+				emitLine(filename.toString().replace("/","$").replace(".","$") + ":", false);
+				PreprocessorVisitor pp = new PreprocessorVisitor(filename.toString(), includeLoader);
+				final String preprocessed = pp.preprocessText(included, defines, macros, previouslyIncluded, substituteInsideDirectives, 0);
+				hasErrors |= pp.hasErrors();
 				out.append(preprocessed);
 			} catch (IllegalArgumentException ex) {
 				throw new PreprocessorException(ex);
@@ -237,9 +271,9 @@ public class PreprocessorVisitor extends PreprocessorParserBaseVisitor<Void> {
 	}
 
 	@Override
-	public Void visitDefineDir(PreprocessorParser.DefineDirContext ctx) {
+	public Void visitDefineDir(cloud.lesh.CPUSim64.PreprocessorParser.DefineDirContext ctx) {
 		String name = ctx.id.getText();
-		PreprocessorParser.LiteralContext lit = ctx.lit;
+		cloud.lesh.CPUSim64.PreprocessorParser.LiteralContext lit = ctx.lit;
 
 		if (lit != null) {
 			if (lit.INT() != null) {
@@ -250,6 +284,8 @@ public class PreprocessorVisitor extends PreprocessorParserBaseVisitor<Void> {
 				addDefine(name, new DefVal(DefVal.Kind.CHAR, lit.CHAR().getText()));
 			} else if (lit.STRING() != null) {
 				addDefine(name, new DefVal(DefVal.Kind.STRING, lit.STRING().getText()));
+			} else if (lit.constExpr() != null) {
+				addDefine(name, new DefVal(DefVal.Kind.EXPR, lit.constExpr().getText()));
 			}
 		} else if (ctx.symbol != null ) {
 			addDefine(name, new DefVal(DefVal.Kind.SYMBOL, ctx.symbol.getText()));
@@ -260,16 +296,16 @@ public class PreprocessorVisitor extends PreprocessorParserBaseVisitor<Void> {
 	}
 
 	@Override
-	public Void visitUndefDir(PreprocessorParser.UndefDirContext ctx) {
+	public Void visitUndefDir(cloud.lesh.CPUSim64.PreprocessorParser.UndefDirContext ctx) {
 		String name = ctx.IDENT().getText();
 		defines.remove(name);
 		return null;
 	}
 
 	@Override
-	public Void visitCallDir(PreprocessorParser.CallDirContext ctx) {
+	public Void visitCallDir(cloud.lesh.CPUSim64.PreprocessorParser.CallDirContext ctx) {
 		if (ctx.argList() != null) {
-			emitLineBeginDirective(filename, lineNum);
+			emitLineBeginDirective(filename, ctx);
 			for (var param : ctx.argList().callArg().reversed()) {
 				emitLine("push " + param.getText(), true);
 			}
@@ -277,7 +313,7 @@ public class PreprocessorVisitor extends PreprocessorParserBaseVisitor<Void> {
 		emitLine("call " + ctx.IDENT().getText(), true);
 		if (ctx.argList() != null) {
 			emitLine("add sp, " + ctx.argList().callArg().size(), true);
-			emitLineEndDirective(filename, lineNum);
+			emitLineEndDirective();
 		}
 		return null;
 	}
@@ -285,14 +321,25 @@ public class PreprocessorVisitor extends PreprocessorParserBaseVisitor<Void> {
 	private static List<String> globals = new ArrayList<>();
 
 	@Override
-	public Void visitGlobalDir(PreprocessorParser.GlobalDirContext ctx) {
-		globals.add(ctx.codeLine().getText());
+	public Void visitGlobalDir(cloud.lesh.CPUSim64.PreprocessorParser.GlobalDirContext ctx) {
+		String codeline = Utils.rebuildWithSingleSpaces(tokens, ctx.codeLine());
+		PreprocessorVisitor pp = new PreprocessorVisitor(filename, sourceLineNum, includeLoader);
+		++pauseLineSync;
+		codeline = pp.preprocessText(codeline, defines, macros, previouslyIncluded, true, pauseLineSync);
+		--pauseLineSync;
+		hasErrors |= pp.hasErrors();
+		globals.add(String.format(".LINE \u00ab%s\u00bb, %d", filename, sourceLineNum));
+		globals.add(codeline.trim());
 		return null;
 	}
 
 	public static List<String> getGlobals() { return globals; }
 
-	public static void resetGlobals() { globals.clear(); }
+	public static void resetGlobals() {
+		globals.clear();
+		sourceLocations.clear();
+		preprocessedLineNum = 1;
+	}
 
 	public static String addGlobals(String preprocessed, boolean hasMain) {
 		preprocessed =
@@ -311,7 +358,7 @@ public class PreprocessorVisitor extends PreprocessorParserBaseVisitor<Void> {
 
 	private final Set<String> svarSet = new HashSet<>();
 	@Override
-	public Void visitSvarDir(PreprocessorParser.SvarDirContext ctx) {
+	public Void visitSvarDir(cloud.lesh.CPUSim64.PreprocessorParser.SvarDirContext ctx) {
 		if (ctx.identList().IDENT().size() == 0) {
 			return null;
 		} else if (ctx.identList().IDENT().size() == 1) {
@@ -334,7 +381,7 @@ public class PreprocessorVisitor extends PreprocessorParserBaseVisitor<Void> {
 	private final Set<String> varSet = new HashSet<>();
 
 	@Override
-	public Void visitVarDir(PreprocessorParser.VarDirContext ctx) {
+	public Void visitVarDir(cloud.lesh.CPUSim64.PreprocessorParser.VarDirContext ctx) {
 		if (ctx.identList().IDENT().size() == 0) {
 			return null;
 		} else if (ctx.identList().IDENT().size() == 1) {
@@ -357,7 +404,7 @@ public class PreprocessorVisitor extends PreprocessorParserBaseVisitor<Void> {
 	private final Set<String> fvarSet = new HashSet<>();
 
 	@Override
-	public Void visitFvarDir(PreprocessorParser.FvarDirContext ctx) {
+	public Void visitFvarDir(cloud.lesh.CPUSim64.PreprocessorParser.FvarDirContext ctx) {
 		if (ctx.identList().IDENT().size() == 0) {
 			return null;
 		} else if (ctx.identList().IDENT().size() == 1) {
@@ -378,7 +425,7 @@ public class PreprocessorVisitor extends PreprocessorParserBaseVisitor<Void> {
 	}
 
 	@Override
-	public Void visitReturnDir(PreprocessorParser.ReturnDirContext ctx) {
+	public Void visitReturnDir(cloud.lesh.CPUSim64.PreprocessorParser.ReturnDirContext ctx) {
 		if (ctx.primary() != null) {
 			emitLine("MOVE R0, " + ctx.primary().getText(), substituteInsideDirectives);
 			emitLine("JUMP " + funcName + "$_RETURN", false);
@@ -387,7 +434,7 @@ public class PreprocessorVisitor extends PreprocessorParserBaseVisitor<Void> {
 	}
 
 	@Override
-	public Void visitFreturnDir(PreprocessorParser.FreturnDirContext ctx) {
+	public Void visitFreturnDir(cloud.lesh.CPUSim64.PreprocessorParser.FreturnDirContext ctx) {
 		if (ctx.primary() != null) {
 			emitLine("MOVE F0, " + ctx.primary().getText(), substituteInsideDirectives);
 			emitLine("JUMP " + funcName + "$_RETURN", false);
@@ -396,7 +443,7 @@ public class PreprocessorVisitor extends PreprocessorParserBaseVisitor<Void> {
 	}
 
 	@Override
-	public Void visitDefFuncDir(PreprocessorParser.DefFuncDirContext ctx) {
+	public Void visitDefFuncDir(cloud.lesh.CPUSim64.PreprocessorParser.DefFuncDirContext ctx) {
 		// Default behavior:
 		//  - strip the #def_func / #end_func markers from output,
 		//  - emit the body (directives/code) after preprocessing.
@@ -421,7 +468,7 @@ public class PreprocessorVisitor extends PreprocessorParserBaseVisitor<Void> {
 				}
 				emitLine(".BLOCK _" + funcName, false);
 			} else if (child == ctx.PP_END_FUNC()) {
-				emitLineBeginDirective(filename, lineNum);
+				emitLineBeginDirective(filename, child);
 				emitLine(funcName + "$_RETURN:", false);
 				if (fvarSet.size() > 1)
 					emitLine("restore f" + (31 - fvarSet.size() + 1) + ", f31", false);
@@ -434,8 +481,8 @@ public class PreprocessorVisitor extends PreprocessorParserBaseVisitor<Void> {
 				if (svarSet.size() > 0)
 					emitLine("add sp, " + (svarSet.size()), false);
 				emitLine("return", false);
-				emitLine(".BLOCK_END", false);
-				emitLineEndDirective(filename, lineNum);
+				emitLine(".BLOCK_END _" + funcName, false);
+				emitLineEndDirective();
 				popScope();
 				funcName = "";
 			} else {
@@ -450,7 +497,7 @@ public class PreprocessorVisitor extends PreprocessorParserBaseVisitor<Void> {
 	Map<String, Pair<List<String>, String>> macros = new HashMap<>();
 
 	@Override
-	public Void visitDefMacroDir(PreprocessorParser.DefMacroDirContext ctx) {
+	public Void visitDefMacroDir(cloud.lesh.CPUSim64.PreprocessorParser.DefMacroDirContext ctx) {
 		// Name + params
 		macroDefName = ctx.IDENT().getText().toUpperCase();
 		List<String> params = new ArrayList<>();
@@ -465,18 +512,14 @@ public class PreprocessorVisitor extends PreprocessorParserBaseVisitor<Void> {
 
 		// Accumulate directives and codelines
 		StringBuilder body = new StringBuilder();
-		for (var child : ctx.block().children) {
-			String s = rebuildWithSingleSpaces(tokens, child);
-			if (s.length() > 0) {
-				body.append(s);
-				body.append('\n');
+		if (ctx.block().children != null) {
+			for (var child : ctx.block().children) {
+				String s = Utils.rebuildWithSingleSpaces(tokens, child);
+				if (s.length() > 0) {
+					body.append(s);
+					body.append('\n');
+				}
 			}
-//			if (child instanceof ParserRuleContext prc) {
-//				body.append(reflowTokens(prc));
-//			} else {
-//				body.append(child.getText());
-//			}
-//			body.append(child.getText()); // see note below about whitespace
 		}
 
 		macros.put(macroDefName, Pair.of(params, body.toString()));
@@ -484,7 +527,7 @@ public class PreprocessorVisitor extends PreprocessorParserBaseVisitor<Void> {
 	}
 
 	@Override
-	public Void visitMacroDir(PreprocessorParser.MacroDirContext ctx) {
+	public Void visitMacroDir(cloud.lesh.CPUSim64.PreprocessorParser.MacroDirContext ctx) {
 		var def = macros.get(ctx.IDENT().getText().toUpperCase());
 		if (def != null) {
 			Map<String, String> formalParams = new HashMap<String, String>();
@@ -501,14 +544,14 @@ public class PreprocessorVisitor extends PreprocessorParserBaseVisitor<Void> {
 				formalParams.put(def.getLeft().get(i).toUpperCase(), ctx.argList().callArg(i).getText());
 			}
 			String replacement = applyPlaceholders(def.getRight(), formalParams);
-			emitLineBeginDirective(filename, lineNum);
-			++pauseLineSync;
+			emitLineBeginDirective(filename, ctx);
 			if (pauseLineSync > 10)
 				throw new PreprocessorException("Macro nesting exceeded 10 levels!");
-			replacement = preprocessText(filename, lineNum, replacement, includeLoader, defines, macros, previouslyIncluded, true, pauseLineSync);
-			--pauseLineSync;
+			PreprocessorVisitor pp = new PreprocessorVisitor(filename, sourceLineNum, includeLoader);
+			replacement = pp.preprocessText(replacement, defines, macros, previouslyIncluded, true, pauseLineSync);
+			hasErrors |= pp.hasErrors();
 			emitLine(replacement, true);
-			emitLineEndDirective(filename, lineNum);
+			emitLineEndDirective();
 		} else {
 			throw new PreprocessorException("Undefined macro: " + ctx.IDENT().getText());
 		}
@@ -517,7 +560,7 @@ public class PreprocessorVisitor extends PreprocessorParserBaseVisitor<Void> {
 		/* ----- #if / #elseif / #else / #endif ----- */
 
 	@Override
-	public Void visitIfBlock(PreprocessorParser.IfBlockContext ctx) {
+	public Void visitIfBlock(cloud.lesh.CPUSim64.PreprocessorParser.IfBlockContext ctx) {
 		// #if arm
 		if (evalExpr(ctx.expr()) && ctx.block() != null) {
 			visit(ctx.block());   // emit only this block
@@ -525,7 +568,7 @@ public class PreprocessorVisitor extends PreprocessorParserBaseVisitor<Void> {
 		}
 
 		// #elseif arms (in order)
-		for (PreprocessorParser.ElseifClauseContext elif : ctx.elseifClause()) {
+		for (cloud.lesh.CPUSim64.PreprocessorParser.ElseifClauseContext elif : ctx.elseifClause()) {
 			if (evalExpr(elif.expr()) && elif.block() != null) {
 				visit(elif.block());
 				return null;
@@ -540,7 +583,7 @@ public class PreprocessorVisitor extends PreprocessorParserBaseVisitor<Void> {
 	}
 
 	@Override
-	public Void visitIfDefBlock(PreprocessorParser.IfDefBlockContext ctx) {
+	public Void visitIfDefBlock(cloud.lesh.CPUSim64.PreprocessorParser.IfDefBlockContext ctx) {
 		if (ctx.primary() != null) {
 			boolean b = ctx.primary().IDENT() != null ?
 				defines.containsKey(ctx.primary().IDENT().getText().toUpperCase()) :
@@ -560,7 +603,7 @@ public class PreprocessorVisitor extends PreprocessorParserBaseVisitor<Void> {
 	}
 
 	@Override
-	public Void visitIfNDefBlock(PreprocessorParser.IfNDefBlockContext ctx) {
+	public Void visitIfNDefBlock(cloud.lesh.CPUSim64.PreprocessorParser.IfNDefBlockContext ctx) {
 		if (ctx.primary() != null) {
 			boolean b = ctx.primary().IDENT() != null ?
 				defines.containsKey(ctx.primary().IDENT().getText().toUpperCase()) :
@@ -665,10 +708,10 @@ public class PreprocessorVisitor extends PreprocessorParserBaseVisitor<Void> {
 	}
 
 	@Override
-	public Void visitForBlock(PreprocessorParser.ForBlockContext ctx) {
+	public Void visitForBlock(cloud.lesh.CPUSim64.PreprocessorParser.ForBlockContext ctx) {
 		if (ctx.cond != null && ctx.block() != null) {
 			String blockName = "FOR_{}";
-			emitLineBeginDirective(filename, lineNum);
+			emitLineBeginDirective(filename, ctx);
 			emitLine(".BLOCK " + blockName, false);
 
 			String loopVar = ctx.cond.primary(0).getText();
@@ -677,11 +720,11 @@ public class PreprocessorVisitor extends PreprocessorParserBaseVisitor<Void> {
 			}
 			emitLine("jump $_LOOP_TEST", true);
 			emitLine("$_LOOP_BEGIN:", true);
-			emitLineEndDirective(filename, lineNum);
+			emitLineEndDirective();
 
 			visit(ctx.block());
 
-			emitLineBeginDirective(filename, lineNum);
+			emitLineBeginDirective(filename, ctx.PP_ENDFOR());
 			emitLine("$_LOOP_NEXT:", true);
 			if (ctx.incr != null) {
 				emitLine("add " + loopVar + ", " + ctx.incr.getText(), true);
@@ -692,27 +735,27 @@ public class PreprocessorVisitor extends PreprocessorParserBaseVisitor<Void> {
 			emitLine("jump " + conditionOp + ", $_LOOP_BEGIN", false);
 			emitLine("$_LOOP_END:", true);
 			emitLine(".BLOCK_END", false);
-			emitLineEndDirective(filename, lineNum);
+			emitLineEndDirective();
 		} else
 			throw new PreprocessorException("For loop needs an expression and a block!");
 		return null;
 	}
 
 	@Override
-	public Void visitWhileBlock(PreprocessorParser.WhileBlockContext ctx) {
+	public Void visitWhileBlock(cloud.lesh.CPUSim64.PreprocessorParser.WhileBlockContext ctx) {
 		if (ctx.cond != null && ctx.block() != null) {
 			String blockName = "WHILE_{}";
-			emitLineBeginDirective(filename, lineNum);
+			emitLineBeginDirective(filename, ctx);
 			emitLine(".BLOCK " + blockName, false);
 
 			String loopVar = ctx.cond.primary(0).getText();
 			emitLine("jump $_LOOP_TEST", true);
 			emitLine("$_LOOP_BEGIN:", true);
-			emitLineEndDirective(filename, lineNum);
+			emitLineEndDirective();
 
 			visit(ctx.block());
 
-			emitLineBeginDirective(filename, lineNum);
+			emitLineBeginDirective(filename, ctx.PP_ENDWHILE());
 			emitLine("$_LOOP_NEXT:", true);
 			emitLine("$_LOOP_TEST:", true);
 			if (ctx.cond.primary().size() == 1) {
@@ -732,26 +775,26 @@ public class PreprocessorVisitor extends PreprocessorParserBaseVisitor<Void> {
 			}
 			emitLine("$_LOOP_END:", true);
 			emitLine(".BLOCK_END", false);
-			emitLineEndDirective(filename, lineNum);
+			emitLineEndDirective();
 		} else
 			throw new PreprocessorException("For loop needs an expression and a block!");
 		return null;
 	}
 
 	@Override
-	public Void visitDoWhileBlock(PreprocessorParser.DoWhileBlockContext ctx) {
+	public Void visitDoWhileBlock(cloud.lesh.CPUSim64.PreprocessorParser.DoWhileBlockContext ctx) {
 		if (ctx.cond != null && ctx.block() != null) {
 			String blockName = "DO_WHILE_{}";
-			emitLineBeginDirective(filename, lineNum);
+			emitLineBeginDirective(filename, ctx);
 			emitLine(".BLOCK " + blockName, false);
 
 			String loopVar = ctx.cond.primary(0).getText();
 			emitLine("$_LOOP_BEGIN:", true);
-			emitLineEndDirective(filename, lineNum);
+			emitLineEndDirective();
 
 			visit(ctx.block());
 
-			emitLineBeginDirective(filename, lineNum);
+			emitLineBeginDirective(filename, ctx.PP_ENDDOWHILE());
 			emitLine("$_LOOP_NEXT:", true);
 			emitLine("$_LOOP_TEST:", true);
 			if (ctx.cond.primary().size() == 1) {
@@ -771,31 +814,31 @@ public class PreprocessorVisitor extends PreprocessorParserBaseVisitor<Void> {
 			}
 			emitLine("$_LOOP_END:", true);
 			emitLine(".BLOCK_END", false);
-			emitLineEndDirective(filename, lineNum);
+			emitLineEndDirective();
 		} else
 			throw new PreprocessorException("For loop needs an expression and a block!");
 		return null;
 	}
 
 	@Override
-	public Void visitBreakDir(PreprocessorParser.BreakDirContext ctx) {
+	public Void visitBreakDir(cloud.lesh.CPUSim64.PreprocessorParser.BreakDirContext ctx) {
 		// $$ refers to the loop scope
 		emitLine("JUMP $$_LOOP_END", true);
 		return null;
 	}
 
 	@Override
-	public Void visitContinueDir(PreprocessorParser.ContinueDirContext ctx) {
+	public Void visitContinueDir(cloud.lesh.CPUSim64.PreprocessorParser.ContinueDirContext ctx) {
 		// $$ refers to the loop scope
 		emitLine("JUMP $$_LOOP_NEXT", true);
 		return null;
 	}
 
 	@Override
-	public Void visitIfCondBlock(PreprocessorParser.IfCondBlockContext ctx) {
+	public Void visitIfCondBlock(cloud.lesh.CPUSim64.PreprocessorParser.IfCondBlockContext ctx) {
 		if (ctx.cond != null && ctx.block() != null) {
 			String blockName = "COND_{}";
-			emitLineBeginDirective(filename, lineNum);
+			emitLineBeginDirective(filename, ctx);
 			emitLine(".BLOCK " + blockName, false);
 
 			// If Cond expr
@@ -818,26 +861,26 @@ public class PreprocessorVisitor extends PreprocessorParserBaseVisitor<Void> {
 					emitLine("jump z, $_SKIP", false);
 				}
 			}
-			emitLineEndDirective(filename, lineNum);
+			emitLineEndDirective();
 
 			visit(ctx.block());
 
-			emitLineBeginDirective(filename, lineNum);
 			if (ctx.elseCondClause() != null ||
-				(ctx.elseifCondClause() != null && ctx.elseifCondClause().size() > 0))
+				(ctx.elseifCondClause().size() > 0)) {
+				emitLineDirective(filename, ctx.elseifCondClause().size() > 0 ? ctx.elseifCondClause(0) : ctx.elseCondClause());
 				emitLine("jump $_COND_END", false);
+			}
 			emitLine("$_SKIP:", false);
-			emitLineEndDirective(filename, lineNum);
 
 			// else if cond
 			if (ctx.elseifCondClause() != null) {
 				for (int i = 0; i < ctx.elseifCondClause().size(); ++i) {
 					var ectx = ctx.elseifCondClause(i);
+					emitLineBeginDirective(filename, ectx);
 					leftVal = ectx.cond.primary(0).getText();
 					if (ctx.cond.primary().size() == 2) {
 						rightVal = ectx.cond.primary(1).getText();
 						conditionOp = getNotConditionCode(ectx.cond.cmpOp().getText());
-						emitLineBeginDirective(filename, lineNum);
 						emitLine("cmp " + leftVal + ", " + rightVal, true);
 						emitLine("jump " + conditionOp + ", $_SKIP_" + (i + 1), false);
 					} else {
@@ -851,15 +894,15 @@ public class PreprocessorVisitor extends PreprocessorParserBaseVisitor<Void> {
 							emitLine("jump z, $_SKIP_" + (i + 1), false);
 						}
 					}
-					emitLineEndDirective(filename, lineNum);
+					emitLineEndDirective();
 
 					visit(ectx.block());
 
-					emitLineBeginDirective(filename, lineNum);
-					if (ctx.elseCondClause() != null || i < ctx.elseifCondClause().size() - 1)
+					if (ctx.elseCondClause() != null || i < ctx.elseifCondClause().size() - 1) {
+						emitLineDirective(filename, ctx.elseifCondClause(i).stop, 1);
 						emitLine("jump $_COND_END", false);
+					}
 					emitLine("$_SKIP_" + (i + 1) + ":", false);
-					emitLineEndDirective(filename, lineNum);
 				}
 			}
 
@@ -867,20 +910,20 @@ public class PreprocessorVisitor extends PreprocessorParserBaseVisitor<Void> {
 			if (ctx.elseCondClause() != null) {
 				visit(ctx.elseCondClause().block());
 			}
-			emitLineBeginDirective(filename, lineNum);
+			emitLineBeginDirective(filename, ctx.PP_ENDCOND());
 			emitLine("$_COND_END:", false);
 			emitLine(".BLOCK_END", false);
-			emitLineEndDirective(filename, lineNum);
+			emitLineEndDirective();
 		} else
 			throw new PreprocessorException("If condition needs an expression and a block!");
 		return null;
 	}
 
 	@Override
-	public Void visitIfCondSRBlock(PreprocessorParser.IfCondSRBlockContext ctx) {
+	public Void visitIfCondSRBlock(cloud.lesh.CPUSim64.PreprocessorParser.IfCondSRBlockContext ctx) {
 		if ((ctx.IDENT() != null || ctx.cmpOp() != null) && ctx.block() != null) {
 			String blockName = "CONDSR_{}";
-			emitLineBeginDirective(filename, lineNum);
+			emitLineBeginDirective(filename, ctx);
 			emitLine(".BLOCK " + blockName, false);
 
 			// If Cond SR IDENT
@@ -895,36 +938,36 @@ public class PreprocessorVisitor extends PreprocessorParserBaseVisitor<Void> {
 				throw new PreprocessorException("If condition SR IDENT must be one of: z, nz, n, p, nn, np, pe, po, o, no");
 			}
 			emitLine("jump " + getNotConditionCode(conditionOp) + ", $_SKIP", false);
-			emitLineEndDirective(filename, lineNum);
+			emitLineEndDirective();
 
 			visit(ctx.block());
 
-			emitLineBeginDirective(filename, lineNum);
-			if (ctx.elseCondClause() != null)
+			if (ctx.elseCondClause() != null) {
+				emitLineDirective(filename, ctx.elseCondClause());
 				emitLine("jump $_COND_END", false);
+			}
 			emitLine("$_SKIP:", false);
-			emitLineEndDirective(filename, lineNum);
 
 			// else cond
 			if (ctx.elseCondClause() != null) {
 				visit(ctx.elseCondClause().block());
 			}
 
-			emitLineBeginDirective(filename, lineNum);
+			emitLineBeginDirective(filename, ctx.PP_ENDCOND());
 			emitLine("$_COND_END:", false);
 			emitLine(".BLOCK_END", false);
-			emitLineEndDirective(filename, lineNum);
+			emitLineEndDirective();
 		} else
 			throw new PreprocessorException("If condition SR needs an SR code and a block!");
 		return null;
 	}
 
 	@Override
-	public Void visitSyncBlock(PreprocessorParser.SyncBlockContext ctx) {
+	public Void visitSyncBlock(cloud.lesh.CPUSim64.PreprocessorParser.SyncBlockContext ctx) {
 		if (ctx.IDENT() != null && ctx.block() != null) {
 			String blockName = "SYNC_{}";
 			String mutex = ctx.IDENT(0).getText().toUpperCase();
-			emitLineBeginDirective(filename, lineNum);
+			emitLineBeginDirective(filename, ctx);
 			emitLine(".BLOCK " + blockName, false);
 			if (ctx.offset != null) {
 				emitLine("move r0, " + mutex + "[" + ctx.offset.getText() + "]", true);
@@ -934,23 +977,23 @@ public class PreprocessorVisitor extends PreprocessorParserBaseVisitor<Void> {
 			}
 			emitLine("call acquireMutex", false);
 			emitLine("add sp, 1", false);
-			emitLineEndDirective(filename, lineNum);
+			emitLineEndDirective();
 
 			visit(ctx.block());
 
-			emitLineBeginDirective(filename, lineNum);
+			emitLineBeginDirective(filename, ctx.PP_ENDSYNC());
 			emitLine("push " + mutex, true);
 			emitLine("call releaseMutex", false);
 			emitLine("add sp, 1", false);
 			emitLine(".BLOCK_END", false);
-			emitLineEndDirective(filename, lineNum);
+			emitLineEndDirective();
 		} else
 			throw new PreprocessorException("Sync block needs a mutex and a block!");
 		return null;
 	}
 
 	@Override
-	public Void visitBlock(PreprocessorParser.BlockContext ctx) {
+	public Void visitBlock(cloud.lesh.CPUSim64.PreprocessorParser.BlockContext ctx) {
 		if (ctx.children == null) return null;
 		for (var child : ctx.children) {
 			child.accept(this);   // directives and codeLines recurse naturally
@@ -962,18 +1005,18 @@ public class PreprocessorVisitor extends PreprocessorParserBaseVisitor<Void> {
        Expression evaluation for #if
        ========================================================= */
 
-	private boolean evalExpr(PreprocessorParser.ExprContext expr) {
-		PreprocessorParser.PrimaryContext p0 = expr.primary(0);
+	private boolean evalExpr(cloud.lesh.CPUSim64.PreprocessorParser.ExprContext expr) {
+		cloud.lesh.CPUSim64.PreprocessorParser.PrimaryContext p0 = expr.primary(0);
 		if (expr.cmpOp() == null) {
 			// Truthiness of a single primary
 			return truthy(p0);
 		}
-		PreprocessorParser.PrimaryContext p1 = expr.primary(1);
+		cloud.lesh.CPUSim64.PreprocessorParser.PrimaryContext p1 = expr.primary(1);
 		String op = expr.cmpOp().getText();
 		return compare(p0, op, p1);
 	}
 
-	private boolean truthy(PreprocessorParser.PrimaryContext p) {
+	private boolean truthy(cloud.lesh.CPUSim64.PreprocessorParser.PrimaryContext p) {
 		if (p.IDENT() != null) {
 			String name = p.IDENT().getText();
 			DefVal dv = defines.get(name);
@@ -991,7 +1034,7 @@ public class PreprocessorVisitor extends PreprocessorParserBaseVisitor<Void> {
 		return false;
 	}
 
-	private boolean compare(PreprocessorParser.PrimaryContext a, String op, PreprocessorParser.PrimaryContext b) {
+	private boolean compare(cloud.lesh.CPUSim64.PreprocessorParser.PrimaryContext a, String op, cloud.lesh.CPUSim64.PreprocessorParser.PrimaryContext b) {
 		// Try numeric comparison first if both are numeric-ish; otherwise string compare
 		if (isNumericLike(a) && isNumericLike(b)) {
 			double da = asDouble(a);
@@ -1020,7 +1063,7 @@ public class PreprocessorVisitor extends PreprocessorParserBaseVisitor<Void> {
 		throw new PreprocessorException("Unsupported compare op: " + op);
 	}
 
-	private boolean isNumericLike(PreprocessorParser.PrimaryContext p) {
+	private boolean isNumericLike(cloud.lesh.CPUSim64.PreprocessorParser.PrimaryContext p) {
 		if (p.literal() != null) {
 			return p.literal().INT()!=null || p.literal().FLOAT()!=null || p.literal().CHAR()!=null;
 		}
@@ -1032,7 +1075,7 @@ public class PreprocessorVisitor extends PreprocessorParserBaseVisitor<Void> {
 		return false;
 	}
 
-	private double asDouble(PreprocessorParser.PrimaryContext p) {
+	private double asDouble(cloud.lesh.CPUSim64.PreprocessorParser.PrimaryContext p) {
 		if (p.literal()!=null) {
 			if (p.literal().INT()!=null)   return (double) parseLongSafe(p.literal().INT().getText());
 			if (p.literal().FLOAT()!=null) return parseDoubleSafe(p.literal().FLOAT().getText());
@@ -1051,7 +1094,7 @@ public class PreprocessorVisitor extends PreprocessorParserBaseVisitor<Void> {
 		return 0.0;
 	}
 
-	private String asString(PreprocessorParser.PrimaryContext p) {
+	private String asString(cloud.lesh.CPUSim64.PreprocessorParser.PrimaryContext p) {
 		if (p.literal()!=null) {
 			if (p.literal().STRING()!=null) return stripQuotes(p.literal().STRING().getText());
 			if (p.literal().CHAR()!=null)   return new String(new char[]{ (char) charValue(p.literal().CHAR().getText()) });
@@ -1064,7 +1107,7 @@ public class PreprocessorVisitor extends PreprocessorParserBaseVisitor<Void> {
 		return "";
 	}
 
-	private boolean literalTruthy(PreprocessorParser.LiteralContext lit) {
+	private boolean literalTruthy(cloud.lesh.CPUSim64.PreprocessorParser.LiteralContext lit) {
 		if (lit.INT()!=null)   return parseLongSafe(lit.INT().getText()) != 0;
 		if (lit.FLOAT()!=null) return Double.compare(parseDoubleSafe(lit.FLOAT().getText()), 0.0) != 0;
 		if (lit.CHAR()!=null)  return charValue(lit.CHAR().getText()) != 0;
@@ -1080,32 +1123,48 @@ public class PreprocessorVisitor extends PreprocessorParserBaseVisitor<Void> {
 		if (!lineDirectives.isEmpty()) {
 			out.append(lineDirectives.pop());
 			lineDirectives.clear();
+			++preprocessedLineNum;
 		}
 		if (doSubst) {
-			out.append(applyDefines(s));
-		} else {
+			s = applyDefines(s);
+		}
+		if (s.length() != 0) {
+			sourceLocations.put(preprocessedLineNum, String.format("\u00ab%s\u00bb:%d", filename, sourceLineNum));
+			var folder = new ExpressionFolder(filename, sourceLineNum);
+			s = folder.fold(s);
+			++preprocessedLineNum;
 			out.append(s);
+			if (s.charAt(s.length() - 1) != '\n') {
+				out.append('\n');
+			}
 		}
-		if (s.length() == 0 || s.charAt(s.length() - 1) != '\n')
-			out.append('\n');
-		if (pauseLineSync <= 0 ) ++lineNum;
+		if (pauseLineSync <= 0 ) ++sourceLineNum;
 	}
 
-	private void emitLineDirective(String filename, int line) {
+	private void emitLineDirective(String filename, ParseTree ctx) {
 		if (pauseLineSync <= 0) {
-			lineDirectives.push(String.format(".LINE \u00ab%s\u00bb, %d%n", filename, line));
-			lineNum = line;
+			sourceLineNum = lineOf(ctx);
+			lineDirectives.push(String.format(".LINE \u00ab%s\u00bb, %d%n", filename, sourceLineNum));
 		}
 	}
 
-	private void emitLineBeginDirective(String filename, int line) {
+	private void emitLineDirective(String filename, Token tok, int additional) {
+		if (pauseLineSync <= 0) {
+			sourceLineNum = tok.getLine() + 1;
+			lineDirectives.push(String.format(".LINE \u00ab%s\u00bb, %d%n", filename, sourceLineNum));
+		}
+	}
+
+	private void emitLineBeginDirective(String filename, ParseTree ctx) {
 		lineDirectives.clear();
 		++pauseLineSync;
-		if (pauseLineSync <= 1)
-			emitLine(String.format(".LINE_BEGIN \u00ab%s\u00bb, %d", filename, lineNum), false);
+		if (pauseLineSync <= 1) {
+			sourceLineNum = lineOf(ctx);
+			emitLine(String.format(".LINE_BEGIN \u00ab%s\u00bb, %d", filename, sourceLineNum), false);
+		}
 	}
 
-	private void emitLineEndDirective(String filename, int line) {
+	private void emitLineEndDirective() {
 		--pauseLineSync;
 		if (pauseLineSync <= 0)
 			emitLine(".LINE_END", false);
@@ -1137,7 +1196,7 @@ public class PreprocessorVisitor extends PreprocessorParserBaseVisitor<Void> {
 					if (ident.equals("__FILE__"))
 						replacement = '"' + filename + '"';
 					else if (ident.equals("__LINE__"))
-						replacement = String.valueOf(lineNum);
+						replacement = String.valueOf(sourceLineNum);
 					else
 						continue;
 				}
@@ -1254,70 +1313,6 @@ public class PreprocessorVisitor extends PreprocessorParserBaseVisitor<Void> {
 		return raw; // already stripped quotes by caller
 	}
 
-	/** Rebuild a directive line with spaces, rather than ctx.getText(). */
-	private static String reflowTokens(ParserRuleContext ctx) {
-		Token start = ctx.getStart();
-		Token stop  = ctx.getStop();
-		if (start == null || stop == null) return "";
-		// CharStream slice from the original input
-		System.out.println("orig: " + ctx.getText());
-		String result = start.getInputStream().getText(Interval.of(start.getStartIndex(), stop.getStopIndex()));
-		System.out.println("reflow: " + result);
-		return result;
-	}
-
-	static String rebuildWithSingleSpaces(
-			CommonTokenStream tokens,
-			ParserRuleContext ctx
-	) {
-		Token start = ctx.getStart();
-		Token stop  = ctx.getStop();
-		if (start == null || stop == null) return "";
-
-		int a = start.getTokenIndex();
-		int b = stop.getTokenIndex();
-
-		StringBuilder out = new StringBuilder();
-		boolean pendingSpace = false;
-
-		for (int i = a; i <= b; i++) {
-			Token t = tokens.get(i);
-
-			// Any hidden token (WS, comments) ⇒ one space
-			if (t.getChannel() == Token.HIDDEN_CHANNEL) {
-				pendingSpace = true;
-				continue;
-			}
-
-			if (pendingSpace && out.length() > 0 &&
-				t.getType() != PreprocessorLexer.COMMA) {
-				out.append(' ');
-			}
-			pendingSpace = false;
-
-			out.append(t.getText());
-		}
-
-		return out.toString().trim();
-	}
-
-	static String rebuildWithSingleSpaces(
-			CommonTokenStream tokens,
-			ParseTree node
-	) {
-		if (node == null) return "";
-
-		if (node instanceof ParserRuleContext prc) {
-			return rebuildWithSingleSpaces(tokens, prc);
-		}
-
-		if (node instanceof TerminalNode tn) {
-			return tn.getText().trim();
-		}
-
-		return node.getText();
-	}
-
     /* =========================================================
        Public entry points
        ========================================================= */
@@ -1326,12 +1321,12 @@ public class PreprocessorVisitor extends PreprocessorParserBaseVisitor<Void> {
 	 * Convenience: preprocess a source string with a given IncludeLoader.
 	 * This one starts with a fresh, empty define table.
 	 */
-	public static String preprocessText(String filename, String source, IncludeLoader loader) {
-		return preprocessText(filename, 1, source, loader, null, null, null, true, 0);
+	public String preprocessText(String source) {
+		return preprocessText(source, null, null, null, true, 0);
 	}
 
 	// Sets elements of args to null when they are used.
-	public static String preprocessText(String filename, String source, IncludeLoader loader, String[] args) {
+	public String preprocessText(String source, String[] args) {
 		HashMap<String, PreprocessorVisitor.DefVal> definitions = new HashMap<>();
 		for (int i = 0; i < args.length; ++i) {
 			String arg = args[i];
@@ -1350,97 +1345,72 @@ public class PreprocessorVisitor extends PreprocessorParserBaseVisitor<Void> {
 				}
 			}
 		}
-		return preprocessText(filename, 1, source, loader, definitions, null, null, true, 0);
+		return preprocessText(source, definitions, null, null, true, 0);
 	}
 
 	/**
 	 * Same as above, but allows reusing an existing define map (e.g., across #include).
 	 */
-	public static String preprocessText(String filename,
-										int lineNum,
+	public String preprocessText(
 										String source,
-										IncludeLoader loader,
 										Map<String, DefVal> seedDefines,
 										Map<String, Pair<List<String>, String>> seedMacros,
 										Set<String> seedIncludes,
 										boolean substituteInsideDirectives,
 										int pauseLineSync) {
+		if (!source.endsWith("\n"))
+			source += System.lineSeparator();
 		CharStream input = CharStreams.fromString(source);
-		PreprocessorLexer lexer = new PreprocessorLexer(input);
+		cloud.lesh.CPUSim64.PreprocessorLexer lexer = new cloud.lesh.CPUSim64.PreprocessorLexer(input);
 		lexer.removeErrorListeners();
-		lexer.addErrorListener(new MyLexerErrorListener(filename));
+		lexer.addErrorListener(new PreprocessorErrorListener(filename));
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
-		PreprocessorParser parser = new PreprocessorParser(tokens);
+		cloud.lesh.CPUSim64.PreprocessorParser parser = new cloud.lesh.CPUSim64.PreprocessorParser(tokens);
 		parser.removeErrorListeners();
-		parser.addErrorListener(new MyParserErrorListener(filename));
-//		parser.addErrorListener(new DiagnosticErrorListener());
+		parser.addErrorListener(new PreprocessorErrorListener(filename));
 
-		PreprocessorVisitor v = new PreprocessorVisitor(filename, lineNum, loader, substituteInsideDirectives, pauseLineSync, tokens);
+		PreprocessorVisitor v = new PreprocessorVisitor(filename, sourceLineNum, includeLoader);
+		v.setTokens(tokens);
 		v.defines = seedDefines != null ? seedDefines : new HashMap<>();
 		v.macros = seedMacros != null ? seedMacros : new HashMap<>();
+		v.substituteInsideDirectives = substituteInsideDirectives;
+		v.pauseLineSync = pauseLineSync;
 		v.previouslyIncluded = seedIncludes != null ? seedIncludes : new HashSet<>();
 		v.visit(parser.preproc());
-		return v.getOutput();
-	}
-}
-
-final class MyLexerErrorListener extends BaseErrorListener {
-	private String filename;
-
-	public MyLexerErrorListener(String filename) {
-		this.filename = filename;
+		String preprocessed = v.getOutput();
+		if (v.hasErrors()) throw new RuntimeException("Too many preprocessor errors!");
+		return preprocessed;
 	}
 
-	@Override
-	public void syntaxError(Recognizer<?, ?> recognizer,
-							Object offendingSymbol,
-							int line, int charPositionInLine,
-							String msg,
-							RecognitionException e) {
+	final class PreprocessorErrorListener extends BaseErrorListener {
+		private String filename;
 
-		// For a lexer error, offendingSymbol is usually null.
-		// msg is ANTLR's message; e may be LexerNoViableAltException.
+		public PreprocessorErrorListener(String filename) {
+			this.filename = filename;
+		}
 
-		String where = String.format("«%s»:%d:%d", filename, line, charPositionInLine);
+		@Override
+		public void syntaxError(Recognizer<?, ?> recognizer,
+								Object offendingSymbol,
+								int line,
+								int charPositionInLine,
+								String msg,
+								RecognitionException e) {
 
-		// Example: pull the exact bad character(s) if possible
-		String snippet = "";
-		if (recognizer instanceof Lexer lx) {
-			CharStream cs = lx.getInputStream();
-			int i = cs.index();
-			if (i >= 0 && i < cs.size()) {
-				int cp = cs.LA(1);
-				if (cp != IntStream.EOF) {
-					snippet = " (saw '" + (char)cp + "')";
-				}
+			String where = String.format("«%s»:%d:%d", filename, sourceLineNum, charPositionInLine);
+			String sourceLine = "";
+
+			String tokenText = "";
+			if (offendingSymbol instanceof Token t) {
+				tokenText = " near '" + t.getText() + "'";
+				sourceLine = Utils.extractSourceLine(t);
 			}
+			System.err.println(where + ":PPERROR:" + msg);
+			if (!sourceLine.isEmpty()) {
+				System.err.println("    " + sourceLine);
+				System.err.println("    " + " ".repeat(charPositionInLine) + "^");
+			}
+			hasErrors = true;
 		}
-		// Now format however you want:
-		System.err.println(where + ":PLERROR:" + msg);
-	}
-}
-
-final class MyParserErrorListener extends BaseErrorListener {
-	private String filename;
-
-	public MyParserErrorListener(String filename) {
-		this.filename = filename;
-	}
-
-	@Override
-	public void syntaxError(Recognizer<?, ?> recognizer,
-							Object offendingSymbol,
-							int line,
-							int charPositionInLine,
-							String msg,
-							RecognitionException e) {
-
-		String where = String.format("«%s»:%d:%d", filename, line, charPositionInLine);
-
-		String tokenText = "";
-		if (offendingSymbol instanceof Token t) {
-			tokenText = " near '" + t.getText() + "'";
-		}
-		System.err.println(where + ":PPERROR:" + msg);
 	}
 }

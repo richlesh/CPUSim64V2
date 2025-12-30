@@ -427,4 +427,54 @@ public interface PreprocessorParserListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitLiteral(PreprocessorParser.LiteralContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link PreprocessorParser#constExpr}.
+	 * @param ctx the parse tree
+	 */
+	void enterConstExpr(PreprocessorParser.ConstExprContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link PreprocessorParser#constExpr}.
+	 * @param ctx the parse tree
+	 */
+	void exitConstExpr(PreprocessorParser.ConstExprContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link PreprocessorParser#addExpr}.
+	 * @param ctx the parse tree
+	 */
+	void enterAddExpr(PreprocessorParser.AddExprContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link PreprocessorParser#addExpr}.
+	 * @param ctx the parse tree
+	 */
+	void exitAddExpr(PreprocessorParser.AddExprContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link PreprocessorParser#mulExpr}.
+	 * @param ctx the parse tree
+	 */
+	void enterMulExpr(PreprocessorParser.MulExprContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link PreprocessorParser#mulExpr}.
+	 * @param ctx the parse tree
+	 */
+	void exitMulExpr(PreprocessorParser.MulExprContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link PreprocessorParser#unaryExpr}.
+	 * @param ctx the parse tree
+	 */
+	void enterUnaryExpr(PreprocessorParser.UnaryExprContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link PreprocessorParser#unaryExpr}.
+	 * @param ctx the parse tree
+	 */
+	void exitUnaryExpr(PreprocessorParser.UnaryExprContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link PreprocessorParser#const}.
+	 * @param ctx the parse tree
+	 */
+	void enterConst(PreprocessorParser.ConstContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link PreprocessorParser#const}.
+	 * @param ctx the parse tree
+	 */
+	void exitConst(PreprocessorParser.ConstContext ctx);
 }
