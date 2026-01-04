@@ -11,5 +11,5 @@ if [[ -e "$1.obj.gz" ]]; then
 fi
 java -Dfile.encoding=UTF8 -cp "$SCRIPT_DIR"/lib/* Assembler $1.asm --DEBUG
 if [[ -e "$1.obj.gz" ]] ; then
-	java -Dfile.encoding=UTF8 -cp "$SCRIPT_DIR"/lib/* Simulation $1.obj.gz --debug --mem=$MEMSIZE --stack=$STACKSIZE $2 $3 $4 $5 $6 $7 $8 $9
+	java -Dfile.encoding=UTF8 -cp "$SCRIPT_DIR"/lib/* Simulation $1.obj.gz --verbose --debug --mem=$MEMSIZE --stack=$STACKSIZE $2 $3 $4 $5 $6 $7 $8 $9
 fi

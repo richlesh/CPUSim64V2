@@ -40,8 +40,8 @@ import java.util.stream.Collectors;
 public class Assembler {
 	public static void main(String[] args) throws Exception {
 		System.out.println("=".repeat(80));
-		System.out.println("CPUSim64 2.0 Assembler");
-		System.out.println("By Richard Lesh ©2025");
+		System.out.println("CPUSim64 " + BuildInfo.VERSION + " Assembler");
+		System.out.println(BuildInfo.COPYRIGHT + " Richard Lesh");
 		System.out.println("Assembles .asm source files into .obj.gz binary files.");
 		System.out.println("=".repeat(80));
 		if (args.length < 1) {

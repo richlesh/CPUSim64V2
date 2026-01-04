@@ -1,5 +1,5 @@
+./clean.sh
+rm lib/*
 mvn clean
 mvn package -DskipTests=true
-
-./clean.sh
-cp target/CPUSim64-2.0-SNAPSHOT.jar lib
+cp target/CPUSim64*.jar lib

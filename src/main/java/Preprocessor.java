@@ -15,21 +15,16 @@
  * limitations under the License.
  */
 
-import cloud.lesh.CPUSim64.IncludeLoader;
-import cloud.lesh.CPUSim64.LiteralRewriter;
-import cloud.lesh.CPUSim64.PreprocessorVisitor;
-import org.antlr.v4.runtime.CommonTokenStream;
+import cloud.lesh.CPUSim64.*;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.List;
-import java.util.stream.Collectors;
 
 public class Preprocessor {
 	public static void main(String[] args) throws Exception {
 		System.out.println("=".repeat(80));
-		System.out.println("CPUSim64 2.0 Preprocessor");
-		System.out.println("By Richard Lesh ©2025");
+		System.out.println("CPUSim64 " + BuildInfo.VERSION + " Preprocessor");
+		System.out.println(BuildInfo.COPYRIGHT + " Richard Lesh");
 		System.out.println("Preprocesses .asm source files into .pp.asm files.");
 		System.out.println("=".repeat(80));
 		if (args.length < 1) {

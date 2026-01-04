@@ -5,69 +5,9 @@ By Richard Lesh ©2025
 Implements a CPUSim64 Virtual Machine.
 ================================================================================
 Debug: true
-Memory size: 1048576
-Stack size: 8192
+Memory size: 1000000
+Stack size: 8000
 Read 49 words from example007.obj.gz
-    1:__CODE__+0                                                  00000001 READONLY  	0x31 (__HEAP_START__+0)
-    1:__CODE__+1                                                  00000002 MOVE      	R1, 1
-    1:__CODE__+2                                                  00000003 MOVE      	R2, 2
-    1:__CODE__+3                                                  00000004 ADD       	R0, R1, R2
-    1:__CODE__+4                                                  00000005 DEBUG     	R0
-R0: 3  
-    1:__CODE__+5                                                  00000006 SUBTRACT  	R0, R1, R2
-    1:__CODE__+6                                                  00000007 DEBUG     	R0
-R0: -1  
-    1:__CODE__+7                                                  00000008 MOVE      	R1, 3
-    1:__CODE__+8                                                  00000009 MULTIPLY  	R0, R1, R2
-    1:__CODE__+9                                                  0000000a DEBUG     	R0
-R0: 6  
-    1:__CODE__+10                                                 0000000b RECIP     	R0, R1, R2
-    1:__CODE__+11                                                 0000000c DEBUG     	R0
-R0: 1  
-    1:__CODE__+12                                                 0000000d LOAD      	F1, 46
-    1:__CODE__+13                                                 0000000e LOAD      	F2, 47
-    1:__CODE__+14                                                 0000000f ADD       	F0, F1, F2
-    1:__CODE__+15                                                 00000010 DEBUG     	F0
-F0: 3.5790000000000000  
-    1:__CODE__+16                                                 00000011 SUBTRACT  	F0, F1, F2
-    1:__CODE__+17                                                 00000012 DEBUG     	F0
-F0: -1.1110000000000002  
-    1:__CODE__+18                                                 00000013 LOAD      	F1, 48
-    1:__CODE__+19                                                 00000014 MULTIPLY  	F0, F1, F2
-    1:__CODE__+20                                                 00000015 DEBUG     	F0
-F0: 7.3670285500000010  
-    1:__CODE__+21                                                 00000016 RECIP     	F0, F1, F2
-    1:__CODE__+22                                                 00000017 DEBUG     	F0
-F0: 1.3396972281449893  
-    1:__CODE__+23                                                 00000018 MOVE      	R1, 1
-    1:__CODE__+24                                                 00000019 ADD       	R0, R1, 2
-    1:__CODE__+25                                                 0000001a DEBUG     	R0
-R0: 3  
-    1:__CODE__+26                                                 0000001b SUBTRACT  	R0, R1, 2
-    1:__CODE__+27                                                 0000001c DEBUG     	R0
-R0: -1  
-    1:__CODE__+28                                                 0000001d MOVE      	R1, 3
-    1:__CODE__+29                                                 0000001e MULTIPLY  	R0, R1, 2
-    1:__CODE__+30                                                 0000001f DEBUG     	R0
-R0: 6  
-    1:__CODE__+31                                                 00000020 RECIP     	R0, R1, 2
-    1:__CODE__+32                                                 00000021 DEBUG     	R0
-R0: 1  
-    1:__CODE__+33                                                 00000022 LOAD      	F1, 46
-    1:__CODE__+34                                                 00000023 ADD       	F0, F1, 2
-    1:__CODE__+35                                                 00000024 DEBUG     	F0
-F0: 3.2340000000000000  
-    1:__CODE__+36                                                 00000025 SUBTRACT  	F0, F1, 2
-    1:__CODE__+37                                                 00000026 DEBUG     	F0
-F0: -0.76600000000000000  
-    1:__CODE__+38                                                 00000027 LOAD      	F1, 48
-    1:__CODE__+39                                                 00000028 MULTIPLY  	F0, F1, 2
-    1:__CODE__+40                                                 00000029 DEBUG     	F0
-F0: 6.2831800000000000  
-    1:__CODE__+41                                                 0000002a RECIP     	F0, F1, 2
-    1:__CODE__+42                                                 0000002b DEBUG     	F0
-F0: 1.5707950000000000  
-    1:__CODE__+43                                                 0000002c STOP      	
 
 CPU State    SR: oszp
   R               hex                   dec  FP                    float   Stack               hex                   dec                   float
@@ -100,6 +40,6 @@ R25: 0000000000000000                     0 F25:       0.000000000000000
 R26: 0000000000000000                     0 F26:       0.000000000000000
 R27: 0000000000000000                     0 F27:       0.000000000000000
 R28: 0000000000000000                     0 F28:       0.000000000000000
- SF: 0000000000101fff                       F29:       0.000000000000000
- SP: 0000000000101fff                       F30:       0.000000000000000
+ SF: 00000000000f617f                       F29:       0.000000000000000
+ SP: 00000000000f617f                       F30:       0.000000000000000
  PC: 000000000000002d                       F31:       0.000000000000000

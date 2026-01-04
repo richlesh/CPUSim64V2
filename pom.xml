@@ -6,9 +6,11 @@
 
     <groupId>org.lesh</groupId>
     <artifactId>CPUSim64</artifactId>
-    <version>2.0-SNAPSHOT</version>
+    <version>${app.version}</version>
 
     <properties>
+        <app.version>2.0.1</app.version>
+        <copyright.years>2025–2026</copyright.years>
         <maven.compiler.release>21</maven.compiler.release>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <antlr.version>4.13.2</antlr.version>
@@ -45,6 +47,7 @@
             <!-- Normal application resources -->
             <resource>
                 <directory>src/main/resources</directory>
+                <filtering>true</filtering>
             </resource>
 
             <!-- Copy LICENSE and NOTICE into META-INF -->
@@ -85,6 +88,34 @@
                 </executions>
             </plugin>
 
+            <!-- 1) Generate BuildInfo sources BEFORE compile -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>3.1.0</version>
+                <executions>
+                    <execution>
+                        <id>generate-buildinfo</id>
+                        <phase>generate-sources</phase>
+                        <goals><goal>run</goal></goals>
+                        <configuration>
+                            <target>
+                                <mkdir dir="${project.build.directory}/generated-sources/buildinfo/cloud/lesh/CPUSim64"/>
+
+                                <copy file="${basedir}/src/templates/BuildInfo.java.in"
+                                      tofile="${project.build.directory}/generated-sources/buildinfo/cloud/lesh/CPUSim64/BuildInfo.java"
+                                      filtering="true">
+                                    <filterset>
+                                        <filter token="app.version" value="${app.version}"/>
+                                        <filter token="copyright.years" value="${copyright.years}"/>
+                                    </filterset>
+                                </copy>
+                            </target>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
             <!-- 2) Make Maven treat generated sources as normal sources -->
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
@@ -98,6 +129,7 @@
                         <configuration>
                             <sources>
                                 <source>${basedir}/src/generated-sources/antlr4</source>
+                                <source>${project.build.directory}/generated-sources/buildinfo</source>
                             </sources>
                         </configuration>
                     </execution>
@@ -144,6 +176,33 @@
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.ApacheNoticeResourceTransformer"/>
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.ApacheLicenseResourceTransformer"/>
                             </transformers>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>3.4.0</version>
+                <executions>
+                    <execution>
+                        <id>filter-buildinfo</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>
+                                ${project.build.directory}/generated-sources/buildinfo
+                            </outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>src/templates</directory>
+                                    <filtering>true</filtering>
+                                    <includes>
+                                        <include>**/*.java</include>
+                                    </includes>
+                                </resource>
+                            </resources>
                         </configuration>
                     </execution>
                 </executions>

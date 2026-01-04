@@ -5,99 +5,9 @@ By Richard Lesh ©2025
 Implements a CPUSim64 Virtual Machine.
 ================================================================================
 Debug: true
-Memory size: 1048576
-Stack size: 8192
+Memory size: 1000000
+Stack size: 8000
 Read 20 words from example011.obj.gz
-    1:__CODE__+0                                                  00000001 READONLY  	0x14 (__HEAP_START__+0)
-    1:__CODE__+1                                                  00000002 MOVE      	R0, 0
-    1:__CODE__+2                                                  00000003 JUMP      	0x6 (END1+0)
-    1:END1+0                                                      00000006 CMP       	R0, 10
-    1:END1+1                                                      00000007 JUMP      	nz, 0x4 (START1+0)
-    1:START1+0                                                    00000004 DEBUG     	R0
-R0: 0  
-    1:START1+1                                                    00000005 ADD       	R0, 1
-    1:END1+0                                                      00000006 CMP       	R0, 10
-    1:END1+1                                                      00000007 JUMP      	nz, 0x4 (START1+0)
-    1:START1+0                                                    00000004 DEBUG     	R0
-R0: 1  
-    1:START1+1                                                    00000005 ADD       	R0, 1
-    1:END1+0                                                      00000006 CMP       	R0, 10
-    1:END1+1                                                      00000007 JUMP      	nz, 0x4 (START1+0)
-    1:START1+0                                                    00000004 DEBUG     	R0
-R0: 2  
-    1:START1+1                                                    00000005 ADD       	R0, 1
-    1:END1+0                                                      00000006 CMP       	R0, 10
-    1:END1+1                                                      00000007 JUMP      	nz, 0x4 (START1+0)
-    1:START1+0                                                    00000004 DEBUG     	R0
-R0: 3  
-    1:START1+1                                                    00000005 ADD       	R0, 1
-    1:END1+0                                                      00000006 CMP       	R0, 10
-    1:END1+1                                                      00000007 JUMP      	nz, 0x4 (START1+0)
-    1:START1+0                                                    00000004 DEBUG     	R0
-R0: 4  
-    1:START1+1                                                    00000005 ADD       	R0, 1
-    1:END1+0                                                      00000006 CMP       	R0, 10
-    1:END1+1                                                      00000007 JUMP      	nz, 0x4 (START1+0)
-    1:START1+0                                                    00000004 DEBUG     	R0
-R0: 5  
-    1:START1+1                                                    00000005 ADD       	R0, 1
-    1:END1+0                                                      00000006 CMP       	R0, 10
-    1:END1+1                                                      00000007 JUMP      	nz, 0x4 (START1+0)
-    1:START1+0                                                    00000004 DEBUG     	R0
-R0: 6  
-    1:START1+1                                                    00000005 ADD       	R0, 1
-    1:END1+0                                                      00000006 CMP       	R0, 10
-    1:END1+1                                                      00000007 JUMP      	nz, 0x4 (START1+0)
-    1:START1+0                                                    00000004 DEBUG     	R0
-R0: 7  
-    1:START1+1                                                    00000005 ADD       	R0, 1
-    1:END1+0                                                      00000006 CMP       	R0, 10
-    1:END1+1                                                      00000007 JUMP      	nz, 0x4 (START1+0)
-    1:START1+0                                                    00000004 DEBUG     	R0
-R0: 8  
-    1:START1+1                                                    00000005 ADD       	R0, 1
-    1:END1+0                                                      00000006 CMP       	R0, 10
-    1:END1+1                                                      00000007 JUMP      	nz, 0x4 (START1+0)
-    1:START1+0                                                    00000004 DEBUG     	R0
-R0: 9  
-    1:START1+1                                                    00000005 ADD       	R0, 1
-    1:END1+0                                                      00000006 CMP       	R0, 10
-    1:END1+1                                                      00000007 JUMP      	nz, 0x4 (START1+0)
-    1:END1+2                                                      00000008 MOVE      	R0, 10
-    1:END1+3                                                      00000009 JUMP      	0xe (END2+0)
-    1:END2+0                                                      0000000e TEST      	R0
-    1:END2+1                                                      0000000f JUMP      	nz, 0xa (START2+0)
-    1:START2+0                                                    0000000a SUBTRACT  	R0, 1
-    1:START2+1                                                    0000000b MULTIPLY  	R1, R0, R0
-    1:START2+2                                                    0000000c CMP       	R1, 25
-    1:START2+3                                                    0000000d JUMP      	z, 0x11 (FOUND2+0)
-    1:END2+0                                                      0000000e TEST      	R0
-    1:END2+1                                                      0000000f JUMP      	nz, 0xa (START2+0)
-    1:START2+0                                                    0000000a SUBTRACT  	R0, 1
-    1:START2+1                                                    0000000b MULTIPLY  	R1, R0, R0
-    1:START2+2                                                    0000000c CMP       	R1, 25
-    1:START2+3                                                    0000000d JUMP      	z, 0x11 (FOUND2+0)
-    1:END2+0                                                      0000000e TEST      	R0
-    1:END2+1                                                      0000000f JUMP      	nz, 0xa (START2+0)
-    1:START2+0                                                    0000000a SUBTRACT  	R0, 1
-    1:START2+1                                                    0000000b MULTIPLY  	R1, R0, R0
-    1:START2+2                                                    0000000c CMP       	R1, 25
-    1:START2+3                                                    0000000d JUMP      	z, 0x11 (FOUND2+0)
-    1:END2+0                                                      0000000e TEST      	R0
-    1:END2+1                                                      0000000f JUMP      	nz, 0xa (START2+0)
-    1:START2+0                                                    0000000a SUBTRACT  	R0, 1
-    1:START2+1                                                    0000000b MULTIPLY  	R1, R0, R0
-    1:START2+2                                                    0000000c CMP       	R1, 25
-    1:START2+3                                                    0000000d JUMP      	z, 0x11 (FOUND2+0)
-    1:END2+0                                                      0000000e TEST      	R0
-    1:END2+1                                                      0000000f JUMP      	nz, 0xa (START2+0)
-    1:START2+0                                                    0000000a SUBTRACT  	R0, 1
-    1:START2+1                                                    0000000b MULTIPLY  	R1, R0, R0
-    1:START2+2                                                    0000000c CMP       	R1, 25
-    1:START2+3                                                    0000000d JUMP      	z, 0x11 (FOUND2+0)
-    1:FOUND2+0                                                    00000011 DEBUG     	R0
-R0: 5  
-    1:FINIS+0                                                     00000012 STOP      	
 
 CPU State    SR: osZp
   R               hex                   dec  FP                    float   Stack               hex                   dec                   float
@@ -130,6 +40,6 @@ R25: 0000000000000000                     0 F25:       0.000000000000000
 R26: 0000000000000000                     0 F26:       0.000000000000000
 R27: 0000000000000000                     0 F27:       0.000000000000000
 R28: 0000000000000000                     0 F28:       0.000000000000000
- SF: 0000000000101fff                       F29:       0.000000000000000
- SP: 0000000000101fff                       F30:       0.000000000000000
+ SF: 00000000000f617f                       F29:       0.000000000000000
+ SP: 00000000000f617f                       F30:       0.000000000000000
  PC: 0000000000000013                       F31:       0.000000000000000

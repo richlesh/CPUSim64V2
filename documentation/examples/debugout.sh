@@ -3,8 +3,8 @@
 SCRIPT_PATH="$(realpath "${BASH_SOURCE[0]}")"
 SCRIPT_DIR="$(dirname "$SCRIPT_PATH")"
 
-MEMSIZE=0x100000
-STACKSIZE=0x2000
+MEMSIZE=1M
+STACKSIZE=8K
 
 if [[ -e "$1.obj.gz" ]]; then
 	rm $1.obj.gz

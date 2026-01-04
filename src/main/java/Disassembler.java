@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import cloud.lesh.CPUSim64.Simulator;
+import cloud.lesh.CPUSim64.*;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -29,8 +29,8 @@ public class Disassembler {
 
 	public static void main(String[] args) throws Exception {
 		System.out.println("=".repeat(80));
-		System.out.println("CPUSim64 2.0 Disassembler");
-		System.out.println("By Richard Lesh ©2025");
+		System.out.println("CPUSim64 " + BuildInfo.VERSION + " Disassembler");
+		System.out.println(BuildInfo.COPYRIGHT + " Richard Lesh");
 		System.out.println("Disassembles .obj.gz object files into source code.");
 		System.out.println("=".repeat(80));
 		if (args.length < 1) {

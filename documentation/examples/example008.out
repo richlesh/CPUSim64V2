@@ -5,21 +5,9 @@ By Richard Lesh ©2025
 Implements a CPUSim64 Virtual Machine.
 ================================================================================
 Debug: true
-Memory size: 1048576
-Stack size: 8192
+Memory size: 1000000
+Stack size: 8000
 Read 12 words from example008.obj.gz
-    1:__CODE__+0                                                  00000001 READONLY  	0xc (__HEAP_START__+0)
-    1:__CODE__+1                                                  00000002 MOVE      	R2, 7
-    1:__CODE__+2                                                  00000003 MOVE      	R3, 3
-    1:__CODE__+3                                                  00000004 RECIP     	R0, R1, R2, R3
-    1:__CODE__+4                                                  00000005 DEBUG     	R0, R1
-R0: 2  R1: 1  
-    1:__CODE__+5                                                  00000006 MOVE      	R2, 27
-    1:__CODE__+6                                                  00000007 MOVE      	R3, 5
-    1:__CODE__+7                                                  00000008 RECIP     	R0, R1, R2, R3
-    1:__CODE__+8                                                  00000009 DEBUG     	R0, R1
-R0: 5  R1: 2  
-    1:__CODE__+9                                                  0000000a STOP      	
 
 CPU State    SR: oszp
   R               hex                   dec  FP                    float   Stack               hex                   dec                   float
@@ -52,6 +40,6 @@ R25: 0000000000000000                     0 F25:       0.000000000000000
 R26: 0000000000000000                     0 F26:       0.000000000000000
 R27: 0000000000000000                     0 F27:       0.000000000000000
 R28: 0000000000000000                     0 F28:       0.000000000000000
- SF: 0000000000101fff                       F29:       0.000000000000000
- SP: 0000000000101fff                       F30:       0.000000000000000
+ SF: 00000000000f617f                       F29:       0.000000000000000
+ SP: 00000000000f617f                       F30:       0.000000000000000
  PC: 000000000000000b                       F31:       0.000000000000000

@@ -1,0 +1,9 @@
+package cloud.lesh.CPUSim64;
+
+public final class BuildInfo {
+
+    private BuildInfo() {}
+
+    public static final String VERSION = "@app.version@";
+    public static final String COPYRIGHT = "©@copyright.years@";
+}

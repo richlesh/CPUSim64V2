@@ -15,8 +15,7 @@
  * limitations under the License.
  */
 
-import cloud.lesh.CPUSim64.Simulator;
-import cloud.lesh.CPUSim64.Utils;
+import cloud.lesh.CPUSim64.*;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -71,10 +70,10 @@ public class Simulation {
 			}
 		}
 
-		if (verbose || debug) {
+		if (verbose) {
 			System.out.println("=".repeat(80));
-			System.out.println("CPUSim64 2.0 Emulator");
-			System.out.println("By Richard Lesh ©2025");
+			System.out.println("CPUSim64 " + BuildInfo.VERSION + " Emulator");
+			System.out.println(BuildInfo.COPYRIGHT + " Richard Lesh");
 			System.out.println("Implements a CPUSim64 Virtual Machine.");
 			System.out.println("=".repeat(80));
 			System.out.println("Debug: " + debug);

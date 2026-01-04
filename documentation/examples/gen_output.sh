@@ -6,6 +6,7 @@ echo hello_world.asm
 echo example001.asm
 ../../assemble.sh example001 > example001c.out
 ../../debug.sh example001 > example001d.out
+../../trace.sh example001 > example001t.out
 ../../run.sh example001 > example001r.out
 echo example003.asm
 ./debugout.sh example003 > example003.out

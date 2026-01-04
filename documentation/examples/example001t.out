@@ -13,8 +13,11 @@ Debug: false
 Memory size: 1000000
 Stack size: 8000
 Read 5 words from example001.obj.gz
+    1:__CODE__+0                                                  00000001 READONLY  	0x5 (__HEAP_START__+0)
+    1:__CODE__+1                                                  00000002 NOP       	
+    1:__CODE__+2                                                  00000003 STOP      	
 Result: 0
 User CPU Cycles: 3
-User Time: 0.001 sec
+User Time: 0.011 sec
 System Time: 0.000 sec
-Total Time: 0.001 sec
+Total Time: 0.011 sec
