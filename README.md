@@ -99,7 +99,7 @@ The CPUSim64V2.zip archive is organized to clearly separate documentation, sourc
 
 HTML and reference material describing the CPUSim64V2 architecture, instruction set, directives, interrupts, libraries, and programming model.
 
-These files are suitable for direct viewing in a browser.
+These files are not suitable for direct viewing in a browser as they make extensive use of server-side includes.  See http://cpusim64.lesh.cloud/ for online hosted documentation.
 
 ⸻
 
