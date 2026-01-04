@@ -41,6 +41,24 @@
     </dependencies>
 
     <build>
+        <resources>
+            <!-- Normal application resources -->
+            <resource>
+                <directory>src/main/resources</directory>
+            </resource>
+
+            <!-- Copy LICENSE and NOTICE into META-INF -->
+            <resource>
+                <directory>${project.basedir}</directory>
+                <includes>
+                    <include>LICENSE</include>
+                    <include>NOTICE</include>
+                </includes>
+                <targetPath>META-INF</targetPath>
+                <filtering>false</filtering>
+            </resource>
+        </resources>
+
         <plugins>
             <!-- 1) Generate ANTLR sources BEFORE compile -->
             <plugin>
@@ -110,6 +128,21 @@
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
                                     <mainClass>ias.Main</mainClass>
                                 </transformer>
+                                <!-- Ensure YOUR project's LICENSE is in the shaded jar -->
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.IncludeResourceTransformer">
+                                    <resource>META-INF/LICENSE</resource>
+                                    <file>${project.basedir}/LICENSE</file>
+                                </transformer>
+
+                                <!-- If you also want to force your own NOTICE similarly (optional) -->
+                                <!--transformer implementation="org.apache.maven.plugins.shade.resource.IncludeResourceTransformer">
+                                    <resource>META-INF/NOTICE</resource>
+                                    <file>${project.basedir}/NOTICE</file>
+                                </transformer-->
+
+                                <!-- Keep these if you want dependency NOTICE/LICENSE transforms -->
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ApacheNoticeResourceTransformer"/>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ApacheLicenseResourceTransformer"/>
                             </transformers>
                         </configuration>
                     </execution>

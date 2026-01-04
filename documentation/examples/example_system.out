@@ -7,7 +7,7 @@ iNEGATIVE_INFINITY: -Infinity
 iPOSITIVE_INFINITY: Infinity
 iNAN: NaN
 iCYCLES: 2078
-iCLOCK: 11944667
+iCLOCK: 10693166
 
 CPU State    SR: oszP
   R               hex                   dec  FP                    float   Stack               hex                   dec                   float
@@ -79,7 +79,7 @@ R28: 0000000000000000                     0 F28:       0.000000000000000
  SP: 0000000000101ff8                       F30:       0.000000000000000
  PC: 0000000000000452                       F31:       0.000000000000000
 iCYCLES: 2759
-iCLOCK: 32153250
+iCLOCK: 30574750
 0:0
 1:1
 2:4
