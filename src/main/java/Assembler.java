@@ -114,7 +114,7 @@ public class Assembler {
 			var asm = new AssemblerVisitor(labelMap, reverseLabelMap);
 			asm.assemble(noLabels);
 			List<Long> words = asm.result();
-			if (words == null || words.isEmpty() || labelVisitor.hasErrors()) {
+			if (words == null || words.isEmpty() || asm.hasErrors()) {
 				System.err.println("Error: too many assembler errors!");
 				System.exit(2);
 			}

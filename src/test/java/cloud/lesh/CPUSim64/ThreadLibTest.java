@@ -2,6 +2,9 @@ package cloud.lesh.CPUSim64;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.Arrays;
+import java.util.Comparator;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ThreadLibTest extends BaseTest {
@@ -107,11 +110,36 @@ public class ThreadLibTest extends BaseTest {
 			move	r1, 0
 			int		iEXIT
 
-			#def_macro put_dec(i)
-				move R2, ${i}
-				move R1, 1
+			#def_macro put_dec(val)
+				push ${val}
+				#call	acquireRecursiveSpinLock(SPINLOCK)
+				move R3, 4
+				pop R2
+				move R1, STDOUT
 				int iPUT_DEC
+				move R1, STDOUT
 				int	iPUT_NL
+				#call	releaseRecursiveSpinLock(SPINLOCK)
+			#end_macro
+
+			#def_macro put_dec2(pid, val)
+				push ${val}
+				push ${pid}
+				#call	acquireRecursiveSpinLock(SPINLOCK)
+				move R3, 4
+				pop R2
+				move R1, STDOUT
+				int iPUT_DEC
+				move R2, ":"
+				move R1, STDOUT
+				int iPUTS
+				move R3, 4
+				pop R2
+				move R1, STDOUT
+				int iPUT_DEC
+				move R1, STDOUT
+				int	iPUT_NL
+				#call	releaseRecursiveSpinLock(SPINLOCK)
 			#end_macro
 
 			#global	PIDS: .dca	3
@@ -120,10 +148,13 @@ public class ThreadLibTest extends BaseTest {
 				#var	pid, i
 				#macro	create_thread(run, 1)
 				store	r0, PIDS[1]
+//				#macro	put_dec2(0, r0)
 				#macro	create_thread(run, 2)
 				store	r0, PIDS[2]
+//				#macro	put_dec2(0, r0)
 				#macro	create_thread(run, 3)
 				store	r0, PIDS[3]
+//				#macro	put_dec2(0, r0)
 				load	r1, PIDS[1]
 				int		iJOIN_THREAD
 				load	r1, PIDS[2]
@@ -135,20 +166,28 @@ public class ThreadLibTest extends BaseTest {
 			#macro DEFINE_RECURSIVE_SPINLOCK(SPINLOCK)
 			#global		COUNTER:	.dci 0
 			#def_func run(data)
-				#var	c, d, i
+				#var	c, d, i, start, stop
 				load	d, data
-				jump	z, $_RETURN
-				#for	0, i < 100, 1
-					#call	acquireRecursiveSpinLock(SPINLOCK)
-					#if_cond	i == 0
+				int		iGET_PID
+//				#macro	put_dec2(r0, d)
+				#if_cond	d == 0
+					#return 0
+				#end_cond
+				mult	start, 100, d
+				add		stop, 100, start
+				#for	start, i <= stop, 1
+					#if_cond	i == start
+						#call	acquireRecursiveSpinLock(SPINLOCK)
 						sub		d, 1
 						#call	run(d)
+						#call	releaseRecursiveSpinLock(SPINLOCK)
 					#end_cond
+					#call	acquireRecursiveSpinLock(SPINLOCK)
 					load	c, COUNTER
 					add		c, 1
 					store	c, COUNTER
-					#macro	put_dec(c)
 					#call	releaseRecursiveSpinLock(SPINLOCK)
+					#macro	put_dec(c)
 				#end_for
 			#end_func
 				stop
@@ -159,6 +198,7 @@ public class ThreadLibTest extends BaseTest {
 		var tuple = runProgram(src);
 		String output = capturer.stop();
 		String[] lines = output.split("\n");
+		Arrays.sort(lines, Comparator.comparingInt(Integer::parseInt));
 		var result = tuple.getLeft();
 		var sim = tuple.getMiddle();
 		var diff = tuple.getRight();
@@ -217,7 +257,9 @@ public class ThreadLibTest extends BaseTest {
 			#def_func run(data)
 				#var	c, d, i
 				load	d, data
-				jump	z, $_RETURN
+				#if_cond	d == 0
+					#return 0
+				#end_cond
 				#for	0, i < 100, 1
 					#call	acquireMutex(MUTEX)
 					#if_cond	i == 0
@@ -240,6 +282,7 @@ public class ThreadLibTest extends BaseTest {
 		var tuple = runProgram(src);
 		String output = capturer.stop();
 		String[] lines = output.split("\n");
+		Arrays.sort(lines, Comparator.comparingInt(Integer::parseInt));
 		var result = tuple.getLeft();
 		var sim = tuple.getMiddle();
 		var diff = tuple.getRight();
@@ -298,7 +341,9 @@ public class ThreadLibTest extends BaseTest {
 			#def_func run(data)
 				#var	c, d, i
 				load	d, data
-				jump	z, $_RETURN
+				#if_cond	d == 0
+					#return 0
+				#end_cond
 				#for	0, i < 100, 1
 					#sync(MUTEX)
 						#if_cond	i == 0
@@ -321,6 +366,7 @@ public class ThreadLibTest extends BaseTest {
 		var tuple = runProgram(src);
 		String output = capturer.stop();
 		String[] lines = output.split("\n");
+		Arrays.sort(lines, Comparator.comparingInt(Integer::parseInt));
 		var result = tuple.getLeft();
 		var sim = tuple.getMiddle();
 		var diff = tuple.getRight();
