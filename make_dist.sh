@@ -2,7 +2,7 @@
 
 set -e
 
-OUTPUT="CPUSim64.zip"
+OUTPUT="CPUSim64V2.zip"
 
 # Remove existing file if needed
 rm -f "$OUTPUT"
@@ -14,4 +14,7 @@ zip -r "$OUTPUT" \
     lib \
     src \
     documentation \
+    NOTICE \
+    LICENSE \
+    README.md \
     -x "**/.DS_Store"

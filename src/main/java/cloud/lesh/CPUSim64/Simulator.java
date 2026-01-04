@@ -152,12 +152,14 @@ public class Simulator {
 	// Execution controls
 	private boolean running = false;
 	private boolean debug = false;
+	private boolean trace = false;
 	private long pid;
 	private static AtomicLong nextPID = new AtomicLong(1);
 	private Vector<Simulator> childCPUs = new Vector<>();
 	private static Vector<Simulator> threadCPUs = new Vector<>();
 	private ChildProcess process = null;    // If this is a child what is its process object.
 	private ChildThread thread = null;		// If this is a thread what i its thread object.
+	private Map<Long, String> reverseSymbolMap = null;	// Used by disassembler
 
 	private InterruptHandler interruptHandler;
 
@@ -239,6 +241,8 @@ public class Simulator {
 		ports = (HashMap<Integer, PortHandler>) (cloneMe.ports.clone());
 		interruptHandler = new StdInterruptHandler(this);
 		setDebug(cloneMe.debug);
+		setTrace(cloneMe.trace);
+		reverseSymbolMap = cloneMe.reverseSymbolMap;
 
 		try {
 			stackBase = cloneMe.stackBase;
@@ -268,7 +272,11 @@ public class Simulator {
 	}
 
 	// ===== PROGRAM LOADING =====
-	public void loadProgram(long[] words, long loadAddr) {
+	public void loadProgram(java.util.List<java.lang.Long> words, long loadAddr) {
+		loadProgram(words, loadAddr, new HashMap<Long, String>());
+	}
+
+	public void loadProgram(long[] words, long loadAddr, Map<Long, String> reverseSymbolMap) {
 		for (int i = 0; i < words.length; i++) {
 			mem[Math.toIntExact(loadAddr + i)] = words[i];
 		}
@@ -283,9 +291,10 @@ public class Simulator {
 		heapList = heapStart;
 		freeList = new LinkedList<Long>();
 		freeList.push(heapList);
+		this.reverseSymbolMap = reverseSymbolMap;
 	}
 
-	public void loadProgram(List<Long> words, long loadAddr) {
+	public void loadProgram(List<Long> words, long loadAddr, Map<Long, String> reverseSymbolMap) {
 		for (int i = 0; i < words.size(); i++) {
 			mem[Math.toIntExact(loadAddr + i)] = words.get(i);
 		}
@@ -300,6 +309,7 @@ public class Simulator {
 		heapList = heapStart;
 		freeList = new LinkedList<Long>();
 		freeList.push(heapList);
+		this.reverseSymbolMap = reverseSymbolMap;
 	}
 
 	private static String[] condition = {"u", "z", "nz", "n", "p", "nn", "np", "o", "no", "pe", "po"};
@@ -780,10 +790,6 @@ public class Simulator {
 
 	// ===== EXECUTION =====
 	public int run(long startPC) {
-		return run(startPC, null);
-	}
-
-	public int run(long startPC, Map<Long, String> reverseSymbolMap) {
 		running = true;
 		startClock = System.nanoTime();
 		totalSystemTime = 0;
@@ -798,7 +804,7 @@ public class Simulator {
 
 			Decoded d = Decoded.decode(instr);
 
-			if (debug) {
+			if (trace) {
 				synchronized(System.out) {
 					String label = null;
 					if (reverseSymbolMap != null) {
@@ -825,7 +831,7 @@ public class Simulator {
 		return (int) R[0];
 	}
 
-	public String disassemble(long startAddress, Map<Long, String> reverseSymbolMap, Map<String, LabelType> symbolTypes ) {
+	public String disassemble(long startAddress, Map<String, LabelType> symbolTypes ) {
 		int numStops = 0;
 		StringBuffer buffer = new StringBuffer();
 		try {
@@ -932,7 +938,7 @@ public class Simulator {
 		// If operand kinds are NONE => NOP; otherwise DEBUG forms (Y,YY,YYY,YYYY or dumps)
 		boolean noOps = (d.tt == 0 && d.a == 0 && d.b == 0 && d.c == 0 && d.d == 0);
 		if (noOps) return; // NOP
-		if (!debug) return;
+		if (!debug || !trace) return;
 
 		synchronized(System.out) {
 			if (d.tt == 0) {
@@ -2068,6 +2074,7 @@ public class Simulator {
 	public void setSF(long sf) { R[R_SF] = sf; }
 	public void setPC(long pc) { R[R_PC] = pc; }
 	public void setDebug(boolean on) { this.debug = on; }
+	public void setTrace(boolean on) { this.trace = on; }
 
 	public long getR(int r) { return R[r & 0x1F]; }
 	public void setR(int r, long v) { R[r & 0x1F] = v; setFlags(v, false); }

@@ -15,23 +15,26 @@
  * limitations under the License.
  */
 
+import cloud.lesh.CPUSim64.Simulator;
+import cloud.lesh.CPUSim64.Utils;
+
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
-
-import cloud.lesh.CPUSim64.Simulator;
 
 public class Simulation {
 
 	public static void main(String[] args) throws Exception {
 		if (args.length < 1) {
-			System.err.println("Usage: simulation <input.obj.gz>");
+			System.err.println("Usage: simulation [--debug] [--trace] [--verbose] \n" +
+					"        [--mem=memsize] [--stack=stacksize] <input.obj.gz>");
 			System.exit(2);
 		}
 
 		boolean debug = false;
+		boolean trace = false;
 		boolean verbose = false;
 		int memorySize = 1048576;		// default 1M
 		int stackSize = 8192; 			// default 8k
@@ -42,18 +45,20 @@ public class Simulation {
 			if (arg.charAt(0) == '-') {
 				if (arg.equals("--debug")) {
 					debug = true;
+				} else if (arg.equals("--trace") || arg.equals("-t")) {
+					trace = true;
 				} else if (arg.equals("--verbose") || arg.equals("-v")) {
 					verbose = true;
 				} else if (arg.startsWith("--mem=")) {
 					try {
-						memorySize = Integer.decode(arg.substring("--mem=".length()));
+						memorySize = Utils.decodeSI(arg.substring("--mem=".length()));
 					} catch (NumberFormatException e) {
 						System.err.println("Invalid memory size: " + arg);
 						System.exit(1);
 					}
 				} else if (arg.startsWith("--stack=")) {
 					try {
-						stackSize = Integer.decode(arg.substring("--stack=".length()));
+						stackSize = Utils.decodeSI(arg.substring("--stack=".length()));
 					} catch (NumberFormatException e) {
 						System.err.println("Invalid stack size: " + arg);
 						System.exit(1);
@@ -111,8 +116,9 @@ public class Simulation {
 
 		var sim = new Simulator(memorySize, 0, stackSize, simulatorArgs.toArray(String[]::new));
 		if (debug) sim.setDebug(true);
-		sim.loadProgram(program, 0L);
-		long result = sim.run(program.get(0), reverseSymbolMap);
+		if (trace) sim.setTrace(true);
+		sim.loadProgram(program, 0L, reverseSymbolMap);
+		long result = sim.run(program.get(0));
 		if (verbose) {
 			System.out.println("Result: " + result);
 			var totalTime = sim.getClock();

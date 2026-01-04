@@ -101,8 +101,8 @@ public class Disassembler {
 		System.out.println("Read " + program.size() + " words from " + newPath.getFileName().toString());
 
 		var sim = new Simulator(program.size(), 0, 1024, simulatorArgs.toArray(String[]::new));
-		sim.loadProgram(program, 0L);
-		System.out.println(sim.disassemble(mainOnly ? program.get(0) : 1L, reverseSymbolMap, symbolTypes));
+		sim.loadProgram(program, 0L, reverseSymbolMap);
+		System.out.println(sim.disassemble(mainOnly ? program.get(0) : 1L, symbolTypes));
 
 		System.out.println("=".repeat(80));
 		System.out.println("Labels");

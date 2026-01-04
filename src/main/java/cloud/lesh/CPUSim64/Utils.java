@@ -47,6 +47,43 @@ public class Utils {
 		return 0.5 * Math.log((1.0 + x) / (1.0 - x));
 	}
 
+	public static int decodeSI(String s) {
+		if (s == null)
+			throw new IllegalArgumentException("null input");
+
+		s = s.trim();
+		if (s.isEmpty())
+			throw new IllegalArgumentException("empty input");
+
+		// Separate numeric part and suffix
+		int len = s.length();
+		char last = s.charAt(len - 1);
+
+		double multiplier = 1.0;
+		String numberPart = s;
+
+		switch (Character.toUpperCase(last)) {
+			case 'K': multiplier = 1e3;  numberPart = s.substring(0, len - 1); break;
+			case 'M': multiplier = 1e6;  numberPart = s.substring(0, len - 1); break;
+			case 'G': multiplier = 1e9;  numberPart = s.substring(0, len - 1); break;
+			case 'T': multiplier = 1e12; numberPart = s.substring(0, len - 1); break;
+			case 'P': multiplier = 1e15; numberPart = s.substring(0, len - 1); break;
+			case 'E': multiplier = 1e18; numberPart = s.substring(0, len - 1); break;
+			default:
+				// No suffix → plain number
+				break;
+		}
+
+		double value;
+		value = Double.parseDouble(numberPart.trim());
+
+		double result = Math.round(value * multiplier);
+
+		if (result > Integer.MAX_VALUE || result < 0)
+			throw new NumberFormatException("Value out of range for integer: " + s);
+		return (int)result;
+	}
+
 	public static long parseCharLiteral(String s) {
 		if (s.length() >= 2 && s.charAt(0) == '\'' && s.charAt(s.length() - 1) == '\'') {
 			s = s.substring(1, s.length() - 1);
