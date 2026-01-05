@@ -637,8 +637,8 @@ RETURN
 			START:
 			#define iPUT_DEC 202
 			#def_macro put_dec(i)
-				move R1, ${i}
-				move R0, 1
+				move R2, ${i}
+				move R1, 1
 				#macro putter()
 			#end_macro
 			#def_macro print3(i)
@@ -666,23 +666,23 @@ START:
 .LINE «TEST.ASM», 20
 MAIN:
 .LINE_BEGIN «TEST.ASM», 21
-MOVE R1, 3
-MOVE R0, 1
+MOVE R2, 3
+MOVE R1, 1
 INT 202
 .LINE_END
 .LINE_BEGIN «TEST.ASM», 22
-MOVE R1, 4
-MOVE R0, 1
+MOVE R2, 4
+MOVE R1, 1
 INT 202
 MOVE R0, 4
 ADD R0, 1
-MOVE R1, R0
-MOVE R0, 1
+MOVE R2, R0
+MOVE R1, 1
 INT 202
 MOVE R0, 4
 ADD R0, 2
-MOVE R1, R0
-MOVE R0, 1
+MOVE R2, R0
+MOVE R1, 1
 INT 202
 .LINE_END
 .LINE «TEST.ASM», 23
@@ -1045,6 +1045,75 @@ $_COND_END:
 .LINE_END
 .LINE «TEST.ASM», 8
 MOVE R28, 0
+			""";
+		var loader = new IncludeLoader(Path.of("."));
+		PreprocessorVisitor pp = new PreprocessorVisitor("Test.asm", loader);
+		String preprocessed = pp.preprocessText(src);
+		assertEquals(expected, preprocessed.toUpperCase());
+	}
+
+	@Test
+	void testExpressionFolding() {
+		String src = """
+			move	r3, 1+1
+			move	r3, 1-1
+			move	r3, -1-1
+			move	r3, -1--1
+			move	r3, -1-(-1)
+			move	r3, 1 + 2 + 3 + 4
+			move	r3, 1 + 2 * 3 + 4
+			move	r3, (1 + 2) * (3 + 4)
+			move	r3, 1 * 2 + 3 * 4
+			move	r3, 10 / 5
+			load	f0, 2.2 + 3.3
+			load	f0, 2.2 * 2
+			load	f0, 2.2 / 2
+			load	f0, 1.5 + 1.1 * 3 + 1.3
+			load	f0, (1.5 + 1.1) * (3 + 1.3)
+			load	f0, 1.5 * 1.1 + 3 * 1.3
+			load	f0, -1.5 + -1.1 * 3 + -1.3
+			load	f0, (-1.5 - 1.1) * -(3 + 1.3)
+			load	f0, -1.5 * 1.1 - 3 * 1.3
+			""";
+		String expected = """
+.LINE «TEST.ASM», 1
+MOVE R3, 2
+.LINE «TEST.ASM», 2
+MOVE R3, 0
+.LINE «TEST.ASM», 3
+MOVE R3, -2
+.LINE «TEST.ASM», 4
+MOVE R3, 0
+.LINE «TEST.ASM», 5
+MOVE R3, 0
+.LINE «TEST.ASM», 6
+MOVE R3, 10
+.LINE «TEST.ASM», 7
+MOVE R3, 11
+.LINE «TEST.ASM», 8
+MOVE R3, 21
+.LINE «TEST.ASM», 9
+MOVE R3, 14
+.LINE «TEST.ASM», 10
+MOVE R3, 2
+.LINE «TEST.ASM», 11
+LOAD F0, 5.5
+.LINE «TEST.ASM», 12
+LOAD F0, 4.4
+.LINE «TEST.ASM», 13
+LOAD F0, 1.1
+.LINE «TEST.ASM», 14
+LOAD F0, 6.1000000000000005
+.LINE «TEST.ASM», 15
+LOAD F0, 11.18
+.LINE «TEST.ASM», 16
+LOAD F0, 5.550000000000001
+.LINE «TEST.ASM», 17
+LOAD F0, -6.1000000000000005
+.LINE «TEST.ASM», 18
+LOAD F0, 11.18
+.LINE «TEST.ASM», 19
+LOAD F0, -5.550000000000001
 			""";
 		var loader = new IncludeLoader(Path.of("."));
 		PreprocessorVisitor pp = new PreprocessorVisitor("Test.asm", loader);

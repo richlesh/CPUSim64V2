@@ -260,12 +260,12 @@ public class PreprocessorParser extends Parser {
 		public Token COMP_DIR;
 		public Token _tset58;
 		public Token COMMA;
+		public Token LBRACKET;
+		public Token RBRACKET;
 		public Token PLACEHOLDER;
 		public Token REG_R;
 		public Token REG_F;
 		public Token MEMREF;
-		public Token INT;
-		public Token FLOAT;
 		public Token STRING;
 		public Token CHAR;
 		public Token _tset78;
@@ -295,6 +295,14 @@ public class PreprocessorParser extends Parser {
 		public TerminalNode COMMA(int i) {
 			return getToken(PreprocessorParser.COMMA, i);
 		}
+		public List<TerminalNode> LBRACKET() { return getTokens(PreprocessorParser.LBRACKET); }
+		public TerminalNode LBRACKET(int i) {
+			return getToken(PreprocessorParser.LBRACKET, i);
+		}
+		public List<TerminalNode> RBRACKET() { return getTokens(PreprocessorParser.RBRACKET); }
+		public TerminalNode RBRACKET(int i) {
+			return getToken(PreprocessorParser.RBRACKET, i);
+		}
 		public List<TerminalNode> PLACEHOLDER() { return getTokens(PreprocessorParser.PLACEHOLDER); }
 		public TerminalNode PLACEHOLDER(int i) {
 			return getToken(PreprocessorParser.PLACEHOLDER, i);
@@ -310,14 +318,6 @@ public class PreprocessorParser extends Parser {
 		public List<TerminalNode> MEMREF() { return getTokens(PreprocessorParser.MEMREF); }
 		public TerminalNode MEMREF(int i) {
 			return getToken(PreprocessorParser.MEMREF, i);
-		}
-		public List<TerminalNode> INT() { return getTokens(PreprocessorParser.INT); }
-		public TerminalNode INT(int i) {
-			return getToken(PreprocessorParser.INT, i);
-		}
-		public List<TerminalNode> FLOAT() { return getTokens(PreprocessorParser.FLOAT); }
-		public TerminalNode FLOAT(int i) {
-			return getToken(PreprocessorParser.FLOAT, i);
 		}
 		public List<TerminalNode> STRING() { return getTokens(PreprocessorParser.STRING); }
 		public TerminalNode STRING(int i) {
@@ -368,7 +368,7 @@ public class PreprocessorParser extends Parser {
 			setState(114);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & -4575815551082823672L) != 0) || _la==MINUS) {
+			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & -4575815551082823672L) != 0) || ((((_la - 65)) & ~0x3f) == 0 && ((1L << (_la - 65)) & 259L) != 0)) {
 				{
 				{
 				setState(106);
@@ -389,7 +389,7 @@ public class PreprocessorParser extends Parser {
 					setState(108);
 					((CodeLineContext)_localctx)._tset78 = _input.LT(1);
 					_la = _input.LA(1);
-					if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & 4647556485771952128L) != 0)) ) {
+					if ( !(((((_la - 44)) & ~0x3f) == 0 && ((1L << (_la - 44)) & 6555255L) != 0)) ) {
 						((CodeLineContext)_localctx)._tset78 = (Token)_errHandler.recoverInline(this);
 					}
 					else {
@@ -4881,7 +4881,7 @@ public class PreprocessorParser extends Parser {
 		"\u0001.\u0001.\u0001.\u0001.\u0001.\u0001.\u0003.\u027c\b.\u0001.\u0000"+
 		"\u0002VX/\u0000\u0002\u0004\u0006\b\n\f\u000e\u0010\u0012\u0014\u0016"+
 		"\u0018\u001a\u001c\u001e \"$&(*,.02468:<>@BDFHJLNPRTVXZ\\\u0000\b\u0002"+
-		"\u0000/022\u0003\u0000,.06>>\u0001\u000067\u0002\u0000..00\u0002\u0000"+
+		"\u0000/022\u0005\u0000,.0256>>AB\u0001\u000067\u0002\u0000..00\u0002\u0000"+
 		"0033\u0001\u00008=\u0001\u0000HI\u0001\u0000JK\u02ce\u0000c\u0001\u0000"+
 		"\u0000\u0000\u0002h\u0001\u0000\u0000\u0000\u0004\u0091\u0001\u0000\u0000"+
 		"\u0000\u0006\u0093\u0001\u0000\u0000\u0000\b\u009c\u0001\u0000\u0000\u0000"+

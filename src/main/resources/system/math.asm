@@ -47,74 +47,74 @@ jump	MATH_ASM_END
 #def_func	fabs(x)
 	load	f1, x
 	int		iABS_FP
-#end_func	fabs
+#end_func
 
 #def_func	abs(i)
 	load	r1, i
 	int		iABS
-#end_func	abs
+#end_func
 
 #def_func	ceil(x)
 	load	f1, x
 	int		iCEIL
-#end_func	ceil
+#end_func
 
 #def_func	floor(x)
 	load	f1, x
 	int		iFLOOR
-#end_func	floor
+#end_func
 
 #def_func	round(x)
 	load	f1, x
 	int		iROUND
-#end_func	round
+#end_func
 
 #def_func	sqrt(x)
 	load	f1, x
 	int		iSQRT
-#end_func	sqrt
+#end_func
 
 #def_func	exp(x)
 	load	f1, x
 	int		iEXP
-#end_func	exp
+#end_func
 
 #def_func	log(x)
 	load	f1, x
 	int		iLOG
-#end_func	log
+#end_func
 
 #def_func	exp10(x)
 	load	f1, 10.
 	load	f2, x
 	int		iPOW
-#end_func	exp10
+#end_func
 
 #def_func	log10(x)
 	load	f1, x
 	int		iLOG
 	load	f1, 2.3025850929940456840179914546844
 	div		f0,f1
-#end_func	log10
+#end_func
 
 #def_func	exp2(x)
 	move	f1, 2.
 	load	f2, x
 	int		iPOW
-#end_func	exp10
+#end_func
 
 #def_func	log2(x)
 	load	f1, x
 	int		iLOG
 	load	f1, 0.693147180559945309417232121458
 	div		f0, f1
-#end_func	log10
+#end_func
 
 #def_func	pow(x,y)
 	load	f1, x
 	load	f2, y
 	int		iPOW
-#end_func	pow
+#end_func
 
 // base is integer, power is integer (non-negtive)
 #def_func	ifastpow(base, power)
@@ -135,7 +135,7 @@ $LOOP_END:
 	test	p
 	jump	nz, $LOOP_START
 	move	r0, product
-#end_func	ifastpow
+#end_func
 
 // base is FP, power is integer (non-negtive)
 #def_func	fastpow(base, power)
@@ -168,17 +168,17 @@ $LOOP_END:
 	recip	f0
 $SKIP_NEG2:
 	move	f0, product
-#end_func	fastpow
+#end_func
 
 #def_func	random()
 	int		iRANDOM
-#end_func	random
+#end_func
 
 #def_func	rand(low,high)
 	load	r1, low
 	load	r2, high
 	int		iRAND
-#end_func	random
+#end_func
 
 ///////////////////////////////////////////////////////////////////////////////
 // min(first, second) computes minimum of two integer values
@@ -193,7 +193,7 @@ $SKIP_NEG2:
 	load	b, second			// must load them from memory into a register
 	cmp		a, b
 	mov		lt, r0, a, b
-#end_func						// This cleans up the stack and returns
+#end_func
 
 ///////////////////////////////////////////////////////////////////////////////
 // max(first, second) computes minimum of two integer values
@@ -208,7 +208,7 @@ $SKIP_NEG2:
 	load	b, second			// must load them from memory into a register
 	cmp		a, b
 	mov		gt, r0, a, b
-#end_func						// This cleans up the stack and returns
+#end_func
 
 ///////////////////////////////////////////////////////////////////////////////
 // fmin(first, second) computes minimum of two FP values
@@ -223,7 +223,7 @@ $SKIP_NEG2:
 	load	b, second			// must load them from memory into a register
 	cmp		a, b
 	mov		lt, f0, a, b
-#end_func						// This cleans up the stack and returns
+#end_func
 
 ///////////////////////////////////////////////////////////////////////////////
 // fmax(first, second) computes minimum of two FP values
@@ -238,7 +238,7 @@ $SKIP_NEG2:
 	load	b, second			// must load them from memory into a register
 	cmp		a, b
 	mov		gt, f0, a, b
-#end_func						// This cleans up the stack and returns
+#end_func
 
 ///////////////////////////////////////////////////////////////////////////////
 // sum(array) computes the sum of an INTEGER array
@@ -283,6 +283,6 @@ $END_LOOP:
 	cmp		i, max
 	jump	le, $LOOP
 	#freturn	sum
-#end_funcs
+#end_func
 
 MATH_ASM_END: nop

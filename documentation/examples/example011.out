@@ -1,12 +1,4 @@
 > debug.sh example011
-================================================================================
-CPUSim64 2.0 Emulator
-By Richard Lesh ©2025
-Implements a CPUSim64 Virtual Machine.
-================================================================================
-Debug: true
-Memory size: 1000000
-Stack size: 8000
 Read 20 words from example011.obj.gz
 
 CPU State    SR: osZp

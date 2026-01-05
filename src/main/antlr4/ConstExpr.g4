@@ -62,11 +62,11 @@ HEXINT
   ;
 
 INT
-  : '-'? DIGITS
+  : DIGITS
   ;
 
 FLOAT
-    : '-'? DIGITS+ '.' DIGITS* ([eE] [+-]? DIGITS+)? ;
+    : DIGITS+ '.' DIGITS* ([eE] [+-]? DIGITS+)? ;
 
 WS : [ \t\r\n]+ -> channel(HIDDEN) ;
 

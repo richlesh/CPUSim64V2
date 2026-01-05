@@ -1,12 +1,12 @@
 ================================================================================
-CPUSim64 2.0 Assembler
-By Richard Lesh ©2025
+CPUSim64 2.0.1 Assembler
+©2025–2026 Richard Lesh
 Assembles .asm source files into .obj.gz binary files.
 ================================================================================
 Wrote 5 words to /Users/rich/Desktop/Resources/CPUSim64V2/documentation/examples/example001.obj.gz
 ================================================================================
-CPUSim64 2.0 Emulator
-By Richard Lesh ©2025
+CPUSim64 2.0.1 Emulator
+©2025–2026 Richard Lesh
 Implements a CPUSim64 Virtual Machine.
 ================================================================================
 Debug: false

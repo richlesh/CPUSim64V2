@@ -47,7 +47,6 @@
             <!-- Normal application resources -->
             <resource>
                 <directory>src/main/resources</directory>
-                <filtering>true</filtering>
             </resource>
 
             <!-- Copy LICENSE and NOTICE into META-INF -->
@@ -176,33 +175,6 @@
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.ApacheNoticeResourceTransformer"/>
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.ApacheLicenseResourceTransformer"/>
                             </transformers>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <artifactId>maven-resources-plugin</artifactId>
-                <version>3.4.0</version>
-                <executions>
-                    <execution>
-                        <id>filter-buildinfo</id>
-                        <phase>generate-sources</phase>
-                        <goals>
-                            <goal>copy-resources</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>
-                                ${project.build.directory}/generated-sources/buildinfo
-                            </outputDirectory>
-                            <resources>
-                                <resource>
-                                    <directory>src/templates</directory>
-                                    <filtering>true</filtering>
-                                    <includes>
-                                        <include>**/*.java</include>
-                                    </includes>
-                                </resource>
-                            </resources>
                         </configuration>
                     </execution>
                 </executions>

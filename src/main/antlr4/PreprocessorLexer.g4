@@ -60,8 +60,8 @@ IDENT : [\p{L}_$] [\p{L}\p{Nd}_${}]* ;
 MEMREF : (IDENT | PLACEHOLDER | INT) LBRACKET (IDENT | INT | PLACEHOLDER) RBRACKET? ;
 COMP_DIR : '.' [_a-zA-Z]+ ;
 
-INT   : MINUS? (DIGITS+ | ('0' [xX] HEX+)) ;
-FLOAT : MINUS? DIGITS+ '.' DIGITS* ([eE] [+-]? DIGITS+)? ;
+INT   : (DIGITS+ | ('0' [xX] HEX+)) ;
+FLOAT : DIGITS+ '.' DIGITS* ([eE] [+-]? DIGITS+)? ;
 fragment DIGITS : [0-9] ;
 CHAR  : '\'' ( ESC | ~['\\\r\n] ) '\'' ;
 STRING: '"' ( ESC | ~["\\\r\n] )* '"' ;
@@ -123,8 +123,8 @@ LINE_CONT_D		: '\\' [ \t]* ( '//' ~[\r\n]* )? ('/*' ( '\r'? '\n' | . )*? '*/')? 
 ANGLE_PATH_D	: '<' (~[>\r\n])+ '>' -> type(ANGLE_PATH) ;
 STRING_D		: '"' ( ESC | ~["\\\r\n] )* '"' -> type(STRING) ;
 CHAR_D			: '\'' ( ESC | ~['\\\r\n] ) '\'' -> type(CHAR) ;
-FLOAT_D			: MINUS? DIGITS+ '.' DIGITS* ([eE] [+-]? DIGITS+)? -> type(FLOAT) ;
-INT_D        	: MINUS? (DIGITS+ | ('0' [xX] HEX+)) -> type(INT) ;
+FLOAT_D			: DIGITS+ '.' DIGITS* ([eE] [+-]? DIGITS+)? -> type(FLOAT) ;
+INT_D        	: (DIGITS+ | ('0' [xX] HEX+)) -> type(INT) ;
 PLACEHOLDER_D	: '$' '{' ([\p{L}_] [\p{L}\p{Nd}_]* | ELLIPSIS)'}' -> type(PLACEHOLDER) ;
 REG_R_D      	: [rR] [0-9]+ -> type(REG_R) ;
 REG_F_D      	: [fF] [0-9]+ -> type(REG_F) ;
