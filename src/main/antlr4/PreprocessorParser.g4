@@ -253,41 +253,14 @@ literal
   | constExpr
   ;
 
-/*
- * Lowest precedence: + -
- */
 constExpr
-    : addExpr
+    : constExpr op=(MULTIPLY | DIVIDE) constExpr    # mulExpr
+    | constExpr op=(PLUS | MINUS) constExpr         # addExpr
+    | MINUS constExpr                          		# unaryExpr
+    | LPAREN constExpr RPAREN                  		# parensExpr
+    | atom                                			# atomExpr
     ;
 
-addExpr
-    : addExpr op=(PLUS | MINUS) mulExpr
-    | mulExpr
-    ;
-
-/*
- * Next precedence: * /
- */
-mulExpr
-    : mulExpr op=(MULTIPLY | DIVIDE) unaryExpr
-    | unaryExpr
-    ;
-
-/*
- * Unary negation
- */
-unaryExpr
-    : MINUS unaryExpr
-    | const
-    ;
-
-/*
- * Literals and grouping
- */
-const
-    : IDENT
-    | PLACEHOLDER
-    | INT
-    | FLOAT
-    | LPAREN addExpr RPAREN
+atom
+    : IDENT | PLACEHOLDER | INT | FLOAT
     ;

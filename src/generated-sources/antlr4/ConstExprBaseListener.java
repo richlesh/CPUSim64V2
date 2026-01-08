@@ -77,13 +77,25 @@ public class ConstExprBaseListener implements ConstExprListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterExpr(ConstExprParser.ExprContext ctx) { }
+	@Override public void enterUnaryExpr(ConstExprParser.UnaryExprContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitExpr(ConstExprParser.ExprContext ctx) { }
+	@Override public void exitUnaryExpr(ConstExprParser.UnaryExprContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterPrimaryExpr(ConstExprParser.PrimaryExprContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitPrimaryExpr(ConstExprParser.PrimaryExprContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -113,13 +125,13 @@ public class ConstExprBaseListener implements ConstExprListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterUnaryExpr(ConstExprParser.UnaryExprContext ctx) { }
+	@Override public void enterParensExpr(ConstExprParser.ParensExprContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitUnaryExpr(ConstExprParser.UnaryExprContext ctx) { }
+	@Override public void exitParensExpr(ConstExprParser.ParensExprContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

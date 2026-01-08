@@ -131,13 +131,6 @@ public final class ExpressionFolder implements HasLocation {
 		}
 
 		@Override
-		public ConstExprResult visitExpr(ConstExprParser.ExprContext ctx) {
-			ConstExprResult r = visit(ctx.addExpr());
-			// If whole thing is constant, r.text is folded; else it's original subtree text
-			return r;
-		}
-
-		@Override
 		public ConstExprResult visitPrimary(ConstExprParser.PrimaryContext ctx) {
 			if (ctx.INT() != null) {
 				String s = ctx.INT().getText();
@@ -156,39 +149,26 @@ public final class ExpressionFolder implements HasLocation {
 				double v = Double.parseDouble(s);
 				return ConstExprResult.constDouble(v);
 			}
-			if (ctx.addExpr() != null) {
-				// Parenthesized expression: if foldable, we fold away parentheses (by returning folded literal).
-				// If you want to KEEP original parens when folded, you can wrap: "(" + folded + ")"
-				return visit(ctx.addExpr());
-			}
 			// Fallback (shouldn't happen with this grammar)
 			return ConstExprResult.nonConst(original(ctx));
 		}
 
 		@Override
 		public ConstExprResult visitUnaryExpr(ConstExprParser.UnaryExprContext ctx) {
-			if (ctx.getChildCount() == 2 && "-".equals(ctx.getChild(0).getText())) {
-				ConstExprResult inner = visit(ctx.unaryExpr());
-				if (inner.isConst) {
-					if (inner.isFloat) return ConstExprResult.constDouble(-inner.doubleVal);
-					return ConstExprResult.constLong(-inner.longVal);
-				}
-				// Not foldable: preserve EXACT original text
-				return ConstExprResult.nonConst(original(ctx));
+			ConstExprResult inner = visit(ctx.expr());
+			if (inner.isConst) {
+				if (inner.isFloat) return ConstExprResult.constDouble(-inner.doubleVal);
+				return ConstExprResult.constLong(-inner.longVal);
 			}
-			// primary
-			return visit(ctx.primary());
+			// Not foldable: preserve EXACT original text
+			return ConstExprResult.nonConst(original(ctx));
 		}
 
 		@Override
 		public ConstExprResult visitMulExpr(ConstExprParser.MulExprContext ctx) {
-			// mulExpr : mulExpr op=('*'|'/') unaryExpr | unaryExpr ;
-			if (ctx.op == null) {
-				return visit(ctx.unaryExpr());
-			}
-
-			ConstExprResult left = visit(ctx.mulExpr());
-			ConstExprResult right = visit(ctx.unaryExpr());
+			// mulExpr : expr op=('*'|'/') expr ;
+			ConstExprResult left = visit(ctx.expr(0));
+			ConstExprResult right = visit(ctx.expr(1));
 
 			if (left.isConst && right.isConst) {
 				String op = ctx.op.getText();
@@ -219,13 +199,9 @@ public final class ExpressionFolder implements HasLocation {
 
 		@Override
 		public ConstExprResult visitAddExpr(ConstExprParser.AddExprContext ctx) {
-			// addExpr : addExpr op=('+'|'-') mulExpr | mulExpr ;
-			if (ctx.op == null) {
-				return visit(ctx.mulExpr());
-			}
-
-			ConstExprResult left = visit(ctx.addExpr());
-			ConstExprResult right = visit(ctx.mulExpr());
+			// addExpr : expr op=('+'|'-') expr ;
+			ConstExprResult left = visit(ctx.expr(0));
+			ConstExprResult right = visit(ctx.expr(1));
 
 			if (left.isConst && right.isConst) {
 				String op = ctx.op.getText();
@@ -252,6 +228,13 @@ public final class ExpressionFolder implements HasLocation {
 
 			// Not foldable: preserve EXACT original text
 			return ConstExprResult.nonConst(original(ctx));
+		}
+
+		@Override
+		public ConstExprResult visitParensExpr(ConstExprParser.ParensExprContext ctx) {
+			// parensExpr : '(' expr ')' ;
+			ConstExprResult e = visit(ctx.expr());
+			return e;
 		}
 	}
 

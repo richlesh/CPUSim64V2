@@ -66,45 +66,65 @@ public interface ConstExprListener extends ParseTreeListener {
 	 */
 	void exitPartOther(ConstExprParser.PartOtherContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link ConstExprParser#expr}.
-	 * @param ctx the parse tree
-	 */
-	void enterExpr(ConstExprParser.ExprContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link ConstExprParser#expr}.
-	 * @param ctx the parse tree
-	 */
-	void exitExpr(ConstExprParser.ExprContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link ConstExprParser#addExpr}.
-	 * @param ctx the parse tree
-	 */
-	void enterAddExpr(ConstExprParser.AddExprContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link ConstExprParser#addExpr}.
-	 * @param ctx the parse tree
-	 */
-	void exitAddExpr(ConstExprParser.AddExprContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link ConstExprParser#mulExpr}.
-	 * @param ctx the parse tree
-	 */
-	void enterMulExpr(ConstExprParser.MulExprContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link ConstExprParser#mulExpr}.
-	 * @param ctx the parse tree
-	 */
-	void exitMulExpr(ConstExprParser.MulExprContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link ConstExprParser#unaryExpr}.
+	 * Enter a parse tree produced by the {@code unaryExpr}
+	 * labeled alternative in {@link ConstExprParser#expr}.
 	 * @param ctx the parse tree
 	 */
 	void enterUnaryExpr(ConstExprParser.UnaryExprContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link ConstExprParser#unaryExpr}.
+	 * Exit a parse tree produced by the {@code unaryExpr}
+	 * labeled alternative in {@link ConstExprParser#expr}.
 	 * @param ctx the parse tree
 	 */
 	void exitUnaryExpr(ConstExprParser.UnaryExprContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code primaryExpr}
+	 * labeled alternative in {@link ConstExprParser#expr}.
+	 * @param ctx the parse tree
+	 */
+	void enterPrimaryExpr(ConstExprParser.PrimaryExprContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code primaryExpr}
+	 * labeled alternative in {@link ConstExprParser#expr}.
+	 * @param ctx the parse tree
+	 */
+	void exitPrimaryExpr(ConstExprParser.PrimaryExprContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code addExpr}
+	 * labeled alternative in {@link ConstExprParser#expr}.
+	 * @param ctx the parse tree
+	 */
+	void enterAddExpr(ConstExprParser.AddExprContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code addExpr}
+	 * labeled alternative in {@link ConstExprParser#expr}.
+	 * @param ctx the parse tree
+	 */
+	void exitAddExpr(ConstExprParser.AddExprContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code mulExpr}
+	 * labeled alternative in {@link ConstExprParser#expr}.
+	 * @param ctx the parse tree
+	 */
+	void enterMulExpr(ConstExprParser.MulExprContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code mulExpr}
+	 * labeled alternative in {@link ConstExprParser#expr}.
+	 * @param ctx the parse tree
+	 */
+	void exitMulExpr(ConstExprParser.MulExprContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code parensExpr}
+	 * labeled alternative in {@link ConstExprParser#expr}.
+	 * @param ctx the parse tree
+	 */
+	void enterParensExpr(ConstExprParser.ParensExprContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code parensExpr}
+	 * labeled alternative in {@link ConstExprParser#expr}.
+	 * @param ctx the parse tree
+	 */
+	void exitParensExpr(ConstExprParser.ParensExprContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link ConstExprParser#primary}.
 	 * @param ctx the parse tree

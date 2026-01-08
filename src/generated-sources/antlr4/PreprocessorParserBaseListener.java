@@ -521,13 +521,13 @@ public class PreprocessorParserBaseListener implements PreprocessorParserListene
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterConstExpr(PreprocessorParser.ConstExprContext ctx) { }
+	@Override public void enterUnaryExpr(PreprocessorParser.UnaryExprContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitConstExpr(PreprocessorParser.ConstExprContext ctx) { }
+	@Override public void exitUnaryExpr(PreprocessorParser.UnaryExprContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -557,25 +557,37 @@ public class PreprocessorParserBaseListener implements PreprocessorParserListene
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterUnaryExpr(PreprocessorParser.UnaryExprContext ctx) { }
+	@Override public void enterAtomExpr(PreprocessorParser.AtomExprContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitUnaryExpr(PreprocessorParser.UnaryExprContext ctx) { }
+	@Override public void exitAtomExpr(PreprocessorParser.AtomExprContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterConst(PreprocessorParser.ConstContext ctx) { }
+	@Override public void enterParensExpr(PreprocessorParser.ParensExprContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitConst(PreprocessorParser.ConstContext ctx) { }
+	@Override public void exitParensExpr(PreprocessorParser.ParensExprContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterAtom(PreprocessorParser.AtomContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitAtom(PreprocessorParser.AtomContext ctx) { }
 
 	/**
 	 * {@inheritDoc}

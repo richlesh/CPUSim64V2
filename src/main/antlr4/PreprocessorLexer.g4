@@ -46,7 +46,7 @@ PP_IFCONDSR : '#' ([iI][fF]) '_' [cC][oO][nN][dD] '_' [sS][rR]	 -> pushMode(DIRE
 PP_IFCOND   : '#' ([iI][fF]) '_' [cC][oO][nN][dD]	 -> pushMode(DIRECTIVE_ARGS) ;
 PP_ELSEIFCOND: '#' [eE][lL][sS][eE] '_' [iI][fF] '_' [cC][oO][nN][dD] -> pushMode(DIRECTIVE_ARGS) ;
 PP_ELSECOND : '#' [eE][lL][sS][eE] '_' [cC][oO][nN][dD] ;
-PP_ENDCOND  : '#' [eE][nN][dD] '_' [cC][oO][nN][dD] ('_' [sR][rR])? ;
+PP_ENDCOND  : '#' [eE][nN][dD] '_' [cC][oO][nN][dD] ('_' [sS][rR])? ;
 PP_SYNC     : '#' [sS][yY][nN][cC] -> pushMode(DIRECTIVE_ARGS) ;
 PP_ENDSYNC  : '#' [eE][nN][dD] '_' [sS][yY][nN][cC] ;
 PP_INFO		: '#' [iI][nN][fF][oO] -> pushMode(MODE_MESSAGE) ;
@@ -116,6 +116,7 @@ IDENT_I		    : ([\p{L}_$] [\p{L}\p{Nd}_${}]*) -> type(IDENT) ;
 // ---- Then the mode block ----
 mode DIRECTIVE_ARGS;
 
+BLOCK_COMMENT_D : '/*' .*? '*/' -> channel(HIDDEN) ;
 LINE_COMMENT_D : '//' ~[\r\n]* -> channel(HIDDEN) ;
 WS_D 			: [ \t]+ -> channel(HIDDEN) ;
 NL_D 			: ('\r'? '\n')+ -> type(NL), popMode ;

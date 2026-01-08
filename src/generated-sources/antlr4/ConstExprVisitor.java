@@ -45,29 +45,40 @@ public interface ConstExprVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitPartOther(ConstExprParser.PartOtherContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link ConstExprParser#expr}.
+	 * Visit a parse tree produced by the {@code unaryExpr}
+	 * labeled alternative in {@link ConstExprParser#expr}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitExpr(ConstExprParser.ExprContext ctx);
+	T visitUnaryExpr(ConstExprParser.UnaryExprContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link ConstExprParser#addExpr}.
+	 * Visit a parse tree produced by the {@code primaryExpr}
+	 * labeled alternative in {@link ConstExprParser#expr}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitPrimaryExpr(ConstExprParser.PrimaryExprContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code addExpr}
+	 * labeled alternative in {@link ConstExprParser#expr}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitAddExpr(ConstExprParser.AddExprContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link ConstExprParser#mulExpr}.
+	 * Visit a parse tree produced by the {@code mulExpr}
+	 * labeled alternative in {@link ConstExprParser#expr}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitMulExpr(ConstExprParser.MulExprContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link ConstExprParser#unaryExpr}.
+	 * Visit a parse tree produced by the {@code parensExpr}
+	 * labeled alternative in {@link ConstExprParser#expr}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitUnaryExpr(ConstExprParser.UnaryExprContext ctx);
+	T visitParensExpr(ConstExprParser.ParensExprContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link ConstExprParser#primary}.
 	 * @param ctx the parse tree

@@ -263,33 +263,44 @@ public interface PreprocessorParserVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitLiteral(PreprocessorParser.LiteralContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link PreprocessorParser#constExpr}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitConstExpr(PreprocessorParser.ConstExprContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link PreprocessorParser#addExpr}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitAddExpr(PreprocessorParser.AddExprContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link PreprocessorParser#mulExpr}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitMulExpr(PreprocessorParser.MulExprContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link PreprocessorParser#unaryExpr}.
+	 * Visit a parse tree produced by the {@code unaryExpr}
+	 * labeled alternative in {@link PreprocessorParser#constExpr}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitUnaryExpr(PreprocessorParser.UnaryExprContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link PreprocessorParser#const}.
+	 * Visit a parse tree produced by the {@code addExpr}
+	 * labeled alternative in {@link PreprocessorParser#constExpr}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitConst(PreprocessorParser.ConstContext ctx);
+	T visitAddExpr(PreprocessorParser.AddExprContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code mulExpr}
+	 * labeled alternative in {@link PreprocessorParser#constExpr}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitMulExpr(PreprocessorParser.MulExprContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code atomExpr}
+	 * labeled alternative in {@link PreprocessorParser#constExpr}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitAtomExpr(PreprocessorParser.AtomExprContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code parensExpr}
+	 * labeled alternative in {@link PreprocessorParser#constExpr}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitParensExpr(PreprocessorParser.ParensExprContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link PreprocessorParser#atom}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitAtom(PreprocessorParser.AtomContext ctx);
 }

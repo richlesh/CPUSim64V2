@@ -5,49 +5,26 @@ line
     ;
 
 part
-    : expr                     		# PartExpr
-    | CHAR							# PartChar
-    | STRING						# PartString
-    | OTHER                      	# PartOther
+    : expr		                    		# PartExpr
+    | CHAR									# PartChar
+    | STRING								# PartString
+    | OTHER                      			# PartOther
     ;
 
-/*
- * Lowest precedence: + -
- */
 expr
-    : addExpr
+    : <assoc=right> MINUS expr              # unaryExpr
+    | expr op=(MULTIPLY | DIVIDE) expr		# mulExpr
+    | expr op=(PLUS | MINUS) expr     		# addExpr
+    | LPAREN expr RPAREN             		# parensExpr
+    | primary                             	# primaryExpr
     ;
 
-addExpr
-    : addExpr op=('+' | '-') mulExpr
-    | mulExpr
-    ;
-
-/*
- * Next precedence: * /
- */
-mulExpr
-    : mulExpr op=('*' | '/') unaryExpr
-    | unaryExpr
-    ;
-
-/*
- * Unary negation
- */
-unaryExpr
-    : '-' unaryExpr
-    | primary
-    ;
-
-/*
- * Literals and grouping
- */
 primary
-    : INT
-    | HEXINT
-    | FLOAT
-    | '(' addExpr ')'
+    : INT | HEXINT | FLOAT
     ;
+
+// ===== LEXER RULES =====
+// Order matters! More specific rules must come before OTHER
 
 CHAR
   : '\'' ( ESC | ~['\\\r\n] ) '\''
@@ -58,7 +35,7 @@ STRING
   ;
 
 HEXINT
-  : '-'? '0' [xX] HEX+
+  : '0' [xX] HEX+
   ;
 
 INT
@@ -67,6 +44,14 @@ INT
 
 FLOAT
     : DIGITS+ '.' DIGITS* ([eE] [+-]? DIGITS+)? ;
+
+// Operators - MUST be defined before OTHER
+PLUS     : '+' ;
+MINUS    : '-' ;
+MULTIPLY : '*' ;
+DIVIDE   : '/' ;
+LPAREN   : '(' ;
+RPAREN   : ')' ;
 
 WS : [ \t\r\n]+ -> channel(HIDDEN) ;
 

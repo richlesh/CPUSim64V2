@@ -428,53 +428,73 @@ public interface PreprocessorParserListener extends ParseTreeListener {
 	 */
 	void exitLiteral(PreprocessorParser.LiteralContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link PreprocessorParser#constExpr}.
-	 * @param ctx the parse tree
-	 */
-	void enterConstExpr(PreprocessorParser.ConstExprContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link PreprocessorParser#constExpr}.
-	 * @param ctx the parse tree
-	 */
-	void exitConstExpr(PreprocessorParser.ConstExprContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link PreprocessorParser#addExpr}.
-	 * @param ctx the parse tree
-	 */
-	void enterAddExpr(PreprocessorParser.AddExprContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link PreprocessorParser#addExpr}.
-	 * @param ctx the parse tree
-	 */
-	void exitAddExpr(PreprocessorParser.AddExprContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link PreprocessorParser#mulExpr}.
-	 * @param ctx the parse tree
-	 */
-	void enterMulExpr(PreprocessorParser.MulExprContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link PreprocessorParser#mulExpr}.
-	 * @param ctx the parse tree
-	 */
-	void exitMulExpr(PreprocessorParser.MulExprContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link PreprocessorParser#unaryExpr}.
+	 * Enter a parse tree produced by the {@code unaryExpr}
+	 * labeled alternative in {@link PreprocessorParser#constExpr}.
 	 * @param ctx the parse tree
 	 */
 	void enterUnaryExpr(PreprocessorParser.UnaryExprContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link PreprocessorParser#unaryExpr}.
+	 * Exit a parse tree produced by the {@code unaryExpr}
+	 * labeled alternative in {@link PreprocessorParser#constExpr}.
 	 * @param ctx the parse tree
 	 */
 	void exitUnaryExpr(PreprocessorParser.UnaryExprContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link PreprocessorParser#const}.
+	 * Enter a parse tree produced by the {@code addExpr}
+	 * labeled alternative in {@link PreprocessorParser#constExpr}.
 	 * @param ctx the parse tree
 	 */
-	void enterConst(PreprocessorParser.ConstContext ctx);
+	void enterAddExpr(PreprocessorParser.AddExprContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link PreprocessorParser#const}.
+	 * Exit a parse tree produced by the {@code addExpr}
+	 * labeled alternative in {@link PreprocessorParser#constExpr}.
 	 * @param ctx the parse tree
 	 */
-	void exitConst(PreprocessorParser.ConstContext ctx);
+	void exitAddExpr(PreprocessorParser.AddExprContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code mulExpr}
+	 * labeled alternative in {@link PreprocessorParser#constExpr}.
+	 * @param ctx the parse tree
+	 */
+	void enterMulExpr(PreprocessorParser.MulExprContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code mulExpr}
+	 * labeled alternative in {@link PreprocessorParser#constExpr}.
+	 * @param ctx the parse tree
+	 */
+	void exitMulExpr(PreprocessorParser.MulExprContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code atomExpr}
+	 * labeled alternative in {@link PreprocessorParser#constExpr}.
+	 * @param ctx the parse tree
+	 */
+	void enterAtomExpr(PreprocessorParser.AtomExprContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code atomExpr}
+	 * labeled alternative in {@link PreprocessorParser#constExpr}.
+	 * @param ctx the parse tree
+	 */
+	void exitAtomExpr(PreprocessorParser.AtomExprContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code parensExpr}
+	 * labeled alternative in {@link PreprocessorParser#constExpr}.
+	 * @param ctx the parse tree
+	 */
+	void enterParensExpr(PreprocessorParser.ParensExprContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code parensExpr}
+	 * labeled alternative in {@link PreprocessorParser#constExpr}.
+	 * @param ctx the parse tree
+	 */
+	void exitParensExpr(PreprocessorParser.ParensExprContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link PreprocessorParser#atom}.
+	 * @param ctx the parse tree
+	 */
+	void enterAtom(PreprocessorParser.AtomContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link PreprocessorParser#atom}.
+	 * @param ctx the parse tree
+	 */
+	void exitAtom(PreprocessorParser.AtomContext ctx);
 }

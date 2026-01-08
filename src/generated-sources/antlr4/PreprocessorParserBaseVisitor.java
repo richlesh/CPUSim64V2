@@ -312,7 +312,7 @@ public class PreprocessorParserBaseVisitor<T> extends AbstractParseTreeVisitor<T
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitConstExpr(PreprocessorParser.ConstExprContext ctx) { return visitChildren(ctx); }
+	@Override public T visitUnaryExpr(PreprocessorParser.UnaryExprContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -333,12 +333,19 @@ public class PreprocessorParserBaseVisitor<T> extends AbstractParseTreeVisitor<T
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitUnaryExpr(PreprocessorParser.UnaryExprContext ctx) { return visitChildren(ctx); }
+	@Override public T visitAtomExpr(PreprocessorParser.AtomExprContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitConst(PreprocessorParser.ConstContext ctx) { return visitChildren(ctx); }
+	@Override public T visitParensExpr(PreprocessorParser.ParensExprContext ctx) { return visitChildren(ctx); }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
+	@Override public T visitAtom(PreprocessorParser.AtomContext ctx) { return visitChildren(ctx); }
 }
