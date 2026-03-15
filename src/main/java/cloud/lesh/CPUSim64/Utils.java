@@ -35,18 +35,48 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Utils {
+	/**
+	 * Computes the inverse hyperbolic sine of {@code x}.
+	 *
+	 * @param x the value
+	 * @return asinh(x) = ln(x + sqrt(x² + 1))
+	 */
 	public static double asinh(double x) {
 		return Math.log(x + Math.sqrt(x * x + 1.0));
 	}
 
+	/**
+	 * Computes the inverse hyperbolic cosine of {@code x}.
+	 *
+	 * @param x the value (must be &ge; 1)
+	 * @return acosh(x) = ln(x + sqrt(x² - 1))
+	 */
 	public static double acosh(double x) {
 		return Math.log(x + Math.sqrt(x * x - 1.0));
 	}
 
+	/**
+	 * Computes the inverse hyperbolic tangent of {@code x}.
+	 *
+	 * @param x the value (must be in the range (-1, 1))
+	 * @return atanh(x) = 0.5 * ln((1 + x) / (1 - x))
+	 */
 	public static double atanh(double x) {
 		return 0.5 * Math.log((1.0 + x) / (1.0 - x));
 	}
 
+	/**
+	 * Parses a string representing an integer with an optional SI suffix
+	 * (K, M, G, T, P, E) and returns the corresponding {@code int} value.
+	 * <p>
+	 * Examples: {@code "1K"} → 1000, {@code "2.5M"} → 2500000, {@code "42"} → 42.
+	 *
+	 * @param s the string to parse; must not be {@code null} or empty
+	 * @return the parsed integer value
+	 * @throws IllegalArgumentException if {@code s} is null or empty
+	 * @throws NumberFormatException if the value exceeds {@link Integer#MAX_VALUE}
+	 *         or is negative, or if the numeric part cannot be parsed
+	 */
 	public static int decodeSI(String s) {
 		if (s == null)
 			throw new IllegalArgumentException("null input");
@@ -84,6 +114,18 @@ public class Utils {
 		return (int)result;
 	}
 
+	/**
+	 * Parses a character literal string (with or without surrounding single quotes)
+	 * and returns its Unicode code point as a {@code long}.
+	 * <p>
+	 * Supports standard escape sequences ({@code \b}, {@code \n}, {@code \t},
+	 * {@code \r}, {@code \\}, {@code \'}, {@code \"}, {@code \0}) and Unicode
+	 * escapes of the form {@code \\u{XXXXX}} or {@code \\U{XXXXX}}.
+	 *
+	 * @param s the character literal string to parse
+	 * @return the Unicode code point of the character
+	 * @throws IllegalStateException if the literal does not resolve to exactly one character
+	 */
 	public static long parseCharLiteral(String s) {
 		if (s.length() >= 2 && s.charAt(0) == '\'' && s.charAt(s.length() - 1) == '\'') {
 			s = s.substring(1, s.length() - 1);
@@ -152,6 +194,17 @@ public class Utils {
 		return unescaped.codePointAt(0);
 	}
 
+	/**
+	 * Parses a string literal (with or without surrounding double quotes),
+	 * processing escape sequences, and returns the result encoded as UTF-8 bytes.
+	 * <p>
+	 * Supports standard escape sequences ({@code \b}, {@code \n}, {@code \t},
+	 * {@code \r}, {@code \\}, {@code \'}, {@code \"}, {@code \0}) and Unicode
+	 * escapes of the form {@code \\u{XXXXX}} or {@code \\U{XXXXX}}.
+	 *
+	 * @param str the string literal to parse
+	 * @return the UTF-8 encoded bytes of the unescaped string content
+	 */
 	public static byte[] parseStringLiteral(String str) {
 		int[] s = str.codePoints().toArray();
 		if (s.length >= 2 && s[0] == '\"' && s[s.length - 1] == '\"') {
@@ -220,6 +273,16 @@ public class Utils {
 		return unescaped.getBytes(StandardCharsets.UTF_8);
 	}
 
+	/**
+	 * Escapes special characters in {@code s} so it can be safely embedded in a
+	 * string or character literal.
+	 * <p>
+	 * Replaces {@code \}, null, {@code \b}, {@code \t}, {@code \n}, {@code \r},
+	 * {@code \f}, {@code "}, and {@code '} with their corresponding escape sequences.
+	 *
+	 * @param s the string to escape
+	 * @return a new string with special characters replaced by escape sequences
+	 */
 	public static String escapeString(String s) {
 		s = s.replace("\\", "\\\\");
 		s = s.replace("\0", "\\0");
@@ -233,6 +296,15 @@ public class Utils {
 		return s;
 	}
 
+	/**
+	 * Rebuilds the source text of a parser rule context from the token stream,
+	 * collapsing all whitespace and hidden-channel tokens into single spaces.
+	 * Commas are not preceded by a space.
+	 *
+	 * @param tokens the full token stream from parsing
+	 * @param ctx    the parser rule context whose tokens should be rebuilt
+	 * @return the reconstructed text with normalized spacing
+	 */
 	public static String rebuildWithSingleSpaces(CommonTokenStream tokens, ParserRuleContext ctx) {
 		Token start = ctx.getStart();
 		Token stop  = ctx.getStop();
@@ -265,6 +337,17 @@ public class Utils {
 		return out.toString().trim();
 	}
 
+	/**
+	 * Rebuilds the source text of a parse tree node from the token stream,
+	 * collapsing whitespace into single spaces.
+	 * <p>
+	 * Delegates to {@link #rebuildWithSingleSpaces(CommonTokenStream, ParserRuleContext)}
+	 * for rule contexts and returns trimmed text for terminal nodes.
+	 *
+	 * @param tokens the full token stream from parsing
+	 * @param node   the parse tree node to rebuild; returns {@code ""} if {@code null}
+	 * @return the reconstructed text with normalized spacing
+	 */
 	public static String rebuildWithSingleSpaces(CommonTokenStream tokens, ParseTree node) {
 		if (node == null) return "";
 
@@ -299,6 +382,14 @@ public class Utils {
 			"^\\.(LINE|LINE_BEGIN)\\s+(.*)$"
 	);
 
+	/**
+	 * Scans preprocessed assembly text for {@code .LINE} and {@code .LINE_BEGIN}
+	 * directives and returns a map from each directive's line number (1-based) to
+	 * its payload (the filename and source line info following the directive keyword).
+	 *
+	 * @param text the preprocessed assembly source text to scan
+	 * @return a map from file line number to the directive payload string
+	 */
 	public static HashMap<Integer, String> readLineDirectives(String text) {
 		HashMap<Integer, String> map = new HashMap<>();
 
@@ -322,6 +413,16 @@ public class Utils {
 		return map;
 	}
 
+	/**
+	 * Extracts the full source line from the input stream that contains the given token.
+	 * <p>
+	 * Walks backward and forward from the token's position to find the surrounding
+	 * newline characters, then returns the entire line as a string.
+	 *
+	 * @param t the token whose source line should be extracted
+	 * @return the full line of source text containing {@code t}, or {@code ""} if
+	 *         the token has no associated input stream
+	 */
 	public static String extractSourceLine(Token t) {
 		CharStream input = t.getInputStream();
 		if (input == null) return "";

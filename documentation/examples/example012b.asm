@@ -7,17 +7,17 @@ PROGRAM_START:
 	mov		r1, FALSE
 	mov		r2, FALSE
 	and		r0, r1, r2
-	#call	fprintf(STDOUT, @FMT2ARGS, r1, r2, r0)
+	#call	printf(FMT2ARGS, r1, r2, r0)
 	mov		r2, TRUE
 	and		r0, r1, r2
-	#call	fprintf(STDOUT, @FMT2ARGS, r1, r2, r0)
+	#call	printf(FMT2ARGS, r1, r2, r0)
 	mov		r1, TRUE
 	mov		r2, FALSE
 	and		r0, r1, r2
-	#call	fprintf(STDOUT, @FMT2ARGS, r1, r2, r0)
+	#call	printf(FMT2ARGS, r1, r2, r0)
 	mov		r2, TRUE
 	and		r0, r1, r2
-	#call	fprintf(STDOUT, @FMT2ARGS, r1, r2, r0)
+	#call	printf(FMT2ARGS, r1, r2, r0)
 	#call	put_nl()
 
 	#call	puts("OR Truth Table\n")
@@ -25,17 +25,17 @@ PROGRAM_START:
 	mov		r1, FALSE
 	mov		r2, FALSE
 	or		r0, r1, r2
-	#call	fprintf(STDOUT, @FMT2ARGS, r1, r2, r0)
+	#call	printf(FMT2ARGS, r1, r2, r0)
 	mov		r2, TRUE
 	or		r0, r1, r2
-	#call	fprintf(STDOUT, @FMT2ARGS, r1, r2, r0)
+	#call	printf(FMT2ARGS, r1, r2, r0)
 	mov		r1, TRUE
 	mov		r2, FALSE
 	or		r0, r1, r2
-	#call	fprintf(STDOUT, @FMT2ARGS, r1, r2, r0)
+	#call	printf(FMT2ARGS, r1, r2, r0)
 	mov		r2, TRUE
 	or		r0, r1, r2
-	#call	fprintf(STDOUT, @FMT2ARGS, r1, r2, r0)
+	#call	printf(FMT2ARGS, r1, r2, r0)
 	#call	put_nl()
 
 	#call	puts("XOR Truth Table\n")
@@ -43,17 +43,17 @@ PROGRAM_START:
 	mov		r1, FALSE
 	mov		r2, FALSE
 	xor		r0, r1, r2
-	#call	fprintf(STDOUT, @FMT2ARGS, r1, r2, r0)
+	#call	printf(FMT2ARGS, r1, r2, r0)
 	mov		r2, TRUE
 	xor		r0, r1, r2
-	#call	fprintf(STDOUT, @FMT2ARGS, r1, r2, r0)
+	#call	printf(FMT2ARGS, r1, r2, r0)
 	mov		r1, TRUE
 	mov		r2, FALSE
 	xor		r0, r1, r2
-	#call	fprintf(STDOUT, @FMT2ARGS, r1, r2, r0)
+	#call	printf(FMT2ARGS, r1, r2, r0)
 	mov		r2, TRUE
 	xor		r0, r1, r2
-	#call	fprintf(STDOUT, @FMT2ARGS, r1, r2, r0)
+	#call	printf(FMT2ARGS, r1, r2, r0)
 	#call	put_nl()
 
 	#call	puts("NOT Truth Table\n")
@@ -61,15 +61,15 @@ PROGRAM_START:
 	mov		r1, FALSE
 	mov		r0, r1
 	not		r0
-	#call	fprintf(STDOUT, @FMT1ARG, r1, r0)
+	#call	printf(FMT1ARG, r1, r0)
 	mov		r1, TRUE
 	mov		r0, r1
 	not		r0
-	#call	fprintf(STDOUT, @FMT1ARG, r1, r0)
+	#call	printf(FMT1ARG, r1, r0)
 
 FINIS:	
 	stop
 	stop
-FMT2ARGS:	DCS	"%2d  %2d  %2d\n"
-FMT1ARG:	DCS	"%2d  %2d\n"
+FMT2ARGS:	.dcs	"%2d  %2d  %2d\n"
+FMT1ARG:	.dcs	"%2d  %2d\n"
 

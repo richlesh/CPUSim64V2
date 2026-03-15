@@ -65,3 +65,13 @@
 	cmp		${a}, ${b}
 	move	gt, r0, ${a}, ${b}
 #end_macro
+
+#def_macro	FMIN(a, b)
+	cmp		${a}, ${b}
+	move	lt, f0, ${a}, ${b}
+#end_macro
+
+#def_macro	FMAX(a, b)
+	cmp		${a}, ${b}
+	move	gt, f0, ${a}, ${b}
+#end_macro

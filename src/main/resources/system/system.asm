@@ -21,16 +21,16 @@ SYSTEM_ASM_START:
 	jump	SYSTEM_ASM_END
 
 ///////////////////////////////////////////////////////////////////////////////
-// intPrintArray(a, size)
-// Prints an array of integers.
+// printIntegerArray(a)
+// Prints an array of integers with the index and value.
 // a	Base address of the array to print
 // size	Number of elements to print
 ///////////////////////////////////////////////////////////////////////////////
-#def_func intPrintArray(a, size)
+#def_func printIntegerArray(a)
 	#var	base, i, len, v
 	load	base, a
-	load	len, size
-	clear	i
+	load	len, base[0]
+	move	i, 1
 	jump	$LOOP1_END
 $LOOP1:
 	load	v, base[i]
@@ -41,21 +41,21 @@ $LOOP1:
 	add		i, 1
 $LOOP1_END:
 	cmp		i, len
-	jump	ne, $LOOP1
+	jump	le, $LOOP1
 #end_func
 
 ///////////////////////////////////////////////////////////////////////////////
-// fpPrintArray(a, size)
-// Prints an array of FP.
+// printFloatArray(a)
+// Prints an array of floats with the index and value.
 // a	Base address of the array to print
 // size	Number of elements to print
 ///////////////////////////////////////////////////////////////////////////////
-#def_func fpPrintArray(a, size)
+#def_func printFloatArray(a)
 	#var	base, i, len
 	#fvar	v
 	load	base, a
-	load	len, size
-	clear	i
+	load	len, base[0]
+	move	i, 1
 	jump	$LOOP1_END
 $LOOP1:
 	load	v, base[i]
@@ -66,7 +66,7 @@ $LOOP1:
 	add		i, 1
 $LOOP1_END:
 	cmp		i, len
-	jump	ne, $LOOP1
+	jump	le, $LOOP1
 #end_func
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -138,7 +138,7 @@ $LOOP1_END:
 	int		iFREE
 #end_func
 
-#def_func free2(addr, offset)
+#def_func freeElement(addr, offset)
 	#var	a, o
 	load	a, addr
 	load	o, offset
@@ -181,11 +181,11 @@ _MUTEX_EXP_WAIT_FACTOR: .dcf 1.2
 _MUTEX_MAX_EXP_WAIT: .dcf 500.
 
 ///////////////////////////////////////////////////////////////////////////////
-// mutex_unlock2(addr, offset)
+// mutexUnlockElement(addr, offset)
 // Unlocks the mutex at addr[offset].
 // Returns TRUE if successful.
 ///////////////////////////////////////////////////////////////////////////////
-#def_func mutex_unlock2(addr, offset)
+#def_func mutexUnlockElement(addr, offset)
 	#var	a, o
 	load	a, addr
 	load	o, offset
@@ -194,11 +194,11 @@ _MUTEX_MAX_EXP_WAIT: .dcf 500.
 #end_func
 
 ///////////////////////////////////////////////////////////////////////////////
-// mutex_unlock(addr)
+// mutexUnlock(addr)
 // Unlocks the mutex at addr.
 // Returns TRUE if successful.
 ///////////////////////////////////////////////////////////////////////////////
-#def_func mutex_unlock(addr)
+#def_func mutexUnlock(addr)
 	#var	a, v, ov, newValue, oldValue, pid, oldPID
 	load	a, addr
 	int		iGET_PID
@@ -225,12 +225,12 @@ _MUTEX_MAX_EXP_WAIT: .dcf 500.
 #end_func
 
 ///////////////////////////////////////////////////////////////////////////////
-// mutex_lock2(addr, offset, timeout)
+// mutexLockElement(addr, offset, timeout)
 // Pauses the current thread until the mutex at addr[offset] can be acquired or
 // until timeout is reached.  Timeout is in milliseconds. Use -1 for no timeout
 // Returns TRUE if successful.
 ///////////////////////////////////////////////////////////////////////////////
-#def_func mutex_lock2(addr, offset, timeout)
+#def_func mutexLockElement(addr, offset, timeout)
 	#var	a, o, t
 	load	a, addr
 	load	o, offset
@@ -241,12 +241,12 @@ _MUTEX_MAX_EXP_WAIT: .dcf 500.
 #end_func
 
 ///////////////////////////////////////////////////////////////////////////////
-// mutex_lock(addr, timeout)
+// mutexLock(addr, timeout)
 // Pauses the current thread until the mutex at addr can be acquired or until
 // timeout is reached.  Timeout is in milliseconds. Use -1 for no timeout.
 // Returns TRUE if successful.
 ///////////////////////////////////////////////////////////////////////////////
-#def_func mutex_lock(addr, timeout)
+#def_func mutexLock(addr, timeout)
 	#var	a, newValue, oldValue, pid, oldPID, sleepDuration, start, duration, endDuration
 	#fvar	mutex_exp_wait_factor, mutex_max_exp_wait
 	load	a, addr

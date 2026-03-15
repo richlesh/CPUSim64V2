@@ -26,10 +26,13 @@ echo example010.asm
 ./debugout.sh example010 > example010.out
 echo example011.asm
 ./debugout.sh example011 > example011.out
+../../disassemble.sh example011 > example011.disasm
 echo example012.asm
 ./runout.sh example012 > example012.out
+echo example012b.asm
+./runout.sh example012b > example012b.out
 echo example013.asm
-./runout.sh example013 > example013.out
+./debugout.sh example013 > example013.out
 echo example014.asm
 ./runout.sh example014 > example014.out
 echo example015.asm

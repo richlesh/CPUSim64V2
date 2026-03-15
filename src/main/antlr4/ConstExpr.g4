@@ -39,7 +39,7 @@ HEXINT
   ;
 
 INT
-  : DIGITS
+  : DIGITS+
   ;
 
 FLOAT
@@ -60,7 +60,7 @@ fragment ESC
   | '\\' [uU] '{' HEX+ '}'
   ;
 
-fragment DIGITS : [0-9]+ ;
+fragment DIGITS : [0-9] ;
 
 fragment HEX : [0-9A-Fa-f];
 

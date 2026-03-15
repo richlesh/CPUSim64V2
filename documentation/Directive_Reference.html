@@ -36,7 +36,7 @@
 		<tr><td>#include</td><td>&lt;systemfile.def&gt;<br/>"localfile.asm"</td><td>Includes the contents of a system file or a file in the current directory.</td></tr>
 		<tr><td>#define</td><td>IDENT literal</td><td>Defines the substitution symbol IDENT as a synonym for the literal value.</td></tr>
 		<tr><td>#undef</td><td>IDENT</td><td>Undefines the substitution symbol IDENT.</td></tr>
-		<tr><td>#def_func<br/>#end_func</td><td>FUNC_IDENT(params)<br/>none</td><td>Defines a stack-based function.  Params are a comma-separated list of formal argument identifiers.  </td></tr>
+		<tr><td>#def_func<br/>#end_func</td><td>FUNC_IDENT(params)<br/>none</td><td>Defines a stack-based function.  Params are a comma-separated list of formal argument identifiers.   Since the args are on the stack they must be loaded into registers using the <code>load</code> instruction to be useful.</td></tr>
 		<tr><td>#call</td><td>FUNC_IDENT(args)</td><td>Calls a stack-based function.  The args are a comma separated list of values that will be passed on the stack matching the formal parameters defined for the function.</td></tr>
 		<tr><td>#def_macro<br/>#end_macro</td><td>MACRO_IDENT(params)<br/>none</td><td>Defines a substitution macro.  Params are a comma-separated list of placeholder names.  Inside the body of the macro, parameters are represented using the special placeholder symbol <code>${param}</code>, where param is the name of the parameter to substitute.</td></tr>
 		<tr><td>#macro</td><td>MACRO_IDENT(args)</td><td>Instantiates a substitution of the macro.  The args are a comma separated list of symbols that will be substituted into the macro matching the formal parameters defined for the macro.</td></tr>
@@ -75,24 +75,24 @@
 		<tr><td>.block_begin<br/>.block_end</td><td>IDENT<br/>none</td><td>Creates a new scope for line labels.  Label names beginning with a dollar sign (<code>$</code>) will be relative to the enclosing scope.</td></tr>
 		<tr><td>.dci</td><td>int_literal</td><td>Stores the specified integer in the next word of the assembled code.</td></tr>
 		<tr><td>.dcf</td><td>float_literal</td><td>Stores the specified floating point value in the next word of the assembled code.</td></tr>
-		<tr><td>.dca</td><td>count</td><td>Causes count + 1 words to be allocated at this point in the code.  Contents are undefined.  The first word will contain the count.</td></tr>
-		<tr><td>.dcb</td><td>byte_list</td><td>Causes the bytes specified by the comma separated byte_list to be allocated at this point in the code.  Bytes will be packed 8 to a word (big-endian).  The first word will contain the count.</td></tr>
+		<tr><td>.dca</td><td>count</td><td>Causes count + 1 words to be allocated at this point in the code.  Contents are undefined.  The first word will contain the word count.</td></tr>
+		<tr><td>.dcb</td><td>byte_list</td><td>Causes the bytes specified by the comma separated byte_list to be allocated at this point in the code.  Bytes will be packed 8 to a word (big-endian).  The first word will contain the byte count (not the word count).</td></tr>
 		<tr><td>.dcs</td><td>string_literal</td><td>Causes the string specified to be allocated at this point in the code.  String is encoded in UTF-8 and will be packed 8 to a word (big-endian).  The first word will contain the UTF-8 byte count.</td></tr>
-		<tr><td>.dcw</td><td>int_list<br/>float_list<br/>char_list</td><td>Causes the words specified by the comma separated list to be allocated at this point in the code.  Initializers are placed one per word.  The first word will contain the count.</td></tr>
+		<tr><td>.dcw</td><td>int_list<br/>float_list<br/>char_list</td><td>Causes the words specified by the comma separated list to be allocated at this point in the code.  Initializers are placed one per word.  The first word will contain the word count.</td></tr>
 	</tbody>
 </table>
 
-<p>Literals can be a decimal integer, hexadecimal integer, floating point literal, character literal or string literal.
+<p>Literals may be a decimal integer, hexadecimal integer, floating point literal, character literal or string literal.
 </p>
 <h4>Examples</h4>
 <ul>
 	<li>Decimal Integer: <code>326</code>, <code>-123</code></li>
 	<li>Hexadecimal Integer: <code>0x1a2b</code>, <code>-0X1234</code></li>
 	<li>Floating Point: <code>3.</code>, <code>-0.123</code>, <code>3.1415e10</code>, <code>4.567E-2</code></li>
-	<li>Character Literal: <code>'A'</code>, <code>'4'</code>, <code>'\t'</code>, <code>'\u00ab'</code></li>
-	<li>String Literal: <code>"Héllø, World!"</code>, <code>"C-style escapes \t \n"</code>, <code>"Unicode escapes \u00ab \u1234, \u134F"</code></li>
+	<li>Character Literal: <code>'A'</code>, <code>'4'</code>, <code>'\t'</code>, <code>'\u{ab}'</code></li>
+	<li>String Literal: <code>"Héllø, World!"</code>, <code>"C-style escapes \t \n"</code>, <code>"Unicode escapes \u{00ab} \u{1234}, \u{134F}"</code></li>
 </ul>
-<p class="note">Unicode escapes are UTF-16 values.  They must be exactly four hexadecimal digits.</p>
+<p class="note">Unicode escapes are Unicode codepoints.  They may be one to six hexadecimal digits.</p>
 
 <footer>
 <p><a href="index.html">Overview</a> |

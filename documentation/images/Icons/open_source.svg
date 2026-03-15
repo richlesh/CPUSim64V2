@@ -1,0 +1,14 @@
+<!-- Open Lock (more obviously open) -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" aria-label="Open source" role="img">
+  <title>Open source</title>
+  <g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <!-- body -->
+    <rect x="6" y="11" width="12" height="10" rx="2"/>
+    <!-- keyhole -->
+    <path d="M12 15v3"/>
+    <path d="M11 15a1 1 0 0 1 2 0"/>
+    <!-- open shackle (tilted/open) -->
+    <path d="M9 11V8a3 3 0 0 1 5.8-1"/>
+    <path d="M14.8 7L16 7"/>
+  </g>
+</svg>

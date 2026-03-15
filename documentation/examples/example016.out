@@ -8,9 +8,8 @@ iPARSE_FP+1:327.00
 
 > run.sh example016 3.1415
 Input:3.1415
-iPARSE_INT+1:Can't parse int '3.1415'
-
+iPARSE_INT+1:
 
 > run.sh example016 abcd
 Input:abcd
-iPARSE_INT+1:Can't parse int 'abcd'
+iPARSE_INT+1:

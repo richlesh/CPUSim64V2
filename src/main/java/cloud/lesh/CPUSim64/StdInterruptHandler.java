@@ -858,8 +858,7 @@ public class StdInterruptHandler extends InterruptHandler
 				try {
 					cpu.setR(0, Long.decode(s));
 				} catch (Exception ex) {
-					System.out.println("Can't parse int '" + s + "'");
-					System.exit(1);
+					throw cpu.new CPUException("Can't parse int '" + s + "'");
 				}
 				break;
 			case iPARSE_DEC:
@@ -867,8 +866,7 @@ public class StdInterruptHandler extends InterruptHandler
 				try {
 					cpu.setR(0,Long.parseLong(s,10));
 				} catch (Exception ex) {
-					System.out.println("Can't parse dec '" + s + "'");
-					System.exit(1);
+					throw cpu.new CPUException("Can't parse dec '" + s + "'");
 				}
 		break;
 			case iPARSE_HEX:
@@ -876,8 +874,7 @@ public class StdInterruptHandler extends InterruptHandler
 				try {
 					cpu.setR(0,Long.parseLong(s,16));
 				} catch (Exception ex) {
-					System.out.println("Can't parse hex '" + s + "'");
-					System.exit(1);
+					throw cpu.new CPUException("Can't parse hex '" + s + "'");
 				}
 				break;
 			case iPARSE_FLOAT:
@@ -885,8 +882,7 @@ public class StdInterruptHandler extends InterruptHandler
 				try {
 					cpu.setFP(0,Double.parseDouble(s));
 				} catch (Exception ex) {
-					System.out.println("Can't parse float '" + s + "'");
-					System.exit(1);
+					throw cpu.new CPUException("Can't parse float '" + s + "'");
 				}
 				break;
 			case iSPRINTF:

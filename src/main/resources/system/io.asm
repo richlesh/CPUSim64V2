@@ -386,7 +386,22 @@ jump	IO_ASM_END
 	#call	puts(str)
 	load	r0, STDOUT_LOCK_HANDLE
 	#call	releaseRecursiveSpinLock(r0)
+	move	r1, str
+	int		iFREE
 #end_func
+
+// cond_printf(cond, fmt, values...)
+// Formats the values on the stack and then sends to STDOUT atomically
+// cond		Must be TRUE to print
+// fmt		String with formatting information
+// values	Values for formatting
+#def_macro	cond_printf(b, fmt, values...)
+	load	r0, STDOUT_LOCK_HANDLE
+	#call	acquireRecursiveSpinLock(r0)
+	#call	cond_fprintf(${cond}, STDOUT, ${fmt}, ${values}, ${...})
+	load	r0, STDOUT_LOCK_HANDLE
+	#call	releaseRecursiveSpinLock(r0)
+#end_macro
 
 // cond_fprintf(cond, port, fmt, values...)
 // Formats the values on the stack and then sends to the specified I/O port
@@ -449,7 +464,6 @@ jump	IO_ASM_END
 // fgetline
 // Read an entire line from the specified I/O port
 // port		I/O Port
-// Returns address of the line as a string.  Do not free this address.
 // Returns the (re)allocated buffer or 0 if EOF
 #def_func	fgetline(port, buffer)
 	load	r1, port
@@ -637,6 +651,48 @@ jump	IO_ASM_END
 		move	r1, STDOUT
 		load	r2, addr[i]
 		int		iPUT_DEC
+	#end_for
+#end_func
+
+///////////////////////////////////////////////////////////////////////////////
+// printFloatArray(a)
+// Prints an array of floats.
+// a	Base address of the array to print
+///////////////////////////////////////////////////////////////////////////////
+#def_func printFloatArray(addrArg)
+	#var	len, i, addr
+	load	addr, addrArg
+	load	len, addr[0]
+	#for	1, i <= len, 1
+		#if_cond	i, ne, 1
+			move	r1, STDOUT
+			move	r2, ","
+			int		iPUTS
+		#end_cond
+		move	r1, STDOUT
+		load	f1, addr[i]
+		int		iPUT_FP
+	#end_for
+#end_func
+
+///////////////////////////////////////////////////////////////////////////////
+// printStringArray(a)
+// Prints an array of strings.
+// a	Base address of the array to print
+///////////////////////////////////////////////////////////////////////////////
+#def_func printStringArray(addrArg)
+	#var	len, i, addr
+	load	addr, addrArg
+	load	len, addr[0]
+	#for	1, i <= len, 1
+		#if_cond	i, ne, 1
+			move	r1, STDOUT
+			move	r2, ","
+			int		iPUTS
+		#end_cond
+		move	r1, STDOUT
+		load	r2, addr[i]
+		int		iPUTS
 	#end_for
 #end_func
 

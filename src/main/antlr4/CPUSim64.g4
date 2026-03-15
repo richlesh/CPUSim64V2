@@ -383,7 +383,7 @@ SUB      : [sS][uU][bB] ;
 MULT     : [mM][uU][lL][tT]? ;
 DIV      : [dD][iI][vV] ;
 RECIP    : [rR][eE][cC][iI][pP] ;
-COMPL    : [cC][oO][mM][pP][lL] ;
+COMPL    : ([cC][oO][mM][pP][lL]) | ([nN][oO][tT]);
 AND      : [aA][nN][dD] ;
 OR       : [oO][rR] ;
 XOR      : [xX][oO][rR] ;

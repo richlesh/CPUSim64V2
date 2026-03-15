@@ -34,12 +34,13 @@ PROGRAM_START:
 	#call	puts(MY_STR3)	// Lots of escaped characters
 	#call	put_nl()
 
-	#call	puts(CONST_STR)	// Address of string constant defined by DCS at the   
-							// end of the code is used here
-	load	r1, CONST_CHAR	// Address of character (integer) constant is used
-							// here to load the character
-	#call	putc(r1)
+	#call	puts(CONST_STR)		// Address of string constant defined by DCS at the   
+								// end of the code is used here
 	#call	put_nl()
+	load	r1, BYTE_ARRAY[0]	// Start of byte array (count of bytes not words)
+								// here to load the character
+	load	r2, BYTE_ARRAY[1]	// The bytes
+	debug	r1, r2
 	
 	move	r1, 1				// loop variable
 	move	r2, INT_ARRAY		// address of array
@@ -72,7 +73,7 @@ END_LOOP1:
 
 	CONST_INT:	.DCI	326
 	CONST_FP:	.DCF	3.1415
-	CONST_CHAR:	.DCC 	'\u{263A}'
 	CONST_STR:	.DCS 	"Hello, Rich!"
+	BYTE_ARRAY:	.DCB 	1, 2, 3, 0xFF, 0
 	INT_ARRAY:	.DCW	1,1,2,3,5,8,13,21
 	FP_ARRAY:	.DCW	1.00, 1.60, 2.50, 4.00, 6.30

@@ -1,5 +1,8 @@
 > debug.sh example005
 Read 22 words from example005.obj.gz
+R0: 32  
+R1: 65  R2: 9786  
+R3: -5  R4: 326  R5: 4886718345  
 
 CPU State    SR: oszP
   R               hex                   dec  FP                    float   Stack               hex                   dec                   float
@@ -35,6 +38,8 @@ R28: 0000000000000000                     0 F28:       0.000000000000000
  SF: 00000000000f617f                       F29:       0.000000000000000
  SP: 00000000000f617f                       F30:       0.000000000000000
  PC: 000000000000000c                       F31:       0.000000000000000
+F0: -10.000000000000000  F1: -1.0000000000000000  F2: 20.000000000000000  F3: 21.000000000000000  
+SP: 1007999  SF: 1007999  PC: 18  
 
 CPU State    SR: oszP
   R               hex                   dec  FP                    float   Stack               hex                   dec                   float

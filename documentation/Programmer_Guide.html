@@ -3,13 +3,14 @@
 <head>
 	<meta charset="utf-8">
 	<title>CPUSim64 Programmer Guide</title>
-	<meta name="description" content="Documentation for CPUSim64">
+	<meta name="description" content="Programmer Documentation for CPUSim64">
 	<link rel="canonical" href="https://www.lesh.cloud/cpusim64/Programmer_Guide.html">
 	<meta name="robots" content="max-image-preview:large">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<meta name="generator" content="BBEdit 14.6">
 	<meta name="author" content="Richard Lesh">
 	<link rel="stylesheet" type="text/css" href="styles.css">
+	<link rel="stylesheet" type="text/css" href="styles2.css">
 	<script src="js/jquery-3.6.1.min.js"></script>
 	<script>
 		var basepath = window.location.href;
@@ -54,14 +55,15 @@
 </script>
 </head>
 <body onload="javascript:processFiles()">
+  <div class="wrap">
 <h1>CPUSim64 Programmer Guide</h1>
 <h2>Introduction</h2>
 <p>The CPUSim64 project consists of an assembler and an emulator (also called the simulator).  The assembler is used to convert assembly language source files into CPUSim64 machine code object files.  The emulator is used to execute these object files.</p>
 	
-<p>Assembly language files are plain text files that can create with any programming editor.  Popular editors include <a href="https://kate-editor.org/" target="_blank">Kate</a> (Linux), <a href="https://www.barebones.com/products/bbedit/" target="_blank">BBEdit</a> (macOS) and <a href="https://notepad-plus-plus.org/" target="_blank">Notepad++</a> (Windows) Microsoft has released an open source code editor called <a href="https://code.visualstudio.com/" target="_blank">Visual Studio Code</a> that runs on all platforms.  There is also the commercial multi-platform <a href="https://www.sublimetext.com/" target="_blank">Sublime</a> editor. <em>DO NOT use a word processor like LibreOffice Writer, Pages or Word as these do not save their files as plain text.</em></p>
+<p>Assembly language files are plain text files that can create with any <a href="code_editors.html">programming editor</a>.  Popular editors include <a href="https://kate-editor.org/" target="_blank">Kate</a> <img src="images/Logos/linux.svg" alt="Linux Logo" width="16" height="16"><img src="images/Logos/raspberry_pi.svg" alt="Raspberry Pi Logo" class="icon">, <a href="https://www.barebones.com/products/bbedit/" target="_blank">BBEdit</a> <img src="images/Logos/apple.svg" alt="Apple Logo" class="icon" width="18" height="18"> and <a href="https://notepad-plus-plus.org/" target="_blank">Notepad++</a> <img src="images/Logos/windows.svg" alt="Windows Logo" class="icon" width="14" height="14">. Microsoft has released an open source code editor called <a href="https://code.visualstudio.com/" target="_blank">Visual Studio Code</a> that runs on all platforms.  There is also the commercial multi-platform <a href="https://www.sublimetext.com/" target="_blank">Sublime</a> editor. <em>DO NOT use a word processor like LibreOffice Writer, Apple Pages or Microsoft Word as these do not save their files as plain text.</em></p>
 
-<p>Then you use the assembler to compile your assembly language source files into CPUSim64 machine code object files.  These object files can then be run with the CPUSim64 emulator.  Both the assembler and the simulator are written in Java so you will need the Java 17 or later VM (virtual machine).  You can get Java runtime from <a href="https://www.oracle.com/java/" target="_blank">Oracle</a> (Commercial) or <a href="https://adoptium.net/" target="_blank">Adoptium</a> (Open Source) as well as others.</p>
-<figure><img alt="Memory Model Diagram" src="images/compile_execution_model.png" style="width:50%;height:50%"><figcaption>Development Model Diagram</figcaption></figure>
+<p>Then you use the assembler to compile your assembly language source files into CPUSim64 machine code object files.  These object files can then be run with the CPUSim64 emulator.  Both the assembler and the simulator are written in Java so you will need the Java 17 or later VM (virtual machine).  You can get Java runtime from <a href="https://www.oracle.com/java/" target="_blank">Oracle</a> (Commercial) or free OSS versions <a href="https://adoptium.net/" target="_blank">Adoptium Eclipse Temerin</a>, <a href="https://aws.amazon.com/corretto/" target="_blank">Amazon Corretto</a>, <a href="https://azul.com/" target="_blank">Azul Zulu</a> as well as others.</p>
+<figure><img alt="Memory Model Diagram" src="images/compile_execution_model.png" style="width:50%;height:50%;background-color:white;"><figcaption>Development Model Diagram</figcaption></figure>
 <h2>Installation</h2>
 <p>CPUSim64 is composed of Java classes in a jar file located in the "lib" folder of the distribution and script files in the main directory that you can use to run the assembler and emulator in different modes.  Download the <a href="/CPUSim64V2.zip">CPUSim64V2.zip</a> file and expand it to a location of your choice.  For this guide we will assume that you expand the ZIP archive in your Documents dirctory.</p>
 <p>You are required to install Java JDK 17 on your system and make sure that the Java JDK bin directory is in your system's PATH ejvironment variable.  Type the following in your terminal window to see if Java is installed correctly.</p>
@@ -70,7 +72,7 @@ java 17.0.5 2022-10-18 LTS
 Java(TM) SE Runtime Environment (build 17.0.5+9-LTS-191)
 Java HotSpot(TM) 64-Bit Server VM (build 17.0.5+9-LTS-191, mixed mode, sharing)
 </div>
-<p>If you don't see the Java version printed, check your install and PATH variable.  Also it can be handy to put the location of your CPUSim64 directory in the path variable as well.  Then you can execute the CPUSim64 scripts from any directory.  See <a href="Setting the PATH Variable.html" target="_blank">How to Set Your Path Variable</a> for detailed instuctions on setting the PATH variable.</p>
+<p>If you don't see the Java version printed, check your install and PATH variable.  Also it can be handy to put the location of your CPUSim64 directory in the path variable as well.  Then you can execute the CPUSim64 scripts from any directory.  See <a href="Setting_the_PATH_Variable.html" target="_blank">How to Set Your Path Variable</a> for detailed instuctions on setting the PATH variable.</p>
 <p>Once you have Java and CPUSim64 installed, you can test it out using a the very small program listed below.  Use a text editor to enter the text of the program then save it as example001.asm.</p>
 <div id="example001_asm"></div>
 <script>register("example001_asm")</script>
@@ -169,15 +171,22 @@ Java HotSpot(TM) 64-Bit Server VM (build 17.0.5+9-LTS-191, mixed mode, sharing)
 <div id="example009_out"></div>
 <script>register("example009_out")</script> 
 <h2>Control</h2>
-<p>We can make control structures such as conditional branching and loops using the <code>JUMP</code> instruction.  The <code>JUMP</code> instruction can branch unconditionally or based on the condition of one of the bits in the status register (SR).  The status register bits that we can test for include   We can make the equivalent of DO WHILE/WEND and DO/WHILE loops as illustrated below.</p>
+<p>We can make control structures such as conditional branching and loops using the <code>JUMP</code> instruction.  The <code>JUMP</code> instruction can branch unconditionally or based on the condition of one of the bits in the status register (<code>SR</code>).  The status register bit conditions that we can test include:</p>
+<ul>
+	<li>zero (<code>z</code>)</li>
+	<li>sign (<code>s</code>)</li>
+	<li>parity (<code>p</code>)</li>
+	<li>overflow (<code>o</code>)</li>
+</ul>
+<p>We can make the equivalent of DO WHILE/WEND and DO/WHILE loops as illustrated below.</p>
 <div id="example010_asm"></div>
 <script>register("example010_asm")</script>
 <div id="example010_out"></div>
 <script>register("example010_out")</script> 
-<p>When we use a <code>JUMP</code> or <code>CALL</code> instruction we must always supply an address as the last operand (or second to last if an offset is also used).  The address can either be a general purpose register with an address in it or an address literal.  Address literals can be global or block local.  Normally address symbols are global unless they start with an '$' character.  Global address labels must be unique within the entire program.  Block local addresses are only known inside the function, control structure or block where they are defined and thus can be reused in other blocks.  Function names are always global address labels.  Programmer defined address labels are symbols followed by a colon (':') that precede an instruction or assembler data directive.</p>
+<p>When we use a <code>JUMP</code> or <code>CALL</code> instruction we must always supply an address as the last operand (or second to last if an offset is also used).  The address can either be a general purpose register with an address in it or an address literal.  Address literals can be global or block local.  Normally address symbols are global unless they start with an '<code>$</code>' character.  Global address labels must be unique within the entire program.  Block local addresses are only known inside the function, control structure or block where they are defined and thus can be reused in other blocks.  Function names are always global address labels.  Programmer defined address labels are symbols followed by a colon ('<code>:</code>') that precede an instruction or assembler data directive.</p>
 <h2>Compare and Test</h2>
 <p>Two instructions that can be helpful when writing loops are <code>COMPARE</code> and <code>TEST</code>.</p>
-<p><code>COMPARE</code> takes two operands and subtracts them, setting the status register bits according to the computed difference.  If the two operands are equal, the Z (zero) status bit will be true.  Likewise it will be false (not zero) if they are not equal.  When the status register is printed by the <code>DEBUG</code> instruction the zerio bit will be a capital Z if it is set (true) and a lowercase z if it is not set (false).  The condition codes we use in the <code>JUMP</code> instruction are 'z' if set and 'nz' if not set, corresponding to 'is zero' and 'is not zero' respectively.  You may also use the condition 'eq' for 'z' or 'ne' for 'nz'.</p>
+<p><code>COMPARE</code> takes two operands and subtracts them, setting the status register bits according to the computed difference.  If the two operands are equal, the <code>Z</code> (zero) status bit will be true.  Likewise it will be false (not zero) if they are not equal.  When the status register is printed by the <code>DEBUG</code> instruction the zero bit will be a capital Z if it is set (true) and a lowercase z if it is not set (false).  This is also the pattern for the other three SR bits, capital is true, lowercase is false.  The condition codes we use in the <code>JUMP</code> instruction are <code>z</code> if set and <code>nz</code> if not set, corresponding to "is zero" and "is not zero" respectively.  You may also use the condition '<code>eq</code>' for <code>z</code> or <code>ne</code> for <code>nz</code>.</p>
 <p>The <code>TEST</code> instruction simply tests the single operand supplied, setting the status registers based on the attributes of the operand.  It is essentially equivalent to comparing the operand to zero.</p>
 <div id="example011_asm"></div>
 <script>register("example011_asm")</script>
@@ -187,12 +196,12 @@ Java HotSpot(TM) 64-Bit Server VM (build 17.0.5+9-LTS-191, mixed mode, sharing)
 <table>
 	<tr><th>Condition Code</th><th>SR Bit Checked</th><th>Relational Equivalent</th></tr>
 	<tr><td>u</td><td>unconditional</td><td></td></tr>
-	<tr><td>z or eq</td><td>zero</td><td>op0 == op1</td></tr>
-	<tr><td>nz or ne</td><td>not zero</td><td>op0 != op1</td></tr>
-	<tr><td>n or lt</td><td>negative</td><td>op0 &lt; op1</td></tr>
-	<tr><td>p or gt</td><td>positive</td><td>op0 &gt; op1</td></tr>
-	<tr><td>nn or ge</td><td>not negative</td><td>op0 &gt;= op1</td></tr>
-	<tr><td>np or le</td><td>not positive</td><td>op0 &lt;= op1</td></tr>
+	<tr><td>z or eq</td><td>Z</td><td>op0 == op1</td></tr>
+	<tr><td>nz or ne</td><td>z</td><td>op0 != op1</td></tr>
+	<tr><td>n or lt</td><td>S</td><td>op0 &lt; op1</td></tr>
+	<tr><td>p or gt</td><td>s and z</td><td>op0 &gt; op1</td></tr>
+	<tr><td>nn or ge</td><td>s</td><td>op0 &gt;= op1</td></tr>
+	<tr><td>np or le</td><td>S or Z</td><td>op0 &lt;= op1</td></tr>
 </table>
 <h2>Logical Operators</h2>
 <p>We have a number of bitwise logical operators that can be used for Boolean arithmetic.  These operators can also be used for simple logical testing if we restrict our values to -1 and 0.  This allows us to represent TRUE as -1 (all bits set) and FALSE as 0 (no bits set).  The binary logical operators are <code>AND</code>, <code>OR</code> and <code>XOR</code>.  There is one operator that takes a single argument, the <code>COMPLIMENT</code> operator (also known as logical <code>NOT</code>)  The following example illustrates this use of the logical operators to print out truth tables.<p>
@@ -204,25 +213,29 @@ Java HotSpot(TM) 64-Bit Server VM (build 17.0.5+9-LTS-191, mixed mode, sharing)
 <h2>Named Constants</h2>
 <p>Using symbolic names for literal values helps with the readability of our programs.  It also helps eliminate mistakes caused by repeated typing of the same literal value.  With symbolic constants we get the added benefit that if we misspell the symbolic constant, we should get an assembler error.  Unlike mistyping a literal value which is often just a different and wrong legal literal value.</p>
 <p>One way to create symbolic constants is to use a preprocessor directive <code>#define</code>.  The preprocessor directives define simple text substitutions that happen on our code before it is compiled.  We have been using one such directive <code>#include</code> to add in code from another file,  The <code>#define</code> directive establishes a simple substitution between a symbolic name and a numeric literal (integer or floating point).  Whenever the symbolic name is used in our code, the corresponding literal value is substituted just as if we had typed it into the code ourselves.  When we use <code>#define</code> we often use all upper case symbols to help remind us where text substitutions are occuring in our code.</p>
-<p>The other mechanism for creating named constants is to declare a constant in memory at the end of our code.  This is done with the <code>.DCI</code> or <code>.DCF</code> compiler directives to store an integer or floating point value.  There are also <code>.DCC</code> and <code>.DCS</code> directives for storing a character or a UTF-8 encoded Unicode string respectively.  In addition, there is the <code>.DCW</code> for defining a list of integer or floating point values.  The list always has one additional item that is the list size.  This will be in the first element at the beginning of the list.</p>
-<div id="example013_asm"></div>
-<script>register("example013_asm")</script>
-<div id="example013_out"></div>
-<p class="note">Assembler directives always start with a period '.' to differentiate them from CPUSim64 instructions.  Directives are instructions for the assembler to process whereas CPUSim64 instructions are machine instructions for the CPUSim64 emulator.</p>
-<script>register("example013_out")</script>
-<h2>Disassembly and Symbol Files</h2>
-<p>You can use the CPUSim64 disassembler to take machine code in a <code>.obj.gz</code> file and turn it back into human readable form.  This can be helpful to see exactly how the assembler has interpreted your source code.  It can also provide a roadmap for when you run your code in debug mode.  The assembler will create three symbol files (<code>.sym</code>,<code>.sym1</code> and <code>.sym2</code>) that can be used by the disassembler to make your code more readable.  You can safely delete these files if you don't need to use the disassembler.  You can run the disassembler on your object files using the provided <code>disassemble.sh</code> script.</p>
-<div id="example013_disasm"></div>
-<script>register("example013_disasm")</script>
+<p>The other mechanism for creating named constants is to declare a constant in memory at the end of our code.  This is done with the <code>.DCI</code> or <code>.DCF</code> compiler directives to store an integer or floating point value.  There are also <code>.DCS</code> directive for storing an UTF-8 encoded Unicode string respectively.  In addition, there are the <code>.DCB</code> and the <code>.DCW</code> for defining a list of values.  The <code>.DCB</code> is for a list of bytes (packed 8 to a word), whereas the <code>.DCW</code> is for an integer or floating point list (word sized values).  In both case the list always has one additional item that is the list size.  This will be in the first element at the beginning of the list.</p>
 <p>Using named constants we can refactor the truth tables program to be more readable and avoid redundancies thus reducing the chances of typing errors.  Symbols for <code>TRUE</code> and <code>FALSE</code> are defined in <code>&lt;system/system.def&gt;</code>.  We use a <code>.DCS</code> constant for the formatting strings to <code>printf()</code>.</p>
 <div id="example012b_asm"></div>
 <script>register("example012b_asm")</script>
+<div id="example012b_out"></div>
+<script>register("example012b_out")</script>
+<div id="example013_asm"></div>
+<script>register("example013_asm")</script>
+<div id="example013_out"></div>
+<script>register("example013_out")</script>
+<p class="note">Assembler directives always start with a period '.' to differentiate them from CPUSim64 instructions.  Directives are instructions for the assembler to process whereas CPUSim64 instructions are machine instructions for the CPUSim64 emulator.</p>
+
+<h2>Disassembly and Symbol Files</h2>
+<p>You can use the CPUSim64 disassembler to take machine code in a <code>.obj.gz</code> file and turn it back into human readable form.  This can be helpful to see exactly how the assembler has interpreted your source code.  It can also provide a roadmap for when you run your code in debug mode.  The assembler will create three symbol files (<code>.sym</code>,<code>.sym1</code> and <code>.sym2</code>) that can be used by the disassembler to make your code more readable.  You can safely delete these files if you don't need to use the disassembler.  You can run the disassembler on your object files using the provided <code>disassemble.sh</code> script.</p>
+<div id="example011_disasm"></div>
+<script>register("example011_disasm")</script>
 
 <h2>Arrays</h2>
 <p>To access elements of an array all you need is the base address of the array and an offset to the element.  When you create an array with <code>DCA</code> you should give it a label which will be the base address of the array.  Depending on whether the array has integer elements or floating point elements  you can use one of the load instruction of the form:</p>
 <p class="listing">load	r0, BASE_ADDR[offset]</p>
 <p class="listing">load	f0, BASE_ADDR[offset]</p>
-<p>The offset can be a literal integer or the value in an integer register.  Valid offsets are zero through the size of the array minus one.  You can also use the special offset -1 to get the size of the array.</p>
+<p>The offset can be a literal integer or the value in an integer register.  Valid offsets are zero through the size of the array.  You use the special offset 0 to get the size of the array (n).  This essentially makes the array access 1-based where the elements are in positions 1-n.</p>
+
 <h2>Console Output</h2>
 <p>If you include the system header file <code>&lt;system/io.asm&gt;</code> you will gain access to a number of helpful functions for performing output to the console.</p>
 <table>
@@ -234,36 +247,40 @@ Java HotSpot(TM) 64-Bit Server VM (build 17.0.5+9-LTS-191, mixed mode, sharing)
 	<tr><td>put_hex(value)</td><td>Prints an integer in base 16</td></tr>
 	<tr><td>put_fp(value)</td><td>Prints a floating point</td></tr>
 	<tr><td>put_nl()</td><td>Prints a new line</td></tr>
-	<tr><td>fprintf(STDOUT, fmt, values...)</td><td>Uses a format string to print variable number of value</td></tr>
+	<tr><td>printf(fmt, values...)</td><td>Uses a format string to print variable number of value</td></tr>
 </table>
 <p>Because these functions pass arguments on the stack, you use the <code>#call</code> directive when you wish to call them.  All arguments should be either integer or floating point registers as appropriate to the call.  The arguments will then be pushed onto the stack and the function call made.</p>
 <div id="example014_asm"></div>
 <script>register("example014_asm")</script>
 <div id="example014_out"></div>
 <script>register("example014_out")</script> 
+
+<h2>Interrupts</h2>
+<p>Interrupts are operating system level functions that are executed via the software interrupt mechanism of the cpu invoked with the <code>INT</code> instruction.  Interrupt instructions take a single integer operand to identify the system level function to execute.  Interrupts use a register passing convention.  If the interrupt requires an input argument, by convention, they are expected in <code>r1</code>/<code>r2</code>/<code>r3</code> for integer arguments or <code>f1</code>/<code>f2</code>/<code>f3</code> for floating point.  Likewise a value will typically be returned from the interrupt in <code>r0</code> or <code>f0</code>.  Symbols for the various interrupt codes available are defined in the system definition files.  You must include the appropriate file to gain access to the definitions.  See the <a href="Interrupt_Reference.html">Interrupt Reference</a> for a complete listing of operating system interrupts available in CPUSim64.</p>
+
 <h2>Command Line Arguments</h2>
 <p>When writing command line programs it is often necessary to pass in arguments to the program on the command line.  There are two system level interrupts that we can invoke.  One will give us the count of items on the command line and the other can be used to get each item on the command line.  Items on the command line are strings and are separated by spaces.  For example:</p>
 <p class="console">&gt; <b>run.sh example015 326 Hello 3.1415</b></p>
-<p>Interrupts are operating system level functions that are executed via the software interrupt mechanism of the cpu invoked with the <code>INT</code> instruction.  Interrupt instructions take a single integer operand to identify the system level function to execute.  Interrupts use a register passing convention.  If the interrupt requires an input argument it is expected in <code>r0</code> or <code>f0</code>.  Likewise a value can be returned from the interrupt in <code>r0</code> or <code>f0</code>.  Symbols for the various interrupt codes available are defined in the system definition files.  You must include the appropriate file to gain access to the definitions.  For the command line argument interrupts we will need to include <code>&lt;system/system.def&gt;</code>.</p>
 <div id="example015_asm"></div>
 <script>register("example015_asm")</script>
 <div id="example015_out"></div>
 <script>register("example015_out")</script>
-<p class="note">The first command line argument in element zero of ARGS is always the name of the program file that is running.</p>
+<p class="note">The first command line argument in element zero of ARGS is always the name of the program file that is running.  For the command line argument interrupts we will need to include <code>&lt;system/system.def&gt;</code>.</p>
+
 <h2>Converting Strings to Numbers</h2>
 <p>Often we will want to take command line arguments (which are strings) and convert them to integers or floating point numbers so that we can do calculations with them.  In the <code>&lt;system/string.def&gt;</code> definition file we have some interrupt codes defined to help us with that.</p>
 <table>
 	<tr><th>Function</th><th>Description</th></tr>
-	<tr><td>iPARSE_INT</td><td>Converts string at <code>r0</code> to integer in <code>r0</code><br>Accepts both decimal and hexadecimal with the '0x' prefix</td></tr>
-	<tr><td>iPARSE_DEC</td><td>Converts decimal string at <code>r0</code> to integer in <code>r0</code></td></tr>
-	<tr><td>iPARSE_HEX</td><td>Converts hexadecimal string at <code>r0</code> to integer in <code>r0</code></td></tr>
-	<tr><td>iPARSE_FLOAT</td><td>Converts FP string at <code>r0</code> to floating point in <code>f0</code></td></tr>
+	<tr><td>iPARSE_INT</td><td>Converts string at address in <code>r1</code> to integer in <code>r0</code><br>Accepts both decimal and hexadecimal with the '0x' prefix</td></tr>
+	<tr><td>iPARSE_DEC</td><td>Converts decimal string at address in <code>r1</code> to integer in <code>r0</code></td></tr>
+	<tr><td>iPARSE_HEX</td><td>Converts hexadecimal string at address in <code>r1</code> to integer in <code>r0</code></td></tr>
+	<tr><td>iPARSE_FLOAT</td><td>Converts FP string at address in <code>r1</code> to floating point in <code>f0</code></td></tr>
 </table>
 <div id="example016_asm"></div>
 <script>register("example016_asm")</script>
 <div id="example016_out"></div>
 <script>register("example016_out")</script>
-<p class="note">If these parsing functions can not make any sense of the string passed in <code>r0</code>, they will return zero.</p>
+<p class="note">If these parsing functions can not make any sense of the string passed in <code>r0</code>, they will cause the program to fail.</p>
 <h2>Conditional Control</h2>
 <p>Conditional execution of code is acoomplished using the <code>JUMP</code> instruction.  We can compose an IF/THEN construct using one <code>JUMP</code> or an IF/THEN/ELSE construct using two <code>JUMP</code> instructions.  For example if we look at the number of command line argumnents passed to the program we can branch based on whether there are any or not.  If we compare the result of interrupt iARGC to 2 we will know that there aren't any command line arguments if the result of the comparison is less than.  In pseudocode we would have:</p>
 <div class="listing">if argc &lt; 2 then
@@ -284,7 +301,7 @@ end if</div>
 
 <h2>Macros</h2>
 <p>Often we need to repeat code or similar code multiple times.  If the code follows a pattern with just a few elements that differ we can write a macro substitution that can be used to implement the code more easily and correctly.</p>
-<p>Macro substitutions are setup with the <code>#def_macro</code> preprocessor directive.  Using this directive we specifiy the name of the macro and its arguments in parenthesis.  Following that we provide the statements we want to be substituted when the macro is used in our code.  In the substitution code we can use the macro variables by using the special syntax <code>${varname}</code>.  Each time such a special variable symbol is used, it is replaced by the text supplied for that variable when the macro is used.</p>
+<p>Macro substitutions are setup with the <code>#def_macro</code> preprocessor directive.  Using this directive we specifiy the name of the macro and its parameters in parenthesis.  Following that we provide the statements we want to be substituted when the macro is used in our code.  In the substitution code we can use the actual values passed when the macro is called by using the special syntax <code>${varname}</code>.  Each time such a special variable symbol is used, it is replaced by the text supplied for that variable when the macro is used.</p>
 <div id="example018_asm"></div>
 <script>register("example018_asm")</script>
 <div id="example018_out"></div>
@@ -297,12 +314,13 @@ end if</div>
 <p>You can make these two macros even more compact (two instructions each) by using a special form of the <code>MOVE</code> instruction that takes a <code>SR</code> just like the <code>JUMP</code> instruction does.  If the condition is true, it moves the third operand into the second.  If the condition is false, it moves the fourth operand into the second.  This is called a conditional move.</p>
 <div id="example019b_asm"></div>
 <script>register("example019b_asm")</script>
+<p class="note">We typically use SCREAMING_SNAKE_CASE for macro names to help remind us that a substitution is taking place, just as we do with <code>#define</code> constants.</p>
 
 <h2>Register-based Functions</h2>
 <p>We can better organize our code and make it easier to understand by breaking it up into separate functions that do one thing well.  We can then call our functions from many places in our code eliminating the redundancy inherent in using macros.</p>
-<p>The basic form of function in assembly language uses register-based calling conventions.  This means that the inputs to a function are expected to be in specific registers, typically, <code>r0</code>, <code>r1</code>, etc for integer arguments or addresses and <code>f0</code>, <code>f1</code>, etc. for floating point.  By convention, functions are allowed to destroy the contents of <code>r0</code> and/or <code>f0</code>.  In fact these are the two registers in which a function might return a value.  But if the function uses any other registers it is expected that it will <code>PUSH</code> the values of the registers it uses onto the stack to save them and restore them with <code>POP</code> when it ends.</p>
-<p>Register-based functions are started with a unique label which gives the function its name.  The function must use a <code>RETURN</code> statement at the end of its code to return to the calling code.</p>
-<p>The calling code sets up the required registers then issues a <code>CALL</code> instruction with the address of the function.  The <code>CALL</code> instruction can also take a <code>SR</code> condition like the <code>JUMP</code> instruction does to make the <code>CALL</code> conditional.</p>
+<p>The basic form of function in assembly language uses register-based calling conventions.  This means that the inputs to a function are expected to be in specific registers, typically, <code>r1</code>, <code>r2</code>, etc for integer arguments or addresses and <code>f1</code>, <code>f2</code>, etc. for floating point.  By convention, functions are allowed to destroy the contents of <code>r0</code> and/or <code>f0</code>.  In fact these are the two registers in which a function might return a value.  But if the function uses any other registers it is expected that it will <code>PUSH</code> the values of the registers it uses onto the stack to save them and restore them with <code>POP</code> when it ends.</p>
+<p>Register-based functions are called with the <code>CALL</code> instruction passing the unique label which gives the function its name.  The function must use a <code>RETURN</code> statement at the end of its code to return to the calling code.</p>
+<p>The calling code sets up the required registers then issues a <code>CALL</code> instruction with the address of the function.  The <code>CALL</code> instruction can also take an <code>SR</code> condition like the <code>JUMP</code> instruction does to make the <code>CALL</code> conditional.</p>
 <p>Functions can be defined before or after the code that calls them, but functions generally are not to be declared inside other functions.</p>
 <p>In the following example we take our minimum and maximum macros and turn them into register-based functions.</p>
 <div id="example020_asm"></div>
@@ -312,29 +330,30 @@ end if</div>
 
 <h2>Stack-based Functions</h2>
 <p>Stack-based calling conventions give us some advantges over register calling conventions.  First they manage all the <code>PUSH</code> and <code>POP</code> instructions necessary to use registers other then <code>r0</code> or <code>f0</code>.  They also allow us to give symbolic names to arguments and other registers, making our code easier to read.</p>
-<p>Stack-based functions are defined using the preprocessor declaration <code>#DEF_FUNC</code> and stack-based functions are called with the preprocessor declaration <code>#CALL</code>.</p>
-<p>At the beginning of your function you can use one <code>#SVAR</code> directive to declare additional stack named variables.  You will have to use <code>LOAD</code> and <code>STORE</code> to access these variables.  That can be followed by one <code>#VAR</code> directive to declare all your integer or address register named variables.  These register variables can be used direvtly by instructions and can be changed with <code>MOVE</code>.  That in turn can be followed by one <code>#FVAR</code> to declare all you floating point register named variables.</p>
-<p>To return a value simply put it in <code>r0</code> or <code>f0</code>.  You can also use the <code>#RETURN</code> or <code>#FRETURN</code> which take a register and move it into <code>r0</code> or <code>f0</code> respectively.</p>
+<p>Stack-based functions are defined using the preprocessor declaration <code>#DEF_FUNC</code>. Stack-based functions are called with the preprocessor declaration <code>#CALL</code>.</p>
+<p>At the beginning of your function you can use one <code>#SVAR</code> directive to declare additional named stack variables.  You will have to use <code>LOAD</code> and <code>STORE</code> to access these variables.  That can be followed by one <code>#VAR</code> directive to declare all your integer or address register named variables.  These register variables can be used directly by instructions and can be accessed with the <code>MOVE</code> instruction.  That in turn can be followed by one <code>#FVAR</code> to declare all you floating point register named variables.</p>
+<p>To return a value simply put it in <code>r0</code> or <code>f0</code> then issue the <code>RETURN</code> instruction.  You can also use the <code>#RETURN</code> or <code>#FRETURN</code> which takes a register and move it into <code>r0</code> or <code>f0</code> respectively, then returns by jumping to the end of the function where there is a <code>RETURN</code> setup automatically for you.</p>
 <p>Below is our min/max example using stack-based functions.  There is also a sum function for summing a floating point array.</p>
 <div id="example021_asm"></div>
 <script>register("example021_asm")</script>
 <div id="example021_out"></div>
 <script>register("example021_out")</script>
+<p class="note">It is important to let your function run to the end and to not issue a <code>RETURN</code> instruction in the middle of the code.  This is because the function definition macro inserts stack clean-up code at the end of the function that must be executed before your function returns.  Always use the <code>#RETURN</code> or <code>#FRETURN</code> (even at the end for consistency) to make sure stack clean-up is done.</p>
 <p>We can even turn our main code into a function and simply call it from the start of our program then exit with a return value returned by main.</p>
 <div id="example021b_asm"></div>
 <script>register("example021b_asm")</script>
 
 <h2>Heap Dynamic Memory Allocation</h2>
 <p>Our programs have access to a whole region of memory called the heap.  Our programs can dynamically allocate blocks from the heap as they are running.  When we are done with an allocated block we must release or "free" it.  In this way we can manage the memory in the heap.</p>
-<p>As an example, say we want to allocate enough memory to hold 100 integers.  We can do this issue the software interrupt <code>iALLOC</code> with the size of the block we want to allocate in <code>r0</code>.  It will return the address of the allocated block in <code>r0</code> or <code>0</code> if there is an error.</p>
+<p>As an example, say we want to allocate enough memory to hold 100 integers.  We can do this issue the software interrupt <code>iALLOC</code> with the size of the block we want to allocate in <code>r1</code>.  It will return the address of the allocated block in <code>r0</code> or <code>0</code> if there is an error.</p>
 <div id="example022_asm"></div>
 <script>register("example022_asm")</script>
 <div id="example022_out"></div>
 <script>register("example022_out")</script>
-<p class="note">For small allocations the <code>iALLOC</code> may allocate a slightly larger block so that there are consistent size blocks in the help which helps when blocks are freed an can be reused.  The allocated size is stored in the word right before the address returned by <code>iALLOC</code>.</p>
+<p class="note">For small allocations the <code>iALLOC</code> may allocate a slightly larger block so that there are consistent size blocks in the help which helps when blocks are freed an can be reused.  The allocated size is stored in the word right before the address returned by <code>iALLOC</code>.  You can access this using a <code>LOAD</code> instruction and a memory reference that uses <code>[-1]</code> as the offset.</p>
 
 <h2>String Functions</h2>
-<p>There are a number of functions for operating on strings.  Strings are simply an array of Unicode codepoints terminated with the null character (0 or '\0').  Strings are either statically allocated using a <code>DCS</code> assembler directive and stored in the code segment or they are dynamically allocated in the heap using interrupt <code>iALLOC</code>.  It is important to free strings when you don't need them any longer to free up memory in the heap.</p>
+<p>There are a number of functions for operating on strings.  Strings are an array of UTF-8 encoded Unicode codepoints.  The string will start with a word that contains the number of UTF-8 bytes in the string.  Strings are either statically allocated using a <code>DCS</code> assembler directive and stored in the code segment or they are dynamically allocated in the heap using interrupt <code>iALLOC</code>.  It is important to free strings when you don't need them any longer to free up memory in the heap.</p>
 <div id="example_string_asm"></div>
 <script>register("example_string_asm")</script>
 <div id="example_string_out"></div>
@@ -346,6 +365,522 @@ end if</div>
 <script>register("example_math_asm")</script>
 <div id="example_math_out"></div>
 <script>register("example_math_out")</script>
+
+<h2>Pre-Processor Directives</h2>
+
+<p>The pre-processor is a distinct step that runs before your source code is compiled. Its job is not to understand CPUSim64 syntax or semantics, but to perform textual transformations on your source files. The output of the pre-processor is a modified version of your code that is then handed to the compiler proper.</p>
+
+<p>We use the pre-processor to do things like:</p>
+<ul>
+<li>Include other source files: When the pre-processor encounters a directive like #include &lt;math&gt; or #include "myheader.def", it literally copies the contents of that file into the current source file. By the time the compiler sees the code, the include directive is gone and the file’s contents are already in place.</li>
+<li>Expand macros: Macros defined with #define act as text substitutions. Before compilation, every occurrence of the macro name is replaced with its definition. This can be used for constants, small inline expressions, or platform-specific code, though macros must be used carefully because they do not follow CPUSim64's type or scope rules.</li>
+<li>Control conditional compilation: Directives like #if, #ifdef, #ifndef, #elif, and #endif allow you to include or exclude sections of code based on conditions. This is commonly used for:
+<ul>
+	<li>Debug vs. release builds</li>
+	<li>Feature flags and configuration options</li>
+	<li>Provide compile-time shortcuts</li>
+</ul>
+<li>
+The pre-processor can insert line numbers, file names, or compiler-specific hints using predefined macros such as __LINE__ and __FILE__.</li>
+</ul>
+</li>
+</ul>
+
+<p>Pre-processor directives are easy to recognize because they always begin with a # and are handled before the compiler performs parsing, type checking, or optimization. As a result, the pre-processor cannot evaluate C++ expressions, call functions, or understand classes—it simply follows the instructions you give it to reshape the source code.</p>
+
+<p>In short, we write pre-processor directives to give instructions to the pre-processor, shaping the raw text of our program so that the compiler receives exactly the code it needs for the current build configuration.</p>
+
+<h3>#include</h3>
+<p>
+The <code>#include</code> directive inserts the contents of another file into the current source file <em>before</em> compilation.
+This is commonly used to pull in shared defines, macro definitions and reusable code.
+Includes are processed in-place, so the compiler effectively “sees” one larger combined file.  Shared defines and macro definitions are typically put in a file with a ".def" extension whereas reusable code is put in a file with a ".asm" extension.
+</p>
+<ul>
+  <li><code>#include &lt;...&gt;</code> searches system include paths</li>
+  <li><code>#include "..."</code> searches local project paths</li>
+</ul>
+<div class='listingheader'>Include Examples</div>
+<div class='listing'>#include &lt;math.def&gt;
+#include &lt;math.def&gt;
+#include "my_app.def"
+
+// program here
+
+#include &lt;math.asm&gt;
+#include "my_library.asm";
+</div>
+
+<h3>#define</h3>
+<p>
+The <code>#define</code> directive defines a substitution symbol: a named piece of text that the pre-processor substitutes wherever it appears.
+Defines are expanded before the compiler sees your code. They are powerful but must be used carefully as misuse can produce problems.
+</p>
+<p>Defines are used for constants, small expression substitutions, feature flags and compile-time configuration.  Defined symbols can be redefined later in the file using another deefine directive.</p>
+<p>By convention we write define symbols in all caps so that it is obvious when they are used that a substitution will occur in the source.</p>
+<div class='listingheader'>#define Examples</div>
+<div class='listing'>#define READ_MODE	0
+#define WRITE_MODE	1
+#define APPEND_MODE	2
+#define	ARRAY_SIZE	10 * 20
+#define	DEBUG
+#define PI			3.14159
+</div>
+
+<h3>#undef</h3>
+<p>
+The <code>#undef</code> directive removes a previously defined symbol, preventing it from expanding further.
+This is useful when you need to avoid name collisions or override behavior temporarily.
+</p>
+<div class='listingheader'>#undef Examples</div>
+<div class='listing'>#undef	DEBUG
+#undef	PI
+</div>
+
+<h3>#def_func</h3>
+<p>
+The <code>#def_func</code> directive defines function that uses stack-based arguments.
+It is a convenience directive to make defining functions easier.
+Functions defined this way can easily be called using the <code>#call</code> directive.
+</p>
+<ul>
+  <li>Helps to break your program into smaller pieces.</li>
+  <li>Use it to encapsulate re-usable logic.</li>
+  <li>Values are returned in 
+  <code>R0</code> for integer return values and <code>F0</code> for floating point return values.</li>
+</ul>
+<div class='listingheader'>#def_func Examples</div>
+<div class='listing'>#def_func	fabs(x)
+	load	f1, x				// Load x argument into register F1
+	int		iABS_FP				// Invoke iABS_FP interrupt
+#end_func						// Returns result in R0
+
+#def_func	min(first, second)	// This pushes first and second on the stack
+	#var	a,b					// declare two named integer registers
+								// and saves original values on stack
+	load	a, first			// because the arguments are on the stack we
+	load	b, second			// must load them from memory into a register
+	cmp		a, b
+	mov		lt, r0, a, b		// Load return value ino R0
+#end_func						// Restores registers then returns
+</div>
+
+<h3>#call</h3>
+<p>
+The <code>#call</code> directive invokes a function that uses stack-based arguments such as ones defined with the <code>#def_func</code> declaration.   Arguments must be registers that will have their contents pushed onto the stack.  The return value will be in
+<code>R0</code> for integer results and <code>F0</code> for floating point results.  It will clean up the stack after the function call returns.</p>
+<div class='listingheader'>#call Examples</div>
+<div class='listing'>#call fabs(f1)
+#call min(r1, r2)
+</div>
+
+<h3>#def_macro</h3>
+<p>
+The <code>#def_macro</code> directive defines a macro containing multiple lines in contrast to the single line of the <code>#define</code>.  Macros can also take parameters to implement templated substitution.
+This is useful when a macro expands to several lines of output or when you want cleaner syntax for larger expansions.  To substitute one of the macro parameters in the replacement text use the syntax <code>${parm_name}</code>.</p>
+<p>By convention we write macro names in all caps so that it is obvious when they are used that a substitution will occur in the source and that the <code>#macro</code> directive is needed to expand them.</p>
+
+<div class='listingheader'>#def_macro Examples</div>
+<div class='listing'>#def_macro RAND_DICE()
+move r1, 1				// low is 1
+move r2, 6				// high is 6
+int  iRAND				// generate random [1,6]
+#end_macro				// result will be in R0
+
+#def_macro RAND_INT(x)
+move r1, 1				// low is 1
+move r2, ${x}			// high is x
+int  iRAND				// generate random [1,x]
+#end_macro				// result will be in R0
+
+#def_macro RAND_RANGE(low, high)
+move r1, ${low}
+move r2, ${high}
+int  iRAND
+#end_macro
+</div>
+
+<h3>#macro</h3>
+<p>
+The <code>#macro</code> directive expands (or emits) a macro that was defined previously  with <code>#def_macro</code>.
+Think of it as “use this macro here,” causing its generated text to be inserted at that point in the output.  Arguments can be supplied for the macro expansion to match, one-to-one the parameters defined for the macro.</p>
+
+<div class='listingheader'>#macro Examples</div>
+<div class='listing'>#include &lt;system/io.def&gt;        // Defines PUT_DEC(x)
+#include "macro_examples.def"
+
+#define iRAND 117
+
+#macro RAND_DICE()
+#call PUT_DEC(r0)
+#macro RAND_DICE()
+#call PUT_DEC(r0)
+#macro RAND_DICE()
+#call PUT_DEC(r0)
+
+#macro RAND_INT(100)
+#call PUT_DEC(r0)
+#macro RAND_RANGE(200, 300)
+#call PUT_DEC(r0)
+#macro RAND_RANGE(0, 999)
+#call PUT_DEC(r0)
+</div>
+
+<p>The preprocessor will expands the <code>#macro</code> directives in the preceeding example producing the following code to send to the assembler.</p>
+
+<div class='listingheader'>#macro Examples Expansion</div>
+<div class='listing'>// RAND_DICE()
+move r1, 1
+move r2, 6
+int 117
+// PUT_DEC(r0)
+move r2, r0
+move r1, 1
+int 202
+// RAND_DICE()
+move r1, 1
+move r2, 6
+int 117
+// PUT_DEC(r0)
+move r2, r0
+move r1, 1
+int 202
+// RAND_DICE()
+move r1, 1
+move r2, 6
+int 117
+// PUT_DEC(r0)
+move r2, r0
+move r1, 1
+int 202
+// RAND_INT(100)
+move r1, 1
+move r2, 100
+int 117
+// PUT_DEC(r0)
+move r2, r0
+move r1, 1
+int 202
+// RAND_RANGE(200, 300)
+move r1, 200
+move r2, 300
+int 117
+// PUT_DEC(r0)
+move r2, r0
+move r1, 1
+int 202
+// RAND_RANGE(0, 999)
+move r1, 0
+move r2, 999
+int 117
+// PUT_DEC(r0)
+move r2, r0
+move r1, 1
+int 202
+</div>
+
+<h3>#global</h3>
+<p>
+The <code>#global</code> directive declares or sets a pre-processor global variable.
+Global variables persist across the rest of preprocessing, making them useful for configuration, counters, build flags, or values shared across multiple macro/function expansions.
+</p>
+<div class='listingheader'>#global Examples</div>
+<div class='listing'>#include &lt;system/system.def&gt;
+
+#global gCount: .dci 10
+#global gPi:    .dcf 3.14159
+
+move	r1, 0
+int		iExit</div>
+
+<p>Notice how the <code>#global</code> directive moves the data declaration to the DATA segment of the program so they can be used anywhere without inserting directives in the code segment.</p>
+
+<div class='listingheader'>#globals Examples Expansion</div>
+<div class='listing'>.org 1
+__CODE__: READONLY __CODE_END__
+move r1, 0
+int 32
+__CODE_END__:
+__DATA__:
+gCount: .dci 10
+gPi: .dcf 3.14159
+__DATA_END__:
+__HEAP_START__:
+</div>
+
+<h3>#svar</h3>
+<p>
+The <code>#svar</code> directive declares a named stack variables for a function.  All stack variables must be declared in one <code>#svar</code> directive and it must occur as the first item inside a function body.  Stack variables must be loaded into a register to be used and stored from a register to be changed.
+</p>
+
+<h3>#var</h3>
+<p>The <code>#var</code> directive declares a named general-purpose register variable for a function.  This directive must appear at the beginning of a function block immediately after the <code>#svar</code> directive if present.  Register variables are assigned starting with r28 and proceed lower.  Be careful not to declare so many register variables that you go past r5 which is where you begin to conflict with registers used for arguments and other temporary values.  The registers assigned with <code>#var</code> are saved on the stack and restored by the <code>#return</code> directive.</p>
+<p>These variables are commonly used for counters, loop indices, toggles, and computed values used in conditional logic.</p>
+
+<h3>#fvar</h3>
+<p>The <code>#fvar</code> directive declares a named floating point register variable for a function.  This directive must appear at the beginning of a function block immediately after the <code>#var</code> directive if present.  Register variables are assigned starting with f31 and proceed lower.  Be careful not to declare so many register variables that you go past f5 which is where you begin to conflict with registers used for arguments and other temporary values.  The registers assigned with <code>#var</code> are saved on the stack and restored by the <code>#return</code> directive.</p>
+
+<h3>#return</h3>
+<p>The <code>#return</code> directive returns a value from a pre-processor function, ending the function.  The return value is placed in <code>r0</code> and all registers setup with <code>#var</code> or <code>#fvar</code> are restored from saved value on the stack.  The variables setup with <code>#svar</code> are deallocated.  Finally the <code>return</code> instruction is invoked.</p>
+
+<h3>#freturn</h3>
+<p>The <code>#freturn</code> directive returns a value from a pre-processor function, ending the function.  The return value is placed in <code>f0</code> and all registers setup with <code>#var</code> or <code>#fvar</code> are restored from saved value on the stack.  The variables setup with <code>#svar</code> are deallocated.  Finally the <code>return</code> instruction is invoked.</p>
+
+<div class='listingheader'>Function Variables Example</div>
+<div class='listing'>#include &lt;system/system.def&gt;
+#include &lt;system/io.def&gt;        // Defines PUT_FP(x)
+
+    load   f1, 3.14159
+    move   r1, 3
+    #call  sample_func(r1, f1)
+    #macro PUT_FP(f0, 6)
+    int    iEXIT
+
+#def_func sample_func(int_arg, float_arg)
+    #svar s1, s2            // creates two stack variables
+    #var  i, j              // assigns i -> r28, j -> r27
+    #fvar x, y              // assigns x -> f31, y -> f30
+    
+    load  i, int_arg
+    load  x, float_arg
+    mult  j, i, i
+    mult  y, x, x
+    store s1, j
+    store s2, y
+    #freturn y              // sets f0 to y, restores r28, r27, f31 and f30
+                            // s1 and s2 are destroyed, finally returns
+#end_func
+</div>
+
+<p>The preprocessor will expand the previous function example as follows:</p>
+
+<div class='listingheader'>Function Variables Example Expansion</div>
+<div class='listing'>.org 1
+__CODE__: READONLY __CODE_END__
+
+load f1, __FP_1
+move r1, 3
+// #call  sample_func(r1, f1)
+push f1                     // push f1 argument to the stack
+push r1                     // push r1 argument to the stack
+call sample_func            // call the function, return will be in f0
+add sp, 2                   // pop f1 and r1 from the stack
+// #macro PUT_FP(f0, 6)
+move f1, f0
+move r1, 1
+move r2, 6
+int 204
+int 32
+
+SAMPLE_FUNC:
+.BLOCK _SAMPLE_FUNC
+add sp, -2                  // #svar s1, s2
+save r27, r28               // #var  i, j
+save f30, f31               // #fvar x, y
+load R28, SF[3]             // load  i, int_arg
+load F31, SF[4]             // load  x, float_arg
+mult R27, R28, R28          // mult  j, i, i
+mult F30, F31, F31          // mult  y, x, x
+store sf[0], R27            // store s1, j
+store sf[-1], F30           // store s2, y
+MOVE F0, F30                // load y in to return register f0
+JUMP SAMPLE_FUNC$_RETURN    // jump to return code
+SAMPLE_FUNC$_RETURN:        // return code starts here
+restore f30, f31            // restore original contents of x and y
+restore r27, r28            // restore original contents of i and j
+add sp, 2                   // destroy s1 and s2
+return                      // return from the function
+.BLOCK_END _SAMPLE_FUNC
+__FP_1: .DCF 3.14159
+__CODE_END__:
+__DATA__:
+__DATA_END__:
+__HEAP_START__:
+</div>
+
+<h3>#if/#else/#else_if</h3>
+<p>
+The <code>#if</code> family provides conditional preprocessing: it includes or excludes blocks of code based on an expression evaluated by the pre-processor.
+</p>
+<ul>
+  <li><code>#if</code> starts a conditional block.</li>
+  <li><code>#else_if</code> (else-if) provides an additional condition if earlier ones were false.</li>
+  <li><code>#else</code> provides a fallback block when no condition matched.</li>
+</ul>
+
+<div class='listingheader'>#IF/#ELSE_IF Example</div>
+<div class='listing'>#define LANGUAGE 2
+
+#if LANGUAGE == 1
+	#call puts("Hola")
+#else_if LANGUAGE == 2
+	#call puts("Bonjour")
+#else_if LANGUAGE == 3
+	#call puts("Ciao")
+#else
+	#call puts("Hello")
+#endif
+</div>
+
+<h3>#ifdef/#else</h3>
+<p>
+The <code>#ifdef</code> directive tests whether a symbol is defined.
+If it is defined, the enclosed block is included; otherwise it is skipped (or the <code>#else</code> block is included).  It doesn't matter what the symbol is defined as, just that it is defined.  This is frequently used for feature flags and platform switches.
+</p>
+
+<div class='listingheader'>#ifdef Example</div>
+<div class='listing'>#define USE_COLOR
+
+#ifdef USE_COLOR
+	#call puts_color("Hello", GREEN)
+#else
+	#call puts("Hello")
+#endif
+</div>
+
+<h3>#ifndef/#else</h3>
+<p>
+The <code>#ifndef</code> directive tests whether a symbol is <em>not</em> defined.
+It is commonly used for include guards (preventing headers from being processed multiple times) and for default configuration.
+</p>
+
+<div class='listingheader'>#ifndef Example</div>
+<div class='listing'>#ifndef MY_DEFINES
+#define MY_DEFINES
+
+...
+
+#endif
+</div>
+
+<h3>#for</h3>
+<p>The <code>#for</code> directive creates a run-time loop, repeating a block of code for a range of values.</p>
+<p>Uses a loop variable, condition, start, end and a step value.</p>
+
+<div class='listingheader'>#for Example</div>
+<div class='listing'>#var i, start, stop, increment
+move start, 1
+move stop, 10
+move increment, 2
+
+#for start, i &lt;= stop, increment
+	...
+#end_for
+</div>
+
+<h3>#while</h3>
+<p>
+The <code>#while</code> directive repeats a block as long as a condition remains true.
+Use it when the number of iterations is not a simple numeric range, such as looping until a computed value stabilizes or until a list has been exhausted.
+</p>
+
+<div class='listingheader'>#while Example</div>
+<div class='listing'>#var i, start, stop, increment
+move start, 1
+move stop, 10
+move increment, 2
+
+move i, start
+#while i &lt;= stop
+	...
+	add i, increment
+#end_while
+</div>
+
+<h3>#do_while</h3>
+<p>
+The <code>#do_while</code> directive is a loop that always executes its block at least once, then repeats while a condition is true.
+This is useful when the loop body computes values needed to decide whether another iteration is required.
+</p>
+
+<div class='listingheader'>#do_while Example</div>
+<div class='listing'>#var i, start, stop, increment
+move start, 1
+move stop, 10
+move increment, 2
+
+move i, start
+#do_while
+	add i, increment
+	...
+#end_do_while i &lt;= stop
+</div>
+
+<h3>#break</h3>
+<p>
+The <code>#break</code> directive exits the nearest enclosing pre-processor loop immediately.
+Use it to stop generating output early once a condition is met.
+</p>
+
+<h3>#continue</h3>
+<p>
+The <code>#continue</code> directive skips the rest of the current loop iteration and proceeds to the next one.
+This is helpful when generating output with conditional omissions (for example skipping invalid combinations).
+</p>
+
+<h3>#if_cond/#else_if_cond/#else_cond</h3>
+<p>
+The <code>#if_cond</code> directive is a conditional control structure used to represent conditional if/else run-time logic.
+</p>
+
+<div class='listingheader'>#if_cond Example</div>
+<div class='listing'>#var i
+move i, 10
+
+#if_cond i &lt 100
+	...
+#end_if
+
+#if_cond i &lt= 10
+	...
+#else_if i &lt= 20
+    ...
+#else_if i &lt= 30
+    ...
+#else
+    ...
+#end_if
+</div>
+
+<h3>#if_cond_sr/#else_cond</h3>
+<p>
+The <code>#if_cond_sr</code> directive is a specialized conditional form that branches based on whether a specific status register bit is set or not set.
+The <code>#else_cond_sr</code> provides the alternative branch if the status register condition is false.  You can use the standard status register pnuemonics (z, nz, n, p, nn, np, o or no) or the relational operators.</ul>
+
+<div class='listingheader'>#if_cond_sr Example</div>
+<div class='listing'>#var i
+move i, 10
+
+#if_cond_sr z			// i == 0
+	...
+#else_if_cond			// i != 0
+    ...
+#end_if_cond
+
+cmp i, 5
+#if_cond_sr GT			// i &gt; 5
+	...
+#else_if_cond			// i &lt;= 5
+    ...
+#end_if_cond
+</div>
+
+
+<h3>#sync</h3>
+<p>The <code>#sync</code> directive protects a block of code from multi-threaded entry.  You must create a mutex and initialize it prior to using the <code>#sync</code> directive.</p>
+
+<div class='listingheader'>#sync Example</div>
+<div class='listing'>#include &lt;system/threadlib.asm&gt;
+
+// In main function
+#macro DEFINE_MUTEX(my_mutex)
+#call initializeMutex(my_mutex)
+
+// In thread functions
+#sync my_mutex
+    ...
+#end_sync
+</div>
 
 <footer>
 <p><a href="index.html">Overview</a> |
@@ -367,7 +902,8 @@ end if</div>
 <input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif" name="submit" alt="PayPal - The safer, easier way to pay online!">
 <img alt="" style="border:0;" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
 </form>
-<address>&copy;2022-2025 Richard Lesh.  All rights reserved.</address>
+<address>&copy;2022-2026 Richard Lesh.  All rights reserved.</address>
 </footer>
+</div>
 </body>
 </html>

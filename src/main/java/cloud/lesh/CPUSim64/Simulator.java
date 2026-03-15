@@ -938,7 +938,7 @@ public class Simulator {
 		// If operand kinds are NONE => NOP; otherwise DEBUG forms (Y,YY,YYY,YYYY or dumps)
 		boolean noOps = (d.tt == 0 && d.a == 0 && d.b == 0 && d.c == 0 && d.d == 0);
 		if (noOps) return; // NOP
-		if (!debug || !trace) return;
+		if (!debug && !trace) return;
 
 		synchronized(System.out) {
 			if (d.tt == 0) {

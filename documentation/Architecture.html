@@ -10,8 +10,10 @@
 	<meta name="generator" content="BBEdit 14.6">
 	<meta name="author" content="Richard Lesh">
 	<link rel="stylesheet" type="text/css" href="styles.css">
+	<link rel="stylesheet" type="text/css" href="styles2.css">
 </head>
 <body>
+  <div class="wrap">
 <h1>CPUSim64 Architecture</h1>
 <h2>Overview</h2>
 <p>CPUSim64 is an emulation of a simple 64-bit microprocessor.  All instructions are 64-bit as are all CPU registers.  Memory access is done using 64-bit at a time.  It is a Load/Store architecture which means that only the load, store, push and pop instructions interact with memory.  All other instructions operate on registers.</p>
@@ -24,7 +26,7 @@
 	<li>PC = R31</li>
 </ul>
 <p>Like the floating point registers, the first four integer registers <code>R0</code>, <code>R1</code>, <code>R2</code> and <code>R3</code> are used as working registers and not assumed to be preserved by function calls or interrupts.  The <code>R0</code> is typically used for function/interrupt return values and the other three are used as inputs to function calls or interrupts.</p>
-<figure><figcaption>CPU Model Diagram</figcaption><img alt="CPU Model Diagram" src="images/CPU_Model.png" style="width:25%;height:25%"></figure>
+<figure><figcaption>CPU Model Diagram</figcaption><img alt="CPU Model Diagram" src="images/CPU_Model.png" style="width:25%;height:25%;background-color:white;"></figure>
 
 <h3>Program Counter (<code>PC</code>)</h3>
 <p>The program counter register is used by the CPU to keep track of the next instruction to execute.  Each CPU cycle, the instruction in the memory address stored in the <code>PC</code> is loaded, decoded and executed.  Then the <code>PC</code> is incremented to point to the next instruction.  Control instructions like the <code>JUMP</code>, <code>CALL</code>, <code>RETURN</code> and <code>INTERRUPT</code> instructions can modify the <code>SP</code> to an arbitrary value.</p>
@@ -44,10 +46,10 @@
 <p>The stack is a region of memory used by the CPU and user programs for temporary storage.  It is a last-in/first-out (LIFO) data structure.  The stack resembles a stack of plates where the last plate put on the stack is the first one taken off.  The stack starts at the top of available memory 0xFFFFFFFFFFFF and grows down toward the heap.  It is considered an error if you allow the stack to grow so much that it overwrites some of the heap.  This is known as a stack/heap collision.</p>
 <p>The SP register always points to the next free location on the stack.  The SP should always point to a memory location between the stack base at the top of memory and the stack limit.  The SF points to the location of the SP when the latest function call was invoked.  It points to the beginning of function local variables and should always be between the stack base and the SP.</p>
 <p>The diagram below illustrates an example of the layout of memory assuming that 0x10000 (or 65,536) 64-bit words are available to your application.  Unlike many CPUs that address memory byte-by-byte, CPUSim64 can only access memory as 64-bit words.  This simplifies memory addressing removing the limits other processors have that they can only load on word boundaries every eight bytes, i.e. eight addresses.  In CPUSim64 there is no need to multiply all our address locations by eight to get a valid address.
-<figure><figcaption>Memory Model Diagram</figcaption><img alt="Memory Model Diagram" src="images/Memory_Model.png" style="width:25%;height:25%"></figure>
+<figure><figcaption>Memory Model Diagram</figcaption><img alt="Memory Model Diagram" src="images/Memory_Model.png" style="width:25%;height:25%;background-color:white;"></figure>
 <div class="note">Each 64-byte value in memory has an unique integer address.  Usually addresses are written in <a href="https://en.wikipedia.org/wiki/Hexadecimal">hexadecimal</a> form to differentiate them from other ordinary integers.</div>
-
 <footer>
+
 <p><a href="index.html">Overview</a> |
 <a href="Architecture.html">Architecture&nbsp;Reference</a> |
 <a href="Programmer_Guide.html">Programmer&nbsp;Guide</a> |
@@ -67,7 +69,8 @@
 <input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif" name="submit" alt="PayPal - The safer, easier way to pay online!">
 <img alt="" style="border:0;" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
 </form>
-<address>&copy;2022-2025 Richard Lesh.  All rights reserved.</address>
+<address>&copy;2022-2026 Richard Lesh.  All rights reserved.</address>
 </footer>
+</div>
 </body>
 </html>

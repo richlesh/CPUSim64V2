@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg"
+     viewBox="0 0 7 7"
+     preserveAspectRatio="xMidYMid meet"
+     aria-label="Pure Programmer Logo"
+     role="img">
+  <title>Logo</title>
+
+  <!-- Inverted: solid field, with logo blocks cut out (transparent) -->
+  <path fill="currentColor" fill-rule="evenodd" d="
+    M0 0H7V7H0Z
+
+    M0 1H0.5V2H0Z
+    M2 1H2.5V2H2Z
+
+    M1.5 2H2V3H1.5Z
+    M3 2H4V3H3Z
+    M4.5 2H6.5V3H4.5Z
+
+    M0 3H3V4H0Z
+    M3.5 3H5V4H3.5Z
+    M6 3H7V4H6Z
+
+    M0 4H0.5V5H0Z
+    M1 4H1.5V5H1Z
+    M2 4H3V5H2Z
+    M4 4H5V5H4Z
+    M6.5 4H7V5H6.5Z
+
+    M0 5H1V6H0Z
+    M1.5 5H2.5V6H1.5Z
+    M4.5 5H6.5V6H4.5Z
+
+    M0 6H0.5V7H0Z
+    M1 6H1.5V7H1Z
+    M2 6H3V7H2Z
+    M4 6H4.5V7H4Z
+    M6 6H7V7H6Z
+  "/>
+</svg>

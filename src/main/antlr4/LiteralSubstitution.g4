@@ -73,4 +73,4 @@ OTHER
 
 fragment DIGITS : [0-9]+ ;
 fragment SP     : [ \t] ;
-fragment LABEL  : [A-Za-z_][A-Za-z0-9_]* ':' ;
+fragment LABEL  : [A-Za-z_$][A-Za-z0-9_$]* ':' ;

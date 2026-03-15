@@ -37,20 +37,28 @@ jump	STRING_ASM_END
 #end_func
 
 ///////////////////////////////////////////////////////////////////////////////
-// printStrArray(a)
-// Prints an array of string addresses as strings.
+// printStringArray(a)
+// Prints an array of UTF-8 strings with the index and value.
 // a	Base address of the array to print
+// size	Number of elements to print
 ///////////////////////////////////////////////////////////////////////////////
-#def_func printStrArray(addrArg)
-	#var	len, i, addr
-	load	addr, addrArg
-	load	len, addr[0]
-	#for	1, i <= len, 1
-		move	r1, STDOUT
-		load	r2, addr[i]
-		int		iPUTS
-		int		iPUT_NL
-	#end_for
+#def_func printStringArray(a)
+	#var	base, i, len
+	#fvar	v
+	load	base, a
+	load	len, base[0]
+	move	i, 1
+	jump	$LOOP1_END
+$LOOP1:
+	load	v, base[i]
+	#call	put_dec(i)
+	#call	putc(':')
+	#call	puts(v)
+	#call	put_nl()
+	add		i, 1
+$LOOP1_END:
+	cmp		i, len
+	jump	le, $LOOP1
 #end_func
 
 #def_func freeStrArray(addArg)

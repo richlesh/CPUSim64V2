@@ -1,5 +1,27 @@
 > debug.sh example010
 Read 25 words from example010.obj.gz
+R0: -1  
+R0: 0  
+R0: 10  
+R0: 9  
+R0: 8  
+R0: 7  
+R0: 6  
+R0: 5  
+R0: 4  
+R0: 3  
+R0: 2  
+R0: 1  
+R0: 10  
+R0: 9  
+R0: 8  
+R0: 7  
+R0: 6  
+R0: 5  
+R0: 4  
+R0: 3  
+R0: 2  
+R0: 1  
 
 CPU State    SR: osZp
   R               hex                   dec  FP                    float   Stack               hex                   dec                   float

@@ -122,6 +122,12 @@
 	int		iSTRCMP
 #end_macro
 
+#def_macro	STRICMP(s1, s2)
+	move	r1, ${s1}
+	move	r2, ${s2}
+	int		iSTRICMP
+#end_macro
+
 #def_macro	SUBSTRING(s, start, length)
 	move	r1, ${s}
 	move	r2, ${start}
@@ -195,12 +201,6 @@
 	int		iLAST_SUBSTRING_SEARCH
 	cmp		r0, r3
 	move	z, r0, TRUE, FALSE
-#end_macro
-
-#def_macro	STRICMP(s1, s2)
-	move	r1, ${s1}
-	move	r2, ${s2}
-	int		iSTRICMP
 #end_macro
 
 #def_macro	GET_CODEPOINTS(str)

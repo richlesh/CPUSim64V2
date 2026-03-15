@@ -18,6 +18,7 @@
 #include <system/io.def>
 
 #ifdef __DEBUG__
+	#include <system/io.asm>
 	#def_macro	DEBUG_MSG(...)
 		#call	debug_msg(STDOUT, ${...})
 	#end_macro

@@ -180,6 +180,58 @@ $SKIP_NEG2:
 	int		iRAND
 #end_func
 
+#def_func	remainder(n, d)
+	load	r1, n
+	load	r2, d
+	int		iRAND
+#end_func
+
+#def_func	to_radians(x)
+	load	f1, x
+	int		iTO_RADIANS
+#end_func
+
+#def_func	to_degrees(x)
+	load	f1, x
+	int		iTO_DEGREES
+#end_func
+
+#def_func	sin(x)
+	load	f1, x
+	int		iSIN
+#end_func
+
+#def_func	cos(x)
+	load	f1, x
+	int		iCOS
+#end_func
+
+#def_func	tan(x)
+	load	f1, x
+	int		iTAN
+#end_func
+
+#def_func	asin(x)
+	load	f1, x
+	int		iASIN
+#end_func
+
+#def_func	acos(x)
+	load	f1, x
+	int		iACOS
+#end_func
+
+#def_func	atan(x)
+	load	f1, x
+	int		iATAN
+#end_func
+
+#def_func	atan2(x, y)
+	load	f1, x
+	load	f2, y
+	int		iATAN2
+#end_func
+
 ///////////////////////////////////////////////////////////////////////////////
 // min(first, second) computes minimum of two integer values
 // a		first integer value

@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>How to Set the PATH Variable (Linux, macOS, Windows)</title>
+  <link rel="stylesheet" type="text/css" href="styles.css">
+  <link rel="stylesheet" type="text/css" href="styles2.css">
+</head>
+<body>
+  <div class="wrap">
+    <header>
+  <h1>How to Set the <code>PATH</code> Variable on Linux, macOS, and Windows</h1>
+
+  <p>
+    This guide shows how to set the <code>PATH</code> environment variable on each OS, including
+    <strong>temporary</strong> (current terminal only) and <strong>permanent</strong> methods.
+  </p>
+</header>
+<section>
+  <h2><img class="logo" src="images/Logos/windows_color.svg" alt="Windows Logo"> Windows </h2>
+
+  <h3>Permanent (GUI – Recommended)</h3>
+  <ol>
+    <li>Open the <strong>Start Menu</strong> and search for <strong>Environment Variables</strong>.</li>
+    <li>Click <strong>Edit the system environment variables</strong>.</li>
+    <li>Click <strong>Environment Variables…</strong>.</li>
+    <li>
+      Under <strong>User variables</strong> (preferred) or <strong>System variables</strong>:
+      <ul>
+        <li>Select <strong>Path</strong></li>
+        <li>Click <strong>Edit</strong></li>
+        <li>Click <strong>New</strong></li>
+        <li>Add your directory (example): <code>C:\Program Files\MyApp\bin</code></li>
+      </ul>
+    </li>
+    <li>Click <strong>OK</strong> on all dialogs.</li>
+    <li><strong>Restart terminals</strong> (important).</li>
+  </ol>
+
+  <div class="note">
+      <strong>User Path</strong> affects only your account. <strong>System Path</strong> affects all users and
+      typically requires administrator privileges.
+  </div>
+
+  <h3>Temporary (Current Terminal Only)</h3>
+  <p>Command Prompt (<code>cmd.exe</code>):</p>
+  <pre class="console">set PATH=C:\MyApp\bin;%PATH%</pre>
+
+  <p>PowerShell:</p>
+  <pre class="console">$env:PATH = "C:\MyApp\bin;$env:PATH"</pre>
+
+</section>
+  <hr />
+<section>
+
+  <h2><img class="logo" src="images/Logos/apple.svg" alt="macOS Logo" style="filter: invert(1);"> macOS</h2>
+  <h3>Permanent (Recommended – zsh default)</h3>
+  <p>Edit your zsh config:</p>
+  <pre class="console">nano ~/.zshrc</pre>
+
+  <p>Add this line:</p>
+  <pre class="console">export PATH="/usr/local/myapp/bin:$PATH"</pre>
+
+  <p>Apply immediately:</p>
+  <pre class="console">source ~/.zshrc</pre>
+
+  <div class="warn">
+    <p>
+      <strong>GUI apps</strong> sometimes don’t read shell config files. If a GUI app can’t find your command,
+      you may need to set PATH using <code>launchctl</code> and log out/in afterward:
+    </p>
+    <pre class="console">launchctl setenv PATH "/usr/local/myapp/bin:/usr/bin:/bin:/usr/sbin:/sbin"</pre>
+  </div>
+
+  <h3>Temporary</h3>
+  <pre class="console">export PATH="/usr/local/myapp/bin:$PATH"</pre>
+
+</section>
+  <hr />
+<section>
+
+  <h2><img class="logo" src="images/Logos/linux_color.svg" alt="Linux Logo">Linux and <img class="logo" src="images/Logos/raspberry_pi_48.png" alt="Raspberry Pi Logo"> Raspberry Pi</h2>
+
+  <h3>Permanent (User-Level – Recommended)</h3>
+  <p>Edit one of these files (depending on your shell/distro):</p>
+  <pre class="console">~/.bashrc
+~/.bash_profile
+~/.profile
+~/.zshrc</pre>
+
+  <p>Add:</p>
+  <pre class="console">export PATH="$HOME/myapp/bin:$PATH"</pre>
+
+  <p>Apply:</p>
+  <pre class="console">source ~/.bashrc</pre>
+
+  <h3>Permanent (System-Wide)</h3>
+  <p>Edit one of these (requires sudo):</p>
+  <pre class="console">sudo nano /etc/profile</pre>
+  <p>or</p>
+  <pre class="console">sudo nano /etc/environment</pre>
+
+  <p>Example (in <code>/etc/environment</code>):</p>
+  <pre class="console">PATH="/usr/local/myapp/bin:/usr/bin:/bin"</pre>
+
+  <div class="note">
+    <p>System-wide changes often require a logout/login (or reboot) to fully apply.</p>
+  </div>
+
+  <h3>Temporary</h3>
+  <pre class="console">export PATH="$HOME/myapp/bin:$PATH"</pre>
+
+  <hr />
+
+  <h2>Verify Your PATH</h2>
+  <p>macOS / Linux:</p>
+  <pre class="console">echo $PATH
+which mycommand</pre>
+
+  <p>Windows:</p>
+  <pre class="console">where mycommand</pre>
+
+</section>
+  <hr />
+<section>
+
+  <h2>Common Mistakes</h2>
+  <ul>
+    <li>Overwriting <code>PATH</code> instead of prepending/appending to it</li>
+    <li>Forgetting to restart the terminal (or log out/in)</li>
+    <li>Editing the wrong shell config file (<code>.bashrc</code> vs <code>.profile</code> vs <code>.zshrc</code>)</li>
+    <li>On macOS/Linux, GUI apps not inheriting your shell’s <code>PATH</code></li>
+  </ul>
+
+  <h2>Best Practice Summary</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>OS</th>
+        <th>Best Permanent Method</th>
+        <th>Temporary Method</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Windows</td>
+        <td>User Environment Variables (Path)</td>
+        <td><code>set PATH=...;%PATH%</code> or <code>$env:PATH=...</code></td>
+      </tr>
+      <tr>
+        <td>macOS</td>
+        <td><code>~/.zshrc</code></td>
+        <td><code>export PATH="...:$PATH"</code></td>
+      </tr>
+      <tr>
+        <td>Linux</td>
+        <td><code>~/.bashrc</code> or <code>~/.profile</code></td>
+        <td><code>export PATH="...:$PATH"</code></td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+   <footer>
+		<p><a href="index.html">Overview</a> |
+		<a href="Architecture.html">Architecture&nbsp;Reference</a> |
+		<a href="Programmer_Guide.html">Programmer&nbsp;Guide</a> |
+		<a href="Directive_Reference.html">Directives&nbsp;Reference</a> |
+		<a href="Instruction_Set_Reference.html">Instruction&nbsp;Set&nbsp;Reference</a> |
+		<a href="Interrupt_Reference.html">Software&nbsp;Interrupt&nbsp;Reference</a> |
+		<a href="Library_Reference.html">Library&nbsp;Reference</a> |
+		<a href="http://www.pureprogrammer.org">Pure&nbsp;Programmer</a></p>
+		<p><a href="https://twitter.com/share" class="twitter-share-button" data-size="large" data-related="richlesh">Tweet</a>
+		<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+		<a href="https://twitter.com/richlesh" class="twitter-follow-button" data-show-count="false" data-size="large">Follow @richlesh</a>
+		<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script></p>
+		
+		<form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
+		<input type="hidden" name="cmd" value="_s-xclick">
+		<input type="hidden" name="hosted_button_id" value="P2877VYMJ3G64">
+		<input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif" name="submit" alt="PayPal - The safer, easier way to pay online!">
+		<img alt="" style="border:0;" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
+		</form>
+		<address>2025 Generated by ChatGPT 5.2 on 2025/12/22</address>
+	</footer>
+	</div>
+</body>
+</html>

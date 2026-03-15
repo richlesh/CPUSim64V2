@@ -159,7 +159,8 @@
 }
 
 
-h1,h2,h3,h4,h5,h6 {
+h1,h2,h3,h4,h5,h6
+{
 	font-family: "DejaVu Sans", Helvetica, sans-serif;
 	color: #021EAA;
 }
@@ -169,8 +170,9 @@ h1 {
 }
 
 body {
-	font-family: "DejaVu Serif", "Times New Roman", serif;
+	font-family: "DejaVu Serif", "Times New Roman", ui-serif, serif;
 	margin: 2% 4% 2% 4%;
+	color: #0000cc;
 }
 
 .center {
@@ -178,7 +180,7 @@ body {
 }
 
 code, .code {
-	font-family: "JetBrains Mono NL", monospace;
+	font-family: "JetBrains Mono NL", ui-monospace, monospace;
 	color: #0000cc;
 	background-color: #eeeeee;
 	tab-size: 4;
@@ -187,7 +189,7 @@ code, .code {
 }
 
 .console {
-	font-family: "JetBrains Mono NL", monospace;
+	font-family: "JetBrains Mono NL", ui-monospace, monospace;
 	font-size: 12px;
 	line-height: 125%;
 	text-align: left;
@@ -226,7 +228,7 @@ code, .code {
 figcaption
 {
 	text-align: center;
-	font-family: "DejaVu Sans", Helvetica, sans-serif;
+	font-family: "DejaVu Sans", Helvetica, system-ui, sans-serif;
 	font-size: 14pt;
 	font-style: italic;
 	font-weight: bold;
@@ -235,7 +237,7 @@ figcaption
 }
 
 .listingheader {
-	font-family: "JetBrains Mono NL", monospace;
+	font-family: "JetBrains Mono NL", ui-monospace, monospace;
 	background-color: #176FBC;
 	color: white;
 	font-size: 12px;
@@ -248,7 +250,7 @@ figcaption
 }
 
 .listing {
-	font-family: "JetBrains Mono NL", monospace;
+	font-family: "JetBrains Mono NL", ui-monospace, monospace;
 	font-size: 12px;
 	text-align: left;
 	white-space: pre-wrap;
@@ -281,13 +283,13 @@ footer {
 }
 
 summary {
-	font-family: "DejaVu Sans", Helvetica, sans-serif;
+	font-family: "DejaVu Sans", Helvetica, system-ui, sans-serif;
 	font-size: 10pt;
 	color: #021EAA;
 }
 
 dl {
-	font-family: "DejaVu Sans", Helvetica, sans-serif;
+	font-family: "DejaVu Sans", Helvetica, system-ui, sans-serif;
 	margin: 1em 5em;
 	display: grid;
 	grid-template-columns: max-content auto;
@@ -306,7 +308,7 @@ dd
 }
 
 table {
-	font-family: "DejaVu Sans", Helvetica, sans-serif;
+	font-family: "DejaVu Sans", Helvetica, system-ui, sans-serif;
 	margin: 1em auto;
 	border: 1pt #021EAA solid;
 	border-collapse: collapse;
@@ -321,7 +323,7 @@ table caption {
 }
 
 .instruction {
-	font-family: "JetBrains Mono", monospace;
+	font-family: "JetBrains Mono", ui-monospace, monospace;
 }
 
 table.instruction {
