@@ -15,6 +15,8 @@
  * limitations under the License.
  */
 
+#ifndef _THREAD_ASM
+#define _THREAD_ASM
 #include <system/system.def>
 #include <system/thread.def>
 #include <system/io.asm>
@@ -207,3 +209,4 @@ $_TRY_GET_AND_DECREMENT:
 
 
 THREAD_ASM_END:	nop
+#endif

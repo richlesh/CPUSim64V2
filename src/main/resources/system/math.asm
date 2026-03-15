@@ -15,6 +15,8 @@
  * limitations under the License.
  */
 
+#ifndef _MATH_ASM
+#define _MATH_ASM
 #include <system/math.def>
 #include <system/system.def>
 
@@ -338,3 +340,4 @@ $END_LOOP:
 #end_func
 
 MATH_ASM_END: nop
+#endif

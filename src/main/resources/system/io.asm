@@ -15,6 +15,9 @@
  * limitations under the License.
  */
 
+#ifndef _IO_ASM
+#define _IO_ASM
+
 #include <system/io.def>
 #include <system/system.def>
 #include <system/string.def>
@@ -697,3 +700,4 @@ jump	IO_ASM_END
 #end_func
 
 IO_ASM_END:	nop
+#endif

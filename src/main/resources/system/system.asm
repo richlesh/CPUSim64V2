@@ -15,6 +15,8 @@
  * limitations under the License.
  */
 
+#ifndef _SYSTEM_ASM
+#define _SYSTEM_ASM
 #include <system/system.def>
 
 SYSTEM_ASM_START:
@@ -313,3 +315,4 @@ _MUTEX_MAX_EXP_WAIT: .dcf 500.
 #end_func
 
 SYSTEM_ASM_END: nop
+#endif

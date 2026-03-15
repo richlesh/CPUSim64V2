@@ -15,6 +15,9 @@
  * limitations under the License.
  */
 
+#ifndef _IO_DEF
+#define _IO_DEF
+
 #define	iPUT_NL				200
 #define	iPUT_INT			201
 #define	iPUT_DEC			202
@@ -136,3 +139,6 @@
 	move	r2, ${prec}
 	int		iPUT_FP
 #end_macro
+
+#endif
+

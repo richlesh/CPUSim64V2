@@ -882,6 +882,26 @@ cmp i, 5
 #end_sync
 </div>
 
+<h2>Namespaces</h2>
+<p>You can create namespaces using the <code>.block</code> compiler directive.  This directive is used to create local blocks for functions and loops but can also be used to create namespaces.  For example you can create a namespace called <code>MY_NAMESPACE</code> and declare labeled integers, floats or strings.  Then elsewhere in the code you can refer to these labels using the block name, a dollar sign and then the label.  This helps avoid global namespace pollution when used to localize label names.</p>
+<p>When labels are declared in a block, they must start with a dollar sign to indicate that they are relative to the current block not absolute labels.</p>
+
+<div class='listingheader'>.block Namespace Example</div>
+<div class='listing'>#include &lt;system/ansi_color.asm&gt;
+#include &lt;system/io.asm&gt;
+
+#call puts(ANSI_COLOR$RED)			// sets forground using RED defined in namespace ANSI_COLOR
+#call puts("This is in red\n")
+
+.block MY_NAMESPACE
+	$RED:	 .dci 1
+	$GREEN:  .dci 2
+	$BLUE:   .dci 3
+.block_end
+
+#call put_dec(MY_NAMESPACE$RED)		// This is a different label RED in namespace MY_NAMESPACE
+</div>
+
 <footer>
 <p><a href="index.html">Overview</a> |
 <a href="Architecture.html">Architecture&nbsp;Reference</a> |

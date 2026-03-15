@@ -15,6 +15,8 @@
  * limitations under the License.
  */
 
+#ifndef _THREAD_DEF
+#define _THREAD_DEF
 #include <system/system.def>
 
 // SpinLock structure is just a single atomic boolean
@@ -78,3 +80,5 @@
 	move	r1, ${threadPID}
 	int		iWAKE_THREAD
 #end_macro
+
+#endif

@@ -293,7 +293,19 @@ public class Utils {
 		s = s.replace("\f", "\\f");
 		s = s.replace("\"", "\\\"");
 		s = s.replace("\'", "\\'");
-		return s;
+		StringBuilder sb = new StringBuilder();
+		for (int i = 0; i < s.length(); ) {
+			int cp = s.codePointAt(i);
+			if (cp >= 0x20 && cp <= 0x7E) {
+				// ASCII printable: keep as-is
+				sb.append((char) cp);
+			} else {
+				// Non-ASCII printable (or control chars): escape it
+				sb.append(String.format("\\u{%X}", cp));
+			}
+			i += Character.charCount(cp);
+		}
+		return sb.toString();
 	}
 
 	/**

@@ -15,6 +15,9 @@
  * limitations under the License.
  */
 
+#ifndef _SYSTEM_DEF
+#define _SYSTEM_DEF
+
 #define iINT_MIN		1
 #define iINT_MAX		2
 #define iFLOAT_MIN		3
@@ -147,3 +150,5 @@
 	move	r1, ${ms}
 	int		iSLEEP
 #end_macro
+
+#endif

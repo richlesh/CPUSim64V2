@@ -15,6 +15,9 @@
  * limitations under the License.
  */
 
+#ifndef _STRING_DEF
+#define _STRING_DEF
+
 #define	iFMT_DEC			301
 #define	iFMT_HEX			302
 #define	iFMT_FLOAT			303
@@ -265,3 +268,5 @@
 	move	r2, ${s2}
 	int		iSTRCAT
 #end_macro
+
+#endif

@@ -15,6 +15,8 @@
  * limitations under the License.
  */
 
+#ifndef _STRING_ASM
+#define _STRING_ASM
 #include <system/string.def>
 #include <system/system.def>
 #include <system/io.def>
@@ -74,3 +76,4 @@ $LOOP1_END:
 #end_func
 
 STRING_ASM_END: nop
+#endif

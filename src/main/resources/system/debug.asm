@@ -15,6 +15,9 @@
  * limitations under the License.
  */
 
+#ifndef _DEBUG_ASM
+#define _DEBUG_ASM
+
 #include <system/system.def>
 #include <system/debug.def>
 #include <system/io.asm>
@@ -22,7 +25,7 @@
 
 DEBUG_ASM_START:
 
-jump	DEBUG_ASM_END
+jump	_DEBUG_ASM_END
 
 #ifdef __DEBUG__
 
@@ -200,4 +203,5 @@ $ASSERT_${cond}_FP_PASSED:
 
 #end_if
 
-DEBUG_ASM_END: nop
+_DEBUG_ASM_END: nop
+#endif

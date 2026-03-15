@@ -396,7 +396,7 @@ public class Simulator {
 		public static String getRegisterOrValue(int type, long num) {
 			return switch (type) {
 				case 0 -> "None";
-				case 1 -> Long.toString(num);
+				case 1 -> String.format("%d (0x%X)", num, num);
 				case 2 -> registers[(int) num];
 				case 3 -> registersFP[(int) num];
 				default -> throw new RuntimeException("Unexpected op type: " + type);
@@ -467,7 +467,7 @@ public class Simulator {
 						String label = findNearestLabel(reverseSymbolMap, c1);
 						if (label != null) v0 += " (" + label + ")";
 					} else {
-						v0 = Long.toString(c1);
+						v0 = String.format("%d (0x%X)", c1, c1);
 					}
 					buffer.append(v0);
 					break;
@@ -484,7 +484,7 @@ public class Simulator {
 						String label = findNearestLabel(reverseSymbolMap, c2);
 						if (label != null) v1 += " (" + label + ")";
 					} else {
-						v1 = Long.toString(c2);
+						v1 = String.format("%d (0x%X)", c2, c2);
 					}
 					buffer.append(v1);
 					break;
@@ -502,7 +502,7 @@ public class Simulator {
 							getOpCode() == Opcode.CALL.code)
 						v2 = "0x" + Long.toString(c3, 16);
 					else
-						v2 = Integer.toString(c3);
+						v2 = String.format("%d (0x%X)", c3, c3);
 					buffer.append(v2);
 					break;
 			}
