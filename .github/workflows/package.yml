@@ -1,0 +1,139 @@
+name: Build Native Packages
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Release version tag (e.g. v2.0.2)'
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  package:
+    strategy:
+      matrix:
+        include:
+          - os: macos-13
+            arch: x64
+            icon: resources/app_icon.icns
+            asm_icon: resources/asm_icon.icns
+            obj_icon: resources/obj_icon.icns
+            pkg_type: dmg
+            label: macos-x64
+          - os: macos-latest
+            arch: arm64
+            icon: resources/app_icon.icns
+            asm_icon: resources/asm_icon.icns
+            obj_icon: resources/obj_icon.icns
+            pkg_type: dmg
+            label: macos-arm64
+          - os: windows-latest
+            arch: x64
+            icon: resources/app_icon.ico
+            asm_icon: resources/asm_icon.ico
+            obj_icon: resources/obj_icon.ico
+            pkg_type: msi
+            label: windows-x64
+          - os: windows-11-arm
+            arch: arm64
+            icon: resources/app_icon.ico
+            asm_icon: resources/asm_icon.ico
+            obj_icon: resources/obj_icon.ico
+            pkg_type: msi
+            label: windows-arm64
+          - os: ubuntu-latest
+            arch: x64
+            icon: resources/app_icon_256.png
+            asm_icon: resources/asm_icon_256.png
+            obj_icon: resources/obj_icon_256.png
+            pkg_type: deb
+            label: linux-x64
+          - os: ubuntu-24.04-arm
+            arch: arm64
+            icon: resources/app_icon_256.png
+            asm_icon: resources/asm_icon_256.png
+            obj_icon: resources/obj_icon_256.png
+            pkg_type: deb
+            label: linux-arm64
+
+    runs-on: ${{ matrix.os }}
+    name: Package (${{ matrix.label }})
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+
+      - name: Build JAR
+        run: |
+          mvn clean package -DskipTests=true
+          mkdir -p lib
+          cp target/CPUSim64-*.jar lib/
+
+      - name: Create file associations config
+        shell: bash
+        run: |
+          cat > fa-asm.properties <<EOF
+          mime-type=application/x-cpusim-asm
+          extension=asm
+          icon=${{ matrix.asm_icon }}
+          description=CPUSim64 Assembly File
+          EOF
+
+          cat > fa-obj.properties <<EOF
+          mime-type=application/x-cpusim-obj
+          extension=obj
+          icon=${{ matrix.obj_icon }}
+          description=CPUSim64 Object File
+          EOF
+
+          cat > fa-objgz.properties <<EOF
+          mime-type=application/x-cpusim-obj-gz
+          extension=obj.gz
+          icon=${{ matrix.obj_icon }}
+          description=CPUSim64 Compressed Object File
+          EOF
+
+      - name: Run jpackage
+        shell: bash
+        run: |
+          jpackage \
+            --input lib \
+            --main-jar CPUSim64-2.0.2.jar \
+            --name CPUSim64 \
+            --app-version "${{ inputs.version }}" \
+            --vendor "Richard Lesh" \
+            --copyright "©2025-2026 Richard Lesh" \
+            --description "64-bit virtual CPU, assembler, and simulation environment" \
+            --icon "${{ matrix.icon }}" \
+            --file-associations fa-asm.properties \
+            --file-associations fa-obj.properties \
+            --file-associations fa-objgz.properties \
+            --jlink-options "--strip-debug --no-header-files --no-man-pages --compress zip-6" \
+            --type ${{ matrix.pkg_type }}
+
+      - name: Upload package artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: CPUSim64-${{ matrix.label }}
+          path: |
+            *.dmg
+            *.msi
+            *.deb
+
+      - name: Attach to release
+        if: inputs.version != ''
+        uses: softprops/action-gh-release@v3
+        with:
+          tag_name: ${{ inputs.version }}
+          name: CPUSim64 ${{ inputs.version }}
+          files: |
+            *.dmg
+            *.msi
+            *.deb
