@@ -35,7 +35,6 @@ public class AssemblerVisitor extends CPUSim64BaseVisitor<Void> implements HasLo
 	boolean pauseLineIncrement = false;
 	private long blockCount = 0;
 	private boolean hasErrors = false;
-	private Map<Integer, String> originalSourceLocations;
 
 	public String getLocation(int offendingLine) {
 		return (filename == null ? "" : filename + ":") + offendingLine;
@@ -1636,23 +1635,22 @@ public class AssemblerVisitor extends CPUSim64BaseVisitor<Void> implements HasLo
 	}
 
 	public void assemble(String src) {
-		originalSourceLocations = Utils.readLineDirectives(src);
 		CharStream input = CharStreams.fromString(src);
 		var lex = new cloud.lesh.CPUSim64.CPUSim64Lexer(input);
 		lex.removeErrorListeners();                				// remove ConsoleErrorListener
-		lex.addErrorListener(this.new LabelErrorListener());     // collect lexer errors
+		lex.addErrorListener(this.new AssemblerErrorListener());     // collect lexer errors
 		CommonTokenStream toks = new CommonTokenStream(lex);
 		toks.fill();
 
 		var parser = new cloud.lesh.CPUSim64.CPUSim64Parser(toks);
 		parser.removeErrorListeners();             				// remove ConsoleErrorListener
-		parser.addErrorListener(this.new LabelErrorListener());  // collect parser errors
+		parser.addErrorListener(this.new AssemblerErrorListener());  // collect parser errors
 		ParseTree tree = parser.program();
 		visit(tree);
 	}
 
-	final class LabelErrorListener extends BaseErrorListener {
-		public LabelErrorListener() {}
+	final class AssemblerErrorListener extends BaseErrorListener {
+		public AssemblerErrorListener() {}
 
 		@Override
 		public void syntaxError(Recognizer<?, ?> recognizer,
@@ -1662,12 +1660,8 @@ public class AssemblerVisitor extends CPUSim64BaseVisitor<Void> implements HasLo
 								String msg,
 								RecognitionException e) {
 
-			String where = getLocation(line);
+			String where = getLocation(lineNum);
 
-			String tokenText = "";
-			if (offendingSymbol instanceof Token t) {
-				tokenText = " near '" + t.getText() + "'";
-			}
 			System.err.println(where + ":ASMERROR:" + msg);
 			hasErrors = true;
 		}

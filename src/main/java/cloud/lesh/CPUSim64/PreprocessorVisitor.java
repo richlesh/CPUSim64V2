@@ -1414,18 +1414,15 @@ public class PreprocessorVisitor extends cloud.lesh.CPUSim64.PreprocessorParserB
 								String msg,
 								RecognitionException e) {
 
-			String where = String.format("«%s»:%d:%d", filename, sourceLineNum, charPositionInLine);
 			String sourceLine = "";
-
-			String tokenText = "";
 			if (offendingSymbol instanceof Token t) {
-				tokenText = " near '" + t.getText() + "'";
-				sourceLine = Utils.extractSourceLine(t);
+				sourceLine = Utils.extractSourceLine(t).trim();
 			}
+			String where = String.format("«%s»:%d:%d", filename, line, charPositionInLine);
 			System.err.println(where + ":PPERROR:" + msg);
 			if (!sourceLine.isEmpty()) {
 				System.err.println("    " + sourceLine);
-				System.err.println("    " + " ".repeat(charPositionInLine) + "^");
+				System.err.println("    " + " ".repeat(charPositionInLine - 1) + "^");
 			}
 			hasErrors = true;
 		}

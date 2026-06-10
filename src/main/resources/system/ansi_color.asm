@@ -25,6 +25,8 @@
 jump    _ANSI_COLOR_ASM_END
 
 .block ANSI_COLOR
+
+// Styles
 $RESET:         .dcs "\u{1b}[0m"
 $BOLD:          .dcs "\u{1b}[1m"
 $DIM:           .dcs "\u{1b}[2m"
@@ -40,7 +42,7 @@ $RESET_REVERSE: .dcs "\u{1b}[27m"
 $RESET_COLOR:   .dcs "\u{1b}[39m"
 $RESET_BG:      .dcs "\u{1b}[49m"
 
-    // Foreground colors
+// Foreground colors
 $BLACK:         .dcs "\u{1b}[30m"
 $RED:           .dcs "\u{1b}[31m"
 $GREEN:         .dcs "\u{1b}[32m"
@@ -50,7 +52,7 @@ $MAGENTA:       .dcs "\u{1b}[35m"
 $CYAN:          .dcs "\u{1b}[36m"
 $WHITE:         .dcs "\u{1b}[37m"
 
-    // Bright foreground colors
+// Bright foreground colors
 $BRIGHT_BLACK:  .dcs "\u{1b}[90m"
 $BRIGHT_RED:    .dcs "\u{1b}[91m"
 $BRIGHT_GREEN:  .dcs "\u{1b}[92m"
@@ -60,7 +62,7 @@ $BRIGHT_MAGENTA:.dcs "\u{1b}[95m"
 $BRIGHT_CYAN:   .dcs "\u{1b}[96m"
 $BRIGHT_WHITE:  .dcs "\u{1b}[97m"
 
-    // Background colors
+// Background colors
 $BG_BLACK:      .dcs "\u{1b}[40m"
 $BG_RED:        .dcs "\u{1b}[41m"
 $BG_GREEN:      .dcs "\u{1b}[42m"
@@ -70,7 +72,7 @@ $BG_MAGENTA:    .dcs "\u{1b}[45m"
 $BG_CYAN:       .dcs "\u{1b}[46m"
 $BG_WHITE:      .dcs "\u{1b}[47m"
 
-    // Bright background colors
+// Bright background colors
 $BG_BRIGHT_BLACK:   .dcs "\u{1b}[100m"
 $BG_BRIGHT_RED:     .dcs "\u{1b}[101m"
 $BG_BRIGHT_GREEN:   .dcs "\u{1b}[102m"
@@ -79,6 +81,12 @@ $BG_BRIGHT_BLUE:    .dcs "\u{1b}[104m"
 $BG_BRIGHT_MAGENTA: .dcs "\u{1b}[105m"
 $BG_BRIGHT_CYAN:    .dcs "\u{1b}[106m"
 $BG_BRIGHT_WHITE:   .dcs "\u{1b}[107m"
+
+// Cursor Control
+$CLEAR_TO_EOL:  .dcs "\u{1b}[K"
+$CLEAR_LINE:    .dcs "\u{1b}[2K"
+$HIDE_CURSOR:   .dcs "\u{1b}[?25l"
+$SHOW_CURSOR:   .dcs "\u{1b}[?25h"
 
 .block_end
 

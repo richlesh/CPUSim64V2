@@ -47,3 +47,4 @@ jobs:
           tag_name: ${{ inputs.version }}
           name: CPUSim64 ${{ inputs.version }}
           files: CPUSim64V2.zip
+

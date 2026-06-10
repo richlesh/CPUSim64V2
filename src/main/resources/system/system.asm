@@ -23,12 +23,12 @@ SYSTEM_ASM_START:
 	jump	SYSTEM_ASM_END
 
 ///////////////////////////////////////////////////////////////////////////////
-// printIntegerArray(a)
+// printIntegerArrayWithIndex(a)
 // Prints an array of integers with the index and value.
 // a	Base address of the array to print
 // size	Number of elements to print
 ///////////////////////////////////////////////////////////////////////////////
-#def_func printIntegerArray(a)
+#def_func printIntegerArrayWithIndex(a)
 	#var	base, i, len, v
 	load	base, a
 	load	len, base[0]
@@ -47,12 +47,12 @@ $LOOP1_END:
 #end_func
 
 ///////////////////////////////////////////////////////////////////////////////
-// printFloatArray(a)
+// printFloatArrayWithIndex(a)
 // Prints an array of floats with the index and value.
 // a	Base address of the array to print
 // size	Number of elements to print
 ///////////////////////////////////////////////////////////////////////////////
-#def_func printFloatArray(a)
+#def_func printFloatArrayWithIndex(a)
 	#var	base, i, len
 	#fvar	v
 	load	base, a
@@ -64,6 +64,31 @@ $LOOP1:
 	#call	put_dec(i)
 	#call	putc(':')
 	#call	put_fp(v)
+	#call	put_nl()
+	add		i, 1
+$LOOP1_END:
+	cmp		i, len
+	jump	le, $LOOP1
+#end_func
+
+///////////////////////////////////////////////////////////////////////////////
+// printStringArrayWithIndex(a)
+// Prints an array of floats with the index and value.
+// a	Base address of the array to print
+// size	Number of elements to print
+///////////////////////////////////////////////////////////////////////////////
+#def_func printStringArrayWithIndex(a)
+	#var	base, i, len
+	#fvar	v
+	load	base, a
+	load	len, base[0]
+	move	i, 1
+	jump	$LOOP1_END
+$LOOP1:
+	load	v, base[i]
+	#call	put_dec(i)
+	#call	putc(':')
+	#call	puts(v)
 	#call	put_nl()
 	add		i, 1
 $LOOP1_END:
@@ -192,7 +217,7 @@ _MUTEX_MAX_EXP_WAIT: .dcf 500.
 	load	a, addr
 	load	o, offset
 	add		a, o
-	#call	mutex_unlock(a)
+	#call	mutexUnlock(a)
 #end_func
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -239,7 +264,7 @@ _MUTEX_MAX_EXP_WAIT: .dcf 500.
 	load	t, timeout
 //#call debug(STDOUT,"Acquiring mutex2: %x %d %d\n", a, o, t)
 	add		a, o
-	#call	mutex_lock(a, t)
+	#call	mutexLock(a, t)
 #end_func
 
 ///////////////////////////////////////////////////////////////////////////////

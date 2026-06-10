@@ -38,13 +38,11 @@ public class LabelVisitor extends CPUSim64BaseVisitor<Void> implements HasLocati
 	private long currentAddress = 0;
 	private long blockCount = 0;
 	private boolean hasErrors = false;
-	private Map<Integer, String> originalSourceLocations;
 
 	// TODO remove
 	String filename = null;
 	int lineNum = 1;
 	boolean pauseLineIncrement = false;
-	Map<Integer, String> lineMap = new HashMap<Integer, String>();
 	CommonTokenStream tokens;
 
 	public void setTokens(CommonTokenStream tokens) {
@@ -52,13 +50,9 @@ public class LabelVisitor extends CPUSim64BaseVisitor<Void> implements HasLocati
 	}
 	public boolean hasErrors() { return hasErrors; }
 	public String getLocation(int offendingLine) {
-		String loc = originalSourceLocations.get(offendingLine);
-		while (loc == null && offendingLine > 0) {
-			loc = originalSourceLocations.get(--offendingLine);
-		}
+		String loc = filename + ", " + Integer.toString(lineNum);
 		return loc;
 	}
-	public Map<Integer, String> getLineMap() { return lineMap; }
 
 	public Map<String, Long> getLabelMap() {
 		labelMap.putIfAbsent("__START__", 0L);
@@ -102,7 +96,6 @@ public class LabelVisitor extends CPUSim64BaseVisitor<Void> implements HasLocati
 			if (t != null) {
 				int line = t.getLine();
 				int col  = t.getCharPositionInLine();
-				lineMap.put(line, getLocation(lineNum));
 			}
 		}
 		return null;
@@ -257,8 +250,6 @@ public class LabelVisitor extends CPUSim64BaseVisitor<Void> implements HasLocati
 	}
 
 	public String gatherLabels(String src) {
-		originalSourceLocations = Utils.readLineDirectives(src);
-
 		CharStream input = CharStreams.fromString(src);
 		var lex = new cloud.lesh.CPUSim64.CPUSim64Lexer(input);
 		lex.removeErrorListeners();                				// remove ConsoleErrorListener
@@ -288,10 +279,6 @@ public class LabelVisitor extends CPUSim64BaseVisitor<Void> implements HasLocati
 
 			String where = getLocation(line);
 
-			String tokenText = "";
-			if (offendingSymbol instanceof Token t) {
-				tokenText = " near '" + t.getText() + "'";
-			}
 			System.err.println(where + ":ASMERROR:" + msg);
 			hasErrors = true;
 		}

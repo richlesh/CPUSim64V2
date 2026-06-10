@@ -38,31 +38,6 @@ jump	STRING_ASM_END
 	int		iFORMAT
 #end_func
 
-///////////////////////////////////////////////////////////////////////////////
-// printStringArray(a)
-// Prints an array of UTF-8 strings with the index and value.
-// a	Base address of the array to print
-// size	Number of elements to print
-///////////////////////////////////////////////////////////////////////////////
-#def_func printStringArray(a)
-	#var	base, i, len
-	#fvar	v
-	load	base, a
-	load	len, base[0]
-	move	i, 1
-	jump	$LOOP1_END
-$LOOP1:
-	load	v, base[i]
-	#call	put_dec(i)
-	#call	putc(':')
-	#call	puts(v)
-	#call	put_nl()
-	add		i, 1
-$LOOP1_END:
-	cmp		i, len
-	jump	le, $LOOP1
-#end_func
-
 #def_func freeStrArray(addArg)
 	#var	len, i, addr
 	load	addr, addArg
