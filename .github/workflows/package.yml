@@ -76,6 +76,14 @@ jobs:
           mkdir -p lib
           cp target/CPUSim64-*.jar lib/
 
+      - name: Install WiX Toolset (Windows)
+        if: runner.os == 'Windows'
+        shell: powershell
+        run: |
+          curl -L -o wix311.exe https://github.com/wixtoolset/wix3/releases/download/wix3112rtm/wix311.exe
+          Start-Process -Wait -FilePath .\wix311.exe -ArgumentList '/install','/quiet','/norestart'
+          echo "C:\Program Files (x86)\WiX Toolset v3.11\bin" >> $env:GITHUB_PATH
+
       - name: Create file associations config
         shell: bash
         run: |
