@@ -31,10 +31,10 @@ public class Disassembler {
 		System.out.println("=".repeat(80));
 		System.out.println("CPUSim64 " + BuildInfo.VERSION + " Disassembler");
 		System.out.println(BuildInfo.COPYRIGHT + " Richard Lesh");
-		System.out.println("Disassembles .obj.gz object files into source code.");
+		System.out.println("Disassembles .obj object files into source code.");
 		System.out.println("=".repeat(80));
 		if (args.length < 1) {
-			System.err.println("Usage: disassemble [-mainOnly] <input.obj.gz>");
+			System.err.println("Usage: disassemble [-mainOnly] <input.obj>");
 			System.exit(2);
 		}
 
@@ -66,10 +66,10 @@ public class Disassembler {
 		int dot = fileName.indexOf('.');
 		String baseName = (dot == -1) ? fileName : fileName.substring(0, dot);
 		// Compose new path
-		newPath = originalPath.resolveSibling(baseName + ".obj.gz");
+		newPath = originalPath.resolveSibling(baseName + ".obj");
 		System.out.println("Looking for object file: " + newPath.toString());
 		if (!Files.isRegularFile(newPath)) {
-			newPath = originalPath.resolveSibling(baseName + ".obj");
+			newPath = originalPath.resolveSibling(baseName + ".obj.gz");
 			if (!Files.isRegularFile(newPath)) {
 				throw new RuntimeException("Can't locate object file for program: " + baseName);
 			}

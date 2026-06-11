@@ -102,8 +102,8 @@ jobs:
           EOF
 
           cat > fa-objgz.properties <<EOF
-          mime-type=application/x-cpusim-obj-gz
-          extension=obj.gz
+          mime-type=application/x-cpusim-obj
+          extension=obj
           icon=${{ matrix.obj_icon }}
           description=CPUSim64 Compressed Object File
           EOF

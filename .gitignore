@@ -21,6 +21,7 @@ test.*
 *.sym*
 *.jar
 *.zip
+src/main/resources/cpusim64
 old
 *.old
 

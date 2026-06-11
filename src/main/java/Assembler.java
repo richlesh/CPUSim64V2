@@ -42,7 +42,7 @@ public class Assembler {
 		System.out.println("=".repeat(80));
 		System.out.println("CPUSim64 " + BuildInfo.VERSION + " Assembler");
 		System.out.println(BuildInfo.COPYRIGHT + " Richard Lesh");
-		System.out.println("Assembles .asm source files into .obj.gz binary files.");
+		System.out.println("Assembles .asm source files into .obj binary files.");
 		System.out.println("=".repeat(80));
 		if (args.length < 1) {
 			System.err.println("Usage: assemble [--DEBUG] [--hasMain] [-Dsymbol[=value]] <input.asm>");
@@ -72,7 +72,7 @@ public class Assembler {
 		if (filename.endsWith(".asm")) {
 			filename = filename.substring(0, filename.length() - 4);
 		}
-		String outName = filename + ".obj.gz";
+		String outName = filename + ".obj";
 		// Put it in the same directory as the input file
 		Path outPath = inPath.getParent().resolve(outName);
 
