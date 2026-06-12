@@ -139,19 +139,36 @@ jobs:
       - name: Run jpackage
         shell: bash
         run: |
-          jpackage \
-            --input lib \
-            --main-jar CPUSim64-${{ inputs.version }}.jar \
-            --name CPUSim64 \
-            --app-version "${{ inputs.version }}" \
-            --vendor "Richard Lesh" \
-            --copyright "(C) 2025-2026 Richard Lesh" \
-            --description "64-bit virtual CPU, assembler, and simulation environment" \
-            --icon "${{ matrix.icon }}" \
-            --file-associations fa-asm.properties \
-            --file-associations fa-obj.properties \
-            --jlink-options "--strip-debug --no-header-files --no-man-pages --compress zip-6" \
-            --type ${{ matrix.pkg_type }}
+          if [ "${{ runner.os }}" = "macOS" ]; then
+            # Build app-image first so we can sign before creating DMG
+            jpackage \
+              --input lib \
+              --main-jar CPUSim64-${{ inputs.version }}.jar \
+              --name CPUSim64 \
+              --app-version "${{ inputs.version }}" \
+              --vendor "Richard Lesh" \
+              --copyright "(C) 2025-2026 Richard Lesh" \
+              --description "64-bit virtual CPU, assembler, and simulation environment" \
+              --icon "${{ matrix.icon }}" \
+              --file-associations fa-asm.properties \
+              --file-associations fa-obj.properties \
+              --jlink-options "--strip-debug --no-header-files --no-man-pages --compress zip-6" \
+              --type app-image
+          else
+            jpackage \
+              --input lib \
+              --main-jar CPUSim64-${{ inputs.version }}.jar \
+              --name CPUSim64 \
+              --app-version "${{ inputs.version }}" \
+              --vendor "Richard Lesh" \
+              --copyright "(C) 2025-2026 Richard Lesh" \
+              --description "64-bit virtual CPU, assembler, and simulation environment" \
+              --icon "${{ matrix.icon }}" \
+              --file-associations fa-asm.properties \
+              --file-associations fa-obj.properties \
+              --jlink-options "--strip-debug --no-header-files --no-man-pages --compress zip-6" \
+              --type ${{ matrix.pkg_type }}
+          fi
 
       - name: Sign and notarize (macOS)
         if: runner.os == 'macOS'
@@ -160,29 +177,33 @@ jobs:
           APPLE_API_ISSUER: ${{ secrets.APPLE_API_ISSUER }}
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
         run: |
-          DMG=$(ls *.dmg)
           KEY_FILE=$RUNNER_TEMP/AuthKey_${APPLE_API_KEY_ID}.p8
           echo "${{ secrets.APPLE_API_KEY }}" > "$KEY_FILE"
 
-          # Sign the app inside the DMG
-          hdiutil attach "$DMG" -mountpoint /tmp/dmg-mount
+          # Sign the app
           codesign --deep --force --options runtime \
-            --sign "Developer ID Application: ${{ secrets.APPLE_TEAM_ID }}" \
-            /tmp/dmg-mount/CPUSim64.app
-          hdiutil detach /tmp/dmg-mount
+            --sign "Developer ID Application: ${APPLE_TEAM_ID}" \
+            CPUSim64.app
 
-          # Sign the DMG itself
-          codesign --force --sign "Developer ID Application: ${{ secrets.APPLE_TEAM_ID }}" "$DMG"
+          # Create DMG from signed app
+          jpackage \
+            --type dmg \
+            --name CPUSim64 \
+            --app-version "${{ inputs.version }}" \
+            --app-image CPUSim64.app
+
+          # Sign the DMG
+          codesign --force --sign "Developer ID Application: ${APPLE_TEAM_ID}" CPUSim64-*.dmg
 
           # Notarize
-          xcrun notarytool submit "$DMG" \
+          xcrun notarytool submit CPUSim64-*.dmg \
             --key "$KEY_FILE" \
             --key-id "$APPLE_API_KEY_ID" \
             --issuer "$APPLE_API_ISSUER" \
             --wait
 
           # Staple
-          xcrun stapler staple "$DMG"
+          xcrun stapler staple CPUSim64-*.dmg
 
       - name: Azure login (Windows)
         if: runner.os == 'Windows'
