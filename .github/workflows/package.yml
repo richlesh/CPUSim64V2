@@ -209,7 +209,17 @@ jobs:
             --key "$KEY_FILE" \
             --key-id "$APPLE_API_KEY_ID" \
             --issuer "$APPLE_API_ISSUER" \
-            --wait
+            --wait | tee notarize_output.txt
+
+          # Fetch log if notarization failed
+          SUBMISSION_ID=$(grep "id:" notarize_output.txt | head -1 | awk '{print $2}')
+          if grep -q "Invalid" notarize_output.txt; then
+            xcrun notarytool log "$SUBMISSION_ID" \
+              --key "$KEY_FILE" \
+              --key-id "$APPLE_API_KEY_ID" \
+              --issuer "$APPLE_API_ISSUER" || true
+            exit 1
+          fi
 
           # Staple
           xcrun stapler staple CPUSim64-*.dmg
