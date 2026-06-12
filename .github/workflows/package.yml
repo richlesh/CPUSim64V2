@@ -197,7 +197,7 @@ jobs:
               --jlink-options "--strip-debug --no-header-files --no-man-pages --compress zip-6" \
               --java-options "-Dawt.useSystemAAFontSettings=on" \
               --linux-app-category devel \
-              --linux-menu-group Development \
+              --linux-menu-group "Development;IDE;" \
               --type ${{ matrix.pkg_type }}
           else
             jpackage \
