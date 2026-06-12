@@ -49,14 +49,28 @@ jobs:
             asm_icon: resources/asm_icon_256.png
             obj_icon: resources/obj_icon_256.png
             pkg_type: deb
-            label: linux-x64
+            label: linux-x64-deb
+          - os: ubuntu-latest
+            arch: x64
+            icon: resources/app_icon_256.png
+            asm_icon: resources/asm_icon_256.png
+            obj_icon: resources/obj_icon_256.png
+            pkg_type: rpm
+            label: linux-x64-rpm
           - os: ubuntu-24.04-arm
             arch: arm64
             icon: resources/app_icon_256.png
             asm_icon: resources/asm_icon_256.png
             obj_icon: resources/obj_icon_256.png
             pkg_type: deb
-            label: linux-arm64
+            label: linux-arm64-deb
+          - os: ubuntu-24.04-arm
+            arch: arm64
+            icon: resources/app_icon_256.png
+            asm_icon: resources/asm_icon_256.png
+            obj_icon: resources/obj_icon_256.png
+            pkg_type: rpm
+            label: linux-arm64-rpm
 
     runs-on: ${{ matrix.os }}
     name: Package (${{ matrix.label }})
@@ -75,6 +89,10 @@ jobs:
           mvn clean package -DskipTests=true
           mkdir -p lib
           cp target/CPUSim64-*.jar lib/
+
+      - name: Install RPM tools (Linux RPM)
+        if: matrix.pkg_type == 'rpm'
+        run: sudo apt-get update && sudo apt-get install -y rpm
 
       - name: Install WiX Toolset (Windows)
         if: runner.os == 'Windows'
@@ -134,6 +152,7 @@ jobs:
             *.dmg
             *.msi
             *.deb
+            *.rpm
 
       - name: Attach to release
         if: inputs.version != ''
@@ -145,3 +164,4 @@ jobs:
             *.dmg
             *.msi
             *.deb
+            *.rpm
