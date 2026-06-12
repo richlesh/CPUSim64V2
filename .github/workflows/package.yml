@@ -192,11 +192,11 @@ jobs:
 
           # Sign all nested dylibs and executables first
           find CPUSim64.app -type f \( -name "*.dylib" -o -name "*.jnilib" -o -perm +111 \) | while read f; do
-            codesign --force --options runtime --timestamp --sign "$IDENTITY" --keychain $RUNNER_TEMP/build.keychain "$f"
+            codesign --force --options runtime --timestamp --sign "$IDENTITY" --keychain $RUNNER_TEMP/build.keychain --entitlements resources/entitlements.plist "$f"
           done
 
           # Sign the app bundle
-          codesign --force --options runtime --timestamp --sign "$IDENTITY" --keychain $RUNNER_TEMP/build.keychain CPUSim64.app
+          codesign --force --options runtime --timestamp --sign "$IDENTITY" --keychain $RUNNER_TEMP/build.keychain --entitlements resources/entitlements.plist CPUSim64.app
 
           # Verify signature
           codesign --verify --deep --strict CPUSim64.app
