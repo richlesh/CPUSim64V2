@@ -185,7 +185,7 @@ jobs:
         run: |
           KEY_FILE=$RUNNER_TEMP/AuthKey_${APPLE_API_KEY_ID}.p8
           echo "${{ secrets.APPLE_API_KEY }}" > "$KEY_FILE"
-          IDENTITY="Developer ID Application: ${APPLE_TEAM_ID}"
+          IDENTITY="Developer ID Application"
 
           # Sign all nested dylibs and executables first
           find CPUSim64.app -type f \( -name "*.dylib" -o -name "*.jnilib" -o -perm +111 \) \
