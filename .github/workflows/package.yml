@@ -207,9 +207,13 @@ jobs:
           cp -R CPUSim64.app "$DMG_DIR/"
           ln -s /Applications "$DMG_DIR/Applications"
           cp resources/app_icon.icns "$DMG_DIR/.VolumeIcon.icns"
-          hdiutil create -volname CPUSim64 -srcfolder "$DMG_DIR" -ov -format UDZO CPUSim64-${APP_VERSION}.dmg
-          # Set custom icon flag on the DMG
-          SetFile -a C CPUSim64-${APP_VERSION}.dmg || true
+
+          # Create RW image, set custom icon flag on volume, then convert to compressed
+          hdiutil create -volname CPUSim64 -srcfolder "$DMG_DIR" -ov -format UDRW /tmp/cpusim64-rw.dmg
+          hdiutil attach /tmp/cpusim64-rw.dmg -mountpoint /tmp/dmg-vol
+          SetFile -a C /tmp/dmg-vol
+          hdiutil detach /tmp/dmg-vol
+          hdiutil convert /tmp/cpusim64-rw.dmg -format UDZO -o CPUSim64-${APP_VERSION}.dmg
 
           # Sign the DMG
           codesign --force --timestamp --sign "$IDENTITY" --keychain $RUNNER_TEMP/build.keychain CPUSim64-${APP_VERSION}.dmg
