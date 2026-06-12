@@ -85,6 +85,12 @@ jobs:
           java-version: '21'
           cache: maven
 
+      - name: Normalize version
+        shell: bash
+        run: |
+          VERSION="${{ inputs.version }}"
+          echo "APP_VERSION=${VERSION#v}" >> $GITHUB_ENV
+
       - name: Build JAR
         run: |
           mvn clean package -DskipTests=true
@@ -143,9 +149,9 @@ jobs:
             # Build app-image first so we can sign before creating DMG
             jpackage \
               --input lib \
-              --main-jar CPUSim64-${{ inputs.version }}.jar \
+              --main-jar CPUSim64-${{ env.APP_VERSION }}.jar \
               --name CPUSim64 \
-              --app-version "${{ inputs.version }}" \
+              --app-version "${{ env.APP_VERSION }}" \
               --vendor "Richard Lesh" \
               --copyright "(C) 2025-2026 Richard Lesh" \
               --description "64-bit virtual CPU, assembler, and simulation environment" \
@@ -157,9 +163,9 @@ jobs:
           else
             jpackage \
               --input lib \
-              --main-jar CPUSim64-${{ inputs.version }}.jar \
+              --main-jar CPUSim64-${{ env.APP_VERSION }}.jar \
               --name CPUSim64 \
-              --app-version "${{ inputs.version }}" \
+              --app-version "${{ env.APP_VERSION }}" \
               --vendor "Richard Lesh" \
               --copyright "(C) 2025-2026 Richard Lesh" \
               --description "64-bit virtual CPU, assembler, and simulation environment" \
@@ -192,7 +198,7 @@ jobs:
           jpackage \
             --type dmg \
             --name CPUSim64 \
-            --app-version "${{ inputs.version }}" \
+            --app-version "${{ env.APP_VERSION }}" \
             --app-image CPUSim64.app
 
           # Sign the DMG
