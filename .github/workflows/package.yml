@@ -197,18 +197,17 @@ jobs:
           # Sign the app bundle
           codesign --force --options runtime --timestamp --sign "$IDENTITY" CPUSim64.app
 
-          # Create DMG from signed app
-          jpackage \
-            --type dmg \
-            --name CPUSim64 \
-            --app-version "${{ env.APP_VERSION }}" \
-            --app-image CPUSim64.app
+          # Verify signature
+          codesign --verify --deep --strict CPUSim64.app
+
+          # Create DMG manually (jpackage would re-sign with ad-hoc)
+          hdiutil create -volname CPUSim64 -srcfolder CPUSim64.app -ov -format UDZO CPUSim64-${APP_VERSION}.dmg
 
           # Sign the DMG
-          codesign --force --timestamp --sign "$IDENTITY" CPUSim64-*.dmg
+          codesign --force --timestamp --sign "$IDENTITY" CPUSim64-${APP_VERSION}.dmg
 
           # Notarize
-          xcrun notarytool submit CPUSim64-*.dmg \
+          xcrun notarytool submit CPUSim64-${APP_VERSION}.dmg \
             --key "$KEY_FILE" \
             --key-id "$APPLE_API_KEY_ID" \
             --issuer "$APPLE_API_ISSUER" \
@@ -225,7 +224,7 @@ jobs:
           fi
 
           # Staple
-          xcrun stapler staple CPUSim64-*.dmg
+          xcrun stapler staple CPUSim64-${APP_VERSION}.dmg
 
       - name: Azure login (Windows)
         if: runner.os == 'Windows'
