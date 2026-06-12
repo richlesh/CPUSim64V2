@@ -175,15 +175,18 @@ jobs:
         env:
           APPLE_API_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
           APPLE_API_ISSUER: ${{ secrets.APPLE_API_ISSUER }}
-          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          APPLE_TEAM_ID: MMZ3Y97NTP
         run: |
           KEY_FILE=$RUNNER_TEMP/AuthKey_${APPLE_API_KEY_ID}.p8
           echo "${{ secrets.APPLE_API_KEY }}" > "$KEY_FILE"
+          IDENTITY="Developer ID Application: ${APPLE_TEAM_ID}"
 
-          # Sign the app
-          codesign --deep --force --options runtime \
-            --sign "Developer ID Application: ${APPLE_TEAM_ID}" \
-            CPUSim64.app
+          # Sign all nested dylibs and executables first
+          find CPUSim64.app -type f \( -name "*.dylib" -o -name "*.jnilib" -o -perm +111 \) \
+            -exec codesign --force --options runtime --timestamp --sign "$IDENTITY" {} \;
+
+          # Sign the app bundle
+          codesign --force --options runtime --timestamp --sign "$IDENTITY" CPUSim64.app
 
           # Create DMG from signed app
           jpackage \
@@ -193,7 +196,7 @@ jobs:
             --app-image CPUSim64.app
 
           # Sign the DMG
-          codesign --force --sign "Developer ID Application: ${APPLE_TEAM_ID}" CPUSim64-*.dmg
+          codesign --force --timestamp --sign "$IDENTITY" CPUSim64-*.dmg
 
           # Notarize
           xcrun notarytool submit CPUSim64-*.dmg \
@@ -225,6 +228,12 @@ jobs:
           file-digest: SHA256
           timestamp-rfc3161: http://timestamp.acs.microsoft.com
           timestamp-digest: SHA256
+
+      - name: Rename package with architecture
+        shell: bash
+        run: |
+          for f in *.dmg; do [ -f "$f" ] && mv "$f" "${f%.dmg}-${{ matrix.arch }}.dmg"; done
+          for f in *.msi; do [ -f "$f" ] && mv "$f" "${f%.msi}-${{ matrix.arch }}.msi"; done
 
       - name: Upload package artifact
         uses: actions/upload-artifact@v7
