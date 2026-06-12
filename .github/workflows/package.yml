@@ -185,17 +185,18 @@ jobs:
         run: |
           KEY_FILE=$RUNNER_TEMP/AuthKey_${APPLE_API_KEY_ID}.p8
           echo "${{ secrets.APPLE_API_KEY }}" > "$KEY_FILE"
-          IDENTITY="Developer ID Application"
+          IDENTITY="Developer ID Application: RICHARD A LESH (MMZ3Y97NTP)"
 
           # Debug: show available signing identities
           security find-identity -v -p codesigning $RUNNER_TEMP/build.keychain
 
           # Sign all nested dylibs and executables first
-          find CPUSim64.app -type f \( -name "*.dylib" -o -name "*.jnilib" -o -perm +111 \) \
-            -exec codesign --force --options runtime --timestamp --sign "$IDENTITY" {} \;
+          find CPUSim64.app -type f \( -name "*.dylib" -o -name "*.jnilib" -o -perm +111 \) | while read f; do
+            codesign --force --options runtime --timestamp --sign "$IDENTITY" --keychain $RUNNER_TEMP/build.keychain "$f"
+          done
 
           # Sign the app bundle
-          codesign --force --options runtime --timestamp --sign "$IDENTITY" CPUSim64.app
+          codesign --force --options runtime --timestamp --sign "$IDENTITY" --keychain $RUNNER_TEMP/build.keychain CPUSim64.app
 
           # Verify signature
           codesign --verify --deep --strict CPUSim64.app
@@ -204,7 +205,7 @@ jobs:
           hdiutil create -volname CPUSim64 -srcfolder CPUSim64.app -ov -format UDZO CPUSim64-${APP_VERSION}.dmg
 
           # Sign the DMG
-          codesign --force --timestamp --sign "$IDENTITY" CPUSim64-${APP_VERSION}.dmg
+          codesign --force --timestamp --sign "$IDENTITY" --keychain $RUNNER_TEMP/build.keychain CPUSim64-${APP_VERSION}.dmg
 
           # Notarize
           xcrun notarytool submit CPUSim64-${APP_VERSION}.dmg \
