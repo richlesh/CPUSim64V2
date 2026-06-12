@@ -238,8 +238,8 @@ jobs:
       - name: Rename package with architecture
         shell: bash
         run: |
-          for f in *.dmg; do [ -f "$f" ] && mv "$f" "${f%.dmg}-${{ matrix.arch }}.dmg"; done
-          for f in *.msi; do [ -f "$f" ] && mv "$f" "${f%.msi}-${{ matrix.arch }}.msi"; done
+          for f in *.dmg; do [ -f "$f" ] && mv "$f" "${f%.dmg}-${{ matrix.arch }}.dmg" || true; done
+          for f in *.msi; do [ -f "$f" ] && mv "$f" "${f%.msi}-${{ matrix.arch }}.msi" || true; done
 
       - name: Upload package artifact
         uses: actions/upload-artifact@v7
