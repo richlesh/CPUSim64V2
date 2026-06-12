@@ -25,9 +25,12 @@ public class CPUSim64App {
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
-            ImageIcon icon = new ImageIcon(new ImageIcon(
-                CPUSim64App.class.getResource("/app_icon_256.png"))
-                .getImage().getScaledInstance(64, 64, Image.SCALE_SMOOTH));
+            Icon icon = null;
+            var iconUrl = CPUSim64App.class.getResource("/app_icon_256.png");
+            if (iconUrl != null) {
+                icon = new ImageIcon(new ImageIcon(iconUrl)
+                    .getImage().getScaledInstance(64, 64, Image.SCALE_SMOOTH));
+            }
             int result = JOptionPane.showOptionDialog(
                 null,
                 "CPUSim64 needs to install command line tools on your system?",
