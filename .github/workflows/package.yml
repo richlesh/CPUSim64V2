@@ -141,9 +141,9 @@ jobs:
         if: runner.os == 'Windows'
         shell: powershell
         run: |
-          Invoke-WebRequest -Uri "https://github.com/wixtoolset/wix3/releases/download/wix3112rtm/wix311.exe" -OutFile wix311.exe
-          Start-Process -Wait -FilePath .\wix311.exe -ArgumentList '/install','/quiet','/norestart'
-          echo "C:\Program Files (x86)\WiX Toolset v3.11\bin" >> $env:GITHUB_PATH
+          nuget install WiX -Version 3.11.2 -OutputDirectory $env:RUNNER_TEMP\wix
+          $wixDir = (Get-ChildItem "$env:RUNNER_TEMP\wix\WiX.*\tools" -Directory).FullName
+          echo "$wixDir" >> $env:GITHUB_PATH
 
       - name: Create file associations config
         shell: bash
