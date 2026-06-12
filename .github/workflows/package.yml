@@ -91,6 +91,22 @@ jobs:
           VERSION="${{ inputs.version }}"
           echo "APP_VERSION=${VERSION#v}" >> $GITHUB_ENV
 
+      - name: Import Developer ID certificate (macOS)
+        if: runner.os == 'macOS'
+        env:
+          CERTIFICATE_BASE64: ${{ secrets.APPLE_CERTIFICATE_BASE64 }}
+          CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+        run: |
+          KEYCHAIN_PATH=$RUNNER_TEMP/build.keychain
+          KEYCHAIN_PASSWORD=build-keychain-password
+          security create-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+          security set-keychain-settings -lut 21600 $KEYCHAIN_PATH
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+          echo "$CERTIFICATE_BASE64" | base64 --decode -o $RUNNER_TEMP/cert.p12
+          security import $RUNNER_TEMP/cert.p12 -k $KEYCHAIN_PATH -P "$CERTIFICATE_PASSWORD" -T /usr/bin/codesign
+          security list-keychain -d user -s $KEYCHAIN_PATH
+          security set-key-partition-list -S apple-tool:,apple: -s -k "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+
       - name: Compile cpusim64 CLI tool
         shell: bash
         run: |
@@ -100,6 +116,15 @@ jobs:
           else
             c++ -std=c++17 -O2 -o src/main/resources/cpusim64 src/main/cpp/cpusim64.cpp
           fi
+
+      - name: Sign cpusim64 binary (macOS)
+        if: runner.os == 'macOS'
+        run: |
+          codesign --force --options runtime --timestamp \
+            --sign "Developer ID Application: RICHARD A LESH (MMZ3Y97NTP)" \
+            --keychain $RUNNER_TEMP/build.keychain \
+            --entitlements resources/entitlements.plist \
+            src/main/resources/cpusim64
 
       - name: Build JAR
         run: |
@@ -118,22 +143,6 @@ jobs:
           Invoke-WebRequest -Uri "https://github.com/wixtoolset/wix3/releases/download/wix3112rtm/wix311.exe" -OutFile wix311.exe
           Start-Process -Wait -FilePath .\wix311.exe -ArgumentList '/install','/quiet','/norestart'
           echo "C:\Program Files (x86)\WiX Toolset v3.11\bin" >> $env:GITHUB_PATH
-
-      - name: Import Developer ID certificate (macOS)
-        if: runner.os == 'macOS'
-        env:
-          CERTIFICATE_BASE64: ${{ secrets.APPLE_CERTIFICATE_BASE64 }}
-          CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
-        run: |
-          KEYCHAIN_PATH=$RUNNER_TEMP/build.keychain
-          KEYCHAIN_PASSWORD=build-keychain-password
-          security create-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
-          security set-keychain-settings -lut 21600 $KEYCHAIN_PATH
-          security unlock-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
-          echo "$CERTIFICATE_BASE64" | base64 --decode -o $RUNNER_TEMP/cert.p12
-          security import $RUNNER_TEMP/cert.p12 -k $KEYCHAIN_PATH -P "$CERTIFICATE_PASSWORD" -T /usr/bin/codesign
-          security list-keychain -d user -s $KEYCHAIN_PATH
-          security set-key-partition-list -S apple-tool:,apple: -s -k "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
 
       - name: Create file associations config
         shell: bash
