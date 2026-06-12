@@ -194,6 +194,8 @@ jobs:
               --file-associations fa-asm.properties \
               --file-associations fa-obj.properties \
               --jlink-options "--strip-debug --no-header-files --no-man-pages --compress zip-6" \
+              --linux-app-category Development \
+              --linux-menu-group "Development;" \
               --type ${{ matrix.pkg_type }}
           fi
 
