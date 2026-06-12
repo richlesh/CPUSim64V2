@@ -119,13 +119,6 @@ jobs:
           description=CPUSim64 Object File
           EOF
 
-          cat > fa-objgz.properties <<EOF
-          mime-type=application/x-cpusim-obj
-          extension=obj
-          icon=${{ matrix.obj_icon }}
-          description=CPUSim64 Compressed Object File
-          EOF
-
       - name: Run jpackage
         shell: bash
         run: |
@@ -140,7 +133,6 @@ jobs:
             --icon "${{ matrix.icon }}" \
             --file-associations fa-asm.properties \
             --file-associations fa-obj.properties \
-            --file-associations fa-objgz.properties \
             --jlink-options "--strip-debug --no-header-files --no-man-pages --compress zip-6" \
             --type ${{ matrix.pkg_type }}
 
