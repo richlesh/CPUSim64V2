@@ -187,6 +187,9 @@ jobs:
           echo "${{ secrets.APPLE_API_KEY }}" > "$KEY_FILE"
           IDENTITY="Developer ID Application"
 
+          # Debug: show available signing identities
+          security find-identity -v -p codesigning $RUNNER_TEMP/build.keychain
+
           # Sign all nested dylibs and executables first
           find CPUSim64.app -type f \( -name "*.dylib" -o -name "*.jnilib" -o -perm +111 \) \
             -exec codesign --force --options runtime --timestamp --sign "$IDENTITY" {} \;
