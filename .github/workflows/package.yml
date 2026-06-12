@@ -196,8 +196,8 @@ jobs:
               --file-associations fa-obj.properties \
               --jlink-options "--strip-debug --no-header-files --no-man-pages --compress zip-6" \
               --java-options "-Dawt.useSystemAAFontSettings=on" \
-              --linux-app-category Development \
-              --linux-menu-group "Development;" \
+              --linux-app-category devel \
+              --linux-menu-group Development \
               --type ${{ matrix.pkg_type }}
           else
             jpackage \
