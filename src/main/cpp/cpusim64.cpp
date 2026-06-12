@@ -47,7 +47,7 @@ static std::string get_app_dir() {
     }
     return "C:\\Program Files\\CPUSim64";
 #else
-    return "/opt/cpusim64/lib/cpusim64";
+    return "/opt/cpusim64/lib";
 #endif
 }
 
