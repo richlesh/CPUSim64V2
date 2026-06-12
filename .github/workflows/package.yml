@@ -91,6 +91,16 @@ jobs:
           VERSION="${{ inputs.version }}"
           echo "APP_VERSION=${VERSION#v}" >> $GITHUB_ENV
 
+      - name: Compile cpusim64 CLI tool
+        shell: bash
+        run: |
+          if [ "${{ runner.os }}" = "Windows" ]; then
+            cl.exe /std:c++17 /O2 /Fe:src/main/resources/cpusim64.exe src/main/cpp/cpusim64.cpp || \
+            g++ -std=c++17 -O2 -o src/main/resources/cpusim64.exe src/main/cpp/cpusim64.cpp
+          else
+            c++ -std=c++17 -O2 -o src/main/resources/cpusim64 src/main/cpp/cpusim64.cpp
+          fi
+
       - name: Build JAR
         run: |
           mvn clean package -DskipTests=true
