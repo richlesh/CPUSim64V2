@@ -181,6 +181,24 @@ jobs:
               --file-associations fa-obj.properties \
               --jlink-options "--strip-debug --no-header-files --no-man-pages --compress zip-6" \
               --type app-image
+          elif [ "${{ runner.os }}" = "Linux" ]; then
+            jpackage \
+              --input lib \
+              --main-jar CPUSim64-${{ env.APP_VERSION }}.jar \
+              --main-class CPUSim64App \
+              --name CPUSim64 \
+              --app-version "${{ env.APP_VERSION }}" \
+              --vendor "Richard Lesh" \
+              --copyright "(C) 2025-2026 Richard Lesh" \
+              --description "64-bit virtual CPU, assembler, and simulation environment" \
+              --icon "${{ matrix.icon }}" \
+              --file-associations fa-asm.properties \
+              --file-associations fa-obj.properties \
+              --jlink-options "--strip-debug --no-header-files --no-man-pages --compress zip-6" \
+              --java-options "-Dawt.useSystemAAFontSettings=on" \
+              --linux-app-category Development \
+              --linux-menu-group "Development;" \
+              --type ${{ matrix.pkg_type }}
           else
             jpackage \
               --input lib \
@@ -195,8 +213,6 @@ jobs:
               --file-associations fa-asm.properties \
               --file-associations fa-obj.properties \
               --jlink-options "--strip-debug --no-header-files --no-man-pages --compress zip-6" \
-              --linux-app-category Development \
-              --linux-menu-group "Development;" \
               --type ${{ matrix.pkg_type }}
           fi
 
