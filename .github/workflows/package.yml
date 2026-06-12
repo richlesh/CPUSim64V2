@@ -201,8 +201,15 @@ jobs:
           # Verify signature
           codesign --verify --deep --strict CPUSim64.app
 
-          # Create DMG manually (jpackage would re-sign with ad-hoc)
-          hdiutil create -volname CPUSim64 -srcfolder CPUSim64.app -ov -format UDZO CPUSim64-${APP_VERSION}.dmg
+          # Create DMG with Applications alias and volume icon
+          DMG_DIR=dmg_contents
+          mkdir -p "$DMG_DIR"
+          cp -R CPUSim64.app "$DMG_DIR/"
+          ln -s /Applications "$DMG_DIR/Applications"
+          cp resources/app_icon.icns "$DMG_DIR/.VolumeIcon.icns"
+          hdiutil create -volname CPUSim64 -srcfolder "$DMG_DIR" -ov -format UDZO CPUSim64-${APP_VERSION}.dmg
+          # Set custom icon flag on the DMG
+          SetFile -a C CPUSim64-${APP_VERSION}.dmg || true
 
           # Sign the DMG
           codesign --force --timestamp --sign "$IDENTITY" --keychain $RUNNER_TEMP/build.keychain CPUSim64-${APP_VERSION}.dmg
