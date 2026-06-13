@@ -1,0 +1,38 @@
+<?xml version="1.0" ?>
+<job id="postimage">
+<script language="JScript">
+// Post-image script for CPUSim64 Windows installer.
+// Injects a custom action into main.wxs to run "CPUSim64.exe --uninstall"
+// during MSI removal, which removes the CLI tool and cleans PATH.
+
+var fso = new ActiveXObject("Scripting.FileSystemObject");
+
+var mainWxs = "jpackage-temp\\config\\main.wxs";
+if (!fso.FileExists(mainWxs)) {
+    WScript.Echo("post-image: main.wxs not found, skipping");
+    WScript.Quit(0);
+}
+
+var file = fso.OpenTextFile(mainWxs, 1);
+var content = file.ReadAll();
+file.Close();
+
+// Use Directory-based custom action: runs cmd.exe from INSTALLDIR
+var caDef = '    <CustomAction Id="UninstallCLI" Directory="INSTALLDIR" ExeCommand="cmd.exe /c &quot;CPUSim64.exe --uninstall&quot;" Execute="deferred" Impersonate="yes" Return="ignore" />\r\n';
+var seqEntry = '      <Custom Action="UninstallCLI" Before="RemoveFiles"><![CDATA[(REMOVE="ALL") AND (NOT UPGRADINGPRODUCTCODE)]]></Custom>\r\n';
+
+// Insert custom action definition before </Product>
+content = content.replace("</Product>", caDef + "  </Product>");
+
+// Insert into InstallExecuteSequence
+if (content.indexOf("</InstallExecuteSequence>") >= 0) {
+    content = content.replace("</InstallExecuteSequence>", seqEntry + "    </InstallExecuteSequence>");
+}
+
+var outFile = fso.CreateTextFile(mainWxs, true);
+outFile.Write(content);
+outFile.Close();
+
+WScript.Echo("post-image: Injected uninstall cleanup custom action");
+</script>
+</job>

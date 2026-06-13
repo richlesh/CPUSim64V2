@@ -26,6 +26,10 @@ public class CPUSim64App {
     private static final boolean IS_MAC = System.getProperty("os.name").toLowerCase().contains("mac");
 
     public static void main(String[] args) {
+        if (args.length > 0 && args[0].equals("--uninstall")) {
+            uninstall();
+            return;
+        }
         SwingUtilities.invokeLater(() -> {
             Icon icon = null;
             var iconUrl = CPUSim64App.class.getResource("/app_icon_256.png");
@@ -89,6 +93,64 @@ public class CPUSim64App {
                 "Installation failed: " + e.getMessage() + "\nYou may need to run with administrator privileges.",
                 "CPUSim64", JOptionPane.ERROR_MESSAGE);
         }
+    }
+
+    private static void uninstall() {
+        try {
+            Path destDir = Path.of(System.getenv("LOCALAPPDATA"), "CPUSim64", "bin");
+            Path exe = destDir.resolve("cpusim64.exe");
+
+            // Remove the executable
+            Files.deleteIfExists(exe);
+
+            // Remove the bin directory if empty
+            try { Files.deleteIfExists(destDir); } catch (Exception ignored) {}
+
+            // Remove from PATH
+            removeFromPathWindows(destDir.toString());
+        } catch (Exception ignored) {}
+    }
+
+    private static void removeFromPathWindows(String dir) throws Exception {
+        Process p = Runtime.getRuntime().exec(new String[]{
+            "reg", "query", "HKCU\\Environment", "/v", "Path"
+        });
+        String output = new String(p.getInputStream().readAllBytes());
+        p.waitFor();
+        if (p.exitValue() != 0) return;
+
+        String currentPath = "";
+        for (String line : output.split("\\r?\\n")) {
+            line = line.trim();
+            if (line.contains("REG_") && line.contains("Path")) {
+                int idx = line.indexOf("REG_");
+                idx = line.indexOf("    ", idx);
+                if (idx >= 0) currentPath = line.substring(idx).trim();
+                break;
+            }
+        }
+
+        // Remove our directory from PATH
+        StringJoiner joiner = new StringJoiner(";");
+        boolean found = false;
+        for (String entry : currentPath.split(";")) {
+            if (entry.trim().equalsIgnoreCase(dir)) {
+                found = true;
+            } else if (!entry.trim().isEmpty()) {
+                joiner.add(entry.trim());
+            }
+        }
+        if (!found) return;
+
+        String newPath = joiner.toString();
+        Runtime.getRuntime().exec(new String[]{
+            "reg", "add", "HKCU\\Environment", "/v", "Path", "/t", "REG_EXPAND_SZ", "/d", newPath, "/f"
+        }).waitFor();
+
+        // Broadcast change
+        Runtime.getRuntime().exec(new String[]{
+            "cmd", "/c", "setx", "CPUSIM64_PATH_SET", "1"
+        }).waitFor();
     }
 
     private static String addToPath(String dir) {

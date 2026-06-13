@@ -207,6 +207,10 @@ jobs:
               --file-associations fa-asm.properties \
               --file-associations fa-obj.properties \
               --jlink-options "--strip-debug --no-header-files --no-man-pages --compress zip-6" \
+              --win-menu \
+              --win-menu-group "Development" \
+              --resource-dir resources/windows \
+              --temp jpackage-temp \
               --type ${{ matrix.pkg_type }}
           fi
 
