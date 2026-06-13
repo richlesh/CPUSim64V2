@@ -7,9 +7,12 @@
 
 var fso = new ActiveXObject("Scripting.FileSystemObject");
 
-var mainWxs = "jpackage-temp\\config\\main.wxs";
+// main.wxs is in the same directory as this script
+var scriptDir = fso.GetParentFolderName(WScript.ScriptFullName);
+var mainWxs = scriptDir + "\\main.wxs";
+
 if (!fso.FileExists(mainWxs)) {
-    WScript.Echo("post-image: main.wxs not found, skipping");
+    WScript.Echo("post-image: main.wxs not found at " + mainWxs + ", skipping");
     WScript.Quit(0);
 }
 
