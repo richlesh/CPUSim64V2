@@ -86,7 +86,13 @@ static std::string quote(const std::string& s) {
 }
 
 static int run_cmd(const std::string& cmd) {
+#ifdef _WIN32
+    // cmd.exe requires the entire command wrapped in quotes when paths contain spaces
+    std::string wrapped = "\"" + cmd + "\"";
+    return system(wrapped.c_str());
+#else
     return system(cmd.c_str());
+#endif
 }
 
 static bool file_exists(const std::string& path) {
