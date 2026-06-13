@@ -16,13 +16,6 @@ jobs:
     strategy:
       matrix:
         include:
-          - os: macos-13
-            arch: x64
-            icon: resources/app_icon.icns
-            asm_icon: resources/asm_icon.icns
-            obj_icon: resources/obj_icon.icns
-            pkg_type: dmg
-            label: macos-x64
           - os: macos-latest
             arch: arm64
             icon: resources/app_icon.icns
@@ -113,7 +106,7 @@ jobs:
           sed -i.bak "s/Version 2.0.0/Version ${APP_VERSION}/" src/main/cpp/cpusim64.cpp
           if [ "${{ runner.os }}" = "Windows" ]; then
             cl.exe /std:c++17 /O2 /Fe:src/main/resources/cpusim64.exe src/main/cpp/cpusim64.cpp || \
-            g++ -std=c++17 -O2 -o src/main/resources/cpusim64.exe src/main/cpp/cpusim64.cpp
+            g++ -std=c++17 -O2 -static -o src/main/resources/cpusim64.exe src/main/cpp/cpusim64.cpp
           else
             c++ -std=c++17 -O2 -o src/main/resources/cpusim64 src/main/cpp/cpusim64.cpp
           fi
@@ -198,6 +191,7 @@ jobs:
               --java-options "-Dawt.useSystemAAFontSettings=on" \
               --linux-app-category devel \
               --linux-menu-group "Development;IDE;" \
+              --resource-dir resources/linux \
               --type ${{ matrix.pkg_type }}
           else
             jpackage \

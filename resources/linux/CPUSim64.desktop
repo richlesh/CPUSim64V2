@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=CPUSim64
+Comment=64-bit virtual CPU, assembler, and simulation environment
+Exec=/opt/cpusim64/bin/CPUSim64 %f
+Icon=/opt/cpusim64/lib/CPUSim64.png
+Terminal=false
+Categories=Development;IDE;Education;
+MimeType=application/x-cpusim-asm;application/x-cpusim-obj;
