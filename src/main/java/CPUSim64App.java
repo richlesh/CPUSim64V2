@@ -40,19 +40,24 @@ public class CPUSim64App {
                 icon = new ImageIcon(new ImageIcon(iconUrl)
                     .getImage().getScaledInstance(64, 64, Image.SCALE_SMOOTH));
             }
+            Object[] options = IS_MAC
+                ? new Object[]{"Cancel", "Uninstall", "Install"}
+                : new Object[]{"Install", "Uninstall", "Cancel"};
             int result = JOptionPane.showOptionDialog(
                 null,
-                "CPUSim64 command line tools",
+                "CPUSim64 needs to install command line tools",
                 "CPUSim64",
                 JOptionPane.DEFAULT_OPTION,
                 JOptionPane.QUESTION_MESSAGE,
                 icon,
-                new Object[]{"Install", "Uninstall", "Cancel"},
+                options,
                 "Install"
             );
-            if (result == 0) {
+            int installIdx = IS_MAC ? 2 : 0;
+            int uninstallIdx = 1;
+            if (result == installIdx) {
                 install();
-            } else if (result == 1) {
+            } else if (result == uninstallIdx) {
                 if (IS_WINDOWS) {
                     uninstall();
                     JOptionPane.showMessageDialog(null,
