@@ -21,6 +21,7 @@ jobs:
             icon: resources/app_icon.icns
             asm_icon: resources/asm_icon.icns
             obj_icon: resources/obj_icon.icns
+            sym_icon: resources/sym_icon.icns
             pkg_type: dmg
             label: macos-arm64
           - os: windows-latest
@@ -28,6 +29,7 @@ jobs:
             icon: resources/app_icon.ico
             asm_icon: resources/asm_icon.ico
             obj_icon: resources/obj_icon.ico
+            sym_icon: resources/sym_icon.ico
             pkg_type: msi
             label: windows-x64
           - os: windows-11-arm
@@ -35,6 +37,7 @@ jobs:
             icon: resources/app_icon.ico
             asm_icon: resources/asm_icon.ico
             obj_icon: resources/obj_icon.ico
+            sym_icon: resources/sym_icon.ico
             pkg_type: msi
             label: windows-arm64
           - os: ubuntu-latest
@@ -42,6 +45,7 @@ jobs:
             icon: resources/app_icon_256.png
             asm_icon: resources/asm_icon_256.png
             obj_icon: resources/obj_icon_256.png
+            sym_icon: resources/sym_icon_256.png
             pkg_type: deb
             label: linux-x64-deb
           - os: ubuntu-latest
@@ -49,6 +53,7 @@ jobs:
             icon: resources/app_icon_256.png
             asm_icon: resources/asm_icon_256.png
             obj_icon: resources/obj_icon_256.png
+            sym_icon: resources/sym_icon_256.png
             pkg_type: rpm
             label: linux-x64-rpm
           - os: ubuntu-24.04-arm
@@ -56,6 +61,7 @@ jobs:
             icon: resources/app_icon_256.png
             asm_icon: resources/asm_icon_256.png
             obj_icon: resources/obj_icon_256.png
+            sym_icon: resources/sym_icon_256.png
             pkg_type: deb
             label: linux-arm64-deb
           - os: ubuntu-24.04-arm
@@ -63,6 +69,7 @@ jobs:
             icon: resources/app_icon_256.png
             asm_icon: resources/asm_icon_256.png
             obj_icon: resources/obj_icon_256.png
+            sym_icon: resources/sym_icon_256.png
             pkg_type: rpm
             label: linux-arm64-rpm
 
@@ -155,6 +162,27 @@ jobs:
           description=CPUSim64 Object File
           EOF
 
+          cat > fa-sym.properties <<EOF
+          mime-type=application/x-cpusim-sym
+          extension=sym
+          icon=${{ matrix.sym_icon }}
+          description=CPUSim64 Symbol File
+          EOF
+
+          cat > fa-sym1.properties <<EOF
+          mime-type=application/x-cpusim-sym1
+          extension=sym1
+          icon=${{ matrix.sym_icon }}
+          description=CPUSim64 Symbol File
+          EOF
+
+          cat > fa-sym2.properties <<EOF
+          mime-type=application/x-cpusim-sym2
+          extension=sym2
+          icon=${{ matrix.sym_icon }}
+          description=CPUSim64 Symbol File
+          EOF
+
       - name: Run jpackage
         shell: bash
         run: |
@@ -172,6 +200,9 @@ jobs:
               --icon "${{ matrix.icon }}" \
               --file-associations fa-asm.properties \
               --file-associations fa-obj.properties \
+              --file-associations fa-sym.properties \
+              --file-associations fa-sym1.properties \
+              --file-associations fa-sym2.properties \
               --jlink-options "--strip-debug --no-header-files --no-man-pages --compress zip-6" \
               --type app-image
           elif [ "${{ runner.os }}" = "Linux" ]; then
@@ -187,6 +218,9 @@ jobs:
               --icon "${{ matrix.icon }}" \
               --file-associations fa-asm.properties \
               --file-associations fa-obj.properties \
+              --file-associations fa-sym.properties \
+              --file-associations fa-sym1.properties \
+              --file-associations fa-sym2.properties \
               --jlink-options "--strip-debug --no-header-files --no-man-pages --compress zip-6" \
               --java-options "-Dawt.useSystemAAFontSettings=on" \
               --linux-app-category devel \
@@ -206,6 +240,9 @@ jobs:
               --icon "${{ matrix.icon }}" \
               --file-associations fa-asm.properties \
               --file-associations fa-obj.properties \
+              --file-associations fa-sym.properties \
+              --file-associations fa-sym1.properties \
+              --file-associations fa-sym2.properties \
               --jlink-options "--strip-debug --no-header-files --no-man-pages --compress zip-6" \
               --win-menu \
               --win-shortcut \
