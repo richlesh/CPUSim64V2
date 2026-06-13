@@ -204,6 +204,7 @@ jobs:
               --file-associations fa-sym1.properties \
               --file-associations fa-sym2.properties \
               --jlink-options "--strip-debug --no-header-files --no-man-pages --compress zip-6" \
+              --resource-dir resources/macos \
               --type app-image
           elif [ "${{ runner.os }}" = "Linux" ]; then
             jpackage \
