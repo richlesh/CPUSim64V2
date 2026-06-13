@@ -39,16 +39,20 @@ public class CPUSim64App {
             }
             int result = JOptionPane.showOptionDialog(
                 null,
-                "CPUSim64 needs to install command line tools on your system?",
+                "CPUSim64 command line tools",
                 "CPUSim64",
                 JOptionPane.DEFAULT_OPTION,
                 JOptionPane.QUESTION_MESSAGE,
                 icon,
-                new Object[]{"Install", "Cancel"},
+                IS_WINDOWS
+                    ? new Object[]{"Install", "Cancel"}
+                    : new Object[]{"Install", "Uninstall", "Cancel"},
                 "Install"
             );
             if (result == 0) {
                 install();
+            } else if (!IS_WINDOWS && result == 1) {
+                uninstallUnix();
             }
             System.exit(0);
         });
@@ -109,6 +113,37 @@ public class CPUSim64App {
             // Remove from PATH
             removeFromPathWindows(destDir.toString());
         } catch (Exception ignored) {}
+    }
+
+    private static void uninstallUnix() {
+        try {
+            Path destDir = Path.of(System.getProperty("user.home"), ".local", "bin");
+            Path exe = destDir.resolve("cpusim64");
+
+            Files.deleteIfExists(exe);
+
+            // Remove PATH entry from profile
+            Path profilePath = IS_MAC
+                ? Path.of(System.getProperty("user.home"), ".zprofile")
+                : Path.of(System.getProperty("user.home"), ".profile");
+
+            if (Files.exists(profilePath)) {
+                String content = Files.readString(profilePath);
+                String cleaned = content
+                    .replace("\n# Added by CPUSim64 installer\nexport PATH=\"" + destDir + ":$PATH\"\n", "");
+                if (!cleaned.equals(content)) {
+                    Files.writeString(profilePath, cleaned);
+                }
+            }
+
+            JOptionPane.showMessageDialog(null,
+                "Command line tools removed successfully.",
+                "CPUSim64", JOptionPane.INFORMATION_MESSAGE);
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null,
+                "Uninstall failed: " + e.getMessage(),
+                "CPUSim64", JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     private static void removeFromPathWindows(String dir) throws Exception {

@@ -1,0 +1,7 @@
+#!/bin/sh
+# Remove cpusim64 CLI tool installed by CPUSim64App
+# Runs for all users who have it installed
+for home_dir in /home/*; do
+    rm -f "$home_dir/.local/bin/cpusim64"
+done
+rm -f /root/.local/bin/cpusim64
