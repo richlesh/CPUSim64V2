@@ -44,15 +44,20 @@ public class CPUSim64App {
                 JOptionPane.DEFAULT_OPTION,
                 JOptionPane.QUESTION_MESSAGE,
                 icon,
-                IS_WINDOWS
-                    ? new Object[]{"Install", "Cancel"}
-                    : new Object[]{"Install", "Uninstall", "Cancel"},
+                new Object[]{"Install", "Uninstall", "Cancel"},
                 "Install"
             );
             if (result == 0) {
                 install();
-            } else if (!IS_WINDOWS && result == 1) {
-                uninstallUnix();
+            } else if (result == 1) {
+                if (IS_WINDOWS) {
+                    uninstall();
+                    JOptionPane.showMessageDialog(null,
+                        "Command line tools removed successfully.",
+                        "CPUSim64", JOptionPane.INFORMATION_MESSAGE);
+                } else {
+                    uninstallUnix();
+                }
             }
             System.exit(0);
         });
@@ -128,8 +133,12 @@ public class CPUSim64App {
                 : Path.of(System.getProperty("user.home"), ".bashrc");
             if (Files.exists(profilePath)) {
                 String content = Files.readString(profilePath);
-                String cleaned = content
-                    .replace("\n# Added by CPUSim64 installer\nexport PATH=\"" + destDir + ":$PATH\"\n", "");
+                String snippet = "\n# Added by CPUSim64 installer\n"
+                    + "case \":$PATH:\" in\n"
+                    + "  *\":" + destDir + ":\"*) ;;\n"
+                    + "  *) export PATH=\"" + destDir + ":$PATH\" ;;\n"
+                    + "esac\n";
+                String cleaned = content.replace(snippet, "");
                 if (!cleaned.equals(content)) {
                     Files.writeString(profilePath, cleaned);
                 }
@@ -256,14 +265,18 @@ public class CPUSim64App {
         }
 
         // Check if the profile already contains this path entry
-        String exportLine = "export PATH=\"" + dir + ":$PATH\"";
         if (Files.exists(profilePath)) {
             String content = Files.readString(profilePath);
             if (content.contains(dir)) return null; // Already configured
         }
 
-        Files.writeString(profilePath,
-            "\n# Added by CPUSim64 installer\n" + exportLine + "\n",
+        String snippet = "\n# Added by CPUSim64 installer\n"
+            + "case \":$PATH:\" in\n"
+            + "  *\":" + dir + ":\"*) ;;\n"
+            + "  *) export PATH=\"" + dir + ":$PATH\" ;;\n"
+            + "esac\n";
+
+        Files.writeString(profilePath, snippet,
             StandardOpenOption.CREATE, StandardOpenOption.APPEND);
 
         return "PATH has been updated in " + profilePath.getFileName() +
