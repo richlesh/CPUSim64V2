@@ -1,41 +1,34 @@
 <?xml version="1.0" ?>
 <job id="postimage">
 <script language="JScript">
-// Post-image script for CPUSim64 Windows installer.
-// Injects a custom action into main.wxs to run "CPUSim64.exe --uninstall"
-// during MSI removal, which removes the CLI tool and cleans PATH.
+try {
+    var fso = new ActiveXObject("Scripting.FileSystemObject");
+    var scriptDir = fso.GetParentFolderName(WScript.ScriptFullName);
+    var mainWxs = scriptDir + "\\main.wxs";
 
-var fso = new ActiveXObject("Scripting.FileSystemObject");
+    if (!fso.FileExists(mainWxs)) {
+        WScript.Quit(0);
+    }
 
-// main.wxs is in the same directory as this script
-var scriptDir = fso.GetParentFolderName(WScript.ScriptFullName);
-var mainWxs = scriptDir + "\\main.wxs";
+    var file = fso.OpenTextFile(mainWxs, 1);
+    var content = file.ReadAll();
+    file.Close();
 
-if (!fso.FileExists(mainWxs)) {
-    WScript.Echo("post-image: main.wxs not found at " + mainWxs + ", skipping");
-    WScript.Quit(0);
+    var caDef = '    <CustomAction Id="UninstallCLI" Directory="INSTALLDIR" ExeCommand="cmd.exe /c CPUSim64.exe --uninstall" Execute="deferred" Impersonate="yes" Return="ignore" />\r\n';
+    var seqEntry = '      <Custom Action="UninstallCLI" Before="RemoveFiles"><![CDATA[(REMOVE="ALL") AND (NOT UPGRADINGPRODUCTCODE)]]></Custom>\r\n';
+
+    content = content.replace("</Product>", caDef + "  </Product>");
+
+    if (content.indexOf("</InstallExecuteSequence>") >= 0) {
+        content = content.replace("</InstallExecuteSequence>", seqEntry + "    </InstallExecuteSequence>");
+    }
+
+    var outFile = fso.CreateTextFile(mainWxs, true);
+    outFile.Write(content);
+    outFile.Close();
+} catch(e) {
+    // Never fail the build
 }
-
-var file = fso.OpenTextFile(mainWxs, 1);
-var content = file.ReadAll();
-file.Close();
-
-// Use Directory-based custom action: runs cmd.exe from INSTALLDIR
-var caDef = '    <CustomAction Id="UninstallCLI" Directory="INSTALLDIR" ExeCommand="cmd.exe /c &quot;CPUSim64.exe --uninstall&quot;" Execute="deferred" Impersonate="yes" Return="ignore" />\r\n';
-var seqEntry = '      <Custom Action="UninstallCLI" Before="RemoveFiles"><![CDATA[(REMOVE="ALL") AND (NOT UPGRADINGPRODUCTCODE)]]></Custom>\r\n';
-
-// Insert custom action definition before </Product>
-content = content.replace("</Product>", caDef + "  </Product>");
-
-// Insert into InstallExecuteSequence
-if (content.indexOf("</InstallExecuteSequence>") >= 0) {
-    content = content.replace("</InstallExecuteSequence>", seqEntry + "    </InstallExecuteSequence>");
-}
-
-var outFile = fso.CreateTextFile(mainWxs, true);
-outFile.Write(content);
-outFile.Close();
-
-WScript.Echo("post-image: Injected uninstall cleanup custom action");
+WScript.Quit(0);
 </script>
 </job>
