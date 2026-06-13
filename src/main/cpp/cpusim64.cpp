@@ -116,7 +116,7 @@ static bool has_main_label(const std::string& asm_file) {
 
 static std::string build_java_cmd(const std::string& java_cmd, const std::string& classpath,
                                    const std::string& main_class, const std::vector<std::string>& args) {
-    std::string cmd = quote(java_cmd) + " -Dfile.encoding=UTF8 -cp " + quote(classpath) + " " + main_class;
+    std::string cmd = quote(java_cmd) + " -Dfile.encoding=UTF-8 -Dstdout.encoding=UTF-8 -Dstderr.encoding=UTF-8 -cp " + quote(classpath) + " " + main_class;
     for (const auto& arg : args) {
         cmd += " " + quote(arg);
     }
@@ -134,6 +134,9 @@ static void usage() {
 }
 
 int main(int argc, char* argv[]) {
+#ifdef _WIN32
+    SetConsoleOutputCP(65001);
+#endif
     if (argc < 2) usage();
 
     std::string command = argv[1];
