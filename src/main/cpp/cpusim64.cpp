@@ -127,7 +127,7 @@ static void usage() {
     std::cerr
         << "CPUSim64: A simple 64-bit CPU simulator\n"
         << "Version 2.0.0\n"
-        << "Copyright (C) 2026 Richard Lesh\n\n"
+        << "Copyright ©2026 Richard Lesh\n\n"
         << "Usage: cpusim64 <command> <file> [options...]\n"
         << "Commands: assemble, debug, disassemble, preprocess, run, trace\n";
     exit(1);
