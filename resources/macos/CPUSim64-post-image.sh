@@ -4,6 +4,12 @@
 # conflicts with the system Wavefront OBJ UTI).
 
 PLIST="CPUSim64.app/Contents/Info.plist"
+RESOURCES="CPUSim64.app/Contents/Resources"
+
+# Copy document type icons into the app bundle's Resources directory
+cp resources/asm_icon.icns "$RESOURCES/"
+cp resources/obj_icon.icns "$RESOURCES/"
+cp resources/sym_icon.icns "$RESOURCES/"
 
 /usr/libexec/PlistBuddy -c "Add :UTExportedTypeDeclarations array" "$PLIST"
 
@@ -12,6 +18,7 @@ PLIST="CPUSim64.app/Contents/Info.plist"
   -c "Add :UTExportedTypeDeclarations:0 dict" \
   -c "Add :UTExportedTypeDeclarations:0:UTTypeIdentifier string com.richardlesh.cpusim64.asm" \
   -c "Add :UTExportedTypeDeclarations:0:UTTypeDescription string CPUSim64 Assembly File" \
+  -c "Add :UTExportedTypeDeclarations:0:UTTypeIconFile string asm_icon.icns" \
   -c "Add :UTExportedTypeDeclarations:0:UTTypeConformsTo array" \
   -c "Add :UTExportedTypeDeclarations:0:UTTypeConformsTo:0 string public.plain-text" \
   -c "Add :UTExportedTypeDeclarations:0:UTTypeTagSpecification dict" \
@@ -25,6 +32,7 @@ PLIST="CPUSim64.app/Contents/Info.plist"
   -c "Add :UTExportedTypeDeclarations:1 dict" \
   -c "Add :UTExportedTypeDeclarations:1:UTTypeIdentifier string com.richardlesh.cpusim64.obj" \
   -c "Add :UTExportedTypeDeclarations:1:UTTypeDescription string CPUSim64 Object File" \
+  -c "Add :UTExportedTypeDeclarations:1:UTTypeIconFile string obj_icon.icns" \
   -c "Add :UTExportedTypeDeclarations:1:UTTypeConformsTo array" \
   -c "Add :UTExportedTypeDeclarations:1:UTTypeConformsTo:0 string public.data" \
   -c "Add :UTExportedTypeDeclarations:1:UTTypeTagSpecification dict" \
@@ -38,6 +46,7 @@ PLIST="CPUSim64.app/Contents/Info.plist"
   -c "Add :UTExportedTypeDeclarations:2 dict" \
   -c "Add :UTExportedTypeDeclarations:2:UTTypeIdentifier string com.richardlesh.cpusim64.sym" \
   -c "Add :UTExportedTypeDeclarations:2:UTTypeDescription string CPUSim64 Symbol File" \
+  -c "Add :UTExportedTypeDeclarations:2:UTTypeIconFile string sym_icon.icns" \
   -c "Add :UTExportedTypeDeclarations:2:UTTypeConformsTo array" \
   -c "Add :UTExportedTypeDeclarations:2:UTTypeConformsTo:0 string public.data" \
   -c "Add :UTExportedTypeDeclarations:2:UTTypeTagSpecification dict" \
@@ -51,6 +60,7 @@ PLIST="CPUSim64.app/Contents/Info.plist"
   -c "Add :UTExportedTypeDeclarations:3 dict" \
   -c "Add :UTExportedTypeDeclarations:3:UTTypeIdentifier string com.richardlesh.cpusim64.sym1" \
   -c "Add :UTExportedTypeDeclarations:3:UTTypeDescription string CPUSim64 Symbol File" \
+  -c "Add :UTExportedTypeDeclarations:3:UTTypeIconFile string sym_icon.icns" \
   -c "Add :UTExportedTypeDeclarations:3:UTTypeConformsTo array" \
   -c "Add :UTExportedTypeDeclarations:3:UTTypeConformsTo:0 string public.data" \
   -c "Add :UTExportedTypeDeclarations:3:UTTypeTagSpecification dict" \
@@ -64,6 +74,7 @@ PLIST="CPUSim64.app/Contents/Info.plist"
   -c "Add :UTExportedTypeDeclarations:4 dict" \
   -c "Add :UTExportedTypeDeclarations:4:UTTypeIdentifier string com.richardlesh.cpusim64.sym2" \
   -c "Add :UTExportedTypeDeclarations:4:UTTypeDescription string CPUSim64 Symbol File" \
+  -c "Add :UTExportedTypeDeclarations:4:UTTypeIconFile string sym_icon.icns" \
   -c "Add :UTExportedTypeDeclarations:4:UTTypeConformsTo array" \
   -c "Add :UTExportedTypeDeclarations:4:UTTypeConformsTo:0 string public.data" \
   -c "Add :UTExportedTypeDeclarations:4:UTTypeTagSpecification dict" \
@@ -72,7 +83,7 @@ PLIST="CPUSim64.app/Contents/Info.plist"
   -c "Add :UTExportedTypeDeclarations:4:UTTypeTagSpecification:public.mime-type string application/x-cpusim-sym2" \
   "$PLIST"
 
-# Also update CFBundleDocumentTypes to reference UTIs via LSItemContentTypes
+# Update CFBundleDocumentTypes to reference UTIs via LSItemContentTypes and set LSHandlerRank
 # This ensures macOS uses the UTI-based matching rather than just extension-based
 TYPES_COUNT=$(/usr/libexec/PlistBuddy -c "Print :CFBundleDocumentTypes" "$PLIST" | grep -c "Dict")
 for ((i=0; i<TYPES_COUNT; i++)); do
@@ -81,24 +92,29 @@ for ((i=0; i<TYPES_COUNT; i++)); do
     asm)
       /usr/libexec/PlistBuddy -c "Add :CFBundleDocumentTypes:$i:LSItemContentTypes array" "$PLIST" 2>/dev/null
       /usr/libexec/PlistBuddy -c "Add :CFBundleDocumentTypes:$i:LSItemContentTypes:0 string com.richardlesh.cpusim64.asm" "$PLIST"
+      /usr/libexec/PlistBuddy -c "Add :CFBundleDocumentTypes:$i:LSHandlerRank string Owner" "$PLIST" 2>/dev/null
       ;;
     obj)
       /usr/libexec/PlistBuddy -c "Add :CFBundleDocumentTypes:$i:LSItemContentTypes array" "$PLIST" 2>/dev/null
       /usr/libexec/PlistBuddy -c "Add :CFBundleDocumentTypes:$i:LSItemContentTypes:0 string com.richardlesh.cpusim64.obj" "$PLIST"
+      /usr/libexec/PlistBuddy -c "Add :CFBundleDocumentTypes:$i:LSHandlerRank string Owner" "$PLIST" 2>/dev/null
       ;;
     sym)
       /usr/libexec/PlistBuddy -c "Add :CFBundleDocumentTypes:$i:LSItemContentTypes array" "$PLIST" 2>/dev/null
       /usr/libexec/PlistBuddy -c "Add :CFBundleDocumentTypes:$i:LSItemContentTypes:0 string com.richardlesh.cpusim64.sym" "$PLIST"
+      /usr/libexec/PlistBuddy -c "Add :CFBundleDocumentTypes:$i:LSHandlerRank string Owner" "$PLIST" 2>/dev/null
       ;;
     sym1)
       /usr/libexec/PlistBuddy -c "Add :CFBundleDocumentTypes:$i:LSItemContentTypes array" "$PLIST" 2>/dev/null
       /usr/libexec/PlistBuddy -c "Add :CFBundleDocumentTypes:$i:LSItemContentTypes:0 string com.richardlesh.cpusim64.sym1" "$PLIST"
+      /usr/libexec/PlistBuddy -c "Add :CFBundleDocumentTypes:$i:LSHandlerRank string Owner" "$PLIST" 2>/dev/null
       ;;
     sym2)
       /usr/libexec/PlistBuddy -c "Add :CFBundleDocumentTypes:$i:LSItemContentTypes array" "$PLIST" 2>/dev/null
       /usr/libexec/PlistBuddy -c "Add :CFBundleDocumentTypes:$i:LSItemContentTypes:0 string com.richardlesh.cpusim64.sym2" "$PLIST"
+      /usr/libexec/PlistBuddy -c "Add :CFBundleDocumentTypes:$i:LSHandlerRank string Owner" "$PLIST" 2>/dev/null
       ;;
   esac
 done
 
-echo "Info.plist patched with UTExportedTypeDeclarations and LSItemContentTypes"
+echo "Info.plist patched with UTExportedTypeDeclarations, UTTypeIconFile, and LSHandlerRank"
