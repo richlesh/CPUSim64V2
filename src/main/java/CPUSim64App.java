@@ -30,6 +30,9 @@ public class CPUSim64App {
             uninstall();
             return;
         }
+        if (!IS_WINDOWS && !IS_MAC) {
+            checkXWayland();
+        }
         SwingUtilities.invokeLater(() -> {
             Icon icon = null;
             var iconUrl = CPUSim64App.class.getResource("/app_icon_256.png");
@@ -61,6 +64,15 @@ public class CPUSim64App {
             }
             System.exit(0);
         });
+    }
+
+    private static void checkXWayland() {
+        String display = System.getenv("DISPLAY");
+        if (display == null || display.isEmpty()) {
+            System.err.println("Error: CPUSim64 requires an X11 display (DISPLAY not set).");
+            System.err.println("If running Wayland, install XWayland: sudo apt install xwayland");
+            System.exit(1);
+        }
     }
 
     private static void install() {

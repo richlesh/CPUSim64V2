@@ -43,7 +43,10 @@ static std::string get_app_dir() {
 #elif defined(_WIN32)
     char path[MAX_PATH];
     if (GetEnvironmentVariableA("LOCALAPPDATA", path, MAX_PATH)) {
-        return std::string(path) + "\\CPUSim64";
+        std::string localApp = std::string(path) + "\\CPUSim64";
+        if (fs::exists(localApp + "\\runtime\\bin\\java.exe")) {
+            return localApp;
+        }
     }
     return "C:\\Program Files\\CPUSim64";
 #else
