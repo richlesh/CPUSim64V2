@@ -125,8 +125,7 @@ public class CPUSim64App {
             // Remove PATH entry from profile
             Path profilePath = IS_MAC
                 ? Path.of(System.getProperty("user.home"), ".zprofile")
-                : Path.of(System.getProperty("user.home"), ".profile");
-
+                : Path.of(System.getProperty("user.home"), ".bashrc");
             if (Files.exists(profilePath)) {
                 String content = Files.readString(profilePath);
                 String cleaned = content
@@ -249,20 +248,11 @@ public class CPUSim64App {
     }
 
     private static String addToPathUnix(String dir) throws Exception {
-        // Check if already in PATH
-        String currentPath = System.getenv("PATH");
-        if (currentPath != null) {
-            for (String entry : currentPath.split(":")) {
-                if (entry.equals(dir)) return null; // Already in PATH
-            }
-        }
-
-        // Determine which profile file to use
         Path profilePath;
         if (IS_MAC) {
             profilePath = Path.of(System.getProperty("user.home"), ".zprofile");
         } else {
-            profilePath = Path.of(System.getProperty("user.home"), ".profile");
+            profilePath = Path.of(System.getProperty("user.home"), ".bashrc");
         }
 
         // Check if the profile already contains this path entry
@@ -272,7 +262,6 @@ public class CPUSim64App {
             if (content.contains(dir)) return null; // Already configured
         }
 
-        // Append the PATH export
         Files.writeString(profilePath,
             "\n# Added by CPUSim64 installer\n" + exportLine + "\n",
             StandardOpenOption.CREATE, StandardOpenOption.APPEND);
