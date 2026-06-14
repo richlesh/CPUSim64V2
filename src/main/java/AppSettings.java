@@ -17,7 +17,7 @@ public class AppSettings {
         Color.BLACK,              // normal
         new Color(0, 0, 180),     // keyword
         new Color(128, 0, 128),   // directive
-        new Color(0, 128, 0),     // comment
+        new Color(0x99, 0x99, 0x99),   // comment
         new Color(163, 21, 21),   // string
         new Color(180, 100, 0),   // number
         new Color(200, 0, 100),   // register

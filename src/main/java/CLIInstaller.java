@@ -25,6 +25,12 @@ public class CLIInstaller {
     private static final boolean IS_WINDOWS = System.getProperty("os.name").toLowerCase().contains("win");
     private static final boolean IS_MAC = System.getProperty("os.name").toLowerCase().contains("mac");
 
+    private static Icon appIcon() {
+        var url = CLIInstaller.class.getResource("/app_icon_256.png");
+        if (url == null) return null;
+        return new ImageIcon(new ImageIcon(url).getImage().getScaledInstance(64, 64, Image.SCALE_SMOOTH));
+    }
+
     public static void install() {
         try {
             String toolName = IS_WINDOWS ? "cpusim64.exe" : "cpusim64";
@@ -33,7 +39,7 @@ public class CLIInstaller {
             if (in == null) {
                 JOptionPane.showMessageDialog(null,
                     "Error: " + toolName + " not found in application resources.",
-                    "CPUSim64", JOptionPane.ERROR_MESSAGE);
+                    "CPUSim64", JOptionPane.ERROR_MESSAGE, appIcon());
                 return;
             }
 
@@ -58,11 +64,11 @@ public class CLIInstaller {
                 message += "\n\n" + pathMessage;
             }
 
-            JOptionPane.showMessageDialog(null, message, "CPUSim64", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(null, message, "CPUSim64", JOptionPane.INFORMATION_MESSAGE, appIcon());
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null,
                 "Installation failed: " + e.getMessage() + "\nYou may need to run with administrator privileges.",
-                "CPUSim64", JOptionPane.ERROR_MESSAGE);
+                "CPUSim64", JOptionPane.ERROR_MESSAGE, appIcon());
         }
     }
 
@@ -71,7 +77,7 @@ public class CLIInstaller {
             uninstallWindows();
             JOptionPane.showMessageDialog(null,
                 "Command line tools removed successfully.",
-                "CPUSim64", JOptionPane.INFORMATION_MESSAGE);
+                "CPUSim64", JOptionPane.INFORMATION_MESSAGE, appIcon());
         } else {
             uninstallUnix();
         }
@@ -114,11 +120,11 @@ public class CLIInstaller {
 
             JOptionPane.showMessageDialog(null,
                 "Command line tools removed successfully.",
-                "CPUSim64", JOptionPane.INFORMATION_MESSAGE);
+                "CPUSim64", JOptionPane.INFORMATION_MESSAGE, appIcon());
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null,
                 "Uninstall failed: " + e.getMessage(),
-                "CPUSim64", JOptionPane.ERROR_MESSAGE);
+                "CPUSim64", JOptionPane.ERROR_MESSAGE, appIcon());
         }
     }
 

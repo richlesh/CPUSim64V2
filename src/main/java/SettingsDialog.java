@@ -45,36 +45,74 @@ public class SettingsDialog {
         panel.add(new JSeparator(), gbc);
         gbc.gridwidth = 1;
 
-        gbc.gridy = 3;
-        gbc.gridx = 0; gbc.gridwidth = 2;
-        panel.add(new JLabel("Syntax Colors:"), gbc);
-        gbc.gridwidth = 1;
+        // Syntax Colors group
+        JPanel colorsPanel = new JPanel(new GridBagLayout());
+        colorsPanel.setBorder(BorderFactory.createTitledBorder("Syntax Colors"));
+        GridBagConstraints cgbc = new GridBagConstraints();
+        cgbc.insets = new Insets(3, 5, 3, 5);
+        cgbc.anchor = GridBagConstraints.WEST;
 
         JButton[] colorButtons = new JButton[AsmSyntaxHighlighter.CATEGORY_NAMES.length];
+        JTextField[] colorFields = new JTextField[AsmSyntaxHighlighter.CATEGORY_NAMES.length];
         Color[] colors = new Color[AsmSyntaxHighlighter.CATEGORY_NAMES.length];
 
+        int colCount = 2;
         for (int i = 0; i < AsmSyntaxHighlighter.CATEGORY_NAMES.length; i++) {
-            gbc.gridy = 4 + i;
-            gbc.gridx = 0;
-            panel.add(new JLabel(AsmSyntaxHighlighter.CATEGORY_NAMES[i] + ":"), gbc);
+            int col = i % colCount;
+            int row = i / colCount;
+            cgbc.gridy = row;
+            cgbc.gridx = col * 2;
+            cgbc.fill = GridBagConstraints.NONE;
+            cgbc.weightx = 0;
+            colorsPanel.add(new JLabel(AsmSyntaxHighlighter.CATEGORY_NAMES[i] + ":"), cgbc);
 
             colors[i] = highlighter.getColor(i);
-            JButton btn = new JButton("    ");
-            btn.setBackground(colors[i]);
-            btn.setOpaque(true);
-            btn.setPreferredSize(new Dimension(60, 24));
+            JPanel colorPanel = new JPanel(new BorderLayout(4, 0));
+            JTextField field = new JTextField(String.format("#%02x%02x%02x", colors[i].getRed(), colors[i].getGreen(), colors[i].getBlue()), 7);
+            field.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
+            JPanel swatch = new JPanel();
+            swatch.setBackground(colors[i]);
+            swatch.setPreferredSize(new Dimension(24, 24));
+            swatch.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY));
+            swatch.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+            colorPanel.add(field, BorderLayout.CENTER);
+            colorPanel.add(swatch, BorderLayout.EAST);
+
             final int idx = i;
-            btn.addActionListener(e -> {
-                Color c = JColorChooser.showDialog(dialog, "Choose Color", colors[idx]);
-                if (c != null) {
-                    colors[idx] = c;
-                    btn.setBackground(c);
+            field.getDocument().addDocumentListener(new javax.swing.event.DocumentListener() {
+                public void insertUpdate(javax.swing.event.DocumentEvent e) { update(); }
+                public void removeUpdate(javax.swing.event.DocumentEvent e) { update(); }
+                public void changedUpdate(javax.swing.event.DocumentEvent e) {}
+                private void update() {
+                    try {
+                        Color c = Color.decode(field.getText().trim());
+                        colors[idx] = c;
+                        swatch.setBackground(c);
+                    } catch (NumberFormatException ignored) {}
                 }
             });
-            colorButtons[i] = btn;
-            gbc.gridx = 1;
-            panel.add(btn, gbc);
+            swatch.addMouseListener(new java.awt.event.MouseAdapter() {
+                public void mouseClicked(java.awt.event.MouseEvent e) {
+                    Color c = JColorChooser.showDialog(dialog, "Choose Color", colors[idx]);
+                    if (c != null) {
+                        colors[idx] = c;
+                        swatch.setBackground(c);
+                        field.setText(String.format("#%02x%02x%02x", c.getRed(), c.getGreen(), c.getBlue()));
+                    }
+                }
+            });
+
+            colorFields[i] = field;
+            cgbc.gridx = col * 2 + 1;
+            cgbc.fill = GridBagConstraints.HORIZONTAL;
+            cgbc.weightx = 0.5;
+            colorsPanel.add(colorPanel, cgbc);
         }
+
+        gbc.gridy = 3; gbc.gridx = 0; gbc.gridwidth = 2;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        panel.add(colorsPanel, gbc);
+        gbc.gridwidth = 1;
 
         // Buttons
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));

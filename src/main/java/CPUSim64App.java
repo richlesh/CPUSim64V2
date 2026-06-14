@@ -23,6 +23,8 @@ import javax.swing.undo.AbstractUndoableEdit;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
+import java.io.PipedInputStream;
+import java.io.PipedOutputStream;
 import java.nio.file.*;
 
 public class CPUSim64App {
@@ -41,6 +43,7 @@ public class CPUSim64App {
     private boolean highlightingInProgress = false;
     private boolean modified = false;
     private JMenuItem saveItem;
+    private FindReplaceDialog findReplaceDialog;
 
     public static void main(String[] args) {
         if (args.length > 0 && args[0].equals("--uninstall")) {
@@ -55,6 +58,9 @@ public class CPUSim64App {
 
     private void createAndShowGUI() {
         settings = AppSettings.load();
+        if (!LicenseDialog.isLicensed(settings)) {
+            SplashScreen.show();
+        }
         frame = new JFrame("CPUSim64");
         frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         frame.addWindowListener(new WindowAdapter() {
@@ -90,11 +96,14 @@ public class CPUSim64App {
         JMenu appMenu = new JMenu("Application");
         JMenuItem installItem = new JMenuItem("CLI Tools...");
         installItem.addActionListener(e -> {
+            Icon appIcon = null;
+            var url = CPUSim64App.class.getResource("/app_icon_256.png");
+            if (url != null) appIcon = new ImageIcon(new ImageIcon(url).getImage().getScaledInstance(64, 64, Image.SCALE_SMOOTH));
             Object[] options = {"Install", "Remove", "Cancel"};
             int result = JOptionPane.showOptionDialog(frame,
                 "Install or remove CPUSim64 command line tools?",
                 "CLI Tools", JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE,
-                null, options, "Install");
+                appIcon, options, "Install");
             if (result == 0) CLIInstaller.install();
             else if (result == 1) CLIInstaller.uninstall();
         });
@@ -103,35 +112,7 @@ public class CPUSim64App {
         JMenuItem licenseItem = new JMenuItem("License Key");
         licenseItem.addActionListener(e -> LicenseDialog.show(frame, settings));
         JMenuItem aboutItem = new JMenuItem("About CPUSim64");
-        aboutItem.addActionListener(e -> {
-            Icon icon = null;
-            var iconUrl = CPUSim64App.class.getResource("/app_icon_256.png");
-            if (iconUrl != null) {
-                icon = new ImageIcon(new ImageIcon(iconUrl)
-                    .getImage().getScaledInstance(96, 96, Image.SCALE_SMOOTH));
-            }
-            boolean licensed = LicenseDialog.isLicensed(settings);
-            String thankYou = licensed ? "<br><br><b>Thank you for purchasing a license<br>for CPUSim64!</b>" : "";
-            JEditorPane msg = new JEditorPane("text/html",
-                "<html><body style='text-align:center;font-family:sans-serif;'>" +
-                "<b style='font-size:14pt;'>CPUSim64</b><br><br>" +
-                "Version " + cloud.lesh.CPUSim64.BuildInfo.VERSION + "<br>" +
-                "\u00a92026 Richard Lesh<br>" +
-                "<a href='https://glowingcatsoftware.com'>Glowing Cat Software</a><br>" +
-                "<a href='https://github.com/richlesh/CPUSim64V2/issues'>Report issues on GitHub</a>" +
-                thankYou +
-                "</body></html>");
-            msg.setEditable(false);
-            msg.setOpaque(false);
-            msg.addHyperlinkListener(he -> {
-                if (he.getEventType() == javax.swing.event.HyperlinkEvent.EventType.ACTIVATED) {
-                    try { Desktop.getDesktop().browse(he.getURL().toURI()); }
-                    catch (Exception ignored) {}
-                }
-            });
-            JOptionPane.showMessageDialog(frame, msg,
-                "About CPUSim64", JOptionPane.INFORMATION_MESSAGE, icon);
-        });
+        aboutItem.addActionListener(e -> showAboutDialog());
         appMenu.add(aboutItem);
         appMenu.addSeparator();
         appMenu.add(installItem);
@@ -180,6 +161,12 @@ public class CPUSim64App {
         fileMenu.add(saveAsItem);
         fileMenu.addSeparator();
         fileMenu.add(runItem);
+        JMenuItem debugItem = new JMenuItem("Debug");
+        debugItem.addActionListener(e -> runWithMode("--debug"));
+        JMenuItem traceItem = new JMenuItem("Trace");
+        traceItem.addActionListener(e -> runWithMode("--trace"));
+        fileMenu.add(debugItem);
+        fileMenu.add(traceItem);
 
         // Edit menu
         JMenu editMenu = new JMenu("Edit");
@@ -207,6 +194,14 @@ public class CPUSim64App {
         editMenu.add(cutItem);
         editMenu.add(copyItem);
         editMenu.add(pasteItem);
+        editMenu.addSeparator();
+        JMenuItem findItem = new JMenuItem("Find...");
+        findItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F, Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx()));
+        findItem.addActionListener(e -> {
+            if (findReplaceDialog == null) findReplaceDialog = new FindReplaceDialog(frame, codeEditor);
+            findReplaceDialog.show();
+        });
+        editMenu.add(findItem);
 
         menuBar.add(appMenu);
         menuBar.add(fileMenu);
@@ -222,6 +217,23 @@ public class CPUSim64App {
     private JSplitPane createMainPanel() {
         codeEditor = new JTextPane();
         codeEditor.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 14));
+        FontMetrics fm = codeEditor.getFontMetrics(codeEditor.getFont());
+        int tabWidth = fm.charWidth(' ') * 4;
+        javax.swing.text.TabStop[] tabs = new javax.swing.text.TabStop[64];
+        for (int i = 0; i < tabs.length; i++) tabs[i] = new javax.swing.text.TabStop((i + 1) * tabWidth);
+        javax.swing.text.TabSet tabSet = new javax.swing.text.TabSet(tabs);
+        javax.swing.text.SimpleAttributeSet attr = new javax.swing.text.SimpleAttributeSet();
+        javax.swing.text.StyleConstants.setTabSet(attr, tabSet);
+        codeEditor.getStyledDocument().setParagraphAttributes(0, 0, attr, false);
+        codeEditor.addPropertyChangeListener("font", evt -> {
+            FontMetrics fm2 = codeEditor.getFontMetrics(codeEditor.getFont());
+            int tw = fm2.charWidth(' ') * 4;
+            javax.swing.text.TabStop[] ts = new javax.swing.text.TabStop[64];
+            for (int i = 0; i < ts.length; i++) ts[i] = new javax.swing.text.TabStop((i + 1) * tw);
+            javax.swing.text.SimpleAttributeSet a = new javax.swing.text.SimpleAttributeSet();
+            javax.swing.text.StyleConstants.setTabSet(a, new javax.swing.text.TabSet(ts));
+            codeEditor.getStyledDocument().setParagraphAttributes(0, codeEditor.getDocument().getLength(), a, false);
+        });
         highlighter = new AsmSyntaxHighlighter(codeEditor);
         highlightTimer = new javax.swing.Timer(300, e -> {
             highlightingInProgress = true;
@@ -243,6 +255,7 @@ public class CPUSim64App {
             }
         });
         JScrollPane editorScroll = new JScrollPane(codeEditor);
+        editorScroll.setRowHeaderView(new LineNumberPanel(codeEditor));
 
         console = new JTextArea();
         console.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 13));
@@ -332,6 +345,10 @@ public class CPUSim64App {
     }
 
     private void runFile() {
+        runWithMode(null);
+    }
+
+    private void runWithMode(String mode) {
         if (currentFile == null) {
             appendConsole("No file open. Open an .asm file first.\n");
             return;
@@ -347,6 +364,7 @@ public class CPUSim64App {
         new Thread(() -> {
             PrintStream origOut = System.out;
             PrintStream origErr = System.err;
+            InputStream origIn = System.in;
             try {
                 PrintStream consoleStream = new PrintStream(new OutputStream() {
                     private final ByteArrayOutputStream buf = new ByteArrayOutputStream();
@@ -370,8 +388,19 @@ public class CPUSim64App {
                 System.setOut(consoleStream);
                 System.setErr(consoleStream);
 
+                // Set up input pipe
+                PipedOutputStream inputPipe = new PipedOutputStream();
+                PipedInputStream pis = new PipedInputStream(inputPipe);
+                System.setIn(pis);
+
+                // Allow console to accept input
+                SwingUtilities.invokeLater(() -> {
+                    console.setEditable(true);
+                    console.addKeyListener(consoleKeyListener(inputPipe));
+                });
+
                 SwingUtilities.invokeLater(() -> appendConsole("> Assembling " + currentFile.getFileName() + "...\n"));
-                int asmResult = Assembler.run(new String[]{asmFile});
+                int asmResult = Assembler.run(mode != null ? new String[]{asmFile, "--DEBUG"} : new String[]{asmFile});
                 if (asmResult != 0) {
                     SwingUtilities.invokeLater(() -> appendConsole("\nAssembly failed.\n"));
                     return;
@@ -381,6 +410,7 @@ public class CPUSim64App {
                 java.util.List<String> simArgs = new java.util.ArrayList<>();
                 simArgs.add(objFile);
                 simArgs.add("--verbose");
+                if (mode != null) simArgs.add(mode);
                 String userArgs = argsField.getText().trim();
                 if (!userArgs.isEmpty()) {
                     for (String arg : userArgs.split("\\s+")) simArgs.add(arg);
@@ -392,13 +422,135 @@ public class CPUSim64App {
             } finally {
                 System.setOut(origOut);
                 System.setErr(origErr);
+                System.setIn(origIn);
+                SwingUtilities.invokeLater(() -> {
+                    for (var kl : console.getKeyListeners()) console.removeKeyListener(kl);
+                    console.setEditable(false);
+                });
             }
         }).start();
+    }
+
+    private void showAboutDialog() {
+        JDialog dialog = new JDialog(frame, "About CPUSim64", true);
+        dialog.setUndecorated(true);
+        dialog.getRootPane().setBorder(BorderFactory.createLineBorder(new Color(80, 80, 80), 1));
+
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+        panel.setBackground(new Color(40, 40, 40));
+        panel.setBorder(BorderFactory.createEmptyBorder(30, 50, 30, 50));
+
+        // Icon
+        var iconUrl = CPUSim64App.class.getResource("/app_icon_256.png");
+        if (iconUrl != null) {
+            JLabel iconLabel = new JLabel(new ImageIcon(new ImageIcon(iconUrl)
+                .getImage().getScaledInstance(96, 96, Image.SCALE_SMOOTH)));
+            iconLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+            panel.add(iconLabel);
+        }
+        panel.add(Box.createVerticalStrut(14));
+
+        JLabel name = new JLabel("CPUSim64");
+        name.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 20));
+        name.setForeground(Color.WHITE);
+        name.setAlignmentX(Component.CENTER_ALIGNMENT);
+        panel.add(name);
+        panel.add(Box.createVerticalStrut(10));
+
+        JLabel ver = new JLabel("Version " + cloud.lesh.CPUSim64.BuildInfo.VERSION);
+        ver.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 14));
+        ver.setForeground(new Color(180, 180, 180));
+        ver.setAlignmentX(Component.CENTER_ALIGNMENT);
+        panel.add(ver);
+        panel.add(Box.createVerticalStrut(4));
+
+        JLabel copy = new JLabel("\u00a92026 Richard Lesh");
+        copy.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 14));
+        copy.setForeground(new Color(180, 180, 180));
+        copy.setAlignmentX(Component.CENTER_ALIGNMENT);
+        panel.add(copy);
+        panel.add(Box.createVerticalStrut(12));
+
+        JLabel link1 = new JLabel("<html><a style='color:#4da3ff;'>Glowing Cat Software</a></html>");
+        link1.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 14));
+        link1.setAlignmentX(Component.CENTER_ALIGNMENT);
+        link1.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        link1.addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent e) {
+                try { Desktop.getDesktop().browse(java.net.URI.create("https://glowingcatsoftware.com")); }
+                catch (Exception ignored) {}
+            }
+        });
+        panel.add(link1);
+        panel.add(Box.createVerticalStrut(4));
+
+        JLabel link2 = new JLabel("<html><a style='color:#4da3ff;'>Report issues on GitHub</a></html>");
+        link2.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 14));
+        link2.setAlignmentX(Component.CENTER_ALIGNMENT);
+        link2.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        link2.addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent e) {
+                try { Desktop.getDesktop().browse(java.net.URI.create("https://github.com/richlesh/CPUSim64V2/issues")); }
+                catch (Exception ignored) {}
+            }
+        });
+        panel.add(link2);
+        panel.add(Box.createVerticalStrut(18));
+
+        JButton okBtn = new JButton("OK");
+        okBtn.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 14));
+        okBtn.setAlignmentX(Component.CENTER_ALIGNMENT);
+        okBtn.addActionListener(ev -> dialog.dispose());
+        panel.add(okBtn);
+
+        if (LicenseDialog.isLicensed(settings)) {
+            panel.add(Box.createVerticalStrut(14));
+            JLabel thanks = new JLabel("<html><b>Thank you for purchasing a license<br>for CPUSim64!</b></html>");
+            thanks.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 13));
+            thanks.setForeground(new Color(100, 200, 100));
+            thanks.setHorizontalAlignment(SwingConstants.CENTER);
+            thanks.setAlignmentX(Component.CENTER_ALIGNMENT);
+            panel.add(thanks);
+        }
+
+        dialog.setContentPane(panel);
+        dialog.pack();
+        dialog.setLocationRelativeTo(frame);
+        dialog.setVisible(true);
     }
 
     private void appendConsole(String text) {
         console.append(text);
         console.setCaretPosition(console.getDocument().getLength());
+    }
+
+    private java.awt.event.KeyListener consoleKeyListener(PipedOutputStream pipe) {
+        return new java.awt.event.KeyAdapter() {
+            private int inputStart = console.getDocument().getLength();
+            @Override public void keyPressed(java.awt.event.KeyEvent e) {
+                // Prevent editing before the input start position
+                if (console.getCaretPosition() < inputStart && e.getKeyCode() != KeyEvent.VK_ENTER) {
+                    console.setCaretPosition(console.getDocument().getLength());
+                }
+                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+                    e.consume();
+                    try {
+                        int len = console.getDocument().getLength();
+                        String input = console.getText(inputStart, len - inputStart) + "\n";
+                        console.append("\n");
+                        pipe.write(input.getBytes(java.nio.charset.StandardCharsets.UTF_8));
+                        pipe.flush();
+                        inputStart = console.getDocument().getLength();
+                    } catch (Exception ignored) {}
+                }
+            }
+            @Override public void keyTyped(java.awt.event.KeyEvent e) {
+                if (console.getCaretPosition() < inputStart) {
+                    console.setCaretPosition(console.getDocument().getLength());
+                }
+            }
+        };
     }
 
     private static void checkXWayland() {

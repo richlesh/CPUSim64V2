@@ -35,8 +35,9 @@ public class AsmSyntaxHighlighter {
         "|(?<HEX>-?0[xX][0-9A-Fa-f]+)" +
         "|(?<FLOAT>-?\\d+\\.\\d*(?:[eE][+-]?\\d+)?|-?\\.\\d+(?:[eE][+-]?\\d+)?|-?\\d+[eE][+-]?\\d+)" +
         "|(?<INT>-?\\d+)" +
-        "|(?<REG>[rRfF]\\d+|[sS][fFpP]|[pP][cC]|[sS][rR])" +
+        "|(?<REG>\\b(?:[rRfF]\\d+|[sS][fFpP]|[pP][cC]|[sS][rR])\\b)" +
         "|(?<LABEL>[\\w$]+:)" +
+        "|(?<PPDIR>#[a-zA-Z_]+)" +
         "|(?<DIRECTIVE>\\.[a-zA-Z_]+)" +
         "|(?<WORD>[a-zA-Z_$][a-zA-Z0-9_${}]*)"
     );
@@ -74,7 +75,7 @@ public class AsmSyntaxHighlighter {
         StyleConstants.setBold(directive, true);
 
         comment = doc.addStyle("comment", null);
-        StyleConstants.setForeground(comment, new Color(0, 128, 0));
+        StyleConstants.setForeground(comment, new Color(0x99, 0x99, 0x99));
         StyleConstants.setItalic(comment, true);
 
         string = doc.addStyle("string", null);
@@ -141,6 +142,8 @@ public class AsmSyntaxHighlighter {
                 style = register;
             } else if (m.group("LABEL") != null) {
                 style = label;
+            } else if (m.group("PPDIR") != null) {
+                style = directive;
             } else if (m.group("DIRECTIVE") != null) {
                 if (DIRECTIVES.contains(m.group().toLowerCase())) {
                     style = directive;
