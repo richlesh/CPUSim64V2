@@ -20,7 +20,7 @@ jobs:
             arch: arm64
             icon: resources/app_icon.icns
             asm_icon: resources/asm_icon.icns
-            obj_icon: resources/obj_icon.icns
+            o64_icon: resources/o64_icon.icns
             sym_icon: resources/sym_icon.icns
             pkg_type: dmg
             label: macos-arm64
@@ -28,7 +28,7 @@ jobs:
             arch: x64
             icon: resources/app_icon.ico
             asm_icon: resources/asm_icon.ico
-            obj_icon: resources/obj_icon.ico
+            o64_icon: resources/o64_icon.ico
             sym_icon: resources/sym_icon.ico
             pkg_type: msi
             label: windows-x64
@@ -36,7 +36,7 @@ jobs:
             arch: arm64
             icon: resources/app_icon.ico
             asm_icon: resources/asm_icon.ico
-            obj_icon: resources/obj_icon.ico
+            o64_icon: resources/o64_icon.ico
             sym_icon: resources/sym_icon.ico
             pkg_type: msi
             label: windows-arm64
@@ -44,7 +44,7 @@ jobs:
             arch: x64
             icon: resources/app_icon_256.png
             asm_icon: resources/asm_icon_256.png
-            obj_icon: resources/obj_icon_256.png
+            o64_icon: resources/o64_icon_256.png
             sym_icon: resources/sym_icon_256.png
             pkg_type: deb
             label: linux-x64-deb
@@ -52,7 +52,7 @@ jobs:
             arch: x64
             icon: resources/app_icon_256.png
             asm_icon: resources/asm_icon_256.png
-            obj_icon: resources/obj_icon_256.png
+            o64_icon: resources/o64_icon_256.png
             sym_icon: resources/sym_icon_256.png
             pkg_type: rpm
             label: linux-x64-rpm
@@ -60,7 +60,7 @@ jobs:
             arch: arm64
             icon: resources/app_icon_256.png
             asm_icon: resources/asm_icon_256.png
-            obj_icon: resources/obj_icon_256.png
+            o64_icon: resources/o64_icon_256.png
             sym_icon: resources/sym_icon_256.png
             pkg_type: deb
             label: linux-arm64-deb
@@ -68,7 +68,7 @@ jobs:
             arch: arm64
             icon: resources/app_icon_256.png
             asm_icon: resources/asm_icon_256.png
-            obj_icon: resources/obj_icon_256.png
+            o64_icon: resources/o64_icon_256.png
             sym_icon: resources/sym_icon_256.png
             pkg_type: rpm
             label: linux-arm64-rpm
@@ -155,10 +155,10 @@ jobs:
           description=CPUSim64 Assembly File
           EOF
 
-          cat > fa-obj.properties <<EOF
-          mime-type=application/x-cpusim-obj
-          extension=obj
-          icon=${{ matrix.obj_icon }}
+          cat > fa-o64.properties <<EOF
+          mime-type=application/x-cpusim-o64
+          extension=o64
+          icon=${{ matrix.o64_icon }}
           description=CPUSim64 Object File
           EOF
 
@@ -199,7 +199,7 @@ jobs:
               --description "64-bit virtual CPU, assembler, and simulation environment" \
               --icon "${{ matrix.icon }}" \
               --file-associations fa-asm.properties \
-              --file-associations fa-obj.properties \
+              --file-associations fa-o64.properties \
               --file-associations fa-sym.properties \
               --file-associations fa-sym1.properties \
               --file-associations fa-sym2.properties \
@@ -218,7 +218,7 @@ jobs:
               --description "64-bit virtual CPU, assembler, and simulation environment" \
               --icon "${{ matrix.icon }}" \
               --file-associations fa-asm.properties \
-              --file-associations fa-obj.properties \
+              --file-associations fa-o64.properties \
               --file-associations fa-sym.properties \
               --file-associations fa-sym1.properties \
               --file-associations fa-sym2.properties \
@@ -240,7 +240,7 @@ jobs:
               --description "64-bit virtual CPU, assembler, and simulation environment" \
               --icon "${{ matrix.icon }}" \
               --file-associations fa-asm.properties \
-              --file-associations fa-obj.properties \
+              --file-associations fa-o64.properties \
               --file-associations fa-sym.properties \
               --file-associations fa-sym1.properties \
               --file-associations fa-sym2.properties \

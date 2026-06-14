@@ -28,7 +28,7 @@ public class Simulation {
 	public static void main(String[] args) throws Exception {
 		if (args.length < 1) {
 			System.err.println("Usage: simulation [--debug] [--trace] [--verbose] \n" +
-					"        [--mem=memsize] [--stack=stacksize] <input.obj>");
+					"        [--mem=memsize] [--stack=stacksize] <input.o64>");
 			System.exit(2);
 		}
 
@@ -90,12 +90,9 @@ public class Simulation {
 		int dot = fileName.indexOf('.');
 		String baseName = (dot == -1) ? fileName : fileName.substring(0, dot);
 		// Compose new path
-		newPath = originalPath.resolveSibling(baseName + ".obj");
+		newPath = originalPath.resolveSibling(baseName + ".o64");
 		if (!Files.isRegularFile(newPath)) {
-			newPath = originalPath.resolveSibling(baseName + ".obj.gz");
-			if (!Files.isRegularFile(newPath)) {
-				throw new RuntimeException("Can't locate object file for program: " + baseName);
-			}
+			throw new RuntimeException("Can't locate object file for program: " + baseName);
 		}
 		symbolPath = originalPath.resolveSibling(baseName + ".sym1");
 		if (!Files.isRegularFile(symbolPath)) {

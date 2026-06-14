@@ -14,8 +14,7 @@ htmlreport/
 *.iml
 *.ipr
 test.*
-*.obj
-*.obj.gz
+*.o64
 *.pp.asm
 *.bin
 *.sym*

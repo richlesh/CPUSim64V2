@@ -1,10 +1,10 @@
 ================================================================================
 CPUSim64 2.0.1 Disassembler
 ©2025–2026 Richard Lesh
-Disassembles .obj.gz object files into source code.
+Disassembles .o64 object files into source code.
 ================================================================================
-Looking for object file: /Users/rich/Desktop/Resources/CPUSim64V2/documentation/examples/example011.obj.gz
-Read 20 words from example011.obj.gz
+Looking for object file: /Users/rich/Desktop/Resources/CPUSim64V2/documentation/examples/example011.o64
+Read 20 words from example011.o64
 __CODE__+0                                                   00000001 READONLY  	0x14 (__HEAP_START__+0)
 __CODE__+1                                                   00000002 MOVE      	R0, 0
 __CODE__+2                                                   00000003 JUMP      	0x6 (END1+0)

@@ -3,8 +3,8 @@
 SCRIPT_PATH="$(realpath "${BASH_SOURCE[0]}")"
 SCRIPT_DIR="$(dirname "$SCRIPT_PATH")"
 
-if [[ -e "$1.obj.gz" ]]; then
-	rm $1.obj.gz
+if [[ -e "$1.o64" ]]; then
+	rm $1.o64
 fi
 if grep -qi '^[[:space:]]*__MAIN__:' $1.asm; then
     hasMain="--hasMain"

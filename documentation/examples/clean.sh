@@ -1,4 +1,4 @@
-rm *.obj.gz
+rm *.o64
 rm *.sym*
 rm *.pp.asm
 

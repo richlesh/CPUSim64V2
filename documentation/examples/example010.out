@@ -1,5 +1,5 @@
 > debug.sh example010
-Read 25 words from example010.obj.gz
+Read 25 words from example010.o64
 R0: -1  
 R0: 0  
 R0: 10  

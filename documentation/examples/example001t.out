@@ -1,9 +1,9 @@
 ================================================================================
 CPUSim64 2.0.1 Assembler
 ©2025–2026 Richard Lesh
-Assembles .asm source files into .obj.gz binary files.
+Assembles .asm source files into .o64 binary files.
 ================================================================================
-Wrote 5 words to /Users/rich/Desktop/Resources/CPUSim64V2/documentation/examples/example001.obj.gz
+Wrote 5 words to /Users/rich/Desktop/Resources/CPUSim64V2/documentation/examples/example001.o64
 ================================================================================
 CPUSim64 2.0.1 Emulator
 ©2025–2026 Richard Lesh
@@ -12,7 +12,7 @@ Implements a CPUSim64 Virtual Machine.
 Debug: false
 Memory size: 1000000
 Stack size: 8000
-Read 5 words from example001.obj.gz
+Read 5 words from example001.o64
     1:__CODE__+0                                                  00000001 READONLY  	0x5 (__HEAP_START__+0)
     1:__CODE__+1                                                  00000002 NOP       	
     1:__CODE__+2                                                  00000003 STOP      	

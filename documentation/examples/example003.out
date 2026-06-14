@@ -1,5 +1,5 @@
 > debug.sh example003
-Read 44 words from example003.obj.gz
+Read 44 words from example003.o64
 
 CPU State    SR: oszP
   R               hex                   dec  FP                    float   Stack               hex                   dec                   float

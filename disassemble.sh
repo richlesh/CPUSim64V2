@@ -3,4 +3,4 @@
 SCRIPT_PATH="$(realpath "${BASH_SOURCE[0]}")"
 SCRIPT_DIR="$(dirname "$SCRIPT_PATH")"
 
-java -Dfile.encoding=UTF8 -cp "$SCRIPT_DIR"/lib/* Disassembler $1.obj.gz $2
+java -Dfile.encoding=UTF8 -cp "$SCRIPT_DIR"/lib/* Disassembler $1.o64 $2

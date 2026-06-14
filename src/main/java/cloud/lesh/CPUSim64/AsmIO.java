@@ -41,30 +41,16 @@ public final class AsmIO {
 
 	public static List<Long> readU64BE(File in) throws IOException {
 		List<Long> words = new java.util.ArrayList<>();
-		if (in.toString().endsWith(".gz")) {
-			try (FileInputStream fis = new FileInputStream(in);
-				 GZIPInputStream gis = new GZIPInputStream(fis);
-				 DataInputStream dis = new DataInputStream(gis)) {
-				try {
-					while (true) {
-						long w = dis.readLong();
-						words.add(w);
-					}
-				} catch (EOFException e) {
-					// end of file reached
+		try (FileInputStream fis = new FileInputStream(in);
+			 GZIPInputStream gis = new GZIPInputStream(fis);
+			 DataInputStream dis = new DataInputStream(gis)) {
+			try {
+				while (true) {
+					long w = dis.readLong();
+					words.add(w);
 				}
-			}
-		} else {
-			try (FileInputStream fis = new FileInputStream(in);
-				 DataInputStream dis = new DataInputStream(fis)) {
-				try {
-					while (true) {
-						long w = dis.readLong();
-						words.add(w);
-					}
-				} catch (EOFException e) {
-					// end of file reached
-				}
+			} catch (EOFException e) {
+				// end of file reached
 			}
 		}
 		return words;

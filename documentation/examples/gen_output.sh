@@ -1,4 +1,4 @@
-rm *.obj.gz
+rm *.o64
 rm *.sym*
 rm *.out
 echo hello_world.asm
@@ -102,5 +102,5 @@ echo example_heap.asm
 echo example_vector.asm
 ./runout.sh example_vector > example_vector.out
 
-rm *.obj.gz
+rm *.o64
 rm *.sym*

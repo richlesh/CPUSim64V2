@@ -81,7 +81,7 @@ Java HotSpot(TM) 64-Bit Server VM (build 17.0.5+9-LTS-191, mixed mode, sharing)
 <div class="console">&gt; <b>cd ~/Documents/CPUSim64V2</b><br>&gt; <b>assemble.sh example001</b></div>
 <div id="example001c_out"></div>
 <script>register("example001c_out")</script>
-<p>The program will compile your assembly language source file and create a machine lanugage object file with an ".obj.gz" extension.  It will print how many words were compiled from your source when it is complete.  If there are errors, they will be displayed.</p>
+<p>The program will compile your assembly language source file and create a machine lanugage object file with an ".o64" extension.  It will print how many words were compiled from your source when it is complete.  If there are errors, they will be displayed.</p>
 <p>To run the program use the <code>run.sh</code> (or <code>run.bat</code> for Windows) script name followed by the base name of your program source file.  Like the compile script, the run script will first compile your source into an object file.  Then the run script will execute your object file on the CPUSim64 emulator.  It will print statistics related to your program before it runs such as code size, heap size and maximum stack size.  Then your program will run.  After it runs, statistics related to the run will be printed such as the number of user CPU cycles used, the wall clock time it took to execute and the return code from your program.
 <div class="console">&gt; <b>run.sh example001</b></div>
 <div id="example001r_out"></div>
@@ -226,7 +226,7 @@ Java HotSpot(TM) 64-Bit Server VM (build 17.0.5+9-LTS-191, mixed mode, sharing)
 <p class="note">Assembler directives always start with a period '.' to differentiate them from CPUSim64 instructions.  Directives are instructions for the assembler to process whereas CPUSim64 instructions are machine instructions for the CPUSim64 emulator.</p>
 
 <h2>Disassembly and Symbol Files</h2>
-<p>You can use the CPUSim64 disassembler to take machine code in a <code>.obj.gz</code> file and turn it back into human readable form.  This can be helpful to see exactly how the assembler has interpreted your source code.  It can also provide a roadmap for when you run your code in debug mode.  The assembler will create three symbol files (<code>.sym</code>,<code>.sym1</code> and <code>.sym2</code>) that can be used by the disassembler to make your code more readable.  You can safely delete these files if you don't need to use the disassembler.  You can run the disassembler on your object files using the provided <code>disassemble.sh</code> script.</p>
+<p>You can use the CPUSim64 disassembler to take machine code in a <code>.o64</code> file and turn it back into human readable form.  This can be helpful to see exactly how the assembler has interpreted your source code.  It can also provide a roadmap for when you run your code in debug mode.  The assembler will create three symbol files (<code>.sym</code>,<code>.sym1</code> and <code>.sym2</code>) that can be used by the disassembler to make your code more readable.  You can safely delete these files if you don't need to use the disassembler.  You can run the disassembler on your object files using the provided <code>disassemble.sh</code> script.</p>
 <div id="example011_disasm"></div>
 <script>register("example011_disasm")</script>
 

@@ -6,4 +6,4 @@ Exec=/opt/cpusim64/bin/CPUSim64 %f
 Icon=/opt/cpusim64/lib/CPUSim64.png
 Terminal=false
 Categories=Development;IDE;Education;
-MimeType=application/x-cpusim-asm;application/x-cpusim-obj;
+MimeType=application/x-cpusim-asm;application/x-cpusim-o64;
