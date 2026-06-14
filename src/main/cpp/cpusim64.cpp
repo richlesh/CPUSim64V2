@@ -126,7 +126,7 @@ static std::string build_java_cmd(const std::string& java_cmd, const std::string
 static void usage() {
     std::cerr
         << "CPUSim64: A simple 64-bit CPU simulator\n"
-        << "Version 2.0.0\n"
+        << "Version 2.2.0\n"
         << "Copyright ©2026 Richard Lesh\n\n"
         << "Usage: cpusim64 <command> <file> [options...]\n"
         << "Commands: assemble, debug, disassemble, preprocess, run, trace\n";
