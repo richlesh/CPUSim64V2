@@ -26,10 +26,14 @@ import java.util.Map;
 public class Simulation {
 
 	public static void main(String[] args) throws Exception {
+		System.exit(run(args));
+	}
+
+	public static int run(String[] args) throws Exception {
 		if (args.length < 1) {
 			System.err.println("Usage: simulation [--debug] [--trace] [--verbose] \n" +
 					"        [--mem=memsize] [--stack=stacksize] <input.o64>");
-			System.exit(2);
+			return 2;
 		}
 
 		boolean debug = false;
@@ -53,14 +57,14 @@ public class Simulation {
 						memorySize = Utils.decodeSI(arg.substring("--mem=".length()));
 					} catch (NumberFormatException e) {
 						System.err.println("Invalid memory size: " + arg);
-						System.exit(1);
+						return 1;
 					}
 				} else if (arg.startsWith("--stack=")) {
 					try {
 						stackSize = Utils.decodeSI(arg.substring("--stack=".length()));
 					} catch (NumberFormatException e) {
 						System.err.println("Invalid stack size: " + arg);
-						System.exit(1);
+						return 1;
 					}
 				} else {
 					simulatorArgs.add(arg);
@@ -123,5 +127,6 @@ public class Simulation {
 			System.out.printf("System Time: %.3f sec\n", sim.getSystemClock() / 1.e9);
 			System.out.printf("Total Time: %.3f sec\n", totalTime / 1.e9);
 		}
+		return 0;
 	}
 }

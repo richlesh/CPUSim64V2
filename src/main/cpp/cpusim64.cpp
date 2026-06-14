@@ -175,31 +175,19 @@ int main(int argc, char* argv[]) {
         return run_cmd(build_java_cmd(java_cmd, classpath, "Disassembler", args));
 
     } else if (command == "run") {
-        std::string asm_file = base + ".asm";
         std::string obj_file = base + ".o64";
-        remove_file(obj_file);
-        int rc = run_cmd(build_java_cmd(java_cmd, classpath, "Assembler", {asm_file}));
-        if (rc != 0 || !file_exists(obj_file)) return rc;
         std::vector<std::string> args = {obj_file, "--verbose", "--mem=" + MEMSIZE, "--stack=" + STACKSIZE};
         for (int i = 3; i < argc; i++) args.push_back(argv[i]);
         return run_cmd(build_java_cmd(java_cmd, classpath, "Simulation", args));
 
     } else if (command == "debug") {
-        std::string asm_file = base + ".asm";
         std::string obj_file = base + ".o64";
-        remove_file(obj_file);
-        int rc = run_cmd(build_java_cmd(java_cmd, classpath, "Assembler", {asm_file, "--DEBUG"}));
-        if (rc != 0 || !file_exists(obj_file)) return rc;
         std::vector<std::string> args = {obj_file, "--verbose", "--debug", "--mem=" + MEMSIZE, "--stack=" + STACKSIZE};
         for (int i = 3; i < argc; i++) args.push_back(argv[i]);
         return run_cmd(build_java_cmd(java_cmd, classpath, "Simulation", args));
 
     } else if (command == "trace") {
-        std::string asm_file = base + ".asm";
         std::string obj_file = base + ".o64";
-        remove_file(obj_file);
-        int rc = run_cmd(build_java_cmd(java_cmd, classpath, "Assembler", {asm_file, "--DEBUG"}));
-        if (rc != 0 || !file_exists(obj_file)) return rc;
         std::vector<std::string> args = {obj_file, "--verbose", "--trace", "--mem=" + MEMSIZE, "--stack=" + STACKSIZE};
         for (int i = 3; i < argc; i++) args.push_back(argv[i]);
         return run_cmd(build_java_cmd(java_cmd, classpath, "Simulation", args));

@@ -39,6 +39,10 @@ import java.util.stream.Collectors;
 
 public class Assembler {
 	public static void main(String[] args) throws Exception {
+		System.exit(run(args));
+	}
+
+	public static int run(String[] args) throws Exception {
 		System.out.println("=".repeat(80));
 		System.out.println("CPUSim64 " + BuildInfo.VERSION + " Assembler");
 		System.out.println(BuildInfo.COPYRIGHT + " Richard Lesh");
@@ -46,7 +50,7 @@ public class Assembler {
 		System.out.println("=".repeat(80));
 		if (args.length < 1) {
 			System.err.println("Usage: assemble [--DEBUG] [--hasMain] [-Dsymbol[=value]] <input.asm>");
-			System.exit(2);
+			return 2;
 		}
 
 		boolean hasMain = false;
@@ -65,7 +69,7 @@ public class Assembler {
 
 		if (!Files.isRegularFile(inPath)) {
 			System.err.println("Can't find file: " + inPath.toString());
-			System.exit(3);
+			return 3;
 		}
 		String filename = inPath.getFileName().toString();
 		// Strip ".asm" if present
@@ -87,7 +91,7 @@ public class Assembler {
 			String preprocessed = pp.preprocessText(source, args);
 			if (preprocessed == null || preprocessed.isEmpty()) {
 				System.err.println("Error: too many preprocessor errors!");
-				System.exit(2);
+				return 2;
 			}
 
 			// 3) Rewrite literals
@@ -122,7 +126,7 @@ public class Assembler {
 			String noLabels = labelVisitor.gatherLabels(preprocessed);
 			if (noLabels == null || noLabels.isEmpty() || labelVisitor.hasErrors()) {
 				System.err.println("Error: too many assembler errors!");
-				System.exit(2);
+				return 2;
 			}
 
 			// 6) Assemble
@@ -133,7 +137,7 @@ public class Assembler {
 			List<Long> words = asm.result();
 			if (words == null || words.isEmpty() || asm.hasErrors()) {
 				System.err.println("Error: too many assembler errors!");
-				System.exit(2);
+				return 2;
 			}
 			if (labelMap.containsKey("__MAIN__")) {
 				words.set(0, labelMap.get("__MAIN__"));    // Set start of program
@@ -177,7 +181,8 @@ public class Assembler {
 			}
 		} catch (Exception ex) {
 			System.err.println(ex.getMessage());
+			return 1;
 		}
-		System.exit(0);
+		return 0;
 	}
 }

@@ -50,3 +50,4 @@ build/
 .DS_Store
 
 **/fonts/**
+src/main/java/License.java
