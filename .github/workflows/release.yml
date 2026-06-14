@@ -22,6 +22,15 @@ jobs:
           java-version: '21'
           cache: maven
 
+      - name: Inject license salt
+        run: |
+          cat > src/main/java/License.java << EOF
+          // SPDX-License-Identifier: Apache-2.0
+          public class License {
+              static final String LICENSE_SALT = "${{ secrets.LICENSE_SALT }}";
+          }
+          EOF
+
       - name: Build JAR
         run: |
           mvn clean package -DskipTests=true
