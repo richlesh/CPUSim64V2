@@ -39,11 +39,12 @@ jobs:
 
       - name: Create distribution zip
         run: |
-          zip -r CPUSim64V2.zip \
+          VERSION="${{ inputs.version }}"
+          VERSION="${VERSION#v}"
+          zip -r "cpusim64-${VERSION}-java.zip" \
             pom.xml \
             *.sh \
             lib \
-            src \
             documentation \
             NOTICE \
             LICENSE \
@@ -55,5 +56,5 @@ jobs:
         with:
           tag_name: ${{ inputs.version }}
           name: CPUSim64 ${{ inputs.version }}
-          files: CPUSim64V2.zip
+          files: cpusim64-*-java.zip
 
