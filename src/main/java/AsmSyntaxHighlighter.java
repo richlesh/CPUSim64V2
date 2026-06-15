@@ -160,5 +160,18 @@ public class AsmSyntaxHighlighter {
                 doc.setCharacterAttributes(m.start(), m.end() - m.start(), style, true);
             }
         }
+
+        // Highlight #include filenames as hyperlinks
+        Pattern includePattern = Pattern.compile("#[iI][nN][cC][lL][uU][dD][eE]\\s+([<\"])(.*?)([>\"])");
+        Matcher im = includePattern.matcher(text);
+        while (im.find()) {
+            int start = im.start(2);
+            int end = im.end(2);
+            SimpleAttributeSet link = new SimpleAttributeSet();
+            StyleConstants.setForeground(link, new Color(77, 163, 255));
+            StyleConstants.setUnderline(link, true);
+            link.addAttribute("include-file", im.group(2));
+            doc.setCharacterAttributes(start, end - start, link, true);
+        }
     }
 }

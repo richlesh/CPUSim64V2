@@ -26,6 +26,7 @@ import java.io.*;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 import java.nio.file.*;
+import java.util.regex.*;
 
 public class CPUSim64App {
     private static final boolean IS_MAC = System.getProperty("os.name").toLowerCase().contains("mac");
@@ -56,7 +57,7 @@ public class CPUSim64App {
         SwingUtilities.invokeLater(() -> new CPUSim64App().createAndShowGUI());
     }
 
-    private void createAndShowGUI() {
+    void createAndShowGUI() {
         settings = AppSettings.load();
         if (!LicenseDialog.isLicensed(settings)) {
             SplashScreen.show();
@@ -93,7 +94,7 @@ public class CPUSim64App {
         JMenuBar menuBar = new JMenuBar();
 
         // Application menu
-        JMenu appMenu = new JMenu("Application");
+        JMenu appMenu = new JMenu("CPUSim64");
         JMenuItem installItem = new JMenuItem("CLI Tools...");
         installItem.addActionListener(e -> {
             Icon appIcon = null;
@@ -216,6 +217,22 @@ public class CPUSim64App {
 
     private JSplitPane createMainPanel() {
         codeEditor = new JTextPane();
+        codeEditor.setFocusTraversalKeysEnabled(false);
+        codeEditor.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_TAB, 0), "insert-spaces");
+        codeEditor.getActionMap().put("insert-spaces", new javax.swing.AbstractAction() {
+            public void actionPerformed(java.awt.event.ActionEvent e) {
+                try {
+                    if (codeEditor.getSelectedText() != null) {
+                        codeEditor.replaceSelection("");
+                    }
+                    int pos = codeEditor.getCaretPosition();
+                    int lineStart = javax.swing.text.Utilities.getRowStart(codeEditor, pos);
+                    int col = pos - lineStart;
+                    int spaces = 4 - (col % 4);
+                    codeEditor.getDocument().insertString(pos, " ".repeat(spaces), null);
+                } catch (javax.swing.text.BadLocationException ignored) {}
+            }
+        });
         codeEditor.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 14));
         FontMetrics fm = codeEditor.getFontMetrics(codeEditor.getFont());
         int tabWidth = fm.charWidth(' ') * 4;
@@ -235,9 +252,31 @@ public class CPUSim64App {
             codeEditor.getStyledDocument().setParagraphAttributes(0, codeEditor.getDocument().getLength(), a, false);
         });
         highlighter = new AsmSyntaxHighlighter(codeEditor);
+        codeEditor.addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent e) {
+                boolean modClick = IS_MAC ? e.isMetaDown() : e.isControlDown();
+                if (modClick && e.getButton() == MouseEvent.BUTTON1 && e.getClickCount() == 1 && currentFile != null) {
+                    int pos = codeEditor.viewToModel2D(e.getPoint());
+                    if (pos < 0) return;
+                    try {
+                        String text = codeEditor.getDocument().getText(0, codeEditor.getDocument().getLength());
+                        Pattern p = Pattern.compile("#[iI][nN][cC][lL][uU][dD][eE]\\s+[<\"](.+?)[>\"]");
+                        Matcher m = p.matcher(text);
+                        while (m.find()) {
+                            if (pos >= m.start(1) && pos <= m.end(1)) {
+                                String file = m.group(1);
+                                openIncludeFile(file);
+                                break;
+                            }
+                        }
+                    } catch (javax.swing.text.BadLocationException ignored) {}
+                }
+            }
+        });
         highlightTimer = new javax.swing.Timer(300, e -> {
             highlightingInProgress = true;
             highlighter.highlight();
+            applyTabStops();
             highlightingInProgress = false;
         });
         highlightTimer.setRepeats(false);
@@ -278,7 +317,7 @@ public class CPUSim64App {
         }
     }
 
-    private void loadFile(Path path) {
+    void loadFile(Path path) {
         try {
             highlightingInProgress = true;
             codeEditor.setText(Files.readString(path));
@@ -429,6 +468,71 @@ public class CPUSim64App {
                 });
             }
         }).start();
+    }
+
+    private void openIncludeFile(String file) {
+        // Try local file first
+        if (currentFile != null) {
+            Path dir = currentFile.getParent();
+            Path target = dir.resolve(file);
+            if (Files.exists(target)) {
+                SwingUtilities.invokeLater(() -> {
+                    CPUSim64App app = new CPUSim64App();
+                    app.createAndShowGUI();
+                    app.loadFile(target);
+                });
+                return;
+            }
+        }
+        // Try JAR resource
+        InputStream is = CPUSim64App.class.getResourceAsStream("/" + file);
+        if (is != null) {
+            try {
+                String content = new String(is.readAllBytes(), java.nio.charset.StandardCharsets.UTF_8);
+                is.close();
+                openReadOnlyViewer(file, content);
+            } catch (IOException ignored) {}
+        }
+    }
+
+    private void openReadOnlyViewer(String title, String content) {
+        JFrame viewer = new JFrame("CPUSim64 - " + title + " (read-only)");
+        viewer.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        viewer.setSize(800, 600);
+
+        JTextPane pane = new JTextPane();
+        pane.setFont(new Font(Font.MONOSPACED, Font.PLAIN, settings.fontSize));
+        pane.setEditable(false);
+        pane.setText(content);
+        pane.setCaretPosition(0);
+
+        AsmSyntaxHighlighter hl = new AsmSyntaxHighlighter(pane);
+        hl.highlight();
+
+        // Set tab stops
+        FontMetrics fm = pane.getFontMetrics(pane.getFont());
+        int tw = fm.charWidth(' ') * 4;
+        javax.swing.text.TabStop[] ts = new javax.swing.text.TabStop[64];
+        for (int i = 0; i < ts.length; i++) ts[i] = new javax.swing.text.TabStop((i + 1) * tw);
+        javax.swing.text.SimpleAttributeSet a = new javax.swing.text.SimpleAttributeSet();
+        javax.swing.text.StyleConstants.setTabSet(a, new javax.swing.text.TabSet(ts));
+        pane.getStyledDocument().setParagraphAttributes(0, pane.getDocument().getLength(), a, false);
+
+        JScrollPane scroll = new JScrollPane(pane);
+        scroll.setRowHeaderView(new LineNumberPanel(pane));
+        viewer.add(scroll);
+        viewer.setLocationRelativeTo(frame);
+        viewer.setVisible(true);
+    }
+
+    private void applyTabStops() {
+        FontMetrics fm = codeEditor.getFontMetrics(codeEditor.getFont());
+        int tw = fm.charWidth(' ') * 4;
+        javax.swing.text.TabStop[] ts = new javax.swing.text.TabStop[64];
+        for (int i = 0; i < ts.length; i++) ts[i] = new javax.swing.text.TabStop((i + 1) * tw);
+        javax.swing.text.SimpleAttributeSet a = new javax.swing.text.SimpleAttributeSet();
+        javax.swing.text.StyleConstants.setTabSet(a, new javax.swing.text.TabSet(ts));
+        codeEditor.getStyledDocument().setParagraphAttributes(0, codeEditor.getDocument().getLength(), a, false);
     }
 
     private void showAboutDialog() {

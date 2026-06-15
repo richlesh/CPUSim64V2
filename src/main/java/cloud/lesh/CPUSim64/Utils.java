@@ -153,6 +153,10 @@ public class Utils {
 						sb.append('\r');
 						i++;
 					}
+					case 'f' -> {
+						sb.append('\f');
+						i++;
+					}
 					case '\\' -> {
 						sb.append('\\');
 						i++;
@@ -228,6 +232,9 @@ public class Utils {
 					}
 					case 'r' -> {
 						sb.appendCodePoint('\r');
+					}
+					case 'f' -> {
+						sb.appendCodePoint('\f');
 					}
 					case '\\' -> {
 						sb.appendCodePoint('\\');
