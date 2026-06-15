@@ -1,15 +1,18 @@
-# CPUSimV2  
+# CPUSim64  
 *A 64-bit virtual CPU, assembler, and simulation environment*
 
 ©2026 Richard Lesh.  All rights reserved.
 
-CPUSimV2 is a complete software toolchain for experimenting with CPU architecture and assembly language design.  
+CPUSim64 is a complete software toolchain for experimenting with CPU architecture and assembly language design.  
 
 It includes:
 
 - A 64-bit virtual CPU with a simple instruction set  
 - A Java-based assembler built using ANTLR4 grammars  
 - A cycle-accurate simulation engine  
+- A simple IDE with code editor, console, and integrated run/debug  
+- A native CLI tool for command-line workflows  
+- Native installers for macOS, Windows, and Linux  
 - A Maven-driven build system producing runnable JAR file
 
 The project is designed for educational use, computer architecture instruction, and experimentation with ISA design and microarchitecture concepts.
@@ -17,6 +20,20 @@ The project is designed for educational use, computer architecture instruction, 
 ---
 
 ## 🚀 Features
+
+### **Integrated Development Environment**
+- Code editor with syntax highlighting for CPUSim64 assembly
+- Line number margin  
+- Console pane with program output and interactive input  
+- Assemble, Run, Debug, and Trace from the menu  
+- Find and Replace with regex/grep support and capture groups  
+- Cmd+click (macOS) / Ctrl+click to navigate `#include` files  
+- System include files open in a read-only viewer  
+- Configurable fonts, sizes, and syntax highlighting colors  
+- Settings persisted to `~/.cpusim64-settings.json`  
+- Tab key inserts spaces to 4-character tab stops  
+- Undo/Redo support  
+- Splash screen and license key system  
 
 ### **Virtual CPU**
 - Custom 64-bit RISC-style architecture  
@@ -27,18 +44,26 @@ The project is designed for educational use, computer architecture instruction, 
 - Implemented in Java with **ANTLR4** lexer and parser  
 - Strict syntax checking and helpful diagnostics  
 - Support for labels, immediates, directives, and constants  
-- Emits flattened machine code for the CPUSimV2 execution core
+- Preprocessor with `#include`, `#define`, `#if`/`#else`/`#endif`, loops, macros, and functions  
+- Emits gzip-compressed `.o64` object files
 
 ### **Simulation Engine**
 - Cycle-accurate execution  
-- Stepping and register inspection  
-- Optional trace mode for instruction-by-instruction tracing  
+- Debug mode with stepping and register inspection  
+- Trace mode for instruction-by-instruction tracing  
 - Disassemble feature to disassemble object files
 
-### **Development Tools**
-- Scripts to preprocess, assemble, run, debug and trace
-- Scripts to view preprocessor parse tree and assembler parse tree
-- Scripts for cleaning, building and packaging  
+### **CLI Tool (`cpusim64`)**
+- Native C++ command-line interface  
+- Commands: `assemble`, `run`, `debug`, `trace`, `disassemble`, `preprocess`  
+- Installable via the IDE's CLI Tools menu  
+
+### **Native Installers**
+- macOS DMG (signed and notarized)  
+- Windows MSI (Azure code signed)  
+- Linux DEB and RPM  
+- File type associations for `.asm`, `.o64`, and `.sym` files  
+- Built via GitHub Actions workflows
 
 ---
 
@@ -68,7 +93,7 @@ The CPUSim64V2.zip archive is organized to clearly separate documentation, sourc
 │   └── examples/
 │
 ├── lib/
-│   └── CPUSim64-2.0-SNAPSHOT.jar
+│   └── CPUSim64-2.2.0.jar
 │
 └── src/
     ├── generated-sources/
