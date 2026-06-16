@@ -578,6 +578,7 @@ public class CPUSim64App {
 
         JLabel link1 = new JLabel("<html><a style='color:#4da3ff;'>Glowing Cat Software</a></html>");
         link1.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 14));
+        link1.setHorizontalAlignment(SwingConstants.CENTER);
         link1.setAlignmentX(Component.CENTER_ALIGNMENT);
         link1.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         link1.addMouseListener(new MouseAdapter() {
@@ -591,6 +592,7 @@ public class CPUSim64App {
 
         JLabel link2 = new JLabel("<html><a style='color:#4da3ff;'>Report issues on GitHub</a></html>");
         link2.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 14));
+        link2.setHorizontalAlignment(SwingConstants.CENTER);
         link2.setAlignmentX(Component.CENTER_ALIGNMENT);
         link2.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         link2.addMouseListener(new MouseAdapter() {
@@ -610,7 +612,7 @@ public class CPUSim64App {
 
         if (LicenseDialog.isLicensed(settings)) {
             panel.add(Box.createVerticalStrut(14));
-            JLabel thanks = new JLabel("<html><b>Thank you for purchasing a license<br>for CPUSim64!</b></html>");
+            JLabel thanks = new JLabel("<html><p style='text-align: center;'><b>Thank you for purchasing a<br>license for CPUSim64!</b></p></html>");
             thanks.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 13));
             thanks.setForeground(new Color(100, 200, 100));
             thanks.setHorizontalAlignment(SwingConstants.CENTER);
