@@ -4,6 +4,9 @@
 #include <system/string.asm>
 #include <system/system.asm>
 
+/* Mandelbrot set computation using a histogram 
+   by Richard Lesh
+*/
 	#call	main()
 	int		iEXIT
 
@@ -232,7 +235,7 @@ debug r0
 	load	fn, filename
 	load	size, imageSize
 	load	image_buffer, IMAGE
-	load	max_iteration, MAX_ITERATION
+	load	max_iteration, gMAX_ITERATION
 	#call	alloc(max_iteration)
 	move	histogram, r0
 // Create text file in write mode.
