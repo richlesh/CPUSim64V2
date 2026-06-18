@@ -50,8 +50,30 @@ public class LabelVisitor extends CPUSim64BaseVisitor<Void> implements HasLocati
 	}
 	public boolean hasErrors() { return hasErrors; }
 	public String getLocation(int offendingLine) {
-		String loc = filename + ", " + Integer.toString(lineNum);
-		return loc;
+		if (filename == null && tokens != null) {
+			// Scan tokens to find the most recent .LINE directive before offendingLine
+			for (int i = tokens.size() - 1; i >= 0; i--) {
+				Token t = tokens.get(i);
+				if (t.getLine() >= offendingLine) continue;
+				if (t.getType() == CPUSim64Lexer.LINE || t.getType() == CPUSim64Lexer.LINE_BEGIN) {
+					// Scan forward for FILENAMELIT then INTLIT
+					String fn = null;
+					for (int j = i + 1; j < tokens.size() && j <= i + 6; j++) {
+						Token nt = tokens.get(j);
+						if (nt.getType() == CPUSim64Lexer.FILENAMELIT) {
+							fn = nt.getText();
+						} else if (fn != null && nt.getType() == CPUSim64Lexer.INTLIT) {
+							return fn + ":" + nt.getText();
+						}
+					}
+					if (fn != null) return fn + ":" + offendingLine;
+				}
+			}
+		}
+		if (filename == null) {
+			return "Preprocessed line " + offendingLine;
+		}
+		return filename + ", " + Integer.toString(lineNum);
 	}
 
 	public Map<String, Long> getLabelMap() {
@@ -180,7 +202,7 @@ public class LabelVisitor extends CPUSim64BaseVisitor<Void> implements HasLocati
 		if (ctx.INTLIT() != null) {
 			currentAddress = Long.parseLong(ctx.INTLIT().getText());
 		} else if (ctx.HEXLIT() != null) {
-			currentAddress = Long.parseLong(ctx.HEXLIT().getText().substring(2), 16);
+			currentAddress = Long.parseUnsignedLong(ctx.HEXLIT().getText().substring(2), 16);
 		} else {
 			System.err.println(getLocation(lineNum) + ":ASMERROR:Missing integer literal for .ORG directive");
 			hasErrors = true;

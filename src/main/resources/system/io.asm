@@ -51,7 +51,6 @@ jump	IO_ASM_END
 	#call	acquireRecursiveSpinLock(lock)
 	load	addr, __PORT_MAP_HANDLE
 	div		offset, mask, b, 64
-	debug	b, addr, offset, mask
 	lsh		mask, 1, mask
 	load	r0, addr[offset]
 	or		r0, mask

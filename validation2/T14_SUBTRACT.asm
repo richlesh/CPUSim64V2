@@ -14,7 +14,7 @@
 
 BEGIN:
 // Mode YC
-	subtract	r2,1
+	sub		r2,1
 	sub		r2,1
 	sub		pc,-1
 	sub		r2,1		// This one should be skipped.

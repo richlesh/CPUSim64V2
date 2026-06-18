@@ -111,6 +111,11 @@ public final class ExpressionFolder implements HasLocation {
 		}
 
 		@Override
+		public ConstExprResult visitPartIdent(ConstExprParser.PartIdentContext ctx) {
+			return ConstExprResult.nonConst(original(ctx));
+		}
+
+		@Override
 		public ConstExprResult visitPartChar(ConstExprParser.PartCharContext ctx) {
 			// OTHER is a single token; preserve exactly (including any punctuation/letters)
 			return ConstExprResult.nonConst(original(ctx));
@@ -141,7 +146,11 @@ public final class ExpressionFolder implements HasLocation {
 			if (ctx.HEXINT() != null) {
 				String s = ctx.HEXINT().getText();
 				// Basic decimal ints only; extend if you later add hex etc.
-				long v = Long.decode(s);
+				long v;
+				if (s.startsWith("-"))
+					v = Long.decode(s);
+				else
+					v = Long.parseUnsignedLong(s.substring(2), 16);
 				return ConstExprResult.constLong(v);
 			}
 			if (ctx.FLOAT() != null) {
@@ -265,7 +274,10 @@ public final class ExpressionFolder implements HasLocation {
 				if (r.isConst) {
 					int a = pe.getStart().getTokenIndex();
 					int b = pe.getStop().getTokenIndex();
-					rewriter.replace(a, b, r.text);
+					// Only fold if the expression spans multiple tokens (actual arithmetic)
+					if (a != b) {
+						rewriter.replace(a, b, r.text);
+					}
 				}
 			}
 		}

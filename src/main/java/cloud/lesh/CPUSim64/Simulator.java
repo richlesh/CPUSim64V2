@@ -186,7 +186,7 @@ public class Simulator {
 	private final static String[] cpuLabels = {"R", "hex", "dec", "FP", "float", "Stack", "hex", "dec", "float"};
 
 	// Symbols for the general purpose (integer/address) registers: r0, r1, r2, ... sf, sp, pc, sr
-	public static final String[] registers = new String[GPR_COUNT];
+	public static final String[] registers = new String[GPR_COUNT + 1];
 	// Symbols for the floating point registers: f0, f1, f2, ...
 	public static final String[] registersFP = new String[FPR_COUNT];
 
@@ -197,6 +197,7 @@ public class Simulator {
 		registers[GPR_COUNT - 3] = "SF";
 		registers[GPR_COUNT - 2] = "SP";
 		registers[GPR_COUNT - 1] = "PC";
+		registers[GPR_COUNT] = "SR";
 		for (int i = 0; i < FPR_COUNT; ++i) {
 			registersFP[i] = "F" + i;
 		}
@@ -350,6 +351,7 @@ public class Simulator {
 				case 2 -> {
 					d.a = (int) ((w >>> 54) & 0x3);
 					d.v0 = (int) ((w >>> 42) & 0xFFF);
+					d.v0 = (int) signExtend(d.v0, 12);
 					long imm = w & ((1L << 42) - 1);
 					d.c2 = signExtend(imm, 42);
 				}
@@ -357,7 +359,9 @@ public class Simulator {
 					d.a = (int) ((w >>> 54) & 0x3);
 					d.b = (int) ((w >>> 52) & 0x3);
 					d.v0 = (int) ((w >>> 40) & 0xFFF);
+					d.v0 = (int) signExtend(d.v0, 12);
 					d.v1 = (int) ((w >>> 28) & 0xFFF);
+					d.v1 = (int) signExtend(d.v1, 12);
 					int raw = (int) (w & ((1L << 28) - 1));
 					d.c3 = (int) signExtend(raw, 28);
 				}
@@ -781,7 +785,7 @@ public class Simulator {
 	}
 
 	private void checkIntReg(int r) {
-		if (r < 0 || r >= GPR_COUNT) throw new CPUException("Bad int register: R" + r);
+		if (r < 0 || r >= GPR_COUNT + 1) throw new CPUException("Bad int register: R" + r);
 	}
 
 	private void checkFPReg(int f) {
@@ -942,12 +946,35 @@ public class Simulator {
 
 		synchronized(System.out) {
 			if (d.tt == 0) {
-				// Print up to 4 registers (int or float)
-				printX(d.a, d.v0);
-				printX(d.b, d.v1);
-				printX(d.c, d.v2);
-				printX(d.d, d.v3);
-				System.out.println();
+				// AC form: a=REG/CONST, b=CONST, c=NONE, d=NONE => memory dump
+				if (isConstKind(d.b) && isNoneKind(d.c) && isNoneKind(d.d) && isYKind(d.a)) {
+					long addr;
+					if (isRegKind(d.a)) addr = getR(d.a, d.v0);
+					else addr = d.v0;
+					int count = d.v1;
+					if (count == -1) {
+						// Heap walk
+						printHeapWalk(addr);
+					} else {
+						printMemoryDump(addr, count);
+					}
+				} else {
+					// Print up to 4 registers (int or float)
+					printX(d.a, d.v0);
+					printX(d.b, d.v1);
+					printX(d.c, d.v2);
+					printX(d.d, d.v3);
+					System.out.println();
+				}
+			} else if (d.tt == 2) {
+				// Type2 (literal address form): d.c2 = address, d.v0 = count
+				long addr = d.c2;
+				int count = d.v0;
+				if (count == -1) {
+					printHeapWalk(addr);
+				} else {
+					printMemoryDump(addr, count);
+				}
 			} else {
 				printCPUState();
 			}
@@ -962,7 +989,14 @@ public class Simulator {
 			if (f < FPR_COUNT) System.out.printf("%s: %.17g  ", reg, F[f]);
 		} else if (isRegKind(kind)) {
 			int r = toRegIndex(kind, v);
-			if (r < GPR_COUNT) System.out.printf("%s: %d  ", reg, R[r]);
+			if (r == 32) {
+				// SR: print status register flags
+				System.out.printf("SR: " + formatSR());
+			} else if (r < GPR_COUNT - 3) {
+				System.out.printf("%s: %d  ", reg, R[r]);
+			} else if (r < GPR_COUNT) {
+				System.out.printf("%s: %08x  ", reg, R[r]);
+			}
 		} else if (isConstKind(kind)) {
 			System.out.printf("C(12)=%d  ", v);
 		}
@@ -2550,6 +2584,27 @@ public class Simulator {
 		}
 
 		System.out.flush();
+	}
+
+	private void printMemoryDump(long addr, int count) {
+		System.out.printf("Memory dump at %08x, %d words:\n", (int)addr, count);
+		for (int i = 0; i < count; i++) {
+			long v = memRead(addr + i);
+			System.out.printf("  [%08x]: %016x  (%d)\n", (int)(addr + i), v, v);
+		}
+	}
+
+	private void printHeapWalk(long addr) {
+		System.out.println("Heap walk:");
+		long p = addr < heapStart ? heapStart : addr;
+		while (p < stackBase) {
+			long prev = memRead(p);
+			long next = memRead(p + 1);
+			long size = memRead(p + 2);
+			System.out.printf("  [%08x]: %s, size=%d words\n", (int)p, size > 0 ? "IN USE" : "FREE", Math.abs(size));
+			if (next <= 0) break;
+			p = next;
+		}
 	}
 
 	public static String formatAddress(long addr)

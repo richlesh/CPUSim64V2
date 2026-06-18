@@ -65,6 +65,18 @@ public class ConstExprBaseListener implements ConstExprListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterPartIdent(ConstExprParser.PartIdentContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitPartIdent(ConstExprParser.PartIdentContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterPartOther(ConstExprParser.PartOtherContext ctx) { }
 	/**
 	 * {@inheritDoc}

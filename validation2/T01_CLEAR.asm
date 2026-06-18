@@ -190,8 +190,7 @@ CLEAR_ALL:
 	debug
 
 	clear
-	
-	debug
+
 END:
 	stop
 	stop

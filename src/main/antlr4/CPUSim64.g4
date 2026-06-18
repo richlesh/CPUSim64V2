@@ -98,6 +98,7 @@ instrNOP
 instrDEBUG
   : DEBUG
   | DEBUG y1to4                        			/* Y / YY / YYY / YYYY */
+  | DEBUG SR
   | DEBUG (aOperand | aLiteral) ',' cLiteral    /* AC (dump start,count) */
   ;
 
@@ -114,6 +115,7 @@ instrMOVE
   | MOVE aOperand ',' aOperand ('+' | ',' | '[') rOperand ']'?  /* AAR  (A1 <- A2 + R) */
   | MOVE aOperand ',' aOperand ('+' | ',' | '[') aLiteral ']'?  /* AAC  (A1 <- A2 + C) */
   | MOVE aOperand ',' aLiteral ('+' | ',' | '[') aOperand ']'?  /* ACA  (A1 <- C + A2) */
+  | MOVE aOperand ',' aLiteral ('+' | ',' | '[') cLiteral ']'?  /* ACC  (A1 <- C + C) */
   | MOVE zCond ',' yOperand ',' qOperand ',' qOperand  			/* ZYQQ conditional */
   ;
 
@@ -356,7 +358,8 @@ zCond
 /* ---- memory shapes used by LOAD/STORE ---- */
 memRef
   : (aOperand | aLiteral) ('[' ']')?
-  | (aOperand | aLiteral) '[' (rOperand | cLiteral) ']'?
+  | (aOperand | aLiteral) ('+' | ',' | '[') (rOperand | cLiteral) ']'?
+  | cLiteral '[' aOperand ']'?
   ;
 
 /* =======================
@@ -369,7 +372,7 @@ DEBUG    : [dD][eE][bB][uU][gG] ;
 CLEAR    : [cC][lL][eE][aA][rR] ;
 MOVE     : [mM][oO][vV][eE]? ;
 LOAD     : [lL][oO][aA][dD]? ;
-STORE    : [sS][tT][oO]([rR][eE])? ;
+STORE    : [sS][tT]([oO]([rR][eE])?)? ;
 POP      : [pP][oO][pP] ;
 PUSH     : [pP][uU][sS][hH] ;
 JUMP     : [jJ][uU][mM][pP] ;

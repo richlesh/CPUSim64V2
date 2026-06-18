@@ -35,9 +35,31 @@ public class AssemblerVisitor extends CPUSim64BaseVisitor<Void> implements HasLo
 	boolean pauseLineIncrement = false;
 	private long blockCount = 0;
 	private boolean hasErrors = false;
+	private CommonTokenStream tokens;
 
 	public String getLocation(int offendingLine) {
-		return (filename == null ? "" : filename + ":") + offendingLine;
+		if (filename == null && tokens != null) {
+			for (int i = tokens.size() - 1; i >= 0; i--) {
+				Token t = tokens.get(i);
+				if (t.getLine() >= offendingLine) continue;
+				if (t.getType() == CPUSim64Lexer.LINE || t.getType() == CPUSim64Lexer.LINE_BEGIN) {
+					String fn = null;
+					for (int j = i + 1; j < tokens.size() && j <= i + 6; j++) {
+						Token nt = tokens.get(j);
+						if (nt.getType() == CPUSim64Lexer.FILENAMELIT) {
+							fn = nt.getText();
+						} else if (fn != null && nt.getType() == CPUSim64Lexer.INTLIT) {
+							return fn + ":" + nt.getText();
+						}
+					}
+					if (fn != null) return fn + ":" + offendingLine;
+				}
+			}
+		}
+		if (filename == null) {
+			return "Preprocessed line " + offendingLine;
+		}
+		return filename + ":" + offendingLine;
 	}
 	public boolean hasErrors() { return hasErrors; }
 
@@ -401,6 +423,9 @@ public class AssemblerVisitor extends CPUSim64BaseVisitor<Void> implements HasLo
 		if (ctx.children.size() == 1) {
 			// No operands: just DEBUG
 			addWord(LabelType.CODE, encType1C1(Opcode.DEBUG.code, -1));
+		} else if (ctx.SR() != null) {
+			// DEBUG SR: encode with register index 32 to signal SR
+			addWord(LabelType.CODE, encType0(Opcode.DEBUG.code, OT_REG, OT_NONE, OT_NONE, OT_NONE, 32, 0, 0, 0));
 		} else if (ctx.y1to4() != null) {
 			var ys = ctx.y1to4().yOperand();
 			int a = OT_NONE, b = OT_NONE, c = OT_NONE, d = OT_NONE;
@@ -571,6 +596,15 @@ public class AssemblerVisitor extends CPUSim64BaseVisitor<Void> implements HasLo
 			b = OT_REG;
 			v1 = aIndexFromToken(ctx.aOperand(1).start);
 			addWord(LabelType.CODE, encType3ZZC3(Opcode.MOVE.code, a, v0, b, v1, v2));
+		} else if (ctx.aOperand().size() == 1 && ctx.aLiteral() != null && ctx.cLiteral() != null) {
+			// ACC (A1 <- C + C)
+			a = OT_REG;
+			v0 = aIndexFromToken(ctx.aOperand(0).start);
+			b = OT_CONST;
+			k = parseIntLike(ctx.aLiteral().getText());
+			c = OT_CONST;
+			v2 = (int)parseIntLike(ctx.cLiteral().getText());
+			addWord(LabelType.CODE, encType2RC2(Opcode.MOVE.code, a, v0, k + v2));
 		} else {
 			throw new AssemblerException("Unhandled MOVE form");
 		}
@@ -1641,6 +1675,7 @@ public class AssemblerVisitor extends CPUSim64BaseVisitor<Void> implements HasLo
 		lex.addErrorListener(this.new AssemblerErrorListener());     // collect lexer errors
 		CommonTokenStream toks = new CommonTokenStream(lex);
 		toks.fill();
+		this.tokens = toks;
 
 		var parser = new cloud.lesh.CPUSim64.CPUSim64Parser(toks);
 		parser.removeErrorListeners();             				// remove ConsoleErrorListener

@@ -21,7 +21,7 @@ BEGIN:
 	move	f3,1
 
 // Integer Test
-	compare	r1,-1
+	cmp	r1,-1
 	debug	r1
 	cmp		r1,1
 	debug	r1

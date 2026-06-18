@@ -54,6 +54,18 @@ public interface ConstExprListener extends ParseTreeListener {
 	 */
 	void exitPartString(ConstExprParser.PartStringContext ctx);
 	/**
+	 * Enter a parse tree produced by the {@code PartIdent}
+	 * labeled alternative in {@link ConstExprParser#part}.
+	 * @param ctx the parse tree
+	 */
+	void enterPartIdent(ConstExprParser.PartIdentContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code PartIdent}
+	 * labeled alternative in {@link ConstExprParser#part}.
+	 * @param ctx the parse tree
+	 */
+	void exitPartIdent(ConstExprParser.PartIdentContext ctx);
+	/**
 	 * Enter a parse tree produced by the {@code PartOther}
 	 * labeled alternative in {@link ConstExprParser#part}.
 	 * @param ctx the parse tree

@@ -25,27 +25,27 @@ BEGIN:
 	move	f1,-2.5
 	neg		f1
 	move	f2,3.2
-	negate	f2
+	neg		f2
 	move	f3,0
 	neg		f3
 
 // Compliment Test
 	move	r4,-1
-	cpl		r4
+	compl	r4
 	move	r5,0xcafebabe
 	compl	r5
-	move	r6,0xaaaa5555cccc3333
-	compliment	r6
+	move	r6,0x155cccc3333
+	compl	r6
 	move	r7,0
-	compl	r7
+	not		r7
 
 // Reciprocal Test
 	mov		f4,PI
-	rcp		f4
+	recip	f4
 	mov		f5,__NATURAL_LOG_BASE
 	recip	f5
 	move	f6,0
-	reciprocal	f6
+	recip	f6
 
 END:
 	stop

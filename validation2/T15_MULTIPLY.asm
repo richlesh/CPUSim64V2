@@ -15,9 +15,9 @@
 BEGIN:
 // Mode XC
 	move		r2,1
-	multiply	r2,2
+	mult		r2,2
 	move		f2,1
-	multiply	f2,2
+	mult		f2,2
 
 // Mode RR, FX
 	move	r1,3

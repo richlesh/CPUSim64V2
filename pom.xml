@@ -103,6 +103,7 @@
 
                                 <copy file="${basedir}/src/templates/BuildInfo.java.in"
                                       tofile="${project.build.directory}/generated-sources/buildinfo/cloud/lesh/CPUSim64/BuildInfo.java"
+                                      overwrite="true"
                                       filtering="true">
                                     <filterset>
                                         <filter token="app.version" value="${app.version}"/>

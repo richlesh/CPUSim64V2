@@ -35,16 +35,20 @@ public class Preprocessor {
 		boolean hasMain = false;
 
 		Path inPath = Path.of("");
+		String options = "";
 		for (int i = 0; i < args.length; ++i) {
 			String arg = args[i];
 			if (arg.charAt(0) == '-') {
 				if (arg.equals("--hasMain")) {
 					hasMain = true;
 				}
+				options += " " + arg;
 			} else {
 				inPath = Path.of(arg).toAbsolutePath();
 			}
 		}
+		if (!options.isEmpty())
+			System.out.println("Options:" + options);
 
 		if (!Files.isRegularFile(inPath)) {
 			System.err.println("Can't find file: " + inPath.toString());

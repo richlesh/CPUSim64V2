@@ -22,36 +22,36 @@ MODE_XC:
 // XA => register indirect load
 MODE_XA:
 	move	r0,COPYRIGHT
-	load	r5,r0
+	load	r6,r0
 	move	r20,PI
 	load	f2,r20
 
 // XAC => register indirect with const offset
 MODE_XAC:
-	load	r6,r0[1]
-	load	r7,r0[-1]
+	load	r7,r0[1]
+	load	r8,r0[-1]
 	load	f3,r20[1]
 
 // XCA => constant address with register offset
-	move	r8,3
-	load	r9,FIBONACCI[r8]
-	move	r8,5
-	load	r10,FIBONACCI[r8]
-	move	r8,2
-	load	f4,RENARD[r8]
-	move	r8,5
-	load	f5,RENARD[r8]
+	move	r9,3
+	load	r10,FIBONACCI[r9]
+	move	r9,5
+	load	r10,FIBONACCI[r9]
+	move	r9,2
+	load	f4,RENARD[r9]
+	move	r9,5
+	load	f5,RENARD[r9]
 
 // XCC => const address with const offset
-	load	r11,COPYRIGHT[2]
+	load	r10,COPYRIGHT[2]
 	load	f6,SPEED_OF_LIGHT[-1]
 
 // XAR => reg address with reg offset
 	move	r0,FIBONACCI
-	move	r8,9
-	load	r12,r0[r8]
-	move	r8,1
-	load	f7,r20[1]
+	move	r9,9
+	load	r11,r0[r9]
+	move	r9,1
+	load	f7,r20[r9]
 
 // Load from stack
 MODE_STACK:
@@ -60,9 +60,9 @@ MODE_STACK:
 	push	PI
 	push	f0
 	load	f10,sp[1]
-	load	r10,sp[2]
-	load	r11,3[sp]
-	load	r12,4[sp]
+	load	r12,sp[2]
+	load	r13,3[sp]
+	load	r14,4[sp]
 
 END:
 	stop
@@ -77,7 +77,7 @@ DEL:
 COPYRIGHT:
 	.DCB		'©'
 SMILE:
-	.DCB		'\u263a'
+	.DCB		'\u{263a}'
 FAVORITE:
 	.DCI		326
 PI:
@@ -89,4 +89,4 @@ FIBONACCI:
 RENARD:
 	.DCW		0.1,0.2,0.5,1.,2.,5.,10.
 UTF_16:
-	.DCC		'a', 'b', '©', '\u263a'
+	.DCC		'a', 'b', '©', '\u{263a}'

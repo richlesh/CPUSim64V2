@@ -39,7 +39,6 @@ BEGIN:
 	move	${r}26,26
 	move	${r}27,27
 	move	${r}28,28
-#endif
 #end_macro
 
 // Test to load sequence into highest three FP registers
@@ -47,13 +46,13 @@ BEGIN:
 	move	F29,29
 	move	F30,30
 	move	F31,31
-#end_macro	testFC
+#end_macro
 
 MAIN:	
 		nop
-		setup(r)
-		setup(f)
-		setupF
+		#macro setup(r)
+		#macro setup(f)
+		#macro setupF()
 		debug
 		debug	r0
 		debug	r1,r2
@@ -86,16 +85,16 @@ MAIN:
 		push	f4
 		
 		debug	sp,9
-		move	r0,@HEAP_START
-		dump	r0,-1					// Heap walker
+		move	r0,__HEAP_START__
+		debug	r0,-1					// Heap walker
 
 		move	r0,myint
-		dump	r0,4				
+		debug	r0,4				
 
 END:	stop
 		stop
 		
-myint:	dci		19630326
-		dci		0xdeadc0de
-myfp:	dcf		3.14159265
-		dcf		-3.14159265
+myint:	.dci		19630326
+		.dci		0xdeadc0de
+myfp:	.dcf		3.14159265
+		.dcf		-3.14159265

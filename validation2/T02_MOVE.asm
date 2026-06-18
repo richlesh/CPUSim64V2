@@ -26,9 +26,9 @@ MODE_RC:
 	move	r12,0x7f
 	move	r13,'©'
 	move	r14,'☺'
-	move	r15,'\u263A'
+	move	r15,'\u{263A}'
 	move	r16,"Hello, World!"
-	move	r17,"☺\u263A©"
+	move	r17,"☺\u{263A}©"
 	move	r18, "\\'"
 	move	r19, "\"\t\r\n"
 	move	r20, "\b\f"
@@ -58,15 +58,15 @@ MODE_RC:
 	move	r19,0x100000000
 	move	r20,0x1000000000
 	move	r21,0x10000000000
-	move	r22,0x10000000000
-	move	r23,0x10000000000
-	move	r24,0x10000000000
-	move	r25,0x10000000000
-	move	r26,0x10000000000
-	move	r27,0x10000000000
-	move	r28,0x10000000000
-	move	sf, 0x10000000000
-	move	sp, 0x10000000000
+	move	r22,0x11000000000
+	move	r23,0x11100000000
+	move	r24,0x11110000000
+	move	r25,0x11111000000
+	move	r26,0x11111100000
+	move	r27,0x11111110000
+	move	r28,0x11111111000
+	move	sf, 0x11111111100
+	move	sp, 0x11111111110
 	move	pc,pc
 
 MODE_FC:
@@ -92,13 +92,16 @@ MODE_FC:
 	move	f19,0x100000000
 	move	f20,0x1000000000
 	move	f21,0x10000000000
-	move	f22,0x10000000000
-	move	f23,0x10000000000
-	move	f24,0x10000000000
-	move	f25,0x10000000000
-	move	f26,0x10000000000
-	move	f27,0x10000000000
-	move	f28,0x10000000000
+	move	f22,0x11000000000
+	move	f23,0x11100000000
+	move	f24,0x11110000000
+	move	f25,0x11111000000
+	move	f26,0x11111100000
+	move	f27,0x11111110000
+	move	f28,0x11111111000
+	move	f29,0x11111111100
+	move	f30,0x11111111110
+	move	f31,0x11111111111
 	debug
 
 // YC => Register to Register
@@ -106,21 +109,21 @@ MODE_YY:
 	move	r0,pc
 	move	r1,sp
 	move	r2,sf
-	move	r3,r26
-	move	r4,r25
-	move	r5,r24
-	move	r6,f23
-	move	r7,f22
-	move	r8,f21
+	move	r3,r28
+	move	r4,r27
+	move	r5,r26
+	move	r6,f25
+	move	r7,f24
+	move	r8,f23
+	move	f1,r28
+	move	f2,r27
 	move	f3,r26
-	move	f4,r25
-	move	f5,r24
+	move	f4,f25
+	move	f5,f24
 	move	f6,f23
-	move	f7,f22
-	move	f8,f21
-	load	f29,1e-10
-	load	f30,1e100
-	load	f31,3.1415926
+	load	f29,1.e-10
+	load	f30,1.e100
+	load	f31,3.141592653589793238
 	move	r9,f29
 	move	r10,f30
 	move	r11,f31
@@ -155,9 +158,6 @@ MODE_ACA:
 MODE_AAR:
 	move	r12,r1,r2
 	move	r13,r0[r5]
-	debug
-
-	clear
 
 END:
 	stop

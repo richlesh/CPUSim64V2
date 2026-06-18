@@ -11,7 +11,7 @@
 
 BEGIN:
 
-	move	r1,0xfedcba9876543210
+	move	r1, VAL1
 
 // Mode RC
 	move	r2,r1
@@ -45,3 +45,5 @@ BEGIN:
 END:
 	stop
 	stop
+
+VAL1: .dci	0xfedcba9876543210

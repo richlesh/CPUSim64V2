@@ -48,13 +48,13 @@ BEGIN:
 	and		r16,0xffffffff
 
 // Mode RR
-	move	r0,0xfedcba9876543210
+	load	r0, VAL1
 	move	r17,0
 	move	r18,-1
 	move	r19,0xffffffff00000000
 	move	r20,0x00000000ffffffff
-	move	r21,0xf0f0f0f0f0f0f0f0
-	move	r22,0x0f0f0f0f0f0f0f0f
+	move	r21, VAL2
+	move	r22, VAL3
 	and		r17,r0
 	and		r18,r0
 	and		r19,r0
@@ -74,3 +74,8 @@ BEGIN:
 END:
 	stop
 	stop
+	
+VAL1: .dci	0xfedcba9876543210
+VAL2: .dci	0xf0f0f0f0f0f0f0f0
+VAL3: .dci	0x0f0f0f0f0f0f0f0f
+

@@ -38,6 +38,13 @@ public interface ConstExprVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitPartString(ConstExprParser.PartStringContext ctx);
 	/**
+	 * Visit a parse tree produced by the {@code PartIdent}
+	 * labeled alternative in {@link ConstExprParser#part}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitPartIdent(ConstExprParser.PartIdentContext ctx);
+	/**
 	 * Visit a parse tree produced by the {@code PartOther}
 	 * labeled alternative in {@link ConstExprParser#part}.
 	 * @param ctx the parse tree

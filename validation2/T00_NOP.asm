@@ -78,8 +78,8 @@ SETUP:
 	push	1
 	push	2
 	push	3
-	nop		// Comment
-	debug
+	nop		// Does nothing
+	debug	// Prints CPU State
 DEBUG_4:
 	debug	r0,r4,r8,r12
 	debug	r16,r20,r24,r28
@@ -120,6 +120,8 @@ DEBUG_1:
 	debug	f23
 	debug	f27
 	debug	f31
+	debug	SR
+	debug	SF, SP, PC
 
 STACK_TEST:
 	push	SF
@@ -167,8 +169,6 @@ TEST_DUMP:
 	debug	SF,3
 	debug	SP,4
 	debug	END, 4
-	load	r0,__HEAP_START__[2]	// First free block size in heap which is a neg value
-	neg	r0
 	move	r0,__HEAP_START__
 	debug	r0,4
 

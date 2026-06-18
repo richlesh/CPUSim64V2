@@ -8,6 +8,12 @@ part
     : expr		                    		# PartExpr
     | CHAR									# PartChar
     | STRING								# PartString
+    | IDENT                      			# PartIdent
+    | PLUS									# PartOther
+    | MULTIPLY								# PartOther
+    | DIVIDE								# PartOther
+    | LPAREN								# PartOther
+    | RPAREN								# PartOther
     | OTHER                      			# PartOther
     ;
 
@@ -44,6 +50,12 @@ INT
 
 FLOAT
     : DIGITS+ '.' DIGITS* ([eE] [+-]? DIGITS+)? ;
+
+// Identifiers - captures register names, labels, etc. so + between
+// an identifier and a number is not mistaken for arithmetic.
+IDENT
+  : [A-Za-z_$@] [A-Za-z0-9_$]*
+  ;
 
 // Operators - MUST be defined before OTHER
 PLUS     : '+' ;

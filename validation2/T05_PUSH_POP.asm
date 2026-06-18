@@ -19,23 +19,23 @@ PUSH_TEST:
 	push	1
 	push	0x100
 	push	'a'
-	push	'\x7f'
+	push	'\u{7f}'
 	push	'©'
 	push	'☺'
-	push	'\u263A'
+	push	'\u{263A}'
 	push	"Hello, World!"
-	push	"☺\u263A©\x7f\\\'\"\t\r\n\b\f\a\c\0"
-	push	@HEAP_START
+	push	"☺\U{263A}©\u{7f}\\\'\"\t\r\n\b\f\0"
+	push	__HEAP_START__
 	move	r0,326
-	move	r1,@HEAP_START
+	move	r1,__HEAP_START__
 	push	r0
 	push	r1
 	push	sf
 	push	sp
 	push	pc
-	move	f0,3.14
-	move	f1,-1.
-	move	f2,1.e-20
+	load	f0,3.14
+	load	f1,-1.
+	load	f2,1.e-20
 	push	f0
 	push	f1
 	push	f2

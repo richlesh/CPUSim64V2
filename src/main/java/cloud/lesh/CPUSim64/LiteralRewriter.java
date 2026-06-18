@@ -34,6 +34,10 @@ public class LiteralRewriter extends LiteralSubstitutionBaseVisitor<Void> implem
 	private static Vector<String> errors = new Vector<String>();
 	public static Vector<String> getErrors() { return errors; }
 	private Map<Integer, String> sourceLocations;
+	private StringBuilder lineBuffer = new StringBuilder();
+	private String currentLocationFromDirective = null;
+	private static final Pattern MOV_PATTERN = Pattern.compile("^\\s*(?:[A-Za-z_$][A-Za-z0-9_$]*:\\s*)?move?\\s", Pattern.CASE_INSENSITIVE);
+	private static final Pattern LINE_DIRECTIVE_PATTERN = Pattern.compile("^\\.LINE\\s+(\u00ab[^\u00bb]*\u00bb)\\s*,\\s*(\\d+)", Pattern.CASE_INSENSITIVE);
 
 	public String getLocation(int offendingLine) {
 		String originalSourceLocation = null;
@@ -112,7 +116,21 @@ public class LiteralRewriter extends LiteralSubstitutionBaseVisitor<Void> implem
 	public Void visitPiece(LiteralSubstitutionParser.PieceContext ctx) {
 		Token t = ctx.getStart();
 		switch (t.getType()) {
+			case LiteralSubstitutionLexer.DIRECTIVE_LINE: {
+				String text = t.getText().trim();
+				Matcher m = LINE_DIRECTIVE_PATTERN.matcher(text);
+				if (m.find()) {
+					currentLocationFromDirective = m.group(1) + ":" + m.group(2);
+				}
+				lineBuffer.setLength(0);
+				out.append(t.getText());
+				return null;
+			}
 			case LiteralSubstitutionLexer.FLOAT: {
+				if (MOV_PATTERN.matcher(lineBuffer).find()) {
+					String loc = currentLocationFromDirective != null ? currentLocationFromDirective : getLocation(t.getLine());
+					System.err.println(loc + ":WARNING:Floating point constant used with MOV instruction; did you mean LOAD?");
+				}
 				if (floats.contains(t.getText())) {
 					int idx = floats.indexOf(t.getText()) + 1;
 					out.append(symFP(idx));
@@ -141,6 +159,17 @@ public class LiteralRewriter extends LiteralSubstitutionBaseVisitor<Void> implem
 			}
 			default:
 				// NEWLINE and OTHER → pass through verbatim
+				if (t.getType() == LiteralSubstitutionLexer.NEWLINE) {
+					lineBuffer.setLength(0);
+					if (currentLocationFromDirective != null) {
+						int colon = currentLocationFromDirective.lastIndexOf(':');
+						String file = currentLocationFromDirective.substring(0, colon);
+						int line = Integer.parseInt(currentLocationFromDirective.substring(colon + 1));
+						currentLocationFromDirective = file + ":" + (line + 1);
+					}
+				} else {
+					lineBuffer.append(t.getText());
+				}
 				out.append(t.getText());
 				break;
 		}

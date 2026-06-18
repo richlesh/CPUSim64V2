@@ -15,9 +15,9 @@
 BEGIN:
 // Mode XC
 	move		r2,5
-	divide		r2,2
+	div			r2,2
 	move		f2,5
-	divide		f2,2
+	div			f2,2
 
 // Mode RR, FX
 	move	r1,2
