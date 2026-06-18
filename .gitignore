@@ -19,6 +19,7 @@ test.*
 *.o64
 *.pp.asm
 *.bin
+*.out
 *.sym*
 *.jar
 *.zip
