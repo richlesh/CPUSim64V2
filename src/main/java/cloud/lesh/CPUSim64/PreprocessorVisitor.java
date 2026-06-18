@@ -294,15 +294,36 @@ public class PreprocessorVisitor extends cloud.lesh.CPUSim64.PreprocessorParserB
 
 		if (lit != null) {
 			if (lit.INT() != null) {
-				addDefine(name, new DefVal(DefVal.Kind.INT, lit.INT().getText()));
+				addDefine(name, new DefVal(DefVal.Kind.INT, Long.toString(Long.decode(lit.INT().getText()))));
 			} else if (lit.FLOAT() != null) {
-				addDefine(name, new DefVal(DefVal.Kind.FLOAT, lit.FLOAT().getText()));
+				double fv = Double.parseDouble(lit.FLOAT().getText());
+				String fs = (fv == Math.floor(fv) && !Double.isInfinite(fv)) ?
+					Long.toString((long) fv) : Double.toString(fv);
+				if (fs.endsWith(".0")) fs = fs.substring(0, fs.length() - 2);
+				addDefine(name, new DefVal(DefVal.Kind.FLOAT, fs));
 			} else if (lit.CHAR() != null) {
 				addDefine(name, new DefVal(DefVal.Kind.CHAR, lit.CHAR().getText()));
 			} else if (lit.STRING() != null) {
 				addDefine(name, new DefVal(DefVal.Kind.STRING, lit.STRING().getText()));
 			} else if (lit.constExpr() != null) {
-				addDefine(name, new DefVal(DefVal.Kind.EXPR, lit.constExpr().getText()));
+				var folder = new ExpressionFolder(filename, sourceLineNum);
+				String folded = folder.fold(applyDefines(lit.constExpr().getText()));
+				try {
+					long val = Long.decode(folded);
+					addDefine(name, new DefVal(DefVal.Kind.INT, Long.toString(val)));
+				} catch (NumberFormatException e1) {
+					try {
+						Double.parseDouble(folded);
+						addDefine(name, new DefVal(DefVal.Kind.FLOAT, folded));
+					} catch (NumberFormatException e2) {
+						String exprText = lit.constExpr().getText();
+						if (exprText.matches("[A-Za-z_.$][A-Za-z0-9_.$]*")) {
+							addDefine(name, new DefVal(DefVal.Kind.SYMBOL, exprText));
+						} else {
+							addDefine(name, new DefVal(DefVal.Kind.EXPR, exprText));
+						}
+					}
+				}
 			}
 		} else if (ctx.symbol != null ) {
 			addDefine(name, new DefVal(DefVal.Kind.SYMBOL, ctx.symbol.getText()));
@@ -1036,7 +1057,7 @@ public class PreprocessorVisitor extends cloud.lesh.CPUSim64.PreprocessorParserB
 	private boolean truthy(cloud.lesh.CPUSim64.PreprocessorParser.PrimaryContext p) {
 		if (p.IDENT() != null) {
 			String name = p.IDENT().getText();
-			DefVal dv = defines.get(name);
+			DefVal dv = defines.get(name.toUpperCase());
 			if (dv == null) return false;
 			switch (dv.kind) {
 				case INT:    return parseLongSafe(dv.text) != 0;
@@ -1085,11 +1106,23 @@ public class PreprocessorVisitor extends cloud.lesh.CPUSim64.PreprocessorParserB
 			return p.literal().INT()!=null || p.literal().FLOAT()!=null || p.literal().CHAR()!=null;
 		}
 		if (p.IDENT() != null) {
-			DefVal dv = defines.get(p.IDENT().getText());
+			DefVal dv = resolveDefine(p.IDENT().getText());
 			if (dv == null) return false;
 			return dv.kind==DefVal.Kind.INT || dv.kind==DefVal.Kind.FLOAT || dv.kind==DefVal.Kind.CHAR;
 		}
 		return false;
+	}
+
+	private DefVal resolveDefine(String name) {
+		DefVal dv = defines.get(name.toUpperCase());
+		int depth = 0;
+		while (dv != null && dv.kind == DefVal.Kind.SYMBOL && depth < 10) {
+			DefVal next = defines.get(dv.text.toUpperCase());
+			if (next == null) break;
+			dv = next;
+			depth++;
+		}
+		return dv;
 	}
 
 	private double asDouble(cloud.lesh.CPUSim64.PreprocessorParser.PrimaryContext p) {
@@ -1099,7 +1132,7 @@ public class PreprocessorVisitor extends cloud.lesh.CPUSim64.PreprocessorParserB
 			if (p.literal().CHAR()!=null)  return (double) charValue(p.literal().CHAR().getText());
 		}
 		if (p.IDENT()!=null) {
-			DefVal dv = defines.get(p.IDENT().getText());
+			DefVal dv = resolveDefine(p.IDENT().getText());
 			if (dv==null) return 0.0;
 			switch (dv.kind) {
 				case INT:   return (double) parseLongSafe(dv.text);
@@ -1118,7 +1151,7 @@ public class PreprocessorVisitor extends cloud.lesh.CPUSim64.PreprocessorParserB
 			return p.literal().getText();
 		}
 		if (p.IDENT()!=null) {
-			DefVal dv = defines.get(p.IDENT().getText());
+			DefVal dv = resolveDefine(p.IDENT().getText());
 			return dv==null ? "" : dv.text;
 		}
 		return "";
@@ -1136,6 +1169,8 @@ public class PreprocessorVisitor extends cloud.lesh.CPUSim64.PreprocessorParserB
        Helpers
        ========================================================= */
 
+	private static final Pattern LINE_DIR_PATTERN = Pattern.compile("^\\.LINE(_BEGIN|_END)?\\b", Pattern.CASE_INSENSITIVE);
+
 	private void emitLine(String s, boolean doSubst) {
 		if (!lineDirectives.isEmpty()) {
 			out.append(lineDirectives.pop());
@@ -1147,8 +1182,10 @@ public class PreprocessorVisitor extends cloud.lesh.CPUSim64.PreprocessorParserB
 		}
 		if (s.length() != 0) {
 			sourceLocations.put(preprocessedLineNum, String.format("\u00ab%s\u00bb:%d", filename, sourceLineNum));
-			var folder = new ExpressionFolder(filename, sourceLineNum);
-			s = folder.fold(s);
+			if (!LINE_DIR_PATTERN.matcher(s).find()) {
+				var folder = new ExpressionFolder(filename, sourceLineNum);
+				s = folder.fold(s);
+			}
 			++preprocessedLineNum;
 			out.append(s);
 			if (s.charAt(s.length() - 1) != '\n') {

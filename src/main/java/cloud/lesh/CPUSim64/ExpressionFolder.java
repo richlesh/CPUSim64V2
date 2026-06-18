@@ -38,7 +38,7 @@ public final class ExpressionFolder implements HasLocation {
 		this.line = line;
 	}
 
-	public String getLocation(int offendingLine) { return "\u00abfilename\u00bb:" + line; }
+	public String getLocation(int offendingLine) { return "\u00ab" + filename + "\u00bb:" + line; }
 
 	/**
 	 * Result of visiting a subtree:
@@ -165,11 +165,11 @@ public final class ExpressionFolder implements HasLocation {
 		@Override
 		public ConstExprResult visitUnaryExpr(ConstExprParser.UnaryExprContext ctx) {
 			ConstExprResult inner = visit(ctx.expr());
+			if (inner == null) return ConstExprResult.nonConst(original(ctx));
 			if (inner.isConst) {
 				if (inner.isFloat) return ConstExprResult.constDouble(-inner.doubleVal);
 				return ConstExprResult.constLong(-inner.longVal);
 			}
-			// Not foldable: preserve EXACT original text
 			return ConstExprResult.nonConst(original(ctx));
 		}
 
@@ -178,6 +178,7 @@ public final class ExpressionFolder implements HasLocation {
 			// mulExpr : expr op=('*'|'/') expr ;
 			ConstExprResult left = visit(ctx.expr(0));
 			ConstExprResult right = visit(ctx.expr(1));
+			if (left == null || right == null) return ConstExprResult.nonConst(original(ctx));
 
 			if (left.isConst && right.isConst) {
 				String op = ctx.op.getText();
@@ -211,6 +212,7 @@ public final class ExpressionFolder implements HasLocation {
 			// addExpr : expr op=('+'|'-') expr ;
 			ConstExprResult left = visit(ctx.expr(0));
 			ConstExprResult right = visit(ctx.expr(1));
+			if (left == null || right == null) return ConstExprResult.nonConst(original(ctx));
 
 			if (left.isConst && right.isConst) {
 				String op = ctx.op.getText();
@@ -243,6 +245,7 @@ public final class ExpressionFolder implements HasLocation {
 		public ConstExprResult visitParensExpr(ConstExprParser.ParensExprContext ctx) {
 			// parensExpr : '(' expr ')' ;
 			ConstExprResult e = visit(ctx.expr());
+			if (e == null) return ConstExprResult.nonConst(original(ctx));
 			return e;
 		}
 	}
@@ -274,8 +277,8 @@ public final class ExpressionFolder implements HasLocation {
 				if (r.isConst) {
 					int a = pe.getStart().getTokenIndex();
 					int b = pe.getStop().getTokenIndex();
-					// Only fold if the expression spans multiple tokens (actual arithmetic)
-					if (a != b) {
+					// Fold multi-token expressions; also normalize single hex tokens to decimal
+					if (a != b || !r.text.equals(pe.getText())) {
 						rewriter.replace(a, b, r.text);
 					}
 				}

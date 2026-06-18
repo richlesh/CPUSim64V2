@@ -1,7 +1,7 @@
 ///////////////////////////////////////////////////////////////////////////////
-// Debugging Functionality Test
+// Macro Functionality Test
 //
-// Test the debug op
+// Test the preprocessor macro capability.
 //
 // Author: Richard Lesh
 // Modified: 2022/10/30
@@ -49,52 +49,8 @@ BEGIN:
 #end_macro
 
 MAIN:	
-		nop
 		#macro setup(r)
 		#macro setup(f)
 		#macro setupF()
-		debug
-		debug	r0
-		debug	r1,r2
-		debug	r3,r4,r5
-		debug	r6,r7,r8,r9
-		debug	r10,r11,r12,r13
-		debug	r14,r15,r16,r17
-		debug	r18,r19,r20,r21
-		debug	r22,r23,r24,r25
-		debug	r26,r27,r28
-		debug	sf,sp,pc
-		debug	f0
-		debug	f1,f2
-		debug	f3,f4,f5
-		debug	f6,f7,f8,f9
-		debug	f10,f11,f12,f13
-		debug	f14,f15,f16,f17
-		debug	f18,f19,f20,f21
-		debug	f22,f23,f24,f25
-		debug	f26,f27,f28,f29
-		debug	f30,f31
-
-		push	r1
-		push	r2
-		push	r3
-		push	r4
-		push	f1
-		push	f2
-		push	f3
-		push	f4
-		
-		debug	sp,9
-		move	r0,__HEAP_START__
-		debug	r0,-1					// Heap walker
-
-		move	r0,myint
-		debug	r0,4				
-
 END:	stop
 		stop
-		
-myint:	.dci		19630326
-		.dci		0xdeadc0de
-myfp:	.dcf		3.14159265
-		.dcf		-3.14159265

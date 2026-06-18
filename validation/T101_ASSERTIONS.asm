@@ -1,7 +1,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 // Assertion Functionality Test
 //
-// Test the debug.asm routines
+// Test the debug.asm assertions.
 //
 // Author: Richard Lesh
 // Modified: 2022/10/30

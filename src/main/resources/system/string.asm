@@ -38,6 +38,17 @@ jump	STRING_ASM_END
 	int		iFORMAT
 #end_func
 
+#def_func printStrArray(addArg)
+	#var	len, i, addr
+	load	addr, addArg
+	load	len, addr[0]
+	#for	1, i <= len, 1
+		load	r2, addr[i]
+		move	r1, STDOUT
+		int		iPUT_LINE
+	#end_for
+#end_func
+
 #def_func freeStrArray(addArg)
 	#var	len, i, addr
 	load	addr, addArg

@@ -255,10 +255,10 @@ public class LabelVisitorTest {
 				FINIS:
 				""";
 		String errorsString = """
-«Test.asm», 8:ASMERROR:missing ':' at '\\n'
-«Test.asm», 10:ASMERROR:missing ':' at '\\n'
-«Test.asm», 12:ASMERROR:missing ':' at '\\n'
-«Test.asm», 17:ASMERROR:missing ':' at '\\n'
+«Test.asm»:8:ASMERROR:missing ':' at '\\n'
+«Test.asm»:10:ASMERROR:missing ':' at '\\n'
+«Test.asm»:12:ASMERROR:missing ':' at '\\n'
+«Test.asm»:17:ASMERROR:missing ':' at '\\n'
 				""";
 		var loader = new IncludeLoader(Path.of("."));
 		PreprocessorVisitor pp = new PreprocessorVisitor("Test.asm", loader);

@@ -14,8 +14,12 @@ for f in glob.glob("*.bin") + glob.glob("*.out") + glob.glob("*.o64") + glob.glo
 asm_files = sorted(glob.glob("*.asm"))
 for asm in asm_files:
     name = asm[:-4]
-    with open(f"{name}.out", "w") as out:
-        subprocess.run(["../debug.sh", name], stdout=out, stderr=out)
+    if name == "T105_SYNC":
+        with open(f"{name}.out", "w") as out:
+            subprocess.run(["../run.sh", name], stdout=out, stderr=out)
+    else:
+        with open(f"{name}.out", "w") as out:
+            subprocess.run(["../debug.sh", name], stdout=out, stderr=out)
 
 def extract_relevant(filepath, name):
     lines = []
