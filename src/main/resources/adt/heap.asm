@@ -230,7 +230,7 @@
 				#macro	TO_NOT_BOOLEAN(block)
 				#call	cond_fatal(r0, STDOUT, "Can\'t allocate new heap block %d!\n", i)
 				// Store the block in the block list.
-				#call	setVectorAt(blockList, block, i)
+				#call	setVectorAt(blockList, i, block)
 				// If the init function is non-null, use it to initialize the
 				// elements in the block.
 				#if_cond	init, ne, 0
@@ -280,7 +280,7 @@
 			move	block, r0
 			#if_cond	block, ne, 0
 				// Clear the block list at index
-				#call	setVectorAt(blockList, 0, i)
+				#call	setVectorAt(blockList, i, 0)
 				// If the destroy function is non-null, use it to destroy
 				// the elements in the block.
 				#if_cond	ff, ne, 0
@@ -550,7 +550,7 @@
 	load	blockElementSize, h[_HEAP_BLOCK_ELEMENT_SIZE]
 	#call	getVectorAt(blockList, i)
 	move	block, r0
-	#if_cond	block, gt, 0
+	#if_cond	block, ne, 0
 		load	r0, h[_HEAP_BLOCK_SIZE]
 		add		aLimit, block, r0
 		#for	block, a, lt, aLimit, blockElementSize

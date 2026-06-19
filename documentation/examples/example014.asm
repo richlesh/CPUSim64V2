@@ -41,7 +41,7 @@ PROGRAM_START:
 	#call	putc(r1)
 	#call	put_nl()
 
-	clear	r1					// loop variable
+	move	r1, 1				// loop variable
 	move	r2, INT_ARRAY		// address of array
 	load	r3, INT_ARRAY[0]	// length of array
 	jump	END_LOOP1

@@ -161,7 +161,7 @@ $LOOP1_END:
 #end_func
 
 #def_func free(addr)
-	load	r2, addr
+	load	r1, addr
 	int		iFREE
 #end_func
 
@@ -174,7 +174,7 @@ $LOOP1_END:
 #end_func
 
 #def_func args(index)
-	load	r2, index
+	load	r1, index
 	int		iARGS
 #end_func
 
