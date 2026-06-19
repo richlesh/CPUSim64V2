@@ -1517,6 +1517,8 @@ public class AssemblerVisitor extends CPUSim64BaseVisitor<Void> implements HasLo
 				throw new IllegalStateException("Invalid DCB directive");
 			}
 		} else if (ctx.DCC() != null) {
+			// OBSOLETE: .DCC is deprecated — use .DCW instead
+			System.err.println("WARNING: .DCC is obsolete. Use .DCW instead.");
 			if (ctx.byteList() != null) {
 				addWord(LabelType.INT, (long) ctx.byteList().bLiteral().size());
 				long buffer = 0;

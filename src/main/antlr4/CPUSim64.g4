@@ -32,7 +32,7 @@ dataDirective
   | DCF FLOATLIT							// floats
   | DCA (INTLIT | HEXLIT)					// Declared array
   | DCB (byteList)							// 8-bit bytes(s)
-  | DCC (byteList)							// 16-bit chars(s)
+  | DCC (byteList)							// OBSOLETE: 16-bit chars(s) — use .DCW instead
   | DCS STRINGLIT							// strings
   | DCW (intList | floatList | charList)	// array of any of the above
   ;
@@ -479,7 +479,7 @@ DCI : '.' [dD][cC][iI] ;
 DCF : '.' [dD][cC][fF] ;
 DCA : '.' [dD][cC][aA] ;
 DCB : '.' [dD][cC][bB] ;
-DCC : '.' [dD][cC][cC] ;		// Don't use
+DCC : '.' [dD][cC][cC] ;		// OBSOLETE: use .DCW instead
 DCW : '.' [dD][cC][wW] ;
 DCS : '.' [dD][cC][sS] ;
 ORG : '.' [oO][rR][gG] ;

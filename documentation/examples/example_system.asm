@@ -42,31 +42,34 @@ FMT_f:	.DCS	": %g\n"
 	#macro PRINT_INT("iCYCLES", iCYCLES, FMT_d)
 	#macro PRINT_INT("iCLOCK", iCLOCK, FMT_d)
 
-	move	size, 10
-	#macro	ALLOC(size)				// Allocation 10 ints on the heap
+	move	size, 11
+	#macro	ALLOC(size)				// Allocation 10 ints + count on the heap
 	move	intArray, r0
+	sub		size, 1
+	store	size, intArray			// Store the number of ints in intArray[0]
 	clear	count
 	jump	$LOOP1_END
 $LOOP1:
 	mult	r0, count, count
-	store	r0, intArray[count]
 	add		count, 1
+	store	r0, intArray[count]
 $LOOP1_END:
 	cmp		count, size
 	jump	nz, $LOOP1
+	#call	printIntArray(intArray)
+	#call	put_nl()
 	
-	#call	intPrintArray(intArray, size)
-	
-	move	size, 20
-	#macro	REALLOC(intArray, 20)
+	move	size, 21
+	#macro	REALLOC(intArray, size)
 	move	intArray, r0
+	sub		size, 1
+	store	size, intArray	
+	move	dest, intArray[11]
+	add		r0, intArray, 1
+	#call	memmove(dest, r0, 10)
 
-	#call	printIntArray(intArray, size)
-	
-	move	dest, intArray[10]
-	#call	memmove(dest, intArray, 10)
-
-	#call	printIntArray(intArray, size)
+	#call	printIntArray(intArray)
+	#call	put_nl()
 
 	#macro	FREE(intArray)
 

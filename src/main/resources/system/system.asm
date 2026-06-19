@@ -178,20 +178,27 @@ $LOOP1_END:
 	int		iARGS
 #end_func
 
-_fibonacci: .DCW 13, 21, 34, 55, 89, 144, 233, 377, 610, 987, 1597, 2584, \
-				4181, 6765, 10946, 17711, 28657, 46368, 75025, 121393
+_fibonacci: .DCW 8, 13, 21, 34, 55, 89, 144, 233, 377, 610, 987, 1597, 2584, \
+				4181, 6765, 10946, 17711, 28657, 46368, 75025, 121393, \
+				196418, 317811, 514229, 832040, 1346269, 2178309, 3524578, \
+				5702887, 9227465, 14930352, 24157817, 39088169, 63245986, \
+				102334155, 165580141, 267914296, 433494437, 701408733
 #def_func _fibonacciAlloc(x0)
-	#var	x, i, f, fib, fiblen
+	#var	x, i, f, fiblen
 	load	x, x0
-	load	fiblen, _fibonacci[-1]
-	#for	0, i, lt, fiblen, 1
+	load	fiblen, _fibonacci[0]
+	#for	1, i, le, fiblen, 1
 		load	f, _fibonacci[i]
 		#if_cond	f, ge, x
 			#break
 		#end_cond
 	#end_for
-	#macro COMPARE(i, eq, fiblen)
-	move	nz, r0, x, f
+	// Fallback: if size exceeds table, return size as-is
+	#if_cond	i, gt, fiblen
+		move	r0, x
+	#else_cond
+		move	r0, f
+	#end_cond
 #end_func
 
 // Computes the minimum size of a heap allocated block

@@ -40,9 +40,9 @@ echo example015.asm
 echo example016.asm
 ./runout.sh example016 326 > example016.out
 (echo; echo) >> example016.out
-./runout.sh example016 3.1415 >> example016.out
+./runout.sh example016 3.1415 >> example016.out 2>&1
 (echo; echo) >> example016.out
-./runout.sh example016 abcd >> example016.out
+./runout.sh example016 abcd >> example016.out 2>&1
 echo example017.asm
 ./runout.sh example017 > example017.out
 (echo; echo) >> example017.out

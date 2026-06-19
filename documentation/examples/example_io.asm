@@ -43,10 +43,11 @@
 	int		iPUT_NL
 
 // Test iGETS
-	move	r0, 10
+	move	r1, 10
 	int		iAlloc
 	store	r0, SMALL_GETS_BUFFER
-	load	r1, SMALL_GETS_BUFFER[-1]
+	load	r1, SMALL_GETS_BUFFER
+	load	r1, r1[-1]
 	#call	printf("Small buffer: %8x (%d)\n", SMALL_GETS_BUFFER, r1)
 	move	r1, STDOUT
 	move	r2, "What is your quest? "

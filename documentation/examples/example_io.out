@@ -4,9 +4,9 @@ IO Interrupts Tests
 101000110
 326
 146
-Small buffer:      5f9 (0)
+Small buffer:      64a (13)
 What is your quest? coconuts
-Final buffer:      5fd (8)
+Final buffer:      64e (13)
 What is your favorite binary number? 11001100
 What is your favorite decimal number? 326
 What is your favorite hexadecimal number? ABCDEF
@@ -18,11 +18,11 @@ Hello ☺ 146 3.14159
 326
 326
 3.141500
-Created temp directory: /var/folders/cq/xyxjbx311jlgrtj_2hbwc9l80000gn/T/CPUSim642633246277738653064
+Created temp directory: /var/folders/95/6xnljkg57yx1g06pzk8fp68r0000gn/T/CPUSim641199979079271174833
 Dir exists: -1
 Deleted temp directory: -1
 Dir exists: 0
-Created temp file: /var/folders/cq/xyxjbx311jlgrtj_2hbwc9l80000gn/T/CPUSim649254824446826104015.txt
+Created temp file: /var/folders/95/6xnljkg57yx1g06pzk8fp68r0000gn/T/CPUSim6412312781027002471812.txt
 File exists: -1
 Deleted temp file: -1
 File exists: 0

@@ -8,6 +8,7 @@ PROGRAM_START:
 	mov		r2, FALSE
 	and		r0, r1, r2
 	#call	printf(FMT2ARGS, r1, r2, r0)
+	mov		r1, FALSE
 	mov		r2, TRUE
 	and		r0, r1, r2
 	#call	printf(FMT2ARGS, r1, r2, r0)
@@ -15,6 +16,7 @@ PROGRAM_START:
 	mov		r2, FALSE
 	and		r0, r1, r2
 	#call	printf(FMT2ARGS, r1, r2, r0)
+	mov		r1, TRUE
 	mov		r2, TRUE
 	and		r0, r1, r2
 	#call	printf(FMT2ARGS, r1, r2, r0)
@@ -26,6 +28,7 @@ PROGRAM_START:
 	mov		r2, FALSE
 	or		r0, r1, r2
 	#call	printf(FMT2ARGS, r1, r2, r0)
+	mov		r1, FALSE
 	mov		r2, TRUE
 	or		r0, r1, r2
 	#call	printf(FMT2ARGS, r1, r2, r0)
@@ -33,6 +36,7 @@ PROGRAM_START:
 	mov		r2, FALSE
 	or		r0, r1, r2
 	#call	printf(FMT2ARGS, r1, r2, r0)
+	mov		r1, TRUE
 	mov		r2, TRUE
 	or		r0, r1, r2
 	#call	printf(FMT2ARGS, r1, r2, r0)
@@ -44,6 +48,7 @@ PROGRAM_START:
 	mov		r2, FALSE
 	xor		r0, r1, r2
 	#call	printf(FMT2ARGS, r1, r2, r0)
+	mov		r1, FALSE
 	mov		r2, TRUE
 	xor		r0, r1, r2
 	#call	printf(FMT2ARGS, r1, r2, r0)
@@ -51,6 +56,7 @@ PROGRAM_START:
 	mov		r2, FALSE
 	xor		r0, r1, r2
 	#call	printf(FMT2ARGS, r1, r2, r0)
+	mov		r1, TRUE
 	mov		r2, TRUE
 	xor		r0, r1, r2
 	#call	printf(FMT2ARGS, r1, r2, r0)

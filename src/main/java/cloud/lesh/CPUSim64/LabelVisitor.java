@@ -180,6 +180,7 @@ public class LabelVisitor extends CPUSim64BaseVisitor<Void> implements HasLocati
 			} else if (ctx.dataDirective().DCB() != null) {
 				currentAddress += 1 + (ctx.dataDirective().byteList().bLiteral().size() + 7) / 8;
 			} else if (ctx.dataDirective().DCC() != null) {
+				// OBSOLETE: .DCC is deprecated — use .DCW instead
 				currentAddress += 1 + (ctx.dataDirective().byteList().bLiteral().size() + 3) / 4;
 			} else if (ctx.dataDirective().DCW() != null) {
 				int count = 0;

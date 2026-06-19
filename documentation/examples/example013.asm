@@ -15,12 +15,10 @@ PROGRAM_START:
 	
 	debug	r1,r2,r3,r4
 
-	mov		f1, MY_PI		// 3.141592... is substituted here
-							// This causes the mov to be changed to a load of
+	load	f1, MY_PI		// 3.141592... is substituted here
 							// the FP value stored at the end of code
 	load 	f2, CONST_FP	// 3.1415 is loaded from DCF at end of code
-	mov 	f3, MY_PI		// 3.141592... is substituted here
-							// This causes the mov to be changed to a load of
+	load 	f3, MY_PI		// 3.141592... is substituted here
 							// the FP value previously stored at the end of code
 	load 	f4, CONST_FP	// 3.1415 is loaded from DCF at end of code
 	

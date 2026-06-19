@@ -1,22 +1,22 @@
 ================================================================================
-CPUSim64 2.0.1 Disassembler
+CPUSim64 2.2.0 Disassembler
 ©2025–2026 Richard Lesh
 Disassembles .o64 object files into source code.
 ================================================================================
 Looking for object file: /Users/rich/Desktop/Resources/CPUSim64V2/documentation/examples/example011.o64
 Read 20 words from example011.o64
 __CODE__+0                                                   00000001 READONLY  	0x14 (__HEAP_START__+0)
-__CODE__+1                                                   00000002 MOVE      	R0, 0
+__CODE__+1                                                   00000002 MOVE      	R0, 0 (0x0)
 __CODE__+2                                                   00000003 JUMP      	0x6 (END1+0)
 START1+0                                                     00000004 DEBUG     	R0
-START1+1                                                     00000005 ADD       	R0, 1
-END1+0                                                       00000006 CMP       	R0, 10
+START1+1                                                     00000005 ADD       	R0, 1 (0x1)
+END1+0                                                       00000006 CMP       	R0, 10 (0xA)
 END1+1                                                       00000007 JUMP      	nz, 0x4 (START1+0)
-END1+2                                                       00000008 MOVE      	R0, 10
+END1+2                                                       00000008 MOVE      	R0, 10 (0xA)
 END1+3                                                       00000009 JUMP      	0xe (END2+0)
-START2+0                                                     0000000a SUBTRACT  	R0, 1
+START2+0                                                     0000000a SUBTRACT  	R0, 1 (0x1)
 START2+1                                                     0000000b MULTIPLY  	R1, R0, R0
-START2+2                                                     0000000c CMP       	R1, 25
+START2+2                                                     0000000c CMP       	R1, 25 (0x19)
 START2+3                                                     0000000d JUMP      	z, 0x11 (FOUND2+0)
 END2+0                                                       0000000e TEST      	R0
 END2+1                                                       0000000f JUMP      	nz, 0xa (START2+0)

@@ -22,9 +22,9 @@ PROGRAM_START:
 	#call	put_int(326,2)
 	#call	put_nl()
 
-	mov		f1, MY_PI
+	load	f1, MY_PI
 	load 	f2, CONST_FP
-	mov 	f3, MY_PI
+	load 	f3, MY_PI
 	load 	f4, CONST_FP
 	
 	#call	put_fp(f1, 6)
@@ -43,7 +43,7 @@ PROGRAM_START:
 
 	clear	r1					// loop variable
 	move	r2, INT_ARRAY		// address of array
-	load	r3, INT_ARRAY[-1]	// length of array
+	load	r3, INT_ARRAY[0]	// length of array
 	jump	END_LOOP1
 LOOP1:
 	load	r4, r2[r1]
@@ -56,19 +56,20 @@ END_LOOP1:
 	#call	put_nl()
 
 	move	r2, FP_ARRAY		// address of array
-	load	f0, r2[0]
+	load	r0, r2[0]
+	load	f0, r2[1]
 	#call	put_fp(f0, 6)
 	#call	putc(' ')
-	load	f0, r2[1]
+	load	f0, r2[2]
 	#call	put_fp(f0, 8)
 	#call	putc(' ')
-	load	f0, r2[2]
+	load	f0, r2[3]
 	#call	put_fp(f0, 12)
 	#call	putc(' ')
-	load	f0, r2[3]
+	load	f0, r2[4]
 	#call	put_fp(f0, 16)
 	#call	putc(' ')
-	load	f0, r2[4]
+	load	f0, r2[5]
 	#call	put_fp(f0, 16)
 	#call	put_nl()
 
@@ -77,7 +78,7 @@ END_LOOP1:
 
 	CONST_INT:	.DCI	326
 	CONST_FP:	.DCF	3.1415
-	CONST_CHAR:	.DCC	'\u{263A}'
+	CONST_CHAR:	.DCI	'\u{263A}'
 	CONST_STR:	.DCS	"Hello, Rich!"
 	INT_ARRAY:	.DCW	1,1,2,3,5,8,13,21
 	FP_ARRAY:	.DCW	1.00, 1.60, 2.50, 4.00, 6.30
