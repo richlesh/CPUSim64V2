@@ -57,7 +57,7 @@ REG_F : [fF] [0-9]+ ;
 PLACEHOLDER: '$' '{' ([\p{L}_] [\p{L}\p{Nd}_]* | ELLIPSIS)'}' ;
 LABEL : [\p{L}_$] [\p{L}\p{Nd}_${}]* COLON ;
 IDENT : [\p{L}_$] [\p{L}\p{Nd}_${}]* ;
-MEMREF : (IDENT | PLACEHOLDER | INT) LBRACKET (IDENT | INT | PLACEHOLDER) RBRACKET? ;
+MEMREF : (IDENT | REG_R | PLACEHOLDER | INT) LBRACKET (IDENT | REG_R | INT | PLACEHOLDER) RBRACKET? ;
 COMP_DIR : '.' [_a-zA-Z]+ ;
 
 INT   : (DIGITS+ | ('0' [xX] HEX+)) ;
@@ -137,7 +137,7 @@ LT_D      		: ('<' | [lL][tT]) -> type(LT) ;
 GT_D     		: ('>' | [gG][tT]) -> type(GT) ;
 LABEL_D			: [\p{L}_$] [\p{L}\p{Nd}_${}]* COLON_D -> type(IDENT) ;
 IDENT_D			: [\p{L}_$] [\p{L}\p{Nd}_${}]* -> type(IDENT) ;
-MEMREF_D		: (IDENT | PLACEHOLDER | INT) LBRACKET (IDENT | INT | PLACEHOLDER) RBRACKET? -> type(MEMREF);
+MEMREF_D		: (IDENT | REG_R | PLACEHOLDER | INT) LBRACKET (IDENT | REG_R | INT | PLACEHOLDER) RBRACKET? -> type(MEMREF);
 COMMA_D   	   	: ',' -> type(COMMA) ;
 LPAREN_D   	  	: '(' -> type(LPAREN) ;
 RPAREN_D   	  	: ')' -> type(RPAREN) ;

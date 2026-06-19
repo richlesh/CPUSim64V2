@@ -114,7 +114,7 @@
 	// Compute capacity of allocated block list (may be larger than requested)
 	#call	_heapComputeCapacity(addr)
 	move	r0, addr[_HEAP_MUTEX]
-	initializeMutex(r0)
+	#call	initializeMutex(r0)
 	#return	addr
 #end_func
 

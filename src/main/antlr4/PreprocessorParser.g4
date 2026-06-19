@@ -214,7 +214,7 @@ elseCondClause
   ;
 
 syncBlock
-  : PP_SYNC LPAREN? IDENT (LBRACKET offset=(IDENT|INT) RBRACKET?)? RPAREN? NL+ block PP_ENDSYNC NL+
+  : PP_SYNC LPAREN? (MEMREF | IDENT (LBRACKET offset=(IDENT|INT) RBRACKET?)?) RPAREN? NL+ block PP_ENDSYNC NL+
   ;
 
 block

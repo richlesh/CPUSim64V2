@@ -1002,13 +1002,25 @@ public class PreprocessorVisitor extends cloud.lesh.CPUSim64.PreprocessorParserB
 
 	@Override
 	public Void visitSyncBlock(cloud.lesh.CPUSim64.PreprocessorParser.SyncBlockContext ctx) {
-		if (ctx.IDENT() != null && ctx.block() != null) {
+		if (ctx.block() != null && (ctx.IDENT() != null || ctx.MEMREF() != null)) {
 			String blockName = "SYNC_{}";
-			String mutex = ctx.IDENT(0).getText().toUpperCase();
+			String mutex;
+			String offsetText = null;
+			if (ctx.MEMREF() != null) {
+				String memref = ctx.MEMREF().getText().toUpperCase();
+				int bracket = memref.indexOf('[');
+				mutex = memref.substring(0, bracket);
+				offsetText = memref.substring(bracket + 1, memref.endsWith("]") ? memref.length() - 1 : memref.length());
+			} else {
+				mutex = ctx.IDENT(0).getText().toUpperCase();
+				if (ctx.offset != null) {
+					offsetText = ctx.offset.getText();
+				}
+			}
 			emitLineBeginDirective(filename, ctx);
 			emitLine(".BLOCK " + blockName, false);
-			if (ctx.offset != null) {
-				emitLine("move r0, " + mutex + "[" + ctx.offset.getText() + "]", true);
+			if (offsetText != null) {
+				emitLine("move r0, " + mutex + "[" + offsetText + "]", true);
 				emitLine("push r0", true);
 			} else {
 				emitLine("push " + mutex, true);
@@ -1020,7 +1032,12 @@ public class PreprocessorVisitor extends cloud.lesh.CPUSim64.PreprocessorParserB
 			visit(ctx.block());
 
 			emitLineBeginDirective(filename, ctx.PP_ENDSYNC());
-			emitLine("push " + mutex, true);
+			if (offsetText != null) {
+				emitLine("move r0, " + mutex + "[" + offsetText + "]", true);
+				emitLine("push r0", true);
+			} else {
+				emitLine("push " + mutex, true);
+			}
 			emitLine("call releaseMutex", false);
 			emitLine("add sp, 1", false);
 			emitLine(".BLOCK_END", false);
