@@ -156,7 +156,7 @@
 		// Free blocks that are now completely unused.
 		#if_cond	blockListSize, lt, oldBlockListSize
 //#call debug(STDOUT, "Freeing blocks...%d to %d", blockListSize, oldBlockListSize)
-			#for	i, blockListSize, lt, oldBlockListSize, 1
+			#for	blockListSize, i, lt, oldBlockListSize, 1
 				#call	_heapFreeBlock(h, i)
 			#end_for
 		#end_cond
@@ -237,7 +237,7 @@
 					load	blockElementSize, h[_HEAP_BLOCK_ELEMENT_SIZE]
 					load	r0, h[_HEAP_BLOCK_SIZE]
 					add		aLimit, block, r0
-					#for	a, block, lt, aLimit, blockElementSize
+					#for	block, a, lt, aLimit, blockElementSize
 						push	a
 						call	init
 						add		sp, 1
@@ -286,7 +286,7 @@
 				#if_cond	ff, ne, 0
 					load	r0, h[_HEAP_BLOCK_SIZE]
 					add		aLimit, block, r0
-					#for	a, block, lt, aLimit, blockElementSize
+					#for	block, a, lt, aLimit, blockElementSize
 						push	a
 						call	ff
 						add		sp, 1
@@ -471,7 +471,7 @@
 		#end_cond
 		// Check to make sure index is in the block list now.
 		#macro	COMPARE_RANGE(0, le, i, lt, capacity)
-		#if_cond_sr	eq
+		#if_cond_sr	nz
 			// Compute the block num and the index into the block.
 			div		blockNum, blockOffset, i, blockNumElem
 			load	blockList, h[_HEAP_BLOCK_LIST]
@@ -553,7 +553,7 @@
 	#if_cond	block, gt, 0
 		load	r0, h[_HEAP_BLOCK_SIZE]
 		add		aLimit, block, r0
-		#for	a, block, lt, aLimit, blockElementSize
+		#for	block, a, lt, aLimit, blockElementSize
 			#if_cond	a, ne, block
 				#call	putc(',')
 			#end_cond
