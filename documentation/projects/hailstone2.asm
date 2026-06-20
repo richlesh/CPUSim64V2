@@ -1,28 +1,35 @@
+///////////////////////////////////////////////////////////////////////////////
+// Hailstone2.asm
+//
+// Finds the longest Hailstone sequence with starting number less than or 
+// equal to the argument.
+// See https://en.wikipedia.org/wiki/Collatz_conjecture
+//
+// Author: Richard Lesh
+// Original: 2009/03/20
+///////////////////////////////////////////////////////////////////////////////
+
 #include <system/io.asm>
 #include <system/string.def>
+#include <system/system.asm>
 
-///////////////////////////////////////////////////////////////////////////////
-// Computes the hailstone sequence
-// Finds the longest sequence with starting number less than argument.
-// See https://en.wikipedia.org/wiki/Collatz_conjecture
-///////////////////////////////////////////////////////////////////////////////
 	#call	main()
 	int		iEXIT
 
 #def_func	main()
-	#var	i, hailstone, limit, argc, imax, max
+	#var	i, hailstone, limit, argc, arg, imax, max
 	int		iARGC
 	move	argc, r0
 	cmp		argc, 2
-	jump	lt, @GET_ARGS_FAILED
+	jump	lt, GET_ARGS_FAILED
 GET_ARGS:
 	move	imax, 1
 	move	max, 1
-	move	r0, 1
-	int		iARGS
-	int		iPARSE_INT
+	#call	args(1)
+	move	arg, r0
+	#macro	PARSE_INT(arg)
 	move	limit, r0
-	#for	i, 2, le, limit, 1
+	#for	2, i <= limit, 1
 		#call	compute_hailstone(i)
 		move	hailstone, r0
 		#if_cond	hailstone, gt, max
@@ -32,7 +39,7 @@ GET_ARGS:
 	#end_for
 	#call	fprintf(STDOUT, "%d: %d\n", imax, max)
 	#return	0
-	jump	@MAIN_END
+	jump	MAIN_END
 GET_ARGS_FAILED:
 	#call	puts("You must supply a positive integer argument.")
 	#return	1

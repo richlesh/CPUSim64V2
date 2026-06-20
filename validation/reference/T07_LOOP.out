@@ -5,7 +5,7 @@ Assembles .asm source files into .o64 binary files.
 ================================================================================
 Options: --DEBUG
 «T07_LOOP.asm»:26:9:PPERROR:token recognition error at: '@'
-Wrote 15 words to /Users/rich/Desktop/Resources/CPUSim64V2/validation2/T07_LOOP.o64
+Wrote 15 words to /Users/rich/Desktop/Resources/CPUSim64V2/validation/T07_LOOP.o64
 ================================================================================
 CPUSim64 2.2.0 Emulator
 ©2025–2026 Richard Lesh
@@ -144,6 +144,6 @@ R28: 0000000000000000                     0 F28:       0.000000000000000
  PC: 000000000000000e                       F31:       0.000000000000000
 Result: 1642909629
 User CPU Cycles: 547
-User Time: 0.018 sec
+User Time: 0.015 sec
 System Time: 0.000 sec
-Total Time: 0.018 sec
+Total Time: 0.015 sec

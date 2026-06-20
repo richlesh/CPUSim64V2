@@ -26,14 +26,4 @@
 
 #define	_VECTOR_DATA	0				// Heap allocated block for the vector data
 #define	_VECTOR_MUTEX	1				// Mutex used for concurrent access
-#define	_VECTOR_END		2
-
-#def_macro ZERO_VECTOR()
-	#macro	ALLOC(_VECTOR_END)
-	move	r1, r0
-	store	0, r1[_VECTOR_MUTEX]		// To do: Initialize mutex
-	#macro	ALLOC(1)
-	store	r0, r1[_VECTOR_DATA]		// Create storage array
-	store	0, r0						// Leading count to 0
-	move	r0, r1
-#end_macro
+#define	_VECTOR_END		1+MUTEX_SIZE

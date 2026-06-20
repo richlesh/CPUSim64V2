@@ -177,8 +177,8 @@
 		<tr><td>14</td><td>iRESTORE</td><td>none</td><td>Restores r1-r28 from the stack.</td></tr>
 		<tr><td>15</td><td>iRESTORE_FP</td><td>none</td><td>Restores f1-f31 from the stack.</td></tr>
 		<tr><td>16</td><td>iPrintCPUState</td><td>none</td><td>Prints a diagram of the current CPU state and stack.</td></tr>
-		<tr><td>20</td><td>iALLOC</td><td>r1: allocation size</td><td>Returns a heap allocated block address.</td></tr>
-		<tr><td>21</td><td>iREALLOC</td><td>r1: allocation address<br>r2: new allocation size</td><td>Returns a new heap allocated block with data copied from the passed allocation address.  The original allocation address is freed if it is in the heap.</td></tr>
+		<tr><td>20</td><td>iALLOC</td><td>r1: allocation size</td><td>Returns a heap allocated block address in r0.  Returns 0 in r0 on failure.</td></tr>
+		<tr><td>21</td><td>iREALLOC</td><td>r1: allocation address<br>r2: new allocation size</td><td>Returns a new heap allocated block address in r0 with data copied from the passed allocation address.  The original allocation address is freed if it is in the heap.  Returns 0 in r0 on failure.</td></tr>
 		<tr><td>22</td><td>iFREE</td><td>r1: allocation address</td><td>Returns the heap allocated block address to the free list.</td></tr>
 		<tr><td>23</td><td>iMEMMOVE</td><td>r1: dest address<br>r2: src address<br>r3: length</td><td>Moves contents of memory from src to dest.  Can handle overlapping memory blocks.</td></tr>
 		<tr><td>24</td><td>iMEMCLEAR</td><td>r1: dest address<br>r2: length</td><td>Clears contents of memory from dest for r2 words.</td></tr>

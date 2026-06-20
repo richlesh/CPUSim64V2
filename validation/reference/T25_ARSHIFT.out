@@ -4,7 +4,7 @@ CPUSim64 2.2.0 Assembler
 Assembles .asm source files into .o64 binary files.
 ================================================================================
 Options: --DEBUG
-Wrote 26 words to /Users/rich/Desktop/Resources/CPUSim64V2/validation2/T25_ARSHIFT.o64
+Wrote 26 words to /Users/rich/Desktop/Resources/CPUSim64V2/validation/T25_ARSHIFT.o64
 ================================================================================
 CPUSim64 2.2.0 Emulator
 ©2025–2026 Richard Lesh

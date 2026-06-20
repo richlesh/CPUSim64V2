@@ -43,7 +43,8 @@ _VECTOR_SIZE_FACTOR: 	.dcf	1.2		// Ratio to increase data block size.
 	load	capacity, initialCapacity
 	#macro	ALLOC(_VECTOR_END)
 	move	addr, r0
-	store	0, addr[_VECTOR_MUTEX]			// To do: Initialize mutex
+	add		r0, _VECTOR_MUTEX
+	#call	initializeMutex(r0)
 	load	f0, _VECTOR_SIZE_FACTOR
 	mult	f0, capacity
 	move	s, f0
@@ -66,7 +67,7 @@ _VECTOR_SIZE_FACTOR: 	.dcf	1.2		// Ratio to increase data block size.
 #def_func resizeVector(vector, size)
 	#var	v, data, newSize, capacity
 	load	v, vector
-//	#sync	v[_VECTOR_MUTEX]
+	#sync	v[_VECTOR_MUTEX]
 		load	data, v[_VECTOR_DATA]
 		load	capacity, size
 		load	f0, _VECTOR_SIZE_FACTOR
@@ -83,7 +84,7 @@ _VECTOR_SIZE_FACTOR: 	.dcf	1.2		// Ratio to increase data block size.
 		#if_cond	newSize < r0
 			store	newSize, data[0]
 		#end_cond
-//	#endsync
+	#end_sync
 #end_func
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -94,12 +95,12 @@ _VECTOR_SIZE_FACTOR: 	.dcf	1.2		// Ratio to increase data block size.
 #def_func freeVector(vector)
 	#var	v, data
 	load	v, vector
-//	#sync	v[_VECTOR_MUTEX]
+	#sync	v[_VECTOR_MUTEX]
 		load	data, v[_VECTOR_DATA]
 		#macro	FREE(data)
 		store	0, v[_VECTOR_DATA]
 		#macro	FREE(v)
-//	#endsync
+	#end_sync
 #end_func
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -145,10 +146,10 @@ _VECTOR_SIZE_FACTOR: 	.dcf	1.2		// Ratio to increase data block size.
 #def_func vectorSize(vector)
 	#var	v, data, len
 	load	v, vector
-//	#sync	v[_VECTOR_MUTEX]
+	#sync	v[_VECTOR_MUTEX]
 		load	data, v[_VECTOR_DATA]
 		load	len, data[0]
-//	#endsync
+	#end_sync
 	#return	len
 #end_func
 
@@ -173,12 +174,12 @@ _VECTOR_SIZE_FACTOR: 	.dcf	1.2		// Ratio to increase data block size.
 #def_func vectorCapacity(vector)
 	#var	v, data, size
 	load	v, vector
-//	#sync	v[_VECTOR_MUTEX]
+	#sync	v[_VECTOR_MUTEX]
 		load	data, v[_VECTOR_DATA]
 		load	size, data[-1]
 		sub		size, 1
 		sub		size, HEAP_BLOCK_HEADER_SIZE
-//	#endsync
+	#end_sync
 	#return	size
 #end_func
 
@@ -201,7 +202,7 @@ _VECTOR_SIZE_FACTOR: 	.dcf	1.2		// Ratio to increase data block size.
 		#if_cond_sr	nz
 			load	value, data[i]
 		#end_cond_sr
-//	#endsync
+//	#end_sync
 	#return	value
 #end_func
 
@@ -215,7 +216,7 @@ _VECTOR_SIZE_FACTOR: 	.dcf	1.2		// Ratio to increase data block size.
 #def_func setVectorAt(vector, index, value)
 	#var	v, i, data, len, val
 	load	v, vector
-//	#sync	v[_VECTOR_MUTEX]
+	#sync	v[_VECTOR_MUTEX]
 		load	val, value
 		load	i, index
 		add		i, 1
@@ -225,7 +226,7 @@ _VECTOR_SIZE_FACTOR: 	.dcf	1.2		// Ratio to increase data block size.
 		#if_cond_sr	nz
 			store	val, data[i]
 		#end_cond
-//	#endsync
+	#end_sync
 #end_func
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -305,7 +306,7 @@ _VECTOR_SIZE_FACTOR: 	.dcf	1.2		// Ratio to increase data block size.
 		#if_cond	len != 0
 			load	value, data[1]
 		#end_cond
-//	#endsync
+//	#end_sync
 	#return	value
 #end_func
 
@@ -324,7 +325,7 @@ _VECTOR_SIZE_FACTOR: 	.dcf	1.2		// Ratio to increase data block size.
 		#if_cond	len != 0
 			load	value, data[len]
 		#end_cond
-//	#endsync
+//	#end_sync
 	#return	value
 #end_func
 
@@ -337,7 +338,7 @@ _VECTOR_SIZE_FACTOR: 	.dcf	1.2		// Ratio to increase data block size.
 #def_func vectorAdd(vector, value)
 	#var	v, data, len, size
 	load	v, vector
-//	#sync	v[_VECTOR_MUTEX]
+	#sync	v[_VECTOR_MUTEX]
 		load	data, v[_VECTOR_DATA]
 		load	len, data[0]
 		add		len, 1
@@ -351,7 +352,7 @@ _VECTOR_SIZE_FACTOR: 	.dcf	1.2		// Ratio to increase data block size.
 		load	r0, value
 		store	r0, data[len]
 		store	len, data[0]
-//	#endsync
+	#end_sync
 #end_func
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -364,7 +365,7 @@ _VECTOR_SIZE_FACTOR: 	.dcf	1.2		// Ratio to increase data block size.
 #def_func vectorAddAt(vector, index, value)
 	#var	v, i, val, len, data, size, newSize, src, dest, moveLen
 	load	v, vector
-//	#sync	v[_VECTOR_MUTEX]
+	#sync	v[_VECTOR_MUTEX]
 		load	val, value
 		load	i, index
 		add		i, 1
@@ -388,7 +389,7 @@ _VECTOR_SIZE_FACTOR: 	.dcf	1.2		// Ratio to increase data block size.
 			store	val, src
 			store	len, data[0]
 		#end_cond_sr
-//	#endsync
+	#end_sync
 #end_func
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -400,7 +401,7 @@ _VECTOR_SIZE_FACTOR: 	.dcf	1.2		// Ratio to increase data block size.
 #def_func vectorRemoveAtEnd(vector)
 	#var	v, size, len, data, value
 	load	v, vector
-//	#sync	v[_VECTOR_MUTEX]
+	#sync	v[_VECTOR_MUTEX]
 		load	data, v[_VECTOR_DATA]
 		load	len, data[0]
 		move	value, 0
@@ -409,7 +410,7 @@ _VECTOR_SIZE_FACTOR: 	.dcf	1.2		// Ratio to increase data block size.
 			sub		len, 1
 			store	len, data[0]
 		#end_cond
-//	#endsync
+	#end_sync
 	#return	value
 #end_func
 
@@ -423,7 +424,7 @@ _VECTOR_SIZE_FACTOR: 	.dcf	1.2		// Ratio to increase data block size.
 #def_func vectorRemoveAt(vector, index)
 	#var	v, i, len, data, value, src, dest, moveLen
 	load	v, vector
-//	#sync	v[_VECTOR_MUTEX]
+	#sync	v[_VECTOR_MUTEX]
 		load	i, index
 		add		i, 1
 		load	data, v[_VECTOR_DATA]
@@ -440,7 +441,7 @@ _VECTOR_SIZE_FACTOR: 	.dcf	1.2		// Ratio to increase data block size.
 			sub		len, 1
 			store	len, data[0]
 		#end_cond_sr
-//	#endsync
+	#end_sync
 	#return	value
 #end_func
 
@@ -452,11 +453,11 @@ _VECTOR_SIZE_FACTOR: 	.dcf	1.2		// Ratio to increase data block size.
 #def_func clearVector(vector)
 	#var	v, data
 	load	v, vector
-//	#sync	v[_VECTOR_MUTEX]
+	#sync	v[_VECTOR_MUTEX]
 		#call	resizeVector(v, 1)
 		load	data, v[_VECTOR_DATA]
 		store	0, data[0]
-//	#endsync
+	#end_sync
 #end_func
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -482,7 +483,7 @@ _VECTOR_SIZE_FACTOR: 	.dcf	1.2		// Ratio to increase data block size.
 				#break
 			#end_cond
 		#end_for
-//	#endsync
+//	#end_sync
 	#if_cond	j > len
 		#return	-1
 	#else_cond
@@ -519,7 +520,7 @@ _VECTOR_SIZE_FACTOR: 	.dcf	1.2		// Ratio to increase data block size.
 				#break
 			#end_cond
 		#end_for
-//	#endsync
+//	#end_sync
 	#if_cond	j == 0
 		#return	-1
 	#else_cond
@@ -544,10 +545,10 @@ _VECTOR_SIZE_FACTOR: 	.dcf	1.2		// Ratio to increase data block size.
 				#macro	out1(',', STDOUT)
 			#end_cond
 			load	j, data[i]
-			#macro	put_dec(j)
+			#call	put_dec(j)
 		#end_for
-		#macro	put_nl()
-//	#endsync
+		#call	put_nl()
+//	#end_sync
 #end_func
 
 #def_func debugVector(vector)

@@ -102,43 +102,5 @@
 #def_macro	OUT8(register, port)
 	out		${register}, LONG, ${port}
 #end_macro
-
-#def_macro	PUT_NL()
-	move	r1, STDOUT
-	int		iPUT_NL
-#end_macro
-
-#def_macro	PUTS(str)
-	move	r2, ${str}
-	move	r1, STDOUT
-	int		iPUTS
-#end_macro
-
-#def_macro  PUT_INT(val, base)
-	move	r2, ${val}
-	move	r3, ${base}
-	move	r1, STDOUT
-	int		iPUT_INT
-#end_macro
-
-#def_macro  PUT_DEC(val)
-	move	r2, ${val}
-	move	r1, STDOUT
-	int		iPUT_DEC
-#end_macro
-
-#def_macro  PUT_HEX(val)
-	move	r2, ${val}
-	move	r1, STDOUT
-	int		iPUT_HEX
-#end_macro
-
-#def_macro  PUT_FP(val, prec)
-	move	f1, ${val}
-	move	r1, STDOUT
-	move	r2, ${prec}
-	int		iPUT_FP
-#end_macro
-
 #endif
 

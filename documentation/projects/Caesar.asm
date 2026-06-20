@@ -1,10 +1,21 @@
+///////////////////////////////////////////////////////////////////////////////
+// Caesar.asm
+// Caesar cipher encrypt/decrypt.
+//
+// Usage: Caesar [-95 - 95] input_file output_file
+//
+// Author: Richard Lesh
+// Date:   2025/11/04
+///////////////////////////////////////////////////////////////////////////////
+
 #include <system/io.asm>
 #include <system/string.asm>
+#include <system/system.asm>
 
 	#call	main()
 	int		iEXIT
 
-#deffunc	main()
+#def_func	main()
 	#var	filename, outfilename, key, inport, outport
 	// if (argc < 4)
 	int		iARGC
@@ -12,13 +23,11 @@
 		#call	puts("Syntax: Caesar [-95 - 95] input_file output_file")
 	#else_cond
 		// Get first command line argument and put it in key.
-		move	r0, 1
-		int		iARGS
-		TO_INT(r0)
+		#call	args(1)
+		#macro	PARSE_INT(r0)
 		move	key, r0
 		// Get second command line argument and put it in filename.
-		move	r0, 2
-		int		iARGS
+		#call	args(2)
 		move	filename, r0
 		// Open text file in read mode.
 		#call	openTextFile(filename, READ_MODE)
@@ -26,8 +35,7 @@
 		// If the port returned is -1 we failed.
 		#if_cond	inport, ne, -1
 			// Get third command line argument and put it in outfilename.
-			move	r0, 3
-			int		iARGS
+			#call	args(3)
 			move	outfilename, r0
 			// Open text file in write mode.
 			#call	openTextFile(outfilename, WRITE_MODE)
@@ -51,7 +59,7 @@
 	#return	0
 #end_func
 
-#deffunc	Caesar(key, inport, outport)
+#def_func	Caesar(key, inport, outport)
 	#var	charRead,k,p,po
 	push	r1
 	load	k, key
@@ -59,31 +67,31 @@
 	load	po, outport
 LOOP1:
 // Read a character
-	IN0(charRead,p)
+	#macro	IN0(charRead,p)
 // If it is -1 we are at EOF.
 	cmp		charRead, -1
-	jump	eq, @LOOP_END1
-	COMPARE(charRead, ge, ' ')
+	jump	eq, LOOP_END1
+	#macro	COMPARE(charRead, ge, ' ')
 	move	r1, r0
-	COMPARE(charRead, le, '~')
+	#macro	COMPARE(charRead, le, '~')
 	and		r0, r1
 	#if_cond	r0, eq, TRUE
 		sub		charRead, ' '
 		add		charRead, k
 		#while	charRead, lt, 0
 			add	charRead, 95
-		#endwhile
+		#end_while
 		#while	charRead, ge, 95
 			sub	charRead, 95
-		#endwhile
+		#end_while
 		add		charRead, ' '
 	#end_cond
 
 // Output the character
 	#call	fputc(po, charRead)
-	jump	@LOOP1
+	jump	LOOP1
 LOOP_END1:
 	pop		r1
-#end_forunc
+#end_func
 	stop
 	stop

@@ -4,7 +4,11 @@ CPUSim64 2.2.0 Assembler
 Assembles .asm source files into .o64 binary files.
 ================================================================================
 Options: --DEBUG
-Wrote 34 words to /Users/rich/Desktop/Resources/CPUSim64V2/validation2/T12_UNARY.o64
+«T12_UNARY.asm»:26:WARNING:Floating point constant used with MOV instruction; did you mean LOAD?
+«T12_UNARY.asm»:28:WARNING:Floating point constant used with MOV instruction; did you mean LOAD?
+«T12_UNARY.asm»:44:WARNING:Floating point constant used with MOV instruction; did you mean LOAD?
+«T12_UNARY.asm»:46:WARNING:Floating point constant used with MOV instruction; did you mean LOAD?
+Wrote 34 words to /Users/rich/Desktop/Resources/CPUSim64V2/validation/T12_UNARY.o64
 ================================================================================
 CPUSim64 2.2.0 Emulator
 ©2025–2026 Richard Lesh
@@ -51,6 +55,6 @@ R28: 0000000000000000                     0 F28:       0.000000000000000
  PC: 000000000000001d                       F31:       0.000000000000000
 Result: 0
 User CPU Cycles: 28
-User Time: 0.013 sec
+User Time: 0.016 sec
 System Time: 0.000 sec
-Total Time: 0.013 sec
+Total Time: 0.016 sec

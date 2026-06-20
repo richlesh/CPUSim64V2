@@ -137,7 +137,7 @@ $loop:
 			#end_cond
 			move	r0, addr[3]
 			#call	releaseSpinLock(r0)
-			#macro   sleep(10000)							// Sleep until awoken or 10 sec.
+			#call   sleep(10000)							// Sleep until awoken or 10 sec.
        #end_while
 	#end_cond
 	load	r0, addr[1]										// Increase the re-entry count

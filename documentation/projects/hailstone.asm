@@ -1,31 +1,38 @@
+///////////////////////////////////////////////////////////////////////////////
+// Hailstone.asm
+//
+// Computes the Hailstone sequence.
+// See https://en.wikipedia.org/wiki/Collatz_conjecture
+//
+// Author: Richard Lesh
+// Original: 2009/03/20
+///////////////////////////////////////////////////////////////////////////////
+
 #include <system/io.asm>
 #include <system/string.def>
+#include <system/system.asm>
 
-///////////////////////////////////////////////////////////////////////////////
-// Computes the hailstone sequence
-// See https://en.wikipedia.org/wiki/Collatz_conjecture
-///////////////////////////////////////////////////////////////////////////////
 	#call	main()
 	int		iEXIT
 
 #def_func	main()
-	#var	i, argc
+	#var	i, argc, arg
 	int		iARGC
 	move	argc, r0
 	cmp		argc, 2
-	jump	lt, @GET_ARGS_FAILED
+	jump	lt, GET_ARGS_FAILED
 GET_ARGS:
-	move	r0, 1
-	int		iARGS
-	int		iPARSE_INT
+	#call	args(1)
+	move	arg, r0
+	#macro	PARSE_INT(arg)
 	#call	compute_hailstone(r0)
 	#call	put_dec(r0)
 	#call	put_nl()
 	#return	0
-	jump	@MAIN_END
+	jump	MAIN_END
 GET_ARGS_FAILED:
 //	#call	puts("You must supply a positive integer argument.")
-	#for	i, 1, le, 30, 1
+	#for	1, i <= 30, 1
 		#call	compute_hailstone(i)
 		#call	fprintf(STDOUT,"%d: %d\n", i, r0)
 	#end_for

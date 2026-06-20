@@ -146,9 +146,4 @@
 	restore	r1,r2
 #end_macro
 
-#def_macro	SLEEP(ms)
-	move	r1, ${ms}
-	int		iSLEEP
-#end_macro
-
 #endif

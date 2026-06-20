@@ -698,5 +698,76 @@ jump	IO_ASM_END
 	#end_for
 #end_func
 
+///////////////////////////////////////////////////////////////////////////////
+// printIntegerArrayWithIndex(a)
+// Prints an array of integers with the index and value.
+// a	Base address of the array to print
+///////////////////////////////////////////////////////////////////////////////
+#def_func printIntegerArrayWithIndex(a)
+	#var	base, i, len, v
+	load	base, a
+	load	len, base[0]
+	move	i, 1
+	jump	$LOOP1_END
+$LOOP1:
+	load	v, base[i]
+	#call	put_dec(i)
+	#call	putc(':')
+	#call	put_dec(v)
+	#call	put_nl()
+	add		i, 1
+$LOOP1_END:
+	cmp		i, len
+	jump	le, $LOOP1
+#end_func
+
+///////////////////////////////////////////////////////////////////////////////
+// printFloatArrayWithIndex(a)
+// Prints an array of floats with the index and value.
+// a	Base address of the array to print
+///////////////////////////////////////////////////////////////////////////////
+#def_func printFloatArrayWithIndex(a)
+	#var	base, i, len
+	#fvar	v
+	load	base, a
+	load	len, base[0]
+	move	i, 1
+	jump	$LOOP1_END
+$LOOP1:
+	load	v, base[i]
+	#call	put_dec(i)
+	#call	putc(':')
+	#call	put_fp(v)
+	#call	put_nl()
+	add		i, 1
+$LOOP1_END:
+	cmp		i, len
+	jump	le, $LOOP1
+#end_func
+
+///////////////////////////////////////////////////////////////////////////////
+// printStringArrayWithIndex(a)
+// Prints an array of strings with the index and value.
+// a	Base address of the array to print
+///////////////////////////////////////////////////////////////////////////////
+#def_func printStringArrayWithIndex(a)
+	#var	base, i, len
+	#fvar	v
+	load	base, a
+	load	len, base[0]
+	move	i, 1
+	jump	$LOOP1_END
+$LOOP1:
+	load	v, base[i]
+	#call	put_dec(i)
+	#call	putc(':')
+	#call	puts(v)
+	#call	put_nl()
+	add		i, 1
+$LOOP1_END:
+	cmp		i, len
+	jump	le, $LOOP1
+#end_func
+
 IO_ASM_END:	nop
 #endif

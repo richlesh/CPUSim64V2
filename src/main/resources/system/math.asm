@@ -183,9 +183,9 @@ $SKIP_NEG2:
 #end_func
 
 #def_func	remainder(n, d)
-	load	r1, n
-	load	r2, d
-	int		iRAND
+	load	f1, n
+	load	f2, d
+	int		iREMAINDER
 #end_func
 
 #def_func	to_radians(x)
@@ -232,6 +232,36 @@ $SKIP_NEG2:
 	load	f1, x
 	load	f2, y
 	int		iATAN2
+#end_func
+
+#def_func	sinh(x)
+	load	f1, x
+	int		iSINH
+#end_func
+
+#def_func	cosh(x)
+	load	f1, x
+	int		iCOSH
+#end_func
+
+#def_func	tanh(x)
+	load	f1, x
+	int		iTANH
+#end_func
+
+#def_func	asinh(x)
+	load	f1, x
+	int		iASINH
+#end_func
+
+#def_func	acosh(x)
+	load	f1, x
+	int		iACOSH
+#end_func
+
+#def_func	atanh(x)
+	load	f1, x
+	int		iATANH
 #end_func
 
 ///////////////////////////////////////////////////////////////////////////////

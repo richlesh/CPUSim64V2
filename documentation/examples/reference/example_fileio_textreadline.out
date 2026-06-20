@@ -1,7 +1,7 @@
 > run.sh example_fileio_textreadline alphabets.txt
-ABCDEFGHIJKLMNOPQRSTUVWXY
+!"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}
 
-ΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡ΢ΣΤΥΦΧΨ
+ΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡ΢ΣΤΥΦΧΨΩΪΫάέήίΰαβγδεζηθικλμνξοπρςστυφχψ
 
 אבגדהוזחטיךכלםמןנסעףפץצקרש
 

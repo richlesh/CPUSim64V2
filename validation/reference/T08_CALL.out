@@ -4,7 +4,7 @@ CPUSim64 2.2.0 Assembler
 Assembles .asm source files into .o64 binary files.
 ================================================================================
 Options: --DEBUG
-Wrote 214 words to /Users/rich/Desktop/Resources/CPUSim64V2/validation2/T08_CALL.o64
+Wrote 214 words to /Users/rich/Desktop/Resources/CPUSim64V2/validation/T08_CALL.o64
 ================================================================================
 CPUSim64 2.2.0 Emulator
 ©2025–2026 Richard Lesh
@@ -86,6 +86,6 @@ R28: 0000000000000000                     0 F28:       0.000000000000000
  PC: 000000000000005e                       F31:       0.000000000000000
 Result: 174
 User CPU Cycles: 219
-User Time: 0.017 sec
+User Time: 0.016 sec
 System Time: 0.000 sec
-Total Time: 0.017 sec
+Total Time: 0.016 sec

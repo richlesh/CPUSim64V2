@@ -1,30 +1,37 @@
+///////////////////////////////////////////////////////////////////////////////
+// Hailstone3.asm
+//
+// Finds the longest Hailstone sequence with starting number less than or 
+// equal to the argument.
+// See https://en.wikipedia.org/wiki/Collatz_conjecture
+//
+// Author: Richard Lesh
+// Original: 2009/03/20
+///////////////////////////////////////////////////////////////////////////////
+
 #include <system/io.asm>
 #include <system/string.def>
+#include <system/system.asm>
 
-///////////////////////////////////////////////////////////////////////////////
-// Computes the hailstone sequence
-// Finds the longest sequence with starting number less than argument.
-// See https://en.wikipedia.org/wiki/Collatz_conjecture
-///////////////////////////////////////////////////////////////////////////////
 	#call	main()
 	int		iEXIT
 
 #def_func	main()
-	#var	i, j, hailstone, limit, argc, imax, max, lastClock
+	#var	i, j, hailstone, limit, argc, arg, imax, max, lastClock
 	int		iARGC
 	move	argc, r0
 	cmp		argc, 2
-	jump	lt, @GET_ARGS_FAILED
+	jump	lt, GET_ARGS_FAILED
 GET_ARGS:
 	move	imax, 1
 	move	max, 1
-	move	r0, 1
-	int		iARGS
-	int		iPARSE_INT
+	#call	args(1)
+	move	arg, r0
+	#macro	PARSE_INT(arg)
 	move	limit, r0
 	int		iCLOCK
 	move	lastClock, r0
-	#for	i, 2, le, limit, 1
+	#for	2, i <= limit, 1
 		#call	compute_hailstone(i)
 		move	hailstone, r0
 		#if_cond	hailstone, gt, max
@@ -42,7 +49,6 @@ GET_ARGS:
 	#end_for
 	#call	fprintf(STDOUT, "%d: %d\n", imax, max)
 	#return	0
-	jump	@MAIN_END
 GET_ARGS_FAILED:
 	#call	puts("You must supply a positive integer argument.")
 	#return	1
@@ -60,18 +66,22 @@ MAIN_END:
 // Use memoization to dramatically improve performance.
 ///////////////////////////////////////////////////////////////////////////////
 
-PRECOMPUTED: dci	0
-PRECOMPUTED_SIZE: dci	3000000
+#global PRECOMPUTED: .dci	0
+PRECOMPUTED_SIZE: .dci	3000000
 #def_func	compute_hailstone(arg)
 	#var	i,i0,isOdd,cache,cacheSize,hailstone
 	
-	load	cache, PRECOMPUTED
-	jmp		nz, @BEGIN_COMPUTE
 	load	cacheSize, PRECOMPUTED_SIZE
-	move	r0, cacheSize
-	int		iALLOC
+	load	cache, PRECOMPUTED
+	jump	nz, BEGIN_COMPUTE
+	#macro	ALLOC(cacheSize)
 	move	cache, r0
 	store	cache, PRECOMPUTED
+	#if_cond	cache == 0
+		#call	fprintf(STDOUT, "Can\'t allocate cache size %d\n", cacheSize)
+		#call	exit(1)
+	#end_cond
+	#macro	MEMCLEAR(cache, cacheSize)
 	store	1, cache[1]
 BEGIN_COMPUTE:
 	load	i, arg
@@ -79,7 +89,6 @@ BEGIN_COMPUTE:
 		load	hailstone, cache[i]
 		#if_cond	hailstone, ne, 0
 			#return	hailstone
-			jump	@END
 		#end_cond
 	#end_cond
 	

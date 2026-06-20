@@ -825,7 +825,13 @@ public class Simulator {
 					}
 				}
 			}
-			exec(d);
+			try {
+				exec(d);
+			} catch (Exception ex) {
+				String label = reverseSymbolMap != null ? Decoded.findNearestLabel(reverseSymbolMap, pc) : null;
+				System.err.printf("Exception at PC=%d %s: %s%n", pc, label != null ? label : "", d.disassemble(reverseSymbolMap));
+				throw ex;
+			}
 		}
 		if (debug) {
 			synchronized (System.out) {

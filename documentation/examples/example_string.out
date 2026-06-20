@@ -81,10 +81,7 @@ REPLACE_ALL("Hello, world!",".","?"): "?????????????"
 REPLACE_ALL("Hello, world!!!...","[,\.!]","?"): "Hello? world??????"
 REPLACE_ALL("Hello, world!!!...","!","?"): "Hello, world???..."
 strSplit("Hello, world!!!...", "[od]"):
-Hell
-, w
-rl
-!!!...
+Hell,, w,rl,!!!...
 TRIM("Hello, world!"): "Hello, world!"
 TRIM(" 	trimmed	 "): "trimmed"
 TRIM(" 	

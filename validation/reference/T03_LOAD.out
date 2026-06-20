@@ -4,7 +4,8 @@ CPUSim64 2.2.0 Assembler
 Assembles .asm source files into .o64 binary files.
 ================================================================================
 Options: --DEBUG
-Wrote 76 words to /Users/rich/Desktop/Resources/CPUSim64V2/validation2/T03_LOAD.o64
+WARNING: .DCC is obsolete. Use .DCW instead.
+Wrote 76 words to /Users/rich/Desktop/Resources/CPUSim64V2/validation/T03_LOAD.o64
 ================================================================================
 CPUSim64 2.2.0 Emulator
 ©2025–2026 Richard Lesh
@@ -51,6 +52,6 @@ R28: 0000000000000000                     0 F28:       0.000000000000000
  PC: 0000000000000028                       F31:       0.000000000000000
 Result: 54
 User CPU Cycles: 71
-User Time: 0.017 sec
+User Time: 0.013 sec
 System Time: 0.000 sec
-Total Time: 0.017 sec
+Total Time: 0.013 sec

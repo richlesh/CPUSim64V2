@@ -1,7 +1,7 @@
 ///////////////////////////////////////////////////////////////////////////////
-// Test Program
+// Fibonacci.asm
 //
-// Prints Fibonocci sequence.
+// Prints Fibonacci sequence.
 //
 // Author: Richard Lesh
 // Original: 2009/03/20
@@ -24,7 +24,7 @@ LOOP:
 	move	r3,r2
 	move	r2,r1
 	sub		r4,1
-	jmp		nz,LOOP
+	jump	nz,LOOP
 
 	stop
 	stop

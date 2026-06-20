@@ -1,76 +1,86 @@
+///////////////////////////////////////////////////////////////////////////////
+// Hailstone4.asm
+//
+// Finds the longest Hailstone sequence with starting number less than or 
+// equal to the argument.
+// See https://en.wikipedia.org/wiki/Collatz_conjecture
+//
+// Author: Richard Lesh
+// Original: 2009/03/20
+///////////////////////////////////////////////////////////////////////////////
+
 #include <system/io.asm>
 #include <system/string.asm>
 #include <system/system.asm>
+#include <system/thread.asm>
 #include <adt/vector.asm>
 
-///////////////////////////////////////////////////////////////////////////////
-// Computes the hailstone sequence
-// Finds the longest sequence with starting number less than argument.
-// See https://en.wikipedia.org/wiki/Collatz_conjecture
-///////////////////////////////////////////////////////////////////////////////
 	#call	main()
 	int		iEXIT
 
-MY_MUTEX:	dci 0
-MAX:		dci 0
-IMAX:		dci 0
-WORKSIZE:	dci 100000
-WORKQUEUE:	dci 0
+#macro DEFINE_MUTEX(MY_MUTEX)
+#global MAX:		.dci 0
+#undef iMAX
+#global IMAX:		.dci 0
+#global WORKSIZE:	.dci 100000
+#global WORKQUEUE:	.dci 0
+
 #def_func	main()
-	#var	i, j, argc, imax, max, worksize, limit, queue, \
+	#var	i, j, argc, arg, mImax, mMax, mWorksize, limit, queue, \
 			workunits, cores, pid, pids
 	int		iARGC
 	move	argc, r0
 	cmp		argc, 2
-	jump	lt, @GET_ARGS_FAILED
+	jump	lt, GET_ARGS_FAILED
 GET_ARGS:
-	move	r0, 1
-	int		iARGS
-	int		iPARSE_INT
+	#call	args(1)
+	move	arg, r0
+	#macro	PARSE_INT(arg)
 	move	limit, r0
-	load	worksize, WORKSIZE
-	
+	load	mWorksize, WORKSIZE
+	#call	initializeMutex(MY_MUTEX)
+
 	#call	newVector(10)
 	move	queue, r0
 	store	queue, WORKQUEUE
 	
-	STACK_PUSH(queue, 0)
+	#macro	PUSH_BACK(queue, 0)
 	#call	worker(queue)
 
-	div		workunits, limit, worksize
+	div		workunits, limit, mWorksize
 	sub		workunits, 1
-	mult	workunits, worksize
-	neg		worksize
-	#for	i, workunits, gt, 0, worksize
-		STACK_PUSH(queue, i)
+	mult	workunits, mWorksize
+	neg		mWorksize
+	#for	workunits, i > 0, mWorksize
+		#macro	PUSH_BACK(queue, i)
 	#end_for
 	
 	// Spawn worker threads
 	int		iGET_NUM_CORES
 	move	cores, r0
-	#call	fprintf(STDOUT, "Number of cores: %d\n", cores)
-	#call	alloc(cores)
+	#call	printf("Number of cores: %d\n", cores)
+	#macro	alloc(cores)
 	move	pids, r0
-	#for	i, 0, lt, cores, 1
-		move	r0, worker
-		move	r1, queue
-		int		iTHREAD
+	#if_cond	pids, eq, 0
+		#call	printf("Can\'t allocate pids array!\n")
+		#call	exit(1)
+	#end_cond
+	#for	0, i < cores, 1
+		#macro	create_thread(worker, queue)
 		store	r0, pids[i]
 	#end_for
 	
 	// Join with threads
-	#for	i, 0, lt, cores, 1
+	#for	0, i < cores, 1
 		load	pid, pids[i]
-		#call	fprintf(STDOUT, "Main is joining %d...\n", pid)
-		move	r0, pid
-		int		iJOIN_THREAD
+		#call	printf("Main is joining %d...\n", pid)
+		#macro	join_thread(pid)
 	#end_for
 
-	load	imax, IMAX
-	load	max, MAX
-	#call	fprintf(STDOUT,"Max %d found at %d\n", max, imax)
+	load	mImax, IMAX
+	load	mMax, MAX
+	#call	printf("Max %d found at %d\n", mMax, mImax)
 	#return	0
-	jump	@MAIN_END
 GET_ARGS_FAILED:
 	#call	puts("You must supply a positive integer argument.")
 	#return	1
@@ -88,23 +98,22 @@ MAIN_END:
 // Use memoization to dramatically improve performance.
 ///////////////////////////////////////////////////////////////////////////////
 
-PRECOMPUTED: dci	0
-PRECOMPUTED_SIZE: dci	100000000
+#global PRECOMPUTED: .dci	0
+PRECOMPUTED_SIZE: .dci	500000
 #def_func	compute_hailstone(arg)
 	#var	i,i0,isOdd,cache,cacheSize,hailstone
 	
 	load	cacheSize, PRECOMPUTED_SIZE
 	load	cache, PRECOMPUTED
-	jmp		nz, @BEGIN_COMPUTE
-	move	r0, cacheSize
-	int		iALLOC
+	jump	nz, BEGIN_COMPUTE
+	#macro	ALLOC(cacheSize)
 	move	cache, r0
 	store	cache, PRECOMPUTED
 	#if_cond	cache, eq, 0
-		#call	fprintf(STDOUT, "Can\'t allocate cache size %d\n", cacheSize)
-		move	r0,1
-		int		iEXIT
+		#call	printf("Can\'t allocate cache size %d\n", cacheSize)
+		#call	exit(1)
 	#end_cond
+	#macro	MEMCLEAR(cache, cacheSize)
 	store	1, cache[0]
 	store	1, cache[1]
 	store	2, cache[2]
@@ -115,7 +124,6 @@ BEGIN_COMPUTE:
 		load	hailstone, cache[i]
 		#if_cond	hailstone, ne, 0
 			#return	hailstone
-			jump	@END
 		#end_cond
 	#end_cond
 	
@@ -139,49 +147,56 @@ END:
 #end_func
 
 #def_func worker(queue)
-	#var	i, d, hs, ws, pid, limit, imax, max, quo, remain, mod, q
-	int		iGET_PID
+	#var	i, d, hs, ws, pid, limit, wImax, wMax, quo, remain, q
+	int	iGET_PID
 	move	pid, r0
 	load	q, queue
 	#sync	q[_VECTOR_MUTEX]
 		#call	vectorIsEmpty(q)
 		#if_cond	r0, eq, 0
-			STACK_POP(q)
+			#macro	POP_BACK(q)
 			move	d, r0
-		#if_condelse
+		#else_cond
 			move	d, -1
 		#end_cond
-	#endsync
+	#end_sync
 	#while	d, ne, -1
 		move	limit, d
 		load	ws, WORKSIZE
-		add		limit, ws
-		#call	fprintf(STDOUT, "Thread work unit %d executing with PID %d...\n", d, pid)
-		#for	i, d, lt, limit, 1
+		add	limit, ws
+		#call	printf("Thread work unit %d executing with PID %d...\n", d, pid)
+		clear	wMax
+		#for	d, i < limit, 1
 			#call	compute_hailstone(i)
 			move	hs, r0
-			load	max, MAX
-			#if_cond	hs, gt, max
-				#sync	MY_MUTEX
-					load	max, MAX
-					#if_cond	hs, gt, max
-						store	hs, MAX
-						store	i, IMAX
-					#end_cond
-				#endsync
+			#if_cond	hs > wMax
+				move	wMax, hs
+				move	wImax, i
 			#end_cond
 		#end_for
+		#sync	MY_MUTEX
+			load	hs, MAX
+			load	i, IMAX
+			cmp	wMax, hs
+			move	gt, r0, -1, 0
+			#if_cond_sr	nz
+				#call	printf("New high: %d:%d (%d)\n", wImax, wMax, pid)
+				store	wMax, MAX
+				store	wImax, IMAX
+			#end_cond
+		#end_sync
+
 		#sync	q[_VECTOR_MUTEX]
 			#call	vectorIsEmpty(q)
 			#if_cond	r0, eq, 0
-				STACK_POP(q)
+				#macro	POP_BACK(q)
 				move	d, r0
-			#if_condelse
+			#else_cond
 				move	d, -1
 			#end_cond
-		#endsync
-	#endwhile
-	#call	fprintf(STDOUT, "Thread %d worker finishing...\n", pid)
+		#end_sync
+	#end_while
+	#call	printf("Thread %d finishing...\n", pid)
 #end_func
 
 	stop

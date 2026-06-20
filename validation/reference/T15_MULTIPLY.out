@@ -4,7 +4,9 @@ CPUSim64 2.2.0 Assembler
 Assembles .asm source files into .o64 binary files.
 ================================================================================
 Options: --DEBUG
-Wrote 24 words to /Users/rich/Desktop/Resources/CPUSim64V2/validation2/T15_MULTIPLY.o64
+«T15_MULTIPLY.asm»:39:WARNING:Floating point constant used with MOV instruction; did you mean LOAD?
+«T15_MULTIPLY.asm»:40:WARNING:Floating point constant used with MOV instruction; did you mean LOAD?
+Wrote 24 words to /Users/rich/Desktop/Resources/CPUSim64V2/validation/T15_MULTIPLY.o64
 ================================================================================
 CPUSim64 2.2.0 Emulator
 ©2025–2026 Richard Lesh

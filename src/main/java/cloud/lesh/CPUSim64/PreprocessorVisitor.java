@@ -119,6 +119,9 @@ public class PreprocessorVisitor extends cloud.lesh.CPUSim64.PreprocessorParserB
 			System.err.println(getLocation() + ":ERROR:Define name already exists: " + name);
 			hasErrors = true;
 		}
+		if (codeLabels.contains(name.toUpperCase()) || globalLabelNames.contains(name.toUpperCase())) {
+			System.err.println(getLocation() + ":WARNING:#define '" + name + "' conflicts with label of the same name");
+		}
 		defines.put(name.toUpperCase(), value);
 	}
 
@@ -184,6 +187,16 @@ public class PreprocessorVisitor extends cloud.lesh.CPUSim64.PreprocessorParserB
 	@Override
 	public Void visitCodeLine(cloud.lesh.CPUSim64.PreprocessorParser.CodeLineContext ctx) {
 		emitLineDirective(filename, ctx);
+
+		// Track labels for variable shadowing warnings
+		if (!ctx.more.isEmpty() && ctx.more.get(0).getType() == cloud.lesh.CPUSim64.PreprocessorLexer.LABEL) {
+			String label = ctx.more.get(0).getText();
+			label = label.substring(0, label.length() - 1).toUpperCase(); // strip colon
+			codeLabels.add(label);
+			if (defines.containsKey(label)) {
+				System.err.println(getLocation() + ":WARNING:Label '" + label + "' conflicts with #define of the same name");
+			}
+		}
 
 		// Collect "segments" in the order they appear in the input.
 		// A segment is either a Token (from ctx.more) or a constExpr subtree (from ctx.moreExpr).
@@ -336,12 +349,15 @@ public class PreprocessorVisitor extends cloud.lesh.CPUSim64.PreprocessorParserB
 	@Override
 	public Void visitUndefDir(cloud.lesh.CPUSim64.PreprocessorParser.UndefDirContext ctx) {
 		String name = ctx.IDENT().getText();
-		defines.remove(name);
+		defines.remove(name.toUpperCase());
 		return null;
 	}
 
 	@Override
 	public Void visitCallDir(cloud.lesh.CPUSim64.PreprocessorParser.CallDirContext ctx) {
+		if (ctx.IDENT() != null && macros.containsKey(ctx.IDENT().getText().toUpperCase())) {
+			System.err.println(getLocation() + ":WARNING:#call used with macro '" + ctx.IDENT().getText() + "'; did you mean #macro?");
+		}
 		if (ctx.argList() != null) {
 			emitLineBeginDirective(filename, ctx);
 			for (var param : ctx.argList().callArg().reversed()) {
@@ -357,6 +373,7 @@ public class PreprocessorVisitor extends cloud.lesh.CPUSim64.PreprocessorParserB
 	}
 
 	private static List<String> globals = new ArrayList<>();
+	private static Set<String> globalLabelNames = new HashSet<>();
 
 	@Override
 	public Void visitGlobalDir(cloud.lesh.CPUSim64.PreprocessorParser.GlobalDirContext ctx) {
@@ -368,6 +385,16 @@ public class PreprocessorVisitor extends cloud.lesh.CPUSim64.PreprocessorParserB
 		hasErrors |= pp.hasErrors();
 		globals.add(String.format(".LINE \u00ab%s\u00bb, %d", filename, sourceLineNum));
 		globals.add(codeline.trim());
+		// Track global label name for shadowing warnings
+		String trimmed = codeline.trim();
+		int colonIdx = trimmed.indexOf(':');
+		if (colonIdx > 0) {
+			String gLabel = trimmed.substring(0, colonIdx).trim().toUpperCase();
+			globalLabelNames.add(gLabel);
+			if (defines.containsKey(gLabel)) {
+				System.err.println(getLocation() + ":WARNING:Global label '" + gLabel + "' conflicts with #define of the same name");
+			}
+		}
 		return null;
 	}
 
@@ -375,6 +402,8 @@ public class PreprocessorVisitor extends cloud.lesh.CPUSim64.PreprocessorParserB
 
 	public static void resetGlobals() {
 		globals.clear();
+		globalLabelNames.clear();
+		codeLabels.clear();
 		sourceLocations.clear();
 		preprocessedLineNum = 1;
 	}
@@ -394,12 +423,23 @@ public class PreprocessorVisitor extends cloud.lesh.CPUSim64.PreprocessorParserB
 		return preprocessed;
 	}
 
+	private void warnIfShadowsGlobal(String varName) {
+		String upper = varName.toUpperCase();
+		if (globalLabelNames.contains(upper)) {
+			System.err.println(getLocation() + ":WARNING:Variable '" + varName + "' shadows global label '" + upper + "'");
+		} else if (codeLabels.contains(upper)) {
+			System.err.println(getLocation() + ":WARNING:Variable '" + varName + "' shadows label '" + upper + "'");
+		}
+	}
+
+	private static Set<String> codeLabels = new HashSet<>();
 	private final Set<String> svarSet = new HashSet<>();
 	@Override
 	public Void visitSvarDir(cloud.lesh.CPUSim64.PreprocessorParser.SvarDirContext ctx) {
 		if (ctx.identList().IDENT().size() == 0) {
 			return null;
 		} else if (ctx.identList().IDENT().size() == 1) {
+			warnIfShadowsGlobal(ctx.identList().IDENT(0).getText());
 			emitLine("push 0", false);
 			svarSet.add(ctx.identList().IDENT(0).getText());
 			addVar(ctx.identList().IDENT(0).getText(), "sf[0]");
@@ -407,6 +447,7 @@ public class PreprocessorVisitor extends cloud.lesh.CPUSim64.PreprocessorParserB
 		} else {
 			int i = 0;
 			for (var ident : ctx.identList().IDENT()) {
+				warnIfShadowsGlobal(ident.getText());
 				svarSet.add(ident.getText());
 				addVar(ident.getText(), "sf[" + i + "]");
 				i--;
@@ -423,6 +464,7 @@ public class PreprocessorVisitor extends cloud.lesh.CPUSim64.PreprocessorParserB
 		if (ctx.identList().IDENT().size() == 0) {
 			return null;
 		} else if (ctx.identList().IDENT().size() == 1) {
+			warnIfShadowsGlobal(ctx.identList().IDENT(0).getText());
 			emitLine("push r28", false);
 			varSet.add(ctx.identList().IDENT(0).getText());
 			addVar(ctx.identList().IDENT(0).getText(), "R28");
@@ -430,6 +472,7 @@ public class PreprocessorVisitor extends cloud.lesh.CPUSim64.PreprocessorParserB
 		} else {
 			int reg = 28;
 			for (var ident : ctx.identList().IDENT()) {
+				warnIfShadowsGlobal(ident.getText());
 				varSet.add(ident.getText());
 				addVar(ident.getText(), "R" + reg);
 				reg--;
@@ -446,6 +489,7 @@ public class PreprocessorVisitor extends cloud.lesh.CPUSim64.PreprocessorParserB
 		if (ctx.identList().IDENT().size() == 0) {
 			return null;
 		} else if (ctx.identList().IDENT().size() == 1) {
+			warnIfShadowsGlobal(ctx.identList().IDENT(0).getText());
 			emitLine("push F31", false);
 			fvarSet.add(ctx.identList().IDENT(0).getText());
 			addVar(ctx.identList().IDENT(0).getText(), "F31");
@@ -453,6 +497,7 @@ public class PreprocessorVisitor extends cloud.lesh.CPUSim64.PreprocessorParserB
 		} else {
 			int reg = 31;
 			for (var ident : ctx.identList().IDENT()) {
+				warnIfShadowsGlobal(ident.getText());
 				fvarSet.add(ident.getText());
 				addVar(ident.getText(), "F" + reg);
 				reg--;
@@ -500,6 +545,7 @@ public class PreprocessorVisitor extends cloud.lesh.CPUSim64.PreprocessorParserB
 				if (ctx.paramList() != null) {
 					int i = 3;
 					for (var arg : ctx.paramList().IDENT()) {
+						warnIfShadowsGlobal(arg.getText());
 						addVar(arg.getText(), "SF[" + i + "]");
 						++i;
 					}
@@ -568,6 +614,9 @@ public class PreprocessorVisitor extends cloud.lesh.CPUSim64.PreprocessorParserB
 	public Void visitMacroDir(cloud.lesh.CPUSim64.PreprocessorParser.MacroDirContext ctx) {
 		var def = macros.get(ctx.IDENT().getText().toUpperCase());
 		if (def != null) {
+			if (codeLabels.contains(ctx.IDENT().getText().toUpperCase()) || globalLabelNames.contains(ctx.IDENT().getText().toUpperCase())) {
+				System.err.println(getLocation() + ":WARNING:#macro used with function/label '" + ctx.IDENT().getText() + "'; did you mean #call?");
+			}
 			Map<String, String> formalParams = new HashMap<String, String>();
 			ArrayList<String> varArgs = new ArrayList<String>();
 			for (int i = 0; i < def.getLeft().size(); ++i) {
@@ -1251,7 +1300,13 @@ public class PreprocessorVisitor extends cloud.lesh.CPUSim64.PreprocessorParserB
 			int start = m.start();
 			if (isInsideQuotes(line, start)) {
 				// leave this token unchanged
-				m.appendReplacement(sb, m.group());
+				m.appendReplacement(sb, Matcher.quoteReplacement(m.group()));
+				continue;
+			}
+			// Skip label definitions (token immediately followed by ':')
+			int end = m.end();
+			if (end < line.length() && line.charAt(end) == ':') {
+				m.appendReplacement(sb, Matcher.quoteReplacement(m.group()));
 				continue;
 			}
 			String ident = m.group().toUpperCase();

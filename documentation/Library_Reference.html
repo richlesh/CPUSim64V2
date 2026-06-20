@@ -81,6 +81,11 @@
 		<tr><td>ANSI_COLOR$BG_BRIGHT_MAGENTA</td><td>Set background color to bright magenta</td></tr>
 		<tr><td>ANSI_COLOR$BG_BRIGHT_CYAN</td><td>Set background color to bright cyan</td></tr>
 		<tr><td>ANSI_COLOR$BG_BRIGHT_WHITE</td><td>Set background color to bright white</td></tr>
+
+		<tr><td>ANSI_COLOR$CLEAR_TO_EOL</td><td>Clear from cursor to end of line</td></tr>
+		<tr><td>ANSI_COLOR$CLEAR_LINE</td><td>Clear the entire line</td></tr>
+		<tr><td>ANSI_COLOR$HIDE_CURSOR</td><td>Hide the cursor</td></tr>
+		<tr><td>ANSI_COLOR$SHOW_CURSOR</td><td>Show the cursor</td></tr>
 	</tbody>
 </table>
 
@@ -95,22 +100,22 @@
 	<tbody>
 		<tr><td>DEBUG_MSG</td><td><code>DEBUG_MSG(fmt, ...)</code><br>Formats a printf-style format string using the variable number of arguments supplied and prints it as a debug message.</td></tr>
 		<tr><td>COND_DEBUG_MSG</td><td><code>COND_DEBUG_MSG(cond, fmt, ...)</code><br>Formats a prinf-style format string using the variable number of arguments supplied and prints it as a debug message if the argument <code>cond</code> is true, otherwise it prints nothing.</td></tr>
-		<tr><td>PRINTCPU</td><td><code>PRINTCPU</code></br>Prints the current state of the CPU.</td></tr>
+		<tr><td>printCPU</td><td><code>printCPU()</code><br>Prints the current state of the CPU.</td></tr>
 <tr><td>SET_EXIT_ON_ASSERT_FAILURE</td><td><code>SET_EXIT_ON_ASSERT_FAILURE(b)</code><br>Sets the mode for asserts.  If the argument <code>b</code> is true, assert macros will print message and then exit the program if they fail.  Otherwise assert macros will print a message if they fail but not exit.  Default is true.</td></tr>
-		<tr><td>ASSERT_TRUE</td><td><code>ASSERT_TRUE(isTrue, message)</code><br>Asserts that a condition is true.  Prints the message if the assertion fails.</td></tr>
-		<tr><td>ASSERT_FALSE</td><td><code>ASSERT_FALSE(isFalse, message)</code><br>Asserts that a condition is false.  Prints the message if the assertion fails.</td></tr>
-		<tr><td>ASSERT_EQ</td><td><code>ASSERT_EQ(expected, actual, message)</code><br>Asserts that integer values <code>expected</code> and <code>actual</code> are equal.  Prints the message if the assertion fails.</td></tr>
-		<tr><td>ASSERT_NE</td><td><code>ASSERT_NE(expected, actual, message)</code><br>Asserts that integer values <code>expected</code> and <code>actual</code> are not equal.  Prints the message if the assertion fails.</td></tr>
-		<tr><td>ASSERT_GT</td><td><code>ASSERT_GT(expected, actual, message)</code><br>Asserts that integer value <code>expected</code> is greater than <code>actual</code>.  Prints the message if the assertion fails.</td></tr>
-		<tr><td>ASSERT_LT</td><td><code>ASSERT_LT(expected, actual, message)</code><br>Asserts that integer value <code>expected</code> is less than <code>actual</code>.  Prints the message if the assertion fails.</td></tr>
-		<tr><td>ASSERT_GE</td><td><code>ASSERT_GE(expected, actual, message)</code><br>Asserts that integer value <code>expected</code> is greater than or equal to <code>actual</code>.  Prints the message if the assertion fails.</td></tr>
-		<tr><td>ASSERT_LE</td><td><code>ASSERT_LE(expected, actual, message)</code><br>Asserts that integer value <code>expected</code> is less than or equal to <code>actual</code>.  Prints the message if the assertion fails.</td></tr>
-		<tr><td>ASSERT_EQ_FP</td><td><code>ASSERT_EQ_FP(expected, actual, message)</code><br>Asserts that floating point values <code>expected</code> and <code>actual</code> are equal.  Prints the message if the assertion fails.</td></tr>
-		<tr><td>ASSERT_NE_FP</td><td><code>ASSERT_NE_FP(expected, actual, message)</code><br>Asserts that floating point values <code>expected</code> and <code>actual</code> are not equal.  Prints the message if the assertion fails.</td></tr>
-		<tr><td>ASSERT_GT_FP</td><td><code>ASSERT_GT_FP(expected, actual, message)</code><br>Asserts that floating point value <code>expected</code> is greater than <code>actual</code>.  Prints the message if the assertion fails.</td></tr>
-		<tr><td>ASSERT_LT_FP</td><td><code>ASSERT_LT_FP(expected, actual, message)</code><br>Asserts that floating point value <code>expected</code> is less than <code>actual</code>.  Prints the message if the assertion fails.</td></tr>
-		<tr><td>ASSERT_GE_FP</td><td><code>ASSERT_GE_FP(expected, actual, message)</code><br>Asserts that floating point value <code>expected</code> is greater than or equal to <code>actual</code>.  Prints the message if the assertion fails.</td></tr>
-		<tr><td>ASSERT_LE_FP</td><td><code>ASSERT_LE_FP(expected, actual, message)</code><br>Asserts that floating point value <code>expected</code> is less than or equal to <code>actual</code>.  Prints the message if the assertion fails.</td></tr>
+		<tr><td>assert_true</td><td><code>assert_true(isTrue, message)</code><br>Asserts that a condition is true.  Prints the message if the assertion fails.</td></tr>
+		<tr><td>assert_false</td><td><code>assert_false(isFalse, message)</code><br>Asserts that a condition is false.  Prints the message if the assertion fails.</td></tr>
+		<tr><td>assert_eq</td><td><code>assert_eq(expected, actual, message)</code><br>Asserts that integer values <code>expected</code> and <code>actual</code> are equal.  Prints the message if the assertion fails.</td></tr>
+		<tr><td>assert_ne</td><td><code>assert_ne(expected, actual, message)</code><br>Asserts that integer values <code>expected</code> and <code>actual</code> are not equal.  Prints the message if the assertion fails.</td></tr>
+		<tr><td>assert_gt</td><td><code>assert_gt(expected, actual, message)</code><br>Asserts that integer value <code>expected</code> is greater than <code>actual</code>.  Prints the message if the assertion fails.</td></tr>
+		<tr><td>assert_lt</td><td><code>assert_lt(expected, actual, message)</code><br>Asserts that integer value <code>expected</code> is less than <code>actual</code>.  Prints the message if the assertion fails.</td></tr>
+		<tr><td>assert_ge</td><td><code>assert_ge(expected, actual, message)</code><br>Asserts that integer value <code>expected</code> is greater than or equal to <code>actual</code>.  Prints the message if the assertion fails.</td></tr>
+		<tr><td>assert_le</td><td><code>assert_le(expected, actual, message)</code><br>Asserts that integer value <code>expected</code> is less than or equal to <code>actual</code>.  Prints the message if the assertion fails.</td></tr>
+		<tr><td>assert_eq_fp</td><td><code>assert_eq_fp(expected, actual, message)</code><br>Asserts that floating point values <code>expected</code> and <code>actual</code> are equal.  Prints the message if the assertion fails.</td></tr>
+		<tr><td>assert_ne_fp</td><td><code>assert_ne_fp(expected, actual, message)</code><br>Asserts that floating point values <code>expected</code> and <code>actual</code> are not equal.  Prints the message if the assertion fails.</td></tr>
+		<tr><td>assert_gt_fp</td><td><code>assert_gt_fp(expected, actual, message)</code><br>Asserts that floating point value <code>expected</code> is greater than <code>actual</code>.  Prints the message if the assertion fails.</td></tr>
+		<tr><td>assert_lt_fp</td><td><code>assert_lt_fp(expected, actual, message)</code><br>Asserts that floating point value <code>expected</code> is less than <code>actual</code>.  Prints the message if the assertion fails.</td></tr>
+		<tr><td>assert_ge_fp</td><td><code>assert_ge_fp(expected, actual, message)</code><br>Asserts that floating point value <code>expected</code> is greater than or equal to <code>actual</code>.  Prints the message if the assertion fails.</td></tr>
+		<tr><td>assert_le_fp</td><td><code>assert_le_fp(expected, actual, message)</code><br>Asserts that floating point value <code>expected</code> is less than or equal to <code>actual</code>.  Prints the message if the assertion fails.</td></tr>
 	</tbody>
 </table>
 <p class="note">The floating point assertion macros require that both float values be registers.  The integer assertion macros can use a register or a literal for the values.</p>
@@ -133,12 +138,6 @@
 		<tr><td>OUT2</td><td><code>OUT2(register, port)</code><br>Writes one 2 byte short word to the port.</td></tr>
 		<tr><td>OUT4</td><td><code>OUT4(register, port)</code><br>Writes one 4 byte word to the port.</td></tr>
 		<tr><td>OUT8</td><td><code>OUT8(register, port)</code><br>Writes one 8 byte long to the port.</td></tr>
-		<tr><td>PUT_NL</td><td><code>PUT_NL()</code><br>Writes the newline character(s) to STDOUT.</td></tr>
-		<tr><td>PUTS</td><td><code>PUTS(str)</code><br>Writes the UTF-8 string pointed to by <code>str</code> to STDOUT.</td></tr>
-		<tr><td>PUT_INT</td><td><code>PUT_INT(val, base)</code><br>Writes the integer <code>val</code> to STDOUT using the specified base.</td></tr>
-		<tr><td>PUT_DEC</td><td><code>PUT_DEC(val)</code><br>Writes the integer to STDOUT in base 10.</td></tr>
-		<tr><td>PUT_HEX</td><td><code>PUT_HEX(val)</code><br>Writes the integer to STDOUT in base 16.</td></tr>
-		<tr><td>PUT_FP</td><td><code>PUT_FP(val, prec)</code><br>Writes the float to STDOUT.</td></tr>
 	</tbody>
 </table>
 
@@ -158,7 +157,7 @@
 		<tr><td>puts</td><td><code>puts(str)</code><br>Thread safe output of the UTF-8 string pointed to by <code>str</code> to STDOUT.</td></tr>
 		<tr><td>fputs</td><td><code>fputs(port, str)</code><br>Non-thread safe output of the UTF-8 string pointed to by <code>str</code> to the port.</td></tr>
 		<tr><td>putline</td><td><code>putline(str)</code><br>Thread safe output of the UTF-8 string pointed to by <code>str</code> to STDOUT with a newline appended.</td></tr>
-		<tr><td>fputline</td><td><code>fputline(port, str)</code><br>Non-thread safe output of the UTF-8 string pointed to by <code>str</code> to STDOUT with a newline appended.</td></tr>
+		<tr><td>fputline</td><td><code>fputline(port, str)</code><br>Non-thread safe output of the UTF-8 string pointed to by <code>str</code> to the port with a newline appended.</td></tr>
 		<tr><td>put_int</td><td><code>put_int(value, base)</code><br>Thread safe output of the integer <code>value</code> to STDOUT using the specified base.</td></tr>
 		<tr><td>fput_int</td><td><code>fput_int(port, value, base)</code><br>Non-thread safe output of the integer <code>value</code> to the port using the specified base.</td></tr>
 		<tr><td>put_dec</td><td><code>put_dec(value)</code><br>Thread safe output of the integer <code>value</code> to STDOUT using base 10.</td></tr>
@@ -171,13 +170,13 @@
 		<tr><td>fput_fp</td><td><code>fput_fp(port, value, prec)</code><br>Non-thread safe output of the float <code>value</code> to the port.  Output is rounded to <code>prec</code> significant digits.</td></tr>
 		<tr><td>printf</td><td><code>printf(fmt, values...)</code><br>Thread safe output of the format string pointed to by <code>fmt</code> using <code>values</code> to STDOUT.  Format specifiers include: %s, %c, %d, %x and %f.</td></tr>
 		<tr><td>fprintf</td><td><code>fprintf(port, fmt, values...)</code><br>Non-thread safe output of the format string pointed to by <code>fmt</code> using <code>values</code> to <code>port</code>.  Format specifiers include: %s, %c, %d, %x and %f.</td></tr>
-		<tr><td>cond_printf</td><td><code>cond_printf(cond, fmt, values...)</code><br>Thread safe output of the format string pointed to by <code>fmt</code> using <code>values</code> to STDOUT only if <code>cond</code> is true.  Format specifiers include: %s, %c, %d, %x and %f.</td></tr>
+		<tr><td>cond_printf</td><td><code>cond_printf(cond, fmt, values...)</code><br>Thread safe output of the format string pointed to by <code>fmt</code> using <code>values</code> to STDOUT only if <code>cond</code> is true.  Format specifiers include: %s, %c, %d, %x and %f.  (Note: this is a macro, not a function.)</td></tr>
 		<tr><td>cond_fprintf</td><td><code>cond_fprintf(cond, port, fmt, values...)</code><br>Non-thread safe output of the format string pointed to by <code>fmt</code> using <code>values</code> to <code>port</code> only if <code>cond</code> is true.  Format specifiers include: %s, %c, %d, %x and %f.</td></tr>
 		<tr><td>fatal</td><td><code>fatal(fmt, values...)</code><br>Thread safe output of the format string pointed to by <code>fmt</code> using <code>values</code> to STDERR.  Format specifiers include: %s, %c, %d, %x and %f.  After output the program is terminated.</td></tr>
 		<tr><td>cond_fatal</td><td><code>printf(cond, fmt, values...)</code><br>Thread safe output of the format string pointed to by <code>fmt</code> using <code>values</code> to STDERR only if <code>cond</code> is true.  Format specifiers include: %s, %c, %d, %x and %f.  If <code>cond</code> is true the program is terminated.</td></tr>
-		<tr><td>opentTextFile</td><td><code>openTextFile(filename, mode)</code><br>Opens the text file specified by <code>filename</code> using <code>mode</code> (<code>READ_MODE</code>, <code>WRITE_MODE</code> or <code>APPEND_MODE</code>).  A non-negative port number is returned if successful whereas <code>-1</code> on error.  Reading or writing to text files will convert between operating system specific newlines and the newline (<code>'\n'</code>) character.</td></tr>
-		<tr><td>opentRawFile</td><td><code>openRawFile(filename, mode)</code><br>Opens the raw file specified by <code>filename</code> using <code>mode</code> (<code>READ_MODE</code>, <code>WRITE_MODE</code> or <code>APPEND_MODE</code>).  A non-negative port number is returned if successful whereas <code>-1</code> on error.  Reading or writing to raw files will not perform any newline conversions.</td></tr>
-		<tr><td>close_file</td><td><code>close_file(port)</code><br>Closes the port specified and makes it available for reuse.</td></tr>
+		<tr><td>openTextFile</td><td><code>openTextFile(filename, mode)</code><br>Opens the text file specified by <code>filename</code> using <code>mode</code> (<code>READ_MODE</code>, <code>WRITE_MODE</code> or <code>APPEND_MODE</code>).  A non-negative port number is returned if successful whereas <code>-1</code> on error.  Reading or writing to text files will convert between operating system specific newlines and the newline (<code>'\n'</code>) character.</td></tr>
+		<tr><td>openRawFile</td><td><code>openRawFile(filename, mode)</code><br>Opens the raw file specified by <code>filename</code> using <code>mode</code> (<code>READ_MODE</code>, <code>WRITE_MODE</code> or <code>APPEND_MODE</code>).  A non-negative port number is returned if successful whereas <code>-1</code> on error.  Reading or writing to raw files will not perform any newline conversions.</td></tr>
+		<tr><td>closeFile</td><td><code>closeFile(port)</code><br>Closes the port specified and makes it available for reuse.</td></tr>
 		<tr><td>flush</td><td><code>flush(port)</code><br>Flushes buffered writes to the port.</td></tr>
 		<tr><td>deleteFile</td><td><code>deleteFile(filespec)</code><br>Deletes the file specified by the pointer to UTF-8 string <code>filespec</code>.</td></tr>
 		<tr><td>makeDirectory</td><td><code>makeDirectory(path)</code><br>Creates the directory specified by the pointer to UTF-8 string <code>path</code>.</td></tr>
@@ -186,14 +185,17 @@
 		<tr><td>deleteFiles</td><td><code>deleteFiles(strList)</code><br>Deletes the files specified in the list of pointers to UTF-8 strings.</td></tr>
 		<tr><td>listFiles</td><td><code>listFiles(path)</code><br>Returns a heap allocated list of UTF-8 strings for the files in directory specified by the pointer to UTF-8 string <code>path</code>.</td></tr>
 		<tr><td>isFile</td><td><code>isFile(path)</code><br>Returns true if the path specified by the pointer to UTF-8 string <code>path</code> is a regular file.</td></tr>
-		<tr><td>fileExists</td><td><code>fileExists(path)</code><br>Deletes the file specified by the pointer to UTF-8 string <code>path</code>.</td></tr>
+		<tr><td>fileExists</td><td><code>fileExists(path)</code><br>Returns true if the file specified by the pointer to UTF-8 string <code>path</code> exists.</td></tr>
 		<tr><td>tempDirectory</td><td><code>tempDirectory(prefix)</code><br>Returns a heap allocated UTF-8 string with a valid temporary directory location using <code>prefix</code> at the beginning of the directory name.</td></tr>
 		<tr><td>tempFile</td><td><code>tempFile(prefix, suffix)</code><br>Returns a heap allocated UTF-8 string with a valid temporary file location using <code>prefix</code> at the beginning of the file name and <code>suffix</code> at the end.</td></tr>
 		<tr><td>copy_text_file</td><td><code>copy_text_file(fromPort, toPort)</code><br>Copies the text file from the open port <code>fromPort</code> to the open port <code>toPort</code>.</tr>
 		<tr><td>copy_raw_file</td><td><code>copy_raw_file(fromPort, toPort)</code><br>Copies the raw file from the open port <code>fromPort</code> to the open port <code>toPort</code>.</tr>
-		<tr><td>printIntegerArrayAsList</td><td><code>printIntegerArrayAsList(addrArg)</code><br>Prints the array of integers to STDOUT as a comma separated list.</tr>
-		<tr><td>printFloatArrayAsList</td><td><code>printFloatArrayAsList(addrArg)</code><br>Prints the array of floats to STDOUT as a comma separated list.</tr>
-		<tr><td>printStringArrayAsList</td><td><code>printStringArrayAslist(addrArg)</code><br>Prints the array of UTF-8 strings to STDOUT as a comma separated list.</tr>
+		<tr><td>printIntArray</td><td><code>printIntArray(addrArg)</code><br>Prints the array of integers to STDOUT as a comma separated list.</tr>
+		<tr><td>printFloatArray</td><td><code>printFloatArray(addrArg)</code><br>Prints the array of floats to STDOUT as a comma separated list.</tr>
+		<tr><td>printStringArray</td><td><code>printStringArray(addrArg)</code><br>Prints the array of UTF-8 strings to STDOUT as a comma separated list.</tr>
+		<tr><td>printIntegerArrayWithIndex</td><td><code>printIntegerArrayWithIndex(a)</code><br>Prints an array of integers with the index and value.</td></tr>
+		<tr><td>printFloatArrayWithIndex</td><td><code>printFloatArrayWithIndex(a)</code><br>Prints an array of floats with the index and value.</td></tr>
+		<tr><td>printStringArrayWithIndex</td><td><code>printStringArrayWithIndex(a)</code><br>Prints an array of strings with the index and value.</td></tr>
 	</tbody>
 </table>
 
@@ -225,6 +227,12 @@
 		<tr><td>asin</td><td><code>asin(x)</code><br>Returns inverse sine of x as radians.</td></tr>
 		<tr><td>atan</td><td><code>atan(x)</code><br>Returns inverse tangent of x as radians.</td></tr>
 		<tr><td>atan2</td><td><code>atan2(x, y)</code><br>Returns inverse tangent of x/y as radians even if denom is 0.</td></tr>
+		<tr><td>sinh</td><td><code>sinh(x)</code><br>Returns in F0 the hyperbolic sine of x.</td></tr>
+		<tr><td>cosh</td><td><code>cosh(x)</code><br>Returns in F0 the hyperbolic cosine of x.</td></tr>
+		<tr><td>tanh</td><td><code>tanh(x)</code><br>Returns in F0 the hyperbolic tangent of x.</td></tr>
+		<tr><td>asinh</td><td><code>asinh(x)</code><br>Returns in F0 the inverse hyperbolic sine of x.</td></tr>
+		<tr><td>acosh</td><td><code>acosh(x)</code><br>Returns in F0 the inverse hyperbolic cosine of x.</td></tr>
+		<tr><td>atanh</td><td><code>atanh(x)</code><br>Returns in F0 the inverse hyperbolic tangent of x.</td></tr>
 		<tr><td>ceil</td><td><code>ceil(x)</code><br>Returns in F0 the smallest integer greater than float x.</td></tr>
 		<tr><td>cos</td><td><code>cos(x)</code><br>Returns cosine of x (in radians).</td></tr>
 		<tr><td>exp</td><td><code>exp(x)</code><br>Returns in F0 the value e^x.</td></tr>
@@ -244,19 +252,18 @@
 		<tr><td>log2</td><td><code>log2(x)</code><br>Returns in F0 the binary logarithm of x.</td></tr>
 		<tr><td>max</td><td><code>max(i, j)</code><br>Returns in R0 the larger of integers a or b.</td></tr>
 		<tr><td>min</td><td><code>min(i, j)</code><br>Returns in R0 the smaller of integers a or b.</td></tr>
-		<tr><td>mod</td><td><code>mod()</code><br></td></tr>
 		<tr><td>mod</td><td><code>mod(i, j)</code><br>Returns in R0 the remainder after division of i/j.</td></tr>
 		<tr><td>pi</td><td><code>pi()</code><br>Returns in F0 the mathematics constant π.</td></tr>
 		<tr><td>pow</td><td><code>pow(x, y)</code><br>Returns in F0 the value x^y.</td></tr>
 		<tr><td>rand</td><td><code>rand(i, j)</code><br>Returns in R0 a random value in the range [i,j].</td></tr>
 		<tr><td>random</td><td><code>random()</code><br>Returns in F0 a random value in the range [0.0, 1.0).</td></tr>
-		<tr><td>remainder</td><td><code>remainder(num, denom)<br>>Returns the fractional portion of num / denom using IEEE 754 remainder rules.</td></tr>
+		<tr><td>remainder</td><td><code>remainder(num, denom)</code><br>Returns in F0 the IEEE 754 remainder of num / denom.</td></tr>
 		<tr><td>round</td><td><code>round(x)</code><br>Returns in F0 the nearest integer to float x. It rounds down if the decimal part is less than 0.5 and rounds up if it is 0.5 or greater.</td></tr>
 		<tr><td>sin</td><td><code>sin(x)</code><br>Returns sine of x (in radians).</td></tr>
 		<tr><td>sqrt</td><td><code>sqrt(x)</code><br>Returns in F0 the square root of float x.</td></tr>
 		<tr><td>sum</td><td><code>sum(array)</code><br>Returns in R0 the sum of the integers at address array.  First element of array is the array size.</td></tr>
 		<tr><td>tan</td><td><code>tan(x)</code><br>Returns tangent of x (in radians).</td></tr>
-		<tr><td>to_degrees</td><td><code>to_degrees(x)</code><br>>Returns float converted from radians to degrees.</td></tr>
+		<tr><td>to_degrees</td><td><code>to_degrees(x)</code><br>Returns float converted from radians to degrees.</td></tr>
 		<tr><td>to_radians</td><td><code>to_radians(x)</code><br>Returns float converted from degrees to radians.</td></tr>
 	</tbody>
 </table>
@@ -322,7 +329,6 @@
 		<tr><th>Function</th><th>Description</th></tr>
 	</thead>
 	<tbody>
-		<tr><td>printStringArray</td><td><code>printStringArray(a)</code><br>Prints an array of UTF-8 strings with the index and value.</td></tr>
 		<tr><td>freeStrArray</td><td><code>freeStrArray(addArg)</code><br>Frees the heap allocated array containing heap allocated strings.</td></tr>
 		<tr><td>sprintf</td><td><code>sprintf(fmt, values...)</code><br>Returns a heap allocated string with the <code>values</code> applied to the format string <code>fmt</code>. Format specifiers include: %s, %c, %d, %x and %f.</td></tr>
 		<tr><td>format</td><td><code>format(fmt, values...)</code><br>Returns a heap allocated string with the <code>values</code> applied to the format string <code>fmt</code>. Format specifiers include: {}, {0}, {1}, etc.</td></tr>
@@ -341,8 +347,8 @@
 		<tr><td>TO_NOT_BOOLEAN</td><td><code>TO_NOT_BOOLEAN(x)</code><br>Returns <code>TRUE</code> or <code>FALSE</code> depending on the not-truthiness of <code>x</code>.  Truthiness is false for zero and true for non-zero.</td></tr>
 		<tr><td>COMPARE</td><td><code>COMPARE(x, op, y)</code><br>Compares <code>x</code> to <code>y</code> using operator <code>op</code>.  Status register will be set according to the comparison.</td></tr>
 		<tr><td>COMPARE_RANGE</td><td><code>COMPARE_RANGE(low, op1, x, op2, high)</code><br>Compares <code>x</code> to <code>low</code> and <code>high</code> using operators <code>op1</code> and <code>op2</code>.  Status register will be set according to the comparison.</td></tr>
-		<tr><td>ALLOC</td><td><code>ALLOC(size)</code><br>Allocates a heap block of <code>size</code> long words. Returned address must eventually be freed.</td></tr>
-		<tr><td>REALLOC</td><td><code>REALLOC(addr, size)</code><br>Reallocates heap block at <code>addr</code> to <code>size</code> long words.  May return <code>addr</code> or a new address of a larger heap block.</td></tr>
+		<tr><td>ALLOC</td><td><code>ALLOC(size)</code><br>Allocates a heap block of <code>size</code> long words. Returns 0 on failure. Returned address must eventually be freed.</td></tr>
+		<tr><td>REALLOC</td><td><code>REALLOC(addr, size)</code><br>Reallocates heap block at <code>addr</code> to <code>size</code> long words.  May return <code>addr</code> or a new address of a larger heap block.  Returns 0 on failure.</td></tr>
 		<tr><td>FREE</td><td><code>FREE(addr)</code><br>Releases the heap allocated memory at the address <code>addr</code>.</td></tr>
 		<tr><td>FREE_ELEMENT</td><td><code>FREE_ELEMENT(a, offset)</code><br>Releases the heap allocated memory using the address in array element <code>a[offset]</code>.</td></tr>
 		<tr><td>ALLOC_SHARED</td><td><code>ALLOC_SHARED(size)</code><br>Allocates <code>size</code> long words in the shared memory area.  This memory can not be freed.</td></tr>
@@ -360,15 +366,13 @@
 		<tr><th>Function</th><th>Description</th></tr>
 	</thead>
 	<tbody>
-		<tr><td>printIntegerArray</td><td><code>printIntegerArray(a)</code><br>Prints an array of integers with the index and value.</td></tr>
-		<tr><td>printFloatArray</td><td><code>printFloatArray(a)</code><br>Prints an array of floats with the index and value.</td></tr>
 		<tr><td>memmove</td><td><code>memmove(dest, src, count)</code><br>Moves <code>count</code> long words from <code>src</code> to <code>dest</code>.  Handles overlapping memory.</td></tr>
 		<tr><td>memclear</td><td><code>memclear(dest, count)</code><br>Sets the memory to <code>0</code> starting at address <code>dest</code> for <code>count</code> long words.</td></tr>
 		<tr><td>sleep</td><td><code>sleep(ms)</code><br>Puts the current thread to sleep for <code>ms</code> milliseconds.</td></tr>
 		<tr><td>exit</td><td><code>exit(code)</code><br>Terminates the program returning the <code>code</code> value to the operating system.</td></tr>
 		<tr><td>system</td><td><code>system(cmd)</code><br>Executes the shell command specified in the UTF-8 string <code>cmd</code>.</td></tr>
-		<tr><td>alloc</td><td><code>alloc(size)</code><br>Allocates a heap block of <code>size</code> long words. Returned address must eventually be freed.</td></tr>
-		<tr><td>realloc</td><td><code>realloc(addr, size)</code><br>Reallocates heap block at <code>addr</code> to <code>size</code> long words.  May return <code>addr</code> or a new address of a larger heap block.</td></tr>
+		<tr><td>alloc</td><td><code>alloc(size)</code><br>Allocates a heap block of <code>size</code> long words. Returns 0 on failure. Returned address must eventually be freed.</td></tr>
+		<tr><td>realloc</td><td><code>realloc(addr, size)</code><br>Reallocates heap block at <code>addr</code> to <code>size</code> long words.  May return <code>addr</code> or a new address of a larger heap block.  Returns 0 on failure.</td></tr>
 		<tr><td>free</td><td><code>free(addr)</code><br>Releases the heap allocated memory at the address <code>addr</code>.</td></tr>
 		<tr><td>freeElement</td><td><code>freeElement(addr, offset)</code><br>Releases the heap allocated memory using the address in array element <code>a[offset]</code>.</td></tr>
 		<tr><td>args</td><td><code>args(index)</code><br>Returns the command line argument specified by index.  Name of the program is in index 0.  Command line arguments start at index 1.</td></tr>
@@ -376,6 +380,7 @@
 		<tr><td>mutexLockElement</td><td><code>mutexLockElement(addr, offset, timeout)</code><br>auses the current thread until the mutex at <code>addr[offset]</code> can be acquired or until <code>timeout</code> is reached.  Timeout is in milliseconds. Use -1 for no timeout.  Returns <code>TRUE</code> if successful.</td></tr>
 		<tr><td>mutexUnlock</td><td><code>mutexUnlock(addr)</code><br>Unlocks the mutex at <code>addr</code>.  Returns <code>TRUE</code> if successful.</td></tr>
 		<tr><td>mutexUnlockElement</td><td><code>mutexUnlockElement(addr, offset)</code><br>Unlocks the mutex at <code>addr[offset]</code>.  Returns <code>TRUE</code> if successful.</td></tr>
+		<tr><td>miniumAllocSize</td><td><code>miniumAllocSize(size)</code><br>Computes the minimum size of a heap allocated block that will be returned by <code>alloc</code> for the given <code>size</code>.</td></tr>
 	</tbody>
 </table>
 
@@ -393,9 +398,9 @@
 		<tr><td>DEFINE_SHARED_RECURSIVE_SPINLOCK</td><td><code>DEFINE_SHARED_RECURSIVE_SPINLOCK(name)</code><br>Allocates a recursive spinlock in the shared memory area.  Stores the address of the recursive spinlock in the variable with the specified name in the global data area.</td></tr>
 		<tr><td>DEFINE_MUTEX</td><td><code>DEFINE_MUTEX(name)</code><br>Allocates a mutex with the specified name in the global data area.</td></tr>
 		<tr><td>DEFINE_SHARED_MUTEX</td><td><code>DEFINE_SHARED_MUTEX(name)</code><br>Allocates a mutex in the shared memory area.  Stores the address of the mutex in the variable with the specified name in the global data area.</td></tr>
-		<tr><td>CREATE_THREAD</td><td><code>CREATE_THREAD(entryPoint, data)</code><br>Creates a thread that runs the code at <code>entryPoint</code> and passed the address of a data block at <code>data</code>.  Returns thread PID of the new thread in R0 or -1 on error.</td></tr>
-		<tr><td>JOIN_THREAD</td><td><code>JOIN_THREAD(threadPID)</code><br>Pauses the execution of the current thread until the thread with PID <code>threadPID</code> terminates.</td></tr>
-		<tr><td>WAKE_THREAD</td><td><code>WAKE_THREAD(threadPID)</code><br>Wakes the thread with PID <code>threadPID</code>.</td></tr>
+		<tr><td>create_thread</td><td><code>create_thread(entryPoint, data)</code><br>Creates a thread that runs the code at <code>entryPoint</code> and passed the address of a data block at <code>data</code>.  Returns thread PID of the new thread in R0 or -1 on error.</td></tr>
+		<tr><td>join_thread</td><td><code>join_thread(threadPID)</code><br>Pauses the execution of the current thread until the thread with PID <code>threadPID</code> terminates.</td></tr>
+		<tr><td>wake_thread</td><td><code>wake_thread(threadPID)</code><br>Wakes the thread with PID <code>threadPID</code>.</td></tr>
 	</tbody>
 </table>
 

@@ -4,7 +4,7 @@ CPUSim64 2.2.0 Assembler
 Assembles .asm source files into .o64 binary files.
 ================================================================================
 Options: --DEBUG
-Wrote 1945 words to /Users/rich/Desktop/Resources/CPUSim64V2/validation2/T101_ASSERTIONS.o64
+Wrote 2012 words to /Users/rich/Desktop/Resources/CPUSim64V2/validation/T101_ASSERTIONS.o64
 ================================================================================
 CPUSim64 2.2.0 Emulator
 ©2025–2026 Richard Lesh
@@ -13,7 +13,7 @@ Implements a CPUSim64 Virtual Machine.
 Debug: true
 Memory size: 1000000
 Stack size: 8000
-Read 1945 words from T101_ASSERTIONS.o64
+Read 2012 words from T101_ASSERTIONS.o64
 DEBUG: Debug Int: 326
 DEBUG: Debug FP: 3.141593
 
@@ -50,7 +50,7 @@ R27: 0000000000000000                     0 F27:       0.000000000000000
 R28: 0000000000000000                     0 F28:       0.000000000000000
  SF: 00000000000f617f                       F29:       0.000000000000000
  SP: 00000000000f617f                       F30:       0.000000000000000
- PC: 0000000000000629                       F31:       0.000000000000000
+ PC: 000000000000066c                       F31:       0.000000000000000
 Assertion Failed (T101_ASSERTIONS.asm:23) false(true) failed!
 Assertion Failed (T101_ASSERTIONS.asm:25) true(false) failed!
 Assertion Failed (T101_ASSERTIONS.asm:26) false(false) failed!
@@ -108,9 +108,9 @@ R27: 0000000000000000                     0 F27:       0.000000000000000
 R28: 0000000000000000                     0 F28:       0.000000000000000
  SF: 00000000000f617f                       F29:       0.000000000000000
  SP: 00000000000f617f                       F30:       0.000000000000000
- PC: 0000000000000744                       F31:       0.000000000000000
+ PC: 0000000000000787                       F31:       0.000000000000000
 Result: 17
 User CPU Cycles: 5144
-User Time: 0.005 sec
-System Time: 0.020 sec
-Total Time: 0.025 sec
+User Time: 0.004 sec
+System Time: 0.018 sec
+Total Time: 0.023 sec

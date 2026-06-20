@@ -4,7 +4,7 @@ CPUSim64 2.2.0 Assembler
 Assembles .asm source files into .o64 binary files.
 ================================================================================
 Options: --DEBUG
-Wrote 965 words to /Users/rich/Desktop/Resources/CPUSim64V2/validation/T104_IF_COND.o64
+Wrote 1032 words to /Users/rich/Desktop/Resources/CPUSim64V2/validation/T104_IF_COND.o64
 ================================================================================
 CPUSim64 2.2.0 Emulator
 ©2025–2026 Richard Lesh
@@ -13,7 +13,7 @@ Implements a CPUSim64 Virtual Machine.
 Debug: true
 Memory size: 1000000
 Stack size: 8000
-Read 965 words from T104_IF_COND.o64
+Read 1032 words from T104_IF_COND.o64
 i is 0 OK
 i is 0 OK
 j is not 0 OK
@@ -27,7 +27,7 @@ i is not P OK
 CPU State    SR: oszP
   R               hex                   dec  FP                    float   Stack               hex                   dec                   float
  R0: 0000000000000000                     0  F0:       0.000000000000000 =>
- R1: 00000000000003c8                   968  F1:       0.000000000000000
+ R1: 000000000000040b                  1035  F1:       0.000000000000000
  R2: 0000000000000000                     0  F2:       0.000000000000000
  R3: 0000000000000000                     0  F3:       0.000000000000000
  R4: 0000000000000000                     0  F4:       0.000000000000000
@@ -57,9 +57,9 @@ R27: 0000000000000000                     0 F27:       0.000000000000000
 R28: 0000000000000000                     0 F28:       0.000000000000000
  SF: 00000000000f617f                       F29:       0.000000000000000
  SP: 00000000000f617f                       F30:       0.000000000000000
- PC: 000000000000032c                       F31:       0.000000000000000
+ PC: 000000000000036f                       F31:       0.000000000000000
 Result: 0
 User CPU Cycles: 1902
-User Time: 0.015 sec
+User Time: 0.013 sec
 System Time: 0.002 sec
-Total Time: 0.018 sec
+Total Time: 0.015 sec

@@ -3,20 +3,26 @@ Input:326
 iPARSE_INT+1:327
 iPARSE_DEC+1:327
 iPARSE_HEX+1:0x327
-iPARSE_FP+1:327.0
+iPARSE_FP+1:327.00
 
 
 > run.sh example016 3.1415
 Input:3.1415
-iPARSE_INT+1:1
-iPARSE_DEC+1:1
-iPARSE_HEX+1:0x1
-iPARSE_FP+1:4.141500000000001
+iPARSE_INT+1:Exception in thread "main" cloud.lesh.CPUSim64.Simulator$CPUException: PC:00000383 -> Can't parse int '3.1415'
+	at cloud.lesh.CPUSim64.StdInterruptHandler.dispatch(StdInterruptHandler.java:861)
+	at cloud.lesh.CPUSim64.Simulator.opINTERRUPT(Simulator.java:1301)
+	at cloud.lesh.CPUSim64.Simulator.exec(Simulator.java:907)
+	at cloud.lesh.CPUSim64.Simulator.run(Simulator.java:828)
+	at Simulation.run(Simulation.java:121)
+	at Simulation.main(Simulation.java:29)
 
 
 > run.sh example016 abcd
 Input:abcd
-iPARSE_INT+1:1
-iPARSE_DEC+1:1
-iPARSE_HEX+1:0xabce
-iPARSE_FP+1:1.0
+iPARSE_INT+1:Exception in thread "main" cloud.lesh.CPUSim64.Simulator$CPUException: PC:00000383 -> Can't parse int 'abcd'
+	at cloud.lesh.CPUSim64.StdInterruptHandler.dispatch(StdInterruptHandler.java:861)
+	at cloud.lesh.CPUSim64.Simulator.opINTERRUPT(Simulator.java:1301)
+	at cloud.lesh.CPUSim64.Simulator.exec(Simulator.java:907)
+	at cloud.lesh.CPUSim64.Simulator.run(Simulator.java:828)
+	at Simulation.run(Simulation.java:121)
+	at Simulation.main(Simulation.java:29)

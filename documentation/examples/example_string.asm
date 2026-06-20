@@ -144,7 +144,8 @@ FMT_ssss:.DCS	"(\"%s\",\"%s\",\"%s\"): \"%s\""
 // Split
 	#call	printf("strSplit(\"%s\", \"%s\"):\n", STR3, "[od]")
 	#macro	SPLIT(STR3, "[od]")
-	#call	printStrArray(r0)
+	#call	printStringArray(r0)
+	#call	put_nl()
 
 // Trim
 	#macro	TEST_ONE_ARG(TRIM, STR1, FMT_ss)
