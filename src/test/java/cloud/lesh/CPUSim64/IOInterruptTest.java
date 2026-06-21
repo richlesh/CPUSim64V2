@@ -738,7 +738,7 @@ HÉLLØ😀🇺🇸
 	@Test
 	void testFileDirectoryOps() throws IOException {
 		String src = """
-			#include <system/io.def>
+			#include <system/io.asm>
 			#include <system/string.asm>
 		
 			MAIN:
@@ -787,7 +787,7 @@ HÉLLØ😀🇺🇸
 				move	r1, "."
 				int		iFILES
 				move	fileList, r0
-				#call	printStrArray(fileList)
+				#call	printStringArray(fileList)
 				load	r0, fileList[0]
 				test	r0
 				jump	z, END

@@ -151,7 +151,7 @@ public class StringLibTest extends BaseTest {
 	void testStringArray() {
 		String src = """
 			START:
-			#include <system/system.def>
+			#include <system/io.asm>
 			#include <system/string.asm>
 			#var 	i, len, array
 			move	len, 10
@@ -164,14 +164,14 @@ public class StringLibTest extends BaseTest {
 				#macro	FMT_DEC(i)
 				store	r0, array[i]
 			#end_for
-			#call	printStrArray(array)
+			#call	printStringArray(array)
 			#call	freeStrArray(array)
 			int		iALLOC_COUNT
 			STOP
 			STOP
 			FINIS:
 			""";
-		String expected = "1\n2\n3\n4\n5\n6\n7\n8\n9\n10\n";
+		String expected = "1,2,3,4,5,6,7,8,9,10";
 		ConsoleOutputCapturer capturer = new ConsoleOutputCapturer();
 		capturer.start(ConsoleOutputCapturer.StdStream.STDOUT);
 		var tuple = runProgram(src);

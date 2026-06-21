@@ -39,10 +39,12 @@ public class VectorLibTest extends BaseTest {
 		String expected = """
 Heap Blocks:
 00001000: 8
-00001008: 8
-00001010: 8
-00001018: 21
-0000102d: -4051
+00001008: 13
+00001015: 8
+0000101d: 8
+00001025: 13
+00001032: 21
+00001047: -4025
 """;
 		ConsoleOutputCapturer capturer = new ConsoleOutputCapturer();
 		capturer.start(ConsoleOutputCapturer.StdStream.STDOUT);
@@ -75,10 +77,12 @@ Heap Blocks:
 		String expected = """
 Heap Blocks:
 00001000: 8
-00001008: 8
-00001010: 8
-00001018: 21
-0000102d: -4051
+00001008: 13
+00001015: 8
+0000101d: 8
+00001025: 13
+00001032: 21
+00001047: -4025
 Heap Blocks:
 00001000: -4096
 """;
@@ -118,10 +122,10 @@ Heap Blocks:
 			#call	resizeVector(r28,15)	// 3 + 1 + 15 * 1.2 <= 34
 			int		iWalk_Heap
 			load	r0, r28[_VECTOR_DATA]
-			load	r1, r0[0]
-			load	r2, r0[1]
-			load	r3, r0[2]
-			load	r4, r0[3]
+			load	r2, r0[0]
+			load	r3, r0[1]
+			load	r4, r0[2]
+			load	r5, r0[3]
 			#call	freeVector(r28)
 			int		iWalk_Heap
 			STOP
@@ -131,33 +135,39 @@ Heap Blocks:
 		String expected = """
 Heap Blocks:
 00001000: 8
-00001008: 8
-00001010: -4080
-Heap Blocks:
-00001000: 8
-00001008: -8
-00001010: 13
+00001008: 13
+00001015: 8
 0000101d: -4067
 Heap Blocks:
 00001000: 8
-00001008: -8
-00001010: 13
-0000101d: -4067
+00001008: 13
+00001015: -8
+0000101d: 13
+0000102a: -4054
 Heap Blocks:
 00001000: 8
-00001008: -21
-0000101d: 21
-00001032: -4046
+00001008: 13
+00001015: -8
+0000101d: 13
+0000102a: -4054
 Heap Blocks:
 00001000: 8
-00001008: -21
-0000101d: 21
-00001032: -4046
+00001008: 13
+00001015: -21
+0000102a: 21
+0000103f: -4033
 Heap Blocks:
 00001000: 8
-00001008: -42
-00001032: 34
-00001054: -4012
+00001008: 13
+00001015: -21
+0000102a: 21
+0000103f: -4033
+Heap Blocks:
+00001000: 8
+00001008: 13
+00001015: -42
+0000103f: 34
+00001061: -3999
 Heap Blocks:
 00001000: -4096
 """;
@@ -168,12 +178,12 @@ Heap Blocks:
 		var result = tuple.getLeft();
 		var sim = tuple.getMiddle();
 		var diff = tuple.getRight();
-		assertEquals(9, diff.size());
+		assertEquals(10, diff.size());
 		assertEquals(expected, output);
-		diff.assertDiff(1, 3);
-		diff.assertDiff(2, 1);
-		diff.assertDiff(3, 2);
-		diff.assertDiff(4, 3);
+		diff.assertDiff(2, 3);
+		diff.assertDiff(3, 1);
+		diff.assertDiff(4, 2);
+		diff.assertDiff(5, 3);
 	}
 
 	@Test
@@ -200,13 +210,15 @@ Heap Blocks:
 		String expected = """
 Heap Blocks:
 00001000: 8
-00001008: 144
-00001098: -3944
+00001008: 13
+00001015: 144
+000010a5: -3931
 Heap Blocks:
 00001000: 8
-00001008: -144
-00001098: 21
-000010ad: -3923
+00001008: 13
+00001015: -144
+000010a5: 21
+000010ba: -3910
 """;
 		ConsoleOutputCapturer capturer = new ConsoleOutputCapturer();
 		capturer.start(ConsoleOutputCapturer.StdStream.STDOUT);
@@ -215,7 +227,7 @@ Heap Blocks:
 		var result = tuple.getLeft();
 		var sim = tuple.getMiddle();
 		var diff = tuple.getRight();
-		assertEquals(8, diff.size());
+		assertEquals(9, diff.size());
 		assertEquals(expected, output);
 		diff.assertDiff(27, 1);
 		diff.assertDiff(26, 10);
@@ -250,12 +262,14 @@ Heap Blocks:
 		String expected = """
 Heap Blocks:
 00001000: 8
-00001008: 144
-00001098: -3944
+00001008: 13
+00001015: 144
+000010a5: -3931
 Heap Blocks:
 00001000: 8
-00001008: 144
-00001098: -3944
+00001008: 13
+00001015: 144
+000010a5: -3931
 """;
 		ConsoleOutputCapturer capturer = new ConsoleOutputCapturer();
 		capturer.start(ConsoleOutputCapturer.StdStream.STDOUT);
@@ -393,12 +407,12 @@ Heap Blocks:
 				#macro	PUSH_BACK(v, i)
 			#end_for
 			#macro	PEEK_BACK(v)
-			#macro	PUT_DEC(r0)
-			#macro	PUT_NL()
+			#call	PUT_DEC(r0)
+			#call	PUT_NL()
 			#for	0, i < 10, 1
 				#macro	POP_BACK(v)
-				#macro	PUT_DEC(r0)
-				#macro	PUT_NL()
+				#call	PUT_DEC(r0)
+				#call	PUT_NL()
 			#end_for
 			int		iWALK_HEAP
 			STOP
@@ -419,10 +433,11 @@ Heap Blocks:
 0
 Heap Blocks:
 00001000: 8
-00001008: -21
-0000101d: 21
-00001032: -4046
-			""";
+00001008: 13
+00001015: -21
+0000102a: 21
+0000103f: -4033
+""";
 		ConsoleOutputCapturer capturer = new ConsoleOutputCapturer();
 		capturer.start(ConsoleOutputCapturer.StdStream.STDOUT);
 		var tuple = runProgram(src, new String[] {"--DEBUG"});
@@ -446,12 +461,12 @@ Heap Blocks:
 				#macro	PUSH_FRONT(v, i)
 			#end_for
 			#macro	PEEK_FRONT(v)
-			#macro	PUT_DEC(r0)
-			#macro	PUT_NL()
+			#call	PUT_DEC(r0)
+			#call	PUT_NL()
 			#for	0, i < 10, 1
 				#macro	POP_FRONT(v)
-				#macro	PUT_DEC(r0)
-				#macro	PUT_NL()
+				#call	PUT_DEC(r0)
+				#call	PUT_NL()
 			#end_for
 			int		iWALK_HEAP
 			STOP
@@ -472,9 +487,10 @@ Heap Blocks:
 0
 Heap Blocks:
 00001000: 8
-00001008: -21
-0000101d: 21
-00001032: -4046
+00001008: 13
+00001015: -21
+0000102a: 21
+0000103f: -4033
 			""";
 		ConsoleOutputCapturer capturer = new ConsoleOutputCapturer();
 		capturer.start(ConsoleOutputCapturer.StdStream.STDOUT);
@@ -507,10 +523,11 @@ Heap Blocks:
 		String expected = """
 Heap Blocks:
 00001000: 8
-00001008: -144
-00001098: 8
-000010a0: -3936
-			""";
+00001008: 13
+00001015: -144
+000010a5: 8
+000010ad: -3923
+""";
 		ConsoleOutputCapturer capturer = new ConsoleOutputCapturer();
 		capturer.start(ConsoleOutputCapturer.StdStream.STDOUT);
 		var tuple = runProgram(src, new String[] {"--DEBUG"});

@@ -99,6 +99,12 @@ SYSTEM_ASM_START:
 	int		iFREE
 #end_func
 
+#def_func alloc_shared(size)
+	load	r1, size
+	int		iALLOC_SHARED
+#end_func
+
+
 #def_func args(index)
 	load	r1, index
 	int		iARGS
@@ -207,7 +213,7 @@ _MUTEX_MAX_EXP_WAIT: .dcf 500.
 // Returns TRUE if successful.
 ///////////////////////////////////////////////////////////////////////////////
 #def_func mutexLock(addr, timeout)
-	#var	a, newValue, oldValue, pid, oldPID, sleepDuration, start, duration, endDuration
+	#var	a, newValue, oldValue, pid, oldPID, sleepDuration, startClock, duration, endDuration
 	#fvar	mutex_exp_wait_factor, mutex_max_exp_wait
 	load	a, addr
 	int		iGET_PID
@@ -225,7 +231,7 @@ _MUTEX_MAX_EXP_WAIT: .dcf 500.
 	#end_cond
 	move	sleepDuration, 10
 	int		iCLOCK
-	move	start, r0
+	move	startClock, r0
 	move	duration, 0
 	#while	duration, le, endDuration
 		load	oldPID, a
@@ -261,7 +267,7 @@ _MUTEX_MAX_EXP_WAIT: .dcf 500.
 		#end_cond
 		move	sleepDuration, f0
 		int	iCLOCK
-		sub	duration, r0, start
+		sub	duration, r0, startClock
 	#end_while
 	#if_cond	duration, le, endDuration
 //#call puts("Lock succeeded\n")

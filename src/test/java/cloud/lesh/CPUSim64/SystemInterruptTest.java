@@ -1054,39 +1054,39 @@ R28: 000000000000001c                    28 F28:       28.00000000000000
 	void testFork() {
 		String src = """
 			START:
-			#include <system/system.def>
-			#include <system/io.def>
-			#def_macro put_dec(i)
-				move R2, ${i}
-				move R1, 1
-				int iPUT_DEC
-				int iPUT_NL
-			#end_macro
+			#include <system/system.asm>
+			#include <system/io.asm>
 			MAIN:
 				#var	child_pid
 				int		iFORK
 				move	child_pid, r0
 				cmp		child_pid, -1
-				jump	eq, @FORK_FAILED
+				jump	eq, FORK_FAILED
 				test	child_pid
-				jump	z, @CHILD_FORK
-				#macro	put_dec(child_pid)		// Parent prints child's PID (positive int)
-				#macro	SLEEP(1000)
+				jump	z, CHILD_FORK
+				#call	put_dec(child_pid)		// Parent prints child's PID (positive int)
+				#call	put_nl()
+				#call	SLEEP(1000)
 				move	r1, child_pid
 				int		iWAIT_PID
 				move	r0, child_pid
 				neg		r0
-				#macro	put_dec(r0)				// Parent prints negative child's PID when it exits
-				jump	@END
+				#call	put_dec(r0)				// Parent prints negative child's PID when it exits
+				#call	put_nl()
+				jump	END
 			CHILD_FORK:
-				#macro	put_dec(1000)			// Child prints 1000
+				#call	put_dec(1000)			// Child prints 1000
+				#call	put_nl()
 				int		iGET_PID
-				#macro	put_dec(r0)				// Child prints its own PID (should be same as parent's first print)
-				#macro	SLEEP(1000)
-				#macro	put_dec(-1000)			// Child prints -1000 before exiting
-				jump	@END
+				#call	put_dec(r0)				// Child prints its own PID (should be same as parent's first print)
+				#call	put_nl()
+				#call	SLEEP(1000)
+				#call	put_dec(-1000)			// Child prints -1000 before exiting
+				#call	put_nl()
+				jump	END
 			FORK_FAILED:
-				#macro	put_dec(-999)			// Print -999 on fork failure
+				#call	put_dec(-999)			// Print -999 on fork failure
+				#call	put_nl()
 			END:
 				stop
 				stop
@@ -1103,7 +1103,7 @@ R28: 000000000000001c                    28 F28:       28.00000000000000
 				var result = tuple.getLeft();
 				var sim = tuple.getMiddle();
 				var diff = tuple.getRight();
-				assertEquals(7, diff.size());
+				assertEquals(5, diff.size());
 				assertTrue("-1000".equals(lines[0]));
 				assertTrue(0 > Integer.parseInt(lines[1]));
 				assertTrue(0 < Integer.parseInt(lines[2]));
@@ -1137,14 +1137,8 @@ R28: 000000000000001c                    28 F28:       28.00000000000000
 		String src = """
 			START:
 			#include <system/system.def>
-			#include <system/io.def>
+			#include <system/io.asm>
 			#define MS 1000
-			#def_macro put_dec(i)
-				move R2, ${i}
-				move R1, STDOUT
-				int iPUT_DEC
-				int iPUT_NL
-			#end_macro
 			#def_macro fork_child(i)
 				int		iFORK
 				move	r${i}, r0
@@ -1155,12 +1149,13 @@ R28: 000000000000001c                    28 F28:       28.00000000000000
 				jump	END_MACRO_${i}
 			CHILD_FORK_${i}:
 				int		iGET_PID
-				#macro	put_dec(r0)
+				#call	put_dec(r0)
+				#call	put_nl()
 				move	r1, MS
 				int		iSLEEP
 				jump	END_MACRO_${i}
 			FORK_FAILED_${i}:
-				#macro	put_dec(-999)
+				#call	put_dec(-999)
 			END_MACRO_${i}:
 			#end_macro
 			MAIN:
@@ -1192,18 +1187,11 @@ R28: 000000000000001c                    28 F28:       28.00000000000000
 	@Test
 	void testThread() {
 		String src = """
-			#include <system/system.def>
-			#include <system/io.def>
-			
-			#def_macro put_dec(i)
-				move R2, ${i}
-				move R1, 1
-				int iPUT_DEC
-				int	iPUT_NL
-			#end_macro
+			#include <system/system.asm>
+			#include <system/io.asm>
 			
 				#call	main()
-				move	r0, 0
+				move	r1, 0
 				int		iEXIT
 			
 			#global	PIDS: .dca	3
@@ -1224,25 +1212,30 @@ R28: 000000000000001c                    28 F28:       28.00000000000000
 				load	r1, PIDS[1]
 				int		iJOIN_THREAD
 				move	r0, -1
-				#macro	put_dec(r0)
+				#call	put_dec(r0)
+				#call	put_nl()
 				load	r1, PIDS[2]
 				int		iJOIN_THREAD
 				move	r0, -2
-				#macro	put_dec(r0)
+				#call	put_dec(r0)
+				#call	put_nl()
 				load	r1, PIDS[3]
 				int		iJOIN_THREAD
 				move	r0, -3
-				#macro	put_dec(r0)
+				#call	put_dec(r0)
+				#call	put_nl()
 			#end_func
 			
 			#def_func run(data)
 				#var	d
 				load	d, data
-				#macro	put_dec(d)
+				#call	put_dec(d)
+				#call	put_nl()
 				move	r0, d
 				mult	r0, 1000				
-				#macro	SLEEP(r0)
-				#macro	put_dec(d)
+				#call	SLEEP(r0)
+				#call	put_dec(d)
+				#call	put_nl()
 			#end_func
 				stop
 				stop
@@ -1258,7 +1251,7 @@ R28: 000000000000001c                    28 F28:       28.00000000000000
 				var result = tuple.getLeft();
 				var sim = tuple.getMiddle();
 				var diff = tuple.getRight();
-				assertEquals(5, diff.size());
+				assertEquals(3, diff.size());
 				assertEquals("-3", lines[0]);
 				assertEquals("-2", lines[1]);
 				assertEquals("-1", lines[2]);

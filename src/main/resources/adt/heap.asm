@@ -94,7 +94,7 @@
 	#macro	MAX(r0, blockListSize)
 	move	blockListSize, r0
 	// Allocate the Heap structure
-	#macro	ALLOC(_HEAP_END)
+	#call	ALLOC(_HEAP_END)
 	move	addr, r0
 	// Initialze members
 	load	r0, initFunc
@@ -225,7 +225,7 @@
 			#if_cond_sr	z
 				// Allocate a new block and fail on alloc error.
 				load	blockSize, h[_HEAP_BLOCK_SIZE]
-				#macro	ALLOC(blockSize)
+				#call	ALLOC(blockSize)
 				move	block, r0
 				#macro	TO_NOT_BOOLEAN(block)
 				#call	cond_fatal(r0, STDOUT, "Can\'t allocate new heap block %d!\n", i)
@@ -293,7 +293,7 @@
 					#end_for
 				#end_cond
 				// Finally free the block allocation
-				#macro	FREE(block)
+				#call	FREE(block)
 			#end_cond
 		#else_cond
 			#call	cond_fatal(TRUE, STDOUT, "Illegal free heap block %d!\n", i)
@@ -319,7 +319,7 @@
 		#call	freeVector(blockList)
 		store	0, h[_HEAP_LEN]
 		store	0, h[_HEAP_BLOCK_LIST]
-		#macro	FREE(h)
+		#call	FREE(h)
 	#end_sync
 #end_func
 
@@ -525,7 +525,7 @@
 			call	ff
 			add		sp, 1
 		#end_cond
-		#macro	MEMMOVE(elementAddr, nea, blockElementSize)
+		#call	MEMMOVE(elementAddr, nea, blockElementSize)
 	#end_sync
 #end_func
 

@@ -37,11 +37,11 @@
 		int		iPrintCPUState
 	#end_macro
 
-	#def_macro	assert_true(isTrue, message)
+	#def_macro	assert_is_true(isTrue, message)
 		#call	assert_true(${isTrue}, ${message},__FILE__,__LINE__)
 	#end_macro
 
-	#def_macro	assert_false(isFalse, message)
+	#def_macro	assert_is_false(isFalse, message)
 		#call	assert_false(${isFalse}, ${message},__FILE__,__LINE__)
 	#end_macro
 
@@ -105,10 +105,10 @@
 	#def_macro	printCPU()
 	#end_macro
 
-	#def_macro	assert_true(isTrue, message)
+	#def_macro	assert_is_true(isTrue, message)
 	#end_macro
 
-	#def_macro	assert_false(isFalse, message)
+	#def_macro	assert_is_false(isFalse, message)
 	#end_macro
 
 	#def_macro	assert_eq(valueA, ValueB, message)

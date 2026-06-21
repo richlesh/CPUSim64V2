@@ -74,14 +74,14 @@ PRECOMPUTED_SIZE: .dci	3000000
 	load	cacheSize, PRECOMPUTED_SIZE
 	load	cache, PRECOMPUTED
 	jump	nz, BEGIN_COMPUTE
-	#macro	ALLOC(cacheSize)
+	#call	ALLOC(cacheSize)
 	move	cache, r0
 	store	cache, PRECOMPUTED
 	#if_cond	cache == 0
 		#call	fprintf(STDOUT, "Can\'t allocate cache size %d\n", cacheSize)
 		#call	exit(1)
 	#end_cond
-	#macro	MEMCLEAR(cache, cacheSize)
+	#call	MEMCLEAR(cache, cacheSize)
 	store	1, cache[1]
 BEGIN_COMPUTE:
 	load	i, arg

@@ -10,7 +10,7 @@ CPUSim64 2.2.0 Emulator
 Implements a CPUSim64 Virtual Machine.
 ================================================================================
 Debug: false
-Memory size: 1000000
+Memory size: 16000000
 Stack size: 8000
 Read 5 words from example001.o64
 Result: 0

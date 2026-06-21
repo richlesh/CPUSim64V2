@@ -164,7 +164,7 @@
 	#macro	PRINT_INT("iCLOCK", iCLOCK, FMT_d)
 
 	move	size, 11
-	#macro	ALLOC(size)		// Allocation 10 ints on the heap
+	#call	ALLOC(size)		// Allocation 10 ints on the heap
 	sub		size, 1
 	move	intArray, r0
 	move	count, 1
@@ -180,7 +180,7 @@ $LOOP1_END:
 
 	#call	printIntArray(intArray)
 	#call	put_nl()
-	#macro	REALLOC(intArray, 21)
+	#call	REALLOC(intArray, 21)
 	move	intArray, r0
 
 	#call	printIntArray(intArray)
@@ -188,12 +188,12 @@ $LOOP1_END:
 
 	move	dest, intArray+11
 	move	src, intArray+1
-	#macro	memmove(dest, src, 10)
+	#call	memmove(dest, src, 10)
 	store	20, intArray[0]
 	#call	printIntArray(intArray)
 	#call	put_nl()
 
-	#macro	FREE(intArray)
+	#call	FREE(intArray)
 
 	#return 0					// Programs should return 0 if all went well.
 #end_func

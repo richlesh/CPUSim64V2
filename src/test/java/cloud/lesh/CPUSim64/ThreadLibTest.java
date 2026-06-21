@@ -228,7 +228,7 @@ public class ThreadLibTest extends BaseTest {
 	@Test
 	void testMutex() {
 		String src = """
-			#include <system/system.def>
+			#include <system/system.asm>
 			#include <system/io.def>
 			#include <system/thread.asm>
 
@@ -288,7 +288,7 @@ public class ThreadLibTest extends BaseTest {
 					store	c, COUNTER
 					#macro	put_dec(c)
 					#call	releaseMutex(MUTEX)
-					#macro	sleep(2)
+					#call	sleep(2)
 				#end_for
 			#end_func
 				stop
@@ -312,7 +312,7 @@ public class ThreadLibTest extends BaseTest {
 	@Test
 	void testSync() {
 		String src = """
-			#include <system/system.def>
+			#include <system/system.asm>
 			#include <system/io.def>
 			#include <system/thread.asm>
 
@@ -372,7 +372,7 @@ public class ThreadLibTest extends BaseTest {
 						store	c, COUNTER
 						#macro	put_dec(c)
 					#end_sync
-					#macro	sleep(2)
+					#call	sleep(2)
 				#end_for
 			#end_func
 				stop

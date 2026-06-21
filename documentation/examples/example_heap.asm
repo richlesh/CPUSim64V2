@@ -67,7 +67,7 @@ SIZE: .dci	10
 	#call	heapStats(h)
 	#call	heapPrint(h, structToString)
 
-	#macro	ALLOC(STRUCT_END)
+	#call	ALLOC(STRUCT_END)
 	move	struct, r0
 	#call	puts("Add 20...\n")
 	#for	0, i, lt, 20, 1

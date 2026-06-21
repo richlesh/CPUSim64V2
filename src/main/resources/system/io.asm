@@ -32,7 +32,7 @@ load	r0, PORTMAP_LOCK_HANDLE
 #call initializeRecursiveSpinLock(r0)
 
 #global __PORT_MAP_HANDLE:   .dci    0
-#macro	ALLOC_SHARED(4)			// Must match Architecture.NUM_PORTS / 64
+#call	ALLOC_SHARED(4)			// Must match Architecture.NUM_PORTS / 64
 store	r0, __PORT_MAP_HANDLE
 #call	__setPortMap(0)			// STDIN
 #call	__setPortMap(1)			// STDOUT

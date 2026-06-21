@@ -20,7 +20,7 @@ MAIN:
 					move	r5, r0
 					#call	puts(r5)
 					#call	put_nl()
-					#macro	free(r5)
+					#call	free(r5)
 				#end_for
 			#end_for
 		#end_for

@@ -43,7 +43,7 @@ FMT_f:	.DCS	": %g\n"
 	#macro PRINT_INT("iCLOCK", iCLOCK, FMT_d)
 
 	move	size, 11
-	#macro	ALLOC(size)				// Allocation 10 ints + count on the heap
+	#call	ALLOC(size)				// Allocation 10 ints + count on the heap
 	move	intArray, r0
 	sub		size, 1
 	store	size, intArray			// Store the number of ints in intArray[0]
@@ -60,7 +60,7 @@ $LOOP1_END:
 	#call	put_nl()
 	
 	move	size, 21
-	#macro	REALLOC(intArray, size)
+	#call	REALLOC(intArray, size)
 	move	intArray, r0
 	sub		size, 1
 	store	size, intArray	
@@ -71,7 +71,7 @@ $LOOP1_END:
 	#call	printIntArray(intArray)
 	#call	put_nl()
 
-	#macro	FREE(intArray)
+	#call	FREE(intArray)
 
 	#for	6, i, lt, 200000, i
 		#call	miniumAllocSize(i)

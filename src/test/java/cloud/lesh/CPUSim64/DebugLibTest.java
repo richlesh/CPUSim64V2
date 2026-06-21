@@ -162,8 +162,8 @@ DEBUG: Percent: 12.35%
 			#include <system/debug.def>
 			#include <system/debug.asm>
 			#macro SET_EXIT_ON_ASSERT_FAILURE(0)
-			#macro assert_true(1, "true")
-			#macro assert_false(0, "false")
+			#macro assert_is_true(1, "true")
+			#macro assert_is_false(0, "false")
 			#macro assert_eq(1, 1, "eq")
 			#macro assert_ne(1, 2, "ne")
 			#macro assert_lt(1, 2, "lt")
@@ -206,8 +206,8 @@ DEBUG: Percent: 12.35%
 			#include <system/debug.asm>
 			#var fl, fr
 			#macro SET_EXIT_ON_ASSERT_FAILURE(0)
-			#macro ASSERT_TRUE(0, "true")
-			#macro ASSERT_FALSE(1, "false")
+			#macro ASSERT_IS_TRUE(0, "true")
+			#macro ASSERT_IS_FALSE(1, "false")
 			#macro ASSERT_EQ(1, 2, "eq")
 			#macro ASSERT_NE(1, 1, "ne")
 			#macro ASSERT_LT(2, 1, "lt")
@@ -257,7 +257,7 @@ Assertion Failed (Test.asm:25) ge 1.0000000000000000≥2.0000000000000000
 		var result = tuple.getLeft();
 		var sim = tuple.getMiddle();
 		var diff = tuple.getRight();
-		assertEquals(8, diff.size());
+		assertEquals(6, diff.size());
 		assertEquals(expected, output);
 	}
 }

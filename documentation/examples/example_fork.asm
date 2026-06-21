@@ -1,4 +1,4 @@
-#include <system/system.def>
+#include <system/system.asm>
 #include <system/io.asm>
 
 MAIN:
@@ -10,7 +10,7 @@ MAIN:
 	test	child_pid
 	jump	z, CHILD_FORK
 	#call	printf("Child forked: %d\n", child_pid)
-	#macro	sleep(12000)
+	#call	sleep(12000)
 	move	r1, child_pid
 	int		iWAIT_PID
 	#call	puts("Wait finished!\n")
@@ -19,7 +19,7 @@ CHILD_FORK:
 	#call	puts("Child executing...\n")
 	#for	0, i, lt, 10, 1
 		#call	printf("%d...\n", i)
-		#macro	sleep(1000)
+		#call	sleep(1000)
 	#end_for
 	#call	puts("Child done!\n")
 	jump	END

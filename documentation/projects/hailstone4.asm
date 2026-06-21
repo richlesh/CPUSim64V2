@@ -43,7 +43,7 @@ GET_ARGS:
 	int		iGET_NUM_CORES
 	move	cores, r0
 	#call	printf("Number of cores: %d\n", cores)
-	#macro	alloc(cores)
+	#call	alloc(cores)
 	move	pids, r0
 	#if_cond	pids, eq, 0
 		#call	printf("Can\'t allocate pids array!\n")
@@ -91,14 +91,14 @@ PRECOMPUTED_SIZE: .dci	3000000
 	load	cacheSize, PRECOMPUTED_SIZE
 	load	cache, PRECOMPUTED
 	jump	nz, BEGIN_COMPUTE
-	#macro	ALLOC(cacheSize)
+	#call	ALLOC(cacheSize)
 	move	cache, r0
 	store	cache, PRECOMPUTED
 	#if_cond	cache, eq, 0
 		#call	printf("Can\'t allocate cache size %d\n", cacheSize)
 		#call	exit(1)
 	#end_cond
-	#macro	MEMCLEAR(cache, cacheSize)
+	#call	MEMCLEAR(cache, cacheSize)
 	store	1, cache[0]
 	store	1, cache[1]
 	store	2, cache[2]
@@ -152,8 +152,15 @@ END:
 	#sync	MY_MUTEX
 		load	hs, MAX
 		load	i, IMAX
-		cmp	wMax, hs
+		// if wMax > hs || (wMax == hs && wImax < i)
+		cmp		wMax, hs
 		move	gt, r0, -1, 0
+		cmp 	wMax, hs
+		move	eq, r1, -1, 0
+		cmp		wImax, i
+		move	lt, r2, -1, 0
+		and		r1, r2
+		or		r0, r1
 		#if_cond_sr	nz
 			#call	printf("New high: %d:%d (%d)\n", wImax, wMax, pid)
 			store	wMax, MAX

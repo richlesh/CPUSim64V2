@@ -41,7 +41,7 @@ _VECTOR_SIZE_FACTOR: 	.dcf	1.2		// Ratio to increase data block size.
 #def_func newVector(initialCapacity)
 	#var	s, capacity, addr, data
 	load	capacity, initialCapacity
-	#macro	ALLOC(_VECTOR_END)
+	#call	ALLOC(_VECTOR_END)
 	move	addr, r0
 	add		r0, _VECTOR_MUTEX
 	#call	initializeMutex(r0)
@@ -49,7 +49,7 @@ _VECTOR_SIZE_FACTOR: 	.dcf	1.2		// Ratio to increase data block size.
 	mult	f0, capacity
 	move	s, f0
 	add		s, 1
-	#macro	ALLOC(s)						// Allocate storage array
+	#call	ALLOC(s)						// Allocate storage array
 	move	data, r0
 	#macro	TO_NOT_BOOLEAN(r0)
 	#call	cond_fatal(r0, STDOUT, "Can\'t allocate new vector size %d!\n", capacity)
@@ -74,7 +74,7 @@ _VECTOR_SIZE_FACTOR: 	.dcf	1.2		// Ratio to increase data block size.
 		mult	f0, capacity
 		move	newSize, f0
 		add		newSize, 1
-		#macro	REALLOC(data, newSize)
+		#call	REALLOC(data, newSize)
 		move	data, r0
 		store	data, v[_VECTOR_DATA]
 		#macro	TO_NOT_BOOLEAN(r0)
@@ -97,9 +97,11 @@ _VECTOR_SIZE_FACTOR: 	.dcf	1.2		// Ratio to increase data block size.
 	load	v, vector
 	#sync	v[_VECTOR_MUTEX]
 		load	data, v[_VECTOR_DATA]
-		#macro	FREE(data)
+		#call	free(data)
 		store	0, v[_VECTOR_DATA]
-		#macro	FREE(v)
+		move	r0, v[_VECTOR_MUTEX]
+		#call   freeMutex(r0)
+		#call	free(v)
 	#end_sync
 #end_func
 
@@ -385,7 +387,7 @@ _VECTOR_SIZE_FACTOR: 	.dcf	1.2		// Ratio to increase data block size.
 			add		src, data, i
 			add		dest, src, 1
 			sub		moveLen, len, i
-			#macro	MEMMOVE(dest, src, moveLen)
+			#call	MEMMOVE(dest, src, moveLen)
 			store	val, src
 			store	len, data[0]
 		#end_cond_sr
@@ -437,7 +439,7 @@ _VECTOR_SIZE_FACTOR: 	.dcf	1.2		// Ratio to increase data block size.
 			add		dest, data, i
 			add		src, dest, 1
 			sub		moveLen, len, i
-			#macro	MEMMOVE(dest, src, len)
+			#call	MEMMOVE(dest, src, len)
 			sub		len, 1
 			store	len, data[0]
 		#end_cond_sr

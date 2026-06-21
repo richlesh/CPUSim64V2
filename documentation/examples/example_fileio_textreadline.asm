@@ -56,7 +56,7 @@ $LOOP1_END:
 	#call	fgetline(p, line)
 	move	line, r0
 	jump	nz, $LOOP1
-	#macro	free(line)
+	#call	free(line)
 #end_func
 
 

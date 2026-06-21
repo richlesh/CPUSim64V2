@@ -1,5 +1,6 @@
 #include <system/io.asm>
-#include <system/system.def>
+#include <system/system.asm>
+
 	#call	main()
 	move	r1, 0
 	int		iEXIT
@@ -48,7 +49,7 @@ $CHILD_FORK:
 	#call	printf("Child %s executing...\n", childName)
 	#for	0, r1, lt, 10, 1
 		#call	printf("%s %d...\n", childName, r1)
-		#macro	sleep(1000)
+		#call	sleep(1000)
 	#end_for
 	#call	printf("Child %s done!\n", childName)
 	stop

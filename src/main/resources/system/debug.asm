@@ -89,16 +89,16 @@ $END:
 	#call	acquireRecursiveSpinLock(r0)
 	load	r0, isTrue
 	jump	nz, $ASSERT_IS_TRUE
-	#macro	PUTS("Assertion Failed (")
+	#call	puts("Assertion Failed (")
 	load	temp, filename
-	#macro	PUTS(temp)
-	#macro	PUTS(":")
+	#call	puts(temp)
+	#call	puts(":")
 	load	temp, line
-	#macro	PUT_DEC(temp, 10)
-	#macro	PUTS(") ")
+	#call	PUT_DEC(temp, 10)
+	#call	puts(") ")
 	load	temp, message
-	#macro	PUTS(temp)
-	#macro	PUT_NL()
+	#call	puts(temp)
+	#call	PUT_NL()
 	load	r0, STDOUT_LOCK_HANDLE
 	#call	releaseRecursiveSpinLock(r0)
 	#call	assert_failure_exit()
@@ -111,16 +111,16 @@ $ASSERT_IS_TRUE:
 	#call	acquireRecursiveSpinLock(r0)
 	load	r0, isFalse
 	jump	z, $ASSERT_IS_FALSE
-	#macro	PUTS("Assertion Failed (")
+	#call	puts("Assertion Failed (")
 	load	temp, filename
-	#macro	PUTS(temp)
-	#macro	PUTS(":")
+	#call	puts(temp)
+	#call	puts(":")
 	load	temp, line
-	#macro	PUT_DEC(temp)
-	#macro	PUTS(") ")
+	#call	PUT_DEC(temp)
+	#call	puts(") ")
 	load	temp, message
-	#macro	PUTS(temp)
-	#macro	PUT_NL()
+	#call	puts(temp)
+	#call	PUT_NL()
 	load	r0, STDOUT_LOCK_HANDLE
 	#call	releaseRecursiveSpinLock(r0)
 	#call	assert_failure_exit()
@@ -137,19 +137,19 @@ $ASSERT_IS_FALSE:
 		load	m,message
 		cmp		a,b
 		jump	${cond}, $ASSERT_${cond}_PASSED
-		#macro	PUTS("Assertion Failed (")
+		#call	puts("Assertion Failed (")
 		load	temp, filename
-		#macro	PUTS(temp)
-		#macro	PUTS(":")
+		#call	puts(temp)
+		#call	puts(":")
 		load	temp, line
-		#macro	PUT_DEC(temp)
-		#macro	PUTS(") ")
-		#macro	PUTS(m)
-		#macro	PUTS(" ")
-		#macro	PUT_DEC(a)
-		#macro	PUTS(${condSymbol})
-		#macro	PUT_DEC(b)
-		#macro	PUT_NL()
+		#call	PUT_DEC(temp)
+		#call	puts(") ")
+		#call	puts(m)
+		#call	puts(" ")
+		#call	PUT_DEC(a)
+		#call	puts(${condSymbol})
+		#call	PUT_DEC(b)
+		#call	PUT_NL()
 		load	r0, STDOUT_LOCK_HANDLE
 		#call	releaseRecursiveSpinLock(r0)
 		#call	assert_failure_exit()
@@ -168,19 +168,19 @@ $ASSERT_${cond}_PASSED:
 		#call	acquireRecursiveSpinLock(r0)
 		cmp		a,b
 		jump	${cond}, $ASSERT_${cond}_FP_PASSED
-		#macro	PUTS("Assertion Failed (")
+		#call	puts("Assertion Failed (")
 		load	temp, filename
-		#macro	PUTS(temp)
-		#macro	PUTS(":")
+		#call	puts(temp)
+		#call	puts(":")
 		load	temp, line
-		#macro	PUT_DEC(temp)
-		#macro	PUTS(") ")
-		#macro	PUTS(m)
-		#macro	PUTS(" ")
-		#macro	PUT_FP(a, 16)
-		#macro	PUTS(${condSymbol})
-		#macro	PUT_FP(b, 16)
-		#macro	PUT_NL()
+		#call	PUT_DEC(temp)
+		#call	puts(") ")
+		#call	puts(m)
+		#call	puts(" ")
+		#call	PUT_FP(a, 16)
+		#call	puts(${condSymbol})
+		#call	PUT_FP(b, 16)
+		#call	PUT_NL()
 		load	r0, STDOUT_LOCK_HANDLE
 		#call	releaseRecursiveSpinLock(r0)
 		#call	assert_failure_exit()

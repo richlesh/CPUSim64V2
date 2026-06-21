@@ -17,7 +17,7 @@
 
 #ifndef _THREAD_ASM
 #define _THREAD_ASM
-#include <system/system.def>
+#include <system/system.asm>
 #include <system/thread.def>
 #include <system/io.asm>
 
@@ -93,11 +93,18 @@ $loop:
 	load	addr, mutexAddr
 	store	0, addr[0]
 	store	0, addr[1]
-	#macro	alloc(10)
+	#call	alloc(10)
 	store   r0, addr[2]
 	store	0, r0
 	move	r0, addr[3]
 	#call	initializeSpinLock(r0)
+#end_func
+
+#def_func	freeMutex(mutexAddr)
+	#var	addr
+	load	addr, mutexAddr
+	load	r0, addr[2]
+    #call	free(r0)
 #end_func
 
 #def_func	acquireMutex(mutexAddr)
@@ -128,7 +135,7 @@ $loop:
 				sub		queueAllocSize, HEAP_BLOCK_HEADER_SIZE
 				#if_cond	queueSize == queueAllocSize		// If sizes are the same we need to realloc
 					add		r0, queueSize, 1				// New alloc size is new queue size + leading count
-					#macro	REALLOC(queue, r0)
+					#call	REALLOC(queue, r0)
 					move	queue, r0
 					store	queue, addr[2]					// Store the realloc block
 				#end_cond
