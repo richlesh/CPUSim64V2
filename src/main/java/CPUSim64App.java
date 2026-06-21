@@ -204,14 +204,19 @@ public class CPUSim64App {
         });
         editMenu.add(findItem);
 
+        // Help menu
+        JMenu helpMenu = new JMenu("Help");
+        JMenuItem onlineDocsItem = new JMenuItem("Online Documentation");
+        onlineDocsItem.addActionListener(e -> {
+            try { Desktop.getDesktop().browse(new java.net.URI("http://cpusim64.lesh.cloud/")); }
+            catch (Exception ex) { ex.printStackTrace(); }
+        });
+        helpMenu.add(onlineDocsItem);
+
         menuBar.add(appMenu);
         menuBar.add(fileMenu);
         menuBar.add(editMenu);
-        menuBar.add(Box.createHorizontalStrut(10));
-        menuBar.add(new JLabel("Args:"));
-        argsField = new JTextField(20);
-        argsField.setMaximumSize(new Dimension(300, 24));
-        menuBar.add(argsField);
+        menuBar.add(helpMenu);
         return menuBar;
     }
 
@@ -303,7 +308,28 @@ public class CPUSim64App {
         console.setForeground(Color.WHITE);
         JScrollPane consoleScroll = new JScrollPane(console);
 
-        JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, editorScroll, consoleScroll);
+        JToolBar consoleToolBar = new JToolBar();
+        consoleToolBar.setFloatable(false);
+        JButton runBtn = new JButton("Run");
+        runBtn.addActionListener(e -> runFile());
+        JButton debugBtn = new JButton("Debug");
+        debugBtn.addActionListener(e -> runWithMode("--debug"));
+        JButton traceBtn = new JButton("Trace");
+        traceBtn.addActionListener(e -> runWithMode("--trace"));
+        consoleToolBar.add(runBtn);
+        consoleToolBar.add(debugBtn);
+        consoleToolBar.add(traceBtn);
+        consoleToolBar.addSeparator();
+        consoleToolBar.add(new JLabel("Args: "));
+        argsField = new JTextField(20);
+        argsField.setMaximumSize(new Dimension(300, 24));
+        consoleToolBar.add(argsField);
+
+        JPanel consolePanel = new JPanel(new BorderLayout());
+        consolePanel.add(consoleToolBar, BorderLayout.NORTH);
+        consolePanel.add(consoleScroll, BorderLayout.CENTER);
+
+        JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, editorScroll, consolePanel);
         splitPane.setResizeWeight(0.7);
         return splitPane;
     }

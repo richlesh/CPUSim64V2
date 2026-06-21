@@ -103,8 +103,11 @@ public class LicenseDialog {
             settings.licenseEmail = emailField.getText().trim();
             settings.licenseKey = keyField.getText().replace("-", "").toUpperCase();
             settings.save();
+            Icon appIcon = null;
+            var url = LicenseDialog.class.getResource("/app_icon_256.png");
+            if (url != null) appIcon = new ImageIcon(new ImageIcon(url).getImage().getScaledInstance(64, 64, Image.SCALE_SMOOTH));
             JOptionPane.showMessageDialog(dialog, "License saved. Thank you!",
-                "CPUSim64", JOptionPane.INFORMATION_MESSAGE);
+                "CPUSim64", JOptionPane.INFORMATION_MESSAGE, appIcon);
             dialog.dispose();
         });
 

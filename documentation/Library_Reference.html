@@ -102,20 +102,20 @@
 		<tr><td>COND_DEBUG_MSG</td><td><code>COND_DEBUG_MSG(cond, fmt, ...)</code><br>Formats a prinf-style format string using the variable number of arguments supplied and prints it as a debug message if the argument <code>cond</code> is true, otherwise it prints nothing.</td></tr>
 		<tr><td>printCPU</td><td><code>printCPU()</code><br>Prints the current state of the CPU.</td></tr>
 <tr><td>SET_EXIT_ON_ASSERT_FAILURE</td><td><code>SET_EXIT_ON_ASSERT_FAILURE(b)</code><br>Sets the mode for asserts.  If the argument <code>b</code> is true, assert macros will print message and then exit the program if they fail.  Otherwise assert macros will print a message if they fail but not exit.  Default is true.</td></tr>
-		<tr><td>assert_true</td><td><code>assert_true(isTrue, message)</code><br>Asserts that a condition is true.  Prints the message if the assertion fails.</td></tr>
-		<tr><td>assert_false</td><td><code>assert_false(isFalse, message)</code><br>Asserts that a condition is false.  Prints the message if the assertion fails.</td></tr>
-		<tr><td>assert_eq</td><td><code>assert_eq(expected, actual, message)</code><br>Asserts that integer values <code>expected</code> and <code>actual</code> are equal.  Prints the message if the assertion fails.</td></tr>
-		<tr><td>assert_ne</td><td><code>assert_ne(expected, actual, message)</code><br>Asserts that integer values <code>expected</code> and <code>actual</code> are not equal.  Prints the message if the assertion fails.</td></tr>
-		<tr><td>assert_gt</td><td><code>assert_gt(expected, actual, message)</code><br>Asserts that integer value <code>expected</code> is greater than <code>actual</code>.  Prints the message if the assertion fails.</td></tr>
-		<tr><td>assert_lt</td><td><code>assert_lt(expected, actual, message)</code><br>Asserts that integer value <code>expected</code> is less than <code>actual</code>.  Prints the message if the assertion fails.</td></tr>
-		<tr><td>assert_ge</td><td><code>assert_ge(expected, actual, message)</code><br>Asserts that integer value <code>expected</code> is greater than or equal to <code>actual</code>.  Prints the message if the assertion fails.</td></tr>
-		<tr><td>assert_le</td><td><code>assert_le(expected, actual, message)</code><br>Asserts that integer value <code>expected</code> is less than or equal to <code>actual</code>.  Prints the message if the assertion fails.</td></tr>
-		<tr><td>assert_eq_fp</td><td><code>assert_eq_fp(expected, actual, message)</code><br>Asserts that floating point values <code>expected</code> and <code>actual</code> are equal.  Prints the message if the assertion fails.</td></tr>
-		<tr><td>assert_ne_fp</td><td><code>assert_ne_fp(expected, actual, message)</code><br>Asserts that floating point values <code>expected</code> and <code>actual</code> are not equal.  Prints the message if the assertion fails.</td></tr>
-		<tr><td>assert_gt_fp</td><td><code>assert_gt_fp(expected, actual, message)</code><br>Asserts that floating point value <code>expected</code> is greater than <code>actual</code>.  Prints the message if the assertion fails.</td></tr>
-		<tr><td>assert_lt_fp</td><td><code>assert_lt_fp(expected, actual, message)</code><br>Asserts that floating point value <code>expected</code> is less than <code>actual</code>.  Prints the message if the assertion fails.</td></tr>
-		<tr><td>assert_ge_fp</td><td><code>assert_ge_fp(expected, actual, message)</code><br>Asserts that floating point value <code>expected</code> is greater than or equal to <code>actual</code>.  Prints the message if the assertion fails.</td></tr>
-		<tr><td>assert_le_fp</td><td><code>assert_le_fp(expected, actual, message)</code><br>Asserts that floating point value <code>expected</code> is less than or equal to <code>actual</code>.  Prints the message if the assertion fails.</td></tr>
+		<tr><td>ASSERT_IS_TRUE</td><td><code>ASSERT_IS_TRUE(isTrue, message)</code><br>Asserts that a condition is true.  Prints the message if the assertion fails.</td></tr>
+		<tr><td>ASSERT_IS_FALSE</td><td><code>ASSERT_IS_FALSE(isFalse, message)</code><br>Asserts that a condition is false.  Prints the message if the assertion fails.</td></tr>
+		<tr><td>ASSERT_EQ</td><td><code>ASSERT_EQ(expected, actual, message)</code><br>Asserts that integer values <code>expected</code> and <code>actual</code> are equal.  Prints the message if the assertion fails.</td></tr>
+		<tr><td>ASSERT_NE</td><td><code>ASSERT_NE(expected, actual, message)</code><br>Asserts that integer values <code>expected</code> and <code>actual</code> are not equal.  Prints the message if the assertion fails.</td></tr>
+		<tr><td>ASSERT_GT</td><td><code>ASSERT_GT(expected, actual, message)</code><br>Asserts that integer value <code>expected</code> is greater than <code>actual</code>.  Prints the message if the assertion fails.</td></tr>
+		<tr><td>ASSERT_LT</td><td><code>ASSERT_LT(expected, actual, message)</code><br>Asserts that integer value <code>expected</code> is less than <code>actual</code>.  Prints the message if the assertion fails.</td></tr>
+		<tr><td>ASSERT_GE</td><td><code>ASSERT_GE(expected, actual, message)</code><br>Asserts that integer value <code>expected</code> is greater than or equal to <code>actual</code>.  Prints the message if the assertion fails.</td></tr>
+		<tr><td>ASSERT_LE</td><td><code>ASSERT_LE(expected, actual, message)</code><br>Asserts that integer value <code>expected</code> is less than or equal to <code>actual</code>.  Prints the message if the assertion fails.</td></tr>
+		<tr><td>ASSERT_EQ_FP</td><td><code>ASSERT_EQ_FP(expected, actual, message)</code><br>Asserts that floating point values <code>expected</code> and <code>actual</code> are equal.  Prints the message if the assertion fails.</td></tr>
+		<tr><td>ASSERT_NE_FP</td><td><code>ASSERT_NE_FP(expected, actual, message)</code><br>Asserts that floating point values <code>expected</code> and <code>actual</code> are not equal.  Prints the message if the assertion fails.</td></tr>
+		<tr><td>ASSERT_GT_FP</td><td><code>ASSERT_GT_FP(expected, actual, message)</code><br>Asserts that floating point value <code>expected</code> is greater than <code>actual</code>.  Prints the message if the assertion fails.</td></tr>
+		<tr><td>ASSERT_LT_FP</td><td><code>ASSERT_LT_FP(expected, actual, message)</code><br>Asserts that floating point value <code>expected</code> is less than <code>actual</code>.  Prints the message if the assertion fails.</td></tr>
+		<tr><td>ASSERT_GE_FP</td><td><code>ASSERT_GE_FP(expected, actual, message)</code><br>Asserts that floating point value <code>expected</code> is greater than or equal to <code>actual</code>.  Prints the message if the assertion fails.</td></tr>
+		<tr><td>ASSERT_LE_FP</td><td><code>ASSERT_LE_FP(expected, actual, message)</code><br>Asserts that floating point value <code>expected</code> is less than or equal to <code>actual</code>.  Prints the message if the assertion fails.</td></tr>
 	</tbody>
 </table>
 <p class="note">The floating point assertion macros require that both float values be registers.  The integer assertion macros can use a register or a literal for the values.</p>
@@ -347,14 +347,6 @@
 		<tr><td>TO_NOT_BOOLEAN</td><td><code>TO_NOT_BOOLEAN(x)</code><br>Returns <code>TRUE</code> or <code>FALSE</code> depending on the not-truthiness of <code>x</code>.  Truthiness is false for zero and true for non-zero.</td></tr>
 		<tr><td>COMPARE</td><td><code>COMPARE(x, op, y)</code><br>Compares <code>x</code> to <code>y</code> using operator <code>op</code>.  Status register will be set according to the comparison.</td></tr>
 		<tr><td>COMPARE_RANGE</td><td><code>COMPARE_RANGE(low, op1, x, op2, high)</code><br>Compares <code>x</code> to <code>low</code> and <code>high</code> using operators <code>op1</code> and <code>op2</code>.  Status register will be set according to the comparison.</td></tr>
-		<tr><td>ALLOC</td><td><code>ALLOC(size)</code><br>Allocates a heap block of <code>size</code> long words. Returns 0 on failure. Returned address must eventually be freed.</td></tr>
-		<tr><td>REALLOC</td><td><code>REALLOC(addr, size)</code><br>Reallocates heap block at <code>addr</code> to <code>size</code> long words.  May return <code>addr</code> or a new address of a larger heap block.  Returns 0 on failure.</td></tr>
-		<tr><td>FREE</td><td><code>FREE(addr)</code><br>Releases the heap allocated memory at the address <code>addr</code>.</td></tr>
-		<tr><td>FREE_ELEMENT</td><td><code>FREE_ELEMENT(a, offset)</code><br>Releases the heap allocated memory using the address in array element <code>a[offset]</code>.</td></tr>
-		<tr><td>ALLOC_SHARED</td><td><code>ALLOC_SHARED(size)</code><br>Allocates <code>size</code> long words in the shared memory area.  This memory can not be freed.</td></tr>
-		<tr><td>MEMMOVE</td><td><code>MEMMOVE(dest, src, count)</code><br>Moves <code>count</code> long words from <code>src</code> to <code>dest</code>.  Handles overlapping memory.</td></tr>
-		<tr><td>MEMCLEAR</td><td><code>MEMCLEAR(dest, count)</code><br>Sets the memory to <code>0</code> starting at address <code>dest</code> for <code>count</code> long words.</td></tr>
-		<tr><td>SLEEP</td><td><code>SLEEP(ms)</code><br>Puts the current thread to sleep for <code>ms</code> milliseconds.</td></tr>
 	</tbody>
 </table>
 
@@ -398,9 +390,9 @@
 		<tr><td>DEFINE_SHARED_RECURSIVE_SPINLOCK</td><td><code>DEFINE_SHARED_RECURSIVE_SPINLOCK(name)</code><br>Allocates a recursive spinlock in the shared memory area.  Stores the address of the recursive spinlock in the variable with the specified name in the global data area.</td></tr>
 		<tr><td>DEFINE_MUTEX</td><td><code>DEFINE_MUTEX(name)</code><br>Allocates a mutex with the specified name in the global data area.</td></tr>
 		<tr><td>DEFINE_SHARED_MUTEX</td><td><code>DEFINE_SHARED_MUTEX(name)</code><br>Allocates a mutex in the shared memory area.  Stores the address of the mutex in the variable with the specified name in the global data area.</td></tr>
-		<tr><td>create_thread</td><td><code>create_thread(entryPoint, data)</code><br>Creates a thread that runs the code at <code>entryPoint</code> and passed the address of a data block at <code>data</code>.  Returns thread PID of the new thread in R0 or -1 on error.</td></tr>
-		<tr><td>join_thread</td><td><code>join_thread(threadPID)</code><br>Pauses the execution of the current thread until the thread with PID <code>threadPID</code> terminates.</td></tr>
-		<tr><td>wake_thread</td><td><code>wake_thread(threadPID)</code><br>Wakes the thread with PID <code>threadPID</code>.</td></tr>
+		<tr><td>CREATE_THREAD</td><td><code>CREATE_THREAD(entryPoint, data)</code><br>Creates a thread that runs the code at <code>entryPoint</code> and passed the address of a data block at <code>data</code>.  Returns thread PID of the new thread in R0 or -1 on error.</td></tr>
+		<tr><td>JOIN_THREAD</td><td><code>JOIN_THREAD(threadPID)</code><br>Pauses the execution of the current thread until the thread with PID <code>threadPID</code> terminates.</td></tr>
+		<tr><td>WAKE_THREAD</td><td><code>WAKE_THREAD(threadPID)</code><br>Wakes the thread with PID <code>threadPID</code>.</td></tr>
 	</tbody>
 </table>
 
@@ -421,6 +413,7 @@
 		<tr><td>initializeMutex</td><td><code>initializeMutex(addr)</code><br></td>Initializes the mutex at address <code>addr</code>.</tr>
 		<tr><td>acquireMutex</td><td><code>acquireMutex(addr)</code><br>Pauses the current thread until it can acquire the mutex at address <code>addr</code>.</td></tr>
 		<tr><td>releaseMutex</td><td><code>releaseMutex(addr)</code><br>Release the mutex at address <code>addr</code>.</td></tr>
+		<tr><td>freeMutex</td><td><code>freeMutex(addr)</code><br></td>Frees the heap memory used by the mutex at address <code>addr</code>.</tr>
 		<tr><td>get_and_increment</td><td><code>get_and_increment(addr)</code><br>Atomically increments the value at <code>addr</code>.  Returns the new value.</td></tr>
 		<tr><td>get_and_decrement</td><td><code>get_and_decrement(addr)</code><br>Atomically decrements the value at <code>addr</code>.  Returns the new value.</td></tr>
 	</tbody>
