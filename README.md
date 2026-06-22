@@ -12,6 +12,7 @@ It includes:
 - A cycle-accurate simulation engine  
 - A simple IDE with code editor, console, and integrated run/debug  
 - A native CLI tool for command-line workflows  
+- An agentic AI assistant for writing and debugging assembly code  
 - Native installers for macOS, Windows, and Linux  
 - A Maven-driven build system producing runnable JAR file
 
@@ -52,6 +53,17 @@ The project is designed for educational use, computer architecture instruction, 
 - Debug mode with stepping and register inspection  
 - Trace mode for instruction-by-instruction tracing  
 - Disassemble feature to disassemble object files
+
+### **Agentic AI Assistant**
+- Built-in AI chat panel in the IDE for writing and debugging CPUSim64 assembly  
+- Supports multiple LLM vendors: OpenAI, Anthropic, Google, DeepSeek, Alibaba, and local Ollama  
+- Configurable model and API key via Settings  
+- Context-aware: automatically provides current source code and console output to the AI  
+- AI responses with code blocks present Allow/Reject buttons for applying changes directly to the editor  
+- Animated "thinking" indicator with cancel support  
+- Markdown rendering in responses with bold, italic, code spans, and LaTeX math  
+- Conversation history maintained across messages within a session  
+- System prompt includes full CPUSim64 documentation, examples, and projects for accurate assistance  
 
 ### **CLI Tool (`cpusim64`)**
 - Native C++ command-line interface  
