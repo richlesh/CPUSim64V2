@@ -108,6 +108,7 @@ public class AIChatPanel extends JPanel {
 
     private void updateFontRecursive(Component c, Font font) {
         if (c instanceof JTextArea) c.setFont(font);
+        if (c instanceof JTextPane) c.setFont(font);
         if (c instanceof Container) {
             for (Component child : ((Container) c).getComponents()) updateFontRecursive(child, font);
         }
@@ -616,10 +617,27 @@ public class AIChatPanel extends JPanel {
                 }
             }
             // Plain text - collect until next special char
+            // Check if this is a LaTeX command starting with backslash
+            if (text.charAt(i) == '\\' && i + 1 < text.length() && Character.isLetter(text.charAt(i + 1))) {
+                // Try to find extent of LaTeX expression (ends at end of line or double newline)
+                // Heuristic: grab until end of balanced braces or end of line
+                int latexEnd = findLatexEnd(text, i);
+                String latex = text.substring(i, latexEnd);
+                try {
+                    ImageIcon icon = renderLatexToIcon(latex, fontSize);
+                    try { doc.insertString(doc.getLength(), " ", normal); } catch (Exception ignored) {}
+                    pane.setCaretPosition(doc.getLength());
+                    pane.insertIcon(icon);
+                    i = latexEnd;
+                    continue;
+                } catch (Exception ex) {
+                    // Not valid LaTeX, output as plain text
+                }
+            }
             int next = text.length();
             for (int j = i + 1; j < text.length(); j++) {
                 char c = text.charAt(j);
-                if (c == '$' || c == '`' || c == '*') { next = j; break; }
+                if (c == '$' || c == '`' || c == '*' || (c == '\\' && j + 1 < text.length() && Character.isLetter(text.charAt(j + 1)))) { next = j; break; }
             }
             try { doc.insertString(doc.getLength(), text.substring(i, next), normal); } catch (Exception ignored) {}
             i = next;
@@ -635,6 +653,41 @@ public class AIChatPanel extends JPanel {
         return t.contains("\\frac") || t.contains("\\sqrt") || t.contains("\\sum") ||
                t.contains("\\int") || t.contains("\\lim") || t.contains("\\prod") ||
                (t.contains("\\") && (t.contains("^") || t.contains("_") || t.contains("{")));
+    }
+
+    private static int findLatexEnd(String text, int start) {
+        // Greedily consume LaTeX: track brace depth, include everything that looks like math
+        int depth = 0;
+        int lastGood = start;
+        int i = start;
+        while (i < text.length()) {
+            char c = text.charAt(i);
+            if (c == '{') { depth++; i++; continue; }
+            if (c == '}') { depth--; i++; if (depth <= 0) lastGood = i; continue; }
+            if (depth > 0) { i++; continue; } // inside braces, consume everything
+            // At depth 0, decide if we should continue
+            if (c == '\\' && i + 1 < text.length() && Character.isLetter(text.charAt(i + 1))) {
+                // Another LaTeX command, keep going
+                i++;
+                while (i < text.length() && Character.isLetter(text.charAt(i))) i++;
+                lastGood = i;
+                continue;
+            }
+            if (c == '^' || c == '_' || c == '=' || c == '+' || c == '-' || c == '(' || c == ')' ||
+                c == ' ' || c == ',' || Character.isDigit(c) || c == '.') {
+                i++;
+                lastGood = i;
+                continue;
+            }
+            // Anything else (regular letter word) — stop unless it's a single char variable
+            if (Character.isLetter(c) && (i + 1 >= text.length() || !Character.isLetter(text.charAt(i + 1)))) {
+                i++;
+                lastGood = i;
+                continue;
+            }
+            break;
+        }
+        return lastGood > start ? lastGood : text.length();
     }
 
     private static String markdownToHtml(String md, String fontName, int fontSize, List<ImageIcon> mathIcons) {
