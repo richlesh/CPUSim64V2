@@ -93,7 +93,7 @@ The CPUSim64V2.zip archive is organized to clearly separate documentation, sourc
 │   └── examples/
 │
 ├── lib/
-│   └── CPUSim64-2.2.0.jar
+│   └── CPUSim64-2.3.0.jar
 │
 └── src/
     ├── generated-sources/

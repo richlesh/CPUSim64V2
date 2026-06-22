@@ -13,6 +13,11 @@ public class AppSettings {
     public int fontSize = 14;
     public String licenseEmail = null;
     public String licenseKey = null;
+    public String llmVendor = "OpenAI";
+    public String llmModel = "gpt-4o";
+    public String llmApiKey = null;
+    public Color userPromptColor = new Color(0x00, 0xAA, 0x00);
+    public Color aiResponseColor = new Color(0x33, 0x99, 0xFF);
     public Color[] colors = {
         Color.BLACK,              // normal
         new Color(0, 0, 180),     // keyword
@@ -32,6 +37,11 @@ public class AppSettings {
             sb.append("  \"fontSize\": ").append(fontSize).append(",\n");
             if (licenseEmail != null) sb.append("  \"licenseEmail\": \"").append(escape(licenseEmail)).append("\",\n");
             if (licenseKey != null) sb.append("  \"licenseKey\": \"").append(escape(licenseKey)).append("\",\n");
+            if (llmVendor != null) sb.append("  \"llmVendor\": \"").append(escape(llmVendor)).append("\",\n");
+            if (llmModel != null) sb.append("  \"llmModel\": \"").append(escape(llmModel)).append("\",\n");
+            if (llmApiKey != null) sb.append("  \"llmApiKey\": \"").append(escape(llmApiKey)).append("\",\n");
+            sb.append("  \"userPromptColor\": \"").append(colorToHex(userPromptColor)).append("\",\n");
+            sb.append("  \"aiResponseColor\": \"").append(colorToHex(aiResponseColor)).append("\",\n");
             sb.append("  \"colors\": [");
             for (int i = 0; i < colors.length; i++) {
                 if (i > 0) sb.append(", ");
@@ -58,6 +68,17 @@ public class AppSettings {
 
             s.licenseEmail = extractString(json, "licenseEmail");
             s.licenseKey = extractString(json, "licenseKey");
+
+            String vendor = extractString(json, "llmVendor");
+            if (vendor != null) s.llmVendor = vendor;
+            String model = extractString(json, "llmModel");
+            if (model != null) s.llmModel = model;
+            s.llmApiKey = extractString(json, "llmApiKey");
+
+            String upc = extractString(json, "userPromptColor");
+            if (upc != null) s.userPromptColor = hexToColor(upc);
+            String arc = extractString(json, "aiResponseColor");
+            if (arc != null) s.aiResponseColor = hexToColor(arc);
 
             List<String> colorList = extractArray(json, "colors");
             if (colorList != null) {

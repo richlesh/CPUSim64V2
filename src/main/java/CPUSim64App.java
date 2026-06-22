@@ -45,6 +45,8 @@ public class CPUSim64App {
     private boolean modified = false;
     private JMenuItem saveItem;
     private FindReplaceDialog findReplaceDialog;
+    private AIChatPanel aiChatPanel;
+    private JSplitPane mainSplit;
 
     public static void main(String[] args) {
         if (args.length > 0 && args[0].equals("--uninstall")) {
@@ -70,6 +72,8 @@ public class CPUSim64App {
             }
         });
         frame.setSize(1024, 768);
+        var frameIconUrl = CPUSim64App.class.getResource("/app_icon_256.png");
+        if (frameIconUrl != null) frame.setIconImage(new ImageIcon(frameIconUrl).getImage());
 
         frame.setJMenuBar(createMenuBar());
         frame.add(createMainPanel(), BorderLayout.CENTER);
@@ -109,7 +113,10 @@ public class CPUSim64App {
             else if (result == 1) CLIInstaller.uninstall();
         });
         JMenuItem settingsItem = new JMenuItem("Settings");
-        settingsItem.addActionListener(e -> SettingsDialog.show(frame, codeEditor, console, highlighter, settings));
+        settingsItem.addActionListener(e -> {
+            SettingsDialog.show(frame, codeEditor, console, highlighter, settings);
+            aiChatPanel.updateFont();
+        });
         JMenuItem licenseItem = new JMenuItem("License Key");
         licenseItem.addActionListener(e -> LicenseDialog.show(frame, settings));
         JMenuItem aboutItem = new JMenuItem("About CPUSim64");
@@ -217,6 +224,17 @@ public class CPUSim64App {
         menuBar.add(fileMenu);
         menuBar.add(editMenu);
         menuBar.add(helpMenu);
+        menuBar.add(Box.createHorizontalGlue());
+        var aiIconUrl = CPUSim64App.class.getResource("/AI.png");
+        JButton aiBtn = new JButton(aiIconUrl != null
+            ? new ImageIcon(new ImageIcon(aiIconUrl).getImage().getScaledInstance(24, 24, Image.SCALE_SMOOTH))
+            : null);
+        if (aiIconUrl == null) aiBtn.setText("AI");
+        aiBtn.setToolTipText("Toggle AI Assistant");
+        aiBtn.setBorderPainted(false);
+        aiBtn.setFocusPainted(false);
+        aiBtn.addActionListener(e -> toggleAIPanel());
+        menuBar.add(aiBtn);
         return menuBar;
     }
 
@@ -331,7 +349,21 @@ public class CPUSim64App {
 
         JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, editorScroll, consolePanel);
         splitPane.setResizeWeight(0.7);
-        return splitPane;
+
+        aiChatPanel = new AIChatPanel(codeEditor, console, settings);
+        aiChatPanel.setOnCodeChanged(() -> { modified = true; saveItem.setEnabled(true); });
+        mainSplit = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, splitPane, aiChatPanel);
+        mainSplit.setResizeWeight(1.0);
+        aiChatPanel.setVisible(false);
+        mainSplit.setDividerSize(0);
+        return mainSplit;
+    }
+
+    private void toggleAIPanel() {
+        boolean show = !aiChatPanel.isVisible();
+        aiChatPanel.setVisible(show);
+        mainSplit.setDividerSize(show ? 6 : 0);
+        if (show) mainSplit.setDividerLocation(mainSplit.getWidth() - 400);
     }
 
     private void openFile() {

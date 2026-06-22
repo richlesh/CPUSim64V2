@@ -114,6 +114,159 @@ public class SettingsDialog {
         panel.add(colorsPanel, gbc);
         gbc.gridwidth = 1;
 
+        // LLM Settings group
+        JPanel llmPanel = new JPanel(new GridBagLayout());
+        llmPanel.setBorder(BorderFactory.createTitledBorder("LLM Settings"));
+        GridBagConstraints lgbc = new GridBagConstraints();
+        lgbc.insets = new Insets(4, 5, 4, 5);
+        lgbc.anchor = GridBagConstraints.WEST;
+
+        String[][] vendorData = {
+            {"Alibaba", "https://www.alibabacloud.com/help/en/model-studio/get-api-key", "https://dashscope-us.aliyuncs.com/compatible-mode/v1"},
+            {"Anthropic", "https://console.anthropic.com/settings/keys", "https://api.anthropic.com/v1"},
+            {"DeepSeek", "https://platform.deepseek.com/api_keys", "https://api.deepseek.com/v1"},
+            {"Google", "https://aistudio.google.com/apikey", "https://generativelanguage.googleapis.com/v1beta/openai"},
+            {"Ollama", "https://ollama.com", "http://localhost:11434/v1"},
+            {"OpenAI", "https://platform.openai.com/api-keys", "https://api.openai.com/v1"},
+        };
+
+        lgbc.gridx = 0; lgbc.gridy = 0;
+        llmPanel.add(new JLabel("Vendor:"), lgbc);
+        String[] vendorNames = new String[vendorData.length];
+        for (int i = 0; i < vendorData.length; i++) vendorNames[i] = vendorData[i][0];
+        JComboBox<String> vendorCombo = new JComboBox<>(vendorNames);
+        if (settings.llmVendor != null) vendorCombo.setSelectedItem(settings.llmVendor);
+        lgbc.gridx = 1; lgbc.fill = GridBagConstraints.HORIZONTAL; lgbc.weightx = 1;
+        llmPanel.add(vendorCombo, lgbc);
+
+        lgbc.gridx = 0; lgbc.gridy = 1; lgbc.fill = GridBagConstraints.NONE; lgbc.weightx = 0;
+        llmPanel.add(new JLabel("Model:"), lgbc);
+        JComboBox<String> modelCombo = new JComboBox<>();
+        modelCombo.setEditable(true);
+        lgbc.gridx = 1; lgbc.fill = GridBagConstraints.HORIZONTAL; lgbc.weightx = 1;
+        llmPanel.add(modelCombo, lgbc);
+
+        lgbc.gridx = 0; lgbc.gridy = 2; lgbc.fill = GridBagConstraints.NONE; lgbc.weightx = 0;
+        llmPanel.add(new JLabel("API Key:"), lgbc);
+        JPasswordField apiKeyField = new JPasswordField(settings.llmApiKey != null ? settings.llmApiKey : "", 20);
+        lgbc.gridx = 1; lgbc.fill = GridBagConstraints.HORIZONTAL; lgbc.weightx = 1;
+        llmPanel.add(apiKeyField, lgbc);
+
+        JLabel apiKeyLink = new JLabel("<html><a href=''>Get API key...</a></html>");
+        apiKeyLink.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        lgbc.gridx = 1; lgbc.gridy = 3;
+        llmPanel.add(apiKeyLink, lgbc);
+
+        // Fetch models from vendor API
+        Runnable fetchModels = () -> {
+            int vi = vendorCombo.getSelectedIndex();
+            String apiKey = new String(apiKeyField.getPassword()).trim();
+            String baseUrl = vendorData[vi][2];
+            modelCombo.removeAllItems();
+            if (apiKey.isEmpty() && !"Ollama".equals(vendorData[vi][0])) {
+                if (settings.llmModel != null) modelCombo.addItem(settings.llmModel);
+                return;
+            }
+            new Thread(() -> {
+                try {
+                    java.net.http.HttpRequest.Builder reqBuilder = java.net.http.HttpRequest.newBuilder()
+                        .uri(java.net.URI.create(baseUrl + "/models"))
+                        .header("Content-Type", "application/json")
+                        .GET();
+                    if ("Anthropic".equals(vendorData[vi][0])) {
+                        reqBuilder.header("x-api-key", apiKey);
+                        reqBuilder.header("anthropic-version", "2023-06-01");
+                    } else if (!apiKey.isEmpty()) {
+                        reqBuilder.header("Authorization", "Bearer " + apiKey);
+                    }
+                    java.net.http.HttpResponse<String> resp = java.net.http.HttpClient.newHttpClient()
+                        .send(reqBuilder.build(), java.net.http.HttpResponse.BodyHandlers.ofString());
+                    String body = resp.body();
+                    // Parse model IDs from JSON response
+                    java.util.List<String> models = new java.util.ArrayList<>();
+                    java.util.regex.Matcher m = java.util.regex.Pattern.compile("\"id\"\\s*:\\s*\"([^\"]+)\"").matcher(body);
+                    while (m.find()) models.add(m.group(1));
+                    SwingUtilities.invokeLater(() -> {
+                        modelCombo.removeAllItems();
+                        for (String mod : models) modelCombo.addItem(mod);
+                        if (settings.llmModel != null) modelCombo.setSelectedItem(settings.llmModel);
+                    });
+                } catch (Exception ex) {
+                    SwingUtilities.invokeLater(() -> {
+                        if (settings.llmModel != null) modelCombo.addItem(settings.llmModel);
+                    });
+                }
+            }).start();
+        };
+        fetchModels.run();
+        vendorCombo.addActionListener(e -> fetchModels.run());
+        apiKeyField.getDocument().addDocumentListener(new javax.swing.event.DocumentListener() {
+            private javax.swing.Timer debounce = new javax.swing.Timer(500, e -> fetchModels.run());
+            { debounce.setRepeats(false); }
+            public void insertUpdate(javax.swing.event.DocumentEvent e) { debounce.restart(); }
+            public void removeUpdate(javax.swing.event.DocumentEvent e) { debounce.restart(); }
+            public void changedUpdate(javax.swing.event.DocumentEvent e) { debounce.restart(); }
+        });
+
+        apiKeyLink.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent e) {
+                try { Desktop.getDesktop().browse(java.net.URI.create(vendorData[vendorCombo.getSelectedIndex()][1])); }
+                catch (Exception ignored) {}
+            }
+        });
+
+        gbc.gridy = 4; gbc.gridx = 0; gbc.gridwidth = 2;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        panel.add(llmPanel, gbc);
+        gbc.gridwidth = 1;
+
+        // Chat Colors
+        JPanel chatColorsPanel = new JPanel(new GridBagLayout());
+        chatColorsPanel.setBorder(BorderFactory.createTitledBorder("Chat Colors"));
+        GridBagConstraints ccgbc = new GridBagConstraints();
+        ccgbc.insets = new Insets(4, 5, 4, 5);
+        ccgbc.anchor = GridBagConstraints.WEST;
+
+        Color[] userColor = {settings.userPromptColor};
+        Color[] aiColor = {settings.aiResponseColor};
+
+        ccgbc.gridx = 0; ccgbc.gridy = 0;
+        chatColorsPanel.add(new JLabel("User Prompt:"), ccgbc);
+        JPanel userSwatch = new JPanel();
+        userSwatch.setBackground(userColor[0]);
+        userSwatch.setPreferredSize(new Dimension(60, 24));
+        userSwatch.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY));
+        userSwatch.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        userSwatch.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent e) {
+                Color c = JColorChooser.showDialog(dialog, "User Prompt Color", userColor[0]);
+                if (c != null) { userColor[0] = c; userSwatch.setBackground(c); }
+            }
+        });
+        ccgbc.gridx = 1;
+        chatColorsPanel.add(userSwatch, ccgbc);
+
+        ccgbc.gridx = 2;
+        chatColorsPanel.add(new JLabel("  AI Response:"), ccgbc);
+        JPanel aiSwatch = new JPanel();
+        aiSwatch.setBackground(aiColor[0]);
+        aiSwatch.setPreferredSize(new Dimension(60, 24));
+        aiSwatch.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY));
+        aiSwatch.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        aiSwatch.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent e) {
+                Color c = JColorChooser.showDialog(dialog, "AI Response Color", aiColor[0]);
+                if (c != null) { aiColor[0] = c; aiSwatch.setBackground(c); }
+            }
+        });
+        ccgbc.gridx = 3;
+        chatColorsPanel.add(aiSwatch, ccgbc);
+
+        gbc.gridy = 5; gbc.gridx = 0; gbc.gridwidth = 2;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        panel.add(chatColorsPanel, gbc);
+        gbc.gridwidth = 1;
+
         // Buttons
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         JButton okBtn = new JButton("OK");
@@ -145,6 +298,12 @@ public class SettingsDialog {
             settings.fontName = fontName;
             settings.fontSize = size;
             System.arraycopy(colors, 0, settings.colors, 0, colors.length);
+            settings.llmVendor = (String) vendorCombo.getSelectedItem();
+            settings.llmModel = (String) modelCombo.getSelectedItem();
+            String key = new String(apiKeyField.getPassword()).trim();
+            settings.llmApiKey = key.isEmpty() ? null : key;
+            settings.userPromptColor = userColor[0];
+            settings.aiResponseColor = aiColor[0];
             settings.save();
 
             dialog.dispose();
