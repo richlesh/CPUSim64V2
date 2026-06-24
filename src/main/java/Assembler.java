@@ -183,6 +183,17 @@ public class Assembler {
 			} catch (IOException e) {
 				System.err.println("Error writing label type map: " + e.getMessage());
 			}
+
+			// Write address-to-source-line map for debugger breakpoint sync
+			Path srcmapFile = inPath.getParent().resolve(filename + ".srcmap");
+			try (BufferedWriter writer = new BufferedWriter(new FileWriter(srcmapFile.toFile()))) {
+				for (var entry : labelVisitor.getAddressToSourceLocation().entrySet()) {
+					writer.write(entry.getKey() + ": " + entry.getValue());
+					writer.newLine();
+				}
+			} catch (IOException e) {
+				System.err.println("Error writing source map: " + e.getMessage());
+			}
 		} catch (Exception ex) {
 			System.err.println(ex.getMessage());
 			return 1;

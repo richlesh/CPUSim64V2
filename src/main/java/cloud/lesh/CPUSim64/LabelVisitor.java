@@ -38,6 +38,8 @@ public class LabelVisitor extends CPUSim64BaseVisitor<Void> implements HasLocati
 	private long currentAddress = 0;
 	private long blockCount = 0;
 	private boolean hasErrors = false;
+	// Maps address → «filename»:lineNum for each instruction
+	private final Map<Long, String> addressToSourceLocation = new HashMap<>();
 
 	// TODO remove
 	String filename = null;
@@ -88,6 +90,10 @@ public class LabelVisitor extends CPUSim64BaseVisitor<Void> implements HasLocati
 
 	public Map<Long, String> getReverseLabelMap() {
 		return reverseLabelMap;
+	}
+
+	public Map<Long, String> getAddressToSourceLocation() {
+		return addressToSourceLocation;
 	}
 
 	private static Token startToken(ParseTree node) {
@@ -145,6 +151,9 @@ public class LabelVisitor extends CPUSim64BaseVisitor<Void> implements HasLocati
 
 	@Override
 	public Void visitInstruction(CPUSim64Parser.InstructionContext ctx) {
+		if (filename != null) {
+			addressToSourceLocation.put(currentAddress, filename + ":" + lineNum);
+		}
 		++currentAddress;
 		String s = reflowTokens(ctx) + System.lineSeparator();
 		out.append(s);

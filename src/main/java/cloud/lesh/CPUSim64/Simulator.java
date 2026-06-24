@@ -2804,4 +2804,44 @@ public class Simulator {
 
 		return labelTypes;
 	}
+
+	// ===== DEBUGGER STEPPING API =====
+	public void initForDebug(long startPC) {
+		running = true;
+		startClock = System.nanoTime();
+		totalSystemTime = 0;
+		cycles = 0;
+		R[R_PC] = startPC;
+	}
+
+	/** Execute a single instruction. Returns the opcode executed. */
+	public int stepOne() {
+		if (!running) return -1;
+		long pc = R[R_PC];
+		long instr = memRead(pc);
+		R[R_PC] = pc + 1;
+		Decoded d = Decoded.decode(instr);
+		exec(d);
+		return d.getOpCode();
+	}
+
+	public long getPC() { return R[R_PC]; }
+	public long getSP() { return R[R_SP]; }
+	public long getSF() { return R[R_SF]; }
+	public long[] getRegisters() { return R; }
+	public double[] getFPRegisters() { return F; }
+	public long getHeapStart() { return heapStart; }
+	public boolean isRunning() { return running; }
+	public void stop() { running = false; }
+	public Map<Long, String> getReverseSymbolMap() { return reverseSymbolMap; }
+
+	public String disassembleOne(long addr) {
+		try {
+			long instr = memRead(addr);
+			Decoded d = Decoded.decode(instr);
+			return d.disassemble(reverseSymbolMap);
+		} catch (Exception e) {
+			return "???";
+		}
+	}
 }

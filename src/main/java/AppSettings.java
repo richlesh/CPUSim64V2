@@ -29,6 +29,12 @@ public class AppSettings {
         new Color(0, 100, 100),   // label
         new Color(100, 0, 150)    // condition
     };
+    public int debugMainDivider = -1;
+    public int debugRegStackDivider = -1;
+    public int[] debugRegColWidths = null;
+    public int[] debugStackColWidths = null;
+    public int debugWindowWidth = 1100;
+    public int debugWindowHeight = 700;
 
     public void save() {
         try {
@@ -47,7 +53,29 @@ public class AppSettings {
                 if (i > 0) sb.append(", ");
                 sb.append("\"").append(colorToHex(colors[i])).append("\"");
             }
-            sb.append("]\n}");
+            sb.append("],\n");
+            sb.append("  \"debugMainDivider\": ").append(debugMainDivider).append(",\n");
+            sb.append("  \"debugRegStackDivider\": ").append(debugRegStackDivider).append(",\n");
+            sb.append("  \"debugWindowWidth\": ").append(debugWindowWidth).append(",\n");
+            sb.append("  \"debugWindowHeight\": ").append(debugWindowHeight).append(",\n");
+            if (debugRegColWidths != null) {
+                sb.append("  \"debugRegColWidths\": [");
+                for (int i = 0; i < debugRegColWidths.length; i++) {
+                    if (i > 0) sb.append(", ");
+                    sb.append(debugRegColWidths[i]);
+                }
+                sb.append("],\n");
+            }
+            if (debugStackColWidths != null) {
+                sb.append("  \"debugStackColWidths\": [");
+                for (int i = 0; i < debugStackColWidths.length; i++) {
+                    if (i > 0) sb.append(", ");
+                    sb.append(debugStackColWidths[i]);
+                }
+                sb.append("],\n");
+            }
+            sb.setLength(sb.length() - 2); // remove trailing comma+newline
+            sb.append("\n}");
             Files.writeString(SETTINGS_FILE, sb.toString());
         } catch (IOException e) {
             // silently ignore save errors
@@ -85,6 +113,26 @@ public class AppSettings {
                 for (int i = 0; i < Math.min(colorList.size(), s.colors.length); i++) {
                     s.colors[i] = hexToColor(colorList.get(i));
                 }
+            }
+
+            Integer dmd = extractInt(json, "debugMainDivider");
+            if (dmd != null) s.debugMainDivider = dmd;
+            Integer drsd = extractInt(json, "debugRegStackDivider");
+            if (drsd != null) s.debugRegStackDivider = drsd;
+            Integer dww = extractInt(json, "debugWindowWidth");
+            if (dww != null) s.debugWindowWidth = dww;
+            Integer dwh = extractInt(json, "debugWindowHeight");
+            if (dwh != null) s.debugWindowHeight = dwh;
+
+            List<String> rcw = extractArray(json, "debugRegColWidths");
+            if (rcw != null) {
+                s.debugRegColWidths = new int[rcw.size()];
+                for (int i = 0; i < rcw.size(); i++) s.debugRegColWidths[i] = Integer.parseInt(rcw.get(i).trim());
+            }
+            List<String> scw = extractArray(json, "debugStackColWidths");
+            if (scw != null) {
+                s.debugStackColWidths = new int[scw.size()];
+                for (int i = 0; i < scw.size(); i++) s.debugStackColWidths[i] = Integer.parseInt(scw.get(i).trim());
             }
         } catch (Exception e) {
             // return defaults on any parse error

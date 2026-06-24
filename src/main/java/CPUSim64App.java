@@ -47,6 +47,9 @@ public class CPUSim64App {
     private FindReplaceDialog findReplaceDialog;
     private AIChatPanel aiChatPanel;
     private JSplitPane mainSplit;
+    private LineNumberPanel lineNumberPanel;
+    private JMenuBar menuBar;
+    private JToolBar consoleToolBar;
 
     public static void main(String[] args) {
         if (args.length > 0 && args[0].equals("--uninstall")) {
@@ -88,6 +91,23 @@ public class CPUSim64App {
         Font font = new Font(settings.fontName, Font.PLAIN, settings.fontSize);
         codeEditor.setFont(font);
         console.setFont(font);
+        if (menuBar != null) {
+            menuBar.setFont(font);
+            for (int i = 0; i < menuBar.getMenuCount(); i++) {
+                JMenu m = menuBar.getMenu(i);
+                if (m != null) {
+                    m.setFont(font);
+                    for (int j = 0; j < m.getItemCount(); j++) {
+                        JMenuItem item = m.getItem(j);
+                        if (item != null) item.setFont(font);
+                    }
+                }
+            }
+            for (Component c : menuBar.getComponents()) c.setFont(font);
+        }
+        if (consoleToolBar != null) {
+            for (Component c : consoleToolBar.getComponents()) c.setFont(font);
+        }
         for (int i = 0; i < settings.colors.length; i++) {
             highlighter.setColor(i, settings.colors[i]);
         }
@@ -95,7 +115,7 @@ public class CPUSim64App {
     }
 
     private JMenuBar createMenuBar() {
-        JMenuBar menuBar = new JMenuBar();
+        menuBar = new JMenuBar();
 
         // Application menu
         JMenu appMenu = new JMenu("CPUSim64");
@@ -115,6 +135,7 @@ public class CPUSim64App {
         JMenuItem settingsItem = new JMenuItem("Settings");
         settingsItem.addActionListener(e -> {
             SettingsDialog.show(frame, codeEditor, console, highlighter, settings);
+            applySettings();
             aiChatPanel.updateFont();
         });
         JMenuItem licenseItem = new JMenuItem("License Key");
@@ -170,11 +191,8 @@ public class CPUSim64App {
         fileMenu.addSeparator();
         fileMenu.add(runItem);
         JMenuItem debugItem = new JMenuItem("Debug");
-        debugItem.addActionListener(e -> runWithMode("--debug"));
-        JMenuItem traceItem = new JMenuItem("Trace");
-        traceItem.addActionListener(e -> runWithMode("--trace"));
+        debugItem.addActionListener(e -> launchDebugger());
         fileMenu.add(debugItem);
-        fileMenu.add(traceItem);
 
         // Edit menu
         JMenu editMenu = new JMenu("Edit");
@@ -317,7 +335,8 @@ public class CPUSim64App {
             }
         });
         JScrollPane editorScroll = new JScrollPane(codeEditor);
-        editorScroll.setRowHeaderView(new LineNumberPanel(codeEditor));
+        lineNumberPanel = new LineNumberPanel(codeEditor);
+        editorScroll.setRowHeaderView(lineNumberPanel);
 
         console = new JTextArea();
         console.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 13));
@@ -326,17 +345,14 @@ public class CPUSim64App {
         console.setForeground(Color.WHITE);
         JScrollPane consoleScroll = new JScrollPane(console);
 
-        JToolBar consoleToolBar = new JToolBar();
+        consoleToolBar = new JToolBar();
         consoleToolBar.setFloatable(false);
         JButton runBtn = new JButton("Run");
         runBtn.addActionListener(e -> runFile());
         JButton debugBtn = new JButton("Debug");
-        debugBtn.addActionListener(e -> runWithMode("--debug"));
-        JButton traceBtn = new JButton("Trace");
-        traceBtn.addActionListener(e -> runWithMode("--trace"));
+        debugBtn.addActionListener(e -> launchDebugger());
         consoleToolBar.add(runBtn);
         consoleToolBar.add(debugBtn);
-        consoleToolBar.add(traceBtn);
         consoleToolBar.addSeparator();
         consoleToolBar.add(new JLabel("Args: "));
         argsField = new JTextField(20);
@@ -524,6 +540,38 @@ public class CPUSim64App {
                     for (var kl : console.getKeyListeners()) console.removeKeyListener(kl);
                     console.setEditable(false);
                 });
+            }
+        }).start();
+    }
+
+    private void launchDebugger() {
+        if (currentFile == null) {
+            appendConsole("No file open. Open an .asm file first.\n");
+            return;
+        }
+        if (modified && !promptSaveIfNeeded()) return;
+        console.setText("");
+
+        String base = currentFile.toString();
+        if (base.endsWith(".asm")) base = base.substring(0, base.length() - 4);
+        final String asmFile = base + ".asm";
+        final String objFile = base + ".o64";
+
+        new Thread(() -> {
+            try {
+                // Assemble with --DEBUG
+                SwingUtilities.invokeLater(() -> appendConsole("> Assembling (debug) " + currentFile.getFileName() + "...\n"));
+                int asmResult = Assembler.run(new String[]{asmFile, "--DEBUG"});
+                if (asmResult != 0) {
+                    SwingUtilities.invokeLater(() -> appendConsole("\nAssembly failed.\n"));
+                    return;
+                }
+                SwingUtilities.invokeLater(() -> {
+                    appendConsole("> Opening debugger...\n");
+                    new DebuggerWindow(frame, objFile, asmFile, lineNumberPanel, argsField.getText().trim(), settings);
+                });
+            } catch (Exception e) {
+                SwingUtilities.invokeLater(() -> appendConsole("Error: " + e.getMessage() + "\n"));
             }
         }).start();
     }
