@@ -54,6 +54,18 @@ The project is designed for educational use, computer architecture instruction, 
 - Trace mode for instruction-by-instruction tracing  
 - Disassemble feature to disassemble object files
 
+### **Symbolic Debugger**
+- Integrated GUI debugger launched from the IDE  
+- Disassembly view with live instruction markers and label annotations  
+- Bidirectional breakpoint synchronization between source code and disassembly  
+- Breakpoints on preprocessor directives (`#call`, `#macro`, etc.) map to generated instructions  
+- Step Into, Step Over, Step Out, and Resume execution controls  
+- Green execution line indicator in the source editor (coexists with breakpoints and line numbers)  
+- Live register display with click-to-toggle decimal/hexadecimal values  
+- Stack display with high-to-low address ordering and click-to-cycle decimal/hex/float values  
+- Source-map-based address resolution (`.srcmap` file emitted during assembly)  
+- Window layout (size, dividers, column widths) persisted across sessions  
+
 ### **Agentic AI Assistant**
 - Built-in AI chat panel in the IDE for writing and debugging CPUSim64 assembly  
 - Supports multiple LLM vendors: OpenAI, Anthropic, Google, DeepSeek, Alibaba, and local Ollama  
