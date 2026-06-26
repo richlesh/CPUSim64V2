@@ -220,6 +220,7 @@ jobs:
               --resource-dir resources/macos \
               --type app-image
           elif [ "${{ runner.os }}" = "Linux" ]; then
+            # Build app-image first so we can remove ALSA-linked native libs
             jpackage \
               --input lib \
               --main-jar CPUSim64-${{ env.APP_VERSION }}.jar \
@@ -235,9 +236,27 @@ jobs:
               --file-associations fa-sym.properties \
               --file-associations fa-sym1.properties \
               --file-associations fa-sym2.properties \
-              --add-modules java.base,java.desktop,java.net.http,java.logging,java.compiler,java.management,jdk.unsupported,jdk.zipfs \
               --jlink-options "--strip-debug --no-header-files --no-man-pages --compress zip-6" \
               --java-options "-Dawt.useSystemAAFontSettings=on" \
+              --type app-image
+
+            # Remove native sound libraries to eliminate libasound2 dependency
+            find CPUSim64 -name "libjsound*.so" -delete
+
+            # Package from the app-image
+            jpackage \
+              --app-image CPUSim64 \
+              --name CPUSim64 \
+              --app-version "${{ env.APP_VERSION }}" \
+              --vendor "Richard Lesh" \
+              --copyright "(C) 2025-2026 Richard Lesh" \
+              --description "64-bit virtual CPU, assembler, and simulation environment" \
+              --icon "${{ matrix.icon }}" \
+              --file-associations fa-asm.properties \
+              --file-associations fa-o64.properties \
+              --file-associations fa-sym.properties \
+              --file-associations fa-sym1.properties \
+              --file-associations fa-sym2.properties \
               --linux-app-category devel \
               --linux-menu-group "Development;IDE;" \
               --resource-dir resources/linux \
