@@ -235,7 +235,7 @@ jobs:
               --file-associations fa-sym.properties \
               --file-associations fa-sym1.properties \
               --file-associations fa-sym2.properties \
-              --jlink-options "--strip-debug --no-header-files --no-man-pages --compress zip-6" \
+              --jlink-options "--strip-debug --no-header-files --no-man-pages --compress zip-6 --exclude-module jdk.sound" \
               --java-options "-Dawt.useSystemAAFontSettings=on" \
               --linux-app-category devel \
               --linux-menu-group "Development;IDE;" \
