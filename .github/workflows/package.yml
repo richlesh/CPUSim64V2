@@ -246,6 +246,7 @@ jobs:
               --vendor "Richard Lesh" \
               --copyright "(C) 2025-2026 Richard Lesh" \
               --description "64-bit virtual CPU, assembler, and simulation environment" \
+              --icon "${{ matrix.icon }}" \
               --file-associations fa-asm.properties \
               --file-associations fa-o64.properties \
               --file-associations fa-sym.properties \
