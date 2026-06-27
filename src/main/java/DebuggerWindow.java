@@ -36,7 +36,7 @@ public class DebuggerWindow extends JFrame {
     private final PrintStream origErr = System.err;
     private final InputStream origIn = System.in;
 
-    public DebuggerWindow(JFrame parent, String objFilePath, String sourceFilePath, LineNumberPanel lineNumberPanel, String userArgs, AppSettings settings, JTextArea console) {
+    public DebuggerWindow(JFrame parent, String objFilePath, String sourceFilePath, LineNumberPanel lineNumberPanel, String userArgs, AppSettings settings, JTextArea console, Runnable onClose) {
         super("CPUSim64 Debugger");
         this.lineNumberPanel = lineNumberPanel;
         this.settings = settings;
@@ -156,6 +156,7 @@ public class DebuggerWindow extends JFrame {
                 System.setOut(origOut);
                 System.setErr(origErr);
                 System.setIn(origIn);
+                if (onClose != null) onClose.run();
             }
         });
 

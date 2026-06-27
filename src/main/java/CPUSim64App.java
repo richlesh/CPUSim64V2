@@ -50,6 +50,8 @@ public class CPUSim64App {
     private LineNumberPanel lineNumberPanel;
     private JMenuBar menuBar;
     private JToolBar consoleToolBar;
+    private JMenuItem runItem, debugItem;
+    private JButton runBtn, debugBtn;
 
     public static void main(String[] args) {
         if (args.length > 0 && args[0].equals("--uninstall")) {
@@ -179,7 +181,7 @@ public class CPUSim64App {
         JMenuItem saveAsItem = new JMenuItem("Save As...");
         saveAsItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx() | KeyEvent.SHIFT_DOWN_MASK));
         saveAsItem.addActionListener(e -> saveFileAs());
-        JMenuItem runItem = new JMenuItem("Run");
+        runItem = new JMenuItem("Run");
         runItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_R, Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx()));
         runItem.addActionListener(e -> runFile());
         fileMenu.add(newItem);
@@ -190,7 +192,7 @@ public class CPUSim64App {
         fileMenu.add(saveAsItem);
         fileMenu.addSeparator();
         fileMenu.add(runItem);
-        JMenuItem debugItem = new JMenuItem("Debug");
+        debugItem = new JMenuItem("Debug");
         debugItem.addActionListener(e -> launchDebugger());
         fileMenu.add(debugItem);
 
@@ -347,9 +349,9 @@ public class CPUSim64App {
 
         consoleToolBar = new JToolBar();
         consoleToolBar.setFloatable(false);
-        JButton runBtn = new JButton("Run");
+        runBtn = new JButton("Run");
         runBtn.addActionListener(e -> runFile());
-        JButton debugBtn = new JButton("Debug");
+        debugBtn = new JButton("Debug");
         debugBtn.addActionListener(e -> launchDebugger());
         consoleToolBar.add(runBtn);
         consoleToolBar.add(debugBtn);
@@ -568,7 +570,12 @@ public class CPUSim64App {
                 }
                 SwingUtilities.invokeLater(() -> {
                     appendConsole("> Opening debugger...\n");
-                    new DebuggerWindow(frame, objFile, asmFile, lineNumberPanel, argsField.getText().trim(), settings, console);
+                    runItem.setEnabled(false);
+                    debugItem.setEnabled(false);
+                    runBtn.setEnabled(false);
+                    debugBtn.setEnabled(false);
+                    Runnable onClose = () -> { runItem.setEnabled(true); debugItem.setEnabled(true); runBtn.setEnabled(true); debugBtn.setEnabled(true); };
+                    new DebuggerWindow(frame, objFile, asmFile, lineNumberPanel, argsField.getText().trim(), settings, console, onClose);
                 });
             } catch (Exception e) {
                 SwingUtilities.invokeLater(() -> appendConsole("Error: " + e.getMessage() + "\n"));
