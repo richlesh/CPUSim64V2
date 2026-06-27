@@ -568,7 +568,7 @@ public class CPUSim64App {
                 }
                 SwingUtilities.invokeLater(() -> {
                     appendConsole("> Opening debugger...\n");
-                    new DebuggerWindow(frame, objFile, asmFile, lineNumberPanel, argsField.getText().trim(), settings);
+                    new DebuggerWindow(frame, objFile, asmFile, lineNumberPanel, argsField.getText().trim(), settings, console);
                 });
             } catch (Exception e) {
                 SwingUtilities.invokeLater(() -> appendConsole("Error: " + e.getMessage() + "\n"));

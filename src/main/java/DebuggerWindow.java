@@ -32,12 +32,59 @@ public class DebuggerWindow extends JFrame {
     private JSplitPane mainSplit;
     private JSplitPane regStackSplit;
     private final AppSettings settings;
+    private final PrintStream origOut = System.out;
+    private final PrintStream origErr = System.err;
+    private final InputStream origIn = System.in;
 
-    public DebuggerWindow(JFrame parent, String objFilePath, String sourceFilePath, LineNumberPanel lineNumberPanel, String userArgs, AppSettings settings) {
+    public DebuggerWindow(JFrame parent, String objFilePath, String sourceFilePath, LineNumberPanel lineNumberPanel, String userArgs, AppSettings settings, JTextArea console) {
         super("CPUSim64 Debugger");
         this.lineNumberPanel = lineNumberPanel;
         this.settings = settings;
         Font monoFont = new Font(settings.fontName, Font.PLAIN, settings.fontSize);
+
+        // Redirect System.out/err to IDE console
+        PrintStream consoleStream = new PrintStream(new OutputStream() {
+            private final ByteArrayOutputStream buf = new ByteArrayOutputStream();
+            @Override public void write(int b) {
+                if (b == '\n') {
+                    final String line = buf.toString(java.nio.charset.StandardCharsets.UTF_8);
+                    buf.reset();
+                    SwingUtilities.invokeLater(() -> { console.append(line + "\n"); console.setCaretPosition(console.getDocument().getLength()); });
+                } else {
+                    buf.write(b);
+                }
+            }
+            @Override public void flush() {
+                if (buf.size() > 0) {
+                    final String text = buf.toString(java.nio.charset.StandardCharsets.UTF_8);
+                    buf.reset();
+                    SwingUtilities.invokeLater(() -> { console.append(text); console.setCaretPosition(console.getDocument().getLength()); });
+                }
+            }
+        }, true, java.nio.charset.StandardCharsets.UTF_8);
+        System.setOut(consoleStream);
+        System.setErr(consoleStream);
+
+        // Redirect System.in from IDE console
+        try {
+            PipedOutputStream inputPipe = new PipedOutputStream();
+            PipedInputStream pis = new PipedInputStream(inputPipe);
+            System.setIn(pis);
+            console.setEditable(true);
+            console.addKeyListener(new java.awt.event.KeyAdapter() {
+                private int inputStart = console.getDocument().getLength();
+                @Override public void keyPressed(java.awt.event.KeyEvent e) {
+                    if (console.getCaretPosition() < inputStart && e.getKeyCode() != KeyEvent.VK_ENTER) {
+                        console.setCaretPosition(console.getDocument().getLength());
+                    }
+                    if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+                        String text = console.getText().substring(inputStart) + "\n";
+                        inputStart = console.getDocument().getLength() + 1;
+                        try { inputPipe.write(text.getBytes(java.nio.charset.StandardCharsets.UTF_8)); inputPipe.flush(); } catch (Exception ignored) {}
+                    }
+                }
+            });
+        } catch (Exception ignored) {}
 
         // Load program
         Path objPath = Path.of(objFilePath).toAbsolutePath();
@@ -106,6 +153,9 @@ public class DebuggerWindow extends JFrame {
                 sim.stop();
                 lineNumberPanel.clearExecutionLine();
                 lineNumberPanel.setBreakpointChangeListener(null);
+                System.setOut(origOut);
+                System.setErr(origErr);
+                System.setIn(origIn);
             }
         });
 
