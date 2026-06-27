@@ -449,40 +449,42 @@ public class AIChatPanel extends JPanel {
         sb.append("You have access to the user's current source code and console output.\n\n");
         sb.append("=== CPUSim64 Documentation ===\n");
         try {
-            Path docDir = Path.of("documentation");
-            if (!Files.exists(docDir)) docDir = Path.of(System.getProperty("user.dir"), "documentation");
-            if (Files.exists(docDir)) {
-                try (var files = Files.list(docDir)) {
-                    for (Path f : files.filter(p -> p.toString().endsWith(".html")).collect(Collectors.toList())) {
-                        String content = Files.readString(f);
-                        String text = content.replaceAll("<[^>]+>", " ").replaceAll("\\s+", " ").trim();
-                        if (text.length() > 8000) text = text.substring(0, 8000);
-                        sb.append("\n--- ").append(f.getFileName()).append(" ---\n").append(text).append("\n");
-                    }
-                }
-                Path exDir = docDir.resolve("examples");
-                if (Files.exists(exDir)) {
-                    try (var files = Files.list(exDir)) {
-                        for (Path f : files.filter(p -> p.toString().endsWith(".asm")).limit(10).collect(Collectors.toList())) {
-                            String content = Files.readString(f);
-                            if (content.length() > 3000) content = content.substring(0, 3000);
-                            sb.append("\n--- Example: ").append(f.getFileName()).append(" ---\n").append(content).append("\n");
-                        }
-                    }
-                }
-                Path projDir = docDir.resolve("projects");
-                if (Files.exists(projDir)) {
-                    try (var files = Files.list(projDir)) {
-                        for (Path f : files.filter(p -> p.toString().endsWith(".asm")).collect(Collectors.toList())) {
-                            String content = Files.readString(f);
-                            if (content.length() > 3000) content = content.substring(0, 3000);
-                            sb.append("\n--- Project: ").append(f.getFileName()).append(" ---\n").append(content).append("\n");
-                        }
-                    }
-                }
+            for (String name : readIndex("/documentation/doc-index.txt")) {
+                String content = readResource("/documentation/" + name);
+                if (content == null) continue;
+                String text = content.replaceAll("<[^>]+>", " ").replaceAll("\\s+", " ").trim();
+                if (text.length() > 8000) text = text.substring(0, 8000);
+                sb.append("\n--- ").append(name).append(" ---\n").append(text).append("\n");
+            }
+            for (String name : readIndex("/documentation/examples-index.txt")) {
+                String content = readResource("/documentation/" + name);
+                if (content == null) continue;
+                if (content.length() > 3000) content = content.substring(0, 3000);
+                sb.append("\n--- Example: ").append(name.substring(name.lastIndexOf('/') + 1)).append(" ---\n").append(content).append("\n");
+            }
+            for (String name : readIndex("/documentation/projects-index.txt")) {
+                String content = readResource("/documentation/" + name);
+                if (content == null) continue;
+                if (content.length() > 3000) content = content.substring(0, 3000);
+                sb.append("\n--- Project: ").append(name.substring(name.lastIndexOf('/') + 1)).append(" ---\n").append(content).append("\n");
             }
         } catch (Exception ignored) {}
         return sb.toString();
+    }
+
+    private List<String> readIndex(String path) {
+        try (var in = getClass().getResourceAsStream(path)) {
+            if (in == null) return List.of();
+            return new BufferedReader(new InputStreamReader(in)).lines()
+                    .filter(l -> !l.isBlank()).collect(Collectors.toList());
+        } catch (Exception e) { return List.of(); }
+    }
+
+    private String readResource(String path) {
+        try (var in = getClass().getResourceAsStream(path)) {
+            if (in == null) return null;
+            return new String(in.readAllBytes(), java.nio.charset.StandardCharsets.UTF_8);
+        } catch (Exception e) { return null; }
     }
 
     private static void renderStyledMessage(JTextPane pane, String text, String fontName, int fontSize) {

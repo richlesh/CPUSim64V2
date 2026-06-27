@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Use a Code Editor (Not a Word Processor) for CPUSim64</title>
+  <meta name="description" content="Why you should use a code editor—not a word processor—when writing CPUSim64 assembly programs, plus recommended editors by platform." />
+  <link rel="stylesheet" type="text/css" href="styles.css">
+  <link rel="stylesheet" type="text/css" href="styles2.css">
+</head>
+
+<body>
+  <div class="wrap">
+    <header>
+      <h1>Use a Code Editor<br>(Not a Word Processor)<br>for CPUSim64</h1>
+      <p class="subtitle">
+        CPUSim64 programs are plain-text source files. A code editor helps you write clean, correct assembly code,
+        while a word processor can silently change your text in ways that break assembly.
+      </p>
+    </header>
+
+    <section>
+      <h2>Why a word processor is the wrong tool</h2>
+      <p>
+        Word processors (like LibreOffice Writer, Apple Pages or Microsoft Word) are designed for <em>formatted documents</em>, not source code.
+        They may automatically “help” by converting straight quotes to smart quotes, replacing hyphens with em dashes,
+        changing indentation, or inserting hidden formatting characters. In assembly language, those tiny changes matter:
+        a single unexpected character can turn a correct instruction into a syntax error.
+      </p>
+      <p>
+        CPUSim64 assembly relies on exact spelling, exact punctuation, predictable whitespace, and reliable line endings.
+        A code editor preserves your file as plain text and gives you tools that make programming easier—syntax highlighting,
+        line numbers, indentation control, search/replace, and often optional features like bracket matching and integrated terminals.
+      </p>
+
+      <div class="note">
+        CPUSim64 source files must be saved as plain text (ASCII or UTF-8) and avoid “smart quotes”
+        and auto-correction features that can alter punctuation.
+      </div>
+    </section>
+
+    <section>
+      <h2>What to look for in a CPUSim64-friendly editor</h2>
+      <ul>
+        <li><strong>Plain-text editing</strong> (no hidden formatting)</li>
+        <li><strong>Monospace fonts</strong> and consistent indentation</li>
+        <li><strong>Line numbers</strong> (very helpful when debugging assembly errors)</li>
+        <li><strong>Syntax highlighting</strong> (optional, but makes code easier to read)</li>
+        <li><strong>Good search/replace</strong> (quickly refactor labels and constants)</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>Recommended editors by platform</h2>
+
+      <div class="grid">
+        <div>
+          <h3 style="margin:0 0 8px;"> Cross-platform <img class="logo" src="images/Logos/linux_color.svg" alt="Linux Logo"><img class="logo" src="images/Logos/apple.svg" alt="macOS Logo" style="filter: invert(1);"><img class="logo" src="images/Logos/windows_color.svg" alt="Windows Logo"><img class="logo" src="images/Logos/raspberry_pi_48.png" alt="Raspberry Pi Logo"></h3>
+          <ul>
+            <li>
+              <a href="https://code.visualstudio.com/" target="_blank" rel="noopener">Visual Studio Code</a> <img class="icon" src="images/Icons/free.svg" alt="Free">
+              — A popular, free editor for Windows, macOS, and Linux with excellent search, extensions, and an integrated terminal.
+              It’s a great “all-around” choice if you want a modern UI and lots of customization.
+            </li>
+            <li>
+              <a href="https://www.sublimetext.com/" target="_blank" rel="noopener">Sublime Text</a> <img class="icon" src="images/Icons/paid.svg" alt="Paid"><img class="icon" src="images/Icons/proprietary.svg" alt="Proprietary">
+              — Fast, lightweight, and polished across all major platforms. It’s especially nice if you want speed and a clean,
+              distraction-free editor that still has powerful editing features.
+            </li>
+            <li>
+              <a href="https://kate-editor.org/" target="_blank" rel="noopener">Kate</a> <img class="icon" src="images/Icons/free.svg" alt="Free">
+              — A solid graphical editor commonly found on Linux desktops, offering features like split views, sessions,
+              and convenient project/file browsing.
+            </li>
+            <li>
+              <a href="https://www.ultraedit.com/" target="_blank" rel="noopener">UltraEdit</a> <img class="icon" src="images/Icons/paid.svg" alt="Paid"><img class="icon" src="images/Icons/proprietary.svg" alt="Proprietary">
+              — A mature, feature-rich editor often used for large files and serious text work. It’s a solid choice if you want
+              lots of built-in capabilities without moving to a full IDE.
+            </li>
+            <li>
+              <a href="https://zed.dev/" target="_blank" rel="noopener">Zed</a> <img class="icon" src="images/Icons/free.svg" alt="Free">
+              — A newer, performance-focused editor with a modern feel. If you like a clean UI and quick navigation,
+              it’s worth a look (availability may vary by platform and release).
+            </li>
+          </ul>
+        </div>
+
+        <div>
+          <h3 style="margin:0 0 8px;">Linux favorites <img class="logo" src="images/Logos/linux_color.svg" alt="Linux Logo"><img class="logo" class="logo" src="images/Logos/raspberry_pi_48.png" alt="Raspberry Pi Logo"></h3>
+          <ul>
+            <li>
+              <a href="https://www.vim.org/" target="_blank" rel="noopener">Vim</a> <img class="icon" src="images/Icons/free.svg" alt="Free">
+              — A legendary modal editor available on Linux (and also other platforms). Vim is powerful for keyboard-driven editing,
+              macros, and rapid navigation once you learn the basics.
+            </li>
+            <li>
+              <a href="https://www.gnu.org/software/emacs/" target="_blank" rel="noopener">GNU Emacs</a> <img class="icon" src="images/Icons/free.svg" alt="Free">
+              — Another classic editor with a deep ecosystem. Emacs can be configured into a full programming environment,
+              and many developers love its extensibility and workflows.
+            </li>
+			<li>
+				<a href="https://gedit-text-editor.org/" target="_blank" rel="noopener">Gedit</a> <img class="icon" src="images/Icons/free.svg" alt="Free">
+				— Gedit is the default text editor for the GNOME desktop and emphasizes simplicity and reliability.
+				It is ideal for CPUSim64 beginners who want a clean, distraction-free editor that safely edits
+				plain text while still providing essentials like line numbering and search/replace.
+			</li>
+          </ul>
+        </div>
+
+        <div>
+          <h3 style="margin:0 0 8px;">macOS standouts <img class="logo" src="images/Logos/apple.svg" alt="macOS Logo" style="filter: invert(1);"></h3>
+          <ul>
+            <li>
+              <a href="https://www.barebones.com/products/bbedit/" target="_blank" rel="noopener">BBEdit</a> <img class="icon" src="images/Icons/paid.svg" alt="Paid"><img class="icon" src="images/Icons/proprietary.svg" alt="Proprietary">
+              — A long-time favorite on macOS for working with plain text. It’s reliable, fast, and has excellent tools for
+              search/replace, file management, and working with source code without “helpful” formatting surprises.
+            </li>
+            <li>
+              <a href="https://notepad-plus-plus-mac.org/" target="_blank" rel="noopener">Notepad++ Mac</a> <img class="icon" src="images/Icons/free.svg" alt="Free">
+              — A classic Windows editor but in a macOS native application.  It’s lightweight and practical, with tabs, plugins, and helpful tooling for plain-text code editing.
+            </li>
+            <li>
+              <a href="https://macromates.com/" target="_blank" rel="noopener">TextMate</a> <img class="icon" src="images/Icons/free.svg" alt="Free">
+              — A macOS-native editor known for its simplicity and speed. It’s a great option if you want something lighter than a full IDE.
+            </li>
+          </ul>
+        </div>
+
+        <div>
+          <h3 style="margin:0 0 8px;">Windows essentials <img class="logo" src="images/Logos/windows_color.svg" alt="Windows Logo"></h3>
+          <ul>
+            <li>
+              <a href="https://notepad-plus-plus.org/" target="_blank" rel="noopener">Notepad++</a> <img class="icon" src="images/Icons/free.svg" alt="Free">
+              — A classic Windows editor that’s lightweight and practical, with tabs, plugins, and helpful tooling for plain-text code editing.
+            </li>
+				<a href="https://www.editpadlite.com/" target="_blank" rel="noopener">EditPad Lite / EditPad Pro</a>  <img class="icon" src="images/Icons/free.svg" alt="Free"><img class="icon" src="images/Icons/paid.svg" alt="Paid"><img class="icon" src="images/Icons/proprietary.svg" alt="Proprietary">
+				— EditPad is a long-standing Windows text editor focused on simplicity and speed. It offers excellent search tools and clean plain-text editing, with the Pro version adding syntax highlighting and scripting.
+            <li>
+				<a href="https://www.pspad.com/" target="_blank" rel="noopener">PSPad</a> <img class="icon" src="images/Icons/free.svg" alt="Free">
+				— PSPad is a free Windows-only editor aimed at developers. It includes syntax highlighting, macro support, a built-in hex editor, and project management features, all while remaining lightweight.
+            </li>
+          </ul>
+        </div>
+      </div>
+	  <div>
+	  	Legend: <br/>
+	  	<img class="icon" src="images/Icons/free.svg" alt="Free"> Free & Open Source<br/>
+	  	<img class="icon" src="images/Icons/free.svg" alt="Free"><img class="icon" src="images/Icons/proprietary.svg" alt="Proprietary"> Free but Proprietary<br/>
+	  	<img class="icon" src="images/Icons/paid.svg" alt="Paid"><img class="icon" src="images/Icons/proprietary.svg" alt="Proprietary"> Paid Proprietary<br/>
+	  	<img class="icon" src="images/Icons/free.svg" alt="Free"><img class="icon" src="images/Icons/paid.svg" alt="Paid"><img class="icon" src="images/Icons/proprietary.svg" alt="Proprietary"> Free/Paid Proprietary<br/>
+	  </div>
+      <div class="note">
+        Pick an editor you’re comfortable with—just make sure it edits <em>plain text</em>.
+        That single choice will prevent a lot of mysterious assembly errors.
+      </div>
+    </section>
+
+    <section>
+      <h2>A quick “word processor damage” example</h2>
+      <p>
+        If a word processor silently converts quotes or hyphens, your code may look normal on screen but fail to assemble.
+        For example, smart quotes (<code>“ ”</code>) are different characters than plain quotes (<code>" "</code>).
+      </p>
+      <pre class="listing">; Good (plain ASCII quotes)
+PRINT "Hello, CPUSim64!"
+
+; Bad (smart quotes inserted by a word processor)
+PRINT “Hello, CPUSim64!”</pre>
+    </section>
+
+       <p>
+        Want a CPUSim64 syntax highlighting file for your favorite editor (VS Code, Sublime, Vim, etc.)?
+        That’s doable—and it makes assembly even easier to read.
+      </p>
+   <footer>
+		<p><a href="index.html">Overview</a> |
+		<a href="Architecture.html">Architecture&nbsp;Reference</a> |
+		<a href="Programmer_Guide.html">Programmer&nbsp;Guide</a> |
+		<a href="Directive_Reference.html">Directives&nbsp;Reference</a> |
+		<a href="Instruction_Set_Reference.html">Instruction&nbsp;Set&nbsp;Reference</a> |
+		<a href="Interrupt_Reference.html">Software&nbsp;Interrupt&nbsp;Reference</a> |
+		<a href="Library_Reference.html">Library&nbsp;Reference</a> |
+		<a href="http://www.pureprogrammer.org">Pure&nbsp;Programmer</a> |
+		<a href="https://form.jotform.com/261268744916164" target="_blank">Contact</a>
+		</p>
+		<p><a href="https://twitter.com/share" class="twitter-share-button" data-size="large" data-related="richlesh">Tweet</a>
+		<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+		<a href="https://twitter.com/richlesh" class="twitter-follow-button" data-show-count="false" data-size="large">Follow @richlesh</a>
+		<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script></p>
+		
+		<form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
+		<input type="hidden" name="cmd" value="_s-xclick">
+		<input type="hidden" name="hosted_button_id" value="P2877VYMJ3G64">
+		<input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif" name="submit" alt="PayPal - The safer, easier way to pay online!">
+		<img alt="" style="border:0;" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
+		</form>
+		<address>&copy;2025-2026 <a href="http://www.lesh.cloud/">Richard Lesh</a>.  All rights reserved.</address>
+    </footer>
+  </div>
+</body>
+</html>
