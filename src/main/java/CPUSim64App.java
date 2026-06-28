@@ -277,6 +277,29 @@ public class CPUSim64App {
                 } catch (javax.swing.text.BadLocationException ignored) {}
             }
         });
+        codeEditor.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_BACK_SPACE, 0), "smart-backspace");
+        codeEditor.getActionMap().put("smart-backspace", new javax.swing.AbstractAction() {
+            public void actionPerformed(java.awt.event.ActionEvent e) {
+                try {
+                    if (codeEditor.getSelectedText() != null) {
+                        codeEditor.replaceSelection("");
+                        return;
+                    }
+                    int pos = codeEditor.getCaretPosition();
+                    if (pos == 0) return;
+                    int lineStart = javax.swing.text.Utilities.getRowStart(codeEditor, pos);
+                    int col = pos - lineStart;
+                    String lineText = codeEditor.getText(lineStart, col);
+                    if (col > 0 && lineText.trim().isEmpty()) {
+                        int target = ((col - 1) / 4) * 4;
+                        int del = col - target;
+                        codeEditor.getDocument().remove(pos - del, del);
+                    } else {
+                        codeEditor.getDocument().remove(pos - 1, 1);
+                    }
+                } catch (javax.swing.text.BadLocationException ignored) {}
+            }
+        });
         codeEditor.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 14));
         FontMetrics fm = codeEditor.getFontMetrics(codeEditor.getFont());
         int tabWidth = fm.charWidth(' ') * 4;
