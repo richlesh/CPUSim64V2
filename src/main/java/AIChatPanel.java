@@ -524,7 +524,6 @@ public class AIChatPanel extends JPanel {
 
         javax.swing.text.Style code = doc.addStyle("code", normal);
         StyleConstants.setFontFamily(code, Font.MONOSPACED);
-        StyleConstants.setBackground(code, new Color(0xe8, 0xe8, 0xe8));
 
         javax.swing.text.Style header = doc.addStyle("header", normal);
         StyleConstants.setBold(header, true);
@@ -744,7 +743,7 @@ public class AIChatPanel extends JPanel {
         // LaTeX math: $...$  — replace with placeholder snowman character
         s = renderLatexInline(s, mathIcons, fontSize);
         // Code spans
-        s = s.replaceAll("`([^`]+)`", "<code style='background:#e8e8e8;'>$1</code>");
+        s = s.replaceAll("`([^`]+)`", "<code>$1</code>");
         // Bold
         s = s.replaceAll("\\*\\*(.+?)\\*\\*", "<b>$1</b>");
         s = s.replaceAll("__(.+?)__", "<b>$1</b>");
