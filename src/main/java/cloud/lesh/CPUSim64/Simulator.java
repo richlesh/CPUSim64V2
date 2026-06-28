@@ -802,6 +802,7 @@ public class Simulator {
 		String fmt = "%5d:%-60.60s" + fmtAddress + " ";
 
 		while (running) {
+			if (Thread.currentThread().isInterrupted()) { running = false; break; }
 			long pc = R[R_PC];
 			long instr = memRead(pc);	// This increments cycles by 1
 			R[R_PC] = pc + 1;

@@ -53,6 +53,7 @@ public class CPUSim64App {
     private JToolBar consoleToolBar;
     private JMenuItem runItem, debugItem;
     private JButton runBtn, debugBtn;
+    private volatile Thread runThread;
 
     public static void main(String[] args) {
         if (args.length > 0 && args[0].equals("--uninstall")) {
@@ -506,6 +507,10 @@ public class CPUSim64App {
     }
 
     private void runFile() {
+        if (runThread != null) {
+            runThread.interrupt();
+            return;
+        }
         runWithMode(null);
     }
 
@@ -523,6 +528,8 @@ public class CPUSim64App {
         final String objFile = base + ".o64";
 
         new Thread(() -> {
+            runThread = Thread.currentThread();
+            SwingUtilities.invokeLater(() -> { runBtn.setText("Stop"); runItem.setText("Stop"); });
             PrintStream origOut = System.out;
             PrintStream origErr = System.err;
             InputStream origIn = System.in;
@@ -584,7 +591,9 @@ public class CPUSim64App {
                 System.setOut(origOut);
                 System.setErr(origErr);
                 System.setIn(origIn);
+                runThread = null;
                 SwingUtilities.invokeLater(() -> {
+                    runBtn.setText("Run"); runItem.setText("Run");
                     for (var kl : console.getKeyListeners()) console.removeKeyListener(kl);
                     console.setEditable(false);
                 });
