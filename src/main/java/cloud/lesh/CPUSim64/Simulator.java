@@ -1840,9 +1840,9 @@ public class Simulator {
 				else if (bytes < 0 || bytes > 8)
 					throw new CPUException("OUT number of bytes must be 0-8");
 				var ph = getPortHandler(port);
-				ph.setPort(port);
 				if (ph == null)
-					throw new CPUException("OUT port " + port + " handler not set");
+					throw new CPUException("OUT: no handler registered for port " + port);
+				ph.setPort(port);
 				if (bytes == 0)
 					ph.writeChar((int)val);
 				else
@@ -1865,9 +1865,9 @@ public class Simulator {
 				else if (bytes < 0 || bytes > 8)
 					throw new CPUException("IN number of bytes must be 0-8");
 				var ph = getPortHandler(port);
-				ph.setPort(port);
 				if (ph == null)
-					throw new CPUException("IN port " + port + " handler not set");
+					throw new CPUException("IN: no handler registered for port " + port);
+				ph.setPort(port);
 				long val = 0;
 				if (bytes == 0)
 					val = ph.readChar();
