@@ -28,6 +28,7 @@ public class AIChatPanel extends JPanel {
     private JLabel pulsingAiLabel;
     private javax.swing.Timer pulseTimer;
     private Runnable onCodeChanged;
+    private Runnable statusUpdater;
     private volatile Thread currentThread;
 
     public AIChatPanel(JTextPane codeEditor, JTextArea console, AppSettings settings) {
@@ -86,8 +87,23 @@ public class AIChatPanel extends JPanel {
         inputPanel.add(inputScroll, BorderLayout.CENTER);
         inputPanel.add(sendBtn, BorderLayout.EAST);
 
+        JLabel statusBar = new JLabel(" ");
+        statusBar.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 10));
+        statusBar.setBorder(BorderFactory.createEmptyBorder(2, 4, 2, 4));
+        this.statusUpdater = () -> {
+            int sp = systemPrompt.length();
+            int prog = codeEditor.getText().length();
+            int out = console.getText().length();
+            statusBar.setText(String.format("LLM System Prompt: %,d chars    Current Program: %,d chars    Current Output: %,d chars", sp, prog, out));
+        };
+        statusUpdater.run();
+
+        JPanel southPanel = new JPanel(new BorderLayout());
+        southPanel.add(inputPanel, BorderLayout.CENTER);
+        southPanel.add(statusBar, BorderLayout.SOUTH);
+
         add(chatScroll, BorderLayout.CENTER);
-        add(inputPanel, BorderLayout.SOUTH);
+        add(southPanel, BorderLayout.SOUTH);
 
         sendBtn.addActionListener(e -> sendMessage());
     }
@@ -119,6 +135,7 @@ public class AIChatPanel extends JPanel {
         if (text.isEmpty()) return;
         inputArea.setText("");
         addUserBubble(text);
+        statusUpdater.run();
 
         String context = "Current source code:\n```\n" + codeEditor.getText() + "\n```\n\n"
             + "Console output:\n```\n" + console.getText() + "\n```";
@@ -459,13 +476,13 @@ public class AIChatPanel extends JPanel {
             for (String name : readIndex("/documentation/examples-index.txt")) {
                 String content = readResource("/documentation/" + name);
                 if (content == null) continue;
-                if (content.length() > 3000) content = content.substring(0, 3000);
+                if (content.length() > 10000) content = content.substring(0, 10000);
                 sb.append("\n--- Example: ").append(name.substring(name.lastIndexOf('/') + 1)).append(" ---\n").append(content).append("\n");
             }
             for (String name : readIndex("/documentation/projects-index.txt")) {
                 String content = readResource("/documentation/" + name);
                 if (content == null) continue;
-                if (content.length() > 3000) content = content.substring(0, 3000);
+                if (content.length() > 10000) content = content.substring(0, 10000);
                 sb.append("\n--- Project: ").append(name.substring(name.lastIndexOf('/') + 1)).append(" ---\n").append(content).append("\n");
             }
         } catch (Exception ignored) {}
