@@ -398,7 +398,27 @@ public class CPUSim64App {
     void loadFile(Path path) {
         try {
             highlightingInProgress = true;
-            codeEditor.setText(Files.readString(path));
+            String content = Files.readString(path);
+            if (content.indexOf('\t') >= 0) {
+                StringBuilder sb = new StringBuilder();
+                int col = 0;
+                for (int i = 0; i < content.length(); i++) {
+                    char c = content.charAt(i);
+                    if (c == '\t') {
+                        int spaces = 4 - (col % 4);
+                        sb.append(" ".repeat(spaces));
+                        col += spaces;
+                    } else if (c == '\n') {
+                        sb.append(c);
+                        col = 0;
+                    } else {
+                        sb.append(c);
+                        col++;
+                    }
+                }
+                content = sb.toString();
+            }
+            codeEditor.setText(content);
             codeEditor.setCaretPosition(0);
             highlightingInProgress = false;
             currentFile = path;
