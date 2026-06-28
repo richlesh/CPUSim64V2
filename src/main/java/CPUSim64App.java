@@ -43,6 +43,10 @@ public class CPUSim64App {
     private UndoManager undoManager = new UndoManager();
     private boolean highlightingInProgress = false;
     private boolean undoInProgress = false;
+    private final java.util.Deque<String> undoStack = new java.util.ArrayDeque<>();
+    private final java.util.Deque<String> redoStack = new java.util.ArrayDeque<>();
+    private static final int MAX_UNDO = 200;
+    private String lastSavedText = "";
     private boolean modified = false;
     private JMenuItem saveItem;
     private JMenuItem undoItem, redoItem;
@@ -204,11 +208,11 @@ public class CPUSim64App {
         JMenu editMenu = new JMenu("Edit");
         undoItem = new JMenuItem("Undo");
         undoItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Z, Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx()));
-        undoItem.addActionListener(e -> { if (undoManager.canUndo()) { undoInProgress = true; undoManager.undo(); undoInProgress = false; } updateUndoRedo(); });
+        undoItem.addActionListener(e -> performUndo());
         undoItem.setEnabled(false);
         redoItem = new JMenuItem("Redo");
         redoItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Z, Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx() | KeyEvent.SHIFT_DOWN_MASK));
-        redoItem.addActionListener(e -> { if (undoManager.canRedo()) { undoInProgress = true; undoManager.redo(); undoInProgress = false; } updateUndoRedo(); });
+        redoItem.addActionListener(e -> performRedo());
         JMenuItem cutItem = new JMenuItem("Cut");
         cutItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X, Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx()));
         cutItem.addActionListener(e -> codeEditor.cut());
@@ -307,11 +311,11 @@ public class CPUSim64App {
         int mod = Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx();
         codeEditor.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_Z, mod), "safe-undo");
         codeEditor.getActionMap().put("safe-undo", new javax.swing.AbstractAction() {
-            public void actionPerformed(java.awt.event.ActionEvent e) { if (undoManager.canUndo()) { undoInProgress = true; undoManager.undo(); undoInProgress = false; } updateUndoRedo(); }
+            public void actionPerformed(java.awt.event.ActionEvent e) { performUndo(); }
         });
         codeEditor.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_Z, mod | KeyEvent.SHIFT_DOWN_MASK), "safe-redo");
         codeEditor.getActionMap().put("safe-redo", new javax.swing.AbstractAction() {
-            public void actionPerformed(java.awt.event.ActionEvent e) { if (undoManager.canRedo()) { undoInProgress = true; undoManager.redo(); undoInProgress = false; } updateUndoRedo(); }
+            public void actionPerformed(java.awt.event.ActionEvent e) { performRedo(); }
         });
         codeEditor.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 14));
         FontMetrics fm = codeEditor.getFontMetrics(codeEditor.getFont());
@@ -365,13 +369,19 @@ public class CPUSim64App {
             public void removeUpdate(DocumentEvent e) { highlightTimer.restart(); markModified(); }
             public void changedUpdate(DocumentEvent e) {}
         });
-        codeEditor.getDocument().addUndoableEditListener(e -> {
-            if (!highlightingInProgress && !undoInProgress) {
-                String type = e.getEdit().getPresentationName();
-                if ("addition".equals(type) || "deletion".equals(type)) {
-                    undoManager.addEdit(e.getEdit());
-                    updateUndoRedo();
-                }
+        codeEditor.getDocument().addDocumentListener(new DocumentListener() {
+            public void insertUpdate(DocumentEvent e) { recordUndo(); }
+            public void removeUpdate(DocumentEvent e) { recordUndo(); }
+            public void changedUpdate(DocumentEvent e) {}
+            private void recordUndo() {
+                if (highlightingInProgress || undoInProgress) return;
+                String current = codeEditor.getText();
+                if (current.equals(lastSavedText)) return;
+                undoStack.push(lastSavedText);
+                if (undoStack.size() > MAX_UNDO) ((java.util.ArrayDeque<String>)undoStack).removeLast();
+                redoStack.clear();
+                lastSavedText = current;
+                updateUndoRedo();
             }
         });
         JScrollPane editorScroll = new JScrollPane(codeEditor);
@@ -461,6 +471,9 @@ public class CPUSim64App {
             currentFile = path;
             frame.setTitle("CPUSim64 - " + path.getFileName());
             undoManager.discardAllEdits();
+            undoStack.clear();
+            redoStack.clear();
+            lastSavedText = codeEditor.getText();
             modified = false;
             saveItem.setEnabled(false);
             updateUndoRedo();
@@ -509,8 +522,34 @@ public class CPUSim64App {
     }
 
     private void updateUndoRedo() {
-        undoItem.setEnabled(undoManager.canUndo());
-        redoItem.setEnabled(undoManager.canRedo());
+        undoItem.setEnabled(!undoStack.isEmpty());
+        redoItem.setEnabled(!redoStack.isEmpty());
+    }
+
+    private void performUndo() {
+        if (undoStack.isEmpty()) return;
+        undoInProgress = true;
+        redoStack.push(lastSavedText);
+        lastSavedText = undoStack.pop();
+        int caret = codeEditor.getCaretPosition();
+        codeEditor.setText(lastSavedText);
+        codeEditor.setCaretPosition(Math.min(caret, lastSavedText.length()));
+        undoInProgress = false;
+        updateUndoRedo();
+        highlighter.highlight();
+    }
+
+    private void performRedo() {
+        if (redoStack.isEmpty()) return;
+        undoInProgress = true;
+        undoStack.push(lastSavedText);
+        lastSavedText = redoStack.pop();
+        int caret = codeEditor.getCaretPosition();
+        codeEditor.setText(lastSavedText);
+        codeEditor.setCaretPosition(Math.min(caret, lastSavedText.length()));
+        undoInProgress = false;
+        updateUndoRedo();
+        highlighter.highlight();
     }
 
     /** Returns true if it's safe to proceed (saved or discarded), false if cancelled. */
