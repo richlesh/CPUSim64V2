@@ -802,7 +802,7 @@ public class Simulator {
 		String fmt = "%5d:%-60.60s" + fmtAddress + " ";
 
 		while (running) {
-			if (Thread.currentThread().isInterrupted()) { running = false; break; }
+			if (Thread.currentThread().isInterrupted()) { stopAll(); break; }
 			long pc = R[R_PC];
 			long instr = memRead(pc);	// This increments cycles by 1
 			R[R_PC] = pc + 1;
@@ -2833,6 +2833,12 @@ public class Simulator {
 	public long getHeapStart() { return heapStart; }
 	public boolean isRunning() { return running; }
 	public void stop() { running = false; }
+	public void stopAll() {
+		running = false;
+		synchronized (childCPUs) {
+			for (var child : childCPUs) child.stopAll();
+		}
+	}
 	public Map<Long, String> getReverseSymbolMap() { return reverseSymbolMap; }
 
 	public String disassembleOne(long addr) {
