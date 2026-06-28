@@ -46,6 +46,7 @@ public class CPUSim64App {
     private JMenuItem saveItem;
     private FindReplaceDialog findReplaceDialog;
     private AIChatPanel aiChatPanel;
+    private File lastDirectory;
     private JSplitPane mainSplit;
     private LineNumberPanel lineNumberPanel;
     private JMenuBar menuBar;
@@ -386,9 +387,10 @@ public class CPUSim64App {
 
     private void openFile() {
         if (!promptSaveIfNeeded()) return;
-        JFileChooser chooser = new JFileChooser();
+        JFileChooser chooser = new JFileChooser(lastDirectory != null ? lastDirectory : new File(System.getProperty("user.dir")));
         chooser.setFileFilter(new javax.swing.filechooser.FileNameExtensionFilter("Assembly Files", "asm"));
         if (chooser.showOpenDialog(frame) == JFileChooser.APPROVE_OPTION) {
+            lastDirectory = chooser.getSelectedFile().getParentFile();
             loadFile(chooser.getSelectedFile().toPath());
         }
     }
@@ -426,10 +428,11 @@ public class CPUSim64App {
     }
 
     private void saveFileAs() {
-        JFileChooser chooser = new JFileChooser();
+        JFileChooser chooser = new JFileChooser(lastDirectory != null ? lastDirectory : new File(System.getProperty("user.dir")));
         chooser.setFileFilter(new javax.swing.filechooser.FileNameExtensionFilter("Assembly Files", "asm"));
         if (currentFile != null) chooser.setSelectedFile(currentFile.toFile());
         if (chooser.showSaveDialog(frame) == JFileChooser.APPROVE_OPTION) {
+            lastDirectory = chooser.getSelectedFile().getParentFile();
             currentFile = chooser.getSelectedFile().toPath();
             if (!currentFile.toString().endsWith(".asm")) {
                 currentFile = Path.of(currentFile.toString() + ".asm");
