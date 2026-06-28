@@ -100,7 +100,7 @@ jump	MATH_ASM_END
 #end_func
 
 #def_func	exp2(x)
-	move	f1, 2.
+	load	f1, 2.
 	load	f2, x
 	int		iPOW
 #end_func

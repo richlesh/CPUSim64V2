@@ -6,13 +6,13 @@
 	#call	main()
 	int		iEXIT
 
-PIDS:	dca	8
-X_MIN:	DCF	-2.5
-X_MAX:	DCF	0.5
-Y_MIN:	DCF	-1.5
-Y_MAX:	DCF	1.5
-MAX_ITERATION:	DCI 50
-ONE_HALF: DCF 0.5
+#global PIDS:	.dca	8
+#global gX_MIN:	.dcf	-2.5
+#global gX_MAX:	.dcf	0.5
+#global gY_MIN:	.dcf	-1.5
+#global gY_MAX:	.dcf	1.5
+#global gMAX_ITERATION:	.dci 50
+kONE_HALF: .dcf 0.5
 
 #def_func	main()
 	#var	argc, escape_limit, imageSize, filename, pid, i, numChildren, firstRow, lastRow
@@ -21,7 +21,7 @@ ONE_HALF: DCF 0.5
 	int		iARGC
 	move	argc, r0
 	cmp		argc, 7
-	jump	lt, @GET_ARGS_FAILED
+	jump	lt, GET_ARGS_FAILED
 GET_ARGS:
 	move	r0, 1
 	int		iARGS
@@ -39,7 +39,7 @@ GET_ARGS:
 	int		iARGS
 	int		iPARSE_INT
 	move	escape_limit, r0
-	store	escape_limit, MAX_ITERATION
+	store	escape_limit, gMAX_ITERATION
 	move	r0, 5
 	int		iARGS
 	int		iPARSE_INT
@@ -51,18 +51,18 @@ GET_ARGS:
 
 // Compute limits of image
 	sub		x_min, x, radius
-	store	x_min, X_MIN
+	store	x_min, gX_MIN
 	add		x_max, x, radius
-	store	x_max, X_MAX
+	store	x_max, gX_MAX
 	sub		y_min, y, radius
-	store	y_min, Y_MIN
+	store	y_min, gY_MIN
 	add		y_max, y, radius
-	store	y_max, Y_MAX
+	store	y_max, gY_MAX
 	#call	fprintf(STDOUT, "Image Bounds: %f, %f, %f, %f\n", x_min, x_max, y_min, y_max)
 
 	load	numChildren, PIDS[-1]
 	move	firstRow, 0
-	#for	i, 0, lt, numChildren, 1
+	#for	0, i < numChildren, 1
 		move	f0, imageSize
 		div		f0, numChildren
 		add		r0, i, 1
@@ -78,7 +78,7 @@ GET_ARGS:
 		#end_cond
 		move	firstRow, lastRow
 	#end_for
-	#for	i, 0, lt, numChildren, 1
+	#for	0, i < numChildren, 1
 		load	pid, PIDS[i]
 		#if_cond	pid, gt, 0
 			#call	fprintf(STDOUT, "Waiting for %d...\n", pid)
@@ -88,7 +88,7 @@ GET_ARGS:
 	#end_for
 	#call	combine_output(filename, imageSize)
 	#return	0
-	jump	@MAIN_END
+	jump	MAIN_END
 GET_ARGS_FAILED:
 	#call	puts("Syntax: mandelbrot x y radius escape_limit image_size filename")
 	#return	1
@@ -105,12 +105,12 @@ MAIN_END:
 	int		iFORK
 	move	child_pid, r0
 	cmp		child_pid, -1
-	jump	eq, @FORK_FAILED
+	jump	eq, FORK_FAILED
 	test	child_pid
-	jump	z, @CHILD_FORK
+	jump	z, CHILD_FORK
 //	#call	fprintf(STDOUT,"Child %s forked: %d\n", childName, r0)
 	#return	child_pid
-	jump	@END
+	jump	END
 CHILD_FORK:
 	#call	fprintf(STDOUT,"Child %s executing...%d %d %d\n", childName, first, last, w)
 // Create text file in write mode.
@@ -119,7 +119,7 @@ CHILD_FORK:
 	move	port, r0
 // If the port returned is -1 we failed.
 	cmp		port, -1
-	jump	z, @ENDIF1
+	jump	z, ENDIF1
 	#call	compute_mandelbrot(port, first, last, w)
 // Close the file
 	#call	closeFile(port)
@@ -140,15 +140,15 @@ END:
 	load	last, lastRow
 	load	w, width
 	load	p, port
-	load	xMin, X_MIN
-	load	xMax, X_MAX
-	load	yMin, Y_MIN
-	load	yMax, Y_MAX
-	load	one_half, ONE_HALF
+	load	xMin, gX_MIN
+	load	xMax, gX_MAX
+	load	yMin, gY_MIN
+	load	yMax, gY_MAX
+	load	one_half, kONE_HALF
 	sub		xWidth, xMax, xMin
 	sub		yHeight, yMax, yMin
 	#for	j, first, lt, last, 1
-		#for	i, 0, lt, w, 1
+		#for	0, i < w, 1
 			#if_cond	i, ne, 0
 				div		quotient, remainder, i, 20
 				cmp		remainder, 0
@@ -176,22 +176,23 @@ END:
 	#end_for
 #end_func
 
-FOUR:		DCF 4.0
-#def_func	compute_escape(fp x0, fp y0)
+kFOUR:		.dcf 4.0
+#def_func	compute_escape(x0_arg, y0_arg)
 	#var	iteration, max_iteration
-	#fvar	x, y, x2, y2, four, one_half, normalized
-	load	max_iteration, MAX_ITERATION
+	#fvar	x, y, x0, y0, x2, y2, four, one_half, normalized
+	load	max_iteration, gMAX_ITERATION
 	clear	iteration
 	clear	x2
 	clear	y2
 	clear	x
 	clear	y
-	load	four, FOUR
+	load	four, kFOUR
+    load    x0, x0_arg
+    load    y0, y0_arg
 	push	r1
-	#LOAD_ARGS
 
 //#call debug(STDOUT,"compute_escape(%f,%f)\n", x0, y0)
-	jump	@LOOP_COND
+	jump	LOOP_COND
 LOOP_START:
 //    y:= 2 * x * y + y0
 	mult	y, x
@@ -209,11 +210,11 @@ LOOP_START:
 LOOP_COND:
 // while (x2 + y2 ≤ 4 and iteration < max_iteration) do
 	add		f0, x2, y2
-	COMPARE(f0, le, four)
+	#macro COMPARE(f0, le, four)
 	move	r1, r0
-	COMPARE(iteration, lt, max_iteration)
+	#macro COMPARE(iteration, lt, max_iteration)
 	and		r0, r1
-	jump	nz, @LOOP_START
+	jump	nz, LOOP_START
     
     pop		r1
     #if_cond	iteration, eq, max_iteration
@@ -242,7 +243,7 @@ LOOP_COND:
 	
 	load	numChildren, PIDS[-1]
 	#call	fprintf(STDOUT, "NUM FILES: %d\n", numChildren)
-	#for	i, 0, lt, numChildren, 1
+	#for	0, i < numChildren, 1
 #call fprintf(STDOUT, "Merging %d\n", i)
 		#call	sprintf("%s_%d.tmp", fn, i)
 		move	tempFile, r0
