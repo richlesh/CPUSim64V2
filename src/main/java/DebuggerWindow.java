@@ -77,6 +77,11 @@ public class DebuggerWindow extends JFrame {
                     if (console.getCaretPosition() < inputStart && e.getKeyCode() != KeyEvent.VK_ENTER) {
                         console.setCaretPosition(console.getDocument().getLength());
                     }
+                    if (e.getKeyCode() == KeyEvent.VK_D && (e.getModifiersEx() & KeyEvent.CTRL_DOWN_MASK) != 0) {
+                        e.consume();
+                        try { inputPipe.close(); } catch (Exception ignored) {}
+                        return;
+                    }
                     if (e.getKeyCode() == KeyEvent.VK_ENTER) {
                         String text = console.getText().substring(inputStart) + "\n";
                         inputStart = console.getDocument().getLength() + 1;

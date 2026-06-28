@@ -752,6 +752,11 @@ public class CPUSim64App {
                 if (console.getCaretPosition() < inputStart && e.getKeyCode() != KeyEvent.VK_ENTER) {
                     console.setCaretPosition(console.getDocument().getLength());
                 }
+                if (e.getKeyCode() == KeyEvent.VK_D && (e.getModifiersEx() & KeyEvent.CTRL_DOWN_MASK) != 0) {
+                    e.consume();
+                    try { pipe.close(); } catch (Exception ignored) {}
+                    return;
+                }
                 if (e.getKeyCode() == KeyEvent.VK_ENTER) {
                     e.consume();
                     try {
