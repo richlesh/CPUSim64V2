@@ -2448,7 +2448,6 @@ public class Simulator {
 		Simulator childCPU;
 		try {
 			childCPU = new Simulator(this, true);
-			childCPU.setR(R_PC, childCPU.getR(R_PC) + 1);
 			childCPU.setR(0, 0);
 			ChildProcess child = new ChildProcess(childCPU, this);
 			synchronized (childCPUs) {
