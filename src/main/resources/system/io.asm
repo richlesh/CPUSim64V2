@@ -489,18 +489,34 @@ jump	IO_ASM_END
 		move	r1, foundPort
 		move	r2, fn
 		int		iOPEN_FILE_READ
+		test	r0
+		#if_cond_sr z
+			#call	__unsetPortMap(foundPort)
+			#return	-1
+		#end_cond_sr
 		#return foundPort
 	#else_if_cond	m, eq, WRITE_MODE
 		move	r1, foundPort
 		move	r2, fn
 		int		iOPEN_FILE_WRITE
+		test	r0
+		#if_cond_sr z
+			#call	__unsetPortMap(foundPort)
+			#return	-1
+		#end_cond_sr
 		#return foundPort
 	#else_if_cond	m, eq, APPEND_MODE
 		move	r1, foundPort
 		move	r2, fn
 		int		iOPEN_FILE_APPEND
+		test	r0
+		#if_cond_sr z
+			#call	__unsetPortMap(foundPort)
+			#return	-1
+		#end_cond_sr
 		#return foundPort
 	#else_cond
+		#call	__unsetPortMap(foundPort)
 		#return	-1				// not a valid mode
 	#end_cond
 #end_func
@@ -519,16 +535,31 @@ jump	IO_ASM_END
 		move	r1, foundPort
 		move	r2, fn
 		int		iOPEN_RAW_FILE_READ
+		test	r0
+		#if_cond_sr z
+			#call	__unsetPortMap(foundPort)
+			#return	-1
+		#end_cond_sr
 		#return foundPort
 	#else_if_cond	m, eq, WRITE_MODE
 		move	r1, foundPort
 		move	r2, fn
 		int		iOPEN_RAW_FILE_WRITE
+		test	r0
+		#if_cond_sr z
+			#call	__unsetPortMap(foundPort)
+			#return	-1
+		#end_cond_sr
 		#return foundPort
 	#else_if_cond	m, eq, APPEND_MODE
 		move	r1, foundPort
 		move	r2, fn
 		int		iOPEN_RAW_FILE_APPEND
+		test	r0
+		#if_cond_sr z
+			#call	__unsetPortMap(foundPort)
+			#return	-1
+		#end_cond_sr
 		#return foundPort
 	#else_cond
 		#call	__unsetPortMap(foundPort)
