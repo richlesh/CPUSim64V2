@@ -21,7 +21,7 @@ ONE_HALF: DCF 0.5
 	int		iARGC
 	move	argc, r0
 	cmp		argc, 7
-	jump	lt, @GET_ARGS_FAILED
+	jump	lt, GET_ARGS_FAILED
 GET_ARGS:
 	move	r0, 1
 	int		iARGS
@@ -88,7 +88,7 @@ GET_ARGS:
 	#end_for
 	#call	combine_output(filename, imageSize)
 	#return	0
-	jump	@MAIN_END
+	jump	MAIN_END
 GET_ARGS_FAILED:
 	#call	puts("Syntax: mandelbrot x y radius escape_limit image_size filename")
 	#return	1
@@ -105,12 +105,12 @@ MAIN_END:
 	int		iFORK
 	move	child_pid, r0
 	cmp		child_pid, -1
-	jump	eq, @FORK_FAILED
+	jump	eq, FORK_FAILED
 	test	child_pid
-	jump	z, @CHILD_FORK
+	jump	z, CHILD_FORK
 //	#call	fprintf(STDOUT,"Child %s forked: %d\n", childName, r0)
 	#return	child_pid
-	jump	@END
+	jump	END
 CHILD_FORK:
 	#call	fprintf(STDOUT,"Child %s executing...%d %d %d\n", childName, first, last, w)
 // Create text file in write mode.
@@ -119,7 +119,7 @@ CHILD_FORK:
 	move	port, r0
 // If the port returned is -1 we failed.
 	cmp		port, -1
-	jump	z, @ENDIF1
+	jump	z, ENDIF1
 	#call	compute_mandelbrot(port, first, last, w)
 // Close the file
 	#call	closeFile(port)
@@ -191,7 +191,7 @@ FOUR:		DCF 4.0
 	#LOAD_ARGS
 
 //#call debug(STDOUT,"compute_escape(%f,%f)\n", x0, y0)
-	jump	@LOOP_COND
+	jump	LOOP_COND
 LOOP_START:
 //    y:= 2 * x * y + y0
 	mult	y, x
@@ -213,7 +213,7 @@ LOOP_COND:
 	move	r1, r0
 	COMPARE(iteration, lt, max_iteration)
 	and		r0, r1
-	jump	nz, @LOOP_START
+	jump	nz, LOOP_START
     
     pop		r1
     #if_cond	iteration, eq, max_iteration

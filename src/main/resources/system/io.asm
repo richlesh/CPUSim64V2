@@ -642,17 +642,22 @@ jump	IO_ASM_END
 #end_func
 
 #def_func	copy_text_file(fromPort, toPort)
-	#var	line, fp, tp
+	#var	line, fp, tp, buffer
 	load	fp, fromPort
 	load	tp, toPort
-	#call	fgetline(fp)
+	#call	alloc(1024)
+	move	buffer, r0
+	move	line, buffer
+	#call	fgetline(fp, line)
 	move	line, r0
 	#while	line, ne, 0
+	    move    buffer, line
 		#call	fputs(tp, line)
 		#call	fput_nl(tp)
-		#call	fgetline(fp)
+		#call	fgetline(fp, line)
 		move	line, r0
 	#end_while
+	#call	free(buffer)
 #end_func
 
 #def_func	copy_raw_file(fromPort, toPort)
