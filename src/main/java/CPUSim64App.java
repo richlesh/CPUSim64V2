@@ -44,6 +44,7 @@ public class CPUSim64App {
     private boolean highlightingInProgress = false;
     private boolean modified = false;
     private JMenuItem saveItem;
+    private JMenuItem undoItem, redoItem;
     private FindReplaceDialog findReplaceDialog;
     private AIChatPanel aiChatPanel;
     private File lastDirectory;
@@ -200,12 +201,13 @@ public class CPUSim64App {
 
         // Edit menu
         JMenu editMenu = new JMenu("Edit");
-        JMenuItem undoItem = new JMenuItem("Undo");
+        undoItem = new JMenuItem("Undo");
         undoItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Z, Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx()));
-        undoItem.addActionListener(e -> { if (undoManager.canUndo()) undoManager.undo(); });
-        JMenuItem redoItem = new JMenuItem("Redo");
+        undoItem.addActionListener(e -> { if (undoManager.canUndo()) undoManager.undo(); updateUndoRedo(); });
+        undoItem.setEnabled(false);
+        redoItem = new JMenuItem("Redo");
         redoItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Z, Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx() | KeyEvent.SHIFT_DOWN_MASK));
-        redoItem.addActionListener(e -> { if (undoManager.canRedo()) undoManager.redo(); });
+        redoItem.addActionListener(e -> { if (undoManager.canRedo()) undoManager.redo(); updateUndoRedo(); });
         JMenuItem cutItem = new JMenuItem("Cut");
         cutItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X, Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx()));
         cutItem.addActionListener(e -> codeEditor.cut());
@@ -304,11 +306,11 @@ public class CPUSim64App {
         int mod = Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx();
         codeEditor.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_Z, mod), "safe-undo");
         codeEditor.getActionMap().put("safe-undo", new javax.swing.AbstractAction() {
-            public void actionPerformed(java.awt.event.ActionEvent e) { if (undoManager.canUndo()) undoManager.undo(); }
+            public void actionPerformed(java.awt.event.ActionEvent e) { if (undoManager.canUndo()) undoManager.undo(); updateUndoRedo(); }
         });
         codeEditor.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_Z, mod | KeyEvent.SHIFT_DOWN_MASK), "safe-redo");
         codeEditor.getActionMap().put("safe-redo", new javax.swing.AbstractAction() {
-            public void actionPerformed(java.awt.event.ActionEvent e) { if (undoManager.canRedo()) undoManager.redo(); }
+            public void actionPerformed(java.awt.event.ActionEvent e) { if (undoManager.canRedo()) undoManager.redo(); updateUndoRedo(); }
         });
         codeEditor.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 14));
         FontMetrics fm = codeEditor.getFontMetrics(codeEditor.getFont());
@@ -459,6 +461,7 @@ public class CPUSim64App {
             undoManager.discardAllEdits();
             modified = false;
             saveItem.setEnabled(false);
+            updateUndoRedo();
             highlighter.highlight();
         } catch (IOException e) {
             highlightingInProgress = false;
@@ -500,6 +503,12 @@ public class CPUSim64App {
             modified = true;
             saveItem.setEnabled(true);
         }
+        updateUndoRedo();
+    }
+
+    private void updateUndoRedo() {
+        undoItem.setEnabled(undoManager.canUndo());
+        redoItem.setEnabled(undoManager.canRedo());
     }
 
     /** Returns true if it's safe to proceed (saved or discarded), false if cancelled. */
