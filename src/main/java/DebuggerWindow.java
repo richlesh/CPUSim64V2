@@ -119,7 +119,7 @@ public class DebuggerWindow extends JFrame {
         if (userArgs != null && !userArgs.isEmpty()) {
             for (String a : userArgs.split("\\s+")) simArgs.add(a);
         }
-        sim = new Simulator(1048576, 0, 8192, simArgs.toArray(new String[0]));
+        sim = new Simulator(settings.heapSize, 0, settings.stackSize, simArgs.toArray(new String[0]));
         sim.setDebug(true);
         sim.loadProgram(program, 0L, reverseSymbolMap);
         startPC = program.get(0);

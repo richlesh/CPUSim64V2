@@ -417,6 +417,26 @@ public class CPUSim64App {
         argsField = new JTextField(20);
         argsField.setMaximumSize(new Dimension(300, 24));
         consoleToolBar.add(argsField);
+        consoleToolBar.addSeparator();
+        consoleToolBar.add(new JLabel("Heap: "));
+        JTextField heapField = new JTextField(String.valueOf(settings.heapSize), 8);
+        heapField.setMaximumSize(new Dimension(100, 24));
+        heapField.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent e) {
+                try { settings.heapSize = Integer.parseInt(heapField.getText().trim()); settings.save(); } catch (NumberFormatException ignored) {}
+            }
+        });
+        consoleToolBar.add(heapField);
+        consoleToolBar.addSeparator();
+        consoleToolBar.add(new JLabel("Stack: "));
+        JTextField stackField = new JTextField(String.valueOf(settings.stackSize), 6);
+        stackField.setMaximumSize(new Dimension(80, 24));
+        stackField.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent e) {
+                try { settings.stackSize = Integer.parseInt(stackField.getText().trim()); settings.save(); } catch (NumberFormatException ignored) {}
+            }
+        });
+        consoleToolBar.add(stackField);
 
         JPanel consolePanel = new JPanel(new BorderLayout());
         consolePanel.add(consoleToolBar, BorderLayout.NORTH);
@@ -677,6 +697,8 @@ public class CPUSim64App {
                 java.util.List<String> simArgs = new java.util.ArrayList<>();
                 simArgs.add(objFile);
                 simArgs.add("--verbose");
+                simArgs.add("--mem=" + settings.heapSize);
+                simArgs.add("--stack=" + settings.stackSize);
                 if (mode != null) simArgs.add(mode);
                 String userArgs = argsField.getText().trim();
                 if (!userArgs.isEmpty()) {

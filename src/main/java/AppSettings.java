@@ -35,6 +35,8 @@ public class AppSettings {
     public int[] debugStackColWidths = null;
     public int debugWindowWidth = 1100;
     public int debugWindowHeight = 700;
+    public int heapSize = 1048576;
+    public int stackSize = 8192;
 
     public void save() {
         try {
@@ -74,6 +76,8 @@ public class AppSettings {
                 }
                 sb.append("],\n");
             }
+            sb.append("  \"heapSize\": ").append(heapSize).append(",\n");
+            sb.append("  \"stackSize\": ").append(stackSize).append(",\n");
             sb.setLength(sb.length() - 2); // remove trailing comma+newline
             sb.append("\n}");
             Files.writeString(SETTINGS_FILE, sb.toString());
@@ -134,6 +138,11 @@ public class AppSettings {
                 s.debugStackColWidths = new int[scw.size()];
                 for (int i = 0; i < scw.size(); i++) s.debugStackColWidths[i] = Integer.parseInt(scw.get(i).trim());
             }
+
+            Integer hs = extractInt(json, "heapSize");
+            if (hs != null) s.heapSize = hs;
+            Integer ss = extractInt(json, "stackSize");
+            if (ss != null) s.stackSize = ss;
         } catch (Exception e) {
             // return defaults on any parse error
         }
