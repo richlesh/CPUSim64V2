@@ -82,10 +82,14 @@ public class AIChatPanel extends JPanel {
         JScrollPane inputScroll = new JScrollPane(inputArea);
         inputScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
         sendBtn = new JButton("Send");
+        JButton clearBtn = new JButton("Clear");
+        JPanel btnPanel = new JPanel(new GridLayout(1, 2, 4, 0));
+        btnPanel.add(sendBtn);
+        btnPanel.add(clearBtn);
         JPanel inputPanel = new JPanel(new BorderLayout(4, 0));
         inputPanel.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
         inputPanel.add(inputScroll, BorderLayout.CENTER);
-        inputPanel.add(sendBtn, BorderLayout.EAST);
+        inputPanel.add(btnPanel, BorderLayout.EAST);
 
         JLabel statusBar = new JLabel(" ");
         statusBar.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 10));
@@ -106,6 +110,7 @@ public class AIChatPanel extends JPanel {
         add(southPanel, BorderLayout.SOUTH);
 
         sendBtn.addActionListener(e -> sendMessage());
+        clearBtn.addActionListener(e -> { messages.clear(); chatPanel.removeAll(); chatPanel.revalidate(); chatPanel.repaint(); });
     }
 
     public void setOnCodeChanged(Runnable callback) {
