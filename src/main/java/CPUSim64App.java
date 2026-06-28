@@ -301,6 +301,15 @@ public class CPUSim64App {
                 } catch (javax.swing.text.BadLocationException ignored) {}
             }
         });
+        int mod = Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx();
+        codeEditor.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_Z, mod), "safe-undo");
+        codeEditor.getActionMap().put("safe-undo", new javax.swing.AbstractAction() {
+            public void actionPerformed(java.awt.event.ActionEvent e) { if (undoManager.canUndo()) undoManager.undo(); }
+        });
+        codeEditor.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_Z, mod | KeyEvent.SHIFT_DOWN_MASK), "safe-redo");
+        codeEditor.getActionMap().put("safe-redo", new javax.swing.AbstractAction() {
+            public void actionPerformed(java.awt.event.ActionEvent e) { if (undoManager.canRedo()) undoManager.redo(); }
+        });
         codeEditor.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 14));
         FontMetrics fm = codeEditor.getFontMetrics(codeEditor.getFont());
         int tabWidth = fm.charWidth(' ') * 4;
