@@ -8,7 +8,7 @@
 // bands and each band is computed by a separate child process (created with
 // iFORK). Each child writes its band to a temporary text file. After all
 // children finish, the parent process merges (concatenates) the temporary
-// files into a single .pgm image file with the proper PGM header.
+// files into a single .pgm image file with the proper text PGM header.
 //
 // Usage:
 //   mandelbrot x y radius escape_limit image_size filename
@@ -254,10 +254,8 @@ END:
     #call   printf("compute_mandelbrot(%d, %d, %d, %d)\n", p, first, last, w)
     sub     xWidth, xMax, xMin
     sub     yHeight, yMax, yMin
-    #for    first, j < last, 1
- //       #call   printf("j: %d\n", j)
+    #for    first, j <= last, 1
         #for    0, i < w, 1
- //           #call   printf("i: %d\n", i)
             // Insert a space (or newline every 20 values) between pixels to
             // keep output lines short.
             #if_cond    i, ne, 0
@@ -329,7 +327,6 @@ kFOUR:      .dcf 4.0
     load    y0, y0_arg
     push    r1
 
-//#call printf("compute_escape(%f,%f)\n", x0, y0)
     #do_while
 //    y:= 2 * x * y + y0
         mult    y, x
@@ -343,7 +340,6 @@ kFOUR:      .dcf 4.0
 //    y2:= y * y
         mult    y2, y, y
         add     iteration, 1
-//#call debug(STDOUT,"%f %f\n", x2, y2)     
 LOOP_COND:
 // while (x2 + y2 ≤ 4 and iteration < max_iteration) do
         add     f0, x2, y2

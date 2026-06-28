@@ -345,8 +345,8 @@
 	<tbody>
 		<tr><td>TO_BOOLEAN</td><td><code>TO_BOOLEAN(x)</code><br>Returns <code>TRUE</code> or <code>FALSE</code> depending on the truthiness of <code>x</code>.  Truthiness is false for zero and true for non-zero.</td></tr>
 		<tr><td>TO_NOT_BOOLEAN</td><td><code>TO_NOT_BOOLEAN(x)</code><br>Returns <code>TRUE</code> or <code>FALSE</code> depending on the not-truthiness of <code>x</code>.  Truthiness is false for zero and true for non-zero.</td></tr>
-		<tr><td>COMPARE</td><td><code>COMPARE(x, op, y)</code><br>Compares <code>x</code> to <code>y</code> using operator <code>op</code>.  Status register will be set according to the comparison.</td></tr>
-		<tr><td>COMPARE_RANGE</td><td><code>COMPARE_RANGE(low, op1, x, op2, high)</code><br>Compares <code>x</code> to <code>low</code> and <code>high</code> using operators <code>op1</code> and <code>op2</code>.  Status register will be set according to the comparison.</td></tr>
+		<tr><td>COMPARE</td><td><code>COMPARE(x, op, y)</code><br>Compares <code>x</code> to <code>y</code> using operator <code>op</code>.  Returns TRUE or FALSE in r0.</td></tr>
+		<tr><td>COMPARE_RANGE</td><td><code>COMPARE_RANGE(low, op1, x, op2, high)</code><br>Compares <code>x</code> to <code>low</code> and <code>high</code> using operators <code>op1</code> and <code>op2</code>.  Returns TRUE or FALSE in r0.</td></tr>
 	</tbody>
 </table>
 
