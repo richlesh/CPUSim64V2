@@ -239,6 +239,15 @@ public class CPUSim64App {
             findReplaceDialog.show();
         });
         editMenu.add(findItem);
+        editMenu.addSeparator();
+        JMenuItem shiftLeftItem = new JMenuItem("Shift Selection Left");
+        shiftLeftItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_OPEN_BRACKET, Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx()));
+        shiftLeftItem.addActionListener(e -> shiftIndent(false));
+        editMenu.add(shiftLeftItem);
+        JMenuItem shiftRightItem = new JMenuItem("Shift Selection Right");
+        shiftRightItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_CLOSE_BRACKET, Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx()));
+        shiftRightItem.addActionListener(e -> shiftIndent(true));
+        editMenu.add(shiftRightItem);
 
         // Help menu
         JMenu helpMenu = new JMenu("Help");
@@ -552,7 +561,38 @@ public class CPUSim64App {
         highlighter.highlight();
     }
 
-    /** Returns true if it's safe to proceed (saved or discarded), false if cancelled. */
+    private void shiftIndent(boolean right) {
+        try {
+            int selStart = codeEditor.getSelectionStart();
+            int selEnd = codeEditor.getSelectionEnd();
+            if (selStart == selEnd) {
+                // No selection — use current line
+                selStart = javax.swing.text.Utilities.getRowStart(codeEditor, selStart);
+                selEnd = javax.swing.text.Utilities.getRowEnd(codeEditor, selEnd);
+            } else {
+                selStart = javax.swing.text.Utilities.getRowStart(codeEditor, selStart);
+                int rowEnd = javax.swing.text.Utilities.getRowEnd(codeEditor, selEnd - 1);
+                selEnd = rowEnd;
+            }
+            String text = codeEditor.getText(selStart, selEnd - selStart);
+            String[] lines = text.split("\n", -1);
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < lines.length; i++) {
+                if (right) {
+                    sb.append("    ").append(lines[i]);
+                } else {
+                    String line = lines[i];
+                    int remove = 0;
+                    while (remove < 4 && remove < line.length() && line.charAt(remove) == ' ') remove++;
+                    sb.append(line.substring(remove));
+                }
+                if (i < lines.length - 1) sb.append("\n");
+            }
+            codeEditor.select(selStart, selEnd);
+            codeEditor.replaceSelection(sb.toString());
+            codeEditor.select(selStart, selStart + sb.length());
+        } catch (javax.swing.text.BadLocationException ignored) {}
+    }
     private boolean promptSaveIfNeeded() {
         if (!modified) return true;
         int result = JOptionPane.showConfirmDialog(frame,
