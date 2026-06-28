@@ -83,7 +83,7 @@ public class AIChatPanel extends JPanel {
         inputScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
         sendBtn = new JButton("Send");
         JButton clearBtn = new JButton("Clear");
-        JPanel btnPanel = new JPanel(new GridLayout(1, 2, 4, 0));
+        JPanel btnPanel = new JPanel(new GridLayout(2, 1, 0, 2));
         btnPanel.add(sendBtn);
         btnPanel.add(clearBtn);
         JPanel inputPanel = new JPanel(new BorderLayout(4, 0));
