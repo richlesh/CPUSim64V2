@@ -88,6 +88,7 @@ public class FindReplaceDialog {
         dialog.add(leftPanel, BorderLayout.CENTER);
         dialog.add(buttonPanel, BorderLayout.EAST);
         dialog.pack();
+        dialog.getRootPane().setDefaultButton(nextBtn);
         dialog.setLocationRelativeTo(parent);
     }
 
