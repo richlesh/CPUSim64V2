@@ -453,7 +453,7 @@ public class AIChatPanel extends JPanel {
                 String content = readResource("/documentation/" + name);
                 if (content == null) continue;
                 String text = content.replaceAll("<[^>]+>", " ").replaceAll("\\s+", " ").trim();
-                if (text.length() > 8000) text = text.substring(0, 8000);
+                if (text.length() > 100000) text = text.substring(0, 100000);
                 sb.append("\n--- ").append(name).append(" ---\n").append(text).append("\n");
             }
             for (String name : readIndex("/documentation/examples-index.txt")) {
