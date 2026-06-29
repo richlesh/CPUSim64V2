@@ -60,6 +60,7 @@ public class CPUSim64App {
     private JMenuItem runItem, debugItem;
     private JButton runBtn, debugBtn;
     private volatile Thread runThread;
+    private volatile int consoleInputStart;
 
     public static void main(String[] args) {
         if (args.length > 0 && args[0].equals("--uninstall")) {
@@ -920,14 +921,14 @@ public class CPUSim64App {
     private void appendConsole(String text) {
         console.append(text);
         console.setCaretPosition(console.getDocument().getLength());
+        consoleInputStart = console.getDocument().getLength();
     }
 
     private java.awt.event.KeyListener consoleKeyListener(PipedOutputStream pipe) {
         return new java.awt.event.KeyAdapter() {
-            private int inputStart = console.getDocument().getLength();
             @Override public void keyPressed(java.awt.event.KeyEvent e) {
                 // Prevent editing before the input start position
-                if (console.getCaretPosition() < inputStart && e.getKeyCode() != KeyEvent.VK_ENTER) {
+                if (console.getCaretPosition() < consoleInputStart && e.getKeyCode() != KeyEvent.VK_ENTER) {
                     console.setCaretPosition(console.getDocument().getLength());
                 }
                 if (e.getKeyCode() == KeyEvent.VK_D && (e.getModifiersEx() & KeyEvent.CTRL_DOWN_MASK) != 0) {
@@ -939,16 +940,16 @@ public class CPUSim64App {
                     e.consume();
                     try {
                         int len = console.getDocument().getLength();
-                        String input = console.getText(inputStart, len - inputStart) + "\n";
+                        String input = console.getText(consoleInputStart, len - consoleInputStart) + "\n";
                         console.append("\n");
                         pipe.write(input.getBytes(java.nio.charset.StandardCharsets.UTF_8));
                         pipe.flush();
-                        inputStart = console.getDocument().getLength();
+                        consoleInputStart = console.getDocument().getLength();
                     } catch (Exception ignored) {}
                 }
             }
             @Override public void keyTyped(java.awt.event.KeyEvent e) {
-                if (console.getCaretPosition() < inputStart) {
+                if (console.getCaretPosition() < consoleInputStart) {
                     console.setCaretPosition(console.getDocument().getLength());
                 }
             }
