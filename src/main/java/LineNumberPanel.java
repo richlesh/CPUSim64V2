@@ -88,6 +88,20 @@ public class LineNumberPanel extends JPanel implements DocumentListener {
         repaint();
     }
 
+    public void scrollToLine(int line) {
+        try {
+            var root = editor.getDocument().getDefaultRootElement();
+            int idx = Math.min(line - 1, root.getElementCount() - 1);
+            if (idx < 0) return;
+            int offset = root.getElement(idx).getStartOffset();
+            var rect = editor.modelToView2D(offset).getBounds();
+            var visible = editor.getVisibleRect();
+            rect.y -= visible.height / 2;
+            rect.height = visible.height;
+            editor.scrollRectToVisible(rect);
+        } catch (Exception ignored) {}
+    }
+
     @Override
     public Dimension getPreferredSize() {
         int lines = getLineCount();

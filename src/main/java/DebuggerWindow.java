@@ -447,7 +447,10 @@ public class DebuggerWindow extends JFrame {
         updateStack();
         if (sim.isRunning()) {
             Integer srcLine = addrToSourceLine.get(sim.getPC());
-            if (srcLine != null) lineNumberPanel.setExecutionLine(srcLine);
+            if (srcLine != null) {
+                lineNumberPanel.setExecutionLine(srcLine);
+                lineNumberPanel.scrollToLine(srcLine);
+            }
             else lineNumberPanel.clearExecutionLine();
         } else {
             lineNumberPanel.clearExecutionLine();
