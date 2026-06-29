@@ -102,6 +102,20 @@ public class CPUSim64App {
         Font font = new Font(settings.fontName, Font.PLAIN, settings.fontSize);
         codeEditor.setFont(font);
         console.setFont(font);
+        // Update existing styled text in console
+        javax.swing.text.StyledDocument consoleDoc = console.getStyledDocument();
+        javax.swing.text.SimpleAttributeSet consoleAttr = new javax.swing.text.SimpleAttributeSet();
+        javax.swing.text.StyleConstants.setFontFamily(consoleAttr, settings.fontName);
+        javax.swing.text.StyleConstants.setFontSize(consoleAttr, settings.fontSize);
+        consoleDoc.setCharacterAttributes(0, consoleDoc.getLength(), consoleAttr, false);
+        // Update existing styled text in code editor
+        javax.swing.text.StyledDocument editorDoc = codeEditor.getStyledDocument();
+        javax.swing.text.SimpleAttributeSet editorAttr = new javax.swing.text.SimpleAttributeSet();
+        javax.swing.text.StyleConstants.setFontFamily(editorAttr, settings.fontName);
+        javax.swing.text.StyleConstants.setFontSize(editorAttr, settings.fontSize);
+        editorDoc.setCharacterAttributes(0, editorDoc.getLength(), editorAttr, false);
+        // Update AI chat panel font
+        if (aiChatPanel != null) aiChatPanel.updateFont(settings.fontName, settings.fontSize);
         if (menuBar != null) {
             menuBar.setFont(font);
             for (int i = 0; i < menuBar.getMenuCount(); i++) {

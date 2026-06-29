@@ -113,6 +113,21 @@ public class AIChatPanel extends JPanel {
         clearBtn.addActionListener(e -> { messages.clear(); chatPanel.removeAll(); chatPanel.revalidate(); chatPanel.repaint(); });
     }
 
+    public void updateFont(String fontName, int fontSize) {
+        inputArea.setFont(new Font(fontName, Font.PLAIN, fontSize));
+        for (Component c : chatPanel.getComponents()) {
+            if (c instanceof JPanel row) {
+                for (Component rc : row.getComponents()) {
+                    if (rc instanceof JPanel bubble) {
+                        for (Component bc : bubble.getComponents()) {
+                            if (bc instanceof JTextPane tp) tp.setFont(new Font(fontName, Font.PLAIN, fontSize));
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     public void setOnCodeChanged(Runnable callback) {
         this.onCodeChanged = callback;
     }
