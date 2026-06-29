@@ -53,6 +53,9 @@ public class TerminalPanel extends JComponent implements Scrollable {
     private Timer blinkTimer;
 
     private final ReentrantLock bufferLock = new ReentrantLock();
+    private Runnable interruptHandler;
+
+    public void setInterruptHandler(Runnable handler) { this.interruptHandler = handler; }
 
     public TerminalPanel(String fontName, int fontSize) {
         maxCols = DEFAULT_COLS;
@@ -104,6 +107,11 @@ public class TerminalPanel extends JComponent implements Scrollable {
                     copySelection();
                     return;
                 }
+                if (e.getKeyCode() == KeyEvent.VK_C && (e.getModifiersEx() & KeyEvent.CTRL_DOWN_MASK) != 0) {
+                    e.consume();
+                    if (interruptHandler != null) interruptHandler.run();
+                    return;
+                }
                 if (!inputEnabled) return;
                 if (e.getKeyCode() == KeyEvent.VK_ENTER) {
                     String input = getInputText() + "\n";
@@ -122,7 +130,9 @@ public class TerminalPanel extends JComponent implements Scrollable {
                         repaint();
                     }
                 } else if (e.getKeyCode() == KeyEvent.VK_D && (e.getModifiersEx() & KeyEvent.CTRL_DOWN_MASK) != 0) {
+                    e.consume();
                     if (inputPipe != null) try { inputPipe.close(); } catch (Exception ignored) {}
+                    inputEnabled = false;
                 }
             }
             public void keyTyped(KeyEvent e) {

@@ -688,6 +688,7 @@ public class CPUSim64App {
 
         new Thread(() -> {
             runThread = Thread.currentThread();
+            console.setInterruptHandler(() -> { if (runThread != null) runThread.interrupt(); });
             SwingUtilities.invokeLater(() -> { runBtn.setText("Stop"); runItem.setText("Stop"); });
             PrintStream origOut = System.out;
             PrintStream origErr = System.err;
@@ -766,6 +767,7 @@ public class CPUSim64App {
                 SwingUtilities.invokeLater(() -> {
                     runBtn.setText("Run"); runItem.setText("Run");
                     console.disableInput();
+                    console.setInterruptHandler(null);
                 });
             }
         }).start();
