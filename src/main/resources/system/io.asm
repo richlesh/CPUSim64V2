@@ -190,7 +190,7 @@ jump	IO_ASM_END
 	save	r1, r2
 	load	r1, port
 	load	r2, value
-	#macro	out0(r2, r1)
+	#macro	OUT0(r2, r1)
 	restore	r1, r2
 #end_func
 
@@ -570,9 +570,11 @@ jump	IO_ASM_END
 #def_func	closeFile(port)
 	#var	p
 	load	p, port
-	#call	__unsetPortMap(p)
-	move	r1, p
-	int		iCLOSE_FILE
+	#if_cond  p > 2
+	    #call	__unsetPortMap(p)
+	    move	r1, p
+	    int		iCLOSE_FILE
+	#end_cond
 #end_func
 
 #def_func	flush(port)

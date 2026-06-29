@@ -21,8 +21,8 @@
 //     hashcode                Hash data read from STDIN.
 //
 // Output:
-//   With a filename:   "<filename>: <16-hex-digit hashcode>"
-//   With STDIN:        ": <16-hex-digit hashcode>"
+//   With a filename:   "<16-hex-digit hashcode> <filename>"
+//   With STDIN:        "<16-hex-digit hashcode>"
 //   On open failure:   "Failed to open: <filename>"
 //
 // Author: Richard Lesh
@@ -66,7 +66,7 @@
     jump    ge, PROCESS_FILE
 // No command line argument: hash STDIN.
     #call   hashcode(STDIN)
-    #call   fprintf(STDOUT, ": %016x\n", r0)
+    #call   printf("%016x\n", r0)
     jump    ENDIF1
 PROCESS_FILE:
 // Get the first command line argument and put it in filename.
@@ -80,7 +80,7 @@ PROCESS_FILE:
     #if_cond   port, ne, -1
 // Hash the file contents and report the result.
         #call   hashcode(port)
-        #call   printf("%s: %016x\n", filename, r0)
+        #call   printf("%016x %s\n", r0, filename)
 // Close the file now that we are done with it.
         #call   closeFile(port)
     #else_cond

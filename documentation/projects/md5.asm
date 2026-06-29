@@ -9,7 +9,7 @@
 //
 // The 128-bit digest is printed as 32 hex digits in standard little-endian
 // byte order, for example:
-//   shakespeare.txt: a810f89e9f8e213aebd06b9f8c5157d8
+//   a810f89e9f8e213aebd06b9f8c5157d8 shakespeare.txt
 //
 // MD5 Algorithm Summary (RFC 1321):
 //   1. Append a single 0x80 byte after the message data.
@@ -39,9 +39,9 @@
 // Program entry point. Determines the input source based on command line
 // arguments:
 //   - If no filename is supplied (argc < 2), reads from STDIN and prints
-//     "STDIN:<hash>".
+//     "<hash>".
 //   - If a filename is supplied, opens it as a raw file and prints
-//     "<filename>:<hash>".
+//     "<hash> <filename>".
 //
 // Returns:
 //   r0 = 0 on success, 1 if the file could not be opened.
@@ -53,8 +53,8 @@
     int     iARGC
     #if_cond    r0 < 2
 // then we don't have command args use STDIN.
-        #call   puts("STDIN:")
         #call   md5(STDIN)
+
         #call   printbits(r0, 128)
         #call   put_nl()
         #return 0
@@ -74,10 +74,10 @@ PROCESS_FILE:
         #return 1
     #end_cond
 // Process the input stream
-    #call   puts(filename)
-    #call   putc(':')
     #call   md5(port)
     #call   printbits(r0, 128)
+    #call   putc(' ')
+    #call   puts(filename)
     #call   put_nl()
 // Close the file
     #call   closeFile(port)
