@@ -1017,6 +1017,7 @@ public class CPUSim64App {
         }
         console.setCaretPosition(doc.getLength());
         consoleInputStart = doc.getLength();
+        try { console.scrollRectToVisible(console.modelToView2D(doc.getLength()).getBounds()); } catch (Exception ignored) {}
     }
 
     private Color ansiToColor(String code) {
