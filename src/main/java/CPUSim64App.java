@@ -914,8 +914,18 @@ public class CPUSim64App {
     }
 
     private Color consoleCurrentColor = Color.WHITE;
+    private String consolePending = "";
 
     private void appendConsole(String text) {
+        text = consolePending + text;
+        consolePending = "";
+        // If text ends with an incomplete ANSI sequence, buffer it
+        int escIdx = text.lastIndexOf('\u001B');
+        if (escIdx >= 0 && !text.substring(escIdx).matches("\u001B\\[[0-9;]*m")) {
+            consolePending = text.substring(escIdx);
+            text = text.substring(0, escIdx);
+        }
+        if (text.isEmpty()) return;
         javax.swing.text.StyledDocument doc = console.getStyledDocument();
         java.util.regex.Matcher m = java.util.regex.Pattern.compile("(\r|\u001B\\[[0-9;]*m|[^\r\u001B]+|\u001B)").matcher(text);
         while (m.find()) {
