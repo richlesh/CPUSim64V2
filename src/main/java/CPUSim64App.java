@@ -517,6 +517,7 @@ public class CPUSim64App {
     }
 
     void loadFile(Path path) {
+        console.setText("");
         try {
             highlightingInProgress = true;
             String content = Files.readString(path);
