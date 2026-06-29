@@ -21,6 +21,7 @@ test.*
 *.bin
 *.out
 *.sym*
+*.srcmap
 *.jar
 *.zip
 src/main/resources/cpusim64
