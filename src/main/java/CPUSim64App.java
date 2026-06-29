@@ -922,7 +922,7 @@ public class CPUSim64App {
 
     private void appendConsole(String text) {
         javax.swing.text.StyledDocument doc = console.getStyledDocument();
-        java.util.regex.Matcher m = java.util.regex.Pattern.compile("(\\r|\\033\\[[0-9;]*m|[^\\r\\033]+|\\033)").matcher(text);
+        java.util.regex.Matcher m = java.util.regex.Pattern.compile("(\r|\u001B\\[[0-9;]*m|[^\r\u001B]+|\u001B)").matcher(text);
         while (m.find()) {
             String seg = m.group();
             if (seg.equals("\r")) {
@@ -936,10 +936,10 @@ public class CPUSim64App {
                     }
                     consoleInputStart = doc.getLength();
                 } catch (javax.swing.text.BadLocationException ignored) {}
-            } else if (seg.startsWith("\033[") && seg.endsWith("m")) {
+            } else if (seg.startsWith("\u001B[") && seg.endsWith("m")) {
                 // ANSI color code
                 consoleCurrentColor = ansiToColor(seg);
-            } else if (seg.equals("\033")) {
+            } else if (seg.equals("\u001B")) {
                 // Lone escape — ignore
             } else {
                 try {
