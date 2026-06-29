@@ -6,7 +6,7 @@ import java.util.List;
 
 public class SettingsDialog {
 
-    public static void show(JFrame parent, JTextPane editor, JTextArea console,
+    public static void show(JFrame parent, JTextPane editor, JTextPane console,
                             AsmSyntaxHighlighter highlighter, AppSettings settings) {
         JDialog dialog = new JDialog(parent, "Settings", true);
         dialog.setLayout(new BorderLayout(10, 10));

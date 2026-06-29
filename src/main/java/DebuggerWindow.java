@@ -36,7 +36,7 @@ public class DebuggerWindow extends JFrame {
     private final PrintStream origErr = System.err;
     private final InputStream origIn = System.in;
 
-    public DebuggerWindow(JFrame parent, String objFilePath, String sourceFilePath, LineNumberPanel lineNumberPanel, String userArgs, AppSettings settings, JTextArea console, Runnable onClose) {
+    public DebuggerWindow(JFrame parent, String objFilePath, String sourceFilePath, LineNumberPanel lineNumberPanel, String userArgs, AppSettings settings, JTextPane console, Runnable onClose) {
         super("CPUSim64 Debugger");
         this.lineNumberPanel = lineNumberPanel;
         this.settings = settings;
@@ -49,7 +49,7 @@ public class DebuggerWindow extends JFrame {
                 if (b == '\n') {
                     final String line = buf.toString(java.nio.charset.StandardCharsets.UTF_8);
                     buf.reset();
-                    SwingUtilities.invokeLater(() -> { console.append(line + "\n"); console.setCaretPosition(console.getDocument().getLength()); });
+                    SwingUtilities.invokeLater(() -> { try { console.getDocument().insertString(console.getDocument().getLength(), line + "\n", null); } catch (Exception x) {} console.setCaretPosition(console.getDocument().getLength()); });
                 } else {
                     buf.write(b);
                 }
@@ -58,7 +58,7 @@ public class DebuggerWindow extends JFrame {
                 if (buf.size() > 0) {
                     final String text = buf.toString(java.nio.charset.StandardCharsets.UTF_8);
                     buf.reset();
-                    SwingUtilities.invokeLater(() -> { console.append(text); console.setCaretPosition(console.getDocument().getLength()); });
+                    SwingUtilities.invokeLater(() -> { try { console.getDocument().insertString(console.getDocument().getLength(), text, null); } catch (Exception x) {} console.setCaretPosition(console.getDocument().getLength()); });
                 }
             }
         }, true, java.nio.charset.StandardCharsets.UTF_8);
@@ -83,9 +83,11 @@ public class DebuggerWindow extends JFrame {
                         return;
                     }
                     if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-                        String text = console.getText().substring(inputStart) + "\n";
-                        inputStart = console.getDocument().getLength() + 1;
-                        try { inputPipe.write(text.getBytes(java.nio.charset.StandardCharsets.UTF_8)); inputPipe.flush(); } catch (Exception ignored) {}
+                        try {
+                            String text = console.getDocument().getText(inputStart, console.getDocument().getLength() - inputStart) + "\n";
+                            inputStart = console.getDocument().getLength() + 1;
+                            inputPipe.write(text.getBytes(java.nio.charset.StandardCharsets.UTF_8)); inputPipe.flush();
+                        } catch (Exception ignored) {}
                     }
                 }
             });

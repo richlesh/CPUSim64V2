@@ -19,7 +19,7 @@ public class AIChatPanel extends JPanel {
     private final JTextArea inputArea;
     private final JButton sendBtn;
     private final JTextPane codeEditor;
-    private final JTextArea console;
+    private final JTextPane console;
     private final AppSettings settings;
     private final List<Map<String, String>> messages = new ArrayList<>();
     private String systemPrompt;
@@ -31,7 +31,7 @@ public class AIChatPanel extends JPanel {
     private Runnable statusUpdater;
     private volatile Thread currentThread;
 
-    public AIChatPanel(JTextPane codeEditor, JTextArea console, AppSettings settings) {
+    public AIChatPanel(JTextPane codeEditor, JTextPane console, AppSettings settings) {
         super(new BorderLayout());
         this.codeEditor = codeEditor;
         this.console = console;

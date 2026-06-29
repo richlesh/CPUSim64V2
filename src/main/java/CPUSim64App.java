@@ -35,7 +35,7 @@ public class CPUSim64App {
     private JFrame frame;
     private JTextPane codeEditor;
     private AsmSyntaxHighlighter highlighter;
-    private JTextArea console;
+    private JTextPane console;
     private JTextField argsField;
     private Path currentFile;
     private javax.swing.Timer highlightTimer;
@@ -398,7 +398,7 @@ public class CPUSim64App {
         lineNumberPanel = new LineNumberPanel(codeEditor);
         editorScroll.setRowHeaderView(lineNumberPanel);
 
-        console = new JTextArea();
+        console = new JTextPane();
         console.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 13));
         console.setEditable(false);
         console.setBackground(new Color(30, 30, 30));
@@ -918,10 +918,68 @@ public class CPUSim64App {
         dialog.setVisible(true);
     }
 
+    private Color consoleCurrentColor = Color.WHITE;
+
     private void appendConsole(String text) {
-        console.append(text);
-        console.setCaretPosition(console.getDocument().getLength());
-        consoleInputStart = console.getDocument().getLength();
+        javax.swing.text.StyledDocument doc = console.getStyledDocument();
+        java.util.regex.Matcher m = java.util.regex.Pattern.compile("(\\r|\\033\\[[0-9;]*m|[^\\r\\033]+|\\033)").matcher(text);
+        while (m.find()) {
+            String seg = m.group();
+            if (seg.equals("\r")) {
+                // Carriage return: remove from current position back to last newline
+                try {
+                    String docText = doc.getText(0, doc.getLength());
+                    int lastNl = docText.lastIndexOf('\n');
+                    int lineStart = lastNl + 1;
+                    if (lineStart < doc.getLength()) {
+                        doc.remove(lineStart, doc.getLength() - lineStart);
+                    }
+                    consoleInputStart = doc.getLength();
+                } catch (javax.swing.text.BadLocationException ignored) {}
+            } else if (seg.startsWith("\033[") && seg.endsWith("m")) {
+                // ANSI color code
+                consoleCurrentColor = ansiToColor(seg);
+            } else if (seg.equals("\033")) {
+                // Lone escape — ignore
+            } else {
+                try {
+                    javax.swing.text.SimpleAttributeSet attr = new javax.swing.text.SimpleAttributeSet();
+                    javax.swing.text.StyleConstants.setForeground(attr, consoleCurrentColor);
+                    javax.swing.text.StyleConstants.setFontFamily(attr, Font.MONOSPACED);
+                    javax.swing.text.StyleConstants.setFontSize(attr, 13);
+                    doc.insertString(doc.getLength(), seg, attr);
+                } catch (javax.swing.text.BadLocationException ignored) {}
+            }
+        }
+        console.setCaretPosition(doc.getLength());
+        consoleInputStart = doc.getLength();
+    }
+
+    private Color ansiToColor(String code) {
+        String nums = code.substring(2, code.length() - 1);
+        if (nums.isEmpty() || nums.equals("0")) return Color.WHITE;
+        for (String n : nums.split(";")) {
+            switch (n) {
+                case "0": return Color.WHITE;
+                case "30": return Color.DARK_GRAY;
+                case "31": return new Color(200, 50, 50);
+                case "32": return new Color(50, 200, 50);
+                case "33": return new Color(200, 200, 50);
+                case "34": return new Color(80, 80, 255);
+                case "35": return new Color(200, 50, 200);
+                case "36": return new Color(50, 200, 200);
+                case "37": return Color.WHITE;
+                case "90": return Color.GRAY;
+                case "91": return new Color(255, 100, 100);
+                case "92": return new Color(100, 255, 100);
+                case "93": return new Color(255, 255, 100);
+                case "94": return new Color(130, 130, 255);
+                case "95": return new Color(255, 100, 255);
+                case "96": return new Color(100, 255, 255);
+                case "97": return Color.WHITE;
+            }
+        }
+        return consoleCurrentColor;
     }
 
     private java.awt.event.KeyListener consoleKeyListener(PipedOutputStream pipe) {
@@ -940,8 +998,8 @@ public class CPUSim64App {
                     e.consume();
                     try {
                         int len = console.getDocument().getLength();
-                        String input = console.getText(consoleInputStart, len - consoleInputStart) + "\n";
-                        console.append("\n");
+                        String input = console.getDocument().getText(consoleInputStart, len - consoleInputStart) + "\n";
+                        appendConsole("\n");
                         pipe.write(input.getBytes(java.nio.charset.StandardCharsets.UTF_8));
                         pipe.flush();
                         consoleInputStart = console.getDocument().getLength();
