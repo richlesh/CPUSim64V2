@@ -25,7 +25,8 @@ public class StdIOPortHandler extends PortHandler
 	// Ports supported are...
 	// 0 STDIN, 1 STDOUT, 2 STDERR
 	static int lastPort = 0;
-	static InputStreamReader reader = new InputStreamReader(System.in);
+
+	private InputStreamReader getReader() { return new InputStreamReader(System.in); }
 
 	public StdIOPortHandler(Simulator cpu) { super(cpu); }
 
@@ -46,6 +47,7 @@ public class StdIOPortHandler extends PortHandler
 		if (port() != 0) throw cpu.new CPUException("Can't read from STDOUT or STDERR!");
 		int codePoint = -1;
 		try {
+			InputStreamReader reader = getReader();
 			int ch1;
 			if ((ch1 = reader.read()) != -1) { // read one UTF-16 code unit
 				char c1 = (char) ch1;
