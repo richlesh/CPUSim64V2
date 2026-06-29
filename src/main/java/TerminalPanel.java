@@ -54,8 +54,28 @@ public class TerminalPanel extends JComponent implements Scrollable {
 
     private final ReentrantLock bufferLock = new ReentrantLock();
     private Runnable interruptHandler;
+    private JScrollBar scrollBar;
 
     public void setInterruptHandler(Runnable handler) { this.interruptHandler = handler; }
+
+    public void attachScrollBar(JScrollBar sb) {
+        this.scrollBar = sb;
+        sb.addAdjustmentListener(e -> {
+            if (!e.getValueIsAdjusting()) return;
+            int max = Math.max(0, lineCount - getVisibleRows());
+            scrollOffset = max - e.getValue();
+            repaint();
+        });
+    }
+
+    private void updateScrollBar() {
+        if (scrollBar != null) {
+            int max = Math.max(0, lineCount - getVisibleRows());
+            scrollBar.setMaximum(max);
+            scrollBar.setVisibleAmount(1);
+            scrollBar.setValue(max - scrollOffset);
+        }
+    }
 
     public TerminalPanel(String fontName, int fontSize) {
         maxCols = DEFAULT_COLS;
@@ -91,15 +111,23 @@ public class TerminalPanel extends JComponent implements Scrollable {
         addMouseMotionListener(new MouseMotionAdapter() {
             public void mouseDragged(MouseEvent e) {
                 if (selecting) {
+                    int y = e.getY();
+                    if (y < 0) {
+                        scrollOffset = Math.min(lineCount - getVisibleRows(), scrollOffset + 1);
+                    } else if (y > getHeight()) {
+                        scrollOffset = Math.max(0, scrollOffset - 1);
+                    }
                     Point p = charPosAt(e.getPoint());
                     selEndRow = p.y; selEndCol = p.x;
                     repaint();
+                    updateScrollBar();
                 }
             }
         });
         addMouseWheelListener(e -> {
             scrollOffset = Math.max(0, Math.min(lineCount - getVisibleRows(), scrollOffset + e.getWheelRotation() * 3));
             repaint();
+            updateScrollBar();
         });
         addKeyListener(new KeyAdapter() {
             public void keyPressed(KeyEvent e) {
@@ -201,7 +229,7 @@ public class TerminalPanel extends JComponent implements Scrollable {
             }
         } finally { bufferLock.unlock(); }
         scrollOffset = 0;
-        SwingUtilities.invokeLater(this::repaint);
+        SwingUtilities.invokeLater(() -> { repaint(); updateScrollBar(); });
     }
 
     private void newLine() {

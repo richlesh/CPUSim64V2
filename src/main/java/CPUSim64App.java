@@ -439,7 +439,11 @@ public class CPUSim64App {
         editorScroll.setRowHeaderView(lineNumberPanel);
 
         console = new TerminalPanel(settings.fontName, settings.fontSize);
-        JScrollPane consoleScroll = new JScrollPane(console);
+        JScrollBar consoleScrollBar = new JScrollBar(JScrollBar.VERTICAL);
+        console.attachScrollBar(consoleScrollBar);
+        JPanel consoleScrollPanel = new JPanel(new BorderLayout());
+        consoleScrollPanel.add(console, BorderLayout.CENTER);
+        consoleScrollPanel.add(consoleScrollBar, BorderLayout.EAST);
 
         consoleToolBar = new JToolBar();
         consoleToolBar.setFloatable(false);
@@ -479,7 +483,7 @@ public class CPUSim64App {
 
         JPanel consolePanel = new JPanel(new BorderLayout());
         consolePanel.add(consoleToolBar, BorderLayout.NORTH);
-        consolePanel.add(consoleScroll, BorderLayout.CENTER);
+        consolePanel.add(consoleScrollPanel, BorderLayout.CENTER);
 
         JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, editorScroll, consolePanel);
         splitPane.setResizeWeight(0.7);
