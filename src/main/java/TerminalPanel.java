@@ -169,7 +169,10 @@ public class TerminalPanel extends JComponent implements Scrollable {
                 char c = e.getKeyChar();
                 if (c == KeyEvent.CHAR_UNDEFINED || c == '\n' || c == '\r' || c == '\b') return;
                 if ((e.getModifiersEx() & Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx()) != 0) return;
+                Color saved = currentFg;
+                currentFg = Color.WHITE;
                 write(String.valueOf(c));
+                currentFg = saved;
             }
         });
     }
