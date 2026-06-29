@@ -25,15 +25,25 @@ The project is designed for educational use, computer architecture instruction, 
 ### **Integrated Development Environment**
 - Code editor with syntax highlighting for CPUSim64 assembly
 - Line number margin  
-- Console pane with program output and interactive input  
+- Custom terminal console with ANSI color support and fast rendering  
+- Carriage return (`\r`) support for progress bars and spinners  
+- Cursor hide/show escape sequences  
 - Assemble, Run, Debug, and Trace from the menu  
+- Run/Stop toggle button — Stop terminates the running program and all child processes  
+- Ctrl+C to interrupt running program, Ctrl+D to signal EOF  
+- Configurable Heap Size (MiB) and Stack Size (kiB) in the toolbar  
 - Find and Replace with regex/grep support and capture groups  
+- Shift Selection Left/Right (Cmd+[/]) for block indent/dedent  
 - Cmd+click (macOS) / Ctrl+click to navigate `#include` files  
 - System include files open in a read-only viewer  
 - Configurable fonts, sizes, and syntax highlighting colors  
 - Settings persisted to `~/.cpusim64-settings.json`  
 - Tab key inserts spaces to 4-character tab stops  
-- Undo/Redo support  
+- Smart backspace: deletes to previous tab stop in leading whitespace  
+- Tabs converted to spaces on file open  
+- Triple-click-drag selects whole lines  
+- Undo/Redo support (text-snapshot based)  
+- File Open/Save remembers last used directory  
 - Splash screen and license key system  
 
 ### **Virtual CPU**
@@ -65,6 +75,8 @@ The project is designed for educational use, computer architecture instruction, 
 - Stack display with high-to-low address ordering and click-to-cycle decimal/hex/float values  
 - Source-map-based address resolution (`.srcmap` file emitted during assembly)  
 - Window layout (size, dividers, column widths) persisted across sessions  
+- Source editor auto-scrolls to current execution line  
+- Program I/O redirected to the IDE console pane during debugging  
 
 ### **Agentic AI Assistant**
 - Built-in AI chat panel in the IDE for writing and debugging CPUSim64 assembly  
@@ -76,6 +88,8 @@ The project is designed for educational use, computer architecture instruction, 
 - Markdown rendering in responses with bold, italic, code spans, and LaTeX math  
 - Conversation history maintained across messages within a session  
 - System prompt includes full CPUSim64 documentation, examples, and projects for accurate assistance  
+- Clear button to reset conversation  
+- Status bar showing system prompt, program, and output sizes  
 
 ### **CLI Tool (`cpusim64`)**
 - Native C++ command-line interface  
