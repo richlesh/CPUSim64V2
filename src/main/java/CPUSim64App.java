@@ -999,6 +999,11 @@ public class CPUSim64App {
                     try { pipe.close(); } catch (Exception ignored) {}
                     return;
                 }
+                if (e.getKeyCode() == KeyEvent.VK_C && (e.getModifiersEx() & KeyEvent.CTRL_DOWN_MASK) != 0) {
+                    e.consume();
+                    if (runThread != null) runThread.interrupt();
+                    return;
+                }
                 if (e.getKeyCode() == KeyEvent.VK_ENTER) {
                     e.consume();
                     try {

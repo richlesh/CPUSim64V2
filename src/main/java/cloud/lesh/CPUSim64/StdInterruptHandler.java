@@ -344,6 +344,7 @@ public class StdInterruptHandler extends InterruptHandler
 				try {
 					Thread.sleep(cpu.getR(1));
 				} catch (InterruptedException e) {
+					Thread.currentThread().interrupt();
 				}
 				break;
 			case iWAKE_THREAD:
