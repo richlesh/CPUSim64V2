@@ -61,6 +61,7 @@ public class CPUSim64App {
     private JButton runBtn, debugBtn;
     private volatile Thread runThread;
     private volatile int consoleInputStart;
+    private int tripleClickAnchor = -1;
 
     public static void main(String[] args) {
         if (args.length > 0 && args[0].equals("--uninstall")) {
@@ -379,6 +380,32 @@ public class CPUSim64App {
                         }
                     } catch (javax.swing.text.BadLocationException ignored) {}
                 }
+            }
+        });
+        // Triple-click-drag whole-line selection
+        codeEditor.addMouseListener(new MouseAdapter() {
+            public void mousePressed(MouseEvent e) {
+                if (e.getClickCount() == 3) {
+                    tripleClickAnchor = codeEditor.viewToModel2D(e.getPoint());
+                }
+            }
+            public void mouseReleased(MouseEvent e) { tripleClickAnchor = -1; }
+        });
+        codeEditor.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
+            public void mouseDragged(MouseEvent e) {
+                if (tripleClickAnchor < 0) return;
+                try {
+                    int pos = codeEditor.viewToModel2D(e.getPoint());
+                    int anchorLineStart = javax.swing.text.Utilities.getRowStart(codeEditor, tripleClickAnchor);
+                    int anchorLineEnd = javax.swing.text.Utilities.getRowEnd(codeEditor, tripleClickAnchor) + 1;
+                    int curLineStart = javax.swing.text.Utilities.getRowStart(codeEditor, pos);
+                    int curLineEnd = Math.min(javax.swing.text.Utilities.getRowEnd(codeEditor, pos) + 1, codeEditor.getDocument().getLength());
+                    if (pos < tripleClickAnchor) {
+                        codeEditor.select(curLineStart, anchorLineEnd);
+                    } else {
+                        codeEditor.select(anchorLineStart, curLineEnd);
+                    }
+                } catch (javax.swing.text.BadLocationException ignored) {}
             }
         });
         highlightTimer = new javax.swing.Timer(300, e -> {
