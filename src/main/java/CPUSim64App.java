@@ -35,7 +35,7 @@ public class CPUSim64App {
     private JFrame frame;
     private JTextPane codeEditor;
     private AsmSyntaxHighlighter highlighter;
-    private JTextPane console;
+    private TerminalPanel console;
     private JTextField argsField;
     private Path currentFile;
     private javax.swing.Timer highlightTimer;
@@ -60,7 +60,6 @@ public class CPUSim64App {
     private JMenuItem runItem, debugItem;
     private JButton runBtn, debugBtn;
     private volatile Thread runThread;
-    private volatile int consoleInputStart;
     private int tripleClickAnchor = -1;
 
     public static void main(String[] args) {
@@ -102,13 +101,7 @@ public class CPUSim64App {
     private void applySettings() {
         Font font = new Font(settings.fontName, Font.PLAIN, settings.fontSize);
         codeEditor.setFont(font);
-        console.setFont(font);
-        // Update existing styled text in console
-        javax.swing.text.StyledDocument consoleDoc = console.getStyledDocument();
-        javax.swing.text.SimpleAttributeSet consoleAttr = new javax.swing.text.SimpleAttributeSet();
-        javax.swing.text.StyleConstants.setFontFamily(consoleAttr, settings.fontName);
-        javax.swing.text.StyleConstants.setFontSize(consoleAttr, settings.fontSize);
-        consoleDoc.setCharacterAttributes(0, consoleDoc.getLength(), consoleAttr, false);
+        console.setFont(settings.fontName, settings.fontSize);
         // Update existing styled text in code editor
         javax.swing.text.StyledDocument editorDoc = codeEditor.getStyledDocument();
         javax.swing.text.SimpleAttributeSet editorAttr = new javax.swing.text.SimpleAttributeSet();
@@ -236,7 +229,12 @@ public class CPUSim64App {
         copyItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx()));
         copyItem.addActionListener(e -> {
             if (codeEditor.getSelectedText() != null) codeEditor.copy();
-            else if (console.getSelectedText() != null) console.copy();
+            else {
+                String sel = console.getSelectedText();
+                if (sel != null && !sel.isEmpty()) {
+                    Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new java.awt.datatransfer.StringSelection(sel), null);
+                }
+            }
         });
         JMenuItem pasteItem = new JMenuItem("Paste");
         pasteItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_V, Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx()));
@@ -440,11 +438,7 @@ public class CPUSim64App {
         lineNumberPanel = new LineNumberPanel(codeEditor);
         editorScroll.setRowHeaderView(lineNumberPanel);
 
-        console = new JTextPane();
-        console.setFont(new Font(settings.fontName, Font.PLAIN, settings.fontSize));
-        console.setEditable(false);
-        console.setBackground(new Color(30, 30, 30));
-        console.setForeground(Color.WHITE);
+        console = new TerminalPanel(settings.fontName, settings.fontSize);
         JScrollPane consoleScroll = new JScrollPane(console);
 
         consoleToolBar = new JToolBar();
@@ -517,7 +511,7 @@ public class CPUSim64App {
     }
 
     void loadFile(Path path) {
-        console.setText("");
+        console.clear();
         try {
             highlightingInProgress = true;
             String content = Files.readString(path);
@@ -685,7 +679,7 @@ public class CPUSim64App {
             return;
         }
         if (modified && !promptSaveIfNeeded()) return;
-        console.setText("");
+        console.clear();
 
         String base = currentFile.toString();
         if (base.endsWith(".asm")) base = base.substring(0, base.length() - 4);
@@ -731,26 +725,7 @@ public class CPUSim64App {
                 System.setIn(pis);
 
                 // Allow console to accept input
-                SwingUtilities.invokeLater(() -> {
-                    console.setEditable(true);
-                    console.setCaret(new javax.swing.text.DefaultCaret() {
-                        { setBlinkRate(500); }
-                        @Override protected synchronized void damage(java.awt.Rectangle r) {
-                            if (r != null) { x = r.x; y = r.y; width = Math.max(r.width, 8); height = r.height; repaint(); }
-                        }
-                        @Override public void paint(Graphics g) {
-                            if (isVisible()) {
-                                try {
-                                    var r = console.modelToView2D(getDot()).getBounds();
-                                    g.setColor(Color.WHITE);
-                                    g.fillRect(r.x, r.y, Math.max(r.width, 8), r.height);
-                                } catch (Exception ignored) {}
-                            }
-                        }
-                    });
-                    console.requestFocusInWindow();
-                    console.addKeyListener(consoleKeyListener(inputPipe));
-                });
+                SwingUtilities.invokeLater(() -> console.enableInput(inputPipe));
 
                 SwingUtilities.invokeLater(() -> appendConsole("> Assembling " + currentFile.getFileName() + "...\n"));
                 int asmResult = Assembler.run(mode != null ? new String[]{asmFile, "--DEBUG"} : new String[]{asmFile});
@@ -790,9 +765,7 @@ public class CPUSim64App {
                 runThread = null;
                 SwingUtilities.invokeLater(() -> {
                     runBtn.setText("Run"); runItem.setText("Run");
-                    for (var kl : console.getKeyListeners()) console.removeKeyListener(kl);
-                    console.setEditable(false);
-                    console.setCaret(new javax.swing.text.DefaultCaret());
+                    console.disableInput();
                 });
             }
         }).start();
@@ -804,7 +777,7 @@ public class CPUSim64App {
             return;
         }
         if (modified && !promptSaveIfNeeded()) return;
-        console.setText("");
+        console.clear();
 
         String base = currentFile.toString();
         if (base.endsWith(".asm")) base = base.substring(0, base.length() - 4);
@@ -991,124 +964,11 @@ public class CPUSim64App {
         dialog.setVisible(true);
     }
 
-    private Color consoleCurrentColor = Color.WHITE;
-    private String consolePending = "";
-
-    private static final int MAX_CONSOLE_CHARS = 100000;
-
     private void appendConsole(String text) {
-        text = consolePending + text;
-        consolePending = "";
-        // If text ends with an incomplete ANSI sequence, buffer it
-        int escIdx = text.lastIndexOf('\u001B');
-        if (escIdx >= 0 && !text.substring(escIdx).matches("\u001B\\[[0-9;]*m")) {
-            consolePending = text.substring(escIdx);
-            text = text.substring(0, escIdx);
-        }
-        if (text.isEmpty()) return;
-        javax.swing.text.StyledDocument doc = console.getStyledDocument();
-
-        // Trim old content if console exceeds max size
-        if (doc.getLength() > MAX_CONSOLE_CHARS) {
-            try { doc.remove(0, doc.getLength() - MAX_CONSOLE_CHARS / 2); } catch (javax.swing.text.BadLocationException ignored) {}
-        }
-        java.util.regex.Matcher m = java.util.regex.Pattern.compile("(\r|\u001B\\[[0-9;]*m|[^\r\u001B]+|\u001B)").matcher(text);
-        while (m.find()) {
-            String seg = m.group();
-            if (seg.equals("\r")) {
-                // Carriage return: remove from current position back to last newline
-                try {
-                    String docText = doc.getText(0, doc.getLength());
-                    int lastNl = docText.lastIndexOf('\n');
-                    int lineStart = lastNl + 1;
-                    if (lineStart < doc.getLength()) {
-                        doc.remove(lineStart, doc.getLength() - lineStart);
-                    }
-                    consoleInputStart = doc.getLength();
-                } catch (javax.swing.text.BadLocationException ignored) {}
-            } else if (seg.startsWith("\u001B[") && seg.endsWith("m")) {
-                // ANSI color code
-                consoleCurrentColor = ansiToColor(seg);
-            } else if (seg.equals("\u001B")) {
-                // Lone escape — ignore
-            } else {
-                try {
-                    javax.swing.text.SimpleAttributeSet attr = new javax.swing.text.SimpleAttributeSet();
-                    javax.swing.text.StyleConstants.setForeground(attr, consoleCurrentColor);
-                    javax.swing.text.StyleConstants.setFontFamily(attr, settings.fontName);
-                    javax.swing.text.StyleConstants.setFontSize(attr, settings.fontSize);
-                    doc.insertString(doc.getLength(), seg, attr);
-                } catch (javax.swing.text.BadLocationException ignored) {}
-            }
-        }
-        console.setCaretPosition(doc.getLength());
-        consoleInputStart = doc.getLength();
-        try { console.scrollRectToVisible(console.modelToView2D(doc.getLength()).getBounds()); } catch (Exception ignored) {}
+        console.write(text);
     }
 
-    private Color ansiToColor(String code) {
-        String nums = code.substring(2, code.length() - 1);
-        if (nums.isEmpty() || nums.equals("0")) return Color.WHITE;
-        for (String n : nums.split(";")) {
-            switch (n) {
-                case "0": return Color.WHITE;
-                case "30": return Color.DARK_GRAY;
-                case "31": return new Color(200, 50, 50);
-                case "32": return new Color(50, 200, 50);
-                case "33": return new Color(200, 200, 50);
-                case "34": return new Color(80, 80, 255);
-                case "35": return new Color(200, 50, 200);
-                case "36": return new Color(50, 200, 200);
-                case "37": return Color.WHITE;
-                case "90": return Color.GRAY;
-                case "91": return new Color(255, 100, 100);
-                case "92": return new Color(100, 255, 100);
-                case "93": return new Color(255, 255, 100);
-                case "94": return new Color(130, 130, 255);
-                case "95": return new Color(255, 100, 255);
-                case "96": return new Color(100, 255, 255);
-                case "97": return Color.WHITE;
-            }
-        }
-        return consoleCurrentColor;
-    }
-
-    private java.awt.event.KeyListener consoleKeyListener(PipedOutputStream pipe) {
-        return new java.awt.event.KeyAdapter() {
-            @Override public void keyPressed(java.awt.event.KeyEvent e) {
-                // Prevent editing before the input start position
-                if (console.getCaretPosition() < consoleInputStart && e.getKeyCode() != KeyEvent.VK_ENTER) {
-                    console.setCaretPosition(console.getDocument().getLength());
-                }
-                if (e.getKeyCode() == KeyEvent.VK_D && (e.getModifiersEx() & KeyEvent.CTRL_DOWN_MASK) != 0) {
-                    e.consume();
-                    try { pipe.close(); } catch (Exception ignored) {}
-                    return;
-                }
-                if (e.getKeyCode() == KeyEvent.VK_C && (e.getModifiersEx() & KeyEvent.CTRL_DOWN_MASK) != 0) {
-                    e.consume();
-                    if (runThread != null) runThread.interrupt();
-                    return;
-                }
-                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-                    e.consume();
-                    try {
-                        int len = console.getDocument().getLength();
-                        String input = console.getDocument().getText(consoleInputStart, len - consoleInputStart) + "\n";
-                        appendConsole("\n");
-                        pipe.write(input.getBytes(java.nio.charset.StandardCharsets.UTF_8));
-                        pipe.flush();
-                        consoleInputStart = console.getDocument().getLength();
-                    } catch (Exception ignored) {}
-                }
-            }
-            @Override public void keyTyped(java.awt.event.KeyEvent e) {
-                if (console.getCaretPosition() < consoleInputStart) {
-                    console.setCaretPosition(console.getDocument().getLength());
-                }
-            }
-        };
-    }
+    
 
     private static void checkXWayland() {
         String display = System.getenv("DISPLAY");
