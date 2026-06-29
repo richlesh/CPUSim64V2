@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 import java.awt.Color;
+import java.awt.Font;
 import java.io.*;
 import java.nio.file.*;
 import java.util.*;
@@ -11,6 +12,21 @@ public class AppSettings {
 
     public String fontName = "Monospaced";
     public int fontSize = 14;
+    public String aiFontName = detectAIFont();
+    public int aiFontSize = 14;
+
+    private static String detectAIFont() {
+        String os = System.getProperty("os.name", "").toLowerCase();
+        String[] candidates;
+        if (os.contains("linux")) candidates = new String[]{"DejaVu Sans", "Arial", "Helvetica", "SansSerif"};
+        else if (os.contains("win")) candidates = new String[]{"Calibri", "Arial", "Helvetica", "SansSerif"};
+        else candidates = new String[]{"Arial", "Helvetica", "SansSerif"};
+        for (String name : candidates) {
+            Font f = new Font(name, Font.PLAIN, 14);
+            if (!f.getFamily().equals("Dialog")) return name;
+        }
+        return "SansSerif";
+    }
     public String licenseEmail = null;
     public String licenseKey = null;
     public String llmVendor = "OpenAI";
@@ -43,6 +59,8 @@ public class AppSettings {
             StringBuilder sb = new StringBuilder("{\n");
             sb.append("  \"fontName\": \"").append(escape(fontName)).append("\",\n");
             sb.append("  \"fontSize\": ").append(fontSize).append(",\n");
+            sb.append("  \"aiFontName\": \"").append(escape(aiFontName)).append("\",\n");
+            sb.append("  \"aiFontSize\": ").append(aiFontSize).append(",\n");
             if (licenseEmail != null) sb.append("  \"licenseEmail\": \"").append(escape(licenseEmail)).append("\",\n");
             if (licenseKey != null) sb.append("  \"licenseKey\": \"").append(escape(licenseKey)).append("\",\n");
             if (llmVendor != null) sb.append("  \"llmVendor\": \"").append(escape(llmVendor)).append("\",\n");
@@ -97,6 +115,12 @@ public class AppSettings {
 
             Integer size = extractInt(json, "fontSize");
             if (size != null) s.fontSize = size;
+
+            String aiFont = extractString(json, "aiFontName");
+            if (aiFont != null) s.aiFontName = aiFont;
+
+            Integer aiSize = extractInt(json, "aiFontSize");
+            if (aiSize != null) s.aiFontSize = aiSize;
 
             s.licenseEmail = extractString(json, "licenseEmail");
             s.licenseKey = extractString(json, "licenseKey");

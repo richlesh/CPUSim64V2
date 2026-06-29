@@ -68,7 +68,7 @@ public class AIChatPanel extends JPanel {
         chatScroll.getVerticalScrollBar().setUnitIncrement(16);
 
         inputArea = new JTextArea(3, 20);
-        inputArea.setFont(new Font(settings.fontName, Font.PLAIN, settings.fontSize));
+        inputArea.setFont(new Font(settings.aiFontName, Font.PLAIN, settings.aiFontSize));
         inputArea.setLineWrap(true);
         inputArea.setWrapStyleWord(true);
         inputArea.addKeyListener(new KeyAdapter() {
@@ -114,13 +114,13 @@ public class AIChatPanel extends JPanel {
     }
 
     public void updateFont(String fontName, int fontSize) {
-        inputArea.setFont(new Font(fontName, Font.PLAIN, fontSize));
+        inputArea.setFont(new Font(settings.aiFontName, Font.PLAIN, settings.aiFontSize));
         for (Component c : chatPanel.getComponents()) {
             if (c instanceof JPanel row) {
                 for (Component rc : row.getComponents()) {
                     if (rc instanceof JPanel bubble) {
                         for (Component bc : bubble.getComponents()) {
-                            if (bc instanceof JTextPane tp) tp.setFont(new Font(fontName, Font.PLAIN, fontSize));
+                            if (bc instanceof JTextPane tp) tp.setFont(new Font(settings.aiFontName, Font.PLAIN, settings.aiFontSize));
                         }
                     }
                 }
@@ -133,7 +133,7 @@ public class AIChatPanel extends JPanel {
     }
 
     public void updateFont() {
-        Font font = new Font(settings.fontName, Font.PLAIN, settings.fontSize);
+        Font font = new Font(settings.aiFontName, Font.PLAIN, settings.aiFontSize);
         inputArea.setFont(font);
         for (Component c : chatPanel.getComponents()) {
             updateFontRecursive(c, font);
@@ -207,7 +207,7 @@ public class AIChatPanel extends JPanel {
         bubble.add(icon, BorderLayout.WEST);
 
         JTextArea msg = new JTextArea(text);
-        msg.setFont(new Font(settings.fontName, Font.PLAIN, settings.fontSize));
+        msg.setFont(new Font(settings.aiFontName, Font.PLAIN, settings.aiFontSize));
         msg.setForeground(Color.WHITE);
         msg.setOpaque(false);
         msg.setEditable(false);
@@ -248,8 +248,8 @@ public class AIChatPanel extends JPanel {
         JTextPane msg = new JTextPane();
         msg.setOpaque(false);
         msg.setEditable(false);
-        msg.setFont(new Font(settings.fontName, Font.PLAIN, settings.fontSize));
-        renderStyledMessage(msg, text, settings.fontName, settings.fontSize);
+        msg.setFont(new Font(settings.aiFontName, Font.PLAIN, settings.aiFontSize));
+        renderStyledMessage(msg, text, settings.aiFontName, settings.aiFontSize, settings.fontName);
         bubble.add(msg, BorderLayout.CENTER);
 
         JPanel row = new JPanel(new BorderLayout());
@@ -524,7 +524,7 @@ public class AIChatPanel extends JPanel {
         } catch (Exception e) { return null; }
     }
 
-    private static void renderStyledMessage(JTextPane pane, String text, String fontName, int fontSize) {
+    private static void renderStyledMessage(JTextPane pane, String text, String fontName, int fontSize, String codeFontName) {
         StyledDocument doc = pane.getStyledDocument();
         // Define styles
         javax.swing.text.Style normal = doc.addStyle("normal", null);
@@ -538,7 +538,7 @@ public class AIChatPanel extends JPanel {
         StyleConstants.setItalic(italic, true);
 
         javax.swing.text.Style code = doc.addStyle("code", normal);
-        StyleConstants.setFontFamily(code, Font.MONOSPACED);
+        StyleConstants.setFontFamily(code, codeFontName);
 
         javax.swing.text.Style header = doc.addStyle("header", normal);
         StyleConstants.setBold(header, true);

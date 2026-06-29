@@ -16,9 +16,9 @@ public class SettingsDialog {
         gbc.insets = new Insets(5, 5, 5, 5);
         gbc.anchor = GridBagConstraints.WEST;
 
-        // Font selector (monospaced only)
+        // Code Font selector (monospaced only)
         gbc.gridx = 0; gbc.gridy = 0;
-        panel.add(new JLabel("Font:"), gbc);
+        panel.add(new JLabel("Code Font:"), gbc);
 
         String[] monoFonts = getMonospacedFonts();
         JComboBox<String> fontCombo = new JComboBox<>(monoFonts);
@@ -26,9 +26,9 @@ public class SettingsDialog {
         gbc.gridx = 1;
         panel.add(fontCombo, gbc);
 
-        // Size selector
+        // Code Size selector
         gbc.gridx = 0; gbc.gridy = 1;
-        panel.add(new JLabel("Size:"), gbc);
+        panel.add(new JLabel("Code Size:"), gbc);
 
         String[] sizes = {"Small (12pt)", "Medium (16pt)", "Large (20pt)"};
         JComboBox<String> sizeCombo = new JComboBox<>(sizes);
@@ -39,8 +39,29 @@ public class SettingsDialog {
         gbc.gridx = 1;
         panel.add(sizeCombo, gbc);
 
-        // Color settings
+        // AI Font selector
         gbc.gridx = 0; gbc.gridy = 2;
+        panel.add(new JLabel("AI Font:"), gbc);
+
+        String[] allFonts = GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames();
+        JComboBox<String> aiFontCombo = new JComboBox<>(allFonts);
+        aiFontCombo.setSelectedItem(settings.aiFontName);
+        gbc.gridx = 1;
+        panel.add(aiFontCombo, gbc);
+
+        // AI Size selector
+        gbc.gridx = 0; gbc.gridy = 3;
+        panel.add(new JLabel("AI Size:"), gbc);
+
+        JComboBox<String> aiSizeCombo = new JComboBox<>(sizes);
+        if (settings.aiFontSize <= 12) aiSizeCombo.setSelectedIndex(0);
+        else if (settings.aiFontSize <= 16) aiSizeCombo.setSelectedIndex(1);
+        else aiSizeCombo.setSelectedIndex(2);
+        gbc.gridx = 1;
+        panel.add(aiSizeCombo, gbc);
+
+        // Color settings
+        gbc.gridx = 0; gbc.gridy = 4;
         gbc.gridwidth = 2;
         panel.add(new JSeparator(), gbc);
         gbc.gridwidth = 1;
@@ -109,7 +130,7 @@ public class SettingsDialog {
             colorsPanel.add(colorPanel, cgbc);
         }
 
-        gbc.gridy = 3; gbc.gridx = 0; gbc.gridwidth = 2;
+        gbc.gridy = 5; gbc.gridx = 0; gbc.gridwidth = 2;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         panel.add(colorsPanel, gbc);
         gbc.gridwidth = 1;
@@ -215,7 +236,7 @@ public class SettingsDialog {
             }
         });
 
-        gbc.gridy = 4; gbc.gridx = 0; gbc.gridwidth = 2;
+        gbc.gridy = 6; gbc.gridx = 0; gbc.gridwidth = 2;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         panel.add(llmPanel, gbc);
         gbc.gridwidth = 1;
@@ -262,7 +283,7 @@ public class SettingsDialog {
         ccgbc.gridx = 3;
         chatColorsPanel.add(aiSwatch, ccgbc);
 
-        gbc.gridy = 5; gbc.gridx = 0; gbc.gridwidth = 2;
+        gbc.gridy = 7; gbc.gridx = 0; gbc.gridwidth = 2;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         panel.add(chatColorsPanel, gbc);
         gbc.gridwidth = 1;
@@ -286,7 +307,7 @@ public class SettingsDialog {
             };
             Font font = new Font(fontName, Font.PLAIN, size);
             editor.setFont(font);
-            console.setFont(font);
+            console.setFont(fontName, size);
 
             // Apply colors
             for (int i = 0; i < colors.length; i++) {
@@ -297,6 +318,13 @@ public class SettingsDialog {
             // Save settings
             settings.fontName = fontName;
             settings.fontSize = size;
+            settings.aiFontName = (String) aiFontCombo.getSelectedItem();
+            settings.aiFontSize = switch (aiSizeCombo.getSelectedIndex()) {
+                case 0 -> 12;
+                case 1 -> 16;
+                case 2 -> 20;
+                default -> 14;
+            };
             System.arraycopy(colors, 0, settings.colors, 0, colors.length);
             settings.llmVendor = (String) vendorCombo.getSelectedItem();
             settings.llmModel = (String) modelCombo.getSelectedItem();
