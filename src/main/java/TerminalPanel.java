@@ -247,8 +247,11 @@ public class TerminalPanel extends JComponent implements Scrollable {
                     case "97" -> currentFg = Color.WHITE;
                 }
             }
+        } else if (seq.equals("\u001B[?25l")) {
+            cursorVisible = false; blinkTimer.stop();
+        } else if (seq.equals("\u001B[?25h")) {
+            cursorVisible = true; blinkTimer.start();
         }
-        // Ignore other escape sequences (cursor hide/show, etc.)
     }
 
     public void clear() {
