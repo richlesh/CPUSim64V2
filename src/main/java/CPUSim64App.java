@@ -659,13 +659,8 @@ public class CPUSim64App {
                 PrintStream consoleStream = new PrintStream(new OutputStream() {
                     private final ByteArrayOutputStream buf = new ByteArrayOutputStream();
                     @Override public void write(int b) {
-                        if (b == '\n') {
-                            final String line = buf.toString(java.nio.charset.StandardCharsets.UTF_8);
-                            buf.reset();
-                            SwingUtilities.invokeLater(() -> appendConsole(line + "\n"));
-                        } else {
-                            buf.write(b);
-                        }
+                        buf.write(b);
+                        if (b == '\n' || b == '\r') flush();
                     }
                     @Override public void flush() {
                         if (buf.size() > 0) {
