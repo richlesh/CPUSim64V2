@@ -412,7 +412,7 @@ public class AIChatPanel extends JPanel {
 
     private String callAnthropic(String apiKey, String model) throws Exception {
         StringBuilder body = new StringBuilder();
-        body.append("{\"model\":\"").append(model).append("\",\"max_tokens\":16384,");
+        body.append("{\"model\":\"").append(model).append("\",\"max_tokens\":128000,");
         String sys = messages.stream().filter(m -> "system".equals(m.get("role"))).map(m -> m.get("content")).findFirst().orElse("");
         body.append("\"system\":").append(jsonString(sys)).append(",\"messages\":[");
         boolean first = true;

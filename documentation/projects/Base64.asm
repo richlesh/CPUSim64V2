@@ -4,8 +4,8 @@
 //
 // Usage: Base64 [e|d] input_file output_file
 //
-// Author: Richard Lesh
-// Date:   2025/11/17
+// Author:   Richard Lesh
+// Original: 2025/11/17
 ///////////////////////////////////////////////////////////////////////////////
 
 #include <system/io.asm>

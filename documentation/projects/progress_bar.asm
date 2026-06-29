@@ -35,7 +35,7 @@ stop
         #call progress_bar(SIZE, p)
         #call puts(ANSI_COLOR$RESET)
         #call puts("\r")
-        #macro SLEEP(100)
+        #call sleep(100)
     #end_for
     #call puts("Copying: ")
     #call progress_bar(SIZE, stop)
