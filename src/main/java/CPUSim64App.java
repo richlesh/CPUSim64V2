@@ -399,7 +399,7 @@ public class CPUSim64App {
         editorScroll.setRowHeaderView(lineNumberPanel);
 
         console = new JTextPane();
-        console.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 13));
+        console.setFont(new Font(settings.fontName, Font.PLAIN, settings.fontSize));
         console.setEditable(false);
         console.setBackground(new Color(30, 30, 30));
         console.setForeground(Color.WHITE);
@@ -950,8 +950,8 @@ public class CPUSim64App {
                 try {
                     javax.swing.text.SimpleAttributeSet attr = new javax.swing.text.SimpleAttributeSet();
                     javax.swing.text.StyleConstants.setForeground(attr, consoleCurrentColor);
-                    javax.swing.text.StyleConstants.setFontFamily(attr, Font.MONOSPACED);
-                    javax.swing.text.StyleConstants.setFontSize(attr, 13);
+                    javax.swing.text.StyleConstants.setFontFamily(attr, settings.fontName);
+                    javax.swing.text.StyleConstants.setFontSize(attr, settings.fontSize);
                     doc.insertString(doc.getLength(), seg, attr);
                 } catch (javax.swing.text.BadLocationException ignored) {}
             }
