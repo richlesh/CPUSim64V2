@@ -35,8 +35,8 @@ public class AppSettings {
     public int[] debugStackColWidths = null;
     public int debugWindowWidth = 1100;
     public int debugWindowHeight = 700;
-    public int heapSize = 1048576;
-    public int stackSize = 8192;
+    public double heapSizeMiB = 1.0;
+    public double stackSizeKiB = 8.0;
 
     public void save() {
         try {
@@ -76,8 +76,8 @@ public class AppSettings {
                 }
                 sb.append("],\n");
             }
-            sb.append("  \"heapSize\": ").append(heapSize).append(",\n");
-            sb.append("  \"stackSize\": ").append(stackSize).append(",\n");
+            sb.append("  \"heapSizeMiB\": ").append(heapSizeMiB).append(",\n");
+            sb.append("  \"stackSizeKiB\": ").append(stackSizeKiB).append(",\n");
             sb.setLength(sb.length() - 2); // remove trailing comma+newline
             sb.append("\n}");
             Files.writeString(SETTINGS_FILE, sb.toString());
@@ -140,9 +140,13 @@ public class AppSettings {
             }
 
             Integer hs = extractInt(json, "heapSize");
-            if (hs != null) s.heapSize = hs;
+            if (hs != null) s.heapSizeMiB = hs / (1024.0 * 1024.0);
             Integer ss = extractInt(json, "stackSize");
-            if (ss != null) s.stackSize = ss;
+            if (ss != null) s.stackSizeKiB = ss / 1024.0;
+            Double hm = extractDouble(json, "heapSizeMiB");
+            if (hm != null) s.heapSizeMiB = hm;
+            Double sk = extractDouble(json, "stackSizeKiB");
+            if (sk != null) s.stackSizeKiB = sk;
         } catch (Exception e) {
             // return defaults on any parse error
         }
@@ -170,6 +174,11 @@ public class AppSettings {
     private static Integer extractInt(String json, String key) {
         Matcher m = Pattern.compile("\"" + key + "\"\\s*:\\s*(\\d+)").matcher(json);
         return m.find() ? Integer.parseInt(m.group(1)) : null;
+    }
+
+    private static Double extractDouble(String json, String key) {
+        Matcher m = Pattern.compile("\"" + key + "\"\\s*:\\s*([\\d.eE+-]+)").matcher(json);
+        return m.find() ? Double.parseDouble(m.group(1)) : null;
     }
 
     private static List<String> extractArray(String json, String key) {

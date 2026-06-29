@@ -419,24 +419,26 @@ public class CPUSim64App {
         consoleToolBar.add(argsField);
         consoleToolBar.addSeparator();
         consoleToolBar.add(new JLabel("Heap: "));
-        JTextField heapField = new JTextField(String.valueOf(settings.heapSize), 8);
-        heapField.setMaximumSize(new Dimension(100, 24));
+        JTextField heapField = new JTextField(String.valueOf(settings.heapSizeMiB), 5);
+        heapField.setMaximumSize(new Dimension(70, 24));
         heapField.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusLost(java.awt.event.FocusEvent e) {
-                try { settings.heapSize = Integer.parseInt(heapField.getText().trim()); settings.save(); } catch (NumberFormatException ignored) {}
+                try { settings.heapSizeMiB = Double.parseDouble(heapField.getText().trim()); settings.save(); } catch (NumberFormatException ignored) {}
             }
         });
         consoleToolBar.add(heapField);
+        consoleToolBar.add(new JLabel("MiB "));
         consoleToolBar.addSeparator();
         consoleToolBar.add(new JLabel("Stack: "));
-        JTextField stackField = new JTextField(String.valueOf(settings.stackSize), 6);
-        stackField.setMaximumSize(new Dimension(80, 24));
+        JTextField stackField = new JTextField(String.valueOf(settings.stackSizeKiB), 5);
+        stackField.setMaximumSize(new Dimension(70, 24));
         stackField.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusLost(java.awt.event.FocusEvent e) {
-                try { settings.stackSize = Integer.parseInt(stackField.getText().trim()); settings.save(); } catch (NumberFormatException ignored) {}
+                try { settings.stackSizeKiB = Double.parseDouble(stackField.getText().trim()); settings.save(); } catch (NumberFormatException ignored) {}
             }
         });
         consoleToolBar.add(stackField);
+        consoleToolBar.add(new JLabel("kiB"));
 
         JPanel consolePanel = new JPanel(new BorderLayout());
         consolePanel.add(consoleToolBar, BorderLayout.NORTH);
@@ -697,8 +699,8 @@ public class CPUSim64App {
                 java.util.List<String> simArgs = new java.util.ArrayList<>();
                 simArgs.add(objFile);
                 simArgs.add("--verbose");
-                simArgs.add("--mem=" + settings.heapSize);
-                simArgs.add("--stack=" + settings.stackSize);
+                simArgs.add("--mem=" + (int)(settings.heapSizeMiB * 1024 * 1024));
+                simArgs.add("--stack=" + (int)(settings.stackSizeKiB * 1024));
                 if (mode != null) simArgs.add(mode);
                 String userArgs = argsField.getText().trim();
                 if (!userArgs.isEmpty()) {
