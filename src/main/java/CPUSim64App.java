@@ -698,20 +698,29 @@ public class CPUSim64App {
             PrintStream origOut = System.out;
             PrintStream origErr = System.err;
             InputStream origIn = System.in;
+            final StringBuilder consoleBuf = new StringBuilder();
+            final Object consoleBufLock = new Object();
+            javax.swing.Timer consoleFlushTimer = new javax.swing.Timer(50, evt -> {
+                String chunk;
+                synchronized (consoleBufLock) {
+                    if (consoleBuf.length() == 0) return;
+                    chunk = consoleBuf.toString();
+                    consoleBuf.setLength(0);
+                }
+                appendConsole(chunk);
+            });
+            consoleFlushTimer.setRepeats(true);
+            consoleFlushTimer.start();
             try {
+
                 PrintStream consoleStream = new PrintStream(new OutputStream() {
-                    private final ByteArrayOutputStream buf = new ByteArrayOutputStream();
                     @Override public void write(int b) {
-                        buf.write(b);
-                        if (b == '\n' || b == '\r') flush();
+                        synchronized (consoleBufLock) { consoleBuf.append((char) b); }
                     }
-                    @Override public void flush() {
-                        if (buf.size() > 0) {
-                            final String text = buf.toString(java.nio.charset.StandardCharsets.UTF_8);
-                            buf.reset();
-                            SwingUtilities.invokeLater(() -> appendConsole(text));
-                        }
+                    @Override public void write(byte[] buf, int off, int len) {
+                        synchronized (consoleBufLock) { consoleBuf.append(new String(buf, off, len, java.nio.charset.StandardCharsets.UTF_8)); }
                     }
+                    @Override public void flush() {}
                 }, true, java.nio.charset.StandardCharsets.UTF_8);
                 System.setOut(consoleStream);
                 System.setErr(consoleStream);
@@ -766,6 +775,15 @@ public class CPUSim64App {
             } catch (Exception e) {
                 SwingUtilities.invokeLater(() -> appendConsole("Error: " + e.getMessage() + "\n"));
             } finally {
+                consoleFlushTimer.stop();
+                // Final flush
+                synchronized (consoleBufLock) {
+                    if (consoleBuf.length() > 0) {
+                        String remaining = consoleBuf.toString();
+                        consoleBuf.setLength(0);
+                        SwingUtilities.invokeLater(() -> appendConsole(remaining));
+                    }
+                }
                 System.setOut(origOut);
                 System.setErr(origErr);
                 System.setIn(origIn);
@@ -976,6 +994,8 @@ public class CPUSim64App {
     private Color consoleCurrentColor = Color.WHITE;
     private String consolePending = "";
 
+    private static final int MAX_CONSOLE_CHARS = 100000;
+
     private void appendConsole(String text) {
         text = consolePending + text;
         consolePending = "";
@@ -987,6 +1007,11 @@ public class CPUSim64App {
         }
         if (text.isEmpty()) return;
         javax.swing.text.StyledDocument doc = console.getStyledDocument();
+
+        // Trim old content if console exceeds max size
+        if (doc.getLength() > MAX_CONSOLE_CHARS) {
+            try { doc.remove(0, doc.getLength() - MAX_CONSOLE_CHARS / 2); } catch (javax.swing.text.BadLocationException ignored) {}
+        }
         java.util.regex.Matcher m = java.util.regex.Pattern.compile("(\r|\u001B\\[[0-9;]*m|[^\r\u001B]+|\u001B)").matcher(text);
         while (m.find()) {
             String seg = m.group();
