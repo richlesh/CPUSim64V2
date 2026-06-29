@@ -295,6 +295,7 @@ public class CPUSim64App {
     private JSplitPane createMainPanel() {
         codeEditor = new JTextPane();
         codeEditor.setFocusTraversalKeysEnabled(false);
+        codeEditor.setDragEnabled(false);
         codeEditor.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_TAB, 0), "insert-spaces");
         codeEditor.getActionMap().put("insert-spaces", new javax.swing.AbstractAction() {
             public void actionPerformed(java.awt.event.ActionEvent e) {
