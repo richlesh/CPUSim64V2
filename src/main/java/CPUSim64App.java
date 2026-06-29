@@ -695,6 +695,22 @@ public class CPUSim64App {
                 // Allow console to accept input
                 SwingUtilities.invokeLater(() -> {
                     console.setEditable(true);
+                    console.setCaret(new javax.swing.text.DefaultCaret() {
+                        { setBlinkRate(500); }
+                        @Override protected synchronized void damage(java.awt.Rectangle r) {
+                            if (r != null) { x = r.x; y = r.y; width = Math.max(r.width, 8); height = r.height; repaint(); }
+                        }
+                        @Override public void paint(Graphics g) {
+                            if (isVisible()) {
+                                try {
+                                    var r = console.modelToView2D(getDot()).getBounds();
+                                    g.setColor(Color.WHITE);
+                                    g.fillRect(r.x, r.y, Math.max(r.width, 8), r.height);
+                                } catch (Exception ignored) {}
+                            }
+                        }
+                    });
+                    console.requestFocusInWindow();
                     console.addKeyListener(consoleKeyListener(inputPipe));
                 });
 
@@ -729,6 +745,7 @@ public class CPUSim64App {
                     runBtn.setText("Run"); runItem.setText("Run");
                     for (var kl : console.getKeyListeners()) console.removeKeyListener(kl);
                     console.setEditable(false);
+                    console.setCaret(new javax.swing.text.DefaultCaret());
                 });
             }
         }).start();
