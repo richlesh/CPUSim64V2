@@ -114,6 +114,7 @@ public class TerminalPanel extends JComponent implements Scrollable {
                 }
                 if (!inputEnabled) return;
                 if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+                    e.consume();
                     String input = getInputText() + "\n";
                     write("\n");
                     sendInput(input);

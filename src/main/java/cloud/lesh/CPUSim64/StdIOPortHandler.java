@@ -17,6 +17,7 @@
 
 package cloud.lesh.CPUSim64;
 
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 
@@ -25,8 +26,16 @@ public class StdIOPortHandler extends PortHandler
 	// Ports supported are...
 	// 0 STDIN, 1 STDOUT, 2 STDERR
 	static int lastPort = 0;
+	private InputStreamReader reader;
+	private InputStream lastIn;
 
-	private InputStreamReader getReader() { return new InputStreamReader(System.in); }
+	private InputStreamReader getReader() {
+		if (reader == null || System.in != lastIn) {
+			lastIn = System.in;
+			reader = new InputStreamReader(System.in);
+		}
+		return reader;
+	}
 
 	public StdIOPortHandler(Simulator cpu) { super(cpu); }
 
