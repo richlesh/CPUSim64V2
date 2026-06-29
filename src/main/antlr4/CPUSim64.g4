@@ -34,7 +34,7 @@ dataDirective
   | DCB (byteList)							// 8-bit bytes(s)
   | DCC (byteList)							// OBSOLETE: 16-bit chars(s) — use .DCW instead
   | DCS STRINGLIT							// strings
-  | DCW (intList | floatList | charList)	// array of any of the above
+  | DCW (intList | floatList | charList | STRINGLIT)	// array of any of the above
   ;
 
 intList : kLiteral (',' kLiteral)* ;

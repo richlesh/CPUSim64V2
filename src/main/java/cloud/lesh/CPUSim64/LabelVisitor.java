@@ -199,6 +199,12 @@ public class LabelVisitor extends CPUSim64BaseVisitor<Void> implements HasLocati
 					count = ctx.dataDirective().floatList().FLOATLIT().size();
 				} else if (ctx.dataDirective().charList() != null) {
 					count = ctx.dataDirective().charList().CHARLIT().size();
+				} else if (ctx.dataDirective().STRINGLIT() != null) {
+					String s = ctx.dataDirective().STRINGLIT().getText();
+					s = s.substring(1, s.length() - 1);
+					byte[] utf8 = Utils.parseStringLiteral(s);
+					String decoded = new String(utf8, java.nio.charset.StandardCharsets.UTF_8);
+					count = (int) decoded.codePoints().count();
 				}
 				currentAddress += 1 + count;
 			}

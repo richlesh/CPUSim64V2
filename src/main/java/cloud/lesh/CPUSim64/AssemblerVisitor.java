@@ -1578,6 +1578,16 @@ public class AssemblerVisitor extends CPUSim64BaseVisitor<Void> implements HasLo
 					long k = Utils.parseCharLiteral(s);
 					addWord(LabelType.CHAR, k);
 				}
+			} else if (ctx.STRINGLIT() != null) {
+				String s = ctx.STRINGLIT().getText();
+				s = s.substring(1, s.length() - 1); // strip quotes
+				byte[] utf8 = Utils.parseStringLiteral(s);
+				String decoded = new String(utf8, java.nio.charset.StandardCharsets.UTF_8);
+				int[] codepoints = decoded.codePoints().toArray();
+				addWord(LabelType.INT, (long) codepoints.length);
+				for (int cp : codepoints) {
+					addWord(LabelType.CHAR, (long) cp);
+				}
 			} else {
 				throw new IllegalStateException("Invalid DCW directive");
 			}
