@@ -198,6 +198,16 @@ public class MemoryWindow extends JFrame {
         menu.add(charItem);
         menu.addSeparator();
         menu.add(strItem);
+        JMenuItem memItem = new JMenuItem("Memory");
+        memItem.addActionListener(ev -> {
+            try {
+                long addr = sim.memRead(addressForRow(row));
+                baseAddress = addr;
+                setTitle(String.format("Memory @ 0x%08X", addr));
+                refresh();
+            } catch (Exception ex) {}
+        });
+        menu.add(memItem);
         menu.show(table, e.getX(), e.getY());
     }
 
