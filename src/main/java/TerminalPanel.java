@@ -12,7 +12,7 @@ import java.util.concurrent.locks.ReentrantLock;
  * Supports ANSI colors, scrollback, carriage return, text selection, keyboard input.
  */
 public class TerminalPanel extends JComponent implements Scrollable {
-    private static final int DEFAULT_COLS = 120;
+    private static final int DEFAULT_COLS = 500;
     private static final int SCROLLBACK_LINES = 10000;
     private static final Color DEFAULT_BG = new Color(30, 30, 30);
     private static final Color DEFAULT_FG = Color.WHITE;
@@ -192,7 +192,9 @@ public class TerminalPanel extends JComponent implements Scrollable {
     }
 
     public int getVisibleCols() {
-        return Math.max(1, getWidth() / charWidth);
+        int w = getWidth();
+        if (w <= 0) return maxCols;
+        return Math.min(maxCols, Math.max(1, w / charWidth));
     }
 
     // ===== OUTPUT =====
@@ -224,7 +226,7 @@ public class TerminalPanel extends JComponent implements Scrollable {
                     chars[idx] = c;
                     colors[idx] = currentFg;
                     cursorCol++;
-                    if (cursorCol >= maxCols) {
+                    if (cursorCol >= getVisibleCols()) {
                         cursorCol = 0;
                         newLine();
                     }
