@@ -47,6 +47,7 @@ public class MemoryWindow extends JFrame {
             @Override public boolean isCellEditable(int r, int c) { return false; }
         };
         table.setFont(font);
+        table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         table.getTableHeader().setFont(font);
         table.setRowHeight(table.getRowHeight() + 4);
 
