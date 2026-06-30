@@ -148,6 +148,7 @@ public class Simulator {
 	long[] R = new long[GPR_COUNT];     // R0..R31 (R29=SF, R30=SP, R31=PC, SR kept separate)
 	double[] F = new double[FPR_COUNT]; // F0..F31
 	long SR = 0;
+	public long getSR() { return SR; }
 
 	// Execution controls
 	private boolean running = false;

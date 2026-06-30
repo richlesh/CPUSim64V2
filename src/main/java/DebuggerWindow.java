@@ -205,7 +205,7 @@ public class DebuggerWindow extends JFrame {
         JPanel rightPanel = new JPanel(new BorderLayout());
 
         // Register table: 4 columns (IntReg, Value, FPReg, Value)
-        regModel = new DefaultTableModel(new String[]{"Reg", "Value", "FP Reg", "Value"}, 32);
+        regModel = new DefaultTableModel(new String[]{"Reg", "Value", "FP Reg", "Value"}, 33);
         regTable = new JTable(regModel) {
             @Override public boolean isCellEditable(int r, int c) { return false; }
         };
@@ -535,6 +535,16 @@ public class DebuggerWindow extends JFrame {
             regModel.setValueAt(fpName, i, 2);
             regModel.setValueAt(fpVal, i, 3);
         }
+        // Status Register row
+        long sr = sim.getSR();
+        String srStr = ((sr & Simulator.SR_P) != 0 ? "P" : "p") +
+                       ((sr & Simulator.SR_Z) != 0 ? "Z" : "z") +
+                       ((sr & Simulator.SR_S) != 0 ? "S" : "s") +
+                       ((sr & Simulator.SR_O) != 0 ? "O" : "o");
+        regModel.setValueAt("SR", 32, 0);
+        regModel.setValueAt(srStr, 32, 1);
+        regModel.setValueAt("", 32, 2);
+        regModel.setValueAt("", 32, 3);
     }
 
     private void updateStack() {
