@@ -400,8 +400,10 @@ public class SettingsDialog {
         FontMetrics fm;
         for (String name : allFonts) {
             Font font = new Font(name, Font.PLAIN, 12);
+            // Skip ornamental/symbol fonts
+            if (!font.canDisplay('A') || !font.canDisplay('z') || !font.canDisplay('0')) continue;
             fm = new Canvas().getFontMetrics(font);
-            if (fm.charWidth('m') == fm.charWidth('i')) {
+            if (fm.charWidth('m') == fm.charWidth('i') && fm.charWidth('m') > 0) {
                 mono.add(name);
             }
         }
