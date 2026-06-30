@@ -34,7 +34,7 @@ public class AppSettings {
     public String llmApiKey = null;
     public Color userPromptColor = new Color(0x00, 0xAA, 0x00);
     public Color aiResponseColor = new Color(0x33, 0x99, 0xFF);
-    public Color consoleFg = Color.WHITE;
+    public Color consoleFg = new Color(0xBB, 0xBB, 0xBB);
     public Color consoleBg = new Color(30, 30, 30);
     public Color[] colors = {
         Color.BLACK,              // normal
