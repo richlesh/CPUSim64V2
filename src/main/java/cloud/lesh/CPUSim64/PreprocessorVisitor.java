@@ -361,6 +361,11 @@ public class PreprocessorVisitor extends cloud.lesh.CPUSim64.PreprocessorParserB
 		if (ctx.argList() != null) {
 			emitLineBeginDirective(filename, ctx);
 			for (var param : ctx.argList().callArg().reversed()) {
+				if (param == null || param.getText() == null || param.getText().isBlank()) {
+					System.err.println(getLocation() + ":ERROR:#call " + ctx.IDENT().getText() + " has an empty argument");
+					hasErrors = true;
+					return null;
+				}
 				emitLine("push " + param.getText(), true);
 			}
 		}
@@ -616,6 +621,15 @@ public class PreprocessorVisitor extends cloud.lesh.CPUSim64.PreprocessorParserB
 		if (def != null) {
 			if (codeLabels.contains(ctx.IDENT().getText().toUpperCase()) || globalLabelNames.contains(ctx.IDENT().getText().toUpperCase())) {
 				System.err.println(getLocation() + ":WARNING:#macro used with function/label '" + ctx.IDENT().getText() + "'; did you mean #call?");
+			}
+			int actualArgs = (ctx.argList() != null) ? ctx.argList().callArg().size() : 0;
+			int formalCount = def.getLeft().size();
+			boolean hasVarArgs = def.getLeft().contains("...");
+			int requiredArgs = hasVarArgs ? formalCount - 1 : formalCount;
+			if (actualArgs < requiredArgs) {
+				System.err.println(getLocation() + ":ERROR:#macro " + ctx.IDENT().getText() + " expects " + requiredArgs + " argument(s) but got " + actualArgs);
+				hasErrors = true;
+				return null;
 			}
 			Map<String, String> formalParams = new HashMap<String, String>();
 			ArrayList<String> varArgs = new ArrayList<String>();
