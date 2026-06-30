@@ -211,6 +211,8 @@ public class DebuggerWindow extends JFrame {
         };
         regTable.setFont(monoFont);
         regTable.getTableHeader().setFont(monoFont);
+        regTable.setIntercellSpacing(new Dimension(4, 2));
+        regTable.setRowHeight(regTable.getRowHeight() + 4);
         regTable.getColumnModel().getColumn(0).setPreferredWidth(40);
         regTable.getColumnModel().getColumn(1).setPreferredWidth(140);
         regTable.getColumnModel().getColumn(2).setPreferredWidth(40);
