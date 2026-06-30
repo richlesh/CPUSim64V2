@@ -159,7 +159,7 @@ public class TerminalPanel extends JComponent implements Scrollable {
                         bufferLock.lock();
                         try {
                             if (cursorCol > 0) cursorCol--;
-                            else if (cursorRow > 0) { cursorRow--; cursorCol = maxCols - 1; }
+                            else if (cursorRow > inputStartRow) { cursorRow--; cursorCol = getVisibleCols() - 1; }
                             int idx = cursorRow * maxCols + cursorCol;
                             chars[idx] = 0;
                             colors[idx] = termFg;
