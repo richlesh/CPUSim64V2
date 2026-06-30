@@ -471,8 +471,6 @@ jump	IO_ASM_END
 	load	r1, port
 	load	r2, buffer
 	int		iGET_LINE
-	cmp		r0, -1
-	move	z, r0, 0, r2
 #end_func
 
 #def_func	openTextFile(filename, mode)

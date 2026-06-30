@@ -630,9 +630,11 @@ public class StdInterruptHandler extends InterruptHandler
 					long newAlloc = cpu.allocString(s, cpu.getR(2));
 					cpu.setR(2, newAlloc);
 					if (cp == -1 && s.isEmpty())
-						cpu.setR(0, -1);
+						cpu.setR(0, 0);
 					else
-						cpu.setR(0, s.length());
+						cpu.setR(0, newAlloc);
+				} else {
+					cpu.setR(0, 0);
 				}
 				break;
 			case iPRINTF:
@@ -907,12 +909,12 @@ public class StdInterruptHandler extends InterruptHandler
 			case iTO_LOWER_STR:
 				s = cpu.convertString(cpu.getR(1));
 				s = s.toLowerCase();
-				cpu.setR(0,cpu.allocString(s));
+				cpu.setR(0, cpu.allocString(s));
 				break;
 			case iTO_UPPER_STR:
 				s = cpu.convertString(cpu.getR(1));
 				s = s.toUpperCase();
-				cpu.setR(0,cpu.allocString(s));
+				cpu.setR(0, cpu.allocString(s));
 				break;
 			case iSTRCMP:
 				{
