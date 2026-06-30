@@ -25,12 +25,12 @@ The project is designed for educational use, computer architecture instruction, 
 ### **Integrated Development Environment**
 - Code editor with syntax highlighting for CPUSim64 assembly
 - Line number margin  
-- Custom terminal console with ANSI color support and fast rendering  
-- Carriage return (`\r`) support for progress bars and spinners  
-- Cursor hide/show escape sequences  
-- Full ANSI SGR support: bold, dim, italic, underline, blink, reverse, hidden, strikethrough  
-- ANSI background colors (standard and bright)  
-- Clear to end of line and clear line escape sequences  
+- Custom terminal console with ANSI terminal support and fast rendering  
+  - ANSI foreground and background colors (standard and bright)
+  - Carriage return (`\r`) support for progress bars and spinners  
+  - Cursor hide/show escape sequences  
+  - Full ANSI SGR support: bold, dim, italic, underline, blink, reverse, hidden, strikethrough  
+  - Clear to end of line and clear line escape sequences  
 - Assemble, Run, Debug, and Trace from the menu  
 - Run/Stop toggle button — Stop terminates the running program and all child processes  
 - Ctrl+C to interrupt running program, Ctrl+D to signal EOF  
