@@ -248,6 +248,8 @@ public class DebuggerWindow extends JFrame {
         };
         stackTable.setFont(monoFont);
         stackTable.getTableHeader().setFont(monoFont);
+        stackTable.setRowHeight(stackTable.getRowHeight() + 4);
+        for (int i = 0; i < stackTable.getColumnCount(); i++) stackTable.getColumnModel().getColumn(i).setCellRenderer(padRenderer);
         stackTable.getColumnModel().getColumn(0).setPreferredWidth(30);
         stackTable.getColumnModel().getColumn(1).setPreferredWidth(80);
         stackTable.getColumnModel().getColumn(2).setPreferredWidth(140);
