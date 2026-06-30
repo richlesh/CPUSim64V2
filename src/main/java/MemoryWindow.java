@@ -20,7 +20,11 @@ public class MemoryWindow extends JFrame {
     private final DefaultTableModel model;
     private final JTable table;
     private final int[] displayMode;
+    private final int[] rowType; // 0=normal, 1=allocated header, 2=free header
     private final AppSettings settings;
+
+    private static final Color ALLOC_HEADER_COLOR = new Color(220, 220, 220);
+    private static final Color FREE_HEADER_COLOR = new Color(200, 240, 200);
 
     public static void showMemory(Simulator sim, long address, Font font, AppSettings settings) {
         if (instance == null || !instance.isDisplayable()) {
@@ -41,6 +45,7 @@ public class MemoryWindow extends JFrame {
         this.baseAddress = address;
         this.settings = settings;
         this.displayMode = new int[DISPLAY_ROWS];
+        this.rowType = new int[DISPLAY_ROWS];
 
         model = new DefaultTableModel(new String[]{"Address", "Value"}, DISPLAY_ROWS);
         table = new JTable(model) {
@@ -51,11 +56,18 @@ public class MemoryWindow extends JFrame {
         table.getTableHeader().setFont(font);
         table.setRowHeight(table.getRowHeight() + 4);
 
-        // Cell renderer with padding
+        // Cell renderer with padding and heap block coloring
         DefaultTableCellRenderer renderer = new DefaultTableCellRenderer() {
             @Override public Component getTableCellRendererComponent(JTable t, Object v, boolean s, boolean f, int r, int c) {
                 Component comp = super.getTableCellRendererComponent(t, v, s, f, r, c);
                 setBorder(BorderFactory.createEmptyBorder(2, 4, 2, 4));
+                if (!s) {
+                    switch (rowType[r]) {
+                        case 1 -> setBackground(ALLOC_HEADER_COLOR);
+                        case 2 -> setBackground(FREE_HEADER_COLOR);
+                        default -> setBackground(Color.WHITE);
+                    }
+                }
                 return comp;
             }
         };
@@ -135,9 +147,38 @@ public class MemoryWindow extends JFrame {
     }
 
     private void populateTable() {
+        classifyHeapRows();
         for (int i = 0; i < DISPLAY_ROWS; i++) {
             updateRow(i);
         }
+    }
+
+    private void classifyHeapRows() {
+        java.util.Arrays.fill(rowType, 0);
+        long heapStart = sim.getHeapStart();
+        // Walk heap blocks from heapStart
+        try {
+            long p = heapStart;
+            int safety = 10000;
+            while (p > 0 && safety-- > 0) {
+                long size = sim.memRead(p + 2);
+                long blockSize = Math.abs(size);
+                if (blockSize <= 0 || blockSize > sim.getHeapLimit()) break;
+                boolean isFree = size < 0;
+                // Mark the 3 header words (p, p+1, p+2)
+                for (int offset = 0; offset < 3; offset++) {
+                    int row = (int) (p + offset - addressForRow(0));
+                    if (row >= 0 && row < DISPLAY_ROWS) {
+                        rowType[row] = isFree ? 2 : 1;
+                    }
+                }
+                // Move to next block
+                long next = sim.memRead(p + 1);
+                if (next <= p && next != -1) break; // prevent infinite loop
+                if (next == -1) break;
+                p = next;
+            }
+        } catch (Exception ignored) {}
     }
 
     private long addressForRow(int row) {
