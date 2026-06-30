@@ -20,8 +20,17 @@ public class TerminalPanel extends JComponent implements Scrollable {
     // Circular buffer: each line is an array of codepoints and colors
     private final int[] chars;       // [line * maxCols + col] = codepoint
     private final Color[] colors;    // [line * maxCols + col] = foreground color
+    private final byte[] attrs;      // [line * maxCols + col] = style bitmask
     private final int maxCols;
     private final int totalLines;    // scrollback + visible
+
+    private static final byte ATTR_BOLD = 1;
+    private static final byte ATTR_DIM = 2;
+    private static final byte ATTR_ITALIC = 4;
+    private static final byte ATTR_UNDERLINE = 8;
+    private static final byte ATTR_HIDDEN = 16;
+    private static final byte ATTR_STRIKETHROUGH = 32;
+    private static final byte ATTR_REVERSE = 64;
 
     private int cursorRow;           // row within the buffer (absolute)
     private int cursorCol;
@@ -36,6 +45,7 @@ public class TerminalPanel extends JComponent implements Scrollable {
 
     // ANSI state
     private Color currentFg = termFg;
+    private byte currentAttrs = 0;
     private StringBuilder escBuf = null; // non-null when inside an escape sequence
 
     // Selection
@@ -91,6 +101,7 @@ public class TerminalPanel extends JComponent implements Scrollable {
         totalLines = SCROLLBACK_LINES;
         chars = new int[totalLines * maxCols];
         colors = new Color[totalLines * maxCols];
+        attrs = new byte[totalLines * maxCols];
         firstLine = 0;
         lineCount = 1;
         cursorRow = 0;
@@ -236,6 +247,7 @@ public class TerminalPanel extends JComponent implements Scrollable {
                     int idx = cursorRow * maxCols + cursorCol;
                     chars[idx] = c;
                     colors[idx] = currentFg;
+                    attrs[idx] = currentAttrs;
                     cursorCol++;
                     if (cursorCol >= getVisibleCols()) {
                         cursorCol = 0;
@@ -262,6 +274,7 @@ public class TerminalPanel extends JComponent implements Scrollable {
         for (int i = 0; i < maxCols; i++) {
             chars[base + i] = 0;
             colors[base + i] = termFg;
+            attrs[base + i] = 0;
         }
     }
 
@@ -269,11 +282,23 @@ public class TerminalPanel extends JComponent implements Scrollable {
         if (seq.startsWith("\u001B[") && seq.endsWith("m")) {
             // SGR - color
             String nums = seq.substring(2, seq.length() - 1);
-            if (nums.isEmpty() || nums.equals("0")) { currentFg = termFg; return; }
+            if (nums.isEmpty() || nums.equals("0")) { currentFg = termFg; currentAttrs = 0; return; }
             for (String n : nums.split(";")) {
                 switch (n) {
-                    case "0" -> currentFg = termFg;
-                    case "1" -> {} // bold - ignore for now
+                    case "0" -> { currentFg = termFg; currentAttrs = 0; }
+                    case "1" -> currentAttrs |= ATTR_BOLD;
+                    case "2" -> currentAttrs |= ATTR_DIM;
+                    case "3" -> currentAttrs |= ATTR_ITALIC;
+                    case "4" -> currentAttrs |= ATTR_UNDERLINE;
+                    case "7" -> currentAttrs |= ATTR_REVERSE;
+                    case "8" -> currentAttrs |= ATTR_HIDDEN;
+                    case "9" -> currentAttrs |= ATTR_STRIKETHROUGH;
+                    case "22" -> currentAttrs &= ~(ATTR_BOLD | ATTR_DIM);
+                    case "23" -> currentAttrs &= ~ATTR_ITALIC;
+                    case "24" -> currentAttrs &= ~ATTR_UNDERLINE;
+                    case "27" -> currentAttrs &= ~ATTR_REVERSE;
+                    case "28" -> currentAttrs &= ~ATTR_HIDDEN;
+                    case "29" -> currentAttrs &= ~ATTR_STRIKETHROUGH;
                     case "30" -> currentFg = Color.DARK_GRAY;
                     case "31" -> currentFg = new Color(200, 50, 50);
                     case "32" -> currentFg = new Color(50, 200, 50);
@@ -304,10 +329,12 @@ public class TerminalPanel extends JComponent implements Scrollable {
         try {
             java.util.Arrays.fill(chars, 0);
             java.util.Arrays.fill(colors, termFg);
+            java.util.Arrays.fill(attrs, (byte) 0);
             cursorRow = 0; cursorCol = 0;
             firstLine = 0; lineCount = 1;
             scrollOffset = 0;
             currentFg = termFg;
+            currentAttrs = 0;
             escBuf = null;
         } finally { bufferLock.unlock(); }
         repaint();
@@ -429,8 +456,34 @@ public class TerminalPanel extends JComponent implements Scrollable {
                         g2.fillRect(col * charWidth, row * charHeight, charWidth, charHeight);
                     }
                     if (ch != 0) {
-                        g2.setColor(inSelection ? Color.WHITE : (colors[idx] != null ? colors[idx] : termFg));
-                        g2.drawString(new String(Character.toChars(ch)), col * charWidth, y);
+                        byte attr = attrs[idx];
+                        Color fg = inSelection ? Color.WHITE : (colors[idx] != null ? colors[idx] : termFg);
+                        Color bg = termBg;
+                        if ((attr & ATTR_REVERSE) != 0) { Color t = fg; fg = bg; bg = t; }
+                        if ((attr & ATTR_DIM) != 0) fg = fg.darker();
+                        if ((attr & ATTR_BOLD) != 0) fg = fg.brighter();
+                        if ((attr & ATTR_REVERSE) != 0 && !inSelection) {
+                            g2.setColor(bg);
+                            g2.fillRect(col * charWidth, row * charHeight, charWidth, charHeight);
+                        }
+                        if ((attr & ATTR_HIDDEN) == 0) {
+                            Font drawFont = termFont;
+                            if ((attr & ATTR_BOLD) != 0 && (attr & ATTR_ITALIC) != 0)
+                                drawFont = drawFont.deriveFont(Font.BOLD | Font.ITALIC);
+                            else if ((attr & ATTR_BOLD) != 0) drawFont = drawFont.deriveFont(Font.BOLD);
+                            else if ((attr & ATTR_ITALIC) != 0) drawFont = drawFont.deriveFont(Font.ITALIC);
+                            g2.setFont(drawFont);
+                            g2.setColor(fg);
+                            g2.drawString(new String(Character.toChars(ch)), col * charWidth, y);
+                            if ((attr & ATTR_UNDERLINE) != 0) {
+                                g2.drawLine(col * charWidth, y + 1, (col + 1) * charWidth, y + 1);
+                            }
+                            if ((attr & ATTR_STRIKETHROUGH) != 0) {
+                                int midY = row * charHeight + charHeight / 2;
+                                g2.drawLine(col * charWidth, midY, (col + 1) * charWidth, midY);
+                            }
+                            g2.setFont(termFont);
+                        }
                     }
                 }
             }
