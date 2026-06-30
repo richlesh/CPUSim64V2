@@ -116,7 +116,7 @@ public class TerminalPanel extends JComponent implements Scrollable {
         setFocusable(true);
         setOpaque(true);
 
-        blinkTimer = new Timer(500, e -> { cursorVisible = !cursorVisible; repaintCursorLine(); });
+        blinkTimer = new Timer(500, e -> { cursorVisible = !cursorVisible; repaint(); });
         blinkTimer.start();
 
         addMouseListener(new MouseAdapter() {
