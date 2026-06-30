@@ -103,6 +103,9 @@ public class CPUSim64App {
         codeEditor.setFont(font);
         console.setFont(settings.fontName, settings.fontSize);
         console.setColors(settings.consoleFg, settings.consoleBg);
+        if (consoleToolBar != null) {
+            for (Component c : consoleToolBar.getComponents()) c.setFont(font);
+        }
         // Update existing styled text in code editor
         javax.swing.text.StyledDocument editorDoc = codeEditor.getStyledDocument();
         javax.swing.text.SimpleAttributeSet editorAttr = new javax.swing.text.SimpleAttributeSet();
@@ -465,6 +468,8 @@ public class CPUSim64App {
         });
         consoleToolBar.add(stackField);
         consoleToolBar.add(new JLabel("kiB"));
+        Font toolbarFont = new Font(settings.fontName, Font.PLAIN, settings.fontSize);
+        for (Component c : consoleToolBar.getComponents()) c.setFont(toolbarFont);
 
         JPanel consolePanel = new JPanel(new BorderLayout());
         consolePanel.add(consoleToolBar, BorderLayout.NORTH);
