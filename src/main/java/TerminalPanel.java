@@ -20,6 +20,7 @@ public class TerminalPanel extends JComponent implements Scrollable {
     // Circular buffer: each line is an array of codepoints and colors
     private final int[] chars;       // [line * maxCols + col] = codepoint
     private final Color[] colors;    // [line * maxCols + col] = foreground color
+    private final Color[] bgColors;  // [line * maxCols + col] = background color (null = default)
     private final byte[] attrs;      // [line * maxCols + col] = style bitmask
     private final int maxCols;
     private final int totalLines;    // scrollback + visible
@@ -28,9 +29,10 @@ public class TerminalPanel extends JComponent implements Scrollable {
     private static final byte ATTR_DIM = 2;
     private static final byte ATTR_ITALIC = 4;
     private static final byte ATTR_UNDERLINE = 8;
-    private static final byte ATTR_HIDDEN = 16;
-    private static final byte ATTR_STRIKETHROUGH = 32;
-    private static final byte ATTR_REVERSE = 64;
+    private static final byte ATTR_BLINK = 16;
+    private static final byte ATTR_HIDDEN = 32;
+    private static final byte ATTR_STRIKETHROUGH = 64;
+    private static final byte ATTR_REVERSE = (byte) 128;
 
     private int cursorRow;           // row within the buffer (absolute)
     private int cursorCol;
@@ -45,6 +47,7 @@ public class TerminalPanel extends JComponent implements Scrollable {
 
     // ANSI state
     private Color currentFg = termFg;
+    private Color currentBg = null; // null = use termBg
     private byte currentAttrs = 0;
     private StringBuilder escBuf = null; // non-null when inside an escape sequence
 
@@ -101,6 +104,7 @@ public class TerminalPanel extends JComponent implements Scrollable {
         totalLines = SCROLLBACK_LINES;
         chars = new int[totalLines * maxCols];
         colors = new Color[totalLines * maxCols];
+        bgColors = new Color[totalLines * maxCols];
         attrs = new byte[totalLines * maxCols];
         firstLine = 0;
         lineCount = 1;
@@ -247,6 +251,7 @@ public class TerminalPanel extends JComponent implements Scrollable {
                     int idx = cursorRow * maxCols + cursorCol;
                     chars[idx] = c;
                     colors[idx] = currentFg;
+                    bgColors[idx] = currentBg;
                     attrs[idx] = currentAttrs;
                     cursorCol++;
                     if (cursorCol >= getVisibleCols()) {
@@ -274,6 +279,7 @@ public class TerminalPanel extends JComponent implements Scrollable {
         for (int i = 0; i < maxCols; i++) {
             chars[base + i] = 0;
             colors[base + i] = termFg;
+            bgColors[base + i] = null;
             attrs[base + i] = 0;
         }
     }
@@ -282,20 +288,22 @@ public class TerminalPanel extends JComponent implements Scrollable {
         if (seq.startsWith("\u001B[") && seq.endsWith("m")) {
             // SGR - color
             String nums = seq.substring(2, seq.length() - 1);
-            if (nums.isEmpty() || nums.equals("0")) { currentFg = termFg; currentAttrs = 0; return; }
+            if (nums.isEmpty() || nums.equals("0")) { currentFg = termFg; currentBg = null; currentAttrs = 0; return; }
             for (String n : nums.split(";")) {
                 switch (n) {
-                    case "0" -> { currentFg = termFg; currentAttrs = 0; }
+                    case "0" -> { currentFg = termFg; currentBg = null; currentAttrs = 0; }
                     case "1" -> currentAttrs |= ATTR_BOLD;
                     case "2" -> currentAttrs |= ATTR_DIM;
                     case "3" -> currentAttrs |= ATTR_ITALIC;
                     case "4" -> currentAttrs |= ATTR_UNDERLINE;
+                    case "5" -> currentAttrs |= ATTR_BLINK;
                     case "7" -> currentAttrs |= ATTR_REVERSE;
                     case "8" -> currentAttrs |= ATTR_HIDDEN;
                     case "9" -> currentAttrs |= ATTR_STRIKETHROUGH;
                     case "22" -> currentAttrs &= ~(ATTR_BOLD | ATTR_DIM);
                     case "23" -> currentAttrs &= ~ATTR_ITALIC;
                     case "24" -> currentAttrs &= ~ATTR_UNDERLINE;
+                    case "25" -> currentAttrs &= ~ATTR_BLINK;
                     case "27" -> currentAttrs &= ~ATTR_REVERSE;
                     case "28" -> currentAttrs &= ~ATTR_HIDDEN;
                     case "29" -> currentAttrs &= ~ATTR_STRIKETHROUGH;
@@ -308,6 +316,15 @@ public class TerminalPanel extends JComponent implements Scrollable {
                     case "36" -> currentFg = new Color(50, 200, 200);
                     case "37" -> currentFg = Color.WHITE;
                     case "39" -> currentFg = termFg;
+                    case "40" -> currentBg = Color.BLACK;
+                    case "41" -> currentBg = new Color(200, 50, 50);
+                    case "42" -> currentBg = new Color(50, 200, 50);
+                    case "43" -> currentBg = new Color(200, 200, 50);
+                    case "44" -> currentBg = new Color(80, 80, 255);
+                    case "45" -> currentBg = new Color(200, 50, 200);
+                    case "46" -> currentBg = new Color(50, 200, 200);
+                    case "47" -> currentBg = new Color(200, 200, 200);
+                    case "49" -> currentBg = null;
                     case "90" -> currentFg = Color.GRAY;
                     case "91" -> currentFg = new Color(255, 100, 100);
                     case "92" -> currentFg = new Color(100, 255, 100);
@@ -316,7 +333,14 @@ public class TerminalPanel extends JComponent implements Scrollable {
                     case "95" -> currentFg = new Color(255, 100, 255);
                     case "96" -> currentFg = new Color(100, 255, 255);
                     case "97" -> currentFg = Color.WHITE;
-                    case "49" -> {} // reset background (no per-char bg tracking yet)
+                    case "100" -> currentBg = Color.DARK_GRAY;
+                    case "101" -> currentBg = new Color(255, 100, 100);
+                    case "102" -> currentBg = new Color(100, 255, 100);
+                    case "103" -> currentBg = new Color(255, 255, 100);
+                    case "104" -> currentBg = new Color(130, 130, 255);
+                    case "105" -> currentBg = new Color(255, 100, 255);
+                    case "106" -> currentBg = new Color(100, 255, 255);
+                    case "107" -> currentBg = Color.WHITE;
                 }
             }
         } else if (seq.equals("\u001B[?25l")) {
@@ -326,11 +350,11 @@ public class TerminalPanel extends JComponent implements Scrollable {
         } else if (seq.equals("\u001B[K") || seq.equals("\u001B[0K")) {
             // Clear from cursor to end of line
             int base = cursorRow * maxCols;
-            for (int i = cursorCol; i < maxCols; i++) { chars[base + i] = 0; colors[base + i] = termFg; attrs[base + i] = 0; }
+            for (int i = cursorCol; i < maxCols; i++) { chars[base + i] = 0; colors[base + i] = termFg; bgColors[base + i] = null; attrs[base + i] = 0; }
         } else if (seq.equals("\u001B[2K")) {
             // Clear entire line
             int base = cursorRow * maxCols;
-            for (int i = 0; i < maxCols; i++) { chars[base + i] = 0; colors[base + i] = termFg; attrs[base + i] = 0; }
+            for (int i = 0; i < maxCols; i++) { chars[base + i] = 0; colors[base + i] = termFg; bgColors[base + i] = null; attrs[base + i] = 0; }
             cursorCol = 0;
         }
     }
@@ -340,11 +364,13 @@ public class TerminalPanel extends JComponent implements Scrollable {
         try {
             java.util.Arrays.fill(chars, 0);
             java.util.Arrays.fill(colors, termFg);
+            java.util.Arrays.fill(bgColors, (Color) null);
             java.util.Arrays.fill(attrs, (byte) 0);
             cursorRow = 0; cursorCol = 0;
             firstLine = 0; lineCount = 1;
             scrollOffset = 0;
             currentFg = termFg;
+            currentBg = null;
             currentAttrs = 0;
             escBuf = null;
         } finally { bufferLock.unlock(); }
@@ -469,11 +495,12 @@ public class TerminalPanel extends JComponent implements Scrollable {
                     if (ch != 0) {
                         byte attr = attrs[idx];
                         Color fg = inSelection ? Color.WHITE : (colors[idx] != null ? colors[idx] : termFg);
-                        Color bg = termBg;
+                        Color bg = bgColors[idx] != null ? bgColors[idx] : termBg;
                         if ((attr & ATTR_REVERSE) != 0) { Color t = fg; fg = bg; bg = t; }
                         if ((attr & ATTR_DIM) != 0) fg = fg.darker();
                         if ((attr & ATTR_BOLD) != 0) fg = fg.brighter();
-                        if ((attr & ATTR_REVERSE) != 0 && !inSelection) {
+                        if ((attr & ATTR_BLINK) != 0 && !cursorVisible) fg = bg; // blink off phase
+                        if (!inSelection && !bg.equals(termBg)) {
                             g2.setColor(bg);
                             g2.fillRect(col * charWidth, row * charHeight, charWidth, charHeight);
                         }
