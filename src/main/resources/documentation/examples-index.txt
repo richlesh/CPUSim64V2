@@ -47,5 +47,6 @@ examples/example_system.asm
 examples/example_thread.asm
 examples/example_vector.asm
 examples/example_while.asm
+examples/hello_name.asm
 examples/hello_world.asm
 examples/temp.asm

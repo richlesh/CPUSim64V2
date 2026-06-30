@@ -12,10 +12,11 @@ projects/Renard2.asm
 projects/Vigenere.asm
 projects/XORCipher.asm
 projects/hashcode.asm
+projects/holy_grail.asm
 projects/mandelbrot.asm
+projects/mandelbrot_binary.asm
 projects/mandelbrot_histogram.asm
 projects/mandelbrot_histogram_balanced.asm
-projects/mandelbrot_raw.asm
 projects/md5.asm
 projects/progress_bar.asm
 projects/progress_bar2.asm

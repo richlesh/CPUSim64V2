@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////
-// mandelbrot_histogram.asm
+// mandelbrot_binary.asm
 //
 // Multi-process Mandelbrot set image generator.
 //
@@ -9,10 +9,9 @@
 // iFORK). Each child writes its band to a temporary text file. After all
 // children finish, the parent process merges (concatenates) the temporary
 // files into a single .pgm image file with the proper binary PGM header.
-// Uses a histogram of pixel values to equalize the image.
 //
 // Usage:
-//   mandelbrot_histogram x y radius escape_limit image_size filename
+//   mandelbrot_binary x y radius escape_limit image_size filename
 //
 //   x            - x coordinate of the center of the view (float)
 //   y            - y coordinate of the center of the view (float)
@@ -23,7 +22,7 @@
 //
 //
 // Example:
-// mandelbrot_histogram -0.75 0 1.5 50 1024 mandelbrot_test
+// mandelbrot_binary -0.75 0 1.5 50 1024 mandelbrot_test
 //
 // Output:
 //   <filename>.pgm   - the final grayscale image
@@ -38,7 +37,6 @@
 #include <system/math.asm>
 #include <system/string.asm>
 #include <system/system.asm>
-#include <system/thread.def>
 
     #call   main()
     #call   exit(r0)
@@ -54,9 +52,6 @@
 #global gX_MAX: .dcf    0.5
 #global gY_MIN: .dcf    -1.5
 #global gY_MAX: .dcf    1.5
-
-// Global heap allocated levels for image.
-#global gIMAGE: .dci 0
 
 // Maximum iteration count used by the escape-time algorithm.
 #global gMAX_ITERATION: .dci 50
@@ -115,17 +110,8 @@ GET_ARGS:
     move    filename, r0
     #call   printf("Image: %f, %f, %f\n", x, y, radius)
 
-    move    r0, imageSize
-    mult    r0, imageSize
-    #call   alloc(r0)
-    store   r0, gIMAGE
-    #if_cond    r0 == 0
-        #call   putline("Error: image allocation failed!")
-        #return 1
-    #end_cond
-
-
-// Compute limits of image
+// Compute limits of image from center (x,y) and radius, store in globals so
+// the child processes can read them.
     sub     x_min, x, radius
     store   x_min, gX_MIN
     add     x_max, x, radius
@@ -148,10 +134,12 @@ GET_ARGS:
         mult    f0, i
         #call   round(f0)
         move    lastRow, f0
-        #call   spawnChild(firstRow, lastRow, imageSize)
+        #call   sprintf("%s_%d.tmp", filename, i)
+        move    childFilename, r0
+        #call   spawnChild(childFilename, firstRow, lastRow, imageSize)
         move    pid, r0
         #if_cond    pid, gt, 0
-            #call   printf("Spawn child for %d\n", pid)
+            #call   printf("Spawn child for %d...into %s\n", pid, childFilename)
         store   pid, PIDS[i]
         #end_cond
         move    firstRow, lastRow
@@ -163,26 +151,19 @@ GET_ARGS:
         load    pid, PIDS[i]
         #if_cond    pid, gt, 0
             #call   printf("Waiting for %d...\n", pid)
-            #macro  JOIN_THREAD(pid)
+            move    r1, pid
+            int iWAIT_PID
         #end_cond
     #end_for
 
 // Merge all per-band temp files into the final .pgm image.
     #call   combine_output(filename, imageSize)
-    load    r0, gImage
-    #call   free(r0)
     #return 0
 MAIN_END:
 #end_func
 
-// Offsets into data structure passed to thread
-#define DATA_FIRST_ROW  0
-#define DATA_LAST_ROW   1
-#define DATA_WIDTH      2
-#define DATA_SIZE       3
-
 ///////////////////////////////////////////////////////////////////////////////
-// spawnChild(firstRow, lastRow, width)
+// spawnChild(name, firstRow, lastRow, width)
 //
 // Forks a child process to render a single horizontal band of the image. The
 // parent returns immediately with the child's PID. The child opens the named
@@ -190,6 +171,7 @@ MAIN_END:
 // compute_mandelbrot(), closes the file, and then halts (stop).
 //
 // Arguments:
+//   name     - temporary output filename for this band (string)
 //   firstRow - first image row (inclusive) this child should render (int)
 //   lastRow  - last image row this child should render (int)
 //   width    - width of the image in pixels (int)
@@ -199,36 +181,44 @@ MAIN_END:
 // Note: the child process does not return; it stops after writing its band.
 ///////////////////////////////////////////////////////////////////////////////
 
-
-#def_func spawnChild(firstRow, lastRow, width)
-    #var    first, last, w, data
+#def_func spawnChild(name, firstRow, lastRow, width)
+    #var    child_pid, childName, first, last, w, port
+    load    childName, name
     load    first, firstRow
     load    last, lastRow
     load    w, width
-    #call   alloc(DATA_SIZE)
-    move    data, r0
-    #if_cond    data == 0
-        #call   putline("Error: thread data allocation failed!")
+    #call   printf("spawnChild(%s, %d, %d, %d)\n", childName, first, last, w)
+    int     iFORK
+    move    child_pid, r0
+    #call   printf("spawnChild result: %d\n", child_pid)
+// Fork failed if child_pid is -1
+    #if_cond    child_pid != -1
+        #if_cond    child_pid != 0
+// Parent path: child_pid is the new child's PID; return it to the caller.
+            #call   printf("Child %s forked: %d\n", childName, child_pid)
+            #return child_pid    
+        #else_cond
+// Child path: render the assigned band into the temp file.
+            #call   printf("Child %s executing...%d %d %d\n", childName, first, last, w)
+// Create text file in write mode.
+            #call   openTextFile(childName, WRITE_MODE)
+// Save the port returned.
+            move    port, r0
+            #call   printf("Opened port %d\n", port)
+// If the port returned is -1 we failed.
+            #if_cond    port != -1
+                #call   compute_mandelbrot(port, first, last, w)
+// Close the file
+                #call   closeFile(port)
+                #call   printf("Child %s done!\n", childName)
+            #end_cond
+            stop
+        #end_cond
+    #else_cond
+        #call   printf("Fork %s failed!\n", childName)
         #return -1
     #end_cond
-    store   first, data[DATA_FIRST_ROW]
-    store   last, data[DATA_LAST_ROW]
-    store   w, data[DATA_WIDTH]
-    #macro  CREATE_THREAD(run, data)
-#end_func
-
-#def_func run(data_arg)
-    #var    first, last, w, data, pid
-    int iGET_PID
-    move    pid, r0
-    load    data, data_arg
-    load    first, data[DATA_FIRST_ROW]
-    load    last, data[DATA_LAST_ROW]
-    load    w, data[DATA_WIDTH]
-    #call   printf("Child %d executing...%d %d %d\n", pid, first, last, w)
-    #call   compute_mandelbrot(first, last, w)
-    #call   printf("Child %d done!\n", pid)
-    #call   free(data)
+END:
 #end_func
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -243,28 +233,27 @@ MAIN_END:
 // row to keep output lines reasonably short.
 //
 // Arguments:
+//   port     - output port (file) to write pixel values to (int)
 //   firstRow - first row (inclusive) of this band (int)
 //   lastRow  - last row (exclusive) of this band (int)
 //   width    - image width in pixels (int)
 ///////////////////////////////////////////////////////////////////////////////
 
-#def_func compute_mandelbrot(firstRow, lastRow, width)
-    #var    i, j, first, last, w, level, image_buffer
+#def_func compute_mandelbrot(port, firstRow, lastRow, width)
+    #var    i, j, first, last, w, p, level
     #fvar   x0, y0, xWidth, yHeight, xMin, yMin, xMax, yMax, one_half
     load    first, firstRow
     load    last, lastRow
     load    w, width
+    load    p, port
     load    xMin, gX_MIN
     load    xMax, gX_MAX
     load    yMin, gY_MIN
     load    yMax, gY_MAX
-    load    image_buffer, gIMAGE
     load    one_half, kONE_HALF
+    #call   printf("compute_mandelbrot(%d, %d, %d, %d)\n", p, first, last, w)
     sub     xWidth, xMax, xMin
     sub     yHeight, yMax, yMin
-    // first row is at image_buffer + first * width
-    mult    r0, first, w
-    add     image_buffer, r0
     #for    first, j <= last, 1
         #for    0, i < w, 1
             // x0 = xWidth / width * (i + 0.5) + xMin
@@ -280,10 +269,10 @@ MAIN_END:
             div     f0, w
             sub     y0, yMax, f0
             #call   compute_escape(x0, y0)
-            move    level, r0
-            store   level, image_buffer[i]
+            mult    f0, 256
+            move    level, f0
+            #macro  OUT1(level, p)
         #end_for
-        add image_buffer, w
     #end_for
 #end_func
 
@@ -344,26 +333,27 @@ kFOUR:      .dcf 4.0
     add     iteration, 1
 LOOP_COND:
 // while (x2 + y2 ≤ 4 and iteration < max_iteration) do
-    add     f0, x2, y2
-    #macro  COMPARE(f0, le, four)
-    move    r1, r0
-    #macro  COMPARE(iteration, lt, max_iteration)
-    and     r0, r1
+        add     f0, x2, y2
+        #macro COMPARE(f0, le, four)
+        move    r1, r0
+        #macro COMPARE(iteration, lt, max_iteration)
+        and     r0, r1
     #end_do_while r0 != 0
     
     pop     r1
     #if_cond    iteration, eq, max_iteration
-        #return 0
+        clear   f0
     #else_cond
-        #return iteration
+        move    f0, iteration
+        div     f0, max_iteration
     #end_cond
 #end_func
 
 //////////////////////////////////////////////////////////////////////////////
 // combine_output(filename, imageSize)
 //
-// Assembles the final PGM image file from the image data generated by the
-// child processes. Opens the output file <filename>.pgm for
+// Assembles the final PGM image file from the per-band temporary files
+// written by the child processes. Opens the output file <filename>.pgm for
 // writing, emits the PGM P5 header, then iterates over each child's temporary
 // file (<filename>_N.tmp, N = 1..numChildren), copying its pixel data
 // verbatim into the output file. The temporary files are opened and closed one
@@ -381,25 +371,12 @@ LOOP_COND:
 ///////////////////////////////////////////////////////////////////////////////
 
 #def_func   combine_output(filename, imageSize)
-    #var    c, codePoints, i, fn, size, out_port, image_buffer, pix_value, histogram, max_iteration, subtotal, totalCount, header, headerSize
+    #var    c, codePoints, i, fn, size, in_port, out_port, numChildren, tempFile, header, headerSize
     load    fn, filename
     load    size, imageSize
-    load    image_buffer, gIMAGE
-    load    max_iteration, gMAX_ITERATION
-    #call   alloc(max_iteration)
-    move    histogram, r0
-    #if_cond    histogram == 0
-        #call   putline("Error: histogram allocation failed!")
-        #return 1
-    #end_cond
-
 // Create binary file in write mode.
     #call   sprintf("%s.pgm", fn)
     #call   openRawFile(r0, WRITE_MODE)
-    #if_cond	r0, eq, -1
-       	#call   printf("Can\'t open %s.pgm...\n", fn)
-        #return -1
-    #end_cond
     move    out_port, r0
     #call   sprintf("P5\n%d %d\n%d\n", size, size, 255)
     move    header, r0
@@ -410,48 +387,23 @@ LOOP_COND:
         load    c, codePoints[i]
         #macro  OUT1(c, out_port)
     #end_for
-    #call   free(header)
-    #call   free(codePoints)
-    mult    size, size
-
-    #for    0, i, lt, max_iteration, 1
-        store   0, histogram[i]
-    #end_for
+    #call	free(header)
+    #call	free(codePoints)
     
-    // Compute histogram for pixel value frequency
-    clear   totalCount
-    #for    0, i, lt, size, 1
-        load    pix_value, image_buffer[i]
-        #if_cond    pix_value, gt, 0
-            load    r0, histogram[pix_value]
-            add     r0, 1
-            store   r0, histogram[pix_value]
-            add     totalCount, 1
-        #end_cond
-    #end_for
-
-    // compute cumulative histogram
-    clear   subtotal
-    #for    0, i, lt, max_iteration, 1
-        load    r0, histogram[i]
-        add     subtotal, r0
-        move    f0, subtotal
-        move    f1, totalCount
-        div     f0, f1
-        mult    f0, 256
-        move    r0, f0
-        store   r0, histogram[i]
-    #end_for
-    
-    #for    0, i, lt, size, 1
-        load    pix_value, image_buffer[i]
-        load    r0, histogram[pix_value]
-        #macro  OUT1(r0, out_port)
+    load    numChildren, PIDS[0]
+    #call   printf("NUM FILES: %d\n", numChildren)
+    #for    1, i <= numChildren, 1
+        #call   sprintf("%s_%d.tmp", fn, i)
+        move    tempFile, r0
+        #call   printf("Merging %s\n", tempFile)
+        #call   openRawFile(tempFile, READ_MODE)
+        move    in_port, r0
+        #call   copy_raw_file(in_port, out_port)
+        #call   closeFile(in_port)
+        #call   deleteFile(tempFile)
     #end_for
 
     #call   closeFile(out_port)
-    #call   free(histogram)
-    #return 0
 #end_func
 
     stop

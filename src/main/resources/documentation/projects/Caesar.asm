@@ -4,8 +4,8 @@
 //
 // Usage: Caesar [-95 - 95] input_file output_file
 //
-// Author: Richard Lesh
-// Date:   2025/11/04
+// Author:   Richard Lesh
+// Original: 2025/11/04
 ///////////////////////////////////////////////////////////////////////////////
 
 #include <system/io.asm>

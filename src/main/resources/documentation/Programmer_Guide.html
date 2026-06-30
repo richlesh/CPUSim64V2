@@ -773,7 +773,8 @@ move increment, 2
 The <code>#while</code> directive repeats a block as long as a condition remains true.
 Use it when the number of iterations is not a simple numeric range, such as looping until a computed value stabilizes or until a list has been exhausted.
 </p>
-
+<p>The <code>#while</code> directive can also loop on a constant like <code>TRUE</code> or a register.  It will loop if the value is truthy (non-zero) and end the loop if the value is zero.
+</p>
 <div class='listingheader'>#while Example</div>
 <div class='listing'>#var i, start, stop, increment
 move start, 1
@@ -784,6 +785,16 @@ move i, start
 #while i &lt;= stop
 	...
 	add i, increment
+#end_while
+</div>
+
+<div class='listingheader'>#while TRUE Example</div>
+<div class='listing'>#while TRUE
+	...
+	#if some_condition
+		#break
+	#end_if
+	...
 #end_while
 </div>
 
@@ -806,6 +817,17 @@ move i, start
 #end_do_while i &lt;= stop
 </div>
 
+<div class='listingheader'>#do_while Register Example</div>
+<div class='listing'>$var	c, offset
+move	offset, 0
+move	c, 0
+#do_while
+	...
+	load	c, ARRAY[offset]
+	add		offset, 1
+#end_do_while	c
+</div>
+
 <h3>#break</h3>
 <p>
 The <code>#break</code> directive exits the nearest enclosing pre-processor loop immediately.
@@ -820,10 +842,10 @@ This is helpful when generating output with conditional omissions (for example s
 
 <h3>#if_cond/#else_if_cond/#else_cond</h3>
 <p>
-The <code>#if_cond</code> directive is a conditional control structure used to represent conditional if/else run-time logic.
+The <code>#if_cond</code> directive is a conditional control structure used to represent conditional if/else run-time logic.  When used with a single register/variable the truthiness of the value is checked.  The condition will execute if the value is non-zero and will not execute or the <code>#else</code> block will execute if the value is zero.
 </p>
 
-<div class='listingheader'>#if_cond Example</div>
+<div class='listingheader'>#if_cond Expression Example</div>
 <div class='listing'>#var i
 move i, 10
 
@@ -839,6 +861,21 @@ move i, 10
     ...
 #else
     ...
+#end_if
+</div>
+
+<div class='listingheader'>#if_cond Value Example</div>
+<div class='listing'>#var i
+move i, 10
+
+#if_cond i
+	...			// executes if i is non-zero (true)
+#end_if
+
+#if_cond i
+	...			// executes if i is non-zero (true)
+#else
+    ...			// executes if i is zero (false)
 #end_if
 </div>
 

@@ -78,7 +78,7 @@
 		<tr><td>.dca</td><td>count</td><td>Causes count + 1 words to be allocated at this point in the code.  Contents are undefined.  The first word will contain the word count.</td></tr>
 		<tr><td>.dcb</td><td>byte_list</td><td>Causes the bytes specified by the comma separated byte_list to be allocated at this point in the code.  Bytes will be packed 8 to a word (big-endian).  The first word will contain the byte count (not the word count).</td></tr>
 		<tr><td>.dcs</td><td>string_literal</td><td>Causes the string specified to be allocated at this point in the code.  String is encoded in UTF-8 and will be packed 8 to a word (big-endian).  The first word will contain the UTF-8 byte count.</td></tr>
-		<tr><td>.dcw</td><td>int_list<br/>float_list<br/>char_list</td><td>Causes the words specified by the comma separated list to be allocated at this point in the code.  Initializers are placed one per word.  The first word will contain the word count.</td></tr>
+		<tr><td>.dcw</td><td>int_list<br/>float_list<br/>char_list<br/>string_literal</td><td>Causes the words specified by the comma separated list to be allocated at this point in the code.  Initializers are placed one per word.  The first word will contain the word count.</td></tr>
 	</tbody>
 </table>
 
