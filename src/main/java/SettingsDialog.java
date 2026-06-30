@@ -236,7 +236,7 @@ public class SettingsDialog {
             }
         });
 
-        gbc.gridy = 6; gbc.gridx = 0; gbc.gridwidth = 2;
+        gbc.gridy = 7; gbc.gridx = 0; gbc.gridwidth = 2;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         panel.add(llmPanel, gbc);
         gbc.gridwidth = 1;
@@ -283,7 +283,7 @@ public class SettingsDialog {
         ccgbc.gridx = 3;
         chatColorsPanel.add(aiSwatch, ccgbc);
 
-        gbc.gridy = 7; gbc.gridx = 0; gbc.gridwidth = 2;
+        gbc.gridy = 6; gbc.gridx = 0; gbc.gridwidth = 2;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         panel.add(chatColorsPanel, gbc);
         gbc.gridwidth = 1;
