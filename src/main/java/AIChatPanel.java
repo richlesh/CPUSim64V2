@@ -290,9 +290,12 @@ public class AIChatPanel extends JPanel {
             rejectBtn.setEnabled(false);
             prompt.setText("Changes rejected.");
         });
+        JPanel btnStack = new JPanel(new GridLayout(2, 1, 0, 2));
+        btnStack.setOpaque(false);
+        btnStack.add(allowBtn);
+        btnStack.add(rejectBtn);
         btnRow.add(prompt);
-        btnRow.add(allowBtn);
-        btnRow.add(rejectBtn);
+        btnRow.add(btnStack);
 
         chatPanel.add(btnRow);
         chatPanel.revalidate();
