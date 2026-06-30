@@ -432,7 +432,7 @@ public class TerminalPanel extends JComponent implements Scrollable {
             }
             // Draw cursor
             if (inputEnabled && cursorVisible) {
-                int curLine = lineCount - 1;
+                int curLine = (cursorRow - firstLine + totalLines) % totalLines;
                 int screenRow = curLine - startLine;
                 if (screenRow >= 0 && screenRow < visRows) {
                     g2.setColor(termFg);
@@ -446,7 +446,8 @@ public class TerminalPanel extends JComponent implements Scrollable {
         if (inputEnabled) {
             int visRows = getVisibleRows();
             int startLine = Math.max(0, lineCount - visRows - scrollOffset);
-            int screenRow = (lineCount - 1) - startLine;
+            int curLine = (cursorRow - firstLine + totalLines) % totalLines;
+            int screenRow = curLine - startLine;
             if (screenRow >= 0 && screenRow < visRows) {
                 repaint(0, screenRow * charHeight, getWidth(), charHeight);
             }
