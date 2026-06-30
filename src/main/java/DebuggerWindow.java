@@ -210,6 +210,7 @@ public class DebuggerWindow extends JFrame {
             @Override public boolean isCellEditable(int r, int c) { return false; }
         };
         regTable.setFont(monoFont);
+        regTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         regTable.getTableHeader().setFont(monoFont);
         regTable.setRowHeight(regTable.getRowHeight() + 4);
         javax.swing.table.DefaultTableCellRenderer padRenderer = new javax.swing.table.DefaultTableCellRenderer() {

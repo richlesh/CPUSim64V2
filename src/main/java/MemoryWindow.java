@@ -70,14 +70,14 @@ public class MemoryWindow extends JFrame {
             table.getColumnModel().getColumn(1).setPreferredWidth(200);
         }
 
-        // Left-click value column to cycle display format
+        // Left-click value column to cycle display format, ctrl-click for context menu
         table.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
                 int row = table.rowAtPoint(e.getPoint());
                 int col = table.columnAtPoint(e.getPoint());
                 if (row < 0 || col != 1) return;
 
-                if (SwingUtilities.isRightMouseButton(e)) {
+                if (SwingUtilities.isRightMouseButton(e) || e.isControlDown()) {
                     showContextMenu(e, row);
                 } else if (SwingUtilities.isLeftMouseButton(e)) {
                     displayMode[row] = (displayMode[row] + 1) % 4;
@@ -107,6 +107,7 @@ public class MemoryWindow extends JFrame {
 
         // Scroll to show the base address row (PRE_ROWS down)
         SwingUtilities.invokeLater(() -> {
+            table.setRowSelectionInterval(PRE_ROWS, PRE_ROWS);
             Rectangle rect = table.getCellRect(PRE_ROWS, 0, true);
             table.scrollRectToVisible(rect);
         });
@@ -126,6 +127,7 @@ public class MemoryWindow extends JFrame {
         java.util.Arrays.fill(displayMode, 0);
         populateTable();
         SwingUtilities.invokeLater(() -> {
+            table.setRowSelectionInterval(PRE_ROWS, PRE_ROWS);
             Rectangle rect = table.getCellRect(PRE_ROWS, 0, true);
             table.scrollRectToVisible(rect);
         });
