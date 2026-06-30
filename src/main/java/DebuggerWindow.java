@@ -587,7 +587,13 @@ public class DebuggerWindow extends JFrame {
         floatItem.addActionListener(ev -> { stackDisplayMode.put(addr, 2); updateStack(); });
         charItem.addActionListener(ev -> { stackDisplayMode.put(addr, 3); updateStack(); });
         strItem.addActionListener(ev -> showStackString(value));
-        memItem.addActionListener(ev -> MemoryWindow.showMemory(sim, value, stackTable.getFont(), settings));
+        memItem.addActionListener(ev -> {
+            if (value < 0 || value >= sim.getHeapLimit()) {
+                JOptionPane.showMessageDialog(this, String.format("Illegal address: 0x%016X", value), "Error", JOptionPane.ERROR_MESSAGE);
+            } else {
+                MemoryWindow.showMemory(sim, value, stackTable.getFont(), settings);
+            }
+        });
 
         menu.add(decItem);
         menu.add(hexItem);

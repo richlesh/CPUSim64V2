@@ -2832,6 +2832,7 @@ public class Simulator {
 	public long[] getRegisters() { return R; }
 	public double[] getFPRegisters() { return F; }
 	public long getHeapStart() { return heapStart; }
+	public long getHeapLimit() { return heapLimit; }
 	public boolean isRunning() { return running; }
 	public void stop() { running = false; }
 	public void stopAll() {

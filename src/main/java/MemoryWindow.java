@@ -202,10 +202,16 @@ public class MemoryWindow extends JFrame {
         memItem.addActionListener(ev -> {
             try {
                 long addr = sim.memRead(addressForRow(row));
+                if (addr < 0 || addr >= sim.getHeapLimit()) {
+                    JOptionPane.showMessageDialog(this, String.format("Illegal address: 0x%016X", addr), "Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
                 baseAddress = addr;
                 setTitle(String.format("Memory @ 0x%08X", addr));
                 refresh();
-            } catch (Exception ex) {}
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(this, "Error reading memory", "Error", JOptionPane.ERROR_MESSAGE);
+            }
         });
         menu.add(memItem);
         menu.show(table, e.getX(), e.getY());
