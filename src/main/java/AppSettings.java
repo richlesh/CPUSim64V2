@@ -35,7 +35,7 @@ public class AppSettings {
     public Color userPromptColor = new Color(0x00, 0xAA, 0x00);
     public Color aiResponseColor = new Color(0x33, 0x99, 0xFF);
     public Color consoleFg = new Color(0xBB, 0xBB, 0xBB);
-    public Color consoleBg = new Color(30, 30, 30);
+    public Color consoleBg = new Color(0, 0, 0);
     public Color[] colors = {
         Color.BLACK,              // normal
         new Color(0, 0, 180),     // keyword
@@ -53,6 +53,9 @@ public class AppSettings {
     public int[] debugStackColWidths = null;
     public int debugWindowWidth = 1100;
     public int debugWindowHeight = 700;
+    public int memWindowWidth = 350;
+    public int memWindowHeight = 600;
+    public int[] memColWidths = null;
     public double heapSizeMiB = 1.0;
     public double stackSizeKiB = 8.0;
 
@@ -82,6 +85,16 @@ public class AppSettings {
             sb.append("  \"debugRegStackDivider\": ").append(debugRegStackDivider).append(",\n");
             sb.append("  \"debugWindowWidth\": ").append(debugWindowWidth).append(",\n");
             sb.append("  \"debugWindowHeight\": ").append(debugWindowHeight).append(",\n");
+            sb.append("  \"memWindowWidth\": ").append(memWindowWidth).append(",\n");
+            sb.append("  \"memWindowHeight\": ").append(memWindowHeight).append(",\n");
+            if (memColWidths != null) {
+                sb.append("  \"memColWidths\": [");
+                for (int i = 0; i < memColWidths.length; i++) {
+                    if (i > 0) sb.append(", ");
+                    sb.append(memColWidths[i]);
+                }
+                sb.append("],\n");
+            }
             if (debugRegColWidths != null) {
                 sb.append("  \"debugRegColWidths\": [");
                 for (int i = 0; i < debugRegColWidths.length; i++) {
@@ -160,6 +173,16 @@ public class AppSettings {
             if (dww != null) s.debugWindowWidth = dww;
             Integer dwh = extractInt(json, "debugWindowHeight");
             if (dwh != null) s.debugWindowHeight = dwh;
+
+            Integer mww = extractInt(json, "memWindowWidth");
+            if (mww != null) s.memWindowWidth = mww;
+            Integer mwh = extractInt(json, "memWindowHeight");
+            if (mwh != null) s.memWindowHeight = mwh;
+            List<String> mcw = extractArray(json, "memColWidths");
+            if (mcw != null) {
+                s.memColWidths = new int[mcw.size()];
+                for (int i = 0; i < mcw.size(); i++) s.memColWidths[i] = Integer.parseInt(mcw.get(i).trim());
+            }
 
             List<String> rcw = extractArray(json, "debugRegColWidths");
             if (rcw != null) {

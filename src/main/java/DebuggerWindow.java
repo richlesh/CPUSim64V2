@@ -235,7 +235,7 @@ public class DebuggerWindow extends JFrame {
                 if (row >= 0 && row < 32 && col == 1) {
                     if (e.isShiftDown()) {
                         long addr = sim.getRegisters()[row];
-                        new MemoryWindow(sim, addr, regTable.getFont());
+                        MemoryWindow.showMemory(sim, addr, regTable.getFont(), settings);
                     } else {
                         intRegHex[row] = !intRegHex[row];
                         updateRegisters();

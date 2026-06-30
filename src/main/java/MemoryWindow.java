@@ -8,23 +8,42 @@ import cloud.lesh.CPUSim64.Simulator;
 
 /**
  * Memory display window showing memory contents starting at a given address.
- * Shift-click a register value in the debugger to open.
+ * Singleton: only one instance at a time. Shift-click a register value in the debugger to open/refresh.
  */
 public class MemoryWindow extends JFrame {
-    private static final int DISPLAY_ROWS = 64;
-    private final Simulator sim;
-    private final long baseAddress;
-    private final DefaultTableModel model;
-    private final int[] displayMode; // 0=dec, 1=hex, 2=float, 3=char
+    private static final int DISPLAY_ROWS = 74; // 10 before + 64 after
+    private static final int PRE_ROWS = 10;
+    private static MemoryWindow instance;
 
-    public MemoryWindow(Simulator sim, long address, Font font) {
+    private Simulator sim;
+    private long baseAddress;
+    private final DefaultTableModel model;
+    private final JTable table;
+    private final int[] displayMode;
+    private final AppSettings settings;
+
+    public static void showMemory(Simulator sim, long address, Font font, AppSettings settings) {
+        if (instance == null || !instance.isDisplayable()) {
+            instance = new MemoryWindow(sim, address, font, settings);
+        } else {
+            instance.sim = sim;
+            instance.baseAddress = address;
+            instance.setTitle(String.format("Memory @ 0x%08X", address));
+            instance.refresh();
+            instance.toFront();
+            instance.requestFocus();
+        }
+    }
+
+    private MemoryWindow(Simulator sim, long address, Font font, AppSettings settings) {
         super(String.format("Memory @ 0x%08X", address));
         this.sim = sim;
         this.baseAddress = address;
+        this.settings = settings;
         this.displayMode = new int[DISPLAY_ROWS];
 
         model = new DefaultTableModel(new String[]{"Address", "Value"}, DISPLAY_ROWS);
-        JTable table = new JTable(model) {
+        table = new JTable(model) {
             @Override public boolean isCellEditable(int r, int c) { return false; }
         };
         table.setFont(font);
@@ -42,8 +61,14 @@ public class MemoryWindow extends JFrame {
         renderer.setFont(font);
         for (int i = 0; i < 2; i++) table.getColumnModel().getColumn(i).setCellRenderer(renderer);
 
-        table.getColumnModel().getColumn(0).setPreferredWidth(100);
-        table.getColumnModel().getColumn(1).setPreferredWidth(200);
+        // Restore column widths
+        if (settings.memColWidths != null && settings.memColWidths.length == 2) {
+            table.getColumnModel().getColumn(0).setPreferredWidth(settings.memColWidths[0]);
+            table.getColumnModel().getColumn(1).setPreferredWidth(settings.memColWidths[1]);
+        } else {
+            table.getColumnModel().getColumn(0).setPreferredWidth(100);
+            table.getColumnModel().getColumn(1).setPreferredWidth(200);
+        }
 
         // Left-click value column to cycle display format
         table.addMouseListener(new MouseAdapter() {
@@ -53,7 +78,7 @@ public class MemoryWindow extends JFrame {
                 if (row < 0 || col != 1) return;
 
                 if (SwingUtilities.isRightMouseButton(e)) {
-                    showContextMenu(e, table, row);
+                    showContextMenu(e, row);
                 } else if (SwingUtilities.isLeftMouseButton(e)) {
                     displayMode[row] = (displayMode[row] + 1) % 4;
                     updateRow(row);
@@ -66,10 +91,44 @@ public class MemoryWindow extends JFrame {
         JScrollPane scroll = new JScrollPane(table);
         add(scroll, BorderLayout.CENTER);
 
-        setSize(350, 600);
+        // Restore window size
+        setSize(settings.memWindowWidth, settings.memWindowHeight);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+
+        addWindowListener(new WindowAdapter() {
+            @Override public void windowClosed(WindowEvent e) {
+                saveSettings();
+                instance = null;
+            }
+        });
+
         setVisible(true);
+
+        // Scroll to show the base address row (PRE_ROWS down)
+        SwingUtilities.invokeLater(() -> {
+            Rectangle rect = table.getCellRect(PRE_ROWS, 0, true);
+            table.scrollRectToVisible(rect);
+        });
+    }
+
+    private void saveSettings() {
+        settings.memWindowWidth = getWidth();
+        settings.memWindowHeight = getHeight();
+        settings.memColWidths = new int[]{
+            table.getColumnModel().getColumn(0).getWidth(),
+            table.getColumnModel().getColumn(1).getWidth()
+        };
+        settings.save();
+    }
+
+    public void refresh() {
+        java.util.Arrays.fill(displayMode, 0);
+        populateTable();
+        SwingUtilities.invokeLater(() -> {
+            Rectangle rect = table.getCellRect(PRE_ROWS, 0, true);
+            table.scrollRectToVisible(rect);
+        });
     }
 
     private void populateTable() {
@@ -78,8 +137,17 @@ public class MemoryWindow extends JFrame {
         }
     }
 
+    private long addressForRow(int row) {
+        return baseAddress - PRE_ROWS + row;
+    }
+
     private void updateRow(int row) {
-        long addr = baseAddress + row;
+        long addr = addressForRow(row);
+        if (addr < 0) {
+            model.setValueAt("--------", row, 0);
+            model.setValueAt("", row, 1);
+            return;
+        }
         long value;
         try {
             value = sim.memRead(addr);
@@ -107,7 +175,7 @@ public class MemoryWindow extends JFrame {
         };
     }
 
-    private void showContextMenu(MouseEvent e, JTable table, int row) {
+    private void showContextMenu(MouseEvent e, int row) {
         JPopupMenu menu = new JPopupMenu();
         JMenuItem decItem = new JMenuItem("Decimal");
         JMenuItem hexItem = new JMenuItem("Hexadecimal");
@@ -119,7 +187,7 @@ public class MemoryWindow extends JFrame {
         hexItem.addActionListener(ev -> { displayMode[row] = 1; updateRow(row); });
         floatItem.addActionListener(ev -> { displayMode[row] = 2; updateRow(row); });
         charItem.addActionListener(ev -> { displayMode[row] = 3; updateRow(row); });
-        strItem.addActionListener(ev -> showString(baseAddress + row));
+        strItem.addActionListener(ev -> showString(addressForRow(row)));
 
         menu.add(decItem);
         menu.add(hexItem);
@@ -132,6 +200,7 @@ public class MemoryWindow extends JFrame {
 
     private void showString(long addr) {
         try {
+            if (addr < 0) return;
             long byteCount = sim.memRead(addr);
             if (byteCount < 0 || byteCount > 100000) {
                 JOptionPane.showMessageDialog(this, "Invalid string length: " + byteCount, "Error", JOptionPane.ERROR_MESSAGE);
@@ -149,7 +218,7 @@ public class MemoryWindow extends JFrame {
             String str = new String(bytes, StandardCharsets.UTF_8);
 
             JTextArea textArea = new JTextArea(str);
-            textArea.setFont(getContentPane().getFont());
+            textArea.setFont(table.getFont());
             textArea.setEditable(false);
             textArea.setLineWrap(true);
             textArea.setWrapStyleWord(true);
