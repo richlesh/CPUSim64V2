@@ -253,6 +253,7 @@ public class DebuggerWindow extends JFrame {
             @Override public boolean isCellEditable(int r, int c) { return false; }
         };
         stackTable.setFont(monoFont);
+        stackTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         stackTable.getTableHeader().setFont(monoFont);
         stackTable.setRowHeight(stackTable.getRowHeight() + 4);
         for (int i = 0; i < stackTable.getColumnCount(); i++) stackTable.getColumnModel().getColumn(i).setCellRenderer(padRenderer);
