@@ -236,7 +236,7 @@ public class SettingsDialog {
             }
         });
 
-        gbc.gridy = 7; gbc.gridx = 0; gbc.gridwidth = 2;
+        gbc.gridy = 8; gbc.gridx = 0; gbc.gridwidth = 2;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         panel.add(llmPanel, gbc);
         gbc.gridwidth = 1;
@@ -283,7 +283,54 @@ public class SettingsDialog {
         ccgbc.gridx = 3;
         chatColorsPanel.add(aiSwatch, ccgbc);
 
+        // Console Colors
+        JPanel consoleColorsPanel = new JPanel(new GridBagLayout());
+        consoleColorsPanel.setBorder(BorderFactory.createTitledBorder("Console Colors"));
+        GridBagConstraints cngbc = new GridBagConstraints();
+        cngbc.insets = new Insets(4, 5, 4, 5);
+        cngbc.anchor = GridBagConstraints.WEST;
+
+        Color[] conFg = {settings.consoleFg};
+        Color[] conBg = {settings.consoleBg};
+
+        cngbc.gridx = 0; cngbc.gridy = 0;
+        consoleColorsPanel.add(new JLabel("Foreground:"), cngbc);
+        JPanel conFgSwatch = new JPanel();
+        conFgSwatch.setBackground(conFg[0]);
+        conFgSwatch.setPreferredSize(new Dimension(60, 24));
+        conFgSwatch.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY));
+        conFgSwatch.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        conFgSwatch.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent e) {
+                Color c = JColorChooser.showDialog(dialog, "Console Foreground", conFg[0]);
+                if (c != null) { conFg[0] = c; conFgSwatch.setBackground(c); }
+            }
+        });
+        cngbc.gridx = 1;
+        consoleColorsPanel.add(conFgSwatch, cngbc);
+
+        cngbc.gridx = 2;
+        consoleColorsPanel.add(new JLabel("  Background:"), cngbc);
+        JPanel conBgSwatch = new JPanel();
+        conBgSwatch.setBackground(conBg[0]);
+        conBgSwatch.setPreferredSize(new Dimension(60, 24));
+        conBgSwatch.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY));
+        conBgSwatch.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        conBgSwatch.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent e) {
+                Color c = JColorChooser.showDialog(dialog, "Console Background", conBg[0]);
+                if (c != null) { conBg[0] = c; conBgSwatch.setBackground(c); }
+            }
+        });
+        cngbc.gridx = 3;
+        consoleColorsPanel.add(conBgSwatch, cngbc);
+
         gbc.gridy = 6; gbc.gridx = 0; gbc.gridwidth = 2;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        panel.add(consoleColorsPanel, gbc);
+        gbc.gridwidth = 1;
+
+        gbc.gridy = 7; gbc.gridx = 0; gbc.gridwidth = 2;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         panel.add(chatColorsPanel, gbc);
         gbc.gridwidth = 1;
@@ -332,6 +379,8 @@ public class SettingsDialog {
             settings.llmApiKey = key.isEmpty() ? null : key;
             settings.userPromptColor = userColor[0];
             settings.aiResponseColor = aiColor[0];
+            settings.consoleFg = conFg[0];
+            settings.consoleBg = conBg[0];
             settings.save();
 
             dialog.dispose();

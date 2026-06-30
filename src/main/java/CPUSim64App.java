@@ -102,6 +102,7 @@ public class CPUSim64App {
         Font font = new Font(settings.fontName, Font.PLAIN, settings.fontSize);
         codeEditor.setFont(font);
         console.setFont(settings.fontName, settings.fontSize);
+        console.setColors(settings.consoleFg, settings.consoleBg);
         // Update existing styled text in code editor
         javax.swing.text.StyledDocument editorDoc = codeEditor.getStyledDocument();
         javax.swing.text.SimpleAttributeSet editorAttr = new javax.swing.text.SimpleAttributeSet();
@@ -439,6 +440,7 @@ public class CPUSim64App {
         editorScroll.setRowHeaderView(lineNumberPanel);
 
         console = new TerminalPanel(settings.fontName, settings.fontSize);
+        console.setColors(settings.consoleFg, settings.consoleBg);
         JScrollBar consoleScrollBar = new JScrollBar(JScrollBar.VERTICAL);
         console.attachScrollBar(consoleScrollBar);
         JPanel consoleScrollPanel = new JPanel(new BorderLayout());

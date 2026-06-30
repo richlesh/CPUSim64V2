@@ -34,6 +34,8 @@ public class AppSettings {
     public String llmApiKey = null;
     public Color userPromptColor = new Color(0x00, 0xAA, 0x00);
     public Color aiResponseColor = new Color(0x33, 0x99, 0xFF);
+    public Color consoleFg = Color.WHITE;
+    public Color consoleBg = new Color(30, 30, 30);
     public Color[] colors = {
         Color.BLACK,              // normal
         new Color(0, 0, 180),     // keyword
@@ -68,6 +70,8 @@ public class AppSettings {
             if (llmApiKey != null) sb.append("  \"llmApiKey\": \"").append(escape(llmApiKey)).append("\",\n");
             sb.append("  \"userPromptColor\": \"").append(colorToHex(userPromptColor)).append("\",\n");
             sb.append("  \"aiResponseColor\": \"").append(colorToHex(aiResponseColor)).append("\",\n");
+            sb.append("  \"consoleFg\": \"").append(colorToHex(consoleFg)).append("\",\n");
+            sb.append("  \"consoleBg\": \"").append(colorToHex(consoleBg)).append("\",\n");
             sb.append("  \"colors\": [");
             for (int i = 0; i < colors.length; i++) {
                 if (i > 0) sb.append(", ");
@@ -135,6 +139,11 @@ public class AppSettings {
             if (upc != null) s.userPromptColor = hexToColor(upc);
             String arc = extractString(json, "aiResponseColor");
             if (arc != null) s.aiResponseColor = hexToColor(arc);
+
+            String cfg = extractString(json, "consoleFg");
+            if (cfg != null) s.consoleFg = hexToColor(cfg);
+            String cbg = extractString(json, "consoleBg");
+            if (cbg != null) s.consoleBg = hexToColor(cbg);
 
             List<String> colorList = extractArray(json, "colors");
             if (colorList != null) {

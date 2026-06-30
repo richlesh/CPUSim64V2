@@ -14,8 +14,8 @@ import java.util.concurrent.locks.ReentrantLock;
 public class TerminalPanel extends JComponent implements Scrollable {
     private static final int DEFAULT_COLS = 500;
     private static final int SCROLLBACK_LINES = 10000;
-    private static final Color DEFAULT_BG = new Color(30, 30, 30);
-    private static final Color DEFAULT_FG = Color.WHITE;
+    private Color termBg = new Color(30, 30, 30);
+    private Color termFg = Color.WHITE;
 
     // Circular buffer: each line is an array of codepoints and colors
     private final int[] chars;       // [line * maxCols + col] = codepoint
@@ -35,7 +35,7 @@ public class TerminalPanel extends JComponent implements Scrollable {
     private int charAscent;
 
     // ANSI state
-    private Color currentFg = DEFAULT_FG;
+    private Color currentFg = termFg;
     private StringBuilder escBuf = null; // non-null when inside an escape sequence
 
     // Selection
@@ -57,6 +57,14 @@ public class TerminalPanel extends JComponent implements Scrollable {
     private JScrollBar scrollBar;
 
     public void setInterruptHandler(Runnable handler) { this.interruptHandler = handler; }
+
+    public void setColors(Color fg, Color bg) {
+        this.termFg = fg;
+        this.termBg = bg;
+        this.currentFg = fg;
+        setBackground(bg);
+        repaint();
+    }
 
     public void attachScrollBar(JScrollBar sb) {
         this.scrollBar = sb;
@@ -88,7 +96,7 @@ public class TerminalPanel extends JComponent implements Scrollable {
         cursorCol = 0;
 
         setFont(fontName, fontSize);
-        setBackground(DEFAULT_BG);
+        setBackground(termBg);
         setFocusable(true);
         setOpaque(true);
 
@@ -154,7 +162,7 @@ public class TerminalPanel extends JComponent implements Scrollable {
                             else if (cursorRow > 0) { cursorRow--; cursorCol = maxCols - 1; }
                             int idx = cursorRow * maxCols + cursorCol;
                             chars[idx] = 0;
-                            colors[idx] = DEFAULT_FG;
+                            colors[idx] = termFg;
                         } finally { bufferLock.unlock(); }
                         repaint();
                     }
@@ -249,7 +257,7 @@ public class TerminalPanel extends JComponent implements Scrollable {
         int base = cursorRow * maxCols;
         for (int i = 0; i < maxCols; i++) {
             chars[base + i] = 0;
-            colors[base + i] = DEFAULT_FG;
+            colors[base + i] = termFg;
         }
     }
 
@@ -257,10 +265,10 @@ public class TerminalPanel extends JComponent implements Scrollable {
         if (seq.startsWith("\u001B[") && seq.endsWith("m")) {
             // SGR - color
             String nums = seq.substring(2, seq.length() - 1);
-            if (nums.isEmpty() || nums.equals("0")) { currentFg = DEFAULT_FG; return; }
+            if (nums.isEmpty() || nums.equals("0")) { currentFg = termFg; return; }
             for (String n : nums.split(";")) {
                 switch (n) {
-                    case "0" -> currentFg = DEFAULT_FG;
+                    case "0" -> currentFg = termFg;
                     case "1" -> {} // bold - ignore for now
                     case "30" -> currentFg = Color.DARK_GRAY;
                     case "31" -> currentFg = new Color(200, 50, 50);
@@ -291,11 +299,11 @@ public class TerminalPanel extends JComponent implements Scrollable {
         bufferLock.lock();
         try {
             java.util.Arrays.fill(chars, 0);
-            java.util.Arrays.fill(colors, DEFAULT_FG);
+            java.util.Arrays.fill(colors, termFg);
             cursorRow = 0; cursorCol = 0;
             firstLine = 0; lineCount = 1;
             scrollOffset = 0;
-            currentFg = DEFAULT_FG;
+            currentFg = termFg;
             escBuf = null;
         } finally { bufferLock.unlock(); }
         repaint();
@@ -384,7 +392,7 @@ public class TerminalPanel extends JComponent implements Scrollable {
     protected void paintComponent(Graphics g) {
         Graphics2D g2 = (Graphics2D) g;
         g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-        g2.setColor(DEFAULT_BG);
+        g2.setColor(termBg);
         g2.fillRect(0, 0, getWidth(), getHeight());
         g2.setFont(termFont);
 
@@ -417,7 +425,7 @@ public class TerminalPanel extends JComponent implements Scrollable {
                         g2.fillRect(col * charWidth, row * charHeight, charWidth, charHeight);
                     }
                     if (ch != 0) {
-                        g2.setColor(inSelection ? Color.WHITE : (colors[idx] != null ? colors[idx] : DEFAULT_FG));
+                        g2.setColor(inSelection ? Color.WHITE : (colors[idx] != null ? colors[idx] : termFg));
                         g2.drawString(new String(Character.toChars(ch)), col * charWidth, y);
                     }
                 }
@@ -427,7 +435,7 @@ public class TerminalPanel extends JComponent implements Scrollable {
                 int curLine = lineCount - 1;
                 int screenRow = curLine - startLine;
                 if (screenRow >= 0 && screenRow < visRows) {
-                    g2.setColor(DEFAULT_FG);
+                    g2.setColor(termFg);
                     g2.fillRect(cursorCol * charWidth, screenRow * charHeight, charWidth, charHeight);
                 }
             }
