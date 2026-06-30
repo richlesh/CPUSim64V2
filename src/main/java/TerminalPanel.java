@@ -46,6 +46,7 @@ public class TerminalPanel extends JComponent implements Scrollable {
     // Input
     private PipedOutputStream inputPipe;
     private boolean inputEnabled = false;
+    private boolean userTyping = false;
     private int inputStartRow, inputStartCol;
 
     // Cursor blink
@@ -179,7 +180,9 @@ public class TerminalPanel extends JComponent implements Scrollable {
                 if ((e.getModifiersEx() & Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx()) != 0) return;
                 Color saved = currentFg;
                 currentFg = Color.WHITE;
+                userTyping = true;
                 write(String.valueOf(c));
+                userTyping = false;
                 currentFg = saved;
             }
         });
@@ -241,6 +244,7 @@ public class TerminalPanel extends JComponent implements Scrollable {
                 }
             }
         } finally { bufferLock.unlock(); }
+        if (!userTyping) { inputStartRow = cursorRow; inputStartCol = cursorCol; }
         scrollOffset = 0;
         SwingUtilities.invokeLater(() -> { repaint(); updateScrollBar(); });
     }
