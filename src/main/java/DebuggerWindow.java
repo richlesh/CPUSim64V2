@@ -232,9 +232,14 @@ public class DebuggerWindow extends JFrame {
             @Override public void mouseClicked(MouseEvent e) {
                 int row = regTable.rowAtPoint(e.getPoint());
                 int col = regTable.columnAtPoint(e.getPoint());
-                if (row >= 0 && col == 1) {
-                    intRegHex[row] = !intRegHex[row];
-                    updateRegisters();
+                if (row >= 0 && row < 32 && col == 1) {
+                    if (e.isShiftDown()) {
+                        long addr = sim.getRegisters()[row];
+                        new MemoryWindow(sim, addr, regTable.getFont());
+                    } else {
+                        intRegHex[row] = !intRegHex[row];
+                        updateRegisters();
+                    }
                 }
             }
         });
