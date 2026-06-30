@@ -111,23 +111,6 @@ public class CPUSim64App {
         editorDoc.setCharacterAttributes(0, editorDoc.getLength(), editorAttr, false);
         // Update AI chat panel font
         if (aiChatPanel != null) aiChatPanel.updateFont(settings.fontName, settings.fontSize);
-        if (menuBar != null) {
-            menuBar.setFont(font);
-            for (int i = 0; i < menuBar.getMenuCount(); i++) {
-                JMenu m = menuBar.getMenu(i);
-                if (m != null) {
-                    m.setFont(font);
-                    for (int j = 0; j < m.getItemCount(); j++) {
-                        JMenuItem item = m.getItem(j);
-                        if (item != null) item.setFont(font);
-                    }
-                }
-            }
-            for (Component c : menuBar.getComponents()) c.setFont(font);
-        }
-        if (consoleToolBar != null) {
-            for (Component c : consoleToolBar.getComponents()) c.setFont(font);
-        }
         for (int i = 0; i < settings.colors.length; i++) {
             highlighter.setColor(i, settings.colors[i]);
         }
