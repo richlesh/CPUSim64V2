@@ -30,12 +30,12 @@ public class SettingsDialog {
         gbc.gridx = 0; gbc.gridy = 1;
         panel.add(new JLabel("Code Size:"), gbc);
 
-        String[] sizes = {"Small (12pt)", "Medium (16pt)", "Large (20pt)"};
+        int[] sizeValues = {9, 10, 11, 12, 13, 14, 16, 18, 20, 24, 28, 32};
+        String[] sizes = new String[sizeValues.length];
+        for (int i = 0; i < sizeValues.length; i++) sizes[i] = sizeValues[i] + "pt";
         JComboBox<String> sizeCombo = new JComboBox<>(sizes);
         int currentSize = editor.getFont().getSize();
-        if (currentSize <= 12) sizeCombo.setSelectedIndex(0);
-        else if (currentSize <= 16) sizeCombo.setSelectedIndex(1);
-        else sizeCombo.setSelectedIndex(2);
+        for (int i = 0; i < sizeValues.length; i++) { if (sizeValues[i] == currentSize) { sizeCombo.setSelectedIndex(i); break; } }
         gbc.gridx = 1;
         panel.add(sizeCombo, gbc);
 
@@ -54,9 +54,7 @@ public class SettingsDialog {
         panel.add(new JLabel("AI Size:"), gbc);
 
         JComboBox<String> aiSizeCombo = new JComboBox<>(sizes);
-        if (settings.aiFontSize <= 12) aiSizeCombo.setSelectedIndex(0);
-        else if (settings.aiFontSize <= 16) aiSizeCombo.setSelectedIndex(1);
-        else aiSizeCombo.setSelectedIndex(2);
+        for (int i = 0; i < sizeValues.length; i++) { if (sizeValues[i] == settings.aiFontSize) { aiSizeCombo.setSelectedIndex(i); break; } }
         gbc.gridx = 1;
         panel.add(aiSizeCombo, gbc);
 
@@ -346,12 +344,7 @@ public class SettingsDialog {
         okBtn.addActionListener(e -> {
             // Apply font
             String fontName = (String) fontCombo.getSelectedItem();
-            int size = switch (sizeCombo.getSelectedIndex()) {
-                case 0 -> 12;
-                case 1 -> 16;
-                case 2 -> 20;
-                default -> 14;
-            };
+            int size = sizeValues[sizeCombo.getSelectedIndex()];
             Font font = new Font(fontName, Font.PLAIN, size);
             editor.setFont(font);
             console.setFont(fontName, size);
@@ -366,12 +359,7 @@ public class SettingsDialog {
             settings.fontName = fontName;
             settings.fontSize = size;
             settings.aiFontName = (String) aiFontCombo.getSelectedItem();
-            settings.aiFontSize = switch (aiSizeCombo.getSelectedIndex()) {
-                case 0 -> 12;
-                case 1 -> 16;
-                case 2 -> 20;
-                default -> 14;
-            };
+            settings.aiFontSize = sizeValues[aiSizeCombo.getSelectedIndex()];
             System.arraycopy(colors, 0, settings.colors, 0, colors.length);
             settings.llmVendor = (String) vendorCombo.getSelectedItem();
             settings.llmModel = (String) modelCombo.getSelectedItem();
