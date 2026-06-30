@@ -268,10 +268,15 @@ public class DebuggerWindow extends JFrame {
                 int row = stackTable.rowAtPoint(e.getPoint());
                 int col = stackTable.columnAtPoint(e.getPoint());
                 if (row >= 0 && col == 2 && row < stackRowAddresses.size()) {
-                    long addr = stackRowAddresses.get(row);
-                    int mode = stackDisplayMode.getOrDefault(addr, 0);
-                    stackDisplayMode.put(addr, (mode + 1) % 3);
-                    updateStack();
+                    if (SwingUtilities.isRightMouseButton(e)) {
+                        long addr = stackRowAddresses.get(row);
+                        showStackContextMenu(e, addr);
+                    } else {
+                        long addr = stackRowAddresses.get(row);
+                        int mode = stackDisplayMode.getOrDefault(addr, 0);
+                        stackDisplayMode.put(addr, (mode + 1) % 4);
+                        updateStack();
+                    }
                 }
             }
         });
@@ -566,6 +571,68 @@ public class DebuggerWindow extends JFrame {
         regModel.setValueAt("", 32, 3);
     }
 
+    private void showStackContextMenu(MouseEvent e, long addr) {
+        long value;
+        try { value = sim.memRead(addr); } catch (Exception ex) { return; }
+        JPopupMenu menu = new JPopupMenu();
+        JMenuItem decItem = new JMenuItem("Decimal");
+        JMenuItem hexItem = new JMenuItem("Hexadecimal");
+        JMenuItem floatItem = new JMenuItem("Float");
+        JMenuItem charItem = new JMenuItem("Character");
+        JMenuItem strItem = new JMenuItem("String");
+        JMenuItem memItem = new JMenuItem("Memory");
+
+        decItem.addActionListener(ev -> { stackDisplayMode.put(addr, 0); updateStack(); });
+        hexItem.addActionListener(ev -> { stackDisplayMode.put(addr, 1); updateStack(); });
+        floatItem.addActionListener(ev -> { stackDisplayMode.put(addr, 2); updateStack(); });
+        charItem.addActionListener(ev -> { stackDisplayMode.put(addr, 3); updateStack(); });
+        strItem.addActionListener(ev -> showStackString(value));
+        memItem.addActionListener(ev -> MemoryWindow.showMemory(sim, value, stackTable.getFont(), settings));
+
+        menu.add(decItem);
+        menu.add(hexItem);
+        menu.add(floatItem);
+        menu.add(charItem);
+        menu.addSeparator();
+        menu.add(strItem);
+        menu.add(memItem);
+        menu.show(stackTable, e.getX(), e.getY());
+    }
+
+    private void showStackString(long addr) {
+        try {
+            long byteCount = sim.memRead(addr);
+            if (byteCount < 0 || byteCount > 100000) {
+                JOptionPane.showMessageDialog(this, "Invalid string length: " + byteCount, "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            byte[] bytes = new byte[(int) byteCount];
+            int outIndex = 0;
+            long wordAddr = addr + 1;
+            for (; outIndex < byteCount; wordAddr++) {
+                long w = sim.memRead(wordAddr);
+                for (int b = 7; b >= 0 && outIndex < byteCount; b--) {
+                    bytes[outIndex++] = (byte) ((w >> (b * 8)) & 0xFF);
+                }
+            }
+            String str = new String(bytes, java.nio.charset.StandardCharsets.UTF_8);
+            JTextArea textArea = new JTextArea(str);
+            textArea.setFont(stackTable.getFont());
+            textArea.setEditable(false);
+            textArea.setLineWrap(true);
+            textArea.setWrapStyleWord(true);
+            JScrollPane scroll = new JScrollPane(textArea);
+            scroll.setPreferredSize(new java.awt.Dimension(400, 300));
+            JDialog dialog = new JDialog(this, String.format("String @ 0x%08X (%d bytes)", addr, byteCount), false);
+            dialog.add(scroll);
+            dialog.pack();
+            dialog.setLocationRelativeTo(this);
+            dialog.setVisible(true);
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this, "Error reading string: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
     private void updateStack() {
         stackModel.setRowCount(0);
         stackRowAddresses.clear();
@@ -585,6 +652,7 @@ public class DebuggerWindow extends JFrame {
                 valStr = switch (mode) {
                     case 1 -> String.format("0x%016X", val);
                     case 2 -> String.format("%.16g", Double.longBitsToDouble(val));
+                    case 3 -> (val >= 0 && val <= 0x10FFFF) ? "'" + new String(Character.toChars((int) val)) + "' (U+" + String.format("%04X", val) + ")" : "(invalid)";
                     default -> Long.toString(val);
                 };
             }
