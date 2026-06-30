@@ -30,7 +30,7 @@ public class SettingsDialog {
         gbc.gridx = 0; gbc.gridy = 1;
         panel.add(new JLabel("Code Size:"), gbc);
 
-        int[] sizeValues = {9, 10, 11, 12, 13, 14, 16, 18, 20, 24, 28, 32};
+        int[] sizeValues = {9, 10, 11, 12, 13, 14, 16, 18, 20, 24, 28};
         String[] sizes = new String[sizeValues.length];
         for (int i = 0; i < sizeValues.length; i++) sizes[i] = sizeValues[i] + "pt";
         JComboBox<String> sizeCombo = new JComboBox<>(sizes);

@@ -623,16 +623,16 @@ public class StdInterruptHandler extends InterruptHandler
 							codepoints.add(cp);
 						}
 					}
-					// Convert to primitive int[] (needed by String constructor)
-					int[] cps = codepoints.stream().mapToInt(Integer::intValue).toArray();
-					// Construct a String from the code points
-					s = new String(cps, 0, cps.length);
-					long newAlloc = cpu.allocString(s, cpu.getR(2));
-					cpu.setR(2, newAlloc);
-					if (cp == -1 && s.isEmpty())
+					if (cp == -1 && s.isEmpty()) {
 						cpu.setR(0, 0);
-					else
+					} else {
+						// Convert to primitive int[] (needed by String constructor)
+						int[] cps = codepoints.stream().mapToInt(Integer::intValue).toArray();
+						// Construct a String from the code points
+						s = new String(cps, 0, cps.length);
+						long newAlloc = cpu.allocString(s, cpu.getR(2));
 						cpu.setR(0, newAlloc);
+					}
 				} else {
 					cpu.setR(0, 0);
 				}

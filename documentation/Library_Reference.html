@@ -41,8 +41,12 @@
 		<tr><td>ANSI_COLOR$HIDDEN</td><td>Sets hidden style</td></tr>
 		<tr><td>ANSI_COLOR$STRIKETHROUGH</td><td>Sets strikethrough style</td></tr>
 		<tr><td>ANSI_COLOR$RESET_BOLD_DIM</td><td>Resets only the bold or dim style</td></tr>
+		<tr><td>ANSI_COLOR$RESET_ITALIC</td><td>Resets the italic style</td></tr>
 		<tr><td>ANSI_COLOR$RESET_UNDERLINE</td><td>Resets only the underline style</td></tr>
+		<tr><td>ANSI_COLOR$RESET_BLINK</td><td>Resets the blink style</td></tr>
 		<tr><td>ANSI_COLOR$RESET_REVERSE</td><td>Resets only the reversed style</td></tr>
+		<tr><td>ANSI_COLOR$RESET_HIDDEN</td><td>Resets the hidden style</td></tr>
+		<tr><td>ANSI_COLOR$RESET_STRIKETHROUGH</td><td>Resets the strikethrough style</td></tr>
 		<tr><td>ANSI_COLOR$RESET_COLOR</td><td>Resets only the foreground color</td></tr>
 		<tr><td>ANSI_COLOR$RESET_BG</td><td>Resets only the background color</td></tr>
 
@@ -298,11 +302,11 @@
 	<tr><td>PREFIX</td><td><code>PREFIX(s, length)</code><br>Returns the first <code>length</code> characters of string <code>s</code>.</td></tr>
 	<tr><td>SUFFIX</td><td><code>SUFFIX(s, length)</code><br>Returns the last <code>length</code> characters of string <code>s</code>.</td></tr>
 
-	<tr><td>CHAR_SEARCH</td><td><code>CHAR_SEARCH(s, char, startpos)</code><br>Finds the first occurrence of codepoint <code>char</code> in <code>s</code> starting at <code>startpos</code>.</td></tr>
-	<tr><td>LAST_CHAR_SEARCH</td><td><code>LAST_CHAR_SEARCH(s, char, startpos)</code><br>Finds the last occurrence of codepoint <code>char</code> in <code>s</code> starting at <code>startpos</code> and searching backward.</td></tr>
+	<tr><td>CHAR_SEARCH</td><td><code>CHAR_SEARCH(s, char, startpos)</code><br>Finds the first occurrence of codepoint <code>char</code> in <code>s</code> starting at <code>startpos</code> or -1 if not found.</td></tr>
+	<tr><td>LAST_CHAR_SEARCH</td><td><code>LAST_CHAR_SEARCH(s, char, startpos)</code><br>Finds the last occurrence of codepoint <code>char</code> in <code>s</code> starting at <code>startpos</code> and searching backward or -1 if not found.</td></tr>
 
-	<tr><td>SUBSTRING_SEARCH</td><td><code>SUBSTRING_SEARCH(s, substr, startpos)</code><br>Finds the first occurrence of <code>substr</code> in <code>s</code> starting at <code>startpos</code>.</td></tr>
-	<tr><td>LAST_SUBSTRING_SEARCH</td><td><code>LAST_SUBSTRING_SEARCH(s, substr, startpos)</code><br>Finds the last occurrence of <code>substr</code> in <code>s</code> starting at <code>startpos</code> and searching backward.</td></tr>
+	<tr><td>SUBSTRING_SEARCH</td><td><code>SUBSTRING_SEARCH(s, substr, startpos)</code><br>Finds the first occurrence of <code>substr</code> in <code>s</code> starting at <code>startpos</code> or -1 if not found.</td></tr>
+	<tr><td>LAST_SUBSTRING_SEARCH</td><td><code>LAST_SUBSTRING_SEARCH(s, substr, startpos)</code><br>Finds the last occurrence of <code>substr</code> in <code>s</code> starting at <code>startpos</code> and searching backward or -1 if not found.</td></tr>
 
 	<tr><td>STARTS_WITH</td><td><code>STARTS_WITH(str, prefix)</code><br>Checks to see if the string begins with <code>prefix</code>.</td></tr>
 	<tr><td>ENDS_WITH</td><td><code>ENDS_WITH(str, suffix)</code><br>Checks to see if the string ends with <code>suffix</code>.</td></tr>
