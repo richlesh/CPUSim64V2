@@ -196,6 +196,13 @@ jobs:
           description=CPUSim64 Symbol File
           EOF
 
+          cat > fa-srcmap.properties <<EOF
+          mime-type=application/x-cpusim-srcmap
+          extension=srcmap
+          icon=${{ matrix.sym_icon }}
+          description=CPUSim64 Source Map File
+          EOF
+
       - name: Run jpackage
         shell: bash
         run: |
@@ -216,6 +223,7 @@ jobs:
               --file-associations fa-sym.properties \
               --file-associations fa-sym1.properties \
               --file-associations fa-sym2.properties \
+              --file-associations fa-srcmap.properties \
               --jlink-options "--strip-debug --no-header-files --no-man-pages --compress zip-6" \
               --resource-dir resources/macos \
               --type app-image
@@ -252,6 +260,7 @@ jobs:
               --file-associations fa-sym.properties \
               --file-associations fa-sym1.properties \
               --file-associations fa-sym2.properties \
+              --file-associations fa-srcmap.properties \
               --linux-app-category devel \
               --linux-menu-group "Development;IDE;" \
               --resource-dir resources/linux \
@@ -272,6 +281,7 @@ jobs:
               --file-associations fa-sym.properties \
               --file-associations fa-sym1.properties \
               --file-associations fa-sym2.properties \
+              --file-associations fa-srcmap.properties \
               --jlink-options "--strip-debug --no-header-files --no-man-pages --compress zip-6" \
               --win-menu \
               --win-shortcut \
