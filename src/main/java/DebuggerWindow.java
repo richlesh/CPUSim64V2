@@ -234,10 +234,10 @@ public class DebuggerWindow extends JFrame {
                 int row = regTable.rowAtPoint(e.getPoint());
                 int col = regTable.columnAtPoint(e.getPoint());
                 if (row >= 0 && row < 32 && col == 1) {
-                    if (e.isShiftDown()) {
+                    if (SwingUtilities.isRightMouseButton(e)) {
                         long addr = sim.getRegisters()[row];
                         MemoryWindow.showMemory(sim, addr, regTable.getFont(), settings);
-                    } else {
+                    } else if (SwingUtilities.isLeftMouseButton(e)) {
                         intRegHex[row] = !intRegHex[row];
                         updateRegisters();
                     }
