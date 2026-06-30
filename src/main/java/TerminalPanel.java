@@ -307,6 +307,7 @@ public class TerminalPanel extends JComponent implements Scrollable {
                     case "35" -> currentFg = new Color(200, 50, 200);
                     case "36" -> currentFg = new Color(50, 200, 200);
                     case "37" -> currentFg = Color.WHITE;
+                    case "39" -> currentFg = termFg;
                     case "90" -> currentFg = Color.GRAY;
                     case "91" -> currentFg = new Color(255, 100, 100);
                     case "92" -> currentFg = new Color(100, 255, 100);
@@ -315,12 +316,22 @@ public class TerminalPanel extends JComponent implements Scrollable {
                     case "95" -> currentFg = new Color(255, 100, 255);
                     case "96" -> currentFg = new Color(100, 255, 255);
                     case "97" -> currentFg = Color.WHITE;
+                    case "49" -> {} // reset background (no per-char bg tracking yet)
                 }
             }
         } else if (seq.equals("\u001B[?25l")) {
             cursorVisible = false; blinkTimer.stop();
         } else if (seq.equals("\u001B[?25h")) {
             cursorVisible = true; blinkTimer.start();
+        } else if (seq.equals("\u001B[K") || seq.equals("\u001B[0K")) {
+            // Clear from cursor to end of line
+            int base = cursorRow * maxCols;
+            for (int i = cursorCol; i < maxCols; i++) { chars[base + i] = 0; colors[base + i] = termFg; attrs[base + i] = 0; }
+        } else if (seq.equals("\u001B[2K")) {
+            // Clear entire line
+            int base = cursorRow * maxCols;
+            for (int i = 0; i < maxCols; i++) { chars[base + i] = 0; colors[base + i] = termFg; attrs[base + i] = 0; }
+            cursorCol = 0;
         }
     }
 
