@@ -268,14 +268,23 @@ public class DebuggerWindow extends JFrame {
                 int row = stackTable.rowAtPoint(e.getPoint());
                 int col = stackTable.columnAtPoint(e.getPoint());
                 if (row >= 0 && col == 2 && row < stackRowAddresses.size()) {
-                    if (SwingUtilities.isRightMouseButton(e)) {
-                        long addr = stackRowAddresses.get(row);
-                        showStackContextMenu(e, addr);
-                    } else {
+                    if (SwingUtilities.isLeftMouseButton(e) && !e.isPopupTrigger()) {
                         long addr = stackRowAddresses.get(row);
                         int mode = stackDisplayMode.getOrDefault(addr, 0);
                         stackDisplayMode.put(addr, (mode + 1) % 4);
                         updateStack();
+                    }
+                }
+            }
+            @Override public void mousePressed(MouseEvent e) { maybeShowPopup(e); }
+            @Override public void mouseReleased(MouseEvent e) { maybeShowPopup(e); }
+            private void maybeShowPopup(MouseEvent e) {
+                if (e.isPopupTrigger() || SwingUtilities.isRightMouseButton(e)) {
+                    int row = stackTable.rowAtPoint(e.getPoint());
+                    int col = stackTable.columnAtPoint(e.getPoint());
+                    if (row >= 0 && col == 2 && row < stackRowAddresses.size()) {
+                        long addr = stackRowAddresses.get(row);
+                        showStackContextMenu(e, addr);
                     }
                 }
             }
