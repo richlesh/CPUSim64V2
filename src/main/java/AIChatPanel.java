@@ -275,7 +275,7 @@ public class AIChatPanel extends JPanel {
         btnRow.setBorder(BorderFactory.createEmptyBorder(2, 14, 6, 6));
         btnRow.setMaximumSize(new Dimension(Integer.MAX_VALUE, 36));
         JLabel prompt = new JLabel("Apply code changes?");
-        prompt.setFont(new Font(settings.fontName, Font.BOLD, settings.fontSize));
+        prompt.setFont(new Font(settings.aiFontName, Font.BOLD, settings.aiFontSize));
         JButton allowBtn = new JButton("Allow");
         JButton rejectBtn = new JButton("Reject");
         allowBtn.addActionListener(e -> {
@@ -326,7 +326,7 @@ public class AIChatPanel extends JPanel {
         pulsingAiLabel.setVerticalAlignment(SwingConstants.TOP);
         row.add(pulsingAiLabel, BorderLayout.WEST);
         JLabel thinking = new JLabel("Thinking...");
-        thinking.setFont(new Font(settings.fontName, Font.ITALIC, settings.fontSize));
+        thinking.setFont(new Font(settings.aiFontName, Font.ITALIC, settings.aiFontSize));
         thinking.setForeground(Color.GRAY);
         row.add(thinking, BorderLayout.CENTER);
         JButton cancelBtn = new JButton("✕");
