@@ -28,6 +28,9 @@ The project is designed for educational use, computer architecture instruction, 
 - Custom terminal console with ANSI color support and fast rendering  
 - Carriage return (`\r`) support for progress bars and spinners  
 - Cursor hide/show escape sequences  
+- Full ANSI SGR support: bold, dim, italic, underline, blink, reverse, hidden, strikethrough  
+- ANSI background colors (standard and bright)  
+- Clear to end of line and clear line escape sequences  
 - Assemble, Run, Debug, and Trace from the menu  
 - Run/Stop toggle button — Stop terminates the running program and all child processes  
 - Ctrl+C to interrupt running program, Ctrl+D to signal EOF  
@@ -77,6 +80,11 @@ The project is designed for educational use, computer architecture instruction, 
 - Window layout (size, dividers, column widths) persisted across sessions  
 - Source editor auto-scrolls to current execution line  
 - Program I/O redirected to the IDE console pane during debugging  
+- Memory window: right-click a register to inspect memory at that address  
+- Memory window click-to-cycle value format: decimal, hex, float, Unicode character  
+- Memory window right-click menu with String viewer and pointer-follow (Memory)  
+- Heap block header highlighting (gray=allocated, green=free)  
+- Status register (SR) display with PZSO flag indicators  
 
 ### **Agentic AI Assistant**
 - Built-in AI chat panel in the IDE for writing and debugging CPUSim64 assembly  
@@ -90,6 +98,8 @@ The project is designed for educational use, computer architecture instruction, 
 - System prompt includes full CPUSim64 documentation, examples, and projects for accurate assistance  
 - Clear button to reset conversation  
 - Status bar showing system prompt, program, and output sizes  
+- Separate AI font settings (sans-serif default) with code font for code blocks  
+- Markdown table rendering in monospace for column alignment  
 
 ### **CLI Tool (`cpusim64`)**
 - Native C++ command-line interface  
