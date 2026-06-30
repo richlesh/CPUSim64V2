@@ -556,6 +556,11 @@ public class AIChatPanel extends JPanel {
                 try { doc.insertString(doc.getLength(), line + "\n", code); } catch (Exception ignored) {}
                 continue;
             }
+            // Table lines (render in monospace for alignment)
+            if (line.startsWith("|") || (line.startsWith("|-") || line.matches("^\\|?[\\s:|-]+\\|?$"))) {
+                try { doc.insertString(doc.getLength(), line + "\n", code); } catch (Exception ignored) {}
+                continue;
+            }
             // Headers
             if (line.startsWith("### ")) { insertLine(doc, line.substring(4) + "\n", header); continue; }
             if (line.startsWith("## ")) { insertLine(doc, line.substring(3) + "\n", header); continue; }
