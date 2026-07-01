@@ -6,12 +6,12 @@
 
     <groupId>org.lesh</groupId>
     <artifactId>CPUSim64</artifactId>
-    <version>2.5.0</version>
+    <version>2.6.0</version>
 
     <properties>
-        <app.version>2.5.0</app.version>
+        <app.version>2.6.0</app.version>
         <copyright.years>2025–2026</copyright.years>
-        <maven.compiler.release>21</maven.compiler.release>
+        <maven.compiler.release>17</maven.compiler.release>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <antlr.version>4.13.2</antlr.version>
         <junit.version>5.14.0</junit.version>

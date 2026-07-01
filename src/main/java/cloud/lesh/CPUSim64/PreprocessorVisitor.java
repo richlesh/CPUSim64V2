@@ -379,7 +379,9 @@ public class PreprocessorVisitor extends cloud.lesh.CPUSim64.PreprocessorParserB
 		}
 		if (ctx.argList() != null) {
 			emitLineBeginDirective(filename, ctx);
-			for (var param : ctx.argList().callArg().reversed()) {
+			var callArgs = ctx.argList().callArg();
+			for (int _i = callArgs.size() - 1; _i >= 0; --_i) {
+				var param = callArgs.get(_i);
 				if (param == null || param.getText() == null || param.getText().isBlank()) {
 					System.err.println(getLocation() + ":ERROR:#call " + ctx.IDENT().getText() + " has an empty argument");
 					hasErrors = true;

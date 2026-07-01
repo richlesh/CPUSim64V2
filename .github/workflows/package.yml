@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: 'Release version tag (e.g. 2.5.0)'
+        description: 'Release version tag (e.g. 2.6.0)'
         required: true
 
 permissions:
@@ -43,7 +43,7 @@ jobs:
             sym_icon: resources/sym_icon.ico
             pkg_type: msi
             label: windows-arm64
-          - os: ubuntu-latest
+          - os: ubuntu-22.04
             arch: x64
             icon: resources/app_icon_256.png
             asm_icon: resources/asm_icon_256.png
@@ -51,7 +51,7 @@ jobs:
             sym_icon: resources/sym_icon_256.png
             pkg_type: deb
             label: linux-x64-deb
-          - os: ubuntu-latest
+          - os: ubuntu-22.04
             arch: x64
             icon: resources/app_icon_256.png
             asm_icon: resources/asm_icon_256.png
