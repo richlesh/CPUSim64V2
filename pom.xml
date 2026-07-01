@@ -173,6 +173,12 @@
                                         <exclude>NOTICE</exclude>
                                     </excludes>
                                 </filter>
+                                <filter>
+                                    <artifact>org.jline:jline</artifact>
+                                    <excludes>
+                                        <exclude>org/jline/nativ/**</exclude>
+                                    </excludes>
+                                </filter>
                             </filters>
                             <transformers>
                                 <!-- If you have a main() -->
