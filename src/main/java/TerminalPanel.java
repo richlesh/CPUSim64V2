@@ -149,7 +149,7 @@ public class TerminalPanel extends JComponent implements Scrollable {
             }
         });
         addMouseWheelListener(e -> {
-            scrollOffset = Math.max(0, Math.min(lineCount - getVisibleRows(), scrollOffset + e.getWheelRotation() * 3));
+            scrollOffset = Math.max(0, Math.min(lineCount - getVisibleRows(), scrollOffset - e.getWheelRotation() * 3));
             repaint();
             updateScrollBar();
         });
