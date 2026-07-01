@@ -128,19 +128,17 @@ public class Simulation {
 				lastQuery = now;
 				try {
 					if (isWindows) {
-						Process p = new ProcessBuilder("cmd", "/c", "mode", "con")
+						Process p = new ProcessBuilder("powershell", "-NoProfile", "-Command",
+							"$h=$Host.UI.RawUI.WindowSize; Write-Output \"$($h.Height) $($h.Width)\"")
 							.redirectOutput(ProcessBuilder.Redirect.PIPE)
 							.redirectError(ProcessBuilder.Redirect.DISCARD)
 							.start();
-						String output = new String(p.getInputStream().readAllBytes());
+						String output = new String(p.getInputStream().readAllBytes()).trim();
 						p.waitFor();
-						for (String line : output.split("\\r?\\n")) {
-							line = line.trim();
-							if (line.startsWith("Columns:")) {
-								cachedCols = Integer.parseInt(line.replaceAll("[^0-9]", ""));
-							} else if (line.startsWith("Lines:")) {
-								cachedRows = Integer.parseInt(line.replaceAll("[^0-9]", ""));
-							}
+						String[] parts = output.split("\\s+");
+						if (parts.length == 2) {
+							cachedRows = Integer.parseInt(parts[0]);
+							cachedCols = Integer.parseInt(parts[1]);
 						}
 					} else {
 						Process p = new ProcessBuilder("sh", "-c", "stty size < /dev/tty")
