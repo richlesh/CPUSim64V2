@@ -121,41 +121,35 @@ public class Simulation {
 			private int cachedCols = -1;
 			private int cachedRows = -1;
 			private long lastQuery = 0;
-			private final boolean isWindows = System.getProperty("os.name").toLowerCase().contains("win");
+			private org.jline.terminal.Terminal jlineTerminal = null;
+			private boolean initFailed = false;
+			private org.jline.terminal.Terminal getTerminal() {
+				if (jlineTerminal == null && !initFailed) {
+					try {
+						jlineTerminal = org.jline.terminal.TerminalBuilder.builder()
+							.system(true).dumb(false).build();
+					} catch (Exception e) {
+						initFailed = true;
+					}
+				}
+				return jlineTerminal;
+			}
 			private void refresh() {
 				long now = System.currentTimeMillis();
 				if (now - lastQuery < 1000 && cachedCols > 0) return; // cache for 1 second
 				lastQuery = now;
 				try {
-					if (isWindows) {
-						Process p = new ProcessBuilder("powershell", "-NoProfile", "-Command",
-							"Write-Output \"$([Console]::WindowHeight) $([Console]::WindowWidth)\"")
-							.redirectOutput(ProcessBuilder.Redirect.PIPE)
-							.redirectError(ProcessBuilder.Redirect.DISCARD)
-							.start();
-						String output = new String(p.getInputStream().readAllBytes()).trim();
-						p.waitFor();
-						String[] parts = output.split("\\s+");
-						if (parts.length == 2) {
-							cachedRows = Integer.parseInt(parts[0]);
-							cachedCols = Integer.parseInt(parts[1]);
-						}
-					} else {
-						Process p = new ProcessBuilder("sh", "-c", "stty size < /dev/tty")
-							.redirectOutput(ProcessBuilder.Redirect.PIPE)
-							.redirectError(ProcessBuilder.Redirect.DISCARD)
-							.start();
-						String output = new String(p.getInputStream().readAllBytes()).trim();
-						p.waitFor();
-						String[] parts = output.split("\\s+");
-						if (parts.length == 2) {
-							cachedRows = Integer.parseInt(parts[0]);
-							cachedCols = Integer.parseInt(parts[1]);
+					org.jline.terminal.Terminal term = getTerminal();
+					if (term != null) {
+						org.jline.terminal.Size size = term.getSize();
+						if (size.getColumns() > 0 && size.getRows() > 0) {
+							cachedCols = size.getColumns();
+							cachedRows = size.getRows();
+							return;
 						}
 					}
-				} catch (Exception e) {
-					if (cachedCols <= 0) { cachedCols = 80; cachedRows = 24; }
-				}
+				} catch (Exception e) { /* fall through to defaults */ }
+				if (cachedCols <= 0) { cachedCols = 80; cachedRows = 24; }
 			}
 			@Override public int getColumns() { refresh(); return cachedCols; }
 			@Override public int getRows() { refresh(); return cachedRows; }
