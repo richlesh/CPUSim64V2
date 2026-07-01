@@ -399,11 +399,13 @@ public class StdInterruptHandler extends InterruptHandler
 				break;
 			case iTERM_SETCURSOR:
 				// R0 = row (0-based), R1 = column (0-based); ANSI CUP is 1-based
+				System.out.flush();
 				System.out.print("\u001B[" + (cpu.getR(0) + 1) + ";" + (cpu.getR(1) + 1) + "H");
 				System.out.flush();
 				break;
 			case iTERM_CLEAR:
 				// Clear screen and move cursor to top-left
+				System.out.flush();
 				System.out.print("\u001B[2J\u001B[H");
 				System.out.flush();
 				break;
@@ -585,6 +587,7 @@ public class StdInterruptHandler extends InterruptHandler
 						s.codePoints().forEach(cp -> {
 							ph.writeChar(cp);
 						});
+						ph.flush();
 					}
 				}
 				break;

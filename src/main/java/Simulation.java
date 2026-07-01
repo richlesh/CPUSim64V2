@@ -114,6 +114,9 @@ public class Simulation {
 			System.out.println("Read " + program.size() + " words from " + newPath.getFileName().toString());
 		}
 
+		// Disable output buffering so ANSI escape sequences are sent immediately
+		System.setOut(new java.io.PrintStream(new java.io.FileOutputStream(java.io.FileDescriptor.out), true));
+
 		var sim = new Simulator(memorySize, 0, stackSize, simulatorArgs.toArray(String[]::new));
 		// Set up terminal size provider for real terminal (only if not already set by IDE)
 		if (StdInterruptHandler.getGlobalTerminalSizeProvider() == null) {

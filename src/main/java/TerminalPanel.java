@@ -37,6 +37,7 @@ public class TerminalPanel extends JComponent implements Scrollable {
     private int cursorRow;           // row within the buffer (absolute)
     private int cursorCol;
     private int scrollOffset;        // lines scrolled back from bottom (0 = at bottom)
+    private int screenOrigin = -1;   // buffer row of screen top after clear; -1 = not set (use default calc)
     private int firstLine;           // first line index in circular buffer
     private int lineCount;           // total lines written
 
@@ -273,7 +274,12 @@ public class TerminalPanel extends JComponent implements Scrollable {
             cursorRow = 0; // wrap in circular buffer
         }
         if (lineCount < totalLines) lineCount++;
-        else firstLine = (firstLine + 1) % totalLines;
+        else {
+            firstLine = (firstLine + 1) % totalLines;
+            if (screenOrigin >= 0 && firstLine == (screenOrigin + getVisibleRows()) % totalLines) {
+                screenOrigin = -1; // screen has scrolled past the cleared area
+            }
+        }
         // Clear the new line
         int base = cursorRow * maxCols;
         for (int i = 0; i < maxCols; i++) {
@@ -365,8 +371,13 @@ public class TerminalPanel extends JComponent implements Scrollable {
                 row = parts.length > 0 && !parts[0].isEmpty() ? Integer.parseInt(parts[0]) - 1 : 0;
                 col = parts.length > 1 && !parts[1].isEmpty() ? Integer.parseInt(parts[1]) - 1 : 0;
             }
-            // Position relative to the visible area (bottom of scrollback)
-            int visibleStart = lineCount <= getVisibleRows() ? 0 : (firstLine + lineCount - getVisibleRows()) % totalLines;
+            // Position relative to the screen origin (set by clear screen) or visible area
+            int visibleStart;
+            if (screenOrigin >= 0) {
+                visibleStart = screenOrigin;
+            } else {
+                visibleStart = lineCount <= getVisibleRows() ? 0 : (firstLine + lineCount - getVisibleRows()) % totalLines;
+            }
             int targetRow = (visibleStart + Math.max(0, Math.min(row, getVisibleRows() - 1))) % totalLines;
             cursorRow = targetRow;
             cursorCol = Math.max(0, Math.min(col, maxCols - 1));
@@ -374,6 +385,7 @@ public class TerminalPanel extends JComponent implements Scrollable {
             // Clear entire screen using current background color
             int visRows = getVisibleRows();
             int visibleStart = lineCount <= visRows ? 0 : (firstLine + lineCount - visRows) % totalLines;
+            screenOrigin = visibleStart;
             for (int r = 0; r < visRows; r++) {
                 int base = ((visibleStart + r) % totalLines) * maxCols;
                 for (int c = 0; c < maxCols; c++) {
