@@ -176,7 +176,7 @@
                                 <filter>
                                     <artifact>org.jline:jline</artifact>
                                     <excludes>
-                                        <exclude>org/jline/nativ/**</exclude>
+                                        <exclude>org/jline/nativ/Mac/**</exclude>
                                     </excludes>
                                 </filter>
                             </filters>
