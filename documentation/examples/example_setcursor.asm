@@ -32,6 +32,8 @@
     int     iTERM_ROWS
     move    rows, r0
 
+    #call   printf("Terminal: %d x %d\n", rows, cols)
+    #call   sleep(2000)
     #for 0, i < 10, 1
         #call   puts(ANSI_COLOR$BG_BLUE)
         int     iTERM_CLEAR
@@ -64,7 +66,8 @@
             // Print the digit character ('0' + digit).
             move    r0, '0'
             add     r0, digit
-            #call   putc(r0)
+ //           #call   putc(r0)
+            #call   put_dec(row)
         #end_for
     
         // Move the cursor to the bottom of the terminal so the shell prompt

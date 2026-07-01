@@ -370,7 +370,14 @@ public class PreprocessorVisitor extends cloud.lesh.CPUSim64.PreprocessorParserB
 			Integer expectedParams = functionParamCounts.get(funcNameUpper);
 			if (expectedParams != null) {
 				int actualArgs = (ctx.argList() != null) ? ctx.argList().callArg().size() : 0;
-				if (actualArgs != expectedParams) {
+				boolean isVarArgs = varArgsFunctions.contains(funcNameUpper);
+				int requiredArgs = isVarArgs ? expectedParams - 1 : expectedParams;
+				if (actualArgs < requiredArgs) {
+					System.err.println(getLocation() + ":ERROR:#call " + ctx.IDENT().getText() + " expects " + (isVarArgs ? "at least " + requiredArgs : "" + expectedParams) + " argument(s) but got " + actualArgs);
+					hasErrors = true;
+					return null;
+				}
+				if (!isVarArgs && actualArgs > expectedParams) {
 					System.err.println(getLocation() + ":ERROR:#call " + ctx.IDENT().getText() + " expects " + expectedParams + " argument(s) but got " + actualArgs);
 					hasErrors = true;
 					return null;
@@ -432,6 +439,7 @@ public class PreprocessorVisitor extends cloud.lesh.CPUSim64.PreprocessorParserB
 		codeLabels.clear();
 		sourceLocations.clear();
 		functionParamCounts.clear();
+		varArgsFunctions.clear();
 		preprocessedLineNum = 1;
 	}
 
@@ -580,6 +588,9 @@ public class PreprocessorVisitor extends cloud.lesh.CPUSim64.PreprocessorParserB
 					}
 				}
 				functionParamCounts.put(funcName, paramCount);
+				if (ctx.paramList() != null && ctx.paramList().ELLIPSIS() != null) {
+					varArgsFunctions.add(funcName);
+				}
 				emitLine(".BLOCK _" + funcName, false);
 			} else if (child == ctx.PP_END_FUNC()) {
 				emitLineBeginDirective(filename, child);
@@ -610,6 +621,7 @@ public class PreprocessorVisitor extends cloud.lesh.CPUSim64.PreprocessorParserB
 	private String macroDefText;
 	Map<String, Pair<List<String>, String>> macros = new HashMap<>();
 	private static Map<String, Integer> functionParamCounts = new HashMap<>();
+	private static Set<String> varArgsFunctions = new HashSet<>();
 
 	@Override
 	public Void visitDefMacroDir(cloud.lesh.CPUSim64.PreprocessorParser.DefMacroDirContext ctx) {

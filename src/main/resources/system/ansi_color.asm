@@ -89,7 +89,7 @@ $BG_BRIGHT_CYAN:    .dcs "\u{1b}[106m"
 $BG_BRIGHT_WHITE:   .dcs "\u{1b}[107m"
 
 // Cursor Control
-$CLEAR_TO_EOL:  .dcs "\u{1b}[K"
+$CLEAR_TO_EOL:  .dcs "\u{1b}[0K"
 $CLEAR_LINE:    .dcs "\u{1b}[2K"
 $CLEAR_SCREEN:  .dcs "\u{1b}[2J\u{1b}[H"
 $HIDE_CURSOR:   .dcs "\u{1b}[?25l"
