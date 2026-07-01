@@ -20,6 +20,8 @@
  * @brief ANSI escape code string for terminal color formatting.
  */
 
+#include <system/system.def>
+
 #ifndef _ANSI_COLOR_ASM
 #define _ANSI_COLOR_ASM
 jump    _ANSI_COLOR_ASM_END
@@ -89,10 +91,17 @@ $BG_BRIGHT_WHITE:   .dcs "\u{1b}[107m"
 // Cursor Control
 $CLEAR_TO_EOL:  .dcs "\u{1b}[K"
 $CLEAR_LINE:    .dcs "\u{1b}[2K"
+$CLEAR_SCREEN:  .dcs "\u{1b}[2J\u{1b}[H"
 $HIDE_CURSOR:   .dcs "\u{1b}[?25l"
 $SHOW_CURSOR:   .dcs "\u{1b}[?25h"
 
 .block_end
+
+#def_func setcursor(row, col)
+    load    r0, row
+    load    r1, col
+    int     iTERM_SETCURSOR
+#end_func
 
 _ANSI_COLOR_ASM_END:    nop
 #endif

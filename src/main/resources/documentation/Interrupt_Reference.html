@@ -208,6 +208,10 @@
 		<tr><td>42</td><td>iSLEEP</td><td>r1: delay in ms</td><td>Pauses execution for the specified milliseconds.</td></tr>
 		<tr><td>43</td><td>iWAKE_THREAD</td><td>r1: PID</td><td>Wakes a thread from sleep.</td></tr>
 		<tr><td>44</td><td>iALLOC_SHARED</td><td>r1: allocation size</td><td>Returns a shared block of memory.</td></tr>
+		<tr><td>50</td><td>iTERM_COLS</td><td></td><td>Returns the terminal width in columns in r0.</td></tr>
+		<tr><td>51</td><td>iTERM_ROWS</td><td></td><td>Returns the terminal height in rows in r0.</td></tr>
+		<tr><td>52</td><td>iTERM_SETCURSOR</td><td>r0: row (0-based), r1: column (0-based)</td><td>Moves the cursor to the specified row and column position.</td></tr>
+		<tr><td>53</td><td>iTERM_CLEAR</td><td></td><td>Clears the terminal screen and moves the cursor to the top-left.</td></tr>
 	</tbody>
 </table>
 
@@ -219,6 +223,7 @@
 <a href="Instruction_Set_Reference.html">Instruction&nbsp;Set&nbsp;Reference</a> |
 <a href="Interrupt_Reference.html">Software&nbsp;Interrupt&nbsp;Reference</a> |
 <a href="Library_Reference.html">Library&nbsp;Reference</a> |
+<a href="Cycle_Timing_Model.html">Cycle&nbsp;Timing&nbsp;Model</a> |
 <a href="http://www.pureprogrammer.org">Pure&nbsp;Programmer</a> |
 <a href="https://form.jotform.com/261268744916164" target="_blank">Contact</a>
 </p>

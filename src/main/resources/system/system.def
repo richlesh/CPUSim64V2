@@ -61,6 +61,11 @@
 #define iWAKE_THREAD    43
 #define iALLOC_SHARED	44
 
+#define iTERM_COLS		50
+#define iTERM_ROWS		51
+#define iTERM_SETCURSOR	52
+#define iTERM_CLEAR		53
+
 #define	TRUE	-1
 #define	FALSE	0
 

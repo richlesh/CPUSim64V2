@@ -33,6 +33,39 @@ public class StdInterruptHandler extends InterruptHandler
 {
 	private Simulator cpu;
 
+	/** Provider for terminal dimensions (columns, rows). */
+	public interface TerminalSizeProvider {
+		int getColumns();
+		int getRows();
+	}
+
+	private TerminalSizeProvider terminalSizeProvider = null;
+	private static TerminalSizeProvider globalTerminalSizeProvider = null;
+
+	public void setTerminalSizeProvider(TerminalSizeProvider provider) {
+		this.terminalSizeProvider = provider;
+	}
+
+	public static void setGlobalTerminalSizeProvider(TerminalSizeProvider provider) {
+		globalTerminalSizeProvider = provider;
+	}
+
+	public static TerminalSizeProvider getGlobalTerminalSizeProvider() {
+		return globalTerminalSizeProvider;
+	}
+
+	private int getTerminalColumns() {
+		if (terminalSizeProvider != null) return terminalSizeProvider.getColumns();
+		if (globalTerminalSizeProvider != null) return globalTerminalSizeProvider.getColumns();
+		return 80;
+	}
+
+	private int getTerminalRows() {
+		if (terminalSizeProvider != null) return terminalSizeProvider.getRows();
+		if (globalTerminalSizeProvider != null) return globalTerminalSizeProvider.getRows();
+		return 24;
+	}
+
 	public static final int iINT_MIN=1;
 	public static final int iINT_MAX=2;
 	public static final int iFLOAT_MIN=3;
@@ -75,6 +108,11 @@ public class StdInterruptHandler extends InterruptHandler
 	public static final int iSLEEP=42;
 	public static final int iWAKE_THREAD=43;
 	public static final int iALLOC_SHARED=44;
+
+	public static final int iTERM_COLS=50;
+	public static final int iTERM_ROWS=51;
+	public static final int iTERM_SETCURSOR=52;
+	public static final int iTERM_CLEAR=53;
 
 	public static final int iPI=100;
 	public static final int iE=101;		
@@ -352,6 +390,22 @@ public class StdInterruptHandler extends InterruptHandler
 				break;
 			case iALLOC_SHARED:
 				cpu.setR(0, cpu.allocShared((int)cpu.getR(1)));
+				break;
+			case iTERM_COLS:
+				cpu.setR(0, getTerminalColumns());
+				break;
+			case iTERM_ROWS:
+				cpu.setR(0, getTerminalRows());
+				break;
+			case iTERM_SETCURSOR:
+				// R0 = row (0-based), R1 = column (0-based); ANSI CUP is 1-based
+				System.out.print("\u001B[" + (cpu.getR(0) + 1) + ";" + (cpu.getR(1) + 1) + "H");
+				System.out.flush();
+				break;
+			case iTERM_CLEAR:
+				// Clear screen and move cursor to top-left
+				System.out.print("\u001B[2J\u001B[H");
+				System.out.flush();
 				break;
 			case iGET_PID:
 				cpu.setR(0, cpu.getPID());

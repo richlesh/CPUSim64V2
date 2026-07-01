@@ -27,6 +27,7 @@ import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 import java.nio.file.*;
 import java.util.regex.*;
+import cloud.lesh.CPUSim64.StdInterruptHandler;
 
 public class CPUSim64App {
     private static final boolean IS_MAC = System.getProperty("os.name").toLowerCase().contains("mac");
@@ -730,6 +731,11 @@ public class CPUSim64App {
                 }
 
                 SwingUtilities.invokeLater(() -> appendConsole("> Running...\n"));
+                // Provide terminal dimensions to running programs
+                StdInterruptHandler.setGlobalTerminalSizeProvider(new StdInterruptHandler.TerminalSizeProvider() {
+                    @Override public int getColumns() { return console.getVisibleCols(); }
+                    @Override public int getRows() { return console.getVisibleRows(); }
+                });
                 java.util.List<String> simArgs = new java.util.ArrayList<>();
                 simArgs.add(objFile);
                 simArgs.add("--verbose");

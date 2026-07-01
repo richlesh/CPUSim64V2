@@ -88,8 +88,19 @@
 
 		<tr><td>ANSI_COLOR$CLEAR_TO_EOL</td><td>Clear from cursor to end of line</td></tr>
 		<tr><td>ANSI_COLOR$CLEAR_LINE</td><td>Clear the entire line</td></tr>
+		<tr><td>ANSI_COLOR$CLEAR_SCREEN</td><td>Clear the entire screen using the current background color and move cursor to top-left</td></tr>
 		<tr><td>ANSI_COLOR$HIDE_CURSOR</td><td>Hide the cursor</td></tr>
 		<tr><td>ANSI_COLOR$SHOW_CURSOR</td><td>Show the cursor</td></tr>
+	</tbody>
+</table>
+
+<table style="width:100%;">
+    <colgroup><col style="width:25%;"><col style="width:75%;"></colgroup>
+	<thead>
+		<tr><th>Function</th><th>Description</th></tr>
+	</thead>
+	<tbody>
+		<tr><td>setcursor</td><td><code>setcursor(row, col)</code><br>Moves the cursor to the specified <code>row</code> (0-based) and <code>col</code> (0-based) position on the terminal.</td></tr>
 	</tbody>
 </table>
 
@@ -431,6 +442,7 @@
 <a href="Instruction_Set_Reference.html">Instruction&nbsp;Set&nbsp;Reference</a> |
 <a href="Interrupt_Reference.html">Software&nbsp;Interrupt&nbsp;Reference</a> |
 <a href="Library_Reference.html">Library&nbsp;Reference</a> |
+<a href="Cycle_Timing_Model.html">Cycle&nbsp;Timing&nbsp;Model</a> |
 <a href="http://www.pureprogrammer.org">Pure&nbsp;Programmer</a> |
 <a href="https://form.jotform.com/261268744916164" target="_blank">Contact</a>
 </p>

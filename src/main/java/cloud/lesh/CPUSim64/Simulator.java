@@ -1244,6 +1244,7 @@ public class Simulator {
 		if (d.tt != 1 && isConstKind(d.a)) {
 			if (!testCond(getConst(d.a, d.v0)))
 				return;
+			cycles += 1; // conditional branch taken penalty
 		}
 		if (d.tt == 1) {        			// C
 			R[R_PC] = d.c1;
@@ -1305,6 +1306,7 @@ public class Simulator {
 			}
 		}
 		if (code > 0) {
+			cycles += 10; // interrupt trap/return overhead
 			long start = System.nanoTime();
 			interruptHandler.dispatch((int) code);
 			long stop = System.nanoTime();
@@ -1318,6 +1320,7 @@ public class Simulator {
 		if (d.tt == 0 && isFPKind(d.a)) {
 			int f = toRegIndex(d.a, d.v0);
 			F[f] = -F[f];
+			cycles += 2; // FP negate latency
 		} else if (d.tt == 0 && isRegKind(d.a)) {
 			int r = toRegIndex(d.a, d.v0);
 			long res = -R[r];
@@ -1351,6 +1354,7 @@ public class Simulator {
 					double res = before + rhs;
 					F[rd] = res;
 					setFlags(res);
+					cycles += 2; // FP latency
 					return;
 				}
 			} else if (count == 3) {
@@ -1372,6 +1376,7 @@ public class Simulator {
 					double res = before + rhs;
 					F[toRegIndex(d.a, d.v0)] = res;
 					setFlags(res);
+					cycles += 2; // FP latency
 					return;
 				}
 			}
@@ -1395,6 +1400,7 @@ public class Simulator {
 				double res = before + rhs;
 				F[rd] = res;
 				setFlags(res);
+				cycles += 2; // FP latency
 				return;
 			}
 		} else if (d.tt == 3) {
@@ -1417,6 +1423,7 @@ public class Simulator {
 				double res = before + rhs;
 				F[toRegIndex(d.a, d.v0)] = res;
 				setFlags(res);
+				cycles += 2; // FP latency
 				return;
 			}
 		}
@@ -1446,6 +1453,7 @@ public class Simulator {
 					double res = before - rhs;
 					F[rd] = res;
 					setFlags(res);
+					cycles += 2; // FP latency
 					return;
 				}
 			} else if (count == 3) {
@@ -1467,6 +1475,7 @@ public class Simulator {
 					double res = before - rhs;
 					F[toRegIndex(d.a, d.v0)] = res;
 					setFlags(res);
+					cycles += 2; // FP latency
 					return;
 				}
 			}
@@ -1490,6 +1499,7 @@ public class Simulator {
 				double res = before - rhs;
 				F[rd] = res;
 				setFlags(res);
+				cycles += 2; // FP latency
 				return;
 			}
 		} else if (d.tt == 3) {
@@ -1512,6 +1522,7 @@ public class Simulator {
 				double res = before - rhs;
 				F[toRegIndex(d.a, d.v0)] = res;
 				setFlags(res);
+				cycles += 2; // FP latency
 				return;
 			}
 		}
@@ -1532,6 +1543,7 @@ public class Simulator {
 					boolean of = res != 0 && res / rhs != before;
 					R[rd] = res;
 					setFlags(res, of);
+					cycles += 2; // integer multiply latency
 					return;
 				} else if (isFPKind(d.a)) {
 					// FX
@@ -1541,6 +1553,7 @@ public class Simulator {
 					double res = before * rhs;
 					F[rd] = res;
 					setFlags(res);
+					cycles += 2; // FP multiply latency
 					return;
 				}
 			} else if (count == 3) {
@@ -1553,6 +1566,7 @@ public class Simulator {
 					boolean of = res != 0 && res / rhs != before;
 					R[toRegIndex(d.a, d.v0)] = res;
 					setFlags(res, of);
+					cycles += 2; // integer multiply latency
 					return;
 				} else if (isFPKind(d.a) && isFPKind(d.b)) {
 					// FFX
@@ -1562,6 +1576,7 @@ public class Simulator {
 					double res = before * rhs;
 					F[toRegIndex(d.a, d.v0)] = res;
 					setFlags(res);
+					cycles += 2; // FP multiply latency
 					return;
 				}
 			}
@@ -1576,6 +1591,7 @@ public class Simulator {
 				boolean of = res == 0 && res / rhs != before;
 				R[rd] = res;
 				setFlags(res, of);
+				cycles += 2; // integer multiply latency
 				return;
 			} else if (isFPKind(d.a)) {
 				// FC
@@ -1585,6 +1601,7 @@ public class Simulator {
 				double res = before * rhs;
 				F[rd] = res;
 				setFlags(res);
+				cycles += 2; // FP multiply latency
 				return;
 			}
 		} else if (d.tt == 3) {
@@ -1598,6 +1615,7 @@ public class Simulator {
 				boolean of = res == 0 && res / rhs != before;
 				R[toRegIndex(d.a, d.v0)] = res;
 				setFlags(res, of);
+				cycles += 2; // integer multiply latency
 				return;
 			} else if (isFPKind(d.a) && isFPKind(d.b)) {
 				// FC
@@ -1607,6 +1625,7 @@ public class Simulator {
 				double res = before * rhs;
 				F[toRegIndex(d.a, d.v0)] = res;
 				setFlags(res);
+				cycles += 2; // FP multiply latency
 				return;
 			}
 		}
@@ -1622,6 +1641,7 @@ public class Simulator {
 				double res = 1.0 / getFP(d.a, d.v0);
 				F[toRegIndex(d.a, d.v0)] = res;
 				setFlags(res);
+				cycles += 9; // FP divide/recip latency
 				return;
 			} else if (count == 2) {
 				if (isRegKind(d.a) && isRegKind(d.b)) {
@@ -1633,6 +1653,7 @@ public class Simulator {
 					boolean of = (before == Long.MIN_VALUE && rhs == -1);
 					R[rd] = res;
 					setFlags(res, of);
+					cycles += 11; // integer divide latency
 					return;
 				} else if (isFPKind(d.a)) {
 					// FX
@@ -1642,6 +1663,7 @@ public class Simulator {
 					double res = before / rhs;
 					F[rd] = res;
 					setFlags(res);
+					cycles += 9; // FP divide latency
 					return;
 				}
 			} else if (count == 3) {
@@ -1654,6 +1676,7 @@ public class Simulator {
 					boolean of = (before == Long.MIN_VALUE && rhs == -1);
 					R[toRegIndex(d.a, d.v0)] = res;
 					setFlags(res, of);
+					cycles += 11; // integer divide latency
 					return;
 				} else if (isFPKind(d.a) && isFPKind(d.b)) {
 					// FFX
@@ -1663,6 +1686,7 @@ public class Simulator {
 					double res = before / rhs;
 					F[toRegIndex(d.a, d.v0)] = res;
 					setFlags(res);
+					cycles += 9; // FP divide latency
 					return;
 				}
 			} else if (count == 4) {
@@ -1672,6 +1696,7 @@ public class Simulator {
 				setR(d.b, d.v1, a % b);
 				boolean of = (a == Long.MIN_VALUE && b == -1);
 				setFlags(getR(d.a), of);
+				cycles += 11; // integer divide latency
 				return;
 			}
 		} else if (d.tt == 2 && isYKind(d.a)) {
@@ -1685,6 +1710,7 @@ public class Simulator {
 				boolean of = (before == Long.MIN_VALUE && rhs == -1);
 				R[rd] = res;
 				setFlags(res, of);
+				cycles += 11; // integer divide latency
 				return;
 			} else if (isFPKind(d.a)) {
 				// FC
@@ -1694,6 +1720,7 @@ public class Simulator {
 				double res = before / rhs;
 				F[rd] = res;
 				setFlags(res);
+				cycles += 9; // FP divide latency
 				return;
 			}
 		} else if (d.tt == 3) {
@@ -1707,6 +1734,7 @@ public class Simulator {
 				boolean of = (before == Long.MIN_VALUE && rhs == -1);
 				R[toRegIndex(d.a, d.v0)] = res;
 				setFlags(res, of);
+				cycles += 11; // integer divide latency
 				return;
 			} else if (isFPKind(d.a) && isFPKind(d.b)) {
 				// FC
@@ -1716,6 +1744,7 @@ public class Simulator {
 				double res = before / rhs;
 				F[toRegIndex(d.a, d.v0)] = res;
 				setFlags(res);
+				cycles += 9; // FP divide latency
 				return;
 			}
 		}
@@ -1990,8 +2019,10 @@ public class Simulator {
 						}
 					} else if (addr < heapLimit) {
 						ok = atomicMem.compareAndSet(mem, Math.toIntExact(addr), oldVal, newVal);
+						cycles += 2;
 					} else {
 						ok = atomicMem.compareAndSet(stack, Math.toIntExact(addr - heapLimit), oldVal, newVal);
+						cycles += 2;
 					}
 					setFlags(newVal, ok);
 					return;

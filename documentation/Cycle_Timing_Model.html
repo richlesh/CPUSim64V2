@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>CPUSim64 Cycle Timing Model</title>
+	<meta name="description" content="Programmer Documentation for CPUSim64">
+	<link rel="canonical" href="https://www.lesh.cloud/cpusim64/Cycle_Timing_Model.html">
+	<meta name="robots" content="max-image-preview:large">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="generator" content="BBEdit 16.0">
+	<meta name="author" content="Richard Lesh">
+	<link rel="stylesheet" type="text/css" href="styles.css">
+<style>
+  table { border-collapse: collapse; margin: 0 auto; }
+  .category { background: #e8e8e8; font-weight: bold; }
+  .notes { margin-top: 1.5em; font-size: 0.9em; }
+  .notes li { margin-bottom: 0.4em; }
+</style>
+</head>
+<body>
+
+<h1>CPUSim64 Cycle Timing Model</h1>
+<p>Instructions on a modern RISC processor each take multiple cycles to pass through the CPU's execution stages (this is the instruction's latency). However, because these stages are pipelined—allowing several instructions to be processed simultaneously at different stages—the processor can often complete roughly one instruction per cycle in terms of throughput.
+</p><p>
+Some instructions break this ideal. Operations such as division are typically not fully pipelined and take many cycles, while events like interrupts incur additional overhead from flushing the pipeline and saving processor state. This table documents the effective number of cycles attributed to each instruction.<p>
+<table>
+<tr><th>Instruction</th><th>Form</th><th>Cycles</th></tr>
+
+<tr class="category"><th colspan="3">Simple ALU</th></tr>
+<tr><td>NOP</td><td>&mdash;</td><td>1</td></tr>
+<tr><td>CLEAR</td><td>&mdash;</td><td>1</td></tr>
+<tr><td>MOVE</td><td>reg-reg</td><td>1</td></tr>
+<tr><td>COMPL</td><td>&mdash;</td><td>1</td></tr>
+<tr><td>AND, OR, XOR</td><td>&mdash;</td><td>1</td></tr>
+<tr><td>TEST, CMP</td><td>&mdash;</td><td>1</td></tr>
+<tr><td>LSHIFT, RSHIFT, ARSHIFT</td><td>&mdash;</td><td>1</td></tr>
+<tr><td>LROTATE, RROTATE</td><td>&mdash;</td><td>1</td></tr>
+<tr><td>PACK, PACK64, UNPACK, UNPACK64</td><td>&mdash;</td><td>1</td></tr>
+<tr><td>ENDIAN</td><td>&mdash;</td><td>1</td></tr>
+<tr><td>READONLY</td><td>&mdash;</td><td>1</td></tr>
+
+<tr class="category"><th colspan="3">Arithmetic</th></tr>
+<tr><td>NEGATE</td><td>integer</td><td>1</td></tr>
+<tr><td>NEGATE</td><td>FP</td><td>3</td></tr>
+<tr><td>ADD, SUBTRACT</td><td>integer</td><td>1</td></tr>
+<tr><td>ADD, SUBTRACT</td><td>FP</td><td>3</td></tr>
+<tr><td>MULTIPLY</td><td>integer</td><td>3</td></tr>
+<tr><td>MULTIPLY</td><td>FP</td><td>3</td></tr>
+<tr><td>DIVIDE</td><td>integer</td><td>12</td></tr>
+<tr><td>DIVIDE, RECIP</td><td>FP</td><td>10</td></tr>
+
+<tr class="category"><th colspan="3">Memory</th></tr>
+<tr><td>LOAD</td><td>&mdash;</td><td>2</td></tr>
+<tr><td>STORE</td><td>&mdash;</td><td>2</td></tr>
+<tr><td>PUSH</td><td>&mdash;</td><td>2</td></tr>
+<tr><td>POP</td><td>&mdash;</td><td>2</td></tr>
+<tr><td>SAVE</td><td>N registers</td><td>1 + N</td></tr>
+<tr><td>RESTORE</td><td>N registers</td><td>1 + N</td></tr>
+<tr><td>CAS</td><td>&mdash;</td><td>3</td></tr>
+
+<tr class="category"><th colspan="3">Control Flow</th></tr>
+<tr><td>JUMP</td><td>unconditional</td><td>1</td></tr>
+<tr><td>JUMP</td><td>conditional, taken</td><td>2</td></tr>
+<tr><td>JUMP</td><td>conditional, not taken</td><td>1</td></tr>
+<tr><td>CALL</td><td>unconditional</td><td>3</td></tr>
+<tr><td>CALL</td><td>conditional, taken</td><td>4</td></tr>
+<tr><td>CALL</td><td>conditional, not taken</td><td>1</td></tr>
+<tr><td>RETURN</td><td>&mdash;</td><td>3</td></tr>
+<tr><td>STOP</td><td>&mdash;</td><td>1</td></tr>
+
+<tr class="category"><th colspan="3">I/O &amp; System</th></tr>
+<tr><td>IN</td><td>&mdash;</td><td>1</td></tr>
+<tr><td>OUT</td><td>&mdash;</td><td>1</td></tr>
+<tr><td>INTERRUPT</td><td>&mdash;</td><td>11</td></tr>
+<tr><td>INTERRUPT</td><td>conditional, not taken</td><td>1</td></tr>
+<tr><td>DEBUG</td><td>&mdash;</td><td>1</td></tr>
+</table>
+
+<div class="notes">
+<h3>Notes</h3>
+<ul>
+<li>All cycle counts include the 1-cycle instruction fetch.</li>
+<li><strong>SAVE/RESTORE:</strong> N = number of registers in the range (e.g., <code>SAVE R0, R28</code> &rarr; N = 29).</li>
+<li><strong>INTERRUPT:</strong> The 10-cycle overhead represents the trap/return cost. Actual handler execution time is tracked separately as wall-clock &ldquo;System Time.&rdquo;</li>
+<li><strong>Conditional CALL:</strong> Inherits the JUMP penalty (+1 if taken) on top of the 2-write CALL cost, so a conditional taken CALL = 4 cycles.</li>
+</ul>
+</div>
+
+<footer>
+<p><a href="index.html">Overview</a> |
+<a href="Architecture.html">Architecture&nbsp;Reference</a> |
+<a href="Programmer_Guide.html">Programmer&nbsp;Guide</a> |
+<a href="Directive_Reference.html">Directives&nbsp;Reference</a> |
+<a href="Instruction_Set_Reference.html">Instruction&nbsp;Set&nbsp;Reference</a> |
+<a href="Interrupt_Reference.html">Software&nbsp;Interrupt&nbsp;Reference</a> |
+<a href="Library_Reference.html">Library&nbsp;Reference</a> |
+<a href="Cycle_Timing_Model.html">Cycle&nbsp;Timing&nbsp;Model</a> |
+<a href="http://www.pureprogrammer.org">Pure&nbsp;Programmer</a> |
+<a href="https://form.jotform.com/261268744916164" target="_blank">Contact</a>
+</p>
+<p><a href="https://twitter.com/share" class="twitter-share-button" data-size="large" data-related="richlesh">Tweet</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+<a href="https://twitter.com/richlesh" class="twitter-follow-button" data-show-count="false" data-size="large">Follow @richlesh</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script></p>
+
+<form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
+<input type="hidden" name="cmd" value="_s-xclick">
+<input type="hidden" name="hosted_button_id" value="P2877VYMJ3G64">
+<input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif" name="submit" alt="PayPal - The safer, easier way to pay online!">
+<img alt="" style="border:0;" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
+</form>
+<address>&copy;2026 <a href="http://www.lesh.cloud/">Richard Lesh</a>.  All rights reserved.</address>
+</footer>
+</body>
+</html>

@@ -348,14 +348,41 @@ public class TerminalPanel extends JComponent implements Scrollable {
         } else if (seq.equals("\u001B[?25h")) {
             cursorVisible = true; blinkTimer.start();
         } else if (seq.equals("\u001B[K") || seq.equals("\u001B[0K")) {
-            // Clear from cursor to end of line
+            // Clear from cursor to end of line using current background color
             int base = cursorRow * maxCols;
-            for (int i = cursorCol; i < maxCols; i++) { chars[base + i] = 0; colors[base + i] = termFg; bgColors[base + i] = null; attrs[base + i] = 0; }
+            for (int i = cursorCol; i < maxCols; i++) { chars[base + i] = 0; colors[base + i] = termFg; bgColors[base + i] = currentBg; attrs[base + i] = 0; }
         } else if (seq.equals("\u001B[2K")) {
-            // Clear entire line
+            // Clear entire line using current background color
             int base = cursorRow * maxCols;
-            for (int i = 0; i < maxCols; i++) { chars[base + i] = 0; colors[base + i] = termFg; bgColors[base + i] = null; attrs[base + i] = 0; }
+            for (int i = 0; i < maxCols; i++) { chars[base + i] = 0; colors[base + i] = termFg; bgColors[base + i] = currentBg; attrs[base + i] = 0; }
             cursorCol = 0;
+        } else if (seq.startsWith("\u001B[") && seq.endsWith("H")) {
+            // CUP - Cursor Position: ESC[row;colH (1-based)
+            String params = seq.substring(2, seq.length() - 1);
+            int row = 0, col = 0;
+            if (!params.isEmpty()) {
+                String[] parts = params.split(";");
+                row = parts.length > 0 && !parts[0].isEmpty() ? Integer.parseInt(parts[0]) - 1 : 0;
+                col = parts.length > 1 && !parts[1].isEmpty() ? Integer.parseInt(parts[1]) - 1 : 0;
+            }
+            // Position relative to the visible area (bottom of scrollback)
+            int visibleStart = lineCount <= getVisibleRows() ? 0 : (firstLine + lineCount - getVisibleRows()) % totalLines;
+            int targetRow = (visibleStart + Math.max(0, Math.min(row, getVisibleRows() - 1))) % totalLines;
+            cursorRow = targetRow;
+            cursorCol = Math.max(0, Math.min(col, maxCols - 1));
+        } else if (seq.equals("\u001B[2J")) {
+            // Clear entire screen using current background color
+            int visRows = getVisibleRows();
+            int visibleStart = lineCount <= visRows ? 0 : (firstLine + lineCount - visRows) % totalLines;
+            for (int r = 0; r < visRows; r++) {
+                int base = ((visibleStart + r) % totalLines) * maxCols;
+                for (int c = 0; c < maxCols; c++) {
+                    chars[base + c] = 0;
+                    colors[base + c] = termFg;
+                    bgColors[base + c] = currentBg;
+                    attrs[base + c] = 0;
+                }
+            }
         }
     }
 
@@ -492,6 +519,11 @@ public class TerminalPanel extends JComponent implements Scrollable {
                         g2.setColor(new Color(70, 130, 200));
                         g2.fillRect(col * charWidth, row * charHeight, charWidth, charHeight);
                     }
+                    // Draw cell background if set (even for empty cells)
+                    if (!inSelection && bgColors[idx] != null && !bgColors[idx].equals(termBg)) {
+                        g2.setColor(bgColors[idx]);
+                        g2.fillRect(col * charWidth, row * charHeight, charWidth, charHeight);
+                    }
                     if (ch != 0) {
                         byte attr = attrs[idx];
                         Color fg = inSelection ? Color.WHITE : (colors[idx] != null ? colors[idx] : termFg);
@@ -500,7 +532,7 @@ public class TerminalPanel extends JComponent implements Scrollable {
                         if ((attr & ATTR_DIM) != 0) fg = fg.darker();
                         if ((attr & ATTR_BOLD) != 0) fg = fg.brighter();
                         if ((attr & ATTR_BLINK) != 0 && !cursorVisible) fg = bg; // blink off phase
-                        if (!inSelection && !bg.equals(termBg)) {
+                        if (!inSelection && !bg.equals(termBg) && !bg.equals(bgColors[idx])) {
                             g2.setColor(bg);
                             g2.fillRect(col * charWidth, row * charHeight, charWidth, charHeight);
                         }

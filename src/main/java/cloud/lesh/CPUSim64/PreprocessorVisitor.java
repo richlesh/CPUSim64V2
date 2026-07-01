@@ -356,7 +356,26 @@ public class PreprocessorVisitor extends cloud.lesh.CPUSim64.PreprocessorParserB
 	@Override
 	public Void visitCallDir(cloud.lesh.CPUSim64.PreprocessorParser.CallDirContext ctx) {
 		if (ctx.IDENT() != null && macros.containsKey(ctx.IDENT().getText().toUpperCase())) {
-			System.err.println(getLocation() + ":WARNING:#call used with macro '" + ctx.IDENT().getText() + "'; did you mean #macro?");
+			System.err.println(getLocation() + ":ERROR:#call used with macro '" + ctx.IDENT().getText() + "'; use #macro instead");
+			hasErrors = true;
+			return null;
+		}
+		if (ctx.IDENT() != null && defines.containsKey(ctx.IDENT().getText().toUpperCase())) {
+			System.err.println(getLocation() + ":ERROR:#call used with #define symbol '" + ctx.IDENT().getText() + "'");
+			hasErrors = true;
+			return null;
+		}
+		if (ctx.IDENT() != null) {
+			String funcNameUpper = ctx.IDENT().getText().toUpperCase();
+			Integer expectedParams = functionParamCounts.get(funcNameUpper);
+			if (expectedParams != null) {
+				int actualArgs = (ctx.argList() != null) ? ctx.argList().callArg().size() : 0;
+				if (actualArgs != expectedParams) {
+					System.err.println(getLocation() + ":ERROR:#call " + ctx.IDENT().getText() + " expects " + expectedParams + " argument(s) but got " + actualArgs);
+					hasErrors = true;
+					return null;
+				}
+			}
 		}
 		if (ctx.argList() != null) {
 			emitLineBeginDirective(filename, ctx);
@@ -410,6 +429,7 @@ public class PreprocessorVisitor extends cloud.lesh.CPUSim64.PreprocessorParserB
 		globalLabelNames.clear();
 		codeLabels.clear();
 		sourceLocations.clear();
+		functionParamCounts.clear();
 		preprocessedLineNum = 1;
 	}
 
@@ -547,14 +567,17 @@ public class PreprocessorVisitor extends cloud.lesh.CPUSim64.PreprocessorParserB
 				pushScope();
 				funcName = ctx.IDENT().getText().toUpperCase();
 				emitLine(funcName + ":", false);
+				int paramCount = 0;
 				if (ctx.paramList() != null) {
 					int i = 3;
 					for (var arg : ctx.paramList().IDENT()) {
 						warnIfShadowsGlobal(arg.getText());
 						addVar(arg.getText(), "SF[" + i + "]");
 						++i;
+						++paramCount;
 					}
 				}
+				functionParamCounts.put(funcName, paramCount);
 				emitLine(".BLOCK _" + funcName, false);
 			} else if (child == ctx.PP_END_FUNC()) {
 				emitLineBeginDirective(filename, child);
@@ -584,6 +607,7 @@ public class PreprocessorVisitor extends cloud.lesh.CPUSim64.PreprocessorParserB
 	private String macroDefName;
 	private String macroDefText;
 	Map<String, Pair<List<String>, String>> macros = new HashMap<>();
+	private static Map<String, Integer> functionParamCounts = new HashMap<>();
 
 	@Override
 	public Void visitDefMacroDir(cloud.lesh.CPUSim64.PreprocessorParser.DefMacroDirContext ctx) {
@@ -622,12 +646,20 @@ public class PreprocessorVisitor extends cloud.lesh.CPUSim64.PreprocessorParserB
 			if (codeLabels.contains(ctx.IDENT().getText().toUpperCase()) || globalLabelNames.contains(ctx.IDENT().getText().toUpperCase())) {
 				System.err.println(getLocation() + ":WARNING:#macro used with function/label '" + ctx.IDENT().getText() + "'; did you mean #call?");
 			}
+			if (defines.containsKey(ctx.IDENT().getText().toUpperCase())) {
+				System.err.println(getLocation() + ":WARNING:#macro used with #define symbol '" + ctx.IDENT().getText() + "'");
+			}
 			int actualArgs = (ctx.argList() != null) ? ctx.argList().callArg().size() : 0;
 			int formalCount = def.getLeft().size();
 			boolean hasVarArgs = def.getLeft().contains("...");
 			int requiredArgs = hasVarArgs ? formalCount - 1 : formalCount;
 			if (actualArgs < requiredArgs) {
 				System.err.println(getLocation() + ":ERROR:#macro " + ctx.IDENT().getText() + " expects " + requiredArgs + " argument(s) but got " + actualArgs);
+				hasErrors = true;
+				return null;
+			}
+			if (!hasVarArgs && actualArgs > formalCount) {
+				System.err.println(getLocation() + ":ERROR:#macro " + ctx.IDENT().getText() + " expects " + formalCount + " argument(s) but got " + actualArgs);
 				hasErrors = true;
 				return null;
 			}

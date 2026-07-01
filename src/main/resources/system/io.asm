@@ -773,7 +773,7 @@ $LOOP1:
 	load	v, base[i]
 	#call	put_dec(i)
 	#call	putc(':')
-	#call	put_fp(v)
+	#call	put_fp(v, 6)
 	#call	put_nl()
 	add		i, 1
 $LOOP1_END:

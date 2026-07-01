@@ -76,6 +76,9 @@ public class AIChatPanel extends JPanel {
                 if (e.getKeyCode() == KeyEvent.VK_ENTER && !e.isShiftDown()) {
                     e.consume();
                     sendMessage();
+                } else if (e.getKeyCode() == KeyEvent.VK_ENTER && e.isShiftDown()) {
+                    e.consume();
+                    inputArea.insert("\n", inputArea.getCaretPosition());
                 }
             }
         });

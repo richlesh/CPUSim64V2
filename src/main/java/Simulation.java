@@ -115,6 +115,54 @@ public class Simulation {
 		}
 
 		var sim = new Simulator(memorySize, 0, stackSize, simulatorArgs.toArray(String[]::new));
+		// Set up terminal size provider for real terminal (only if not already set by IDE)
+		if (StdInterruptHandler.getGlobalTerminalSizeProvider() == null) {
+		StdInterruptHandler.setGlobalTerminalSizeProvider(new StdInterruptHandler.TerminalSizeProvider() {
+			private int cachedCols = -1;
+			private int cachedRows = -1;
+			private long lastQuery = 0;
+			private final boolean isWindows = System.getProperty("os.name").toLowerCase().contains("win");
+			private void refresh() {
+				long now = System.currentTimeMillis();
+				if (now - lastQuery < 1000 && cachedCols > 0) return; // cache for 1 second
+				lastQuery = now;
+				try {
+					if (isWindows) {
+						Process p = new ProcessBuilder("cmd", "/c", "mode", "con")
+							.redirectOutput(ProcessBuilder.Redirect.PIPE)
+							.redirectError(ProcessBuilder.Redirect.DISCARD)
+							.start();
+						String output = new String(p.getInputStream().readAllBytes());
+						p.waitFor();
+						for (String line : output.split("\\r?\\n")) {
+							line = line.trim();
+							if (line.startsWith("Columns:")) {
+								cachedCols = Integer.parseInt(line.replaceAll("[^0-9]", ""));
+							} else if (line.startsWith("Lines:")) {
+								cachedRows = Integer.parseInt(line.replaceAll("[^0-9]", ""));
+							}
+						}
+					} else {
+						Process p = new ProcessBuilder("sh", "-c", "stty size < /dev/tty")
+							.redirectOutput(ProcessBuilder.Redirect.PIPE)
+							.redirectError(ProcessBuilder.Redirect.DISCARD)
+							.start();
+						String output = new String(p.getInputStream().readAllBytes()).trim();
+						p.waitFor();
+						String[] parts = output.split("\\s+");
+						if (parts.length == 2) {
+							cachedRows = Integer.parseInt(parts[0]);
+							cachedCols = Integer.parseInt(parts[1]);
+						}
+					}
+				} catch (Exception e) {
+					if (cachedCols <= 0) { cachedCols = 80; cachedRows = 24; }
+				}
+			}
+			@Override public int getColumns() { refresh(); return cachedCols; }
+			@Override public int getRows() { refresh(); return cachedRows; }
+		});
+		}
 		if (debug) sim.setDebug(true);
 		if (trace) sim.setTrace(true);
 		sim.loadProgram(program, 0L, reverseSymbolMap);
