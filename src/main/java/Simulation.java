@@ -129,7 +129,7 @@ public class Simulation {
 				try {
 					if (isWindows) {
 						Process p = new ProcessBuilder("powershell", "-NoProfile", "-Command",
-							"$h=$Host.UI.RawUI.WindowSize; Write-Output \"$($h.Height) $($h.Width)\"")
+							"Write-Output \"$([Console]::WindowHeight) $([Console]::WindowWidth)\"")
 							.redirectOutput(ProcessBuilder.Redirect.PIPE)
 							.redirectError(ProcessBuilder.Redirect.DISCARD)
 							.start();
