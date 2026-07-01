@@ -126,8 +126,7 @@ public class Simulation {
 			private org.jline.terminal.Terminal getTerminal() {
 				if (jlineTerminal == null && !initFailed) {
 					try {
-						jlineTerminal = org.jline.terminal.TerminalBuilder.builder()
-							.system(true).dumb(false).build();
+						jlineTerminal = org.jline.terminal.TerminalBuilder.terminal();
 					} catch (Exception e) {
 						initFailed = true;
 					}
@@ -141,12 +140,9 @@ public class Simulation {
 				try {
 					org.jline.terminal.Terminal term = getTerminal();
 					if (term != null) {
-						org.jline.terminal.Size size = term.getSize();
-						if (size.getColumns() > 0 && size.getRows() > 0) {
-							cachedCols = size.getColumns();
-							cachedRows = size.getRows();
-							return;
-						}
+						cachedCols = term.getWidth();
+						cachedRows = term.getHeight();
+						return;
 					}
 				} catch (Exception e) { /* fall through to defaults */ }
 				if (cachedCols <= 0) { cachedCols = 80; cachedRows = 24; }
