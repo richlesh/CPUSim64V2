@@ -14,7 +14,7 @@ import java.util.concurrent.locks.ReentrantLock;
 public class TerminalPanel extends JComponent implements Scrollable {
     private static final int DEFAULT_COLS = 500;
     private static final int SCROLLBACK_LINES = 10000;
-    private Color termBg = new Color(30, 30, 30);
+    private Color termBg = new Color(0, 0, 0);
     private Color termFg = Color.WHITE;
 
     // Circular buffer: each line is an array of codepoints and colors
@@ -313,40 +313,40 @@ public class TerminalPanel extends JComponent implements Scrollable {
                     case "27" -> currentAttrs &= ~ATTR_REVERSE;
                     case "28" -> currentAttrs &= ~ATTR_HIDDEN;
                     case "29" -> currentAttrs &= ~ATTR_STRIKETHROUGH;
-                    case "30" -> currentFg = Color.DARK_GRAY;
-                    case "31" -> currentFg = new Color(200, 50, 50);
-                    case "32" -> currentFg = new Color(50, 200, 50);
-                    case "33" -> currentFg = new Color(200, 200, 50);
-                    case "34" -> currentFg = new Color(80, 80, 255);
-                    case "35" -> currentFg = new Color(200, 50, 200);
-                    case "36" -> currentFg = new Color(50, 200, 200);
-                    case "37" -> currentFg = Color.WHITE;
+                    case "30" -> currentFg = Color.BLACK;                        // black
+                    case "31" -> currentFg = new Color(170, 0, 0);      // red
+                    case "32" -> currentFg = new Color(0, 170, 0 );     // green
+                    case "33" -> currentFg = new Color(170, 170, 0 );   // yellow
+                    case "34" -> currentFg = new Color(0, 0 , 170 );    // blue
+                    case "35" -> currentFg = new Color(170, 0 , 170);   // magenta
+                    case "36" -> currentFg = new Color(0, 170, 170);    // cyan
+                    case "37" -> currentFg = new Color(170, 170, 170);  // white
                     case "39" -> currentFg = termFg;
-                    case "40" -> currentBg = Color.BLACK;
-                    case "41" -> currentBg = new Color(200, 50, 50);
-                    case "42" -> currentBg = new Color(50, 200, 50);
-                    case "43" -> currentBg = new Color(200, 200, 50);
-                    case "44" -> currentBg = new Color(80, 80, 255);
-                    case "45" -> currentBg = new Color(200, 50, 200);
-                    case "46" -> currentBg = new Color(50, 200, 200);
-                    case "47" -> currentBg = new Color(200, 200, 200);
+                    case "40" -> currentBg = Color.BLACK;                        // black
+                    case "41" -> currentBg = new Color(170, 0, 0);      // red
+                    case "42" -> currentBg = new Color(0, 170, 0);      // green
+                    case "43" -> currentBg = new Color(170, 170, 0);    // yellow
+                    case "44" -> currentBg = new Color(0, 0, 170);      // blue
+                    case "45" -> currentBg = new Color(170, 0, 170);    // magenta
+                    case "46" -> currentBg = new Color(0, 170, 170);    // cyan
+                    case "47" -> currentBg = new Color(170, 170, 170);  // white
                     case "49" -> currentBg = null;
-                    case "90" -> currentFg = Color.GRAY;
-                    case "91" -> currentFg = new Color(255, 100, 100);
-                    case "92" -> currentFg = new Color(100, 255, 100);
-                    case "93" -> currentFg = new Color(255, 255, 100);
-                    case "94" -> currentFg = new Color(130, 130, 255);
-                    case "95" -> currentFg = new Color(255, 100, 255);
-                    case "96" -> currentFg = new Color(100, 255, 255);
-                    case "97" -> currentFg = Color.WHITE;
-                    case "100" -> currentBg = Color.DARK_GRAY;
-                    case "101" -> currentBg = new Color(255, 100, 100);
-                    case "102" -> currentBg = new Color(100, 255, 100);
-                    case "103" -> currentBg = new Color(255, 255, 100);
-                    case "104" -> currentBg = new Color(130, 130, 255);
-                    case "105" -> currentBg = new Color(255, 100, 255);
-                    case "106" -> currentBg = new Color(100, 255, 255);
-                    case "107" -> currentBg = Color.WHITE;
+                    case "90" -> currentFg = Color.GRAY;                         // bright black (gray)
+                    case "91" -> currentFg = new Color(255, 100, 100);  // bright red
+                    case "92" -> currentFg = new Color(100, 255, 100);  // bright green
+                    case "93" -> currentFg = new Color(255, 255, 100);  // bright yellow
+                    case "94" -> currentFg = new Color(130, 130, 255);  // bright blue
+                    case "95" -> currentFg = new Color(255, 100, 255);  // bright magenta
+                    case "96" -> currentFg = new Color(100, 255, 255);  // bright cyan
+                    case "97" -> currentFg = Color.WHITE;                        // bright white
+                    case "100" -> currentBg = Color.DARK_GRAY;                   // bright black (gray)
+                    case "101" -> currentBg = new Color(255, 100, 100); // bright red
+                    case "102" -> currentBg = new Color(100, 255, 100); // bright green
+                    case "103" -> currentBg = new Color(255, 255, 100); // bright yellow
+                    case "104" -> currentBg = new Color(130, 130, 255); // bright blue
+                    case "105" -> currentBg = new Color(255, 100, 255); // bright magenta
+                    case "106" -> currentBg = new Color(100, 255, 255); // bright cyan
+                    case "107" -> currentBg = Color.WHITE;                       // bright white
                 }
             }
         } else if (seq.equals("\u001B[?25l")) {
