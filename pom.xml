@@ -48,7 +48,7 @@
         <dependency>
             <groupId>org.jline</groupId>
             <artifactId>jline</artifactId>
-            <version>3.25.1</version>
+            <version>3.30.15</version>
         </dependency>
     </dependencies>
 
@@ -177,6 +177,8 @@
                                     <artifact>org.jline:jline</artifact>
                                     <excludes>
                                         <exclude>org/jline/nativ/Mac/**</exclude>
+                                        <exclude>org/jline/nativ/Linux/**</exclude>
+                                        <exclude>org/jline/nativ/FreeBSD/**</exclude>
                                     </excludes>
                                 </filter>
                             </filters>
