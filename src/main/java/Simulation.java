@@ -145,11 +145,53 @@ public class Simulation {
 				try {
 					org.jline.terminal.Terminal term = getTerminal();
 					if (term != null) {
-						cachedCols = term.getWidth();
-						cachedRows = term.getHeight();
-						return;
+						int w = term.getWidth();
+						int h = term.getHeight();
+						if (w > 0 && h > 0) {
+							cachedCols = w;
+							cachedRows = h;
+							return;
+						}
 					}
 				} catch (Exception e) { /* fall through to defaults */ }
+				// JLine unavailable or returned 0 — try OS-specific fallback
+				try {
+					String os = System.getProperty("os.name", "").toLowerCase();
+					if (os.contains("win")) {
+						Process p = new ProcessBuilder("cmd.exe", "/c", "mode", "con")
+							.redirectErrorStream(true).start();
+						String output = new String(p.getInputStream().readAllBytes());
+						p.waitFor();
+						for (String line : output.split("\\r?\\n")) {
+							line = line.trim();
+							if (line.toLowerCase().contains("columns") || line.toLowerCase().contains("col")) {
+								String[] parts = line.split(":");
+								if (parts.length >= 2) {
+									int val = Integer.parseInt(parts[1].trim());
+									if (val > 0) cachedCols = val;
+								}
+							} else if (line.toLowerCase().contains("lines") || line.toLowerCase().contains("lin")) {
+								String[] parts = line.split(":");
+								if (parts.length >= 2) {
+									int val = Integer.parseInt(parts[1].trim());
+									if (val > 0) cachedRows = val;
+								}
+							}
+						}
+					} else {
+						Process p = new ProcessBuilder("stty", "size")
+							.redirectErrorStream(true).start();
+						String output = new String(p.getInputStream().readAllBytes()).trim();
+						p.waitFor();
+						String[] parts = output.split("\\s+");
+						if (parts.length == 2) {
+							int rows = Integer.parseInt(parts[0]);
+							int cols = Integer.parseInt(parts[1]);
+							if (rows > 0) cachedRows = rows;
+							if (cols > 0) cachedCols = cols;
+						}
+					}
+				} catch (Exception e) { /* ignore */ }
 				if (cachedCols <= 0) { cachedCols = 80; cachedRows = 24; }
 			}
 			@Override public int getColumns() { refresh(); return cachedCols; }
