@@ -3,11 +3,18 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
+import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 
 public class SettingsDialog {
 
-    public static void show(JFrame parent, JTextPane editor, TerminalPanel console,
-                            AsmSyntaxHighlighter highlighter, AppSettings settings) {
+    /** Category names for syntax colors (same order as AppSettings.colors array) */
+    public static final String[] CATEGORY_NAMES = {
+        "Normal", "Keywords", "Directives", "Comments",
+        "Strings", "Numbers", "Registers", "Labels", "Conditions"
+    };
+
+    public static void show(JFrame parent, RSyntaxTextArea editor, TerminalPanel console,
+                            AppSettings settings) {
         JDialog dialog = new JDialog(parent, "Settings", true);
         dialog.setLayout(new BorderLayout(10, 10));
 
@@ -71,21 +78,21 @@ public class SettingsDialog {
         cgbc.insets = new Insets(3, 5, 3, 5);
         cgbc.anchor = GridBagConstraints.WEST;
 
-        JButton[] colorButtons = new JButton[AsmSyntaxHighlighter.CATEGORY_NAMES.length];
-        JTextField[] colorFields = new JTextField[AsmSyntaxHighlighter.CATEGORY_NAMES.length];
-        Color[] colors = new Color[AsmSyntaxHighlighter.CATEGORY_NAMES.length];
+        JButton[] colorButtons = new JButton[CATEGORY_NAMES.length];
+        JTextField[] colorFields = new JTextField[CATEGORY_NAMES.length];
+        Color[] colors = new Color[CATEGORY_NAMES.length];
 
         int colCount = 2;
-        for (int i = 0; i < AsmSyntaxHighlighter.CATEGORY_NAMES.length; i++) {
+        for (int i = 0; i < CATEGORY_NAMES.length; i++) {
             int col = i % colCount;
             int row = i / colCount;
             cgbc.gridy = row;
             cgbc.gridx = col * 2;
             cgbc.fill = GridBagConstraints.NONE;
             cgbc.weightx = 0;
-            colorsPanel.add(new JLabel(AsmSyntaxHighlighter.CATEGORY_NAMES[i] + ":"), cgbc);
+            colorsPanel.add(new JLabel(CATEGORY_NAMES[i] + ":"), cgbc);
 
-            colors[i] = highlighter.getColor(i);
+            colors[i] = settings.colors[i];
             JPanel colorPanel = new JPanel(new BorderLayout(4, 0));
             JTextField field = new JTextField(String.format("#%02x%02x%02x", colors[i].getRed(), colors[i].getGreen(), colors[i].getBlue()), 7);
             field.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
@@ -345,15 +352,6 @@ public class SettingsDialog {
             // Apply font
             String fontName = (String) fontCombo.getSelectedItem();
             int size = sizeValues[sizeCombo.getSelectedIndex()];
-            Font font = new Font(fontName, Font.PLAIN, size);
-            editor.setFont(font);
-            console.setFont(fontName, size);
-
-            // Apply colors
-            for (int i = 0; i < colors.length; i++) {
-                highlighter.setColor(i, colors[i]);
-            }
-            highlighter.highlight();
 
             // Save settings
             settings.fontName = fontName;

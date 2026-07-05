@@ -11,7 +11,7 @@ import cloud.lesh.CPUSim64.*;
 
 public class DebuggerWindow extends JFrame {
     private Simulator sim;
-    private final LineNumberPanel lineNumberPanel;
+    private final EditorPanel editorPanel;
     private JTextArea disasmArea;
     private JTable regTable;
     private DefaultTableModel regModel;
@@ -36,9 +36,9 @@ public class DebuggerWindow extends JFrame {
     private final PrintStream origErr = System.err;
     private final InputStream origIn = System.in;
 
-    public DebuggerWindow(JFrame parent, String objFilePath, String sourceFilePath, LineNumberPanel lineNumberPanel, String userArgs, AppSettings settings, TerminalPanel console, Runnable onClose) {
+    public DebuggerWindow(JFrame parent, String objFilePath, String sourceFilePath, EditorPanel editorPanel, String userArgs, AppSettings settings, TerminalPanel console, Runnable onClose) {
         super("CPUSim64 Debugger");
-        this.lineNumberPanel = lineNumberPanel;
+        this.editorPanel = editorPanel;
         this.settings = settings;
         Font monoFont = new Font(settings.fontName, Font.PLAIN, settings.fontSize);
 
@@ -107,7 +107,7 @@ public class DebuggerWindow extends JFrame {
         syncBreakpointsFromSource();
 
         // Listen for source breakpoint changes during debugging
-        lineNumberPanel.setBreakpointChangeListener((srcLine) -> {
+        editorPanel.setBreakpointChangeListener((srcLine) -> {
             syncBreakpointsFromSource();
             Long addr = sourceLineToAddr.get(srcLine);
             if (addr != null) {
@@ -133,8 +133,8 @@ public class DebuggerWindow extends JFrame {
                 for (int i = 0; i < 3; i++) settings.debugStackColWidths[i] = stackTable.getColumnModel().getColumn(i).getWidth();
                 settings.save();
                 sim.stop();
-                lineNumberPanel.clearExecutionLine();
-                lineNumberPanel.setBreakpointChangeListener(null);
+                editorPanel.clearExecutionLine();
+                editorPanel.setBreakpointChangeListener(null);
                 System.setOut(origOut);
                 System.setErr(origErr);
                 System.setIn(origIn);
@@ -373,7 +373,7 @@ public class DebuggerWindow extends JFrame {
 
     private void stopDebugger() {
         sim.stop();
-        lineNumberPanel.clearExecutionLine();
+        editorPanel.clearExecutionLine();
         dispose();
     }
 
@@ -383,7 +383,7 @@ public class DebuggerWindow extends JFrame {
 
     /** Sync source line breakpoints to debugger address breakpoints */
     private void syncBreakpointsFromSource() {
-        Set<Integer> srcBps = lineNumberPanel.getEnabledBreakpoints();
+        Set<Integer> srcBps = editorPanel.getEnabledBreakpoints();
         // Build the expected set of addresses from source breakpoints
         Set<Long> expected = new HashSet<>();
         for (int line : srcBps) {
@@ -405,8 +405,8 @@ public class DebuggerWindow extends JFrame {
     private void syncBreakpointToSource(long addr, boolean set) {
         Integer srcLine = addrToSourceLine.get(addr);
         if (srcLine != null) {
-            if (set) lineNumberPanel.setBreakpoint(srcLine);
-            else lineNumberPanel.removeBreakpoint(srcLine);
+            if (set) editorPanel.setBreakpoint(srcLine);
+            else editorPanel.removeBreakpoint(srcLine);
         }
     }
 
@@ -456,12 +456,12 @@ public class DebuggerWindow extends JFrame {
         if (sim.isRunning()) {
             Integer srcLine = addrToSourceLine.get(sim.getPC());
             if (srcLine != null) {
-                lineNumberPanel.setExecutionLine(srcLine);
-                lineNumberPanel.scrollToLine(srcLine);
+                editorPanel.setExecutionLine(srcLine);
+                editorPanel.scrollToLine(srcLine);
             }
-            else lineNumberPanel.clearExecutionLine();
+            else editorPanel.clearExecutionLine();
         } else {
-            lineNumberPanel.clearExecutionLine();
+            editorPanel.clearExecutionLine();
         }
     }
 

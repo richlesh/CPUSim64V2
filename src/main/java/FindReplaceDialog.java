@@ -3,6 +3,7 @@ import javax.swing.*;
 import javax.swing.text.*;
 import java.awt.*;
 import java.util.regex.*;
+import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 
 public class FindReplaceDialog {
     private JDialog dialog;
@@ -13,10 +14,10 @@ public class FindReplaceDialog {
     private JCheckBox grepMode;
     private JCheckBox selectedOnly;
     private JCheckBox wrapAround;
-    private JTextPane editor;
+    private RSyntaxTextArea editor;
     private int lastFoundPos = -1;
 
-    public FindReplaceDialog(JFrame parent, JTextPane editor) {
+    public FindReplaceDialog(JFrame parent, RSyntaxTextArea editor) {
         this.editor = editor;
         dialog = new JDialog(parent, "Find / Replace", false);
         dialog.setLayout(new BorderLayout(8, 8));

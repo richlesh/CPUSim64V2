@@ -28,21 +28,20 @@ import java.io.PipedOutputStream;
 import java.nio.file.*;
 import java.util.regex.*;
 import cloud.lesh.CPUSim64.StdInterruptHandler;
+import org.fife.ui.rsyntaxtextarea.*;
+import org.fife.ui.rtextarea.*;
 
 public class CPUSim64App {
     private static final boolean IS_MAC = System.getProperty("os.name").toLowerCase().contains("mac");
     private static final boolean IS_WINDOWS = System.getProperty("os.name").toLowerCase().contains("win");
 
     private JFrame frame;
-    private JTextPane codeEditor;
-    private AsmSyntaxHighlighter highlighter;
+    private RSyntaxTextArea codeEditor;
+    private EditorPanel editorPanel;
     private TerminalPanel console;
     private JTextField argsField;
     private Path currentFile;
-    private javax.swing.Timer highlightTimer;
     private AppSettings settings;
-    private UndoManager undoManager = new UndoManager();
-    private boolean highlightingInProgress = false;
     private boolean undoInProgress = false;
     private final java.util.Deque<String> undoStack = new java.util.ArrayDeque<>();
     private final java.util.Deque<String> redoStack = new java.util.ArrayDeque<>();
@@ -55,13 +54,11 @@ public class CPUSim64App {
     private AIChatPanel aiChatPanel;
     private File lastDirectory;
     private JSplitPane mainSplit;
-    private LineNumberPanel lineNumberPanel;
     private JMenuBar menuBar;
     private JToolBar consoleToolBar;
     private JMenuItem runItem, debugItem;
     private JButton runBtn, debugBtn;
     private volatile Thread runThread;
-    private int tripleClickAnchor = -1;
 
     public static void main(String[] args) {
         if (args.length > 0 && args[0].equals("--uninstall")) {
@@ -101,24 +98,37 @@ public class CPUSim64App {
 
     private void applySettings() {
         Font font = new Font(settings.fontName, Font.PLAIN, settings.fontSize);
-        codeEditor.setFont(font);
+        editorPanel.setEditorFont(font);
         console.setFont(settings.fontName, settings.fontSize);
         console.setColors(settings.consoleFg, settings.consoleBg);
         if (consoleToolBar != null) {
             for (Component c : consoleToolBar.getComponents()) c.setFont(font);
         }
-        // Update existing styled text in code editor
-        javax.swing.text.StyledDocument editorDoc = codeEditor.getStyledDocument();
-        javax.swing.text.SimpleAttributeSet editorAttr = new javax.swing.text.SimpleAttributeSet();
-        javax.swing.text.StyleConstants.setFontFamily(editorAttr, settings.fontName);
-        javax.swing.text.StyleConstants.setFontSize(editorAttr, settings.fontSize);
-        editorDoc.setCharacterAttributes(0, editorDoc.getLength(), editorAttr, false);
+        // Apply syntax colors to RSyntaxTextArea scheme
+        SyntaxScheme scheme = codeEditor.getSyntaxScheme();
+        scheme.getStyle(Token.IDENTIFIER).foreground = settings.colors[0]; // Normal
+        scheme.getStyle(Token.RESERVED_WORD).foreground = settings.colors[1]; // Keywords
+        scheme.getStyle(Token.RESERVED_WORD).font = font.deriveFont(Font.BOLD);
+        scheme.getStyle(Token.FUNCTION).foreground = settings.colors[2]; // Directives
+        scheme.getStyle(Token.FUNCTION).font = font.deriveFont(Font.BOLD);
+        scheme.getStyle(Token.COMMENT_EOL).foreground = settings.colors[3]; // Comments
+        scheme.getStyle(Token.COMMENT_MULTILINE).foreground = settings.colors[3];
+        scheme.getStyle(Token.LITERAL_STRING_DOUBLE_QUOTE).foreground = settings.colors[4]; // Strings
+        scheme.getStyle(Token.LITERAL_CHAR).foreground = settings.colors[4];
+        scheme.getStyle(Token.LITERAL_NUMBER_DECIMAL_INT).foreground = settings.colors[5]; // Numbers
+        scheme.getStyle(Token.LITERAL_NUMBER_HEXADECIMAL).foreground = settings.colors[5];
+        scheme.getStyle(Token.RESERVED_WORD_2).foreground = settings.colors[6]; // Registers
+        scheme.getStyle(Token.VARIABLE).foreground = settings.colors[7]; // Labels
+        scheme.getStyle(Token.VARIABLE).font = font.deriveFont(Font.BOLD);
+        scheme.getStyle(Token.DATA_TYPE).foreground = settings.colors[8]; // Conditions
+        scheme.getStyle(Token.PREPROCESSOR).foreground = settings.colors[2]; // PP directives same as directives
+        scheme.getStyle(Token.PREPROCESSOR).font = font.deriveFont(Font.BOLD);
+        codeEditor.setSyntaxScheme(scheme);
+        codeEditor.setForeground(settings.colors[0]);
+        codeEditor.revalidate();
+        codeEditor.repaint();
         // Update AI chat panel font
         if (aiChatPanel != null) aiChatPanel.updateFont(settings.fontName, settings.fontSize);
-        for (int i = 0; i < settings.colors.length; i++) {
-            highlighter.setColor(i, settings.colors[i]);
-        }
-        highlighter.highlight();
     }
 
     private JMenuBar createMenuBar() {
@@ -141,7 +151,7 @@ public class CPUSim64App {
         });
         JMenuItem settingsItem = new JMenuItem("Settings");
         settingsItem.addActionListener(e -> {
-            SettingsDialog.show(frame, codeEditor, console, highlighter, settings);
+            SettingsDialog.show(frame, codeEditor, console, settings);
             applySettings();
             aiChatPanel.updateFont();
         });
@@ -279,47 +289,32 @@ public class CPUSim64App {
     }
 
     private JSplitPane createMainPanel() {
-        codeEditor = new JTextPane();
-        codeEditor.setFocusTraversalKeysEnabled(false);
-        codeEditor.setDragEnabled(false);
-        codeEditor.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_TAB, 0), "insert-spaces");
-        codeEditor.getActionMap().put("insert-spaces", new javax.swing.AbstractAction() {
-            public void actionPerformed(java.awt.event.ActionEvent e) {
-                try {
-                    if (codeEditor.getSelectedText() != null) {
-                        codeEditor.replaceSelection("");
+        editorPanel = new EditorPanel();
+        codeEditor = editorPanel.getTextArea();
+        codeEditor.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 14));
+
+        // Cmd+click (macOS) / Ctrl+click to navigate #include files
+        codeEditor.addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent e) {
+                boolean modClick = IS_MAC ? e.isMetaDown() : e.isControlDown();
+                if (modClick && e.getButton() == MouseEvent.BUTTON1 && e.getClickCount() == 1 && currentFile != null) {
+                    int pos = codeEditor.viewToModel2D(e.getPoint());
+                    if (pos < 0) return;
+                    String text = codeEditor.getText();
+                    Pattern p = Pattern.compile("#[iI][nN][cC][lL][uU][dD][eE]\\s+[<\"](.+?)[>\"]");
+                    Matcher m = p.matcher(text);
+                    while (m.find()) {
+                        if (pos >= m.start(1) && pos <= m.end(1)) {
+                            String file = m.group(1);
+                            openIncludeFile(file);
+                            break;
+                        }
                     }
-                    int pos = codeEditor.getCaretPosition();
-                    int lineStart = javax.swing.text.Utilities.getRowStart(codeEditor, pos);
-                    int col = pos - lineStart;
-                    int spaces = 4 - (col % 4);
-                    codeEditor.getDocument().insertString(pos, " ".repeat(spaces), null);
-                } catch (javax.swing.text.BadLocationException ignored) {}
+                }
             }
         });
-        codeEditor.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_BACK_SPACE, 0), "smart-backspace");
-        codeEditor.getActionMap().put("smart-backspace", new javax.swing.AbstractAction() {
-            public void actionPerformed(java.awt.event.ActionEvent e) {
-                try {
-                    if (codeEditor.getSelectedText() != null) {
-                        codeEditor.replaceSelection("");
-                        return;
-                    }
-                    int pos = codeEditor.getCaretPosition();
-                    if (pos == 0) return;
-                    int lineStart = javax.swing.text.Utilities.getRowStart(codeEditor, pos);
-                    int col = pos - lineStart;
-                    String lineText = codeEditor.getText(lineStart, col);
-                    if (col > 0 && lineText.trim().isEmpty()) {
-                        int target = ((col - 1) / 4) * 4;
-                        int del = col - target;
-                        codeEditor.getDocument().remove(pos - del, del);
-                    } else {
-                        codeEditor.getDocument().remove(pos - 1, 1);
-                    }
-                } catch (javax.swing.text.BadLocationException ignored) {}
-            }
-        });
+
+        // Undo/redo key bindings
         int mod = Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx();
         codeEditor.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_Z, mod), "safe-undo");
         codeEditor.getActionMap().put("safe-undo", new javax.swing.AbstractAction() {
@@ -329,90 +324,23 @@ public class CPUSim64App {
         codeEditor.getActionMap().put("safe-redo", new javax.swing.AbstractAction() {
             public void actionPerformed(java.awt.event.ActionEvent e) { performRedo(); }
         });
-        codeEditor.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 14));
-        FontMetrics fm = codeEditor.getFontMetrics(codeEditor.getFont());
-        int tabWidth = fm.charWidth(' ') * 4;
-        javax.swing.text.TabStop[] tabs = new javax.swing.text.TabStop[64];
-        for (int i = 0; i < tabs.length; i++) tabs[i] = new javax.swing.text.TabStop((i + 1) * tabWidth);
-        javax.swing.text.TabSet tabSet = new javax.swing.text.TabSet(tabs);
-        javax.swing.text.SimpleAttributeSet attr = new javax.swing.text.SimpleAttributeSet();
-        javax.swing.text.StyleConstants.setTabSet(attr, tabSet);
-        codeEditor.getStyledDocument().setParagraphAttributes(0, 0, attr, false);
-        codeEditor.addPropertyChangeListener("font", evt -> {
-            FontMetrics fm2 = codeEditor.getFontMetrics(codeEditor.getFont());
-            int tw = fm2.charWidth(' ') * 4;
-            javax.swing.text.TabStop[] ts = new javax.swing.text.TabStop[64];
-            for (int i = 0; i < ts.length; i++) ts[i] = new javax.swing.text.TabStop((i + 1) * tw);
-            javax.swing.text.SimpleAttributeSet a = new javax.swing.text.SimpleAttributeSet();
-            javax.swing.text.StyleConstants.setTabSet(a, new javax.swing.text.TabSet(ts));
-            codeEditor.getStyledDocument().setParagraphAttributes(0, codeEditor.getDocument().getLength(), a, false);
+
+        // Shift indent key bindings
+        codeEditor.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_OPEN_BRACKET, mod), "shift-left");
+        codeEditor.getActionMap().put("shift-left", new javax.swing.AbstractAction() {
+            public void actionPerformed(java.awt.event.ActionEvent e) { shiftIndent(false); }
         });
-        highlighter = new AsmSyntaxHighlighter(codeEditor);
-        codeEditor.addMouseListener(new MouseAdapter() {
-            public void mouseClicked(MouseEvent e) {
-                boolean modClick = IS_MAC ? e.isMetaDown() : e.isControlDown();
-                if (modClick && e.getButton() == MouseEvent.BUTTON1 && e.getClickCount() == 1 && currentFile != null) {
-                    int pos = codeEditor.viewToModel2D(e.getPoint());
-                    if (pos < 0) return;
-                    try {
-                        String text = codeEditor.getDocument().getText(0, codeEditor.getDocument().getLength());
-                        Pattern p = Pattern.compile("#[iI][nN][cC][lL][uU][dD][eE]\\s+[<\"](.+?)[>\"]");
-                        Matcher m = p.matcher(text);
-                        while (m.find()) {
-                            if (pos >= m.start(1) && pos <= m.end(1)) {
-                                String file = m.group(1);
-                                openIncludeFile(file);
-                                break;
-                            }
-                        }
-                    } catch (javax.swing.text.BadLocationException ignored) {}
-                }
-            }
+        codeEditor.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_CLOSE_BRACKET, mod), "shift-right");
+        codeEditor.getActionMap().put("shift-right", new javax.swing.AbstractAction() {
+            public void actionPerformed(java.awt.event.ActionEvent e) { shiftIndent(true); }
         });
-        // Triple-click-drag whole-line selection
-        codeEditor.addMouseListener(new MouseAdapter() {
-            public void mousePressed(MouseEvent e) {
-                if (e.getClickCount() == 3) {
-                    tripleClickAnchor = codeEditor.viewToModel2D(e.getPoint());
-                }
-            }
-            public void mouseReleased(MouseEvent e) { tripleClickAnchor = -1; }
-        });
-        codeEditor.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
-            public void mouseDragged(MouseEvent e) {
-                if (tripleClickAnchor < 0) return;
-                try {
-                    int pos = codeEditor.viewToModel2D(e.getPoint());
-                    int anchorLineStart = javax.swing.text.Utilities.getRowStart(codeEditor, tripleClickAnchor);
-                    int anchorLineEnd = javax.swing.text.Utilities.getRowEnd(codeEditor, tripleClickAnchor) + 1;
-                    int curLineStart = javax.swing.text.Utilities.getRowStart(codeEditor, pos);
-                    int curLineEnd = Math.min(javax.swing.text.Utilities.getRowEnd(codeEditor, pos) + 1, codeEditor.getDocument().getLength());
-                    if (pos < tripleClickAnchor) {
-                        codeEditor.select(curLineStart, anchorLineEnd);
-                    } else {
-                        codeEditor.select(anchorLineStart, curLineEnd);
-                    }
-                } catch (javax.swing.text.BadLocationException ignored) {}
-            }
-        });
-        highlightTimer = new javax.swing.Timer(300, e -> {
-            highlightingInProgress = true;
-            highlighter.highlight();
-            applyTabStops();
-            highlightingInProgress = false;
-        });
-        highlightTimer.setRepeats(false);
-        codeEditor.getDocument().addDocumentListener(new DocumentListener() {
-            public void insertUpdate(DocumentEvent e) { highlightTimer.restart(); markModified(); }
-            public void removeUpdate(DocumentEvent e) { highlightTimer.restart(); markModified(); }
-            public void changedUpdate(DocumentEvent e) {}
-        });
-        codeEditor.getDocument().addDocumentListener(new DocumentListener() {
-            public void insertUpdate(DocumentEvent e) { recordUndo(); }
-            public void removeUpdate(DocumentEvent e) { recordUndo(); }
-            public void changedUpdate(DocumentEvent e) {}
+
+        codeEditor.getDocument().addDocumentListener(new javax.swing.event.DocumentListener() {
+            public void insertUpdate(javax.swing.event.DocumentEvent e) { markModified(); recordUndo(); }
+            public void removeUpdate(javax.swing.event.DocumentEvent e) { markModified(); recordUndo(); }
+            public void changedUpdate(javax.swing.event.DocumentEvent e) {}
             private void recordUndo() {
-                if (highlightingInProgress || undoInProgress) return;
+                if (undoInProgress) return;
                 String current = codeEditor.getText();
                 if (current.equals(lastSavedText)) return;
                 undoStack.push(lastSavedText);
@@ -422,10 +350,6 @@ public class CPUSim64App {
                 updateUndoRedo();
             }
         });
-        JScrollPane editorScroll = new JScrollPane(codeEditor);
-        lineNumberPanel = new LineNumberPanel(codeEditor);
-        editorScroll.setRowHeaderView(lineNumberPanel);
-
         console = new TerminalPanel(settings.fontName, settings.fontSize);
         console.setColors(settings.consoleFg, settings.consoleBg);
         JScrollBar consoleScrollBar = new JScrollBar(JScrollBar.VERTICAL);
@@ -476,7 +400,7 @@ public class CPUSim64App {
         consolePanel.add(consoleToolBar, BorderLayout.NORTH);
         consolePanel.add(consoleScrollPanel, BorderLayout.CENTER);
 
-        JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, editorScroll, consolePanel);
+        JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, editorPanel, consolePanel);
         splitPane.setResizeWeight(0.7);
 
         aiChatPanel = new AIChatPanel(codeEditor, console, settings);
@@ -508,7 +432,6 @@ public class CPUSim64App {
     void loadFile(Path path) {
         console.clear();
         try {
-            highlightingInProgress = true;
             String content = Files.readString(path);
             if (content.indexOf('\t') >= 0) {
                 StringBuilder sb = new StringBuilder();
@@ -529,21 +452,19 @@ public class CPUSim64App {
                 }
                 content = sb.toString();
             }
+            undoInProgress = true;
             codeEditor.setText(content);
             codeEditor.setCaretPosition(0);
-            highlightingInProgress = false;
+            undoInProgress = false;
             currentFile = path;
             frame.setTitle("CPUSim64 - " + path.getFileName());
-            undoManager.discardAllEdits();
             undoStack.clear();
             redoStack.clear();
             lastSavedText = codeEditor.getText();
             modified = false;
             saveItem.setEnabled(false);
             updateUndoRedo();
-            highlighter.highlight();
         } catch (IOException e) {
-            highlightingInProgress = false;
             appendConsole("Error opening file: " + e.getMessage());
         }
     }
@@ -578,7 +499,7 @@ public class CPUSim64App {
     }
 
     private void markModified() {
-        if (!highlightingInProgress && !modified) {
+        if (!undoInProgress && !modified) {
             modified = true;
             saveItem.setEnabled(true);
         }
@@ -600,7 +521,6 @@ public class CPUSim64App {
         codeEditor.setCaretPosition(Math.min(caret, lastSavedText.length()));
         undoInProgress = false;
         updateUndoRedo();
-        highlighter.highlight();
     }
 
     private void performRedo() {
@@ -613,7 +533,6 @@ public class CPUSim64App {
         codeEditor.setCaretPosition(Math.min(caret, lastSavedText.length()));
         undoInProgress = false;
         updateUndoRedo();
-        highlighter.highlight();
     }
 
     private void shiftIndent(boolean right) {
@@ -622,14 +541,18 @@ public class CPUSim64App {
             int selEnd = codeEditor.getSelectionEnd();
             if (selStart == selEnd) {
                 // No selection — use current line
-                selStart = javax.swing.text.Utilities.getRowStart(codeEditor, selStart);
-                selEnd = javax.swing.text.Utilities.getRowEnd(codeEditor, selEnd);
+                int line = codeEditor.getLineOfOffset(selStart);
+                selStart = codeEditor.getLineStartOffset(line);
+                selEnd = codeEditor.getLineEndOffset(line);
+                if (selEnd > selStart && codeEditor.getText().charAt(selEnd - 1) == '\n') selEnd--;
             } else {
-                selStart = javax.swing.text.Utilities.getRowStart(codeEditor, selStart);
-                int rowEnd = javax.swing.text.Utilities.getRowEnd(codeEditor, selEnd - 1);
-                selEnd = rowEnd;
+                int startLine = codeEditor.getLineOfOffset(selStart);
+                int endLine = codeEditor.getLineOfOffset(selEnd - 1);
+                selStart = codeEditor.getLineStartOffset(startLine);
+                selEnd = codeEditor.getLineEndOffset(endLine);
+                if (selEnd > selStart && codeEditor.getText().charAt(selEnd - 1) == '\n') selEnd--;
             }
-            String text = codeEditor.getText(selStart, selEnd - selStart);
+            String text = codeEditor.getText().substring(selStart, selEnd);
             String[] lines = text.split("\n", -1);
             StringBuilder sb = new StringBuilder();
             for (int i = 0; i < lines.length; i++) {
@@ -802,7 +725,7 @@ public class CPUSim64App {
                     runBtn.setEnabled(false);
                     debugBtn.setEnabled(false);
                     Runnable onClose = () -> { runItem.setEnabled(true); debugItem.setEnabled(true); runBtn.setEnabled(true); debugBtn.setEnabled(true); };
-                    new DebuggerWindow(frame, objFile, asmFile, lineNumberPanel, argsField.getText().trim(), settings, console, onClose);
+                    new DebuggerWindow(frame, objFile, asmFile, editorPanel, argsField.getText().trim(), settings, console, onClose);
                 });
             } catch (Exception e) {
                 SwingUtilities.invokeLater(() -> appendConsole("Error: " + e.getMessage() + "\n"));
@@ -840,39 +763,22 @@ public class CPUSim64App {
         viewer.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         viewer.setSize(800, 600);
 
-        JTextPane pane = new JTextPane();
+        RSyntaxTextArea pane = new RSyntaxTextArea();
+        pane.setSyntaxEditingStyle("text/cpusim64");
         pane.setFont(new Font(Font.MONOSPACED, Font.PLAIN, settings.fontSize));
         pane.setEditable(false);
+        pane.setCodeFoldingEnabled(false);
+        pane.setTabSize(4);
+        pane.setTabsEmulated(true);
         pane.setText(content);
         pane.setCaretPosition(0);
 
-        AsmSyntaxHighlighter hl = new AsmSyntaxHighlighter(pane);
-        hl.highlight();
-
-        // Set tab stops
-        FontMetrics fm = pane.getFontMetrics(pane.getFont());
-        int tw = fm.charWidth(' ') * 4;
-        javax.swing.text.TabStop[] ts = new javax.swing.text.TabStop[64];
-        for (int i = 0; i < ts.length; i++) ts[i] = new javax.swing.text.TabStop((i + 1) * tw);
-        javax.swing.text.SimpleAttributeSet a = new javax.swing.text.SimpleAttributeSet();
-        javax.swing.text.StyleConstants.setTabSet(a, new javax.swing.text.TabSet(ts));
-        pane.getStyledDocument().setParagraphAttributes(0, pane.getDocument().getLength(), a, false);
-
-        JScrollPane scroll = new JScrollPane(pane);
-        scroll.setRowHeaderView(new LineNumberPanel(pane));
+        RTextScrollPane scroll = new RTextScrollPane(pane);
+        scroll.setLineNumbersEnabled(true);
+        scroll.setFoldIndicatorEnabled(false);
         viewer.add(scroll);
         viewer.setLocationRelativeTo(frame);
         viewer.setVisible(true);
-    }
-
-    private void applyTabStops() {
-        FontMetrics fm = codeEditor.getFontMetrics(codeEditor.getFont());
-        int tw = fm.charWidth(' ') * 4;
-        javax.swing.text.TabStop[] ts = new javax.swing.text.TabStop[64];
-        for (int i = 0; i < ts.length; i++) ts[i] = new javax.swing.text.TabStop((i + 1) * tw);
-        javax.swing.text.SimpleAttributeSet a = new javax.swing.text.SimpleAttributeSet();
-        javax.swing.text.StyleConstants.setTabSet(a, new javax.swing.text.TabSet(ts));
-        codeEditor.getStyledDocument().setParagraphAttributes(0, codeEditor.getDocument().getLength(), a, false);
     }
 
     private void showAboutDialog() {

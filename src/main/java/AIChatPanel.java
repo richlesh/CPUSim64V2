@@ -12,13 +12,14 @@ import java.nio.file.*;
 import java.util.*;
 import java.util.List;
 import java.util.stream.*;
+import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 
 public class AIChatPanel extends JPanel {
     private final JPanel chatPanel;
     private final JScrollPane chatScroll;
     private final JTextArea inputArea;
     private final JButton sendBtn;
-    private final JTextPane codeEditor;
+    private final RSyntaxTextArea codeEditor;
     private final TerminalPanel console;
     private final AppSettings settings;
     private final List<Map<String, String>> messages = new ArrayList<>();
@@ -31,7 +32,7 @@ public class AIChatPanel extends JPanel {
     private Runnable statusUpdater;
     private volatile Thread currentThread;
 
-    public AIChatPanel(JTextPane codeEditor, TerminalPanel console, AppSettings settings) {
+    public AIChatPanel(RSyntaxTextArea codeEditor, TerminalPanel console, AppSettings settings) {
         super(new BorderLayout());
         this.codeEditor = codeEditor;
         this.console = console;
