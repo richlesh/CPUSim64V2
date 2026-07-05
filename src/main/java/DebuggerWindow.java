@@ -133,6 +133,10 @@ public class DebuggerWindow extends JFrame {
                 for (int i = 0; i < 3; i++) settings.debugStackColWidths[i] = stackTable.getColumnModel().getColumn(i).getWidth();
                 settings.save();
                 sim.stop();
+                if (runningThread != null) {
+                    runningThread.interrupt();
+                    runningThread = null;
+                }
                 editorPanel.clearExecutionLine();
                 editorPanel.setBreakpointChangeListener(null);
                 System.setOut(origOut);
@@ -320,6 +324,14 @@ public class DebuggerWindow extends JFrame {
         }
     }
 
+    private volatile Thread runningThread; // background execution thread (stepOver/stepOut/resume)
+
+    private void setButtonsEnabled(boolean enabled) {
+        for (Component c : ((JToolBar) ((JPanel) mainSplit.getLeftComponent()).getComponent(0)).getComponents()) {
+            if (c instanceof JButton) c.setEnabled(enabled);
+        }
+    }
+
     private void stepInto() {
         if (!sim.isRunning()) return;
         sim.stepOne();
@@ -332,47 +344,65 @@ public class DebuggerWindow extends JFrame {
         long instr = sim.memRead(pc);
         var d = Simulator.Decoded.decode(instr);
         if (d.getOpCode() == Opcode.CALL.getCode()) {
-            // Run until PC == pc+1 (return address) or breakpoint
+            // Run on background thread until return or breakpoint
             long returnAddr = pc + 1;
-            while (sim.isRunning()) {
-                sim.stepOne();
-                if (sim.getPC() == returnAddr || isBreakpoint(sim.getPC())) break;
-            }
+            setButtonsEnabled(false);
+            runningThread = new Thread(() -> {
+                while (sim.isRunning() && !Thread.currentThread().isInterrupted()) {
+                    sim.stepOne();
+                    if (sim.getPC() == returnAddr || isBreakpoint(sim.getPC())) break;
+                }
+                runningThread = null;
+                SwingUtilities.invokeLater(() -> { setButtonsEnabled(true); updateAll(); });
+            });
+            runningThread.start();
         } else {
             sim.stepOne();
+            updateAll();
         }
-        updateAll();
     }
 
     private void stepOut() {
         if (!sim.isRunning()) return;
-        int depth = 0;
-        while (sim.isRunning()) {
-            int op = sim.stepOne();
-            if (op == Opcode.CALL.getCode()) depth++;
-            else if (op == Opcode.RETURN.getCode()) {
-                if (depth == 0) break;
-                depth--;
+        setButtonsEnabled(false);
+        runningThread = new Thread(() -> {
+            int depth = 0;
+            while (sim.isRunning() && !Thread.currentThread().isInterrupted()) {
+                int op = sim.stepOne();
+                if (op == Opcode.CALL.getCode()) depth++;
+                else if (op == Opcode.RETURN.getCode()) {
+                    if (depth == 0) break;
+                    depth--;
+                }
+                if (isBreakpoint(sim.getPC())) break;
             }
-            if (isBreakpoint(sim.getPC())) break;
-        }
-        updateAll();
+            runningThread = null;
+            SwingUtilities.invokeLater(() -> { setButtonsEnabled(true); updateAll(); });
+        });
+        runningThread.start();
     }
 
     private void resume() {
         if (!sim.isRunning()) return;
         sim.stepOne(); // step past current breakpoint
-        new Thread(() -> {
-            while (sim.isRunning()) {
+        setButtonsEnabled(false);
+        runningThread = new Thread(() -> {
+            while (sim.isRunning() && !Thread.currentThread().isInterrupted()) {
                 if (isBreakpoint(sim.getPC())) break;
                 sim.stepOne();
             }
-            SwingUtilities.invokeLater(this::updateAll);
-        }).start();
+            runningThread = null;
+            SwingUtilities.invokeLater(() -> { setButtonsEnabled(true); updateAll(); });
+        });
+        runningThread.start();
     }
 
     private void stopDebugger() {
         sim.stop();
+        if (runningThread != null) {
+            runningThread.interrupt();
+            runningThread = null;
+        }
         editorPanel.clearExecutionLine();
         dispose();
     }
@@ -461,7 +491,9 @@ public class DebuggerWindow extends JFrame {
             }
             else editorPanel.clearExecutionLine();
         } else {
+            // Program has terminated — close the debugger
             editorPanel.clearExecutionLine();
+            dispose();
         }
     }
 

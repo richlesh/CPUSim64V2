@@ -56,11 +56,12 @@ public class EditorPanel extends JPanel {
         gutter = scrollPane.getGutter();
         gutter.setBookmarkingEnabled(false); // we manage our own icons
 
-        // Click on icon row header (gutter) to toggle breakpoints
-        gutter.addMouseListener(new MouseAdapter() {
+        // Click on icon row header (gutter) to toggle breakpoints.
+        // The Gutter is a JPanel container; we must attach the listener to its
+        // child components (icon row header and line number list) so clicks register.
+        MouseAdapter breakpointClickListener = new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                // Only respond to clicks in the icon area (left part of gutter)
                 try {
                     int y = e.getY();
                     int line = getLineAtY(y);
@@ -69,13 +70,18 @@ public class EditorPanel extends JPanel {
                     }
                 } catch (Exception ignored) {}
             }
-        });
+        };
+        for (Component child : gutter.getComponents()) {
+            child.addMouseListener(breakpointClickListener);
+        }
 
         add(scrollPane, BorderLayout.CENTER);
     }
 
     /**
-     * Convert a Y coordinate in the gutter to a 1-based line number.
+     * Convert a Y coordinate in a gutter child component to a 1-based line number.
+     * The gutter scrolls in sync with the text area, so Y is already in the
+     * same coordinate space as the text area's visible region.
      */
     private int getLineAtY(int y) {
         try {

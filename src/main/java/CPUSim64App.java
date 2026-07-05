@@ -57,6 +57,7 @@ public class CPUSim64App {
     private JMenuBar menuBar;
     private JToolBar consoleToolBar;
     private JMenuItem runItem, debugItem;
+    private JCheckBoxMenuItem aiMenuItem;
     private JButton runBtn, debugBtn;
     private volatile Thread runThread;
 
@@ -68,6 +69,15 @@ public class CPUSim64App {
         if (!IS_WINDOWS && !IS_MAC) {
             checkXWayland();
         }
+        // On macOS, use the system menu bar at the top of the screen
+        if (IS_MAC) {
+            System.setProperty("apple.laf.useScreenMenuBar", "true");
+            System.setProperty("apple.awt.application.name", "CPUSim64");
+        }
+        // Use native look and feel for each platform
+        try {
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        } catch (Exception ignored) {}
         SwingUtilities.invokeLater(() -> new CPUSim64App().createAndShowGUI());
     }
 
@@ -134,10 +144,14 @@ public class CPUSim64App {
     private JMenuBar createMenuBar() {
         menuBar = new JMenuBar();
 
-        // Application menu
-        JMenu appMenu = new JMenu("CPUSim64");
-        JMenuItem installItem = new JMenuItem("CLI Tools...");
-        installItem.addActionListener(e -> {
+        // Shared action handlers
+        Runnable aboutAction = this::showAboutDialog;
+        Runnable settingsAction = () -> {
+            SettingsDialog.show(frame, codeEditor, console, settings);
+            applySettings();
+            aiChatPanel.updateFont();
+        };
+        Runnable installAction = () -> {
             Icon appIcon = null;
             var url = CPUSim64App.class.getResource("/app_icon_256.png");
             if (url != null) appIcon = new ImageIcon(new ImageIcon(url).getImage().getScaledInstance(64, 64, Image.SCALE_SMOOTH));
@@ -148,26 +162,9 @@ public class CPUSim64App {
                 appIcon, options, "Install");
             if (result == 0) CLIInstaller.install();
             else if (result == 1) CLIInstaller.uninstall();
-        });
-        JMenuItem settingsItem = new JMenuItem("Settings");
-        settingsItem.addActionListener(e -> {
-            SettingsDialog.show(frame, codeEditor, console, settings);
-            applySettings();
-            aiChatPanel.updateFont();
-        });
-        JMenuItem licenseItem = new JMenuItem("License Key");
-        licenseItem.addActionListener(e -> LicenseDialog.show(frame, settings));
-        JMenuItem aboutItem = new JMenuItem("About CPUSim64");
-        aboutItem.addActionListener(e -> showAboutDialog());
-        appMenu.add(aboutItem);
-        appMenu.addSeparator();
-        appMenu.add(installItem);
-        appMenu.add(settingsItem);
-        appMenu.add(licenseItem);
-        appMenu.addSeparator();
-        JMenuItem quitItem = new JMenuItem("Quit");
-        quitItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q, Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx()));
-        quitItem.addActionListener(e -> {
+        };
+        Runnable licenseAction = () -> LicenseDialog.show(frame, settings);
+        Runnable quitAction = () -> {
             for (Window w : Window.getWindows()) {
                 if (w instanceof JFrame && w.isVisible()) {
                     w.dispatchEvent(new WindowEvent(w, WindowEvent.WINDOW_CLOSING));
@@ -175,8 +172,40 @@ public class CPUSim64App {
                 }
             }
             System.exit(0);
-        });
-        appMenu.add(quitItem);
+        };
+
+        if (IS_MAC) {
+            // Register About and Settings with the macOS Apple menu
+            Desktop desktop = Desktop.getDesktop();
+            desktop.setAboutHandler(e -> aboutAction.run());
+            desktop.setPreferencesHandler(e -> settingsAction.run());
+            desktop.setQuitHandler((e, response) -> {
+                quitAction.run();
+                response.cancelQuit();
+            });
+        } else {
+            // Windows/Linux: CPUSim64 application menu
+            JMenu appMenu = new JMenu("CPUSim64");
+            JMenuItem aboutItem = new JMenuItem("About CPUSim64");
+            aboutItem.addActionListener(e -> aboutAction.run());
+            appMenu.add(aboutItem);
+            appMenu.addSeparator();
+            JMenuItem installItem = new JMenuItem("CLI Tools...");
+            installItem.addActionListener(e -> installAction.run());
+            appMenu.add(installItem);
+            JMenuItem settingsItem = new JMenuItem("Settings");
+            settingsItem.addActionListener(e -> settingsAction.run());
+            appMenu.add(settingsItem);
+            JMenuItem licenseItem = new JMenuItem("License Key");
+            licenseItem.addActionListener(e -> licenseAction.run());
+            appMenu.add(licenseItem);
+            appMenu.addSeparator();
+            JMenuItem quitItem = new JMenuItem("Quit CPUSim64");
+            quitItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q, Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx()));
+            quitItem.addActionListener(e -> quitAction.run());
+            appMenu.add(quitItem);
+            menuBar.add(appMenu);
+        }
 
         // File menu
         JMenu fileMenu = new JMenu("File");
@@ -210,6 +239,17 @@ public class CPUSim64App {
         debugItem = new JMenuItem("Debug");
         debugItem.addActionListener(e -> launchDebugger());
         fileMenu.add(debugItem);
+
+        // On macOS, put CLI Tools and License Key in the File menu
+        if (IS_MAC) {
+            fileMenu.addSeparator();
+            JMenuItem installItem = new JMenuItem("CLI Tools...");
+            installItem.addActionListener(e -> installAction.run());
+            fileMenu.add(installItem);
+            JMenuItem licenseItem = new JMenuItem("License Key");
+            licenseItem.addActionListener(e -> licenseAction.run());
+            fileMenu.add(licenseItem);
+        }
 
         // Edit menu
         JMenu editMenu = new JMenu("Edit");
@@ -269,8 +309,11 @@ public class CPUSim64App {
             catch (Exception ex) { ex.printStackTrace(); }
         });
         helpMenu.add(onlineDocsItem);
+        helpMenu.addSeparator();
+        aiMenuItem = new JCheckBoxMenuItem("AI Assistant");
+        aiMenuItem.addActionListener(e -> toggleAIPanel());
+        helpMenu.add(aiMenuItem);
 
-        menuBar.add(appMenu);
         menuBar.add(fileMenu);
         menuBar.add(editMenu);
         menuBar.add(helpMenu);
@@ -417,15 +460,19 @@ public class CPUSim64App {
         aiChatPanel.setVisible(show);
         mainSplit.setDividerSize(show ? 6 : 0);
         if (show) mainSplit.setDividerLocation(mainSplit.getWidth() - 400);
+        if (aiMenuItem != null) aiMenuItem.setSelected(show);
     }
 
     private void openFile() {
         if (!promptSaveIfNeeded()) return;
-        JFileChooser chooser = new JFileChooser(lastDirectory != null ? lastDirectory : new File(System.getProperty("user.dir")));
-        chooser.setFileFilter(new javax.swing.filechooser.FileNameExtensionFilter("Assembly Files", "asm"));
-        if (chooser.showOpenDialog(frame) == JFileChooser.APPROVE_OPTION) {
-            lastDirectory = chooser.getSelectedFile().getParentFile();
-            loadFile(chooser.getSelectedFile().toPath());
+        FileDialog fd = new FileDialog(frame, "Open Assembly File", FileDialog.LOAD);
+        if (lastDirectory != null) fd.setDirectory(lastDirectory.getAbsolutePath());
+        else fd.setDirectory(System.getProperty("user.dir"));
+        fd.setFilenameFilter((dir, name) -> name.endsWith(".asm"));
+        fd.setVisible(true);
+        if (fd.getFile() != null) {
+            lastDirectory = new File(fd.getDirectory());
+            loadFile(Path.of(fd.getDirectory(), fd.getFile()));
         }
     }
 
@@ -484,12 +531,16 @@ public class CPUSim64App {
     }
 
     private void saveFileAs() {
-        JFileChooser chooser = new JFileChooser(lastDirectory != null ? lastDirectory : new File(System.getProperty("user.dir")));
-        chooser.setFileFilter(new javax.swing.filechooser.FileNameExtensionFilter("Assembly Files", "asm"));
-        if (currentFile != null) chooser.setSelectedFile(currentFile.toFile());
-        if (chooser.showSaveDialog(frame) == JFileChooser.APPROVE_OPTION) {
-            lastDirectory = chooser.getSelectedFile().getParentFile();
-            currentFile = chooser.getSelectedFile().toPath();
+        FileDialog fd = new FileDialog(frame, "Save Assembly File", FileDialog.SAVE);
+        if (lastDirectory != null) fd.setDirectory(lastDirectory.getAbsolutePath());
+        else fd.setDirectory(System.getProperty("user.dir"));
+        if (currentFile != null) fd.setFile(currentFile.getFileName().toString());
+        else fd.setFile("untitled.asm");
+        fd.setFilenameFilter((dir, name) -> name.endsWith(".asm"));
+        fd.setVisible(true);
+        if (fd.getFile() != null) {
+            lastDirectory = new File(fd.getDirectory());
+            currentFile = Path.of(fd.getDirectory(), fd.getFile());
             if (!currentFile.toString().endsWith(".asm")) {
                 currentFile = Path.of(currentFile.toString() + ".asm");
             }

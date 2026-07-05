@@ -223,7 +223,7 @@ public class AIChatPanel extends JPanel {
         row.setOpaque(false);
         row.setBorder(BorderFactory.createEmptyBorder(6, 6, 6, 6));
         row.add(bubble, BorderLayout.CENTER);
-        row.setMaximumSize(new Dimension(Integer.MAX_VALUE, row.getPreferredSize().height));
+        row.setMaximumSize(new Dimension(Integer.MAX_VALUE, Integer.MAX_VALUE));
 
         chatPanel.add(row);
         chatPanel.revalidate();
