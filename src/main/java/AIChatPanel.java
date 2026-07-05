@@ -31,6 +31,7 @@ public class AIChatPanel extends JPanel {
     private Runnable onCodeChanged;
     private Runnable statusUpdater;
     private volatile Thread currentThread;
+    private int aiPromptCount = 0;
 
     public AIChatPanel(RSyntaxTextArea codeEditor, TerminalPanel console, AppSettings settings) {
         super(new BorderLayout());
@@ -160,6 +161,12 @@ public class AIChatPanel extends JPanel {
         inputArea.setText("");
         addUserBubble(text);
         statusUpdater.run();
+
+        // Show splash screen every 10 prompts when not licensed
+        aiPromptCount++;
+        if (aiPromptCount % 10 == 0 && !LicenseDialog.isLicensed(settings)) {
+            SplashScreen.show();
+        }
 
         String context = "Current source code:\n```\n" + codeEditor.getText() + "\n```\n\n"
             + "Console output:\n```\n" + console.getText() + "\n```";

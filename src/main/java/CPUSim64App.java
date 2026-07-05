@@ -60,6 +60,7 @@ public class CPUSim64App {
     private JCheckBoxMenuItem aiMenuItem;
     private JButton runBtn, debugBtn;
     private volatile Thread runThread;
+    private int runDebugCount = 0;
 
     public static void main(String[] args) {
         if (args.length > 0 && args[0].equals("--uninstall")) {
@@ -648,6 +649,13 @@ public class CPUSim64App {
             return;
         }
         if (modified && !promptSaveIfNeeded()) return;
+
+        // Show splash screen every 10 Run/Debug actions when not licensed
+        runDebugCount++;
+        if (runDebugCount % 10 == 0 && !LicenseDialog.isLicensed(settings)) {
+            SplashScreen.show();
+        }
+
         console.clear();
 
         String base = currentFile.toString();
@@ -753,6 +761,13 @@ public class CPUSim64App {
             return;
         }
         if (modified && !promptSaveIfNeeded()) return;
+
+        // Show splash screen every 10 Run/Debug actions when not licensed
+        runDebugCount++;
+        if (runDebugCount % 10 == 0 && !LicenseDialog.isLicensed(settings)) {
+            SplashScreen.show();
+        }
+
         console.clear();
 
         String base = currentFile.toString();
