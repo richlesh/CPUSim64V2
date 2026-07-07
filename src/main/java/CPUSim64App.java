@@ -661,7 +661,9 @@ public class CPUSim64App {
         String base = currentFile.toString();
         if (base.endsWith(".asm")) base = base.substring(0, base.length() - 4);
         final String asmFile = base + ".asm";
-        final String objFile = base + ".o64";
+        final String baseName = Path.of(base).getFileName().toString();
+        final Path asmDir = Path.of(base).getParent();
+        final Path objDir = asmDir.resolve("obj");
 
         new Thread(() -> {
             runThread = Thread.currentThread();
@@ -709,6 +711,28 @@ public class CPUSim64App {
                 int asmResult = Assembler.run(mode != null ? new String[]{asmFile, "--DEBUG"} : new String[]{asmFile});
                 if (asmResult != 0) {
                     SwingUtilities.invokeLater(() -> appendConsole("\nAssembly failed.\n"));
+                    return;
+                }
+
+                // Create obj directory and move output files there
+                Files.createDirectories(objDir);
+                String[] extensions = {".o64", ".sym", ".sym1", ".sym2", ".srcmap"};
+                for (String ext : extensions) {
+                    Path src = asmDir.resolve(baseName + ext);
+                    if (Files.exists(src)) {
+                        Files.move(src, objDir.resolve(baseName + ext), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+                    }
+                }
+
+                // Resolve the .o64 file: check obj directory first, fall back to source directory
+                final String objFile;
+                Path objInDir = objDir.resolve(baseName + ".o64");
+                if (Files.exists(objInDir)) {
+                    objFile = objInDir.toString();
+                } else if (Files.exists(asmDir.resolve(baseName + ".o64"))) {
+                    objFile = asmDir.resolve(baseName + ".o64").toString();
+                } else {
+                    SwingUtilities.invokeLater(() -> appendConsole("\nNo .o64 file found after assembly.\n"));
                     return;
                 }
 
@@ -773,7 +797,9 @@ public class CPUSim64App {
         String base = currentFile.toString();
         if (base.endsWith(".asm")) base = base.substring(0, base.length() - 4);
         final String asmFile = base + ".asm";
-        final String objFile = base + ".o64";
+        final String baseName = Path.of(base).getFileName().toString();
+        final Path asmDir = Path.of(base).getParent();
+        final Path objDir = asmDir.resolve("obj");
 
         new Thread(() -> {
             try {
@@ -784,6 +810,29 @@ public class CPUSim64App {
                     SwingUtilities.invokeLater(() -> appendConsole("\nAssembly failed.\n"));
                     return;
                 }
+
+                // Create obj directory and move output files there
+                Files.createDirectories(objDir);
+                String[] extensions = {".o64", ".sym", ".sym1", ".sym2", ".srcmap"};
+                for (String ext : extensions) {
+                    Path src = asmDir.resolve(baseName + ext);
+                    if (Files.exists(src)) {
+                        Files.move(src, objDir.resolve(baseName + ext), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+                    }
+                }
+
+                // Resolve the .o64 file: check obj directory first, fall back to source directory
+                final String objFile;
+                Path objInDir = objDir.resolve(baseName + ".o64");
+                if (Files.exists(objInDir)) {
+                    objFile = objInDir.toString();
+                } else if (Files.exists(asmDir.resolve(baseName + ".o64"))) {
+                    objFile = asmDir.resolve(baseName + ".o64").toString();
+                } else {
+                    SwingUtilities.invokeLater(() -> appendConsole("\nNo .o64 file found after assembly.\n"));
+                    return;
+                }
+
                 SwingUtilities.invokeLater(() -> {
                     appendConsole("> Opening debugger...\n");
                     runItem.setEnabled(false);
