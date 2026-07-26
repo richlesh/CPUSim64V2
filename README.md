@@ -1,4 +1,7 @@
-# CPUSim64  
+![app_icon_256](src/main/resources/app_icon_256.png)
+
+# CPUSim64
+
 *A 64-bit virtual CPU, assembler, and simulation environment*
 
 ©2026 Richard Lesh.  All rights reserved.
@@ -201,3 +204,9 @@ Java source code for the toolchain:
 - Assembler (ANTLR grammar, lexer/parser, visitors)
 - Simulator (CPU core, memory model, devices)
 - Common utilities shared across components
+
+## License
+
+GNU General Public License v3.0 — see [LICENSE](LICENSE) for details.
+
+© 2026 Richard Lesh
