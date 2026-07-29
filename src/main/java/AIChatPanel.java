@@ -219,7 +219,7 @@ public class AIChatPanel extends JPanel {
 
         JTextArea msg = new JTextArea(text);
         msg.setFont(new Font(settings.aiFontName, Font.PLAIN, settings.aiFontSize));
-        msg.setForeground(Color.WHITE);
+        msg.setForeground(settings.userTextColor);
         msg.setOpaque(false);
         msg.setEditable(false);
         msg.setLineWrap(true);
@@ -260,7 +260,8 @@ public class AIChatPanel extends JPanel {
         msg.setOpaque(false);
         msg.setEditable(false);
         msg.setFont(new Font(settings.aiFontName, Font.PLAIN, settings.aiFontSize));
-        renderStyledMessage(msg, text, settings.aiFontName, settings.aiFontSize, settings.fontName);
+        msg.setForeground(settings.aiTextColor);
+        renderStyledMessage(msg, text, settings.aiFontName, settings.aiFontSize, settings.fontName, settings.aiTextColor);
         bubble.add(msg, BorderLayout.CENTER);
 
         JPanel row = new JPanel(new BorderLayout());
@@ -401,6 +402,7 @@ public class AIChatPanel extends JPanel {
             case "Alibaba" -> "https://dashscope-us.aliyuncs.com/compatible-mode/v1";
             case "Anthropic" -> "https://api.anthropic.com/v1";
             case "DeepSeek" -> "https://api.deepseek.com/v1";
+            case "Generic OpenAI API" -> settings.llmEndpoint != null ? settings.llmEndpoint : "";
             case "Google" -> "https://generativelanguage.googleapis.com/v1beta/openai";
             case "Ollama" -> "http://localhost:11434/v1";
             case "OpenAI" -> "https://api.openai.com/v1";
@@ -538,12 +540,13 @@ public class AIChatPanel extends JPanel {
         } catch (Exception e) { return null; }
     }
 
-    private static void renderStyledMessage(JTextPane pane, String text, String fontName, int fontSize, String codeFontName) {
+    private static void renderStyledMessage(JTextPane pane, String text, String fontName, int fontSize, String codeFontName, Color textColor) {
         StyledDocument doc = pane.getStyledDocument();
         // Define styles
         javax.swing.text.Style normal = doc.addStyle("normal", null);
         StyleConstants.setFontFamily(normal, fontName);
         StyleConstants.setFontSize(normal, fontSize);
+        StyleConstants.setForeground(normal, textColor);
 
         javax.swing.text.Style bold = doc.addStyle("bold", normal);
         StyleConstants.setBold(bold, true);

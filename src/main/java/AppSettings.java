@@ -32,8 +32,11 @@ public class AppSettings {
     public String llmVendor = "OpenAI";
     public String llmModel = "gpt-4o";
     public String llmApiKey = null;
+    public String llmEndpoint = null;
     public Color userPromptColor = new Color(0x00, 0xAA, 0x00);
+    public Color userTextColor = Color.WHITE;
     public Color aiResponseColor = new Color(0x33, 0x99, 0xFF);
+    public Color aiTextColor = Color.WHITE;
     public Color consoleFg = new Color(0xBB, 0xBB, 0xBB);
     public Color consoleBg = new Color(0, 0, 0);
     public Color[] colors = {
@@ -71,8 +74,11 @@ public class AppSettings {
             if (llmVendor != null) sb.append("  \"llmVendor\": \"").append(escape(llmVendor)).append("\",\n");
             if (llmModel != null) sb.append("  \"llmModel\": \"").append(escape(llmModel)).append("\",\n");
             if (llmApiKey != null) sb.append("  \"llmApiKey\": \"").append(escape(llmApiKey)).append("\",\n");
+            if (llmEndpoint != null) sb.append("  \"llmEndpoint\": \"").append(escape(llmEndpoint)).append("\",\n");
             sb.append("  \"userPromptColor\": \"").append(colorToHex(userPromptColor)).append("\",\n");
+            sb.append("  \"userTextColor\": \"").append(colorToHex(userTextColor)).append("\",\n");
             sb.append("  \"aiResponseColor\": \"").append(colorToHex(aiResponseColor)).append("\",\n");
+            sb.append("  \"aiTextColor\": \"").append(colorToHex(aiTextColor)).append("\",\n");
             sb.append("  \"consoleFg\": \"").append(colorToHex(consoleFg)).append("\",\n");
             sb.append("  \"consoleBg\": \"").append(colorToHex(consoleBg)).append("\",\n");
             sb.append("  \"colors\": [");
@@ -147,11 +153,16 @@ public class AppSettings {
             String model = extractString(json, "llmModel");
             if (model != null) s.llmModel = model;
             s.llmApiKey = extractString(json, "llmApiKey");
+            s.llmEndpoint = extractString(json, "llmEndpoint");
 
             String upc = extractString(json, "userPromptColor");
             if (upc != null) s.userPromptColor = hexToColor(upc);
+            String utc = extractString(json, "userTextColor");
+            if (utc != null) s.userTextColor = hexToColor(utc);
             String arc = extractString(json, "aiResponseColor");
             if (arc != null) s.aiResponseColor = hexToColor(arc);
+            String atc = extractString(json, "aiTextColor");
+            if (atc != null) s.aiTextColor = hexToColor(atc);
 
             String cfg = extractString(json, "consoleFg");
             if (cfg != null) s.consoleFg = hexToColor(cfg);
