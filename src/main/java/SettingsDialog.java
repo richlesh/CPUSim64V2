@@ -456,7 +456,7 @@ public class SettingsDialog {
         dialog.add(new JScrollPane(panel), BorderLayout.CENTER);
         dialog.add(buttonPanel, BorderLayout.SOUTH);
         dialog.pack();
-        dialog.setSize(dialog.getWidth(), dialog.getHeight() + 20);
+        dialog.setSize(dialog.getWidth(), dialog.getHeight() + 30);
         dialog.setLocationRelativeTo(parent);
         dialog.setVisible(true);
     }
