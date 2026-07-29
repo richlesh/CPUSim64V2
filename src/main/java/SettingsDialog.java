@@ -254,6 +254,8 @@ public class SettingsDialog {
             endpointLabel.setVisible(generic);
             endpointField.setVisible(generic);
             apiKeyLink.setVisible(!generic);
+            apiKeyField.setText("");
+            modelCombo.removeAllItems();
             fetchModels.run();
         });
         apiKeyField.getDocument().addDocumentListener(new javax.swing.event.DocumentListener() {
@@ -454,6 +456,7 @@ public class SettingsDialog {
         dialog.add(new JScrollPane(panel), BorderLayout.CENTER);
         dialog.add(buttonPanel, BorderLayout.SOUTH);
         dialog.pack();
+        dialog.setSize(dialog.getWidth(), dialog.getHeight() + 20);
         dialog.setLocationRelativeTo(parent);
         dialog.setVisible(true);
     }
