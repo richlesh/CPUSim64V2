@@ -1,0 +1,639 @@
+// SPDX-License-Identifier: Apache-2.0
+package com.glowingcat;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+import java.awt.datatransfer.*;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.util.concurrent.locks.ReentrantLock;
+
+/**
+ * A fast canvas-based terminal emulator component.
+ * Supports ANSI colors, scrollback, carriage return, text selection, keyboard input.
+ */
+public class TerminalPanel extends JComponent implements Scrollable {
+    private static final int DEFAULT_COLS = 500;
+    private static final int SCROLLBACK_LINES = 10000;
+    private Color termBg = new Color(0, 0, 0);
+    private Color termFg = Color.WHITE;
+
+    // Circular buffer: each line is an array of codepoints and colors
+    private final int[] chars;       // [line * maxCols + col] = codepoint
+    private final Color[] colors;    // [line * maxCols + col] = foreground color
+    private final Color[] bgColors;  // [line * maxCols + col] = background color (null = default)
+    private final byte[] attrs;      // [line * maxCols + col] = style bitmask
+    private final int maxCols;
+    private final int totalLines;    // scrollback + visible
+
+    private static final byte ATTR_BOLD = 1;
+    private static final byte ATTR_DIM = 2;
+    private static final byte ATTR_ITALIC = 4;
+    private static final byte ATTR_UNDERLINE = 8;
+    private static final byte ATTR_BLINK = 16;
+    private static final byte ATTR_HIDDEN = 32;
+    private static final byte ATTR_STRIKETHROUGH = 64;
+    private static final byte ATTR_REVERSE = (byte) 128;
+
+    private int cursorRow;           // row within the buffer (absolute)
+    private int cursorCol;
+    private int scrollOffset;        // lines scrolled back from bottom (0 = at bottom)
+    private int screenOrigin = -1;   // buffer row of screen top after clear; -1 = not set (use default calc)
+    private int firstLine;           // first line index in circular buffer
+    private int lineCount;           // total lines written
+
+    private Font termFont;
+    private int charWidth;
+    private int charHeight;
+    private int charAscent;
+
+    // ANSI state
+    private Color currentFg = termFg;
+    private Color currentBg = null; // null = use termBg
+    private byte currentAttrs = 0;
+    private StringBuilder escBuf = null; // non-null when inside an escape sequence
+
+    // Selection
+    private int selStartRow = -1, selStartCol = -1;
+    private int selEndRow = -1, selEndCol = -1;
+    private boolean selecting = false;
+
+    // Input
+    private PipedOutputStream inputPipe;
+    private boolean inputEnabled = false;
+    private boolean userTyping = false;
+    private int inputStartRow, inputStartCol;
+
+    // Cursor blink
+    private boolean cursorVisible = true;
+    private Timer blinkTimer;
+
+    private final ReentrantLock bufferLock = new ReentrantLock();
+    private Runnable interruptHandler;
+    private JScrollBar scrollBar;
+
+    public void setInterruptHandler(Runnable handler) { this.interruptHandler = handler; }
+
+    public void setColors(Color fg, Color bg) {
+        this.termFg = fg;
+        this.termBg = bg;
+        this.currentFg = fg;
+        setBackground(bg);
+        repaint();
+    }
+
+    public void attachScrollBar(JScrollBar sb) {
+        this.scrollBar = sb;
+        sb.addAdjustmentListener(e -> {
+            if (!e.getValueIsAdjusting()) return;
+            int max = Math.max(0, lineCount - getVisibleRows());
+            scrollOffset = max - e.getValue();
+            repaint();
+        });
+    }
+
+    private void updateScrollBar() {
+        if (scrollBar != null) {
+            int max = Math.max(0, lineCount - getVisibleRows());
+            scrollBar.setMaximum(max);
+            scrollBar.setVisibleAmount(1);
+            scrollBar.setValue(max - scrollOffset);
+        }
+    }
+
+    public TerminalPanel(String fontName, int fontSize) {
+        maxCols = DEFAULT_COLS;
+        totalLines = SCROLLBACK_LINES;
+        chars = new int[totalLines * maxCols];
+        colors = new Color[totalLines * maxCols];
+        bgColors = new Color[totalLines * maxCols];
+        attrs = new byte[totalLines * maxCols];
+        firstLine = 0;
+        lineCount = 1;
+        cursorRow = 0;
+        cursorCol = 0;
+
+        setFont(fontName, fontSize);
+        setBackground(termBg);
+        setFocusable(true);
+        setOpaque(true);
+
+        blinkTimer = new Timer(500, e -> { cursorVisible = !cursorVisible; repaint(); });
+        blinkTimer.start();
+
+        addMouseListener(new MouseAdapter() {
+            public void mousePressed(MouseEvent e) {
+                requestFocusInWindow();
+                if (SwingUtilities.isLeftMouseButton(e)) {
+                    Point p = charPosAt(e.getPoint());
+                    selStartRow = p.y; selStartCol = p.x;
+                    selEndRow = p.y; selEndCol = p.x;
+                    selecting = true;
+                    repaint();
+                }
+            }
+            public void mouseReleased(MouseEvent e) { selecting = false; }
+        });
+        addMouseMotionListener(new MouseMotionAdapter() {
+            public void mouseDragged(MouseEvent e) {
+                if (selecting) {
+                    int y = e.getY();
+                    if (y < 0) {
+                        scrollOffset = Math.min(lineCount - getVisibleRows(), scrollOffset + 1);
+                    } else if (y > getHeight()) {
+                        scrollOffset = Math.max(0, scrollOffset - 1);
+                    }
+                    Point p = charPosAt(e.getPoint());
+                    selEndRow = p.y; selEndCol = p.x;
+                    repaint();
+                    updateScrollBar();
+                }
+            }
+        });
+        addMouseWheelListener(e -> {
+            scrollOffset = Math.max(0, Math.min(lineCount - getVisibleRows(), scrollOffset - e.getWheelRotation() * 3));
+            repaint();
+            updateScrollBar();
+        });
+        addKeyListener(new KeyAdapter() {
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_C && (e.getModifiersEx() & Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx()) != 0) {
+                    copySelection();
+                    return;
+                }
+                if (e.getKeyCode() == KeyEvent.VK_C && (e.getModifiersEx() & KeyEvent.CTRL_DOWN_MASK) != 0) {
+                    e.consume();
+                    if (interruptHandler != null) interruptHandler.run();
+                    return;
+                }
+                if (!inputEnabled) return;
+                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+                    e.consume();
+                    String input = getInputText() + "\n";
+                    write("\n");
+                    sendInput(input);
+                } else if (e.getKeyCode() == KeyEvent.VK_BACK_SPACE) {
+                    if (cursorCol > inputStartCol || cursorRow > inputStartRow) {
+                        bufferLock.lock();
+                        try {
+                            if (cursorCol > 0) cursorCol--;
+                            else if (cursorRow > inputStartRow) { cursorRow--; cursorCol = getVisibleCols() - 1; }
+                            int idx = cursorRow * maxCols + cursorCol;
+                            chars[idx] = 0;
+                            colors[idx] = termFg;
+                        } finally { bufferLock.unlock(); }
+                        repaint();
+                    }
+                } else if (e.getKeyCode() == KeyEvent.VK_D && (e.getModifiersEx() & KeyEvent.CTRL_DOWN_MASK) != 0) {
+                    e.consume();
+                    if (inputPipe != null) try { inputPipe.close(); } catch (Exception ignored) {}
+                    inputEnabled = false;
+                }
+            }
+            public void keyTyped(KeyEvent e) {
+                if (!inputEnabled) return;
+                char c = e.getKeyChar();
+                if (c == KeyEvent.CHAR_UNDEFINED || c == '\n' || c == '\r' || c == '\b') return;
+                if ((e.getModifiersEx() & Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx()) != 0) return;
+                Color saved = currentFg;
+                currentFg = Color.WHITE;
+                userTyping = true;
+                write(String.valueOf(c));
+                userTyping = false;
+                currentFg = saved;
+            }
+        });
+    }
+
+    public void setFont(String fontName, int fontSize) {
+        termFont = new Font(fontName, Font.PLAIN, fontSize);
+        FontMetrics fm = getFontMetrics(termFont);
+        charWidth = fm.charWidth('M');
+        charHeight = fm.getHeight();
+        charAscent = fm.getAscent();
+        revalidate();
+        repaint();
+    }
+
+    public int getVisibleRows() {
+        return Math.max(1, getHeight() / charHeight);
+    }
+
+    public int getVisibleCols() {
+        int w = getWidth();
+        if (w <= 0) return maxCols;
+        return Math.min(maxCols, Math.max(1, w / charWidth));
+    }
+
+    // ===== OUTPUT =====
+
+    public void write(String text) {
+        bufferLock.lock();
+        try {
+            for (int i = 0; i < text.length(); i++) {
+                char c = text.charAt(i);
+                if (escBuf != null) {
+                    escBuf.append(c);
+                    if (Character.isLetter(c)) {
+                        processEscape(escBuf.toString());
+                        escBuf = null;
+                    }
+                    continue;
+                }
+                if (c == '\u001B') {
+                    escBuf = new StringBuilder();
+                    escBuf.append(c);
+                } else if (c == '\r') {
+                    cursorCol = 0;
+                } else if (c == '\n') {
+                    newLine();
+                } else if (c == '\b') {
+                    if (cursorCol > 0) cursorCol--;
+                } else {
+                    int idx = cursorRow * maxCols + cursorCol;
+                    chars[idx] = c;
+                    colors[idx] = currentFg;
+                    bgColors[idx] = currentBg;
+                    attrs[idx] = currentAttrs;
+                    cursorCol++;
+                    if (cursorCol >= getVisibleCols()) {
+                        cursorCol = 0;
+                        newLine();
+                    }
+                }
+            }
+        } finally { bufferLock.unlock(); }
+        if (!userTyping) { inputStartRow = cursorRow; inputStartCol = cursorCol; }
+        scrollOffset = 0;
+        SwingUtilities.invokeLater(() -> { repaint(); updateScrollBar(); });
+    }
+
+    private void newLine() {
+        cursorRow++;
+        cursorCol = 0;
+        if (cursorRow >= totalLines) {
+            cursorRow = 0; // wrap in circular buffer
+        }
+        if (lineCount < totalLines) lineCount++;
+        else {
+            firstLine = (firstLine + 1) % totalLines;
+            if (screenOrigin >= 0 && firstLine == (screenOrigin + getVisibleRows()) % totalLines) {
+                screenOrigin = -1; // screen has scrolled past the cleared area
+            }
+        }
+        // Clear the new line
+        int base = cursorRow * maxCols;
+        for (int i = 0; i < maxCols; i++) {
+            chars[base + i] = 0;
+            colors[base + i] = termFg;
+            bgColors[base + i] = null;
+            attrs[base + i] = 0;
+        }
+    }
+
+    private void processEscape(String seq) {
+        if (seq.startsWith("\u001B[") && seq.endsWith("m")) {
+            // SGR - color
+            String nums = seq.substring(2, seq.length() - 1);
+            if (nums.isEmpty() || nums.equals("0")) { currentFg = termFg; currentBg = null; currentAttrs = 0; return; }
+            for (String n : nums.split(";")) {
+                switch (n) {
+                    case "0" -> { currentFg = termFg; currentBg = null; currentAttrs = 0; }
+                    case "1" -> currentAttrs |= ATTR_BOLD;
+                    case "2" -> currentAttrs |= ATTR_DIM;
+                    case "3" -> currentAttrs |= ATTR_ITALIC;
+                    case "4" -> currentAttrs |= ATTR_UNDERLINE;
+                    case "5" -> currentAttrs |= ATTR_BLINK;
+                    case "7" -> currentAttrs |= ATTR_REVERSE;
+                    case "8" -> currentAttrs |= ATTR_HIDDEN;
+                    case "9" -> currentAttrs |= ATTR_STRIKETHROUGH;
+                    case "22" -> currentAttrs &= ~(ATTR_BOLD | ATTR_DIM);
+                    case "23" -> currentAttrs &= ~ATTR_ITALIC;
+                    case "24" -> currentAttrs &= ~ATTR_UNDERLINE;
+                    case "25" -> currentAttrs &= ~ATTR_BLINK;
+                    case "27" -> currentAttrs &= ~ATTR_REVERSE;
+                    case "28" -> currentAttrs &= ~ATTR_HIDDEN;
+                    case "29" -> currentAttrs &= ~ATTR_STRIKETHROUGH;
+                    case "30" -> currentFg = Color.BLACK;                        // black
+                    case "31" -> currentFg = new Color(170, 0, 0);      // red
+                    case "32" -> currentFg = new Color(0, 170, 0 );     // green
+                    case "33" -> currentFg = new Color(170, 170, 0 );   // yellow
+                    case "34" -> currentFg = new Color(0, 0 , 170 );    // blue
+                    case "35" -> currentFg = new Color(170, 0 , 170);   // magenta
+                    case "36" -> currentFg = new Color(0, 170, 170);    // cyan
+                    case "37" -> currentFg = new Color(170, 170, 170);  // white
+                    case "39" -> currentFg = termFg;
+                    case "40" -> currentBg = Color.BLACK;                        // black
+                    case "41" -> currentBg = new Color(170, 0, 0);      // red
+                    case "42" -> currentBg = new Color(0, 170, 0);      // green
+                    case "43" -> currentBg = new Color(170, 170, 0);    // yellow
+                    case "44" -> currentBg = new Color(0, 0, 170);      // blue
+                    case "45" -> currentBg = new Color(170, 0, 170);    // magenta
+                    case "46" -> currentBg = new Color(0, 170, 170);    // cyan
+                    case "47" -> currentBg = new Color(170, 170, 170);  // white
+                    case "49" -> currentBg = null;
+                    case "90" -> currentFg = Color.GRAY;                         // bright black (gray)
+                    case "91" -> currentFg = new Color(255, 100, 100);  // bright red
+                    case "92" -> currentFg = new Color(100, 255, 100);  // bright green
+                    case "93" -> currentFg = new Color(255, 255, 100);  // bright yellow
+                    case "94" -> currentFg = new Color(130, 130, 255);  // bright blue
+                    case "95" -> currentFg = new Color(255, 100, 255);  // bright magenta
+                    case "96" -> currentFg = new Color(100, 255, 255);  // bright cyan
+                    case "97" -> currentFg = Color.WHITE;                        // bright white
+                    case "100" -> currentBg = Color.DARK_GRAY;                   // bright black (gray)
+                    case "101" -> currentBg = new Color(255, 100, 100); // bright red
+                    case "102" -> currentBg = new Color(100, 255, 100); // bright green
+                    case "103" -> currentBg = new Color(255, 255, 100); // bright yellow
+                    case "104" -> currentBg = new Color(130, 130, 255); // bright blue
+                    case "105" -> currentBg = new Color(255, 100, 255); // bright magenta
+                    case "106" -> currentBg = new Color(100, 255, 255); // bright cyan
+                    case "107" -> currentBg = Color.WHITE;                       // bright white
+                }
+            }
+        } else if (seq.equals("\u001B[?25l")) {
+            cursorVisible = false; blinkTimer.stop();
+        } else if (seq.equals("\u001B[?25h")) {
+            cursorVisible = true; blinkTimer.start();
+        } else if (seq.equals("\u001B[K") || seq.equals("\u001B[0K")) {
+            // Clear from cursor to end of line using current background color
+            int base = cursorRow * maxCols;
+            for (int i = cursorCol; i < maxCols; i++) { chars[base + i] = 0; colors[base + i] = termFg; bgColors[base + i] = currentBg; attrs[base + i] = 0; }
+        } else if (seq.equals("\u001B[2K")) {
+            // Clear entire line using current background color
+            int base = cursorRow * maxCols;
+            for (int i = 0; i < maxCols; i++) { chars[base + i] = 0; colors[base + i] = termFg; bgColors[base + i] = currentBg; attrs[base + i] = 0; }
+            cursorCol = 0;
+        } else if (seq.startsWith("\u001B[") && seq.endsWith("H")) {
+            // CUP - Cursor Position: ESC[row;colH (1-based)
+            String params = seq.substring(2, seq.length() - 1);
+            int row = 0, col = 0;
+            if (!params.isEmpty()) {
+                String[] parts = params.split(";");
+                row = parts.length > 0 && !parts[0].isEmpty() ? Integer.parseInt(parts[0]) - 1 : 0;
+                col = parts.length > 1 && !parts[1].isEmpty() ? Integer.parseInt(parts[1]) - 1 : 0;
+            }
+            // Position relative to the screen origin (set by clear screen) or visible area
+            int visibleStart;
+            if (screenOrigin >= 0) {
+                visibleStart = screenOrigin;
+            } else {
+                visibleStart = lineCount <= getVisibleRows() ? 0 : (firstLine + lineCount - getVisibleRows()) % totalLines;
+            }
+            int targetRow = (visibleStart + Math.max(0, Math.min(row, getVisibleRows() - 1))) % totalLines;
+            cursorRow = targetRow;
+            cursorCol = Math.max(0, Math.min(col, maxCols - 1));
+        } else if (seq.equals("\u001B[2J")) {
+            // Clear entire screen using current background color
+            int visRows = getVisibleRows();
+            int visibleStart = lineCount <= visRows ? 0 : (firstLine + lineCount - visRows) % totalLines;
+            screenOrigin = visibleStart;
+            for (int r = 0; r < visRows; r++) {
+                int base = ((visibleStart + r) % totalLines) * maxCols;
+                for (int c = 0; c < maxCols; c++) {
+                    chars[base + c] = 0;
+                    colors[base + c] = termFg;
+                    bgColors[base + c] = currentBg;
+                    attrs[base + c] = 0;
+                }
+            }
+        }
+    }
+
+    public void clear() {
+        bufferLock.lock();
+        try {
+            java.util.Arrays.fill(chars, 0);
+            java.util.Arrays.fill(colors, termFg);
+            java.util.Arrays.fill(bgColors, (Color) null);
+            java.util.Arrays.fill(attrs, (byte) 0);
+            cursorRow = 0; cursorCol = 0;
+            firstLine = 0; lineCount = 1;
+            scrollOffset = 0;
+            currentFg = termFg;
+            currentBg = null;
+            currentAttrs = 0;
+            escBuf = null;
+        } finally { bufferLock.unlock(); }
+        repaint();
+    }
+
+    // ===== INPUT =====
+
+    public void enableInput(PipedOutputStream pipe) {
+        this.inputPipe = pipe;
+        this.inputEnabled = true;
+        this.inputStartRow = cursorRow;
+        this.inputStartCol = cursorCol;
+        requestFocusInWindow();
+    }
+
+    public void disableInput() {
+        this.inputEnabled = false;
+        this.inputPipe = null;
+    }
+
+    private String getInputText() {
+        bufferLock.lock();
+        try {
+            StringBuilder sb = new StringBuilder();
+            int r = inputStartRow, c = inputStartCol;
+            while (r != cursorRow || c != cursorCol) {
+                int idx = r * maxCols + c;
+                if (chars[idx] != 0) sb.appendCodePoint(chars[idx]);
+                c++;
+                if (c >= maxCols) { c = 0; r = (r + 1) % totalLines; }
+            }
+            return sb.toString();
+        } finally { bufferLock.unlock(); }
+    }
+
+    private void sendInput(String text) {
+        if (inputPipe != null) {
+            try {
+                inputPipe.write(text.getBytes(StandardCharsets.UTF_8));
+                inputPipe.flush();
+            } catch (Exception ignored) {}
+        }
+        inputStartRow = cursorRow;
+        inputStartCol = cursorCol;
+    }
+
+    // ===== SELECTION & COPY =====
+
+    private void copySelection() {
+        String sel = getSelectedText();
+        if (sel != null && !sel.isEmpty()) {
+            Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(sel), null);
+        }
+    }
+
+    public String getSelectedText() {
+        if (selStartRow < 0) return null;
+        int sr = selStartRow, sc = selStartCol, er = selEndRow, ec = selEndCol;
+        // Normalize direction
+        if (sr > er || (sr == er && sc > ec)) {
+            int t = sr; sr = er; er = t;
+            t = sc; sc = ec; ec = t;
+        }
+        bufferLock.lock();
+        try {
+            StringBuilder sb = new StringBuilder();
+            int r = sr, c = sc;
+            while (r < er || (r == er && c <= ec)) {
+                int bufRow = (firstLine + r) % totalLines;
+                int idx = bufRow * maxCols + c;
+                int ch = chars[idx];
+                if (ch != 0) sb.appendCodePoint(ch);
+                c++;
+                if (c >= maxCols) {
+                    sb.append('\n');
+                    c = 0; r++;
+                }
+            }
+            return sb.toString();
+        } finally { bufferLock.unlock(); }
+    }
+
+    // ===== PAINTING =====
+
+    @Override
+    protected void paintComponent(Graphics g) {
+        Graphics2D g2 = (Graphics2D) g;
+        g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+        g2.setColor(termBg);
+        g2.fillRect(0, 0, getWidth(), getHeight());
+        g2.setFont(termFont);
+
+        int visRows = getVisibleRows();
+        int startLine = Math.max(0, lineCount - visRows - scrollOffset);
+
+        // Normalize selection
+        int sr = selStartRow, sc = selStartCol, er = selEndRow, ec = selEndCol;
+        if (sr > er || (sr == er && sc > ec)) {
+            int t = sr; sr = er; er = t; t = sc; sc = ec; ec = t;
+        }
+
+        bufferLock.lock();
+        try {
+            for (int row = 0; row < visRows; row++) {
+                int bufLine = startLine + row;
+                if (bufLine >= lineCount) break;
+                int bufRow = (firstLine + bufLine) % totalLines;
+                int y = row * charHeight + charAscent;
+                for (int col = 0; col < maxCols; col++) {
+                    int idx = bufRow * maxCols + col;
+                    int ch = chars[idx];
+                    // Selection highlight
+                    boolean inSelection = (bufLine > sr && bufLine < er) ||
+                        (bufLine == sr && bufLine == er && col >= sc && col <= ec) ||
+                        (bufLine == sr && bufLine != er && col >= sc) ||
+                        (bufLine == er && bufLine != sr && col <= ec);
+                    if (inSelection) {
+                        g2.setColor(new Color(70, 130, 200));
+                        g2.fillRect(col * charWidth, row * charHeight, charWidth, charHeight);
+                    }
+                    // Draw cell background if set (even for empty cells)
+                    if (!inSelection && bgColors[idx] != null && !bgColors[idx].equals(termBg)) {
+                        g2.setColor(bgColors[idx]);
+                        g2.fillRect(col * charWidth, row * charHeight, charWidth, charHeight);
+                    }
+                    if (ch != 0) {
+                        byte attr = attrs[idx];
+                        Color fg = inSelection ? Color.WHITE : (colors[idx] != null ? colors[idx] : termFg);
+                        Color bg = bgColors[idx] != null ? bgColors[idx] : termBg;
+                        if ((attr & ATTR_REVERSE) != 0) { Color t = fg; fg = bg; bg = t; }
+                        if ((attr & ATTR_DIM) != 0) fg = fg.darker();
+                        if ((attr & ATTR_BOLD) != 0) fg = fg.brighter();
+                        if ((attr & ATTR_BLINK) != 0 && !cursorVisible) fg = bg; // blink off phase
+                        if (!inSelection && !bg.equals(termBg) && !bg.equals(bgColors[idx])) {
+                            g2.setColor(bg);
+                            g2.fillRect(col * charWidth, row * charHeight, charWidth, charHeight);
+                        }
+                        if ((attr & ATTR_HIDDEN) == 0) {
+                            Font drawFont = termFont;
+                            if ((attr & ATTR_BOLD) != 0 && (attr & ATTR_ITALIC) != 0)
+                                drawFont = drawFont.deriveFont(Font.BOLD | Font.ITALIC);
+                            else if ((attr & ATTR_BOLD) != 0) drawFont = drawFont.deriveFont(Font.BOLD);
+                            else if ((attr & ATTR_ITALIC) != 0) drawFont = drawFont.deriveFont(Font.ITALIC);
+                            g2.setFont(drawFont);
+                            g2.setColor(fg);
+                            g2.drawString(new String(Character.toChars(ch)), col * charWidth, y);
+                            if ((attr & ATTR_UNDERLINE) != 0) {
+                                g2.drawLine(col * charWidth, y + 1, (col + 1) * charWidth, y + 1);
+                            }
+                            if ((attr & ATTR_STRIKETHROUGH) != 0) {
+                                int midY = row * charHeight + charHeight / 2;
+                                g2.drawLine(col * charWidth, midY, (col + 1) * charWidth, midY);
+                            }
+                            g2.setFont(termFont);
+                        }
+                    }
+                }
+            }
+            // Draw cursor
+            if (inputEnabled && cursorVisible) {
+                int curLine = (cursorRow - firstLine + totalLines) % totalLines;
+                int screenRow = curLine - startLine;
+                if (screenRow >= 0 && screenRow < visRows) {
+                    g2.setColor(termFg);
+                    g2.fillRect(cursorCol * charWidth, screenRow * charHeight, charWidth, charHeight);
+                }
+            }
+        } finally { bufferLock.unlock(); }
+    }
+
+    private void repaintCursorLine() {
+        if (inputEnabled) {
+            int visRows = getVisibleRows();
+            int startLine = Math.max(0, lineCount - visRows - scrollOffset);
+            int curLine = (cursorRow - firstLine + totalLines) % totalLines;
+            int screenRow = curLine - startLine;
+            if (screenRow >= 0 && screenRow < visRows) {
+                repaint(0, screenRow * charHeight, getWidth(), charHeight);
+            }
+        }
+    }
+
+    private Point charPosAt(Point pixel) {
+        int visRows = getVisibleRows();
+        int startLine = Math.max(0, lineCount - visRows - scrollOffset);
+        int row = pixel.y / charHeight + startLine;
+        int col = Math.min(maxCols - 1, Math.max(0, pixel.x / charWidth));
+        return new Point(col, row);
+    }
+
+    // ===== SIZING =====
+
+    @Override public Dimension getPreferredSize() {
+        return new Dimension(maxCols * charWidth, getVisibleRows() * charHeight);
+    }
+
+    @Override public Dimension getPreferredScrollableViewportSize() { return getPreferredSize(); }
+    @Override public int getScrollableUnitIncrement(Rectangle vis, int ori, int dir) { return charHeight; }
+    @Override public int getScrollableBlockIncrement(Rectangle vis, int ori, int dir) { return vis.height; }
+    @Override public boolean getScrollableTracksViewportWidth() { return true; }
+    @Override public boolean getScrollableTracksViewportHeight() { return true; }
+
+    // ===== UTILITY =====
+
+    public String getText() {
+        bufferLock.lock();
+        try {
+            StringBuilder sb = new StringBuilder();
+            for (int line = 0; line < lineCount; line++) {
+                int bufRow = (firstLine + line) % totalLines;
+                int lastNonEmpty = -1;
+                for (int col = maxCols - 1; col >= 0; col--) {
+                    if (chars[bufRow * maxCols + col] != 0) { lastNonEmpty = col; break; }
+                }
+                for (int col = 0; col <= lastNonEmpty; col++) {
+                    int ch = chars[bufRow * maxCols + col];
+                    sb.appendCodePoint(ch != 0 ? ch : ' ');
+                }
+                if (line < lineCount - 1) sb.append('\n');
+            }
+            return sb.toString();
+        } finally { bufferLock.unlock(); }
+    }
+}

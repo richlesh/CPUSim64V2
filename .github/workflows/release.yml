@@ -24,8 +24,9 @@ jobs:
 
       - name: Inject license salt
         run: |
-          cat > src/main/java/License.java << EOF
+          cat > ide/src/main/java/com/glowingcat/License.java << EOF
           // SPDX-License-Identifier: Apache-2.0
+          package com.glowingcat;
           public class License {
               static final String LICENSE_SALT = "${{ secrets.LICENSE_SALT }}";
           }
@@ -35,14 +36,14 @@ jobs:
         run: |
           mvn clean package -DskipTests=true
           mkdir -p lib
-          cp target/CPUSim64*.jar lib/
+          cp ide/target/CPUSim64-*.jar lib/
 
       - name: Create distribution zip
         run: |
           VERSION="${{ inputs.version }}"
           VERSION="${VERSION#v}"
           mkdir -p CPUSim64
-          cp -r pom.xml *.sh *.bat lib documentation NOTICE LICENSE README.md CPUSim64/
+          cp -r *.sh *.bat lib cpusim64/documentation NOTICE LICENSE README.md CPUSim64/
           zip -r "cpusim64-${VERSION}-java.zip" CPUSim64 \
             -x "**/.DS_Store"
           rm -rf CPUSim64
@@ -53,4 +54,3 @@ jobs:
           tag_name: ${{ inputs.version }}
           name: CPUSim64 ${{ inputs.version }}
           files: cpusim64-*-java.zip
-

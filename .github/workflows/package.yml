@@ -113,12 +113,12 @@ jobs:
       - name: Compile cpusim64 CLI tool
         shell: bash
         run: |
-          sed -i.bak "s/Version 2.0.0/Version ${APP_VERSION}/" src/main/cpp/cpusim64.cpp
+          sed -i.bak "s/Version 2.0.0/Version ${APP_VERSION}/" ide/src/main/cpp/cpusim64.cpp
           if [ "${{ runner.os }}" = "Windows" ]; then
-            cl.exe /std:c++17 /O2 /Fe:src/main/resources/cpusim64.exe src/main/cpp/cpusim64.cpp || \
-            g++ -std=c++17 -O2 -static -o src/main/resources/cpusim64.exe src/main/cpp/cpusim64.cpp
+            cl.exe /std:c++17 /O2 /Fe:ide/src/main/resources/cpusim64.exe ide/src/main/cpp/cpusim64.cpp || \
+            g++ -std=c++17 -O2 -static -o ide/src/main/resources/cpusim64.exe ide/src/main/cpp/cpusim64.cpp
           else
-            c++ -std=c++17 -O2 -o src/main/resources/cpusim64 src/main/cpp/cpusim64.cpp
+            c++ -std=c++17 -O2 -o ide/src/main/resources/cpusim64 ide/src/main/cpp/cpusim64.cpp
           fi
 
       - name: Sign cpusim64 binary (macOS)
@@ -128,13 +128,14 @@ jobs:
             --sign "Developer ID Application: RICHARD A LESH (MMZ3Y97NTP)" \
             --keychain $RUNNER_TEMP/build.keychain \
             --entitlements resources/entitlements.plist \
-            src/main/resources/cpusim64
+            ide/src/main/resources/cpusim64
 
       - name: Inject license salt
         shell: bash
         run: |
-          cat > src/main/java/License.java << EOF
+          cat > ide/src/main/java/com/glowingcat/License.java << EOF
           // SPDX-License-Identifier: Apache-2.0
+          package com.glowingcat;
           public class License {
               static final String LICENSE_SALT = "${{ secrets.LICENSE_SALT }}";
           }
@@ -144,7 +145,7 @@ jobs:
         run: |
           mvn clean package -DskipTests=true
           mkdir -p lib
-          cp target/CPUSim64-*.jar lib/
+          cp ide/target/CPUSim64-*.jar lib/
 
       - name: Install RPM tools (Linux RPM)
         if: matrix.pkg_type == 'rpm'
@@ -211,7 +212,7 @@ jobs:
             jpackage \
               --input lib \
               --main-jar CPUSim64-${{ env.APP_VERSION }}.jar \
-              --main-class CPUSim64App \
+              --main-class com.glowingcat.CPUSim64App \
               --name CPUSim64 \
               --app-version "${{ env.APP_VERSION }}" \
               --vendor "Richard Lesh" \
@@ -232,7 +233,7 @@ jobs:
             jpackage \
               --input lib \
               --main-jar CPUSim64-${{ env.APP_VERSION }}.jar \
-              --main-class CPUSim64App \
+              --main-class com.glowingcat.CPUSim64App \
               --name CPUSim64 \
               --app-version "${{ env.APP_VERSION }}" \
               --vendor "Richard Lesh" \
@@ -269,7 +270,7 @@ jobs:
             jpackage \
               --input lib \
               --main-jar CPUSim64-${{ env.APP_VERSION }}.jar \
-              --main-class CPUSim64App \
+              --main-class com.glowingcat.CPUSim64App \
               --name CPUSim64 \
               --app-version "${{ env.APP_VERSION }}" \
               --vendor "Richard Lesh" \

@@ -1,0 +1,33 @@
+# OpenAI API Configuration (for testing Generic OpenAI API vendor)
+# Set API Key field in Preferences to your OpenAI API key
+Prompt:
+  URI: https://api.openai.com/v1/chat/completions
+  Method: POST
+  Headers:
+    Content-Type: application/json
+    Authorization: "Bearer ${AUTH_TOKEN}"
+  ConversationMode: multi-turn
+  Body: |
+    {
+      "model": "${MODEL}",
+      "messages": ${MESSAGES},
+      "temperature": 0,
+      "stream": false
+    }
+  Response:
+    ContentPath: "choices[0].message.content"
+
+Models:
+  URI: https://api.openai.com/v1/models
+  Method: GET
+  Headers:
+    Authorization: "Bearer ${AUTH_TOKEN}"
+  Response:
+    # OpenAI returns {"data": [{"id": "gpt-4o", ...}, ...]}
+    ListPath: "data"
+    IdField: "id"
+    DescriptionField: "id"
+
+Embedding:
+  URI: https://api.openai.com/v1/embeddings
+  Model: text-embedding-3-small

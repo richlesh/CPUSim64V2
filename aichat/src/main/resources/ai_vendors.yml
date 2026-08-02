@@ -1,0 +1,112 @@
+# AI Vendor Configuration
+# Each vendor entry defines:
+#   name:            Display name
+#   apiKeyUrl:       URL for obtaining an API key (shown as "Get API key..." link)
+#   baseUrl:         API base URL for chat completions and model listing
+#   clientType:      "openai" (OpenAI-compatible), "anthropic", or "generic" (YAML-configured)
+#   embeddingModel:  Default embedding model name (omit if vendor doesn't support embeddings)
+
+vendors:
+  - name: Alibaba
+    apiKeyUrl: https://www.alibabacloud.com/help/en/model-studio/get-api-key
+    baseUrl: https://dashscope-us.aliyuncs.com/compatible-mode/v1
+    clientType: openai
+    embeddingModel: text-embedding-v3
+
+  - name: Amazon Bedrock
+    apiKeyUrl: https://console.aws.amazon.com/iam/home#/security_credentials
+    baseUrl: https://bedrock-mantle.us-east-1.api.aws/v1
+    clientType: openai
+    embeddingModel: amazon.titan-embed-text-v2:0
+
+  - name: Anthropic
+    apiKeyUrl: https://console.anthropic.com/settings/keys
+    baseUrl: https://api.anthropic.com/v1
+    clientType: anthropic
+
+  - name: Cerebras
+    apiKeyUrl: https://cloud.cerebras.ai
+    baseUrl: https://api.cerebras.ai/v1
+    clientType: openai
+    embeddingModel: text-embedding-3-small
+
+  - name: DeepSeek
+    apiKeyUrl: https://platform.deepseek.com/api_keys
+    baseUrl: https://api.deepseek.com/v1
+    clientType: openai
+    embeddingModel: text-embedding-3-small
+
+  - name: Generic
+    apiKeyUrl: ""
+    baseUrl: ""
+    clientType: generic
+
+  - name: Generic OpenAI API
+    apiKeyUrl: ""
+    baseUrl: ""
+    clientType: openai
+    embeddingModel: text-embedding-3-small
+
+  - name: Google
+    apiKeyUrl: https://aistudio.google.com/apikey
+    baseUrl: https://generativelanguage.googleapis.com/v1beta/openai
+    clientType: openai
+    embeddingModel: text-embedding-004
+
+  - name: Groq
+    apiKeyUrl: https://console.groq.com/keys
+    baseUrl: https://api.groq.com/openai/v1
+    clientType: openai
+    embeddingModel: text-embedding-3-small
+
+  - name: IBM watsonx
+    apiKeyUrl: https://cloud.ibm.com/iam/apikeys
+    baseUrl: https://us-south.ml.cloud.ibm.com/ml/v1
+    clientType: openai
+    embeddingModel: ibm/slate-125m-english-rtrvr-v2
+
+  - name: Meta
+    apiKeyUrl: https://developer.meta.com/ai/
+    baseUrl: https://api.meta.ai/v1
+    clientType: openai
+
+  - name: Microsoft Azure
+    apiKeyUrl: https://portal.azure.com/#view/Microsoft_Azure_ProjectOxford/CognitiveServicesHub/~/OpenAI
+    baseUrl: https://YOUR_RESOURCE_NAME.openai.azure.com/openai
+    clientType: openai
+    embeddingModel: text-embedding-3-small
+
+  - name: Mistral
+    apiKeyUrl: https://console.mistral.ai/api-keys
+    baseUrl: https://api.mistral.ai/v1
+    clientType: openai
+    embeddingModel: mistral-embed
+
+  - name: Moonshot AI
+    apiKeyUrl: https://platform.kimi.ai
+    baseUrl: https://api.moonshot.ai/v1
+    clientType: openai
+    embeddingModel: text-embedding-3-small
+
+  - name: Ollama
+    apiKeyUrl: https://ollama.com
+    baseUrl: http://localhost:11434/v1
+    clientType: openai
+    embeddingModel: nomic-embed-text
+
+  - name: OpenAI
+    apiKeyUrl: https://platform.openai.com/api-keys
+    baseUrl: https://api.openai.com/v1
+    clientType: openai
+    embeddingModel: text-embedding-3-small
+
+  - name: Perplexity
+    apiKeyUrl: https://www.perplexity.ai/settings/api
+    baseUrl: https://api.perplexity.ai
+    clientType: openai
+
+  - name: xAI
+    apiKeyUrl: https://console.x.ai
+    baseUrl: https://api.x.ai/v1
+    clientType: openai
+    embeddingModel: text-embedding-3-small

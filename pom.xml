@@ -5,213 +5,26 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.lesh</groupId>
-    <artifactId>CPUSim64</artifactId>
+    <artifactId>CPUSim64-parent</artifactId>
     <version>2.6.0</version>
+    <packaging>pom</packaging>
+
+    <name>CPUSim64 Parent</name>
 
     <properties>
         <app.version>2.6.0</app.version>
         <copyright.years>2025–2026</copyright.years>
-        <maven.compiler.release>17</maven.compiler.release>
+        <maven.compiler.release>21</maven.compiler.release>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <antlr.version>4.13.2</antlr.version>
         <junit.version>5.14.0</junit.version>
+        <commonmark.version>0.24.0</commonmark.version>
+        <javafx.version>24</javafx.version>
     </properties>
 
-    <dependencies>
-        <!-- ANTLR runtime -->
-        <dependency>
-            <groupId>org.antlr</groupId>
-            <artifactId>antlr4</artifactId>
-            <version>${antlr.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.antlr</groupId>
-            <artifactId>antlr4-runtime</artifactId>
-            <version>${antlr.version}</version> <!-- set this to match your generator -->
-        </dependency>
-        <dependency>
-          <groupId>org.junit.jupiter</groupId>
-          <artifactId>junit-jupiter</artifactId>
-          <version>${junit.version}</version>
-          <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-lang3</artifactId>
-            <version>3.18.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.scilab.forge</groupId>
-            <artifactId>jlatexmath</artifactId>
-            <version>1.0.7</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jline</groupId>
-            <artifactId>jline</artifactId>
-            <version>3.30.15</version>
-        </dependency>
-        <dependency>
-            <groupId>com.fifesoft</groupId>
-            <artifactId>rsyntaxtextarea</artifactId>
-            <version>3.5.3</version>
-        </dependency>
-    </dependencies>
-
-    <build>
-        <resources>
-            <!-- Normal application resources -->
-            <resource>
-                <directory>src/main/resources</directory>
-            </resource>
-
-            <!-- Copy LICENSE and NOTICE into META-INF -->
-            <resource>
-                <directory>${project.basedir}</directory>
-                <includes>
-                    <include>LICENSE</include>
-                    <include>NOTICE</include>
-                </includes>
-                <targetPath>META-INF</targetPath>
-                <filtering>false</filtering>
-            </resource>
-        </resources>
-
-        <plugins>
-            <!-- 1) Generate ANTLR sources BEFORE compile -->
-            <plugin>
-                <groupId>org.antlr</groupId>
-                <artifactId>antlr4-maven-plugin</artifactId>
-                <version>${antlr.version}</version>
-                <executions>
-                    <execution>
-                        <id>generate-antlr-sources</id>
-                        <phase>generate-sources</phase> <!-- ✅ bind to phase -->
-                        <goals><goal>antlr4</goal></goals>
-                        <configuration>
-                            <sourceDirectory>${basedir}/src/main/antlr4</sourceDirectory>
-                            <outputDirectory>${basedir}/src/generated-sources/antlr4</outputDirectory>
-                            <visitor>true</visitor>
-                            <listener>true</listener>
-                            <arguments>
-                                <argument>-package</argument>
-                                <argument>cloud.lesh.CPUSim64</argument>
-                            </arguments>
-                            <libDirectory>${basedir}/src/main/antlr4</libDirectory>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <!-- 1) Generate BuildInfo sources BEFORE compile -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-antrun-plugin</artifactId>
-                <version>3.1.0</version>
-                <executions>
-                    <execution>
-                        <id>generate-buildinfo</id>
-                        <phase>generate-sources</phase>
-                        <goals><goal>run</goal></goals>
-                        <configuration>
-                            <target>
-                                <mkdir dir="${project.build.directory}/generated-sources/buildinfo/cloud/lesh/CPUSim64"/>
-
-                                <copy file="${basedir}/src/templates/BuildInfo.java.in"
-                                      tofile="${project.build.directory}/generated-sources/buildinfo/cloud/lesh/CPUSim64/BuildInfo.java"
-                                      overwrite="true"
-                                      filtering="true">
-                                    <filterset>
-                                        <filter token="app.version" value="${app.version}"/>
-                                        <filter token="copyright.years" value="${copyright.years}"/>
-                                    </filterset>
-                                </copy>
-                            </target>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <!-- 2) Make Maven treat generated sources as normal sources -->
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>build-helper-maven-plugin</artifactId>
-                <version>3.5.0</version>
-                <executions>
-                    <execution>
-                        <id>add-antlr-generated</id>
-                        <phase>generate-sources</phase>
-                        <goals><goal>add-source</goal></goals>
-                        <configuration>
-                            <sources>
-                                <source>${basedir}/src/generated-sources/antlr4</source>
-                                <source>${project.build.directory}/generated-sources/buildinfo</source>
-                            </sources>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <!-- 3) Compile Java (includes generated sources) -->
-            <plugin>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.11.0</version>
-                <configuration>
-                    <release>${maven.compiler.release}</release>
-                </configuration>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-shade-plugin</artifactId>
-                <version>3.5.0</version>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals><goal>shade</goal></goals>
-                        <configuration>
-                            <createDependencyReducedPom>false</createDependencyReducedPom>
-                            <filters>
-                                <filter>
-                                    <artifact>*:*</artifact>
-                                    <excludes>
-                                        <exclude>LICENSE</exclude>
-                                        <exclude>NOTICE</exclude>
-                                    </excludes>
-                                </filter>
-                                <filter>
-                                    <artifact>org.jline:jline</artifact>
-                                    <excludes>
-                                        <exclude>org/jline/nativ/Mac/**</exclude>
-                                        <exclude>org/jline/nativ/Linux/**</exclude>
-                                        <exclude>org/jline/nativ/FreeBSD/**</exclude>
-                                    </excludes>
-                                </filter>
-                            </filters>
-                            <transformers>
-                                <!-- If you have a main() -->
-                                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                    <mainClass>ias.Main</mainClass>
-                                </transformer>
-                                <!-- Ensure YOUR project's LICENSE is in the shaded jar -->
-                                <transformer implementation="org.apache.maven.plugins.shade.resource.IncludeResourceTransformer">
-                                    <resource>META-INF/LICENSE</resource>
-                                    <file>${project.basedir}/LICENSE</file>
-                                </transformer>
-
-                                <!-- If you also want to force your own NOTICE similarly (optional) -->
-                                <!--transformer implementation="org.apache.maven.plugins.shade.resource.IncludeResourceTransformer">
-                                    <resource>META-INF/NOTICE</resource>
-                                    <file>${project.basedir}/NOTICE</file>
-                                </transformer-->
-
-                                <!-- Keep these if you want dependency NOTICE/LICENSE transforms -->
-                                <transformer implementation="org.apache.maven.plugins.shade.resource.ApacheNoticeResourceTransformer"/>
-                                <transformer implementation="org.apache.maven.plugins.shade.resource.ApacheLicenseResourceTransformer"/>
-                            </transformers>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-    </build>
+    <modules>
+        <module>aichat</module>
+        <module>cpusim64</module>
+        <module>ide</module>
+    </modules>
 </project>

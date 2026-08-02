@@ -1,0 +1,39 @@
+# Azure OpenAI API Configuration
+# Set API Key field to your Azure OpenAI API key
+# Replace YOUR_RESOURCE_NAME with your Azure OpenAI resource name
+#
+# Find your key and endpoint in Azure Portal:
+#   Azure Portal > Your OpenAI Resource > Keys and Endpoint
+#
+# API versions: 2024-06-01, 2024-10-21, 2025-01-01-preview
+# Docs: https://learn.microsoft.com/en-us/azure/ai-foundry/openai/reference
+Prompt:
+  URI: https://YOUR_RESOURCE_NAME.services.ai.azure.com/openai/deployments/${MODEL}/chat/completions?api-version=2024-06-01
+  Method: POST
+  Headers:
+    Content-Type: application/json
+    api-key: "${AUTH_TOKEN}"
+  ConversationMode: multi-turn
+  Body: |
+    {
+      "messages": ${MESSAGES},
+      "temperature": 0,
+      "max_tokens": 4096,
+      "stream": false
+    }
+  Response:
+    ContentPath: "choices[0].message.content"
+
+Models:
+  URI: https://YOUR_RESOURCE_NAME.openai.azure.com/openai/models?api-version=2024-06-01
+  Method: GET
+  Headers:
+    api-key: "${AUTH_TOKEN}"
+  Response:
+    ListPath: "data"
+    IdField: "id"
+    DescriptionField: "id"
+
+Embedding:
+  URI: https://YOUR_RESOURCE_NAME.openai.azure.com/openai/deployments/text-embedding-3-small/embeddings?api-version=2024-06-01
+  Model: text-embedding-3-small

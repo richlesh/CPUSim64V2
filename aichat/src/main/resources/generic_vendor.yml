@@ -1,0 +1,135 @@
+# Generic LLM Vendor Configuration
+# Variables: ${AUTH_TOKEN}, ${MODEL}, ${PROMPT}, ${MESSAGES}, ${GUID}
+#            ${MESSAGES_NO_SYSTEM}, ${SYSTEM_PROMPT}
+#
+# ${AUTH_TOKEN}          - API key from the Preferences dialog
+# ${MODEL}              - Selected model from the Preferences dialog
+# ${PROMPT}             - The current user message (JSON-escaped)
+# ${MESSAGES}           - Full conversation history as JSON array
+# ${MESSAGES_NO_SYSTEM} - Conversation history excluding system messages
+# ${SYSTEM_PROMPT}      - Content of the system message (JSON-escaped)
+# ${GUID}              - Conversation GUID (regenerated on Clear)
+#
+# ConversationMode:
+#   single-shot - sends only the current prompt with a conversation GUID
+#                 for server-side history tracking. Uses ${PROMPT} and ${GUID}.
+#   multi-turn  - sends the full conversation history. Uses ${MESSAGES}
+#                 which expands to a JSON array of {role, content} objects.
+
+Prompt:
+  URI: https://example.com/api/conversation
+  Method: POST
+  Headers:
+    Content-Type: application/json
+    Authorization: "Basic ${AUTH_TOKEN}"
+  ConversationMode: single-shot
+  Body: |
+    {
+      "model": "${MODEL}",
+      "messages": [
+        {"role": "system", "content": "${SYSTEM_PROMPT}"},
+        {"role": "user", "content": "${PROMPT}"}
+      ],
+      "temperature": 0,
+      "conversation_guid": "${GUID}",
+      "conversation_mode": ["non-rag"],
+      "stream": false
+    }
+  Response:
+    ContentPath: "choices[0].message.content"
+
+# To use multi-turn mode instead, change ConversationMode and Body:
+#
+#  ConversationMode: multi-turn
+#  Body: |
+#    {
+#      "model": "${MODEL}",
+#      "messages": ${MESSAGES},
+#      "temperature": 0,
+#      "stream": false
+#    }
+
+# Optional: Auth section for OAuth/IAM token exchange.
+# If present, ${AUTH_TOKEN} in Prompt/Models is replaced with the
+# fetched access token instead of the raw API key from Preferences.
+# The token is cached until expiry.
+#
+# Auth:
+#   TokenURI: https://iam.cloud.ibm.com/identity/token
+#   Method: POST
+#   Headers:
+#     Content-Type: application/x-www-form-urlencoded
+#   Body: "grant_type=urn:ibm:params:oauth:grant-type:apikey&apikey=${AUTH_TOKEN}"
+#   Response:
+#     TokenPath: "access_token"
+#     ExpiresInPath: "expires_in"
+
+# Optional: TrustStore section for corporate/custom SSL certificates.
+# Use this if your network uses a TLS intercepting proxy or self-signed certs.
+# A restart of the application is required after changing these settings.
+#
+# To create a trust store with your corporate CA certificate:
+#   1. Export your corporate root CA certificate (PEM or DER format)
+#      - On macOS: Keychain Access > System > find your corporate CA > export as .cer
+#      - On Windows: certmgr.msc > Trusted Root CAs > find CA > export as .cer
+#      - On Linux: check /etc/ssl/certs/ or ask your IT department
+#   2. Create a Java KeyStore (JKS) file:
+#      keytool -import -trustcacerts -alias corporate-ca \
+#        -file /path/to/corporate-ca.cer \
+#        -keystore ~/.purpleplatypus-truststore.jks \
+#        -storepass changeit
+#   3. To include the default Java CA certificates as well:
+#      keytool -importkeystore \
+#        -srckeystore $JAVA_HOME/lib/security/cacerts \
+#        -srcstorepass changeit \
+#        -destkeystore ~/.purpleplatypus-truststore.jks \
+#        -deststorepass changeit
+#      Then import your corporate CA on top:
+#      keytool -import -trustcacerts -alias corporate-ca \
+#        -file /path/to/corporate-ca.cer \
+#        -keystore ~/.purpleplatypus-truststore.jks \
+#        -storepass changeit
+#
+# TrustStore:
+#   Path: ~/.purpleplatypus-truststore.jks
+#   Password: changeit
+#   Type: JKS
+
+Models:
+  URI: https://example.com/api/models
+  Method: GET
+  Headers:
+    Authorization: "Basic ${AUTH_TOKEN}"
+  Response:
+    # ListPath: JSONPath to the array of models in the response.
+    #   "" (empty) = response body is the array itself, e.g. [{"model_id":...}, ...]
+    #   "data"     = array is in the "data" field, e.g. {"data": [...]}
+    #   "models"   = array is in the "models" field
+    #   "result.models" = nested path, e.g. {"result": {"models": [...]}}
+    ListPath: ""
+    IdField: "model_id"
+    DescriptionField: "short_description"
+
+# Optional: Embedding section for RAG (Retrieval-Augmented Generation).
+# If configured, the AI chat will use vector embeddings to find relevant
+# documentation chunks for each query, resulting in better context-aware responses.
+#
+# If omitted or left blank, keyword-based search is used instead (no API calls,
+# but less semantically accurate).
+#
+# The URI should point to an OpenAI-compatible /v1/embeddings endpoint.
+# The Model should be the embedding model name supported by that endpoint.
+#
+# Examples:
+#   OpenAI:        URI: https://api.openai.com/v1/embeddings
+#                  Model: text-embedding-3-small
+#   Azure OpenAI:  URI: https://YOUR_RESOURCE.openai.azure.com/openai/deployments/text-embedding-3-small/embeddings?api-version=2024-06-01
+#                  Model: text-embedding-3-small
+#   Ollama:        URI: http://localhost:11434/v1/embeddings
+#                  Model: nomic-embed-text
+#   AWS Bedrock:   URI: https://bedrock-mantle.us-east-1.api.aws/v1/embeddings
+#                  Model: amazon.titan-embed-text-v2:0
+#
+# Embedding:
+#   URI: https://api.openai.com/v1/embeddings
+#   Model: text-embedding-3-small

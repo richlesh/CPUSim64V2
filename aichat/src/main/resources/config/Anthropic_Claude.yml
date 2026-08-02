@@ -1,0 +1,38 @@
+# Anthropic Claude API Configuration
+# Set API Key field to your Anthropic API key
+# Get one at: https://console.anthropic.com/settings/keys
+Prompt:
+  URI: https://api.anthropic.com/v1/messages
+  Method: POST
+  Headers:
+    Content-Type: application/json
+    x-api-key: "${AUTH_TOKEN}"
+    anthropic-version: "2023-06-01"
+  ConversationMode: multi-turn
+  Body: |
+    {
+      "model": "${MODEL}",
+      "max_tokens": 8192,
+      "system": "${SYSTEM_PROMPT}",
+      "messages": ${MESSAGES_NO_SYSTEM},
+      "stream": false
+    }
+  Response:
+    ContentPath: "content[0].text"
+
+Models:
+  URI: https://api.anthropic.com/v1/models?limit=100
+  Method: GET
+  Headers:
+    x-api-key: "${AUTH_TOKEN}"
+    anthropic-version: "2023-06-01"
+  Response:
+    ListPath: "data"
+    IdField: "id"
+    DescriptionField: "display_name"
+
+# Anthropic does not provide an embedding API.
+# Omit or leave blank to use keyword-based indexing instead.
+# Embedding:
+#   URI:
+#   Model:
