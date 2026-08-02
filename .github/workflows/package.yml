@@ -145,7 +145,7 @@ jobs:
         run: |
           mvn clean package -P release -DskipTests=true
           mkdir -p lib
-          cp ide/target/CPUSim64-*.jar lib/
+          cp ide/target/CPUSim64IDE-*.jar lib/CPUSim64-${APP_VERSION}.jar
 
       - name: Install RPM tools (Linux RPM)
         if: matrix.pkg_type == 'rpm'

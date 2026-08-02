@@ -1,4 +1,4 @@
-name: Build and Release
+name: Build and Release Jar
 
 on:
   workflow_dispatch:
@@ -34,9 +34,11 @@ jobs:
 
       - name: Build JAR
         run: |
+          VERSION="${{ inputs.version }}"
+          VERSION="${VERSION#v}"
           mvn clean package -P release -DskipTests=true
           mkdir -p lib
-          cp ide/target/CPUSim64-*.jar lib/
+          cp ide/target/CPUSim64IDE-*.jar lib/CPUSim64-${VERSION}.jar
 
       - name: Create distribution zip
         run: |
