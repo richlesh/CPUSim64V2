@@ -45,7 +45,7 @@ jobs:
           VERSION="${{ inputs.version }}"
           VERSION="${VERSION#v}"
           mkdir -p CPUSim64
-          cp -r *.sh *.bat lib cpusim64/documentation NOTICE LICENSE README.md CPUSim64/
+          cp -r *.sh *.bat lib cpusim64/src/main/resources/documentation NOTICE LICENSE README.md CPUSim64/
           zip -r "cpusim64-${VERSION}-java.zip" CPUSim64 \
             -x "**/.DS_Store"
           rm -rf CPUSim64
