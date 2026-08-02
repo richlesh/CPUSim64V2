@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: 'Release version tag (e.g. 2.6.0)'
+        description: 'Release version tag (e.g. 2.7.0)'
         required: true
 
 permissions:
@@ -113,12 +113,12 @@ jobs:
       - name: Compile cpusim64 CLI tool
         shell: bash
         run: |
-          sed -i.bak "s/Version 2.0.0/Version ${APP_VERSION}/" src/main/cpp/cpusim64.cpp
+          sed -i.bak "s/Version 2.0.0/Version ${APP_VERSION}/" ide/src/main/cpp/cpusim64.cpp
           if [ "${{ runner.os }}" = "Windows" ]; then
-            cl.exe /std:c++17 /O2 /Fe:src/main/resources/cpusim64.exe src/main/cpp/cpusim64.cpp || \
-            g++ -std=c++17 -O2 -static -o src/main/resources/cpusim64.exe src/main/cpp/cpusim64.cpp
+            cl.exe /std:c++17 /O2 /Fe:ide/src/main/resources/cpusim64.exe ide/src/main/cpp/cpusim64.cpp || \
+            g++ -std=c++17 -O2 -static -o ide/src/main/resources/cpusim64.exe ide/src/main/cpp/cpusim64.cpp
           else
-            c++ -std=c++17 -O2 -o src/main/resources/cpusim64 src/main/cpp/cpusim64.cpp
+            c++ -std=c++17 -O2 -o ide/src/main/resources/cpusim64 ide/src/main/cpp/cpusim64.cpp
           fi
 
       - name: Sign cpusim64 binary (macOS)
@@ -128,13 +128,14 @@ jobs:
             --sign "Developer ID Application: RICHARD A LESH (MMZ3Y97NTP)" \
             --keychain $RUNNER_TEMP/build.keychain \
             --entitlements resources/entitlements.plist \
-            src/main/resources/cpusim64
+            ide/src/main/resources/cpusim64
 
       - name: Inject license salt
         shell: bash
         run: |
-          cat > src/main/java/License.java << EOF
+          cat > ide/src/main/java/com/glowingcat/License.java << EOF
           // SPDX-License-Identifier: Apache-2.0
+          package com.glowingcat;
           public class License {
               static final String LICENSE_SALT = "${{ secrets.LICENSE_SALT }}";
           }
@@ -142,9 +143,9 @@ jobs:
 
       - name: Build JAR
         run: |
-          mvn clean package -DskipTests=true
+          mvn clean package -P release -DskipTests=true
           mkdir -p lib
-          cp target/CPUSim64-*.jar lib/
+          cp ide/target/CPUSim64-*.jar lib/
 
       - name: Install RPM tools (Linux RPM)
         if: matrix.pkg_type == 'rpm'
@@ -203,6 +204,13 @@ jobs:
           description=CPUSim64 Source Map File
           EOF
 
+          cat > fa-def.properties <<EOF
+          mime-type=application/x-cpusim-def
+          extension=def
+          icon=${{ matrix.asm_icon }}
+          description=CPUSim64 Definition File
+          EOF
+
       - name: Run jpackage
         shell: bash
         run: |
@@ -211,7 +219,7 @@ jobs:
             jpackage \
               --input lib \
               --main-jar CPUSim64-${{ env.APP_VERSION }}.jar \
-              --main-class CPUSim64App \
+              --main-class com.glowingcat.CPUSim64App \
               --name CPUSim64 \
               --app-version "${{ env.APP_VERSION }}" \
               --vendor "Richard Lesh" \
@@ -224,6 +232,7 @@ jobs:
               --file-associations fa-sym1.properties \
               --file-associations fa-sym2.properties \
               --file-associations fa-srcmap.properties \
+              --file-associations fa-def.properties \
               --jlink-options "--strip-debug --no-header-files --no-man-pages --compress zip-6" \
               --resource-dir resources/macos \
               --type app-image
@@ -232,7 +241,7 @@ jobs:
             jpackage \
               --input lib \
               --main-jar CPUSim64-${{ env.APP_VERSION }}.jar \
-              --main-class CPUSim64App \
+              --main-class com.glowingcat.CPUSim64App \
               --name CPUSim64 \
               --app-version "${{ env.APP_VERSION }}" \
               --vendor "Richard Lesh" \
@@ -261,6 +270,7 @@ jobs:
               --file-associations fa-sym1.properties \
               --file-associations fa-sym2.properties \
               --file-associations fa-srcmap.properties \
+              --file-associations fa-def.properties \
               --linux-app-category devel \
               --linux-menu-group "Development;IDE;" \
               --resource-dir resources/linux \
@@ -269,7 +279,7 @@ jobs:
             jpackage \
               --input lib \
               --main-jar CPUSim64-${{ env.APP_VERSION }}.jar \
-              --main-class CPUSim64App \
+              --main-class com.glowingcat.CPUSim64App \
               --name CPUSim64 \
               --app-version "${{ env.APP_VERSION }}" \
               --vendor "Richard Lesh" \
@@ -282,6 +292,7 @@ jobs:
               --file-associations fa-sym1.properties \
               --file-associations fa-sym2.properties \
               --file-associations fa-srcmap.properties \
+              --file-associations fa-def.properties \
               --jlink-options "--strip-debug --no-header-files --no-man-pages --compress zip-6" \
               --win-menu \
               --win-shortcut \

@@ -1,0 +1,36 @@
+# Amazon Bedrock Configuration (bedrock-mantle endpoint)
+# Set API Key field to your Amazon Bedrock API key
+# Get one at: https://console.aws.amazon.com/bedrock/ > API keys
+# Replace REGION with your AWS region (e.g. us-east-1, us-west-2)
+#
+# This uses the OpenAI-compatible bedrock-mantle endpoint.
+Prompt:
+  URI: https://bedrock-mantle.us-east-1.api.aws/v1/chat/completions
+  Method: POST
+  Headers:
+    Content-Type: application/json
+    Authorization: "Bearer ${AUTH_TOKEN}"
+  ConversationMode: multi-turn
+  Body: |
+    {
+      "model": "${MODEL}",
+      "messages": ${MESSAGES},
+      "temperature": 0,
+      "stream": false
+    }
+  Response:
+    ContentPath: "choices[0].message.content"
+
+Models:
+  URI: https://bedrock-mantle.us-east-1.api.aws/v1/models
+  Method: GET
+  Headers:
+    Authorization: "Bearer ${AUTH_TOKEN}"
+  Response:
+    ListPath: "data"
+    IdField: "id"
+    DescriptionField: "id"
+
+Embedding:
+  URI: https://bedrock-mantle.us-east-1.api.aws/v1/embeddings
+  Model: amazon.titan-embed-text-v2:0
