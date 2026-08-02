@@ -8,6 +8,8 @@ import java.awt.*;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.*;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -260,6 +262,9 @@ public class AIChatPanel extends JPanel {
             }
             renderChat();
         });
+
+        // Copy bundled AI vendor config files to Desktop on first run
+        installConfigToDesktop();
     }
 
     private void initChatDisplay() {
@@ -730,40 +735,7 @@ public class AIChatPanel extends JPanel {
             }
         }
 
-        // Check for ```markdown or ```md or ```asm or any code block that looks like a full program
-        // Match any fenced code block: ```<optional-lang>\n...\n```
-        int codeStart = -1;
-        String[] fullReplacementLangs = {"markdown", "md", "asm", "assembly", "fulltext", ""};
-        for (String lang : fullReplacementLangs) {
-            String fence = lang.isEmpty() ? "```\n" : "```" + lang + "\n";
-            int idx = normalized.indexOf(fence);
-            if (idx >= 0) {
-                codeStart = idx;
-                break;
-            }
-        }
-
-        if (codeStart >= 0) {
-            int blockStart = normalized.indexOf("\n", codeStart) + 1;
-            int blockEnd = findClosingFence(normalized, blockStart);
-            if (blockEnd > blockStart) {
-                String newMarkdown = normalized.substring(blockStart, blockEnd);
-                // Only treat as full replacement if it's substantial (5+ lines)
-                long lineCount = newMarkdown.chars().filter(c -> c == '\n').count() + 1;
-                if (lineCount >= 5) {
-                    String explanation = normalized.substring(0, codeStart).trim();
-                    int fenceEndPos = normalized.indexOf("\n", blockEnd + 1);
-                    if (fenceEndPos < 0) fenceEndPos = blockEnd + 4;
-                    if (fenceEndPos < normalized.length()) {
-                        String after = normalized.substring(fenceEndPos).trim();
-                        if (!after.isEmpty()) explanation += (explanation.isEmpty() ? "" : "\n") + after;
-                    }
-                    chatMessages.add(new ApprovalMessage(explanation, newMarkdown, null));
-                    renderChat();
-                    return;
-                }
-            }
-        }
+        // No diff or fulltext block found — show as normal chat message
         ChatMessage aiMsg = new ChatMessage("assistant", response);
         chatMessages.add(aiMsg);
         renderChat();
@@ -1027,6 +999,45 @@ public class AIChatPanel extends JPanel {
             java.nio.file.Files.writeString(path, content, StandardCharsets.UTF_8);
         } catch (Exception e) {
             // Non-fatal — developer convenience only
+        }
+    }
+
+    /**
+     * Copy bundled config files from resources/config/ to the user's Desktop
+     * as "Generic AI Configurations" folder. Only runs once — skips if the folder already exists.
+     */
+    private static void installConfigToDesktop() {
+        try {
+            Path desktopDir = Path.of(System.getProperty("user.home"), "Desktop");
+            if (!Files.isDirectory(desktopDir)) return;
+
+            Path destDir = desktopDir.resolve("Generic AI Configurations");
+            if (Files.exists(destDir)) return; // already installed
+
+            // Read the index of config files
+            var indexStream = AIChatPanel.class.getResourceAsStream("/config/config-index.txt");
+            if (indexStream == null) return;
+
+            List<String> filenames;
+            try (var reader = new java.io.BufferedReader(new java.io.InputStreamReader(indexStream, StandardCharsets.UTF_8))) {
+                filenames = reader.lines()
+                    .map(String::trim)
+                    .filter(s -> !s.isEmpty())
+                    .toList();
+            }
+
+            if (filenames.isEmpty()) return;
+
+            Files.createDirectories(destDir);
+            for (String filename : filenames) {
+                var resStream = AIChatPanel.class.getResourceAsStream("/config/" + filename);
+                if (resStream == null) continue;
+                try (resStream) {
+                    Files.copy(resStream, destDir.resolve(filename));
+                }
+            }
+        } catch (Exception e) {
+            // Non-fatal — best effort
         }
     }
 }
