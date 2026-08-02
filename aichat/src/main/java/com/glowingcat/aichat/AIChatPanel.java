@@ -69,6 +69,7 @@ public class AIChatPanel extends JPanel {
     private static class ChatMessage {
         final String role; // "user" or "assistant"
         final String markdown;
+        String copyContent; // if set, copy button copies this instead of markdown
         boolean accepted; // for code approval messages
         boolean rejected;
         boolean isApproval; // whether this contains a document replacement
@@ -465,6 +466,8 @@ public class AIChatPanel extends JPanel {
                     String md;
                     if (msg instanceof ApprovalMessage am) {
                         md = am.diff != null ? am.diff : am.replacementMarkdown;
+                    } else if (msg.copyContent != null) {
+                        md = msg.copyContent;
                     } else {
                         md = msg.markdown;
                     }
@@ -633,6 +636,50 @@ public class AIChatPanel extends JPanel {
         // Normalize line endings
         String normalized = response.replace("\r\n", "\n").replace("\r", "\n");
 
+        // Check for ```fulltext block — full source replacement applied immediately (no Accept/Reject)
+        // Support 3 or more backticks as the fence (LLMs sometimes use 4+)
+        int cpuasmStart = -1;
+        int cpuasmFenceLen = 0;
+        {
+            int idx = 0;
+            while (idx < normalized.length()) {
+                idx = normalized.indexOf("```", idx);
+                if (idx < 0) break;
+                int fenceStart = idx;
+                while (idx < normalized.length() && normalized.charAt(idx) == '`') idx++;
+                int fenceLen = idx - fenceStart;
+                if (normalized.startsWith("fulltext\n", idx)) {
+                    cpuasmStart = fenceStart;
+                    cpuasmFenceLen = fenceLen;
+                    break;
+                }
+            }
+        }
+        if (cpuasmStart >= 0) {
+            int blockStart = normalized.indexOf("\n", cpuasmStart) + 1;
+            String closingFence = "`".repeat(cpuasmFenceLen);
+            int blockEnd = findClosingFenceExact(normalized, blockStart, closingFence);
+            if (blockEnd > blockStart) {
+                String newSource = normalized.substring(blockStart, blockEnd);
+                String explanation = normalized.substring(0, cpuasmStart).trim();
+                int fenceEndPos = normalized.indexOf("\n", blockEnd + 1);
+                if (fenceEndPos < 0) fenceEndPos = blockEnd + cpuasmFenceLen + 1;
+                if (fenceEndPos < normalized.length()) {
+                    String after = normalized.substring(fenceEndPos).trim();
+                    if (!after.isEmpty()) explanation += (explanation.isEmpty() ? "" : "\n") + after;
+                }
+                // Apply directly to editor
+                editor.setText(newSource);
+                // Show explanation as a normal message (or a default if none)
+                String display = explanation.isEmpty() ? "Updated the source code." : explanation;
+                ChatMessage msg = new ChatMessage("assistant", display);
+                msg.copyContent = newSource;
+                chatMessages.add(msg);
+                renderChat();
+                return;
+            }
+        }
+
         // Check for ```diff block (preferred format for changes)
         int diffStart = normalized.indexOf("```diff\n");
         if (diffStart >= 0) {
@@ -711,6 +758,29 @@ public class AIChatPanel extends JPanel {
             searchFrom = candidate + 4;
         }
         return blockEnd;
+    }
+
+    /** Find the closing fence matching an exact backtick sequence (e.g., ```` or `````) after a block start. */
+    private int findClosingFenceExact(String text, int blockStart, String fence) {
+        String target = "\n" + fence;
+        int searchFrom = blockStart;
+        while (searchFrom < text.length()) {
+            int candidate = text.indexOf(target, searchFrom);
+            if (candidate < 0) break;
+            int afterFence = candidate + target.length();
+            // Ensure fence is not followed by more backticks (which would mean a longer fence)
+            if (afterFence < text.length() && text.charAt(afterFence) == '`') {
+                searchFrom = afterFence;
+                continue;
+            }
+            // Ensure fence is at end of line or followed by whitespace/newline
+            if (afterFence >= text.length() || text.charAt(afterFence) == '\n'
+                    || text.substring(afterFence).trim().isEmpty()) {
+                return candidate;
+            }
+            searchFrom = afterFence;
+        }
+        return -1;
     }
 
     /** Special message type for document replacement approvals. */
