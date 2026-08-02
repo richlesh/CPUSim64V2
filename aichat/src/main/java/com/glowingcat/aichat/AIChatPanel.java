@@ -99,6 +99,7 @@ public class AIChatPanel extends JPanel {
         private ChatColors chatColors;
         private LLMClient llmClient;
         private Runnable onPromptNag;
+        private DocumentRetriever documentRetriever;
         private final List<ContextProvider> contextProviders = new ArrayList<>();
 
         private Builder() {}
@@ -130,6 +131,17 @@ public class AIChatPanel extends JPanel {
         /** Set a callback invoked every N prompts for nag/licensing (optional). */
         public Builder onPromptNag(Runnable onPromptNag) {
             this.onPromptNag = onPromptNag;
+            return this;
+        }
+
+        /**
+         * Set the document retriever for RAG-based context (optional).
+         * If not set, no RAG retrieval will be performed.
+         *
+         * @param retriever a configured DocumentRetriever instance
+         */
+        public Builder documentRetriever(DocumentRetriever retriever) {
+            this.documentRetriever = retriever;
             return this;
         }
 
@@ -171,7 +183,7 @@ public class AIChatPanel extends JPanel {
         this.aiIconFallbackUrl = aiUrl != null ? aiUrl.toString() : "";
 
         // RAG retriever — lazily initialized on first query
-        this.retriever = new DocumentRetriever();
+        this.retriever = builder.documentRetriever;
 
         // Set up commonmark parser for rendering AI responses
         List<Extension> extensions = List.of(
@@ -524,6 +536,7 @@ public class AIChatPanel extends JPanel {
      * Shows a progress dialog while indexing.
      */
     private void ensureRetrieverInitialized() {
+        if (retriever == null) return;
         if (!retriever.needsInitialization(aiPreferences)) return;
 
         String vendor = aiPreferences.getLlmVendor();
@@ -582,8 +595,15 @@ public class AIChatPanel extends JPanel {
 
         // Add RAG-retrieved relevant documentation chunks
         ensureRetrieverInitialized();
-        if (retriever.isInitialized()) {
-            List<String> relevantDocs = retriever.retrieve(text);
+        if (retriever != null && retriever.isInitialized()) {
+            // Combine user prompt with document sample for better retrieval relevance
+            String retrievalQuery = text;
+            String docText = editor.getText();
+            if (docText != null && !docText.isEmpty()) {
+                String docSample = docText.length() > 500 ? docText.substring(0, 500) : docText;
+                retrievalQuery = text + "\n\n" + docSample;
+            }
+            List<String> relevantDocs = retriever.retrieve(retrievalQuery);
             if (!relevantDocs.isEmpty()) {
                 context += "\n\nRelevant documentation:\n";
                 for (String doc : relevantDocs) {
@@ -595,7 +615,13 @@ public class AIChatPanel extends JPanel {
         if (messages.isEmpty()) {
             messages.add(Map.of("role", "system", "content", systemPrompt));
         }
-        messages.add(Map.of("role", "user", "content", context + "\n\nUser request: " + text));
+        String fullUserMessage = context + "\n\nUser request: " + text;
+        messages.add(Map.of("role", "user", "content", fullUserMessage));
+
+        // In developer mode, write the composed prompt to a file for inspection
+        if (isDeveloperMode()) {
+            writeDevFile(".glowingcat-ai-prompt.md", fullUserMessage);
+        }
 
         // Ensure we have an LLM client
         if (llmClient == null) {
@@ -611,6 +637,10 @@ public class AIChatPanel extends JPanel {
             try {
                 String response = client.chat(messages, systemPrompt);
                 messages.add(Map.of("role", "assistant", "content", response));
+                // In developer mode, write the AI response to a file for inspection
+                if (isDeveloperMode()) {
+                    writeDevFile(".glowingcat-ai-response.md", response);
+                }
                 SwingUtilities.invokeLater(() -> {
                     pulsing = false;
                     processResponse(response);
@@ -638,8 +668,8 @@ public class AIChatPanel extends JPanel {
 
         // Check for ```fulltext block — full source replacement applied immediately (no Accept/Reject)
         // Support 3 or more backticks as the fence (LLMs sometimes use 4+)
-        int cpuasmStart = -1;
-        int cpuasmFenceLen = 0;
+        int fulltextStart = -1;
+        int fulltextFenceLen = 0;
         {
             int idx = 0;
             while (idx < normalized.length()) {
@@ -649,21 +679,21 @@ public class AIChatPanel extends JPanel {
                 while (idx < normalized.length() && normalized.charAt(idx) == '`') idx++;
                 int fenceLen = idx - fenceStart;
                 if (normalized.startsWith("fulltext\n", idx)) {
-                    cpuasmStart = fenceStart;
-                    cpuasmFenceLen = fenceLen;
+                    fulltextStart = fenceStart;
+                    fulltextFenceLen = fenceLen;
                     break;
                 }
             }
         }
-        if (cpuasmStart >= 0) {
-            int blockStart = normalized.indexOf("\n", cpuasmStart) + 1;
-            String closingFence = "`".repeat(cpuasmFenceLen);
+        if (fulltextStart >= 0) {
+            int blockStart = normalized.indexOf("\n", fulltextStart) + 1;
+            String closingFence = "`".repeat(fulltextFenceLen);
             int blockEnd = findClosingFenceExact(normalized, blockStart, closingFence);
             if (blockEnd > blockStart) {
                 String newSource = normalized.substring(blockStart, blockEnd);
-                String explanation = normalized.substring(0, cpuasmStart).trim();
+                String explanation = normalized.substring(0, fulltextStart).trim();
                 int fenceEndPos = normalized.indexOf("\n", blockEnd + 1);
-                if (fenceEndPos < 0) fenceEndPos = blockEnd + cpuasmFenceLen + 1;
+                if (fenceEndPos < 0) fenceEndPos = blockEnd + fulltextFenceLen + 1;
                 if (fenceEndPos < normalized.length()) {
                     String after = normalized.substring(fenceEndPos).trim();
                     if (!after.isEmpty()) explanation += (explanation.isEmpty() ? "" : "\n") + after;
@@ -703,7 +733,7 @@ public class AIChatPanel extends JPanel {
         // Check for ```markdown or ```md or ```asm or any code block that looks like a full program
         // Match any fenced code block: ```<optional-lang>\n...\n```
         int codeStart = -1;
-        String[] fullReplacementLangs = {"markdown", "md", "asm", "assembly", "cpusim64", ""};
+        String[] fullReplacementLangs = {"markdown", "md", "asm", "assembly", "fulltext", ""};
         for (String lang : fullReplacementLangs) {
             String fence = lang.isEmpty() ? "```\n" : "```" + lang + "\n";
             int idx = normalized.indexOf(fence);
@@ -978,5 +1008,25 @@ public class AIChatPanel extends JPanel {
             // Fall through
         }
         return "";
+    }
+
+    /**
+     * Returns true if running from exploded class files (i.e. an IDE) rather than a packaged JAR.
+     */
+    private static boolean isDeveloperMode() {
+        var url = AIChatPanel.class.getResource("/system_prompt.md");
+        return url != null && "file".equals(url.getProtocol());
+    }
+
+    /**
+     * Write content to a file in the user's home directory (developer mode only).
+     */
+    private static void writeDevFile(String filename, String content) {
+        try {
+            java.nio.file.Path path = java.nio.file.Path.of(System.getProperty("user.home"), filename);
+            java.nio.file.Files.writeString(path, content, StandardCharsets.UTF_8);
+        } catch (Exception e) {
+            // Non-fatal — developer convenience only
+        }
     }
 }

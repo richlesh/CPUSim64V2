@@ -456,6 +456,16 @@ public class CPUSim64App {
         JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, editorPanel, consolePanel);
         splitPane.setResizeWeight(0.7);
 
+        var retriever = new com.glowingcat.aichat.DocumentRetriever(
+            java.nio.file.Path.of(System.getProperty("user.home"), ".cpusim64"),
+            java.util.List.of(
+                "/documentation/doc-index.txt",
+                "/documentation/examples-index.txt",
+                "/documentation/projects-index.txt"
+            ),
+            30
+        );
+
         aiChatPanel = AIChatPanel.builder()
             .editor(new DocumentEditor() {
                 @Override public String getText() { return codeEditor.getText(); }
@@ -466,7 +476,8 @@ public class CPUSim64App {
                 }
             })
             .preferences(aiPreferences)
-            .contextProvider("Console output", () -> {
+            .documentRetriever(retriever)
+            .contextProvider("Console output (truncated)", () -> {
                 String text = console.getText();
                 if (text.isEmpty()) return null;
                 // Limit to last 100 lines

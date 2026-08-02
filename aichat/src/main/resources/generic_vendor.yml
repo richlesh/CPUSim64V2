@@ -130,6 +130,7 @@ Models:
 #   AWS Bedrock:   URI: https://bedrock-mantle.us-east-1.api.aws/v1/embeddings
 #                  Model: amazon.titan-embed-text-v2:0
 #
-# Embedding:
-#   URI: https://api.openai.com/v1/embeddings
-#   Model: text-embedding-3-small
+
+Embedding:
+   URI: https://api.openai.com/v1/embeddings
+   Model: text-embedding-3-small

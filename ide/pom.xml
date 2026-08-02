@@ -10,7 +10,7 @@
         <version>2.7.0</version>
     </parent>
 
-    <artifactId>CPUSim64</artifactId>
+    <artifactId>CPUSim64IDE</artifactId>
     <packaging>jar</packaging>
 
     <name>CPUSim64 IDE</name>

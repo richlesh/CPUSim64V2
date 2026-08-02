@@ -17,21 +17,38 @@ import java.util.regex.*;
  * <p>Uses embedding-based retrieval when the vendor supports embeddings,
  * falls back to BM25 keyword retrieval otherwise.
  *
- * <p>Caches indexes to ~/.cpusim64/embeddings/ or ~/.cpusim64/keywords/
+ * <p>Caches indexes to &lt;cacheBaseDir&gt;/embeddings/ or &lt;cacheBaseDir&gt;/keywords/
  * and invalidates when the source jar is newer than the cache.
  */
 public class DocumentRetriever {
 
     private static final int CHUNK_SIZE = 800;  // target chars per chunk
     private static final int CHUNK_OVERLAP = 100; // overlap between chunks
-    private static final int TOP_K = 15;
 
+    private final Path cacheBaseDir;
+    private final List<String> indexPaths;
+    private final int topK;
     private EmbeddingIndex embeddingIndex;
     private KeywordIndex keywordIndex;
     private EmbeddingClient embeddingClient;
     private boolean useEmbeddings;
     private boolean initialized = false;
     private String initializedVendor = null;
+
+    /**
+     * Create a retriever with the specified cache base directory and index files.
+     * Each index file is a classpath resource containing document paths (one per line)
+     * to load, chunk, and index for retrieval.
+     *
+     * @param cacheBaseDir base directory for cache files (e.g. ~/.myapp)
+     * @param indexPaths   classpath resource paths to index files (e.g. "/documentation/doc-index.txt")
+     * @param topK         maximum number of chunks to return on retrieval
+     */
+    public DocumentRetriever(Path cacheBaseDir, List<String> indexPaths, int topK) {
+        this.cacheBaseDir = cacheBaseDir;
+        this.indexPaths = List.copyOf(indexPaths);
+        this.topK = topK;
+    }
 
     /**
      * Check if the retriever needs (re-)initialization for the given vendor.
@@ -107,17 +124,17 @@ public class DocumentRetriever {
         if (useEmbeddings && embeddingIndex != null && embeddingClient != null) {
             try {
                 float[] queryVec = embeddingClient.embed(query);
-                results = embeddingIndex.retrieve(queryVec, TOP_K);
+                results = embeddingIndex.retrieve(queryVec, topK);
             } catch (Exception e) {
                 // Fall back to keyword search on embedding failure
                 if (keywordIndex != null) {
-                    results = keywordIndex.retrieve(query, TOP_K);
+                    results = keywordIndex.retrieve(query, topK);
                 } else {
                     return List.of();
                 }
             }
         } else if (keywordIndex != null) {
-            results = keywordIndex.retrieve(query, TOP_K);
+            results = keywordIndex.retrieve(query, topK);
         } else {
             return List.of();
         }
@@ -208,41 +225,26 @@ public class DocumentRetriever {
     private List<DocumentChunk> loadAndChunkDocuments() {
         List<DocumentChunk> chunks = new ArrayList<>();
 
-        // Load HTML docs from doc-index.txt
-        List<String> docFiles = readIndexFile("/documentation/doc-index.txt");
-        for (String filename : docFiles) {
-            String content = loadResource("/documentation/" + filename);
-            if (content != null) {
-                String text = stripHtml(content);
-                if (!text.isEmpty()) {
+        for (String indexPath : indexPaths) {
+            // Determine the base directory from the index file path
+            String baseDir = indexPath.substring(0, indexPath.lastIndexOf('/') + 1);
+            List<String> files = readIndexFile(indexPath);
+            for (String filename : files) {
+                String content = loadResource(baseDir + filename);
+                if (content == null || content.isEmpty()) continue;
+
+                // Strip HTML if the file appears to be HTML
+                String text = content;
+                if (filename.endsWith(".html") || filename.endsWith(".htm")) {
+                    text = stripHtml(content);
+                    if (text.isEmpty()) continue;
+                }
+
+                // Don't chunk small files — keep whole
+                if (text.length() <= CHUNK_SIZE * 2) {
+                    chunks.add(new DocumentChunk(filename, text));
+                } else {
                     chunks.addAll(chunkText(filename, text));
-                }
-            }
-        }
-
-        // Load examples from examples-index.txt
-        List<String> exampleFiles = readIndexFile("/documentation/examples-index.txt");
-        for (String filename : exampleFiles) {
-            String content = loadResource("/documentation/" + filename);
-            if (content != null && !content.isEmpty()) {
-                // Don't chunk small assembly files — keep whole
-                if (content.length() <= CHUNK_SIZE * 2) {
-                    chunks.add(new DocumentChunk(filename, content));
-                } else {
-                    chunks.addAll(chunkText(filename, content));
-                }
-            }
-        }
-
-        // Load projects from projects-index.txt
-        List<String> projectFiles = readIndexFile("/documentation/projects-index.txt");
-        for (String filename : projectFiles) {
-            String content = loadResource("/documentation/" + filename);
-            if (content != null && !content.isEmpty()) {
-                if (content.length() <= CHUNK_SIZE * 2) {
-                    chunks.add(new DocumentChunk(filename, content));
-                } else {
-                    chunks.addAll(chunkText(filename, content));
                 }
             }
         }
@@ -297,8 +299,8 @@ public class DocumentRetriever {
 
     // --- Utility methods ---
 
-    private static Path getCachePath(String type, String vendor) {
-        return Path.of(System.getProperty("user.home"), ".cpusim64", type, vendor + ".cache");
+    private Path getCachePath(String type, String vendor) {
+        return cacheBaseDir.resolve(type).resolve(vendor + ".cache");
     }
 
     /**
@@ -306,7 +308,8 @@ public class DocumentRetriever {
      */
     private long getDocumentSourceTimestamp() {
         try {
-            URL url = getClass().getResource("/documentation/doc-index.txt");
+            if (indexPaths.isEmpty()) return 0;
+            URL url = getClass().getResource(indexPaths.get(0));
             if (url == null) return 0;
 
             String protocol = url.getProtocol();
