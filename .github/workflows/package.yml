@@ -113,12 +113,12 @@ jobs:
       - name: Compile cpusim64 CLI tool
         shell: bash
         run: |
-          sed -i.bak "s/Version 2.0.0/Version ${APP_VERSION}/" ide/src/main/cpp/cpusim64.cpp
+          sed -i.bak "s/Version 2.0.0/Version ${APP_VERSION}/" cpusim64/src/main/cpp/cpusim64.cpp
           if [ "${{ runner.os }}" = "Windows" ]; then
-            cl.exe /std:c++17 /O2 /Fe:ide/src/main/resources/cpusim64.exe ide/src/main/cpp/cpusim64.cpp || \
-            g++ -std=c++17 -O2 -static -o ide/src/main/resources/cpusim64.exe ide/src/main/cpp/cpusim64.cpp
+            cl.exe /std:c++17 /O2 /Fe:ide/src/main/resources/cpusim64.exe cpusim64/src/main/cpp/cpusim64.cpp || \
+            g++ -std=c++17 -O2 -static -o ide/src/main/resources/cpusim64.exe cpusim64/src/main/cpp/cpusim64.cpp
           else
-            c++ -std=c++17 -O2 -o ide/src/main/resources/cpusim64 ide/src/main/cpp/cpusim64.cpp
+            c++ -std=c++17 -O2 -o ide/src/main/resources/cpusim64 cpusim64/src/main/cpp/cpusim64.cpp
           fi
 
       - name: Sign cpusim64 binary (macOS)
