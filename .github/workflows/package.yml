@@ -143,7 +143,7 @@ jobs:
 
       - name: Build JAR
         run: |
-          mvn clean package -DskipTests=true
+          mvn clean package -P release -DskipTests=true
           mkdir -p lib
           cp ide/target/CPUSim64-*.jar lib/
 

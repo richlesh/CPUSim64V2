@@ -46,19 +46,19 @@
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-controls</artifactId>
             <version>${javafx.version}</version>
-            <scope>provided</scope>
+            <scope>${javafx.scope}</scope>
         </dependency>
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-web</artifactId>
             <version>${javafx.version}</version>
-            <scope>provided</scope>
+            <scope>${javafx.scope}</scope>
         </dependency>
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-swing</artifactId>
             <version>${javafx.version}</version>
-            <scope>provided</scope>
+            <scope>${javafx.scope}</scope>
         </dependency>
         <dependency>
             <groupId>com.google.code.gson</groupId>
