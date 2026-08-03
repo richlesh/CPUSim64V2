@@ -159,7 +159,7 @@ table {
 }
 
 th, td {
-    border: 1px solid #dddddd;
+    border: 1px solid #cbcbcb;
     padding: 6px 12px;
 }
 
@@ -168,12 +168,13 @@ td[align=center], th[align=center] { text-align: center; }
 td[align=right], th[align=right] { text-align: right; }
 
 th {
-    background-color: #f0f0f0;
+    color: #ffffff;
+    background-color: #888888;
     font-weight: bold;
 }
 
 tr:nth-child(even) {
-    background-color: #f9f9f9;
+    background-color: #f7f7f7;
 }
 
 tr:nth-child(odd) {

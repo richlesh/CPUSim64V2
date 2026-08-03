@@ -146,13 +146,13 @@ pre code.hljs {
 }
 
 table {
-    color: #d4d4d4;
+    color: #cccccc;
     border-collapse: collapse;
     margin: 12px auto;
 }
 
 th, td {
-    border: 1px solid #444444;
+    border: 1px solid #343434;
     padding: 6px 12px;
 }
 
@@ -161,16 +161,17 @@ td[align=center], th[align=center] { text-align: center; }
 td[align=right], th[align=right] { text-align: right; }
 
 th {
-    background-color: #2d2d2d;
+    color: #ffffff;
+    background-color: #777777;
     font-weight: bold;
 }
 
 tr:nth-child(even) {
-    background-color: #2d2d2d;
+    background-color: #222222;
 }
 
 tr:nth-child(odd) {
-    background-color: #1e1e1e;
+    background-color: #000000;
 }
 
 a {
