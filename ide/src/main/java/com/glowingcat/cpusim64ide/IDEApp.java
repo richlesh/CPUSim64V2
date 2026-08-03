@@ -14,13 +14,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.glowingcat;
+package com.glowingcat.cpusim64ide;
 
 import javax.swing.*;
-import javax.swing.event.*;
-import javax.swing.undo.UndoManager;
-import javax.swing.undo.UndoableEdit;
-import javax.swing.undo.AbstractUndoableEdit;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
@@ -29,6 +25,8 @@ import java.io.PipedOutputStream;
 import java.nio.file.*;
 import java.util.regex.*;
 import cloud.lesh.CPUSim64.StdInterruptHandler;
+import cloud.lesh.CPUSim64.Assembler;
+import cloud.lesh.CPUSim64.Simulation;
 import com.glowingcat.aichat.AIChatPanel;
 import com.glowingcat.aichat.AIChatPreferences;
 import com.glowingcat.aichat.AIChatPreferencesDialog;
@@ -36,7 +34,7 @@ import com.glowingcat.aichat.DocumentEditor;
 import org.fife.ui.rsyntaxtextarea.*;
 import org.fife.ui.rtextarea.*;
 
-public class CPUSim64App {
+public class IDEApp {
     private static final boolean IS_MAC = System.getProperty("os.name").toLowerCase().contains("mac");
     private static final boolean IS_WINDOWS = System.getProperty("os.name").toLowerCase().contains("win");
 
@@ -85,7 +83,7 @@ public class CPUSim64App {
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         } catch (Exception ignored) {}
-        SwingUtilities.invokeLater(() -> new CPUSim64App().createAndShowGUI());
+        SwingUtilities.invokeLater(() -> new IDEApp().createAndShowGUI());
     }
 
     void createAndShowGUI() {
@@ -102,7 +100,7 @@ public class CPUSim64App {
             }
         });
         frame.setSize(1024, 768);
-        var frameIconUrl = CPUSim64App.class.getResource("/app_icon_256.png");
+        var frameIconUrl = IDEApp.class.getResource("/app_icon_256.png");
         if (frameIconUrl != null) frame.setIconImage(new ImageIcon(frameIconUrl).getImage());
 
         frame.setJMenuBar(createMenuBar());
@@ -160,7 +158,7 @@ public class CPUSim64App {
         };
         Runnable installAction = () -> {
             Icon appIcon = null;
-            var url = CPUSim64App.class.getResource("/app_icon_256.png");
+            var url = IDEApp.class.getResource("/app_icon_256.png");
             if (url != null) appIcon = new ImageIcon(new ImageIcon(url).getImage().getScaledInstance(64, 64, Image.SCALE_SMOOTH));
             Object[] options = {"Install", "Remove", "Cancel"};
             int result = JOptionPane.showOptionDialog(frame,
@@ -218,7 +216,7 @@ public class CPUSim64App {
         JMenu fileMenu = new JMenu("File");
         JMenuItem newItem = new JMenuItem("New");
         newItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx()));
-        newItem.addActionListener(e -> SwingUtilities.invokeLater(() -> new CPUSim64App().createAndShowGUI()));
+        newItem.addActionListener(e -> SwingUtilities.invokeLater(() -> new IDEApp().createAndShowGUI()));
         JMenuItem openItem = new JMenuItem("Open");
         openItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx()));
         openItem.addActionListener(e -> openFile());
@@ -328,7 +326,7 @@ public class CPUSim64App {
         menuBar.add(editMenu);
         menuBar.add(helpMenu);
         menuBar.add(Box.createHorizontalGlue());
-        var aiIconUrl = CPUSim64App.class.getResource("/AI.png");
+        var aiIconUrl = IDEApp.class.getResource("/AI.png");
         JButton aiBtn = new JButton(aiIconUrl != null
             ? new ImageIcon(new ImageIcon(aiIconUrl).getImage().getScaledInstance(24, 24, Image.SCALE_SMOOTH))
             : null);
@@ -912,7 +910,7 @@ public class CPUSim64App {
             Path target = dir.resolve(file);
             if (Files.exists(target)) {
                 SwingUtilities.invokeLater(() -> {
-                    CPUSim64App app = new CPUSim64App();
+                    IDEApp app = new IDEApp();
                     app.createAndShowGUI();
                     app.loadFile(target);
                 });
@@ -920,7 +918,7 @@ public class CPUSim64App {
             }
         }
         // Try JAR resource
-        InputStream is = CPUSim64App.class.getResourceAsStream("/" + file);
+        InputStream is = IDEApp.class.getResourceAsStream("/" + file);
         if (is != null) {
             try {
                 String content = new String(is.readAllBytes(), java.nio.charset.StandardCharsets.UTF_8);
@@ -964,7 +962,7 @@ public class CPUSim64App {
         panel.setBorder(BorderFactory.createEmptyBorder(30, 50, 30, 50));
 
         // Icon
-        var iconUrl = CPUSim64App.class.getResource("/app_icon_256.png");
+        var iconUrl = IDEApp.class.getResource("/app_icon_256.png");
         if (iconUrl != null) {
             JLabel iconLabel = new JLabel(new ImageIcon(new ImageIcon(iconUrl)
                 .getImage().getScaledInstance(96, 96, Image.SCALE_SMOOTH)));

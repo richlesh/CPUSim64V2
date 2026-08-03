@@ -1,8 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
-package com.glowingcat;
+package com.glowingcat.cpusim64ide;
 
 import java.awt.Color;
-import java.awt.Font;
 import java.io.*;
 import java.nio.file.*;
 import java.util.*;

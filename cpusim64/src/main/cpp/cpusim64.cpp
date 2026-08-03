@@ -116,7 +116,7 @@ static bool has_main_label(const std::string& asm_file) {
 
 static std::string build_java_cmd(const std::string& java_cmd, const std::string& classpath,
                                    const std::string& main_class, const std::vector<std::string>& args) {
-    std::string cmd = quote(java_cmd) + " -Dfile.encoding=UTF-8 -Dstdout.encoding=UTF-8 -Dstderr.encoding=UTF-8 -cp " + quote(classpath) + " " + main_class;
+    std::string cmd = quote(java_cmd) + " -Dfile.encoding=UTF-8 -Dstdout.encoding=UTF-8 -Dstderr.encoding=UTF-8 -cp " + quote(classpath) + " cloud.lesh.CPUSim64." + main_class;
     for (const auto& arg : args) {
         cmd += " " + quote(arg);
     }

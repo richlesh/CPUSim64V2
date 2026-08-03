@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-package com.glowingcat;
+package com.glowingcat.cpusim64ide;
 
 import org.fife.ui.rsyntaxtextarea.*;
 import org.fife.ui.rtextarea.*;
@@ -35,7 +35,7 @@ public class EditorPanel extends JPanel {
 
         // Register custom syntax style for CPUSim64 assembly
         AbstractTokenMakerFactory atmf = (AbstractTokenMakerFactory) TokenMakerFactory.getDefaultInstance();
-        atmf.putMapping("text/cpusim64", "com.glowingcat.CpuSim64TokenMaker");
+        atmf.putMapping("text/cpusim64", "com.glowingcat.cpusim64ide.CpuSim64TokenMaker");
 
         textArea = new RSyntaxTextArea();
         textArea.setSyntaxEditingStyle("text/cpusim64");

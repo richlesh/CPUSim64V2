@@ -14,20 +14,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.glowingcat;
-
-import cloud.lesh.CPUSim64.*;
+package cloud.lesh.CPUSim64;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 // adjust package imports for your classes:
 // import your.pkg.PreprocessVisitor;

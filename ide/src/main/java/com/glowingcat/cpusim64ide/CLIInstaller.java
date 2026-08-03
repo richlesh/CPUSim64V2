@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.glowingcat;
+package com.glowingcat.cpusim64ide;
 
 import javax.swing.*;
 import java.awt.*;

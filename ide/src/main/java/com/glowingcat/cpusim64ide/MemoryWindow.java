@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-package com.glowingcat;
+package com.glowingcat.cpusim64ide;
 
 import javax.swing.*;
 import javax.swing.table.*;

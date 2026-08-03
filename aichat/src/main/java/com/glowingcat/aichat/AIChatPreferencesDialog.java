@@ -55,6 +55,7 @@ public class AIChatPreferencesDialog extends JDialog {
 
         llmModelCombo = new JComboBox<>();
         llmModelCombo.setEditable(true);
+        llmModelCombo.setMinimumSize(new Dimension(200, llmModelCombo.getPreferredSize().height));
 
         llmApiKeyField = new JPasswordField(prefs.getLlmApiKey() != null ? prefs.getLlmApiKey() : "", 20);
 
@@ -339,6 +340,7 @@ public class AIChatPreferencesDialog extends JDialog {
         JPanel userSwatch = new JPanel();
         userSwatch.setBackground(userPromptColor[0]);
         userSwatch.setPreferredSize(new Dimension(60, 24));
+        userSwatch.setMinimumSize(new Dimension(60, 24));
         userSwatch.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY));
         userSwatch.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         userSwatch.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -352,6 +354,7 @@ public class AIChatPreferencesDialog extends JDialog {
         JPanel userTextSwatch = new JPanel();
         userTextSwatch.setBackground(userTextColor[0]);
         userTextSwatch.setPreferredSize(new Dimension(60, 24));
+        userTextSwatch.setMinimumSize(new Dimension(60, 24));
         userTextSwatch.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY));
         userTextSwatch.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         userTextSwatch.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -361,7 +364,9 @@ public class AIChatPreferencesDialog extends JDialog {
             }
         });
         userColorPanel.add(userTextSwatch);
-        gbc.gridx = 1; gbc.fill = GridBagConstraints.NONE;
+        Dimension userColorSize = userColorPanel.getPreferredSize();
+        userColorPanel.setMinimumSize(userColorSize);
+        gbc.gridx = 1; gbc.fill = GridBagConstraints.HORIZONTAL;
         panel.add(userColorPanel, gbc);
 
         gbc.gridy = ++row; gbc.gridx = 0; gbc.fill = GridBagConstraints.NONE;
@@ -371,6 +376,7 @@ public class AIChatPreferencesDialog extends JDialog {
         JPanel aiSwatch = new JPanel();
         aiSwatch.setBackground(aiResponseColor[0]);
         aiSwatch.setPreferredSize(new Dimension(60, 24));
+        aiSwatch.setMinimumSize(new Dimension(60, 24));
         aiSwatch.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY));
         aiSwatch.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         aiSwatch.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -384,6 +390,7 @@ public class AIChatPreferencesDialog extends JDialog {
         JPanel aiTextSwatch = new JPanel();
         aiTextSwatch.setBackground(aiTextColor[0]);
         aiTextSwatch.setPreferredSize(new Dimension(60, 24));
+        aiTextSwatch.setMinimumSize(new Dimension(60, 24));
         aiTextSwatch.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY));
         aiTextSwatch.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         aiTextSwatch.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -393,7 +400,9 @@ public class AIChatPreferencesDialog extends JDialog {
             }
         });
         aiColorPanel.add(aiTextSwatch);
-        gbc.gridx = 1; gbc.fill = GridBagConstraints.NONE;
+        Dimension aiColorSize = aiColorPanel.getPreferredSize();
+        aiColorPanel.setMinimumSize(aiColorSize);
+        gbc.gridx = 1; gbc.fill = GridBagConstraints.HORIZONTAL;
         panel.add(aiColorPanel, gbc);
 
         // Vertical glue to push content to top
