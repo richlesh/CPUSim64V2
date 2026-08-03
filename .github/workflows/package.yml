@@ -144,11 +144,14 @@ jobs:
       - name: Build JAR
         shell: bash
         run: |
-          EXTRA_ARGS=""
           if [ "${{ runner.os }}" = "Linux" ]; then
-            EXTRA_ARGS="-Djavafx.platform=linux"
+            PLATFORM=linux
+          elif [ "${{ runner.os }}" = "macOS" ]; then
+            PLATFORM=mac-aarch64
+          else
+            PLATFORM=win
           fi
-          mvn clean package -P release -DskipTests=true $EXTRA_ARGS
+          mvn clean package -P release -DskipTests=true "-Djavafx.platform=$PLATFORM"
           mkdir -p lib
           cp ide/target/CPUSim64IDE-*.jar lib/CPUSim64-${APP_VERSION}.jar
 

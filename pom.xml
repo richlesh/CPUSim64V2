@@ -39,7 +39,6 @@
             <id>release</id>
             <properties>
                 <javafx.scope>provided</javafx.scope>
-                <javafx.platform>linux</javafx.platform>
             </properties>
         </profile>
     </profiles>
