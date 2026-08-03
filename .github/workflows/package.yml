@@ -142,8 +142,13 @@ jobs:
           EOF
 
       - name: Build JAR
+        shell: bash
         run: |
-          mvn clean package -P release -DskipTests=true -Djavafx.platform=linux
+          EXTRA_ARGS=""
+          if [ "${{ runner.os }}" = "Linux" ]; then
+            EXTRA_ARGS="-Djavafx.platform=linux"
+          fi
+          mvn clean package -P release -DskipTests=true $EXTRA_ARGS
           mkdir -p lib
           cp ide/target/CPUSim64IDE-*.jar lib/CPUSim64-${APP_VERSION}.jar
 
