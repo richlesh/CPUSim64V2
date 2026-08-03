@@ -334,7 +334,7 @@ jobs:
           mkdir -p "$DMG_DIR"
           cp -R CPUSim64.app "$DMG_DIR/"
           ln -s /Applications "$DMG_DIR/Applications"
-          cp resources/app_icon.icns "$DMG_DIR/.VolumeIcon.icns"
+          cp ide/src/main/resources/app_icon.icns "$DMG_DIR/.VolumeIcon.icns"
 
           # Create RW image, set custom icon flag on volume, then convert to compressed
           hdiutil create -volname CPUSim64 -srcfolder "$DMG_DIR" -ov -format UDRW /tmp/cpusim64-rw.dmg
