@@ -1,4 +1,4 @@
-![app_icon_256](src/main/resources/app_icon_256.png)
+![app_icon_256](ide/src/main/resources/app_icon_256.png)
 
 # CPUSim64
 
@@ -15,9 +15,9 @@ It includes:
 - A cycle-accurate simulation engine  
 - A simple IDE with code editor, console, and integrated run/debug  
 - A native CLI tool for command-line workflows  
-- An agentic AI assistant for writing and debugging assembly code  
-- Native installers for macOS, Windows, and Linux  
-- A Maven-driven build system producing runnable JAR file
+- An agentic AI assistant with RAG-based context retrieval for writing and debugging assembly code  
+- Native installers for macOS, Windows, and Linux (x64 and ARM64)  
+- A multi-module Maven build system producing runnable JAR files
 
 The project is designed for educational use, computer architecture instruction, and experimentation with ISA design and microarchitecture concepts.
 
@@ -92,9 +92,14 @@ The project is designed for educational use, computer architecture instruction, 
 ### **Agentic AI Assistant**
 - Built-in AI chat panel in the IDE for writing and debugging CPUSim64 assembly  
 - Supports multiple LLM vendors: OpenAI, Anthropic, Google, DeepSeek, Alibaba, and local Ollama  
-- Configurable model and API key via Settings  
+- Generic OpenAI-compatible API vendor support via YAML configuration  
+- Configurable model and API key via dedicated AI Chat Settings dialog  
+- RAG-based context retrieval using embedding search or BM25 keyword fallback  
+- Embedding and keyword index caching in `~/.cpusim64/`  
 - Context-aware: automatically provides current source code and console output to the AI  
 - AI responses with code blocks present Allow/Reject buttons for applying changes directly to the editor  
+- Auto-apply fulltext code blocks for seamless code replacement  
+- DiffApplier with regex-based hunk parsing and freeform diff support  
 - Animated "thinking" indicator with cancel support  
 - Markdown rendering in responses with bold, italic, code spans, and LaTeX math  
 - Conversation history maintained across messages within a session  
@@ -103,6 +108,8 @@ The project is designed for educational use, computer architecture instruction, 
 - Status bar showing system prompt, program, and output sizes  
 - Separate AI font settings (sans-serif default) with code font for code blocks  
 - Markdown table rendering in monospace for column alignment  
+- Configurable chat text colors  
+- Developer mode with prompt/response logging  
 
 ### **CLI Tool (`cpusim64`)**
 - Native C++ command-line interface  
@@ -110,100 +117,115 @@ The project is designed for educational use, computer architecture instruction, 
 - Installable via the IDE's CLI Tools menu  
 
 ### **Native Installers**
-- macOS DMG (signed and notarized)  
-- Windows MSI (Azure code signed)  
-- Linux DEB and RPM  
-- File type associations for `.asm`, `.o64`, and `.sym` files  
+- macOS DMG (signed and notarized) — ARM64  
+- Windows MSI (Azure code signed) — x64 and ARM64  
+- Linux DEB and RPM — x64 and ARM64  
+- File type associations for `.asm`, `.o64`, `.sym`, `.sym1`, `.sym2`, `.srcmap`, and `.def` files  
 - Built via GitHub Actions workflows
 
 ---
 
 ## 📦 Project Structure (CPUSim64V2)
 
-The CPUSim64V2.zip archive is organized to clearly separate documentation, source code, examples, scripts, and build artifacts.
+The project uses a multi-module Maven layout separating the AI chat library, simulator/assembler core, and IDE.
 
-```CPUSim64V2/
+```
+CPUSim64V2/
 ├── LICENSE
 ├── NOTICE
 ├── README.md
+├── pom.xml                          (parent POM)
 │
-├── assemble.sh
-├── assembler_tree.sh
-├── clean.sh
-├── debug.sh
-├── disassemble.sh
+├── aichat/                          (AI Chat Module)
+│   ├── pom.xml
+│   └── src/main/java/com/glowingcat/aichat/
+│       ├── AIChatPanel.java
+│       ├── DocumentRetriever.java   (RAG retrieval)
+│       ├── EmbeddingClient.java
+│       ├── KeywordIndex.java
+│       ├── LLMClientFactory.java
+│       ├── VendorRegistry.java
+│       └── ...
 │
-├── documentation/
-│   ├── Architecture.html
-│   ├── Directive_Reference.html
-│   ├── Instruction_Set_Reference.html
-│   ├── Interrupt_Reference.html
-│   ├── Library_Reference.html
-│   ├── Programmer_Guide.html
-│   ├── Instruction Format New.txt
-│   └── examples/
+├── cpusim64/                        (Simulator Module)
+│   ├── pom.xml
+│   ├── src/main/antlr4/            (ANTLR grammars)
+│   ├── src/main/cpp/               (CLI tool source)
+│   ├── src/main/java/cloud/lesh/CPUSim64/
+│   │   ├── Assembler.java
+│   │   ├── Simulator.java
+│   │   ├── Preprocessor.java
+│   │   └── ...
+│   ├── src/main/resources/
+│   │   ├── documentation/
+│   │   ├── system/                  (system libraries)
+│   │   └── adt/                     (data structure libraries)
+│   ├── src/test/
+│   └── validation/
 │
-├── lib/
-│   └── CPUSim64-2.7.0.jar
+├── ide/                             (IDE Module)
+│   ├── pom.xml
+│   └── src/main/java/com/glowingcat/cpusim64ide/
+│       ├── IDEApp.java
+│       ├── EditorPanel.java
+│       ├── DebuggerWindow.java
+│       ├── TerminalPanel.java
+│       └── ...
 │
-└── src/
-    ├── generated-sources/
-    │
-    ├── main/
-    │   ├── antlr4/
-    │   ├── cpp/
-    │   ├── java/
-    │   └── resources/
-    │
-    └── test/
-        ├── java/
-        └── resources/
+├── resources/                       (jpackage resources)
+│   ├── entitlements.plist
+│   ├── macos/
+│   └── linux/
+│
+├── .github/workflows/
+│   ├── package.yml                  (native installer builds)
+│   └── release.yml
+│
+└── *.sh / *.bat                     (convenience scripts)
 ```
-⸻
 
-🔹 Top-Level Files
+---
 
-| File        | Purpose                                                     |
-|-------------|-------------------------------------------------------------|
-| `LICENSE`   | Apache License 2.0                                          |
-| `NOTICE`    | Required attribution and licensing notices                  |
-| `README.md` | Project overview and usage instructions                     |
-| `*.sh`      | Convenience scripts for assembling, debugging, and cleaning |
+### Module Overview
 
-⸻
+| Module     | Artifact                | Description                                              |
+|------------|-------------------------|----------------------------------------------------------|
+| `aichat`   | `org.lesh:aichat`       | Reusable AI chat panel with LLM integration and RAG      |
+| `cpusim64` | `org.lesh:CPUSim64`     | Assembler, simulator, CLI tool, ANTLR grammars           |
+| `ide`      | `org.lesh:CPUSim64IDE`  | JavaFX/Swing GUI IDE, depends on both modules above      |
 
-📚 documentation/
+---
 
-HTML and reference material describing the CPUSim64V2 architecture, instruction set, directives, interrupts, libraries, and programming model.
+## 🛠 Building
 
-These files may not with direct viewing in some browsers as they make extensive use of AJAX to load example files and output.  See http://cpusim64.lesh.cloud/ for online hosted documentation.
+### Prerequisites
+- JDK 21+
+- Maven 3.9+
 
-⸻
+### Build
+```bash
+mvn clean package
+```
 
-🧪 examples/
+### Build for release (JavaFX provided by runtime):
+```bash
+mvn clean package -P release -DskipTests=true
+```
 
-Sample CPUSim64 assembly programs (.asm) with corresponding output files (.out) demonstrating:
+### Run the IDE locally:
+```bash
+./ide.sh
+```
 
--	Instruction usage
--	Control flow
--	I/O
--	Interrupts
--	Library calls
+---
 
-⸻
+## 📚 Documentation
 
-📦 lib/
+HTML reference documentation for the CPUSim64 architecture, instruction set, directives, interrupts, libraries, and programming model is bundled in `cpusim64/src/main/resources/documentation/`.
 
-Assembly-level runtime and standard libraries used by programs assembled for CPUSim64V2.
+Online hosted documentation: http://cpusim64.lesh.cloud/
 
-⸻
-
-🛠 src/
-
-Java source code for the toolchain:
-- Assembler (ANTLR grammar, lexer/parser, visitors)
-- Simulator (CPU core, memory model, devices)
-- Common utilities shared across components
+---
 
 ## License
 
