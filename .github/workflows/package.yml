@@ -21,58 +21,58 @@ jobs:
         include:
           - os: macos-latest
             arch: arm64
-            icon: resources/app_icon.icns
-            asm_icon: resources/asm_icon.icns
-            o64_icon: resources/o64_icon.icns
-            sym_icon: resources/sym_icon.icns
+            icon: ide/src/main/resources/app_icon.icns
+            asm_icon: ide/src/main/resources/asm_icon.icns
+            o64_icon: ide/src/main/resources/o64_icon.icns
+            sym_icon: ide/src/main/resources/sym_icon.icns
             pkg_type: dmg
             label: macos-arm64
           - os: windows-latest
             arch: x64
-            icon: resources/app_icon.ico
-            asm_icon: resources/asm_icon.ico
-            o64_icon: resources/o64_icon.ico
-            sym_icon: resources/sym_icon.ico
+            icon: ide/src/main/resources/app_icon.ico
+            asm_icon: ide/src/main/resources/asm_icon.ico
+            o64_icon: ide/src/main/resources/o64_icon.ico
+            sym_icon: ide/src/main/resources/sym_icon.ico
             pkg_type: msi
             label: windows-x64
           - os: windows-11-arm
             arch: arm64
-            icon: resources/app_icon.ico
-            asm_icon: resources/asm_icon.ico
-            o64_icon: resources/o64_icon.ico
-            sym_icon: resources/sym_icon.ico
+            icon: ide/src/main/resources/app_icon.ico
+            asm_icon: ide/src/main/resources/asm_icon.ico
+            o64_icon: ide/src/main/resources/o64_icon.ico
+            sym_icon: ide/src/main/resources/sym_icon.ico
             pkg_type: msi
             label: windows-arm64
           - os: ubuntu-22.04
             arch: x64
-            icon: resources/app_icon_256.png
-            asm_icon: resources/asm_icon_256.png
-            o64_icon: resources/o64_icon_256.png
-            sym_icon: resources/sym_icon_256.png
+            icon: ide/src/main/resources/app_icon_256.png
+            asm_icon: ide/src/main/resources/asm_icon_256.png
+            o64_icon: ide/src/main/resources/o64_icon_256.png
+            sym_icon: ide/src/main/resources/sym_icon_256.png
             pkg_type: deb
             label: linux-x64-deb
           - os: ubuntu-22.04
             arch: x64
-            icon: resources/app_icon_256.png
-            asm_icon: resources/asm_icon_256.png
-            o64_icon: resources/o64_icon_256.png
-            sym_icon: resources/sym_icon_256.png
+            icon: ide/src/main/resources/app_icon_256.png
+            asm_icon: ide/src/main/resources/asm_icon_256.png
+            o64_icon: ide/src/main/resources/o64_icon_256.png
+            sym_icon: ide/src/main/resources/sym_icon_256.png
             pkg_type: rpm
             label: linux-x64-rpm
           - os: ubuntu-24.04-arm
             arch: arm64
-            icon: resources/app_icon_256.png
-            asm_icon: resources/asm_icon_256.png
-            o64_icon: resources/o64_icon_256.png
-            sym_icon: resources/sym_icon_256.png
+            icon: ide/src/main/resources/app_icon_256.png
+            asm_icon: ide/src/main/resources/asm_icon_256.png
+            o64_icon: ide/src/main/resources/o64_icon_256.png
+            sym_icon: ide/src/main/resources/sym_icon_256.png
             pkg_type: deb
             label: linux-arm64-deb
           - os: ubuntu-24.04-arm
             arch: arm64
-            icon: resources/app_icon_256.png
-            asm_icon: resources/asm_icon_256.png
-            o64_icon: resources/o64_icon_256.png
-            sym_icon: resources/sym_icon_256.png
+            icon: ide/src/main/resources/app_icon_256.png
+            asm_icon: ide/src/main/resources/asm_icon_256.png
+            o64_icon: ide/src/main/resources/o64_icon_256.png
+            sym_icon: ide/src/main/resources/sym_icon_256.png
             pkg_type: rpm
             label: linux-arm64-rpm
 
