@@ -53,6 +53,9 @@ public class AIChatPanel extends JPanel {
     private boolean useWebView = false;
     // Strong reference to prevent GC of the JavaScript bridge object
     private ChatBridge chatBridge;
+    // Status bar for showing document/system prompt sizes
+    private JLabel statusBar;
+    private Runnable statusUpdater;
 
     // Fallback rendering
     private JPanel fallbackChatPanel;
@@ -235,13 +238,17 @@ public class AIChatPanel extends JPanel {
         inputPanel.add(btnPanel, BorderLayout.EAST);
 
         JLabel statusBar = new JLabel(" ");
+        this.statusBar = statusBar;
         statusBar.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 10));
         statusBar.setBorder(BorderFactory.createEmptyBorder(2, 4, 2, 4));
 
-        Runnable statusUpdater = () -> {
+        statusUpdater = () -> {
             int sp = systemPrompt.length();
             int doc = editor.getText().length();
-            statusBar.setText(String.format("System: %,d chars    Document: %,d chars", sp, doc));
+            String docInfo = doc > 20_000
+                ? String.format("Document: %,d chars (truncated to 20,000 for LLM)", doc)
+                : String.format("Document: %,d chars", doc);
+            statusBar.setText(String.format("System: %,d chars    %s", sp, docInfo));
         };
         statusUpdater.run();
 
@@ -580,6 +587,9 @@ public class AIChatPanel extends JPanel {
         if (text.isEmpty()) return;
         inputArea.setText("");
 
+        // Update status bar with current document size
+        statusUpdater.run();
+
         // Add user bubble
         ChatMessage userMsg = new ChatMessage("user", text);
         chatMessages.add(userMsg);
@@ -590,7 +600,7 @@ public class AIChatPanel extends JPanel {
             promptNagCallback.run();
         }
 
-        String context = "Current document:\n```\n" + editor.getText() + "\n```";
+        String context = "Current document:\n```\n" + editor.getContextText() + "\n```";
         for (ContextProvider cp : contextProviders) {
             String extra = cp.supplier().get();
             if (extra != null && !extra.isEmpty()) {
@@ -845,10 +855,11 @@ public class AIChatPanel extends JPanel {
         html.append("  svg: { fontCache: 'global' }");
         html.append("};");
         html.append("</script>");
-        html.append("<script src=\"https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js\" async></script>");
-        html.append("<link rel=\"stylesheet\" href=\"https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/styles/")
-            .append(darkMode ? "github-dark" : "github").append(".min.css\">");
-        html.append("<script src=\"https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/highlight.min.js\"></script>");
+        html.append("<style>").append(WebResources.highlightCss(darkMode)).append("</style>");
+        html.append("<script>").append(WebResources.highlightJs()).append("</script>");
+        html.append("<script>").append(WebResources.mermaidJs()).append("</script>");
+        html.append("<script>if(window.mermaid){mermaid.initialize({startOnLoad: false, theme: '").append(darkMode ? "dark" : "default").append("'});}</script>");
+        html.append("<script>").append(WebResources.mathjaxJs()).append("</script>");
         html.append("<script>");
         html.append("document.addEventListener('click', function(e) {");
         html.append("  var a = e.target.closest('a');");
@@ -864,7 +875,14 @@ public class AIChatPanel extends JPanel {
         html.append("  var btn = event.currentTarget;");
         html.append("  btn.innerHTML = '<svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><path d=\"M3 8.5L6.5 12L13 4\"/></svg>';");
         html.append("}");
-        html.append("document.addEventListener('DOMContentLoaded', function() { hljs.highlightAll(); });");
+        html.append("document.addEventListener('DOMContentLoaded', function() {");
+        html.append("  if(window.mermaid){document.querySelectorAll('pre code.language-mermaid').forEach(function(el){");
+        html.append("    var pre=el.parentElement;var div=document.createElement('div');");
+        html.append("    div.className='mermaid';div.textContent=el.textContent;");
+        html.append("    pre.parentElement.replaceChild(div,pre);});");
+        html.append("  mermaid.run();}");
+        html.append("  if(window.hljs){hljs.highlightAll();}");
+        html.append("});");
         html.append("</script>");
         html.append("</head><body>");
 
@@ -919,7 +937,13 @@ public class AIChatPanel extends JPanel {
 
         // Auto-scroll to bottom
         html.append("<script>window.onload = function() { window.scrollTo(0, document.body.scrollHeight); ");
-        html.append("if(window.MathJax && MathJax.typesetPromise) MathJax.typesetPromise(); };</script>");
+        html.append("if(window.MathJax && MathJax.typesetPromise) MathJax.typesetPromise();");
+        html.append("if(window.mermaid){document.querySelectorAll('pre code.language-mermaid').forEach(function(el){");
+        html.append("var pre=el.parentElement;var div=document.createElement('div');");
+        html.append("div.className='mermaid';div.textContent=el.textContent;");
+        html.append("pre.parentElement.replaceChild(div,pre);});");
+        html.append("mermaid.run();}");
+        html.append("};</script>");
 
         html.append("</body></html>");
         return html.toString();

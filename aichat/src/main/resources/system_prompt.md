@@ -29,6 +29,7 @@ Diff format rules:
 - Each hunk starts with @@ -startline,count +startline,count @@
 - Include 3 lines of context before and after each change
 - Multiple changes should use multiple hunks in a single diff block
+- IMPORTANT: If the document was truncated and shows "[... N lines, M characters omitted from beginning ...]", add the number of omitted lines to your diff line numbers so the @@ markers reference the correct positions in the full document. Never use a "fulltext" block for truncated documents — always use a "diff" block since you only see a fragment.
 
 Supported markdown features: headings, bold, italic, strikethrough, underline (using HTML underline), ordered/unordered/task lists, block quotes, code blocks, inline code, links, images, tables (GFM), inline math ($...$), block math ($$...$$) and Mermaid diagrams (inside a markdown code block).
 

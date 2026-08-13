@@ -14,4 +14,12 @@ public interface DocumentEditor {
 
     /** Replace the entire document text. */
     void setText(String text);
+
+    /**
+     * Get document text suitable for sending as LLM context.
+     * May be truncated for large documents. Defaults to full text.
+     */
+    default String getContextText() {
+        return getText();
+    }
 }
