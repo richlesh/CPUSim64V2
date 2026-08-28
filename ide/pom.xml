@@ -117,14 +117,15 @@
                                     <excludes>
                                         <exclude>LICENSE</exclude>
                                         <exclude>NOTICE</exclude>
-                                    </excludes>
-                                </filter>
-                                <filter>
-                                    <artifact>org.jline:jline</artifact>
-                                    <excludes>
+                                        <!-- JLine ships prebuilt native Mach-O/ELF binaries that
+                                             break macOS notarization (unsigned binaries inside the
+                                             JAR). These arrive via the shaded org.lesh:CPUSim64
+                                             artifact, so match them across ALL artifacts, not just
+                                             org.jline:jline. -->
                                         <exclude>org/jline/nativ/Mac/**</exclude>
                                         <exclude>org/jline/nativ/Linux/**</exclude>
                                         <exclude>org/jline/nativ/FreeBSD/**</exclude>
+                                        <exclude>org/jline/nativ/Windows/**</exclude>
                                     </excludes>
                                 </filter>
                             </filters>

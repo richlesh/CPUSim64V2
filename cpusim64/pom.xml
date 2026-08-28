@@ -153,6 +153,13 @@
                                         <exclude>META-INF/*.SF</exclude>
                                         <exclude>META-INF/*.DSA</exclude>
                                         <exclude>META-INF/*.RSA</exclude>
+                                        <!-- Drop JLine prebuilt native binaries: they are unsigned
+                                             Mach-O/ELF files that break macOS notarization when this
+                                             fat JAR is bundled into the notarized app. -->
+                                        <exclude>org/jline/nativ/Mac/**</exclude>
+                                        <exclude>org/jline/nativ/Linux/**</exclude>
+                                        <exclude>org/jline/nativ/FreeBSD/**</exclude>
+                                        <exclude>org/jline/nativ/Windows/**</exclude>
                                     </excludes>
                                 </filter>
                             </filters>
