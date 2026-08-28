@@ -24,6 +24,12 @@ public abstract class PortHandler implements Cloneable {
 	private boolean littleEndian = false;		// True if big-endian
 	private boolean error = false;
 	private boolean eof = false;
+	// Pushback buffer for bytes that were consumed by a multi-byte read that hit
+	// EOF before completing. A short (partial) word read must not lose the bytes
+	// it already consumed: they are pushed back here so that subsequent single-
+	// byte reads (byte mode) can retrieve them in their original order.
+	private int[] pushback = new int[REG_SIZE_BYTES];
+	private int pushbackCount = 0;
 
 	public PortHandler(Simulator cpu) { this.cpu = cpu; }
 	// returns -1 on EOF
@@ -42,11 +48,46 @@ public abstract class PortHandler implements Cloneable {
 	public final void setPort(long i){port=(int)i;}
 	public final int port(){return port;}
 
+	// Return the next byte, drawing from the pushback buffer first (LIFO order,
+	// which restores the original stream order for pushed-back partial reads),
+	// then falling back to the underlying stream. Returns -1 on EOF.
+	private int nextByte() throws Simulator.CPUException {
+		if (pushbackCount > 0) {
+			return pushback[--pushbackCount];
+		}
+		return read();
+	}
+
+	// Push a byte back so the next nextByte() call returns it.
+	private void pushBack(int b) {
+		pushback[pushbackCount++] = b & 0xFF;
+	}
+
+	// Bulk-read up to `len` bytes into buf[off..off+len). Returns the number of
+	// bytes actually read, which may be less than `len` only at end-of-stream.
+	// The default implementation loops the single-byte read() so that handlers
+	// which cannot bulk-read (e.g. interactive STDIN) still work correctly.
+	// Stream-backed handlers override this to delegate to the underlying stream's
+	// block read for real speed. This primitive does NOT consult the pushback
+	// buffer — callers must drain pushback via nextByte() first.
+	protected int readBytes(byte[] buf, int off, int len) throws Simulator.CPUException {
+		int n = 0;
+		while (n < len) {
+			int r = read();
+			if (r == -1) break;
+			buf[off + n++] = (byte) r;
+		}
+		return n;
+	}
+
 	public PortHandler duplicate(Simulator cpu) {
 		PortHandler newPH = null;
 		try {
 			newPH = (PortHandler) this.clone();
 			newPH.cpu = cpu;
+			// Give the clone its own pushback buffer.
+			newPH.pushback = new int[REG_SIZE_BYTES];
+			newPH.pushbackCount = 0;
 		} catch (CloneNotSupportedException ex) {
 		}
 		return newPH;
@@ -54,37 +95,76 @@ public abstract class PortHandler implements Cloneable {
 
 	public long read(int count) throws Simulator.CPUException
 	{
-//System.out.println("read("+count+")");
-		long result=0;
-		if (count <= 0 || count > REG_SIZE_BYTES) count=REG_SIZE_BYTES;
+		long result = 0;
+		if (count <= 0 || count > REG_SIZE_BYTES) count = REG_SIZE_BYTES;
+		int requested = count;
 		if (!littleEndian) {		// big-endian
-			while (count-- > 0) {
-				result <<= 8;
-				int r = read();
-				if (r == -1) { eof = true; return -1; }
-				result |= r & 0xFF;
-//System.out.println(result);
+			// Fast path: when there are no pushed-back bytes pending, read the
+			// whole word in one bulk operation and compose it big-endian. This
+			// avoids `count` separate single-byte stream calls.
+			if (pushbackCount == 0) {
+				byte[] buf = new byte[requested];
+				int n = 0;
+				// A stream may return a short (non-EOF) read, so keep going until
+				// the word is complete or we hit true end-of-stream.
+				while (n < requested) {
+					int r = readBytes(buf, n, requested - n);
+					if (r <= 0) break;
+					n += r;
+				}
+				if (n < requested) {
+					// Partial read: restore the bytes we consumed (in reverse so
+					// they come back out in original order), flag EOF, return -1.
+					for (int i = n - 1; i >= 0; --i) pushBack(buf[i] & 0xFF);
+					eof = true;
+					return -1;
+				}
+				for (int i = 0; i < requested; ++i) {
+					result <<= 8;
+					result |= buf[i] & 0xFF;
+				}
+			} else {
+				// Slow path: pushed-back bytes are pending from a prior partial
+				// read; drain them (and any further bytes) one at a time so their
+				// original order is preserved.
+				int[] got = new int[requested];
+				int n = 0;
+				while (n < requested) {
+					int r = nextByte();
+					if (r == -1) {
+						for (int i = n - 1; i >= 0; --i) pushBack(got[i]);
+						eof = true;
+						return -1;
+					}
+					got[n++] = r & 0xFF;
+				}
+				for (int i = 0; i < requested; ++i) {
+					result <<= 8;
+					result |= got[i] & 0xFF;
+				}
 			}
 		} else {				// little-endian
+			int[] got = new int[requested];
+			int n = 0;
+			while (n < requested) {
+				int r = nextByte();
+				if (r == -1) {
+					for (int i = n - 1; i >= 0; --i) pushBack(got[i]);
+					eof = true;
+					return -1;
+				}
+				got[n++] = r & 0xFF;
+			}
 			int shiftAmount = 0;
-			while (count-- > 0) {
-				result |= (read() & 0xFFL) << shiftAmount;
+			for (int i = 0; i < requested; ++i) {
+				result |= (got[i] & 0xFFL) << shiftAmount;
 				shiftAmount += 8;
 			}
 		}
-		switch (count) {
-			case 1:
-				result = Simulator.signExtend(result, 8);
-				break;
-			case 2:
-				result = Simulator.signExtend(result, 16);
-				break;
-			case 4:
-				result = Simulator.signExtend(result, 32);
-				break;
-			default:
-				break;
-		}
+		// NOTE: values are returned zero-extended (unsigned), matching the
+		// historical behavior. Sign extension is intentionally NOT applied here:
+		// a byte read of 0xFF must remain 255, distinct from the -1 EOF sentinel
+		// that callers (e.g. hashcode's byte-mode tail loop) test for.
 		return result;
 	}
 

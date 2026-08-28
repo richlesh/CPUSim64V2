@@ -17,13 +17,14 @@
 
 package cloud.lesh.CPUSim64;
 
+import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 
 public class RawFilePortHandler extends PortHandler
 {
 	private FileOutputStream os;
-	private FileInputStream is;
+	private BufferedInputStream is;
 	private String filespec;
 
 	public RawFilePortHandler(Simulator cpu, String filespec, int mode) throws Simulator.CPUException
@@ -35,7 +36,7 @@ public class RawFilePortHandler extends PortHandler
 		switch (mode)
 		{
 			case 0:
-				is=new FileInputStream(filespec);
+				is=new BufferedInputStream(new FileInputStream(filespec));
 				break;
 			case 1:
 				os=new FileOutputStream(filespec);
@@ -63,6 +64,18 @@ public class RawFilePortHandler extends PortHandler
 			throw cpu.new CPUException("Read error on file \"" + filespec + "\"!");
 		}
  	}
+
+	@Override
+	protected int readBytes(byte[] buf, int off, int len) throws Simulator.CPUException
+	{
+		if (is == null) throw cpu.new CPUException("File \"" + filespec + "\" not open for input!");
+		try {
+			return is.read(buf, off, len);
+		}
+		catch (Exception e) {
+			throw cpu.new CPUException("Read error on file \"" + filespec + "\"!");
+		}
+	}
 	
 	@Override
 	public int readChar() throws Simulator.CPUException

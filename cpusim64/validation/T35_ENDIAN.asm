@@ -21,7 +21,14 @@
 	#fvar	fvalue, fexpected
 
 	load	endian_mode, endian_mode_arg
-	move	z, filename, "test_be.bin", "test_le.bin"
+	// Select the output filename based on endian_mode (0 => big-endian file).
+	// Use plain moves + a conditional jump rather than a packed conditional
+	// move so the string address is not forced into a 12-bit immediate field.
+	cmp		endian_mode, 0
+	move	filename, "test_be.bin"
+	jump	z, $FILENAME_SET
+	move	filename, "test_le.bin"
+$FILENAME_SET:
 	
 	#call	openRawFile(filename, WRITE_MODE)
 	move	port, r0

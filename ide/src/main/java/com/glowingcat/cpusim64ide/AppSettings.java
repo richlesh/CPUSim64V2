@@ -41,6 +41,11 @@ public class AppSettings {
     public double heapSizeMiB = 1.0;
     public double stackSizeKiB = 8.0;
 
+    public int mainWindowWidth = 1024;
+    public int mainWindowHeight = 768;
+    public boolean aiPanelVisible = false;
+    public int aiPanelWidth = 400;
+
     public void save() {
         try {
             StringBuilder sb = new StringBuilder("{\n");
@@ -88,6 +93,10 @@ public class AppSettings {
             }
             sb.append("  \"heapSizeMiB\": ").append(heapSizeMiB).append(",\n");
             sb.append("  \"stackSizeKiB\": ").append(stackSizeKiB).append(",\n");
+            sb.append("  \"mainWindowWidth\": ").append(mainWindowWidth).append(",\n");
+            sb.append("  \"mainWindowHeight\": ").append(mainWindowHeight).append(",\n");
+            sb.append("  \"aiPanelVisible\": ").append(aiPanelVisible).append(",\n");
+            sb.append("  \"aiPanelWidth\": ").append(aiPanelWidth).append(",\n");
             sb.setLength(sb.length() - 2); // remove trailing comma+newline
             sb.append("\n}");
             Files.writeString(SETTINGS_FILE, sb.toString());
@@ -161,6 +170,15 @@ public class AppSettings {
             if (hm != null) s.heapSizeMiB = hm;
             Double sk = extractDouble(json, "stackSizeKiB");
             if (sk != null) s.stackSizeKiB = sk;
+
+            Integer mnw = extractInt(json, "mainWindowWidth");
+            if (mnw != null) s.mainWindowWidth = mnw;
+            Integer mnh = extractInt(json, "mainWindowHeight");
+            if (mnh != null) s.mainWindowHeight = mnh;
+            Boolean apv = extractBoolean(json, "aiPanelVisible");
+            if (apv != null) s.aiPanelVisible = apv;
+            Integer apw = extractInt(json, "aiPanelWidth");
+            if (apw != null) s.aiPanelWidth = apw;
         } catch (Exception e) {
             // return defaults on any parse error
         }
@@ -193,6 +211,11 @@ public class AppSettings {
     private static Double extractDouble(String json, String key) {
         Matcher m = Pattern.compile("\"" + key + "\"\\s*:\\s*([\\d.eE+-]+)").matcher(json);
         return m.find() ? Double.parseDouble(m.group(1)) : null;
+    }
+
+    private static Boolean extractBoolean(String json, String key) {
+        Matcher m = Pattern.compile("\"" + key + "\"\\s*:\\s*(true|false)").matcher(json);
+        return m.find() ? Boolean.parseBoolean(m.group(1)) : null;
     }
 
     private static List<String> extractArray(String json, String key) {

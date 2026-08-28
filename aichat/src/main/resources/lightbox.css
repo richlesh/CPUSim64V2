@@ -1,0 +1,77 @@
+/* Lightbox overlay for images and Mermaid diagrams */
+.lightbox-overlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(240, 240, 240, 0.95);
+    z-index: 99999;
+    cursor: default;
+}
+@media (prefers-color-scheme: dark) {
+    .lightbox-overlay {
+        background: rgba(0, 0, 0, 0.9);
+    }
+}
+body.dark-mode .lightbox-overlay {
+    background: rgba(0, 0, 0, 0.9);
+}
+.lightbox-overlay.active {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.lightbox-toolbar {
+    position: fixed;
+    top: 10pt;
+    right: 10pt;
+    z-index: 100000;
+    display: flex;
+    gap: 8px;
+}
+.lightbox-toolbar button {
+    background: rgba(0,0,0,0.1);
+    border: 1px solid rgba(0,0,0,0.2);
+    color: #333;
+    width: 32px;
+    height: 32px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 18px;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s;
+}
+.lightbox-toolbar button:hover {
+    background: rgba(0,0,0,0.2);
+}
+body.dark-mode .lightbox-toolbar button {
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.3);
+    color: #fff;
+}
+body.dark-mode .lightbox-toolbar button:hover {
+    background: rgba(255,255,255,0.3);
+}
+.lightbox-container {
+    overflow: auto;
+    width: calc(100vw - 20pt);
+    height: calc(100vh - 20pt);
+    margin: 10pt;
+    cursor: grab;
+}
+.lightbox-container.grabbing {
+    cursor: grabbing;
+}
+.lightbox-wrapper {
+    flex-shrink: 0;
+    min-width: min-content;
+    min-height: min-content;
+}
+.lightbox-wrapper img,
+.lightbox-wrapper svg {
+    display: block;
+    max-width: none;
+    max-height: none;
+}

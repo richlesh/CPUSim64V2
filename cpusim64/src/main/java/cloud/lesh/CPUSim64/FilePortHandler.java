@@ -17,6 +17,7 @@
 
 package cloud.lesh.CPUSim64;
 
+import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStreamReader;
@@ -26,6 +27,7 @@ public class FilePortHandler extends PortHandler
 {
 	private FileOutputStream os;
 	private FileInputStream fis;
+	private BufferedInputStream bis;
 	private InputStreamReader is;
 	private String filespec;
 
@@ -39,7 +41,8 @@ public class FilePortHandler extends PortHandler
 			{
 				case 0:
 					fis = new FileInputStream(filespec);
-					is = new InputStreamReader(fis, StandardCharsets.UTF_8);
+					bis = new BufferedInputStream(fis);
+					is = new InputStreamReader(bis, StandardCharsets.UTF_8);
 					break;
 				case 1:
 					os = new FileOutputStream(filespec);
@@ -61,12 +64,24 @@ public class FilePortHandler extends PortHandler
 	{
 		if (is == null) throw cpu.new CPUException("File \"" + filespec + "\" not open for input!");
 		try {
-			return fis.read();
+			return bis.read();
 		}
 		catch (Exception e) {
 			throw cpu.new CPUException("Read error on file \"" + filespec + "\"!");
 		}
  	}
+
+	@Override
+	protected int readBytes(byte[] buf, int off, int len) throws Simulator.CPUException
+	{
+		if (is == null) throw cpu.new CPUException("File \"" + filespec + "\" not open for input!");
+		try {
+			return bis.read(buf, off, len);
+		}
+		catch (Exception e) {
+			throw cpu.new CPUException("Read error on file \"" + filespec + "\"!");
+		}
+	}
 	
 	@Override
 	public int readChar() throws Simulator.CPUException
@@ -147,6 +162,7 @@ public class FilePortHandler extends PortHandler
 			if (is != null) is.close(); 
 			if (os != null) os.close();
 			is = null;
+			bis = null;
 			os = null;
 		}
 		catch (Exception e) {

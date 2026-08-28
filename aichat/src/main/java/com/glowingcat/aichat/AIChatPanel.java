@@ -10,6 +10,8 @@ import java.awt.event.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -106,6 +108,7 @@ public class AIChatPanel extends JPanel {
         private Runnable onPromptNag;
         private DocumentRetriever documentRetriever;
         private final List<ContextProvider> contextProviders = new ArrayList<>();
+        private final List<String> systemPromptDocIndexPaths = new ArrayList<>();
 
         private Builder() {}
 
@@ -151,6 +154,20 @@ public class AIChatPanel extends JPanel {
         }
 
         /**
+         * Register one or more index files whose listed HTML documents are stripped
+         * of HTML tags and appended to the system prompt (sent with every chat prompt).
+         * This is an alternative to RAG indexing for reference material that should
+         * always be available to the model.
+         *
+         * @param indexPaths classpath resource paths to index files
+         *                   (e.g. "/documentation/doc-index.txt")
+         */
+        public Builder systemPromptDocs(String... indexPaths) {
+            for (String p : indexPaths) this.systemPromptDocIndexPaths.add(p);
+            return this;
+        }
+
+        /**
          * Add an additional context provider. Each provider supplies a labeled
          * block of text that is appended to every user message sent to the LLM.
          * Can be called multiple times to register multiple providers.
@@ -179,7 +196,7 @@ public class AIChatPanel extends JPanel {
         this.llmClient = builder.llmClient;
         this.promptNagCallback = builder.onPromptNag;
         this.contextProviders = List.copyOf(builder.contextProviders);
-        this.systemPrompt = buildSystemPrompt();
+        this.systemPrompt = buildSystemPrompt(builder.systemPromptDocIndexPaths);
         this.humanIconDataUri = loadIconAsDataUri("/human.png");
         this.aiIconDataUri = loadIconAsDataUri("/AI.png");
         var humanUrl = AIChatPanel.class.getResource("/human.png");
@@ -201,7 +218,7 @@ public class AIChatPanel extends JPanel {
         mdRenderer = HtmlRenderer.builder().extensions(extensions).build();
 
         setPreferredSize(new Dimension(380, 0));
-        setBorder(BorderFactory.createTitledBorder("AI Assistant"));
+        setBorder(BorderFactory.createTitledBorder(AIChatMessages.get("aichat.title")));
 
         // Initialize chat display (WebView or fallback)
         initChatDisplay();
@@ -226,8 +243,8 @@ public class AIChatPanel extends JPanel {
         JScrollPane inputScroll = new JScrollPane(inputArea);
         inputScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
 
-        sendBtn = new JButton("Send");
-        JButton clearBtn = new JButton("Clear");
+        sendBtn = new JButton(AIChatMessages.get("aichat.send"));
+        JButton clearBtn = new JButton(AIChatMessages.get("aichat.clear"));
         JPanel btnPanel = new JPanel(new GridLayout(2, 1, 0, 2));
         btnPanel.add(sendBtn);
         btnPanel.add(clearBtn);
@@ -246,9 +263,9 @@ public class AIChatPanel extends JPanel {
             int sp = systemPrompt.length();
             int doc = editor.getText().length();
             String docInfo = doc > 20_000
-                ? String.format("Document: %,d chars (truncated to 20,000 for LLM)", doc)
-                : String.format("Document: %,d chars", doc);
-            statusBar.setText(String.format("System: %,d chars    %s", sp, docInfo));
+                ? String.format(AIChatMessages.get("aichat.status.docTruncated"), doc)
+                : String.format(AIChatMessages.get("aichat.status.doc"), doc);
+            statusBar.setText(String.format(AIChatMessages.get("aichat.status.system"), sp, docInfo));
         };
         statusUpdater.run();
 
@@ -335,8 +352,8 @@ public class AIChatPanel extends JPanel {
                 final int idx = i;
                 JPanel btnPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 4, 2));
                 btnPanel.setOpaque(false);
-                JButton acceptBtn = new JButton("Accept");
-                JButton rejectBtn = new JButton("Reject");
+                JButton acceptBtn = new JButton(AIChatMessages.get("aichat.accept"));
+                JButton rejectBtn = new JButton(AIChatMessages.get("aichat.reject"));
                 acceptBtn.addActionListener(e -> {
                     if (idx < chatMessages.size()) {
                         ChatMessage m = chatMessages.get(idx);
@@ -348,8 +365,8 @@ public class AIChatPanel extends JPanel {
                                     m.accepted = true;
                                 } catch (Exception ex) {
                                     JOptionPane.showMessageDialog(null,
-                                        "Failed to apply diff: " + ex.getMessage(),
-                                        "Diff Error", JOptionPane.ERROR_MESSAGE);
+                                        AIChatMessages.get("aichat.diffError", ex.getMessage()),
+                                        AIChatMessages.get("aichat.diffErrorTitle"), JOptionPane.ERROR_MESSAGE);
                                     return;
                                 }
                             } else if (am.replacementMarkdown != null) {
@@ -404,9 +421,29 @@ public class AIChatPanel extends JPanel {
             thinkingRow.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
             thinkingRow.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
             thinkingRow.add(new JLabel(aiIcon), BorderLayout.WEST);
-            JLabel thinkingLabel = new JLabel("Thinking...");
+            JLabel thinkingLabel = new JLabel(AIChatMessages.get("aichat.thinking"));
             thinkingLabel.setFont(chatFont.deriveFont(Font.ITALIC));
             thinkingRow.add(thinkingLabel, BorderLayout.CENTER);
+
+            // Cancel button to abort the request
+            JButton cancelBtn = new JButton("\u2715");
+            cancelBtn.setToolTipText(AIChatMessages.get("aichat.cancel"));
+            cancelBtn.setFont(cancelBtn.getFont().deriveFont(Font.BOLD, 28f));
+            cancelBtn.setForeground(new Color(0xCC0000));
+            cancelBtn.setBorderPainted(false);
+            cancelBtn.setContentAreaFilled(false);
+            cancelBtn.setMargin(new Insets(0, 2, 0, 0));
+            cancelBtn.setFocusPainted(false);
+            cancelBtn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+            cancelBtn.addActionListener(e -> cancelCurrentRequest());
+
+            // Place thinking label and cancel button together on the left
+            JPanel centerPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 4, 0));
+            centerPanel.setOpaque(false);
+            centerPanel.add(thinkingLabel);
+            centerPanel.add(cancelBtn);
+            thinkingRow.add(centerPanel, BorderLayout.CENTER);
+
             fallbackChatPanel.add(thinkingRow);
 
             // Animate pulsing with a timer
@@ -415,7 +452,7 @@ public class AIChatPanel extends JPanel {
                 private int dots = 3;
                 @Override public void actionPerformed(ActionEvent e) {
                     dots = (dots % 3) + 1;
-                    thinkingLabel.setText("Thinking" + ".".repeat(dots));
+                    thinkingLabel.setText(AIChatMessages.get("aichat.thinking").replace("...", ".".repeat(dots)));
                 }
             });
             thinkingTimer.start();
@@ -457,7 +494,7 @@ public class AIChatPanel extends JPanel {
                             } catch (DiffApplier.DiffException ex) {
                                 // If diff fails, show error in chat
                                 ChatMessage errMsg = new ChatMessage("assistant",
-                                    "Failed to apply diff: " + ex.getMessage() + ". Try asking the AI to regenerate the changes.");
+                                    AIChatMessages.get("aichat.diffErrorRetry", ex.getMessage()));
                                 chatMessages.add(errMsg);
                             }
                         } else if (am.replacementMarkdown != null) {
@@ -513,11 +550,24 @@ public class AIChatPanel extends JPanel {
                 }
             });
         }
+
+        /** Called when user clicks the cancel button during thinking. */
+        public void cancelRequest() {
+            SwingUtilities.invokeLater(() -> cancelCurrentRequest());
+        }
     }
 
     /** Set or replace the LLM client at runtime (e.g., after preferences change). */
     public void setLlmClient(LLMClient client) {
         this.llmClient = client;
+    }
+
+    /**
+     * Notify the panel that AI preferences have changed. Discards the cached
+     * LLM client so the next prompt is sent using the updated vendor/model/API key.
+     */
+    public void refreshPreferences() {
+        this.llmClient = null;
     }
 
     /** Set or replace the prompt nag callback at runtime. */
@@ -554,8 +604,8 @@ public class AIChatPanel extends JPanel {
         String vendor = aiPreferences.getLlmVendor();
         JDialog dialog = new JDialog(
             (java.awt.Frame) SwingUtilities.getWindowAncestor(this),
-            "Indexing", true);
-        JLabel label = new JLabel("Indexing context documents for use by " + vendor + "...");
+            AIChatMessages.get("aichat.indexing"), true);
+        JLabel label = new JLabel(AIChatMessages.get("aichat.indexingMsg", vendor));
         label.setBorder(BorderFactory.createEmptyBorder(20, 30, 20, 30));
         JProgressBar progress = new JProgressBar();
         progress.setIndeterminate(true);
@@ -580,6 +630,21 @@ public class AIChatPanel extends JPanel {
         }, "RAG-Indexer").start();
 
         dialog.setVisible(true); // blocks until disposed
+
+        // If Ollama embedding failed, advise user to pull the embedding model
+        if (retriever.didEmbeddingFail() && "Ollama".equals(aiPreferences.getLlmVendor())) {
+            JOptionPane.showMessageDialog(
+                SwingUtilities.getWindowAncestor(this),
+                AIChatMessages.get("aichat.ollamaEmbeddingHint"),
+                AIChatMessages.get("aichat.ollamaEmbeddingHintTitle"),
+                JOptionPane.INFORMATION_MESSAGE);
+        } else if (retriever.didEmbeddingFail()) {
+            JOptionPane.showMessageDialog(
+                SwingUtilities.getWindowAncestor(this),
+                AIChatMessages.get("aichat.embeddingFallbackHint", aiPreferences.getLlmVendor()),
+                AIChatMessages.get("aichat.embeddingFallbackHintTitle"),
+                JOptionPane.WARNING_MESSAGE);
+        }
     }
 
     private void sendMessage() {
@@ -600,7 +665,8 @@ public class AIChatPanel extends JPanel {
             promptNagCallback.run();
         }
 
-        String context = "Current document:\n```\n" + editor.getContextText() + "\n```";
+        String nowStr = ZonedDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssZZZZZ (zzzz)"));
+        String context = "Current date/time: " + nowStr + "\n\nCurrent document: " + editor.getFilepath() + "\n```cpusim64\n" + editor.getContextText() + "\n```";
         for (ContextProvider cp : contextProviders) {
             String extra = cp.supplier().get();
             if (extra != null && !extra.isEmpty()) {
@@ -615,8 +681,7 @@ public class AIChatPanel extends JPanel {
             String retrievalQuery = text;
             String docText = editor.getText();
             if (docText != null && !docText.isEmpty()) {
-                String docSample = docText.length() > 500 ? docText.substring(0, 500) : docText;
-                retrievalQuery = text + "\n\n" + docSample;
+                retrievalQuery = text + "\n\n" + docText;
             }
             List<String> relevantDocs = retriever.retrieve(retrievalQuery);
             if (!relevantDocs.isEmpty()) {
@@ -630,6 +695,13 @@ public class AIChatPanel extends JPanel {
         if (messages.isEmpty()) {
             messages.add(Map.of("role", "system", "content", systemPrompt));
         }
+
+        // In developer mode, write the composed system prompt to a file for inspection
+        if (isDeveloperMode()) {
+            writeDevFile(".glowingcat-ai-system-prompt.md", systemPrompt);
+        }
+
+
         String fullUserMessage = context + "\n\nUser request: " + text;
         messages.add(Map.of("role", "user", "content", fullUserMessage));
 
@@ -666,7 +738,7 @@ public class AIChatPanel extends JPanel {
                     pulsing = false;
                     if (!Thread.currentThread().isInterrupted()) {
                         ChatMessage errMsg = new ChatMessage("assistant",
-                            "Error (" + ex.getClass().getSimpleName() + "): " + ex.getMessage());
+                            AIChatMessages.get("aichat.error", ex.getClass().getSimpleName(), ex.getMessage()));
                         chatMessages.add(errMsg);
                     }
                     renderChat();
@@ -675,6 +747,25 @@ public class AIChatPanel extends JPanel {
             }
         });
         currentThread.start();
+    }
+
+    /** Cancel the in-flight LLM request, reset the thinking indicator, and re-enable input. */
+    private void cancelCurrentRequest() {
+        Thread t = currentThread;
+        if (t != null) {
+            t.interrupt();
+        }
+        pulsing = false;
+        if (thinkingTimer != null) { thinkingTimer.stop(); thinkingTimer = null; }
+        // Remove the last user message from history since we never got a response
+        if (!messages.isEmpty() && "user".equals(messages.get(messages.size() - 1).get("role"))) {
+            messages.remove(messages.size() - 1);
+        }
+        if (!chatMessages.isEmpty() && "user".equals(chatMessages.get(chatMessages.size() - 1).role)) {
+            chatMessages.remove(chatMessages.size() - 1);
+        }
+        renderChat();
+        sendBtn.setEnabled(true);
     }
 
     private void processResponse(String response) {
@@ -716,7 +807,7 @@ public class AIChatPanel extends JPanel {
                 // Apply directly to editor
                 editor.setText(newSource);
                 // Show explanation as a normal message (or a default if none)
-                String display = explanation.isEmpty() ? "Updated the source code." : explanation;
+                String display = explanation.isEmpty() ? AIChatMessages.get("aichat.updatedSource") : explanation;
                 ChatMessage msg = new ChatMessage("assistant", display);
                 msg.copyContent = newSource;
                 chatMessages.add(msg);
@@ -803,8 +894,8 @@ public class AIChatPanel extends JPanel {
 
         ApprovalMessage(String explanation, String replacementMarkdown, String diff) {
             super("assistant", explanation.isEmpty()
-                ? (diff != null ? "Here are the proposed changes. Review and accept or reject."
-                    : "Here's the updated document. Review and accept or reject the changes.")
+                ? (diff != null ? AIChatMessages.get("aichat.proposedChanges")
+                    : AIChatMessages.get("aichat.updatedDocument"))
                 : explanation);
             this.explanation = explanation;
             this.replacementMarkdown = replacementMarkdown;
@@ -840,6 +931,7 @@ public class AIChatPanel extends JPanel {
         // Dynamic styles that depend on preferences
         html.append("body { font-family: '").append(fontFamily).append("', 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', sans-serif; ");
         html.append("font-size: ").append(fontSize).append("pt; }");
+        html.append("p, li, h1, h2, h3, h4, h5, h6, blockquote, td, th { unicode-bidi: plaintext; }");
         html.append(".user-bubble { background: ").append(userBg).append("; color: ").append(userText).append("; }");
         html.append(".ai-bubble { background: ").append(aiBg).append("; color: ").append(aiText).append("; }");
         html.append(".approval-btns button { font-size: ").append(fontSize).append("pt; }");
@@ -848,6 +940,8 @@ public class AIChatPanel extends JPanel {
         html.append("</style>");
         // Static styles from resource file
         html.append("<style>").append(loadCssResource(darkMode)).append("</style>");
+        // Emoji image styles
+        html.append("<style>").append(EmojiReplacer.emojiCss()).append("</style>");
         html.append("<script>");
         html.append("MathJax = {");
         html.append("  tex: { inlineMath: [['$','$'], ['\\\\(','\\\\)']], displayMath: [['$$','$$'], ['\\\\[','\\\\]']] },");
@@ -870,6 +964,7 @@ public class AIChatPanel extends JPanel {
         html.append("});");
         html.append("function acceptChanges(idx) { if(window.chatBridge) window.chatBridge.acceptChanges(idx); }");
         html.append("function rejectChanges(idx) { if(window.chatBridge) window.chatBridge.rejectChanges(idx); }");
+        html.append("function cancelRequest() { if(window.chatBridge) window.chatBridge.cancelRequest(); }");
         html.append("function copyMarkdown(idx) {");
         html.append("  if(window.chatBridge) window.chatBridge.copyMarkdown(idx);");
         html.append("  var btn = event.currentTarget;");
@@ -884,7 +979,10 @@ public class AIChatPanel extends JPanel {
         html.append("  if(window.hljs){hljs.highlightAll();}");
         html.append("});");
         html.append("</script>");
-        html.append("</head><body>");
+        // Lightbox for images and Mermaid diagrams (right-click to enlarge)
+        html.append("<style>").append(WebResources.lightboxCss()).append("</style>");
+        html.append("<script>").append(WebResources.lightboxJs()).append("</script>");
+        html.append("</head><body dir=\"auto\"").append(darkMode ? " class=\"dark-mode\"" : "").append(">");
 
         // Render all chat messages
         for (int i = 0; i < chatMessages.size(); i++) {
@@ -893,14 +991,14 @@ public class AIChatPanel extends JPanel {
                 html.append("<div class=\"bubble-row\">");
                 html.append("<img class=\"bubble-icon\" src=\"").append(humanIconSrc()).append("\">");
                 html.append("<div class=\"bubble user-bubble bubble-content\">");
-                html.append(escapeHtml(msg.markdown));
+                html.append(EmojiReplacer.replaceEmoji(escapeHtml(msg.markdown)));
                 html.append("</div></div>");
             } else {
                 // AI message — render markdown as HTML
                 String renderedContent;
                 if (msg instanceof ApprovalMessage am) {
                     renderedContent = renderMarkdownToHtml(am.explanation.isEmpty()
-                        ? "Here's the updated document. Review and accept or reject the changes."
+                        ? AIChatMessages.get("aichat.updatedDocument")
                         : am.explanation);
                 } else {
                     renderedContent = renderMarkdownToHtml(msg.markdown);
@@ -932,7 +1030,10 @@ public class AIChatPanel extends JPanel {
 
         // Pulsing "thinking" indicator
         if (pulsing) {
-            html.append("<div class=\"thinking\"><img class=\"bubble-icon\" src=\"").append(aiIconSrc()).append("\">Thinking...</div>");
+            html.append("<div class=\"thinking\"><img class=\"bubble-icon\" src=\"").append(aiIconSrc()).append("\">");
+            html.append(AIChatMessages.get("aichat.thinking"));
+            html.append("<button class=\"cancel-btn\" onclick=\"cancelRequest()\" title=\"").append(AIChatMessages.get("aichat.cancel")).append("\">\u2715</button>");
+            html.append("</div>");
         }
 
         // Auto-scroll to bottom
@@ -955,7 +1056,9 @@ public class AIChatPanel extends JPanel {
         String converted = markdown.replaceAll("\\\\\\((.+?)\\\\\\)", "\\$$1\\$");
         converted = converted.replaceAll("(?s)\\\\\\[(.+?)\\\\\\]", "\\$\\$$1\\$\\$");
         Node document = mdParser.parse(converted);
-        return mdRenderer.render(document);
+        String html = mdRenderer.render(document);
+        // Replace non-BMP characters (emoji) with Twemoji SVG images
+        return EmojiReplacer.replaceEmoji(html);
     }
 
     private static String escapeHtml(String text) {
@@ -966,15 +1069,31 @@ public class AIChatPanel extends JPanel {
                    .replace("\n", "<br>");
     }
 
-    private String buildSystemPrompt() {
+    private String buildSystemPrompt(List<String> docIndexPaths) {
+        String base;
         try (var is = AIChatPanel.class.getResourceAsStream("/system_prompt.md")) {
             if (is != null) {
-                return new String(is.readAllBytes(), StandardCharsets.UTF_8).trim();
+                base = new String(is.readAllBytes(), StandardCharsets.UTF_8).trim();
+            } else {
+                base = "You are an AI writing assistant. Help users write and improve markdown documents.";
             }
         } catch (Exception e) {
-            // Fall through to hardcoded fallback
+            base = "You are an AI writing assistant. Help users write and improve markdown documents.";
         }
-        return "You are an AI writing assistant. Help users write and improve markdown documents.";
+
+        StringBuilder sb = new StringBuilder(base);
+
+        // Append stripped HTML documentation (if any) directly into the system prompt
+        if (docIndexPaths != null && !docIndexPaths.isEmpty()) {
+            String docs = DocumentRetriever.loadAndStripDocuments(docIndexPaths);
+            if (docs != null && !docs.isBlank()) {
+                sb.append("\n\n# CPUSim64 Reference Documentation\n");
+                sb.append(docs);
+            }
+        }
+
+        sb.append("\nResponses should be in ").append(AIChatMessages.get("aichat.languageName")).append(".");
+        return sb.toString();
     }
 
     private String humanIconSrc() {
@@ -1032,14 +1151,14 @@ public class AIChatPanel extends JPanel {
 
     /**
      * Copy bundled config files from resources/config/ to the user's Desktop
-     * as "Generic AI Configurations" folder. Only runs once — skips if the folder already exists.
+     * as "AI Config Examples" folder. Only runs once — skips if the folder already exists.
      */
     private static void installConfigToDesktop() {
         try {
             Path desktopDir = Path.of(System.getProperty("user.home"), "Desktop");
             if (!Files.isDirectory(desktopDir)) return;
 
-            Path destDir = desktopDir.resolve("Generic AI Configurations");
+            Path destDir = desktopDir.resolve("AI Config Examples");
             if (Files.exists(destDir)) return; // already installed
 
             // Read the index of config files

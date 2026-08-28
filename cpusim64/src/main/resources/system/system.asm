@@ -30,14 +30,12 @@ SYSTEM_ASM_START:
 // count	Number of elements to move
 ///////////////////////////////////////////////////////////////////////////////
 #def_func memmove(dest, src, count)
-	push	r1
-	push	r2
+	save	r1, r2
 	load	r1, dest
 	load	r2, src
 	load	r3,	count
 	int		iMEMMOVE
-	pop		r2
-	pop		r1
+	restore	r1, r2
 #end_func
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -47,11 +45,11 @@ SYSTEM_ASM_START:
 // count	Number of elements to clear
 ///////////////////////////////////////////////////////////////////////////////
 #def_func memclear(dest, count)
-	push	r1
+	save	r1, r2
 	load	r1, dest
 	load	r2, count
 	int		iMEMCLEAR
-	pop		r1
+	restore	r1, r2
 #end_func
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -79,11 +77,11 @@ SYSTEM_ASM_START:
 #end_func
 
 #def_func realloc(addr, size)
-	push	r1
+	save	r1, r2
 	load	r1, addr
 	load	r2, size
 	int		iREALLOC
-	pop		r1
+	restore	r1, r2
 #end_func
 
 #def_func free(addr)

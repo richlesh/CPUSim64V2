@@ -22,8 +22,8 @@ import java.util.regex.*;
  */
 public class DocumentRetriever {
 
-    private static final int CHUNK_SIZE = 800;  // target chars per chunk
-    private static final int CHUNK_OVERLAP = 100; // overlap between chunks
+    private static final int CHUNK_SIZE = 64*1024;  // target chars per chunk
+    private static final int CHUNK_OVERLAP = 1024;  // overlap between chunks
 
     private final Path cacheBaseDir;
     private final List<String> indexPaths;
@@ -34,6 +34,7 @@ public class DocumentRetriever {
     private boolean useEmbeddings;
     private boolean initialized = false;
     private String initializedVendor = null;
+    private boolean embeddingFailed = false;
 
     /**
      * Create a retriever with the specified cache base directory and index files.
@@ -53,15 +54,16 @@ public class DocumentRetriever {
     /**
      * Check if the retriever needs (re-)initialization for the given vendor.
      * Returns true if the index doesn't exist or is out of date.
+     * This is a lightweight check — does not load indexes into memory.
      */
     public boolean needsInitialization(AIChatPreferences prefs) {
         String vendor = prefs.getLlmVendor();
-        String safeVendor = vendor.replaceAll("[^a-zA-Z0-9_-]", "_");
 
         // Already initialized for this vendor
         if (initialized && vendor.equals(initializedVendor)) return false;
 
         // Check if cache exists and is current
+        String safeVendor = vendor.replaceAll("[^a-zA-Z0-9_-]", "_");
         boolean supportsEmb = EmbeddingClient.supportsEmbeddings(vendor);
         Path cachePath = getCachePath(supportsEmb ? "embeddings" : "keywords", safeVendor);
         if (!Files.exists(cachePath)) return true;
@@ -69,21 +71,55 @@ public class DocumentRetriever {
         try {
             long cacheTime = Files.getLastModifiedTime(cachePath).toMillis();
             long sourceTime = getDocumentSourceTimestamp();
-            return sourceTime > cacheTime;
+            if (sourceTime > cacheTime) return true;
         } catch (Exception e) {
             return true;
         }
+
+        // Cache exists and is current — still needs initialization (loading into memory)
+        return true;
     }
 
     /**
      * Initialize the retriever for the given vendor preferences.
      * This will load or build the appropriate index (embedding or keyword).
-     * May make API calls if embeddings need to be computed.
+     * If a valid cache exists, loads from cache. Otherwise builds the index
+     * (which may make API calls if embeddings need to be computed).
      */
     public void initialize(AIChatPreferences prefs) {
         String vendor = prefs.getLlmVendor();
         useEmbeddings = EmbeddingClient.supportsEmbeddings(vendor);
+        embeddingFailed = false;
+        String safeVendor = vendor.replaceAll("[^a-zA-Z0-9_-]", "_");
 
+        // Try loading from a valid cache first (fast path)
+        Path cachePath = getCachePath(useEmbeddings ? "embeddings" : "keywords", safeVendor);
+        if (Files.exists(cachePath)) {
+            try {
+                long cacheTime = Files.getLastModifiedTime(cachePath).toMillis();
+                long sourceTime = getDocumentSourceTimestamp();
+                if (cacheTime >= sourceTime) {
+                    if (useEmbeddings) {
+                        embeddingIndex = EmbeddingIndex.load(cachePath);
+                        embeddingClient = EmbeddingClient.fromPreferences(prefs);
+                        // Also build keyword index as fallback
+                        List<DocumentChunk> chunks = loadAndChunkDocuments();
+                        if (!chunks.isEmpty()) {
+                            keywordIndex = new KeywordIndex(chunks);
+                        }
+                    } else {
+                        keywordIndex = KeywordIndex.load(cachePath);
+                    }
+                    initialized = true;
+                    initializedVendor = vendor;
+                    return;
+                }
+            } catch (Exception e) {
+                // Cache corrupt or load failed — fall through to full rebuild
+            }
+        }
+
+        // Full rebuild: load documents, chunk, and index
         List<DocumentChunk> chunks = loadAndChunkDocuments();
         if (chunks.isEmpty()) {
             initialized = true;
@@ -92,7 +128,6 @@ public class DocumentRetriever {
         }
 
         long sourceTimestamp = getDocumentSourceTimestamp();
-        String safeVendor = vendor.replaceAll("[^a-zA-Z0-9_-]", "_");
 
         if (useEmbeddings) {
             embeddingClient = EmbeddingClient.fromPreferences(prefs);
@@ -148,6 +183,14 @@ public class DocumentRetriever {
         return initialized;
     }
 
+    /**
+     * Returns true if embedding indexing was attempted but failed,
+     * causing a fallback to keyword-based retrieval.
+     */
+    public boolean didEmbeddingFail() {
+        return embeddingFailed;
+    }
+
     // --- Index initialization ---
 
     private void initEmbeddingIndex(List<DocumentChunk> chunks, String vendor, long sourceTimestamp) {
@@ -189,6 +232,7 @@ public class DocumentRetriever {
             // Embedding failed, fall back to keywords
             useEmbeddings = false;
             embeddingIndex = null;
+            embeddingFailed = true;
         }
 
         // Always build keyword index as fallback
@@ -233,20 +277,53 @@ public class DocumentRetriever {
                 String content = loadResource(baseDir + filename);
                 if (content == null || content.isEmpty()) continue;
 
-                // Strip HTML if the file appears to be HTML
-                String text = content;
+                // HTML files: split at heading boundaries, then chunk each section
                 if (filename.endsWith(".html") || filename.endsWith(".htm")) {
-                    text = stripHtml(content);
-                    if (text.isEmpty()) continue;
+                    chunks.addAll(chunkHtmlBySections(filename, content));
+                    continue;
                 }
 
-                // Don't chunk small files — keep whole
-                if (text.length() <= CHUNK_SIZE * 2) {
-                    chunks.add(new DocumentChunk(filename, text));
+                // Always keep .asm files as whole units (example programs)
+                if (filename.endsWith(".asm") || content.length() <= CHUNK_SIZE * 2) {
+                    chunks.add(new DocumentChunk(filename, content));
                 } else {
-                    chunks.addAll(chunkText(filename, text));
+                    chunks.addAll(chunkText(filename, content));
                 }
             }
+        }
+
+        return chunks;
+    }
+
+    /**
+     * Split an HTML document into sections at heading boundaries (h1–h4),
+     * strip HTML from each section, and chunk only if a section still exceeds CHUNK_SIZE.
+     * This keeps related content (e.g., a library's function table) together.
+     */
+    private List<DocumentChunk> chunkHtmlBySections(String filename, String html) {
+        List<DocumentChunk> chunks = new ArrayList<>();
+
+        // Split at heading tags (h1-h4), keeping the heading with its section
+        Pattern headingPattern = Pattern.compile("(?=<h[1-4][^>]*>)", Pattern.CASE_INSENSITIVE);
+        String[] sections = headingPattern.split(html);
+
+        for (String section : sections) {
+            String text = stripHtml(section).trim();
+            if (text.isEmpty()) continue;
+
+            // Extract heading text for the section label
+            String label = filename;
+            Matcher hm = Pattern.compile("<h[1-4][^>]*>(.*?)</h[1-4]>", Pattern.CASE_INSENSITIVE | Pattern.DOTALL).matcher(section);
+            if (hm.find()) {
+                String heading = hm.group(1).replaceAll("<[^>]+>", "").trim();
+                if (!heading.isEmpty()) {
+                    label = filename + " — " + heading;
+                }
+            }
+
+            // Keep each section as a whole unit — heading-based splitting
+            // already produces semantically meaningful chunks
+            chunks.add(new DocumentChunk(label, text));
         }
 
         return chunks;
@@ -335,6 +412,37 @@ public class DocumentRetriever {
         return 0;
     }
 
+    /**
+     * Load HTML documents listed in the given index files, strip their HTML tags,
+     * and concatenate the resulting plain text. Intended for embedding documentation
+     * directly into the system prompt (as opposed to RAG indexing).
+     *
+     * @param indexPaths classpath resource paths to index files (e.g. "/documentation/doc-index.txt")
+     * @return concatenated plain-text content of all listed documents
+     */
+    public static String loadAndStripDocuments(List<String> indexPaths) {
+        StringBuilder sb = new StringBuilder();
+        for (String indexPath : indexPaths) {
+            String baseDir = indexPath.substring(0, indexPath.lastIndexOf('/') + 1);
+            List<String> files = readIndexFile(indexPath);
+            for (String filename : files) {
+                String content = loadResource(baseDir + filename);
+                if (content == null || content.isEmpty()) continue;
+                String text;
+                if (filename.endsWith(".html") || filename.endsWith(".htm")) {
+                    text = stripHtml(content);
+                } else {
+                    text = content;
+                }
+                if (!text.isBlank()) {
+                    sb.append("\n\n## ").append(filename).append("\n\n");
+                    sb.append(text.trim());
+                }
+            }
+        }
+        return sb.toString();
+    }
+
     private static List<String> readIndexFile(String resourcePath) {
         List<String> files = new ArrayList<>();
         try (var is = DocumentRetriever.class.getResourceAsStream(resourcePath)) {
@@ -384,8 +492,8 @@ public class DocumentRetriever {
         html = html.replaceAll("(?i)</(p|div|h[1-6]|li|tr|dt|dd|blockquote|pre|section|article)>", "\n");
         html = html.replaceAll("(?i)<(p|div|h[1-6]|li|tr|dt|dd|blockquote|section|article)[^>]*>", "\n");
 
-        // Remove all remaining tags
-        html = html.replaceAll("<[^>]+>", "");
+        // Remove all remaining tags (replace with space to preserve word boundaries)
+        html = html.replaceAll("<[^>]+>", " ");
 
         // Decode HTML entities
         html = html.replaceAll("&amp;", "&");

@@ -37,7 +37,7 @@
 #include <system/system.asm>
 
     #call   main()
-    int     iEXIT
+    #call   exit(r0)
 
 ///////////////////////////////////////////////////////////////////////////////
 // main()
@@ -66,8 +66,8 @@
     int     iARGC
     move    argc, r0
     cmp     argc, 2
-    jump    lt, GET_ARGS_FAILED
-GET_ARGS:
+    jump    lt, $GET_ARGS_FAILED
+
     move    imax, 1                 // Best starting number found so far
     move    max, 1                  // Longest sequence length found so far
     #call   args(1)                 // Get first command line argument
@@ -85,11 +85,9 @@ GET_ARGS:
     #end_for
     #call   fprintf(STDOUT, "%d: %d\n", imax, max)
     #return 0
-    jump    MAIN_END
-GET_ARGS_FAILED:
-    #call   puts("You must supply a positive integer argument.")
+$GET_ARGS_FAILED:
+    #call   putline("You must supply a positive integer argument.")
     #return 1
-MAIN_END:
 #end_func
 
 ///////////////////////////////////////////////////////////////////////////////

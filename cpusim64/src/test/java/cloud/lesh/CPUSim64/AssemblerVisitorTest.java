@@ -126,6 +126,42 @@ public class AssemblerVisitorTest {
 	}
 
 	@Test
+	void testMoveSelfOptimizedOut() {
+		// Redundant register-to-itself moves must be optimized out entirely,
+		// consuming no address and emitting no word. Non-self moves and labels
+		// after them must remain correct.
+		String src = """
+			START:
+			MOVE R0, R0
+			MOVE F2, F2
+			MOVE SP, SP
+			MOVE r5, R5
+			MOVE R6, R6, 0
+			MOVE R7, 0, R7
+			MOVE R8, R8 + 0x0
+			MOVE R1, R2
+			MOVE F1, F2
+			MOVE R9, R9, 4
+			MOVE R10, R11, 0
+			FINIS:
+			""";
+		LiteralRewriter rw = new LiteralRewriter();
+		String preprocessed = rw.rewrite(src);
+		LabelVisitor labelVisitor = new LabelVisitor();
+		String noLabels = labelVisitor.gatherLabels(preprocessed);
+		var asm = new AssemblerVisitor(labelVisitor.getLabelMap(), labelVisitor.getReverseLabelMap());
+		asm.assemble(noLabels);
+		List<Long> words = asm.result();
+		// Dropped: 4 YY self-moves + 3 zero-offset self-moves = 7 removed.
+		// Kept: MOVE R1,R2 ; MOVE F1,F2 ; MOVE R9,R9,4 (nonzero) ; MOVE R10,R11,0 (different regs).
+		assertEquals(4, words.size());
+		assertEquals(0x02A0001002000000L, words.get(0)); // MOVE R1, R2
+		assertEquals(0x02F0001002000000L, words.get(1)); // MOVE F1, F2
+		// Labels must reflect the reduced instruction count.
+		assertEquals(4, labelVisitor.getLabelMap().get("FINIS") - labelVisitor.getLabelMap().get("START"));
+	}
+
+	@Test
 	void testLOAD() {
 		String src = """
 			START:

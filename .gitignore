@@ -50,6 +50,10 @@ build/
 ### VS Code ###
 .vscode/
 
+### Python ###
+*.pyc
+__pycache__/
+
 ### Mac OS ###
 .DS_Store
 

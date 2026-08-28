@@ -22,11 +22,11 @@
 #ifdef __DEBUG__
 	#include <system/io.asm>
 	#def_macro	DEBUG_MSG(...)
-		#call	debug_msg(STDOUT, ${...})
+		#call	_debug_msg(STDOUT, ${...})
 	#end_macro
 
 	#def_macro	COND_DEBUG_MSG(b, ...)
-		#call	cond_debug_msg(${b}, STDOUT, ${...})
+		#call	_cond_debug_msg(${b}, STDOUT, ${...})
 	#end_macro
 
 	#def_macro	SET_EXIT_ON_ASSERT_FAILURE(b)

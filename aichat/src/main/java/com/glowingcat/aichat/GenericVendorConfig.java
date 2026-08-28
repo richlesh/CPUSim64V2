@@ -218,7 +218,7 @@ public class GenericVendorConfig {
 
         HttpRequest.Builder reqBuilder = HttpRequest.newBuilder()
                 .uri(URI.create(uri))
-                .timeout(Duration.ofSeconds(120));
+                .timeout(Duration.ofSeconds(600));
 
         for (Map.Entry<String, String> h : headers.entrySet()) {
             reqBuilder.header(h.getKey(), h.getValue());

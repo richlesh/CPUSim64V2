@@ -27,6 +27,7 @@ import java.util.regex.*;
 import cloud.lesh.CPUSim64.StdInterruptHandler;
 import cloud.lesh.CPUSim64.Assembler;
 import cloud.lesh.CPUSim64.Simulation;
+import cloud.lesh.CPUSim64.Simulator;
 import com.glowingcat.aichat.AIChatPanel;
 import com.glowingcat.aichat.AIChatPreferences;
 import com.glowingcat.aichat.AIChatPreferencesDialog;
@@ -61,6 +62,7 @@ public class IDEApp {
     private JMenuBar menuBar;
     private JToolBar consoleToolBar;
     private JMenuItem runItem, debugItem;
+    private JMenuItem killAllItem;
     private JCheckBoxMenuItem aiMenuItem;
     private JButton runBtn, debugBtn;
     private volatile Thread runThread;
@@ -96,10 +98,13 @@ public class IDEApp {
         frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         frame.addWindowListener(new WindowAdapter() {
             @Override public void windowClosing(WindowEvent e) {
-                if (promptSaveIfNeeded()) frame.dispose();
+                if (promptSaveIfNeeded()) {
+                    saveWindowState();
+                    frame.dispose();
+                }
             }
         });
-        frame.setSize(1024, 768);
+        frame.setSize(settings.mainWindowWidth, settings.mainWindowHeight);
         var frameIconUrl = IDEApp.class.getResource("/app_icon_256.png");
         if (frameIconUrl != null) frame.setIconImage(new ImageIcon(frameIconUrl).getImage());
 
@@ -108,8 +113,35 @@ public class IDEApp {
 
         applySettings();
 
+        // Center the window on the monitor (default position each session)
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
+
+        // Restore AI panel visibility from saved settings (after window is shown so
+        // the split pane has a valid width for divider positioning)
+        if (settings.aiPanelVisible) {
+            SwingUtilities.invokeLater(this::restoreAIPanel);
+        }
+    }
+
+    /** Persist the main window size and AI panel state to settings. */
+    private void saveWindowState() {
+        settings.mainWindowWidth = frame.getWidth();
+        settings.mainWindowHeight = frame.getHeight();
+        settings.aiPanelVisible = aiChatPanel != null && aiChatPanel.isVisible();
+        if (settings.aiPanelVisible && mainSplit != null) {
+            settings.aiPanelWidth = mainSplit.getWidth() - mainSplit.getDividerLocation();
+        }
+        settings.save();
+    }
+
+    /** Show the AI panel at the saved width (used to restore state at startup). */
+    private void restoreAIPanel() {
+        aiChatPanel.setVisible(true);
+        mainSplit.setDividerSize(6);
+        int w = settings.aiPanelWidth > 0 ? settings.aiPanelWidth : 400;
+        mainSplit.setDividerLocation(mainSplit.getWidth() - w);
+        if (aiMenuItem != null) aiMenuItem.setSelected(true);
     }
 
     private void applySettings() {
@@ -222,7 +254,7 @@ public class IDEApp {
         openItem.addActionListener(e -> openFile());
         JMenuItem closeItem = new JMenuItem("Close");
         closeItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_W, Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx()));
-        closeItem.addActionListener(e -> { if (promptSaveIfNeeded()) frame.dispose(); });
+        closeItem.addActionListener(e -> { if (promptSaveIfNeeded()) { saveWindowState(); frame.dispose(); } });
         saveItem = new JMenuItem("Save");
         saveItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx()));
         saveItem.setEnabled(false);
@@ -241,6 +273,10 @@ public class IDEApp {
         fileMenu.add(saveAsItem);
         fileMenu.addSeparator();
         fileMenu.add(runItem);
+        killAllItem = new JMenuItem("Kill All");
+        killAllItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_K, Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx()));
+        killAllItem.addActionListener(e -> killAll());
+        fileMenu.add(killAllItem);
         debugItem = new JMenuItem("Debug");
         debugItem.addActionListener(e -> launchDebugger());
         fileMenu.add(debugItem);
@@ -457,11 +493,10 @@ public class IDEApp {
         var retriever = new com.glowingcat.aichat.DocumentRetriever(
             java.nio.file.Path.of(System.getProperty("user.home"), ".cpusim64"),
             java.util.List.of(
-                "/documentation/doc-index.txt",
-                "/documentation/examples-index.txt",
-                "/documentation/projects-index.txt"
+                "/documentation/examples-index.txt"
+//                "/documentation/projects-index.txt"
             ),
-            30
+            10
         );
 
         aiChatPanel = AIChatPanel.builder()
@@ -472,9 +507,13 @@ public class IDEApp {
                     modified = true;
                     saveItem.setEnabled(true);
                 }
+                @Override public String getFilepath() {
+                    return currentFile != null ? currentFile.toString() : null;
+                }
             })
             .preferences(aiPreferences)
             .documentRetriever(retriever)
+            .systemPromptDocs("/documentation/doc-index.txt")
             .contextProvider("Console output (truncated)", () -> {
                 String text = console.getText();
                 if (text.isEmpty()) return null;
@@ -507,7 +546,10 @@ public class IDEApp {
             aiPreferences.setAiResponseColor(dlg.getSelectedAiResponseColor());
             aiPreferences.setAiTextColor(dlg.getSelectedAiTextColor());
             aiPreferences.save();
-            if (aiChatPanel != null) aiChatPanel.updateFont();
+            if (aiChatPanel != null) {
+                aiChatPanel.updateFont();
+                aiChatPanel.refreshPreferences();
+            }
         }
     }
 
@@ -515,7 +557,13 @@ public class IDEApp {
         boolean show = !aiChatPanel.isVisible();
         aiChatPanel.setVisible(show);
         mainSplit.setDividerSize(show ? 6 : 0);
-        if (show) mainSplit.setDividerLocation(mainSplit.getWidth() - 400);
+        if (show) {
+            int w = settings.aiPanelWidth > 0 ? settings.aiPanelWidth : 400;
+            mainSplit.setDividerLocation(mainSplit.getWidth() - w);
+        } else {
+            // Remember the width when hiding so it can be restored later
+            settings.aiPanelWidth = mainSplit.getWidth() - mainSplit.getDividerLocation();
+        }
         if (aiMenuItem != null) aiMenuItem.setSelected(show);
     }
 
@@ -696,6 +744,27 @@ public class IDEApp {
             return;
         }
         runWithMode(null);
+    }
+
+    /**
+     * Master "Kill All": forcibly terminate a runaway simulation, including all
+     * child CPUs, processes, and threads. First requests a cooperative stop on
+     * every active simulator ({@link Simulator#killAll()}), then interrupts the
+     * IDE's run thread so it unwinds. Safe to invoke even when nothing is running.
+     */
+    private void killAll() {
+        // Forcibly stop every active simulator tree and interrupt all child threads.
+        try {
+            Simulator.killAll();
+        } catch (Throwable t) {
+            // Best-effort: never let Kill All throw.
+        }
+        // Interrupt the IDE's run thread so its execution loop exits promptly.
+        Thread t = runThread;
+        if (t != null) {
+            t.interrupt();
+        }
+        appendConsole("\n*** Kill All: forcibly stopping simulator and all threads/processes. ***\n");
     }
 
     private void runWithMode(String mode) {

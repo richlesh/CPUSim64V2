@@ -16,6 +16,13 @@ public interface DocumentEditor {
     void setText(String text);
 
     /**
+     * Get the file path of the current document, or null if unsaved/untitled.
+     */
+    default String getFilepath() {
+        return null;
+    }
+
+    /**
      * Get document text suitable for sending as LLM context.
      * May be truncated for large documents. Defaults to full text.
      */

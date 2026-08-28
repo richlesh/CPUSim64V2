@@ -6,5 +6,3 @@ Interrupt_Reference.html
 Library_Reference.html
 Programmer_Guide.html
 Cycle_Timing_Model.html
-Setting_the_PATH_Variable.html
-index.html

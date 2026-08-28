@@ -234,7 +234,7 @@ Java HotSpot(TM) 64-Bit Server VM (build 17.0.5+9-LTS-191, mixed mode, sharing)
 <p>To access elements of an array all you need is the base address of the array and an offset to the element.  When you create an array with <code>DCA</code> you should give it a label which will be the base address of the array.  Depending on whether the array has integer elements or floating point elements  you can use one of the load instruction of the form:</p>
 <p class="listing">load	r0, BASE_ADDR[offset]</p>
 <p class="listing">load	f0, BASE_ADDR[offset]</p>
-<p>The offset can be a literal integer or the value in an integer register.  Valid offsets are zero through the size of the array.  You use the special offset 0 to get the size of the array (n).  This essentially makes the array access 1-based where the elements are in positions 1-n.</p>
+<p>The offset can be a literal integer or the value in an integer register.  Valid offsets are zero through the size of the array.  By convention we use the special offset 0 to get the size of the array (n).  This essentially makes the array access 1-based where the elements are in positions 1-n.</p>
 
 <h2>Console Output</h2>
 <p>If you include the system header file <code>&lt;system/io.asm&gt;</code> you will gain access to a number of helpful functions for performing output to the console.</p>

@@ -151,6 +151,13 @@ public class LabelVisitor extends CPUSim64BaseVisitor<Void> implements HasLocati
 
 	@Override
 	public Void visitInstruction(CPUSim64Parser.InstructionContext ctx) {
+		// Peephole optimization: drop redundant register-to-itself moves
+		// (e.g. "move r0, r0" or "move f2, f2") so they consume no address
+		// and are not passed on to the code-emission pass. Must match the
+		// AssemblerVisitor exactly to keep label addresses consistent.
+		if (ctx.instrMOVE() != null && Utils.isRedundantSelfMove(ctx.instrMOVE())) {
+			return null;
+		}
 		if (filename != null) {
 			addressToSourceLocation.put(currentAddress, filename + ":" + lineNum);
 		}

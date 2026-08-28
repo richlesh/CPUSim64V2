@@ -36,6 +36,127 @@ import java.util.regex.Pattern;
 
 public class Utils {
 	/**
+	 * Determines whether a MOVE instruction is a redundant no-op that can be
+	 * optimized out. Two cases are recognized:
+	 *
+	 * <ol>
+	 *   <li><b>Register-to-itself (YY)</b> — e.g. {@code move r0, r0} or
+	 *       {@code move f2, f2}: both operands are the same register.</li>
+	 *   <li><b>Zero-offset self address-arithmetic (AAC/ACA)</b> — e.g.
+	 *       {@code move r0, r0, 0} / {@code move r0, r0 + 0} / {@code move r0, 0 + r0}:
+	 *       the destination and source are the same address-capable register and
+	 *       the constant offset is a literal zero, so the effect is
+	 *       {@code A <- A + 0}.</li>
+	 * </ol>
+	 *
+	 * <p>Register names are compared case-insensitively. Integer/address register
+	 * names (e.g. {@code R0}, {@code SP}) and floating-point register names (e.g.
+	 * {@code F0}) never collide textually, so comparing normalized operand text is
+	 * correct and sufficient. The AAC/ACA case only triggers on a literal numeric
+	 * zero ({@code INTLIT}/{@code HEXLIT} equal to 0) — never on a label, since a
+	 * label's value is not known during the label-gathering pass and both passes
+	 * must reach the same decision from the parse tree alone.</p>
+	 *
+	 * <p>{@code MOVE} has no status-flag side effects in the simulator, so dropping
+	 * a value-preserving move is behaviorally safe.</p>
+	 *
+	 * <p>This helper is shared by the label pass and the code-emission pass so
+	 * that both agree on instruction sizes; skipping the instruction in only one
+	 * pass would corrupt every subsequent label address.</p>
+	 *
+	 * @param ctx the parsed MOVE instruction context
+	 * @return {@code true} if the instruction is a redundant no-op move
+	 */
+	public static boolean isRedundantSelfMove(CPUSim64Parser.InstrMOVEContext ctx) {
+		if (ctx == null) return false;
+		return isSelfMoveYY(ctx) || isZeroOffsetSelfMove(ctx);
+	}
+
+	/**
+	 * Detects the plain register-to-register (YY) self-move: exactly two register
+	 * operands, no condition, no constant/offset literals, no indexing.
+	 */
+	private static boolean isSelfMoveYY(CPUSim64Parser.InstrMOVEContext ctx) {
+		if (ctx.zCond() != null) return false;
+		if (ctx.cLiteral() != null) return false;
+		if (ctx.aLiteral() != null) return false;
+		if (ctx.rOperand() != null) return false;
+		if (ctx.yOperand() == null || ctx.yOperand().size() != 2) return false;
+
+		CPUSim64Parser.YOperandContext y0 = ctx.yOperand(0);
+		CPUSim64Parser.YOperandContext y1 = ctx.yOperand(1);
+		if (y0 == null || y1 == null) return false;
+
+		String r0 = registerName(y0);
+		String r1 = registerName(y1);
+		if (r0 == null || r1 == null) return false;
+
+		return r0.equals(r1);
+	}
+
+	/**
+	 * Detects the AAC/ACA address-arithmetic self-move with a literal zero offset:
+	 * {@code A1 <- A2 + 0} (or {@code A1 <- 0 + A2}) where {@code A1 == A2}.
+	 *
+	 * <p>In both AAC and ACA grammar forms {@code aOperand(0)} is the destination
+	 * and {@code aOperand(1)} is the source register, with {@code aLiteral} holding
+	 * the constant, so a single check covers both.</p>
+	 */
+	private static boolean isZeroOffsetSelfMove(CPUSim64Parser.InstrMOVEContext ctx) {
+		if (ctx.zCond() != null) return false;
+		if (ctx.cLiteral() != null) return false;   // excludes the ACC (A1 <- C + C) form
+		if (ctx.rOperand() != null) return false;   // excludes the AAR form
+		if (ctx.aLiteral() == null) return false;
+		if (ctx.aOperand() == null || ctx.aOperand().size() != 2) return false;
+
+		String dest = ctx.aOperand(0).getText().trim().toUpperCase();
+		String src = ctx.aOperand(1).getText().trim().toUpperCase();
+		if (!dest.equals(src)) return false;
+
+		return isLiteralZero(ctx.aLiteral());
+	}
+
+	/**
+	 * Returns {@code true} only if the literal is a numeric ({@code INTLIT} or
+	 * {@code HEXLIT}) whose value is zero. Labels ({@code IDENT}) always return
+	 * {@code false}.
+	 */
+	private static boolean isLiteralZero(CPUSim64Parser.ALiteralContext lit) {
+		if (lit == null) return false;
+		if (lit.IDENT() != null) return false;      // label — value unknown here
+		String text = lit.getText();
+		if (text == null) return false;
+		text = text.trim();
+		try {
+			long value;
+			if (text.startsWith("0x") || text.startsWith("0X")) {
+				value = Long.parseUnsignedLong(text.substring(2), 16);
+			} else if (text.startsWith("-0x") || text.startsWith("-0X")) {
+				value = -Long.parseUnsignedLong(text.substring(3), 16);
+			} else {
+				value = Long.parseLong(text);
+			}
+			return value == 0L;
+		} catch (NumberFormatException e) {
+			return false;
+		}
+	}
+
+	/**
+	 * Returns the normalized (uppercased, trimmed) register name for a Y operand,
+	 * or {@code null} if the operand is not a simple register reference.
+	 */
+	private static String registerName(CPUSim64Parser.YOperandContext y) {
+		if (y.fOperand() != null && y.fOperand().REG_F() != null) {
+			return y.fOperand().REG_F().getText().trim().toUpperCase();
+		}
+		if (y.aOperand() != null) {
+			return y.aOperand().getText().trim().toUpperCase();
+		}
+		return null;
+	}
+
+	/**
 	 * Computes the inverse hyperbolic sine of {@code x}.
 	 *
 	 * @param x the value

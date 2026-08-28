@@ -68,6 +68,18 @@ public class MemoryFilePortHandler extends PortHandler {
 	}
 
 	@Override
+	protected int readBytes(byte[] buf, int off, int len) throws Simulator.CPUException
+	{
+		if (is == null) throw cpu.new CPUException("Memory file not open for input!");
+		try {
+			return bis.read(buf, off, len);
+		}
+		catch (Exception e) {
+			throw cpu.new CPUException("Read error on Memory file!");
+		}
+	}
+
+	@Override
 	public int readChar() throws Simulator.CPUException
 	{
 		int codePoint = -1;

@@ -32,6 +32,9 @@ class WebViewHelper {
                 WebView webView = new WebView();
                 webEngine = webView.getEngine();
 
+                // Prevent the WebView from opening new windows (prevents lock-up on Linux)
+                webEngine.setCreatePopupHandler(features -> null);
+
                 webEngine.getLoadWorker().stateProperty().addListener((obs, oldState, newState) -> {
                     if (newState == Worker.State.SUCCEEDED) {
                         netscape.javascript.JSObject win =
@@ -61,10 +64,26 @@ class WebViewHelper {
         return webEngine != null;
     }
 
+    private java.io.File tempHtmlFile;
+
     public void loadContent(String html) {
         if (webEngine == null) return;
         Platform.runLater(() -> {
-            webEngine.loadContent(html);
+            try {
+                // Write to temp file and load via URL for proper UTF-8 encoding.
+                // loadContent(String) has JavaFX bugs with non-BMP characters (emoji)
+                // even when encoded as HTML entities — file-based loading avoids this.
+                if (tempHtmlFile == null) {
+                    tempHtmlFile = java.io.File.createTempFile("pp-aichat-", ".html");
+                    tempHtmlFile.deleteOnExit();
+                }
+                java.nio.file.Files.writeString(tempHtmlFile.toPath(), html,
+                        java.nio.charset.StandardCharsets.UTF_8);
+                webEngine.load(tempHtmlFile.toURI().toString());
+            } catch (java.io.IOException e) {
+                // Fallback to loadContent if file write fails
+                webEngine.loadContent(html, "text/html");
+            }
         });
     }
 }

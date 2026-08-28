@@ -22,7 +22,7 @@
 	
 	cas		0, 1, atomic_addr, 0
 	#if_cond_sr no
-		#macro ASSERT_TRUE(1, "Overflow not set")
+		#macro assert_is_true(1, "Overflow not set")
 	#end_cond
 	load	r0, atomic_addr
 	#macro ASSERT_EQ(1, r0, "cas failed")
@@ -30,7 +30,7 @@
 
 	cas		0, 1, atomic_addr, 0
 	#if_cond_sr o
-		#macro ASSERT_TRUE(1, "Overflow incorrectly set")
+		#macro assert_is_true(1, "Overflow incorrectly set")
 	#end_cond
 	load	r0, atomic_addr
 	#macro ASSERT_EQ(1, r0, "cas failed")

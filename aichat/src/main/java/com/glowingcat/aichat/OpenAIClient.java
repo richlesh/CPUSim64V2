@@ -19,11 +19,17 @@ public class OpenAIClient implements LLMClient {
     private final String baseUrl;
     private final String apiKey;
     private final String model;
+    private final Duration requestTimeout;
 
     public OpenAIClient(String baseUrl, String apiKey, String model) {
+        this(baseUrl, apiKey, model, Duration.ofSeconds(600));
+    }
+
+    public OpenAIClient(String baseUrl, String apiKey, String model, Duration requestTimeout) {
         this.baseUrl = baseUrl;
         this.apiKey = apiKey;
         this.model = model;
+        this.requestTimeout = requestTimeout;
     }
 
     @Override
@@ -40,7 +46,7 @@ public class OpenAIClient implements LLMClient {
         HttpRequest.Builder reqBuilder = HttpRequest.newBuilder()
             .uri(URI.create(baseUrl + "/chat/completions"))
             .header("Content-Type", "application/json")
-            .timeout(Duration.ofSeconds(120))
+            .timeout(requestTimeout)
             .POST(HttpRequest.BodyPublishers.ofString(body.toString()));
 
         if (apiKey != null && !apiKey.isEmpty()) {

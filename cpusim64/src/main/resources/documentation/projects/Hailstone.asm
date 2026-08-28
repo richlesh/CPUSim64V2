@@ -16,7 +16,7 @@
 // length of a single sequence recursively with NO memoization.  If a starting
 // number is supplied on the command line, that one sequence length is printed.
 // If no argument is supplied, a demonstration table of lengths for the
-// starting values 1 through 30 is printed instead.
+// starting values 1 through 100 is printed instead.
 //
 // Usage:
 //     Hailstone <n>     Print the sequence length for starting number n.
@@ -32,7 +32,7 @@
 #include <system/system.asm>
 
     #call   main()
-    int     iEXIT
+    #call   exit(r0)
 
 ///////////////////////////////////////////////////////////////////////////////
 // main()
@@ -48,7 +48,7 @@
 //   - If a command line argument is supplied, it is parsed and the length of
 //     that single hailstone sequence is computed and printed.
 //   - If no argument is supplied, a demonstration table is printed showing the
-//     sequence length for each starting value from 1 through 30.
+//     sequence length for each starting value from 1 through 100.
 //
 // Returns:
 //   0 on success.
@@ -59,7 +59,7 @@
     int     iARGC
     move    argc, r0
     cmp     argc, 2
-    jump    lt, GET_ARGS_FAILED     // No argument supplied: print the demo table
+    jump    lt, PRINT_DEMO          // No argument supplied: print the demo table
 GET_ARGS:
     #call   args(1)                 // Get first command line argument
     move    arg, r0
@@ -68,16 +68,14 @@ GET_ARGS:
     #call   put_dec(r0)             // Print the length
     #call   put_nl()
     #return 0
-    jump    MAIN_END
-GET_ARGS_FAILED:
-    // No argument: print a demonstration table for starting values 1..30.
-//  #call   puts("You must supply a positive integer argument.")
+PRINT_DEMO:
+    // No argument: print a demonstration table for starting values 1..100.
     #for    1, i <= 100, 1
         #call   compute_hailstone(i)
         #call   fprintf(STDOUT,"%d: %d\n", i, r0)
     #end_for
-    #return 0
-MAIN_END:
+    #return 1
+
 #end_func
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -113,12 +111,14 @@ MAIN_END:
             div     i, 2
             #call   compute_hailstone(i)
             add     r0, 1
+            #return r0
         #else_cond
             // Odd: next term is 3*i + 1, then add 1 for this step.
             mult    i, 3
             add     i, 1
             #call   compute_hailstone(i)
             add     r0, 1
+            #return r0
         #end_cond
     #end_cond
 #end_func

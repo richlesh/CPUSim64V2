@@ -42,6 +42,7 @@ examples/example_macro.asm
 examples/example_math.asm
 examples/example_mutex.asm
 examples/example_preprocessor.asm
+examples/example_setcursor.asm
 examples/example_string.asm
 examples/example_system.asm
 examples/example_thread.asm

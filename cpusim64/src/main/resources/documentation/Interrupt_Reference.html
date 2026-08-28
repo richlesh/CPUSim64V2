@@ -65,6 +65,8 @@
 		<tr><td>234</td><td>iFILES</td><td>r1: path string</td><td>Returns an array of strings containing the files/dirs residing in the path specified.</td></tr>
 		<tr><td>235</td><td>iTEMP_DIR</td><td>r1: prefix string</td><td>Returns a heap allocated string containing the name of a randomly generated tempory directory.  Returns null on error.</td></tr>
 		<tr><td>236</td><td>iTEMP_FILE</td><td>r1: prefix string<br>r2: extension string</td><td>Returns an heap allocated string containing the name of a randomly generated tempory filepath.  Returns null on error.</td></tr>
+		<tr><td>237</td><td>iFEOF</td><td>r1: port</td><td>Returns TRUE (-1) in r0 if the port has reached end-of-file, else FALSE (0).  Use after an <code>IN</code> read returns -1 to distinguish a genuine 8-byte data value of -1 (0xFFFFFFFFFFFFFFFF) from an actual end-of-file.  (For 1, 2 and 4-byte reads a -1 result is always end-of-file, since successful reads of those widths are non-negative.)</td></tr>
+		<tr><td>238</td><td>iFERROR</td><td>r1: port</td><td>Returns TRUE (-1) in r0 if the port is in an error state, else FALSE (0).</td></tr>
 	</tbody>
 </table>
 
@@ -183,8 +185,8 @@
 		<tr><td>14</td><td>iRESTORE</td><td>none</td><td>Restores r1-r28 from the stack.</td></tr>
 		<tr><td>15</td><td>iRESTORE_FP</td><td>none</td><td>Restores f1-f31 from the stack.</td></tr>
 		<tr><td>16</td><td>iPrintCPUState</td><td>none</td><td>Prints a diagram of the current CPU state and stack.</td></tr>
-		<tr><td>20</td><td>iALLOC</td><td>r1: allocation size</td><td>Returns a heap allocated block address in r0.  Returns 0 in r0 on failure.</td></tr>
-		<tr><td>21</td><td>iREALLOC</td><td>r1: allocation address<br>r2: new allocation size</td><td>Returns a new heap allocated block address in r0 with data copied from the passed allocation address.  The original allocation address is freed if it is in the heap.  Returns 0 in r0 on failure.</td></tr>
+		<tr><td>20</td><td>iALLOC</td><td>r1: allocation size</td><td>Returns a heap allocated block address in r0.  Returns 0 in r0 on failure.  The actual size of the allocation can be found in r0[-1].</td></tr>
+		<tr><td>21</td><td>iREALLOC</td><td>r1: allocation address<br>r2: new allocation size</td><td>Returns a new heap allocated block address in r0 with data copied from the passed allocation address.  The original allocation address is freed if it is in the heap.  Returns 0 in r0 on failure.  The actual size of the allocation can be found in r0[-1].</td></tr>
 		<tr><td>22</td><td>iFREE</td><td>r1: allocation address</td><td>Returns the heap allocated block address to the free list.</td></tr>
 		<tr><td>23</td><td>iMEMMOVE</td><td>r1: dest address<br>r2: src address<br>r3: length</td><td>Moves contents of memory from src to dest.  Can handle overlapping memory blocks.</td></tr>
 		<tr><td>24</td><td>iMEMCLEAR</td><td>r1: dest address<br>r2: length</td><td>Clears contents of memory from dest for r2 words.</td></tr>

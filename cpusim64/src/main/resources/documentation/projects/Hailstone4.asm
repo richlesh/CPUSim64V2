@@ -26,12 +26,13 @@
 #include <system/thread.asm>
 
     #call   main()
-    int     iEXIT
+    #call   exit(r0)
 
 #macro DEFINE_MUTEX(MY_MUTEX)       // Allocate the shared mutex MY_MUTEX
 #global gMAX:        .dci 0         // Longest sequence length found (shared)
 #global gIMAX:       .dci 0         // Starting number that produced MAX (shared)
 #global gWORKSIZE:   .dci 10000     // Number of candidates each thread tests
+#global gLIMIT:      .dci 0         // Maximum number to test supplied by user
 
 ///////////////////////////////////////////////////////////////////////////////
 // main()
@@ -55,7 +56,7 @@
 //      that produced it.
 //
 // Globals used:
-//   WORKSIZE (read/write), MAX (read), IMAX (read), MY_MUTEX (init)
+//   gWORKSIZE (read/write), gMAX (read), gIMAX (read), MY_MUTEX (init)
 //
 // Returns:
 //   0 on success, 1 if the command line argument is missing.
@@ -71,11 +72,16 @@
     int     iARGC
     move    argc, r0
     cmp     argc, 2
-    jump    lt, GET_ARGS_FAILED
-GET_ARGS:
+    jump    lt, $GET_ARGS_FAILED
+
     #call   args(1)                 // Get first command line argument
     move    arg, r0
     #macro  PARSE_INT(arg)          // Convert the argument string to an integer
+    #if_cond     r0 < 2
+        #call putline("Argument must be > 2!")
+        #return 1
+    #end_cond
+    store   r0, gLIMIT
     move    f1, r0
     move    f0, cores
     div     f1, f0                  // Worksize is ceil(limit / cores)
@@ -95,14 +101,14 @@ GET_ARGS:
         #call   printf("Can\'t allocate pids array!\n")
         #call   exit(1)
     #end_cond
-    #for    0, i < cores, 1
+    #for    1, i < cores, 1
         #macro  create_thread(worker, j)    // Each thread starts at offset j
         store   r0, pids[i]                 // Save the new thread's PID
         add     j, ws                       // Advance to the next work unit
     #end_for
     
     // Join with threads
-    #for    0, i < cores, 1
+    #for    1, i < cores, 1
         load    pid, pids[i]
         #call   printf("Main is joining %d...\n", pid)
         #macro  join_thread(pid)            // Wait for each worker to finish
@@ -112,10 +118,9 @@ GET_ARGS:
     load    mMax, gMAX
     #call   printf("Max %d found at %d\n", mMax, mImax)
     #return 0
-GET_ARGS_FAILED:
-    #call   puts("You must supply a positive integer argument.")
+$GET_ARGS_FAILED:
+    #call   putline("You must supply a positive integer argument.")
     #return 1
-MAIN_END:
 #end_func
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -123,8 +128,8 @@ MAIN_END:
 // Computes the number of integers in the hailstone sequence starting
 // with the argument.  The hailstone sequence computes the next value
 // in the sequence according to the formula...
-//   f(n) = f(n-1)/2     if f(n-1) is even
-//   f(n) = 3*f(n-1)+1   if f(n-1) is odd
+//     f(n) = n / 2       if n is even
+//     f(n) = 3 * n + 1   if n is odd
 // The sequence ends when the computed value reaches 1.  This is computed
 // recursively.
 //
@@ -153,20 +158,23 @@ PRECOMPUTED_SIZE: .dci  3000000     // Number of memoized entries
     // Lazily allocate the memoization cache on first use.
     load    cacheSize, PRECOMPUTED_SIZE
     load    cache, PRECOMPUTED
-    jump    nz, BEGIN_COMPUTE
-    #call   ALLOC(cacheSize)
+    jump    nz, $BEGIN_COMPUTE
+    #call   alloc(cacheSize)
     move    cache, r0
     store   cache, PRECOMPUTED
     #if_cond    cache, eq, 0
         #call   printf("Can\'t allocate cache size %d\n", cacheSize)
         #call   exit(1)
     #end_cond
-    #call   MEMCLEAR(cache, cacheSize)
-    store   1, cache[0]             // Seed base cases for the cache
-    store   1, cache[1]
+    #call   memclear(cache, cacheSize)
+    // Seed base cases for the cache
+    store   1, cache[0]             // degenerate case
+    store   1, cache[1]             // by definition
     store   2, cache[2]
+    store   8, cache[3]
     store   3, cache[4]
-BEGIN_COMPUTE:
+    store   6, cache[5]
+$BEGIN_COMPUTE:
     // Return the cached result if available.
     load    i, arg
     #if_cond    i, lt, cacheSize
@@ -194,7 +202,6 @@ BEGIN_COMPUTE:
         store   hailstone, cache[i0]
     #end_cond
     #return hailstone
-END:
 #end_func
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -204,7 +211,7 @@ END:
 //
 // Arguments:
 //   data  The starting candidate number for this work unit.  The thread
-//         tests starting numbers in the range [data, data + WORKSIZE).
+//         tests starting numbers in the range [data, data + gWORKSIZE).
 //
 // Behavior:
 //   1. Computes the hailstone sequence length for every candidate in its
@@ -215,18 +222,21 @@ END:
 //      larger, or equal but found at a smaller starting number.
 //
 // Globals used:
-//   WORKSIZE (read), MAX (read/write), IMAX (read/write), MY_MUTEX (lock)
+//   gWORKSIZE (read), gMAX (read/write), gIMAX (read/write), MY_MUTEX (lock)
 //
 // Returns:
 //   Nothing.
 ///////////////////////////////////////////////////////////////////////////////
 
 #def_func worker(data)
-    #var    i, d, hs, ws, pid, limit, wImax, wMax, quo, remain
+    #var    i, d, hs, ws, pid, limit, wImax, wMax
     load    d, data
     move    limit, d
     load    ws, gWORKSIZE
     add     limit, ws                   // limit = data + WORKSIZE
+    load    r1, gLIMIT
+    #macro  MIN(limit, r1)
+    move    limit, r0
     int     iGET_PID
     move    pid, r0
     #call   printf("Thread work unit %d executing with PID %d...\n", d, pid)

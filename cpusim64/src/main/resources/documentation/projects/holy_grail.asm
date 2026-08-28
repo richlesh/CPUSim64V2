@@ -35,7 +35,7 @@
 
     // Program entry point: run main() then exit with its return code (in r0).
     #call   main()
-    int     iEXIT
+    #call   exit(r0)
 
 ///////////////////////////////////////////////////////////////////////////////
 // main()
@@ -44,12 +44,12 @@
 //   * Prints the Bridgekeeper's introduction.
 //   * Reads three lines of input from the user.
 //   * Evaluates the third answer to decide the traveler's fate.
-//   * Frees all heap-allocated input strings.
+//   * Frees all heap-allocated strings.
 //
 // Returns 0 in r0 on success.
 ///////////////////////////////////////////////////////////////////////////////
 #def_func   main()
-    #var    answer1, answer2, answer3, lowercase3
+    #var    answer1, answer2, answer3, lowercase3, foundAfrican, foundEuropean
 
     // Print the Bridgekeeper's challenge, followed by a blank line.
     #call   puts(ANSI_INTRO)
@@ -83,30 +83,27 @@
     // answer and search it for the substrings "african" and "european".
 
     // Make a lowercase, heap-allocated copy of answer3 and keep that instead.
-    // NOTE: this overwrites our pointer with the new copy; the original
-    // answer3 string is freed below using this same pointer, which is fine
-    // because the lowercase copy is what we now hold. (See cleanup note.)
+
     #macro  TO_LOWER_STR(answer3)
-    move    lowercase3, r0          // lowercased copy (heap-allocated)
+    move    lowercase3, r0              // lowercased copy (heap-allocated)
 
     // Search for "african": iSUBSTRING_SEARCH returns the index or -1.
     // COMPARE sets the result so r0 becomes nonzero (TRUE) when found.
     #macro  SUBSTRING_SEARCH(lowercase3, "african", 0)
     #macro  COMPARE(r0, ne, -1)
-    move    r4, r0                  // r4 = (found "african") ? TRUE : FALSE
+    move    foundAfrican, r0            // (found "african") ? TRUE : FALSE
 
     // Search for "european" the same way.
     #macro  SUBSTRING_SEARCH(lowercase3, "european", 0)
     #macro  COMPARE(r0, ne, -1)
-    move    r5, r0                  // r5 = (found "european") ? TRUE : FALSE
-
-    // Both must be present for the witty answer to count.
-    and     r4, r5                  // r4 = found "african" AND "european"
+    move    foundEuropean, r0           // (found "european") ? TRUE : FALSE
 
     // ---- Deliver the verdict in dramatic red, blinking text -----------------
     #call   puts(ANSI_COLOR$RED)
     #call   puts(ANSI_COLOR$BLINK)
-    #if_cond    r4, ne, 0
+    // Both must be present for the witty answer to count.
+    and     r0, foundAfrican, foundEuropean // r0 = found "african" AND "european"
+    #if_cond    r0, ne, 0
         // Traveler outwitted the Bridgekeeper.
         #call   puts("BRIDGEKEEPER: Huh? I-- I don't know that... AAAAARGH!\n\n")
     #else_cond
@@ -117,8 +114,6 @@
     #call   puts(ANSI_COLOR$RESET_COLOR)     // restore default text color
 
     // ---- Clean up heap allocations ------------------------------------------
-    // answer1 and answer2 hold their original input strings.
-    // answer3 now holds the LOWERCASE COPY (see TO_LOWER_STR above).
     #call   free(answer1)
     #call   free(answer2)
     #call   free(answer3)

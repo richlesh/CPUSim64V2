@@ -63,12 +63,12 @@
 // if (argc < 2) then no filename was supplied; use STDIN.
     int     iARGC
     cmp     r0, 2
-    jump    ge, PROCESS_FILE
+    jump    ge, $PROCESS_FILE
 // No command line argument: hash STDIN.
     #call   hashcode(STDIN)
     #call   printf("%016x\n", r0)
-    jump    ENDIF1
-PROCESS_FILE:
+    #return 0
+$PROCESS_FILE:
 // Get the first command line argument and put it in filename.
     #call   args(1)
     move    filename, r0
@@ -85,9 +85,8 @@ PROCESS_FILE:
         #call   closeFile(port)
     #else_cond
         #call   printf("Failed to open: %s\n", filename)
-        #return 1
+        #return 2
     #end_cond
-ENDIF1:
     #return 0
 #end_func
 
@@ -111,23 +110,23 @@ ENDIF1:
 ///////////////////////////////////////////////////////////////////////////////
 
 #def_func   hashcode(port)
-    #var    byteRead,p,hashcode,count
+    #var    byteRead,p,hash
     load    p, port
-    clear   hashcode            // Start the accumulator at 0
+    clear   hash                // Start the accumulator at 0
 
-LOOP1:
+$LOOP1:
 // Read one byte from the port.
     #macro  IN1(byteRead,p)
 // A value of -1 signals end-of-file; stop reading.
     cmp     byteRead, -1
-    jump    eq, LOOP_END1
+    jump    eq, $LOOP_END1
 
 // Fold the byte into the rolling hash: hash = hash * 31 + byte.
-    mult    hashcode, 31
-    add     hashcode, byteRead
-    jump    LOOP1
-LOOP_END1:
-    #return hashcode
+    mult    hash, 31
+    add     hash, byteRead
+    jump    $LOOP1
+$LOOP_END1:
+    #return hash
 #end_func
 
     stop

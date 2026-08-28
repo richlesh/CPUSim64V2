@@ -37,7 +37,7 @@
 #include <system/system.asm>
 
     #call   main()
-    int     iEXIT
+    #call   exit(r0)
 
 ///////////////////////////////////////////////////////////////////////////////
 // main()
@@ -63,12 +63,12 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #def_func   main()
-    #var    i, j, hailstone, limit, argc, arg, imax, max
+    #var    i, j, hailstone_length, limit, argc, arg, imax, max
     int     iARGC
     move    argc, r0
     cmp     argc, 2
-    jump    lt, GET_ARGS_FAILED
-GET_ARGS:
+    jump    lt, $GET_ARGS_FAILED
+
     move    imax, 1                 // Best starting number found so far
     move    max, 1                  // Longest sequence length found so far
     #call   args(1)                 // Get first command line argument
@@ -77,11 +77,11 @@ GET_ARGS:
     move    limit, r0               // limit = upper bound on starting numbers
     #for    2, i <= limit, 1
         #call   compute_hailstone(i)
-        move    hailstone, r0
+        move    hailstone_length, r0
         // Track the longest sequence seen and the number that produced it.
-        #if_cond    hailstone, gt, max
+        #if_cond    hailstone_length, gt, max
             move    imax, i
-            move    max, hailstone
+            move    max, hailstone_length
         #end_cond
         // Print a progress line every 1000 candidates (when i % 1000 == 0).
         div     r0, j, i, 1000      // j = i mod 1000
@@ -91,10 +91,9 @@ GET_ARGS:
     #end_for
     #call   fprintf(STDOUT, "%d: %d\n", imax, max)
     #return 0
-GET_ARGS_FAILED:
-    #call   puts("You must supply a positive integer argument.")
+$GET_ARGS_FAILED:
+    #call   putline("You must supply a positive integer argument.")
     #return 1
-MAIN_END:
 #end_func
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -126,30 +125,30 @@ MAIN_END:
 ///////////////////////////////////////////////////////////////////////////////
 
 #global PRECOMPUTED: .dci   0       // Heap address of cache (0 until allocated)
-PRECOMPUTED_SIZE: .dci  3000000     // Number of memoized entries
+#define PRECOMPUTED_SIZE 3000000    // Number of memoized entries
 #def_func   compute_hailstone(arg)
-    #var    i,i0,isOdd,cache,cacheSize,hailstone
+    #var    i,i0,isOdd,cache,cacheSize,hailstone_length
     
     // Lazily allocate the memoization cache on first use.
-    load    cacheSize, PRECOMPUTED_SIZE
+    move    cacheSize, PRECOMPUTED_SIZE
     load    cache, PRECOMPUTED
-    jump    nz, BEGIN_COMPUTE
-    #call   ALLOC(cacheSize)
+    jump    nz, $BEGIN_COMPUTE
+    #call   alloc(cacheSize)
     move    cache, r0
     store   cache, PRECOMPUTED
     #if_cond    cache == 0
         #call   fprintf(STDOUT, "Can\'t allocate cache size %d\n", cacheSize)
         #call   exit(1)
     #end_cond
-    #call   MEMCLEAR(cache, cacheSize)
+    #call   memclear(cache, cacheSize)
     store   1, cache[1]             // Seed base case: sequence length of 1 is 1
-BEGIN_COMPUTE:
+$BEGIN_COMPUTE:
     // Return the cached result if it has already been computed.
     load    i, arg
     #if_cond    i, lt, cacheSize
-        load    hailstone, cache[i]
-        #if_cond    hailstone, ne, 0
-            #return hailstone
+        load    hailstone_length, cache[i]
+        #if_cond    hailstone_length, ne, 0
+            #return hailstone_length
         #end_cond
     #end_cond
     
@@ -159,19 +158,18 @@ BEGIN_COMPUTE:
     #if_cond    isOdd, eq, 0
         div     i, 2
         #call   compute_hailstone(i)
-        add     hailstone, r0, 1
+        add     hailstone_length, r0, 1
     #else_cond
         mult    i, 3
         add     i, 1
         #call   compute_hailstone(i)
-        add     hailstone, r0, 1
+        add     hailstone_length, r0, 1
     #end_cond
     // Cache the newly computed result when the start value is in range.
     #if_cond    i0, lt, cacheSize
-        store   hailstone, cache[i0]
+        store   hailstone_length, cache[i0]
     #end_cond
-    #return hailstone
-END:
+    #return hailstone_length
 #end_func
 
     stop

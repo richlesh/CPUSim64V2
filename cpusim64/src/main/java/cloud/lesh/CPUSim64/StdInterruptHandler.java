@@ -182,6 +182,8 @@ public class StdInterruptHandler extends InterruptHandler
 	public static final int iFILES=234;
 	public static final int iTEMP_DIR=235;
 	public static final int iTEMP_FILE=236;
+	public static final int iFEOF=237;
+	public static final int iFERROR=238;
 	
 	public static final int iFMT_DEC=301;
 	public static final int iFMT_HEX=302;
@@ -828,6 +830,22 @@ public class StdInterruptHandler extends InterruptHandler
 					ph.flush();
 				} else
 					throw cpu.new CPUException("Port "+cpu.getR(1)+" not mapped!");
+				break;
+			case iFEOF:								// r0 = end-of-file status of port r1 (-1 if EOF, else 0)
+				ph = cpu.getPortHandler((int)cpu.getR(1));
+				if (ph != null) {
+					ph.setPort(cpu.getR(1));
+					cpu.setR(0, ph.isEOF() ? -1 : 0);
+				} else
+					throw cpu.new CPUException("Port " + cpu.getR(1) + " not mapped!");
+				break;
+			case iFERROR:							// r0 = error status of port r1 (-1 if error, else 0)
+				ph = cpu.getPortHandler((int)cpu.getR(1));
+				if (ph != null) {
+					ph.setPort(cpu.getR(1));
+					cpu.setR(0, ph.isError() ? -1 : 0);
+				} else
+					throw cpu.new CPUException("Port " + cpu.getR(1) + " not mapped!");
 				break;
 			case  iDELETE_FILE:
 				s = cpu.convertString(cpu.getR(1));

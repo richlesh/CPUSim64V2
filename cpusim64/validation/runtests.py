@@ -16,10 +16,10 @@ for asm in asm_files:
     name = asm[:-4]
     if name == "T105_SYNC":
         with open(f"{name}.out", "w") as out:
-            subprocess.run(["../run.sh", name], stdout=out, stderr=out)
+            subprocess.run(["../../run.sh", name, "--mem=1M"], stdout=out, stderr=out)
     else:
         with open(f"{name}.out", "w") as out:
-            subprocess.run(["../debug.sh", name], stdout=out, stderr=out)
+            subprocess.run(["../../debug.sh", name, "--mem=1M"], stdout=out, stderr=out)
 
 def extract_relevant(filepath, name):
     lines = []
@@ -39,7 +39,7 @@ def extract_relevant(filepath, name):
 for asm in asm_files:
     name = asm[:-4]
     out_file = f"{name}.out"
-    obj_file = f"{name}.o64"
+    obj_file = f"obj/{name}.o64"
     ref_file = f"reference/{name}.out"
     if not os.path.exists(obj_file):
         print(f"{name}: COMPILE ERROR")

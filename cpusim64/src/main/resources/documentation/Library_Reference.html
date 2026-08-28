@@ -153,6 +153,8 @@
 		<tr><td>OUT2</td><td><code>OUT2(register, port)</code><br>Writes one 2 byte short word to the port.</td></tr>
 		<tr><td>OUT4</td><td><code>OUT4(register, port)</code><br>Writes one 4 byte word to the port.</td></tr>
 		<tr><td>OUT8</td><td><code>OUT8(register, port)</code><br>Writes one 8 byte long to the port.</td></tr>
+		<tr><td>FEOF</td><td><code>FEOF(port)</code><br>Sets <code>r0</code> to TRUE (-1) if the port has reached end-of-file, else FALSE (0).  Use after an <code>IN</code> read returns -1 to distinguish a genuine 8-byte value of -1 (0xFFFFFFFFFFFFFFFF) from end-of-file.  For 1, 2 and 4-byte reads a -1 result always means end-of-file.</td></tr>
+		<tr><td>FERROR</td><td><code>FERROR(port)</code><br>Sets <code>r0</code> to TRUE (-1) if the port is in an error state, else FALSE (0).</td></tr>
 	</tbody>
 </table>
 

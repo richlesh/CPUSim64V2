@@ -3,6 +3,8 @@
  */
 package com.glowingcat.aichat;
 
+import java.time.Duration;
+
 /**
  * Factory that creates the appropriate LLMClient based on AIChatPreferences.
  */
@@ -44,6 +46,11 @@ public class LLMClientFactory {
             baseUrl = "https://api.openai.com/v1";
         }
 
-        return new OpenAIClient(baseUrl, apiKey, model);
+        // Local models (Ollama) need a longer timeout for model loading and slow generation
+        Duration timeout = "Ollama".equals(vendor)
+            ? Duration.ofSeconds(1200)
+            : Duration.ofSeconds(600);
+
+        return new OpenAIClient(baseUrl, apiKey, model, timeout);
     }
 }

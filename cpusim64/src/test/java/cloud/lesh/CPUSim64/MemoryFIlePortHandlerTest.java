@@ -150,8 +150,7 @@ public class MemoryFIlePortHandlerTest {
 	}
 
 	@Test
-	void testWriteChar() {
-		Simulator sim = new Simulator(0x2000, new String[] {});
+	void testWriteChar() {		Simulator sim = new Simulator(0x2000, new String[] {});
 		var ph = new MemoryFilePortHandler(sim, 1, null);
 		String s = "Bye🙂¡€🇺🇸";
 		for (var c : s.codePoints().toArray()) {
@@ -182,6 +181,93 @@ public class MemoryFIlePortHandlerTest {
 		assertEquals(0x87 - 256, bytes[18]);
 		assertEquals(0xB8 - 256, bytes[19]);
 		assertEquals(s, ph.toString());
+	}
+
+	// A short (partial) word read at EOF must return -1 and leave the bytes it
+	// already consumed available for subsequent byte-mode reads. This mirrors
+	// the hashcode program: read 8 bytes at a time, then fall back to reading
+	// one byte at a time for the < 8-byte tail.
+	@Test
+	void testShortWordReadPushesBackTailBigEndian() {
+		Simulator sim = new Simulator(0x2000, new String[] {});
+		// 11 bytes: one full 8-byte word (0..7) plus a 3-byte tail (8, 9, 10).
+		byte[] data = new byte[] {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+		var ph = new MemoryFilePortHandler(sim, 0, data);
+		ph.setLittleEndian(false);
+
+		// First 8-byte word read succeeds: big-endian 0x0001020304050607.
+		assertEquals(0x0001020304050607L, ph.read(8));
+		assertEquals(false, ph.isEOF());
+
+		// Second 8-byte word read hits EOF after only 3 bytes: returns -1 and
+		// pushes those 3 bytes back (in original order) instead of discarding.
+		assertEquals(-1L, ph.read(8));
+		assertEquals(true, ph.isEOF());
+
+		// Byte-mode tail reads now recover the pushed-back bytes in order.
+		assertEquals(8L, ph.read(1));
+		assertEquals(9L, ph.read(1));
+		assertEquals(10L, ph.read(1));
+		// Stream is now truly exhausted.
+		assertEquals(-1L, ph.read(1));
+		ph.close();
+	}
+
+	@Test
+	void testShortWordReadPushesBackTailLittleEndian() {
+		Simulator sim = new Simulator(0x2000, new String[] {});
+		byte[] data = new byte[] {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+		var ph = new MemoryFilePortHandler(sim, 0, data);
+		ph.setLittleEndian(true);
+
+		// First 8-byte word, little-endian: 0x0706050403020100.
+		assertEquals(0x0706050403020100L, ph.read(8));
+		// Short read of the 3-byte tail returns -1 and pushes bytes back.
+		assertEquals(-1L, ph.read(8));
+		// Recover tail in original stream order.
+		assertEquals(8L, ph.read(1));
+		assertEquals(9L, ph.read(1));
+		assertEquals(10L, ph.read(1));
+		assertEquals(-1L, ph.read(1));
+		ph.close();
+	}
+
+	// Partial 2-byte and 4-byte reads must also push back their consumed bytes.
+	@Test
+	void testShortMultiByteReadsPushBack() {
+		Simulator sim = new Simulator(0x2000, new String[] {});
+
+		// 4-byte read with only 3 bytes available -> -1, then recover 3 bytes.
+		byte[] three = new byte[] {0x11, 0x22, 0x33};
+		var ph = new MemoryFilePortHandler(sim, 0, three);
+		ph.setLittleEndian(false);
+		assertEquals(-1L, ph.read(4));
+		assertEquals(0x11L, ph.read(1));
+		assertEquals(0x22L, ph.read(1));
+		assertEquals(0x33L, ph.read(1));
+		assertEquals(-1L, ph.read(1));
+		ph.close();
+
+		// 2-byte read with only 1 byte available -> -1, then recover it.
+		byte[] one = new byte[] {0x55};
+		ph = new MemoryFilePortHandler(sim, 0, one);
+		ph.setLittleEndian(false);
+		assertEquals(-1L, ph.read(2));
+		assertEquals(0x55L, ph.read(1));
+		assertEquals(-1L, ph.read(1));
+		ph.close();
+
+		// A short 2-byte read followed by another 2-byte read: the second read
+		// draws the pushed-back byte first, then hits EOF -> still -1, and the
+		// byte remains recoverable one more time.
+		byte[] oneB = new byte[] {0x77};
+		ph = new MemoryFilePortHandler(sim, 0, oneB);
+		ph.setLittleEndian(false);
+		assertEquals(-1L, ph.read(2));   // consumes 0x77, pushes it back
+		assertEquals(-1L, ph.read(2));   // re-reads 0x77 from pushback, EOF again
+		assertEquals(0x77L, ph.read(1)); // byte still recoverable
+		assertEquals(-1L, ph.read(1));
+		ph.close();
 	}
 
 }

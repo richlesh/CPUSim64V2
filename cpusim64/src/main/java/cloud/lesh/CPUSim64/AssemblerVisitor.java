@@ -507,6 +507,12 @@ public class AssemblerVisitor extends CPUSim64BaseVisitor<Void> implements HasLo
 
 	@Override
 	public Void visitInstrMOVE(CPUSim64Parser.InstrMOVEContext ctx) {
+		// Peephole optimization: drop redundant register-to-itself moves
+		// (e.g. "move r0, r0" or "move f2, f2"). The label pass skips these
+		// too, so addresses stay consistent.
+		if (Utils.isRedundantSelfMove(ctx)) {
+			return null;
+		}
 		int a = OT_NONE, b = OT_NONE, c = OT_NONE, d = OT_NONE;
 		int v0 = 0, v1 = 0, v2 = 0, v3 = 0;
 		long k;

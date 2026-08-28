@@ -41,22 +41,23 @@ Some instructions break this ideal. Operations such as division are typically no
 
 <tr class="category"><th colspan="3">Arithmetic</th></tr>
 <tr><td>NEGATE</td><td>integer</td><td>1</td></tr>
-<tr><td>NEGATE</td><td>FP</td><td>3</td></tr>
+<tr><td>NEGATE</td><td>FP</td><td>1</td></tr>
 <tr><td>ADD, SUBTRACT</td><td>integer</td><td>1</td></tr>
 <tr><td>ADD, SUBTRACT</td><td>FP</td><td>3</td></tr>
 <tr><td>MULTIPLY</td><td>integer</td><td>3</td></tr>
 <tr><td>MULTIPLY</td><td>FP</td><td>3</td></tr>
 <tr><td>DIVIDE</td><td>integer</td><td>12</td></tr>
-<tr><td>DIVIDE, RECIP</td><td>FP</td><td>10</td></tr>
+<tr><td>DIVIDE, RECIP</td><td>FP</td><td>20</td></tr>
 
 <tr class="category"><th colspan="3">Memory</th></tr>
-<tr><td>LOAD</td><td>&mdash;</td><td>2</td></tr>
+<tr><td>LOAD</td><td>&mdash;</td><td>3</td></tr>
 <tr><td>STORE</td><td>&mdash;</td><td>2</td></tr>
 <tr><td>PUSH</td><td>&mdash;</td><td>2</td></tr>
 <tr><td>POP</td><td>&mdash;</td><td>2</td></tr>
 <tr><td>SAVE</td><td>N registers</td><td>1 + N</td></tr>
 <tr><td>RESTORE</td><td>N registers</td><td>1 + N</td></tr>
-<tr><td>CAS</td><td>&mdash;</td><td>3</td></tr>
+<tr><td>CAS</td><td>heap / stack</td><td>3</td></tr>
+<tr><td>CAS</td><td>shared memory</td><td>5</td></tr>
 
 <tr class="category"><th colspan="3">Control Flow</th></tr>
 <tr><td>JUMP</td><td>unconditional</td><td>1</td></tr>
@@ -71,7 +72,8 @@ Some instructions break this ideal. Operations such as division are typically no
 <tr class="category"><th colspan="3">I/O &amp; System</th></tr>
 <tr><td>IN</td><td>&mdash;</td><td>1</td></tr>
 <tr><td>OUT</td><td>&mdash;</td><td>1</td></tr>
-<tr><td>INTERRUPT</td><td>&mdash;</td><td>11</td></tr>
+<tr><td>INTERRUPT</td><td>unconditional</td><td>11</td></tr>
+<tr><td>INTERRUPT</td><td>conditional, taken</td><td>11</td></tr>
 <tr><td>INTERRUPT</td><td>conditional, not taken</td><td>1</td></tr>
 <tr><td>DEBUG</td><td>&mdash;</td><td>1</td></tr>
 </table>
@@ -79,10 +81,13 @@ Some instructions break this ideal. Operations such as division are typically no
 <div class="notes">
 <h3>Notes</h3>
 <ul>
-<li>All cycle counts include the 1-cycle instruction fetch.</li>
-<li><strong>SAVE/RESTORE:</strong> N = number of registers in the range (e.g., <code>SAVE R0, R28</code> &rarr; N = 29).</li>
-<li><strong>INTERRUPT:</strong> The 10-cycle overhead represents the trap/return cost. Actual handler execution time is tracked separately as wall-clock &ldquo;System Time.&rdquo;</li>
-<li><strong>Conditional CALL:</strong> Inherits the JUMP penalty (+1 if taken) on top of the 2-write CALL cost, so a conditional taken CALL = 4 cycles.</li>
+<li>Each cycle count = a base 1-cycle instruction fetch, plus 1 cycle for every memory word read or written, plus a per-instruction extra-cycle value defined in the <code>instructions.data</code> resource. The simulator loads that table at startup, so timings can be retuned by editing it without changing code.</li>
+<li><strong>Floating point:</strong> ADD, SUBTRACT, MULTIPLY, and DIVIDE use the floating-point cycle value (<code>fadd</code>, <code>fsubtract</code>, <code>fmultiply</code>, <code>fdivide</code>) whenever at least one operand is a floating-point value; otherwise the integer value is used. RECIP is timed as an FP divide.</li>
+<li><strong>SAVE/RESTORE:</strong> N = number of registers in the range (e.g., <code>SAVE R0, R28</code> &rarr; N = 29). The per-register cost comes from the N stack writes/reads (1 cycle each); the instruction itself adds no extra beyond fetch.</li>
+<li><strong>CAS:</strong> A compare-and-swap on heap or stack memory uses an atomic primitive with a 2-cycle extra cost (3 total). A CAS on shared memory additionally performs a separate read and write (2 memory cycles), for 5 total.</li>
+<li><strong>Conditional branches:</strong> JUMP, CALL, and INTERRUPT charge the <code>xxx0</code> value when the condition is not taken and the <code>xxx1</code> value when taken; unconditional forms use the base key.</li>
+<li><strong>INTERRUPT:</strong> The 10-cycle extra (11 total) represents the trap/return cost. Actual handler execution time is tracked separately as wall-clock &ldquo;System Time.&rdquo;</li>
+<li><strong>IN/OUT:</strong> Each port access is charged a fixed 1 cycle for the instruction itself. The real time spent performing the underlying port transfer (e.g. file or device I/O) is measured separately and added to wall-clock &ldquo;System Time,&rdquo; the same way interrupt-handler time is tracked, so slow I/O does not distort the deterministic cycle count.</li>
 </ul>
 </div>
 

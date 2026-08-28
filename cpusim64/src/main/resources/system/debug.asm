@@ -29,12 +29,14 @@ jump	_DEBUG_ASM_END
 
 #ifdef __DEBUG__
 
-// debug_msg(port, fmt, values...)
+// _debug_msg(port, fmt, values...)
 // Formats the values on the stack and then sends to the specified I/O port.
 // port		I/O Port
 // fmt		String with formatting information
 // values	Values for formatting
-#def_func	debug_msg(port, fmt, ...)
+// NOTE: leading underscore avoids a case-insensitive symbol collision with the
+// DEBUG_MSG macro (preprocessor keys all symbols upper-cased).
+#def_func	_debug_msg(port, fmt, ...)
 	save	r1, r2
 	load	r0, STDOUT_LOCK_HANDLE
 	#call	acquireRecursiveSpinLock(r0)
@@ -49,13 +51,15 @@ jump	_DEBUG_ASM_END
 	restore	r1, r2
 #end_func
 
-// cond_debug_msg(cond, port, fmt, values...)
+// _cond_debug_msg(cond, port, fmt, values...)
 // Formats the values on the stack and then sends to the specified I/O port.
 // cond		Must be TRUE to print
 // port		I/O Port
 // fmt		String with formatting information
 // values	Values for formatting
-#def_func	cond_debug_msg(b, port, fmt, ...)
+// NOTE: leading underscore avoids a case-insensitive symbol collision with the
+// COND_DEBUG_MSG macro (preprocessor keys all symbols upper-cased).
+#def_func	_cond_debug_msg(b, port, fmt, ...)
 	save	r1, r2
 	load	r0, STDOUT_LOCK_HANDLE
 	#call	acquireRecursiveSpinLock(r0)
@@ -94,7 +98,7 @@ $END:
 	#call	puts(temp)
 	#call	puts(":")
 	load	temp, line
-	#call	PUT_DEC(temp, 10)
+	#call	PUT_DEC(temp)
 	#call	puts(") ")
 	load	temp, message
 	#call	puts(temp)

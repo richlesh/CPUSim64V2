@@ -53,6 +53,8 @@
 #define	iFILES					234
 #define	iTEMP_DIR				235
 #define	iTEMP_FILE				236
+#define	iFEOF					237
+#define	iFERROR					238
 
 #define	CHAR	0
 #define	BYTE	1
@@ -101,6 +103,19 @@
 #end_macro
 #def_macro	OUT8(register, port)
 	out		${register}, LONG, ${port}
+#end_macro
+
+// FEOF(port): sets r0 to -1 (TRUE) if the port has reached end-of-file, else 0.
+// Useful to disambiguate a genuine 8-byte data value of -1 (0xFFFFFFFFFFFFFFFF)
+// from an EOF short read: after an IN read returns -1, invoke FEOF to confirm.
+#def_macro	FEOF(port)
+	move	r1, ${port}
+	int		iFEOF
+#end_macro
+// FERROR(port): sets r0 to -1 (TRUE) if the port is in an error state, else 0.
+#def_macro	FERROR(port)
+	move	r1, ${port}
+	int		iFERROR
 #end_macro
 #endif
 

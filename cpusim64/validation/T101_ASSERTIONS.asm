@@ -19,11 +19,11 @@ BEGIN:
 		#macro	PRINTCPU()
 		
 		move	r1, 326
-		#macro	assert_true(r1, "true(true) failed!")
-		#macro	assert_false(r1, "false(true) failed!")
+		#macro	assert_is_true(r1, "true(true) failed!")
+		#macro	assert_is_false(r1, "false(true) failed!")
 		move	r1, 0
-		#macro	assert_true(r1, "true(false) failed!")
-		#macro	assert_false(r1, "false(false) failed!")
+		#macro	assert_is_true(r1, "true(false) failed!")
+		#macro	assert_is_false(r1, "false(false) failed!")
 		
 		move	r1, 1
 		move	r2,	2

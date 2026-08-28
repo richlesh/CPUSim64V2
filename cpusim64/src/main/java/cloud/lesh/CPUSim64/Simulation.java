@@ -200,14 +200,18 @@ public class Simulation {
 		if (debug) sim.setDebug(true);
 		if (trace) sim.setTrace(true);
 		sim.loadProgram(program, 0L, reverseSymbolMap);
-		long result = sim.run(program.get(0));
-		if (verbose) {
-			System.out.println("Result: " + result);
-			var totalTime = sim.getClock();
-			System.out.printf("User CPU Cycles: %d\n", sim.getCycles());
-			System.out.printf("User Time: %.3f sec\n", (totalTime - sim.getSystemClock()) / 1.e9);
-			System.out.printf("System Time: %.3f sec\n", sim.getSystemClock() / 1.e9);
-			System.out.printf("Total Time: %.3f sec\n", totalTime / 1.e9);
+		try {
+			long result = sim.run(program.get(0));
+			if (verbose) {
+				System.out.println("Result: " + result);
+				var totalTime = sim.getClock();
+				System.out.printf("User CPU Cycles: %d\n", sim.getCycles());
+				System.out.printf("User Time: %.3f sec\n", (totalTime - sim.getSystemClock()) / 1.e9);
+				System.out.printf("System Time: %.3f sec\n", sim.getSystemClock() / 1.e9);
+				System.out.printf("Total Time: %.3f sec\n", totalTime / 1.e9);
+			}
+		} finally {
+			sim.unregister();
 		}
 		return 0;
 	}

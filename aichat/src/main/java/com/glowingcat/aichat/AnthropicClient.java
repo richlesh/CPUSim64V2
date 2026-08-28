@@ -49,7 +49,7 @@ public class AnthropicClient implements LLMClient {
             .header("Content-Type", "application/json")
             .header("x-api-key", apiKey)
             .header("anthropic-version", "2023-06-01")
-            .timeout(Duration.ofSeconds(120))
+            .timeout(Duration.ofSeconds(600))
             .POST(HttpRequest.BodyPublishers.ofString(body.toString()))
             .build();
 

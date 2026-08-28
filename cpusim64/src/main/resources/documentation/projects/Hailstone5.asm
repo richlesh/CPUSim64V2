@@ -1,7 +1,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 // Hailstone5.asm
 //
-// Finds the starting number, less than or equal to a given limit, that
+// Finds the starting number, less than a given limit, that
 // produces the LONGEST Hailstone (Collatz) sequence.
 // See https://en.wikipedia.org/wiki/Collatz_conjecture
 //
@@ -15,8 +15,8 @@
 // PARALLEL, WORK-QUEUE DESIGN:
 //   This version improves on the fixed-assignment threading of Hailstone4 by
 //   using a shared, thread-safe work queue.  The search range [0, limit) is
-//   divided into fixed-size "work units" of WORKSIZE candidates each.  Each
-//   work unit's starting index is pushed onto a shared Vector (WORKQUEUE),
+//   divided into fixed-size "work units" of gWORKSIZE candidates each.  Each
+//   work unit's starting index is pushed onto a shared Vector (gWORKQUEUE),
 //   guarded by the Vector's own mutex.  One worker thread is spawned per CPU
 //   core; each worker repeatedly pops a work unit from the queue, processes
 //   it, and merges its local best result into the shared global best under
@@ -45,20 +45,21 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include <system/io.asm>
+#include <system/math.asm>
 #include <system/string.asm>
 #include <system/system.asm>
 #include <system/thread.asm>
 #include <adt/vector.asm>
 
     #call   main()
-    int     iEXIT
+    #call   exit(r0)
 
-#macro DEFINE_MUTEX(MY_MUTEX)       // Mutex guarding the shared MAX/IMAX result
-#global MAX:        .dci 0          // Longest sequence length found (shared)
-#undef iMAX                         // Avoid clash with the iMAX interrupt symbol
-#global IMAX:       .dci 0          // Starting number that produced MAX (shared)
-#global WORKSIZE:   .dci 100000     // Number of candidates per work unit
-#global WORKQUEUE:  .dci 0          // Address of the shared work-queue Vector
+#macro DEFINE_MUTEX(MY_MUTEX)       // Mutex guarding the shared gMAX/gIMAX result
+#global gMAX:        .dci 0         // Longest sequence length found (shared)
+#global gIMAX:       .dci 0         // Starting number that produced gMAX (shared)
+#global gWORKSIZE:   .dci 100000    // Number of candidates per work unit
+#global gWORKQUEUE:  .dci 0         // Address of the shared work-queue Vector
+#global gLIMIT:      .dci 0         // Maximum number to test supplied by user
 
 ///////////////////////////////////////////////////////////////////////////////
 // main()
@@ -74,7 +75,7 @@
 //   1. Validates that one command line argument was supplied and parses it
 //      into the search limit.
 //   2. Initializes the shared result mutex MY_MUTEX.
-//   3. Creates the shared work-queue Vector and stores it in WORKQUEUE.
+//   3. Creates the shared work-queue Vector and stores it in gWORKQUEUE.
 //   4. Pushes work-unit start indices onto the queue.  Work unit 0 is handled
 //      directly (to force the memoization cache to be allocated before threads
 //      run), then the remaining work units are pushed in descending order.
@@ -85,7 +86,7 @@
 //      that produced it.
 //
 // Globals used:
-//   WORKSIZE (read), WORKQUEUE (write), MAX (read), IMAX (read),
+//   gWORKSIZE (read), gWORKQUEUE (write), gMAX (read), gIMAX (read),
 //   MY_MUTEX (init)
 //
 // Returns:
@@ -98,19 +99,24 @@
     int     iARGC
     move    argc, r0
     cmp     argc, 2
-    jump    lt, GET_ARGS_FAILED
-GET_ARGS:
+    jump    lt, $GET_ARGS_FAILED
+
     #call   args(1)                 // Get first command line argument
     move    arg, r0
     #macro  PARSE_INT(arg)          // Convert the argument string to an integer
+    #if_cond     r0 < 2
+        #call putline("Argument must be > 2!")
+        #return 1
+    #end_cond
+    store   r0, gLIMIT
     move    limit, r0               // limit = upper bound on starting numbers
-    load    mWorksize, WORKSIZE
+    load    mWorksize, gWORKSIZE
     #call   initializeMutex(MY_MUTEX)
 
     // Create the shared work queue and publish its address globally.
     #call   newVector(10)
     move    queue, r0
-    store   queue, WORKQUEUE
+    store   queue, gWORKQUEUE
     
     // Process work unit 0 directly first.  This forces compute_hailstone to
     // lazily allocate and seed the memoization cache before any threads start,
@@ -118,12 +124,16 @@ GET_ARGS:
     #macro  PUSH_BACK(queue, 0)
     #call   worker(queue)
 
-    // Push the remaining work-unit start indices (multiples of WORKSIZE) onto
-    // the queue in descending order: workunits, ..., 2*WORKSIZE, WORKSIZE.
-    div     workunits, limit, mWorksize
+    // Push the remaining work-unit start indices (multiples of gWORKSIZE) onto
+    // the queue in descending order: workunits, ..., 2*gWORKSIZE, gWORKSIZE.
+    move    f0, limit
+    move    f1, mWorksize
+    div     f0, f1
+    #call   ceil(f0)
+    move    workunits, f0
     sub     workunits, 1
     mult    workunits, mWorksize
-    neg     mWorksize               // step downward by WORKSIZE
+    neg     mWorksize               // step downward by gWORKSIZE
     #for    workunits, i > 0, mWorksize
         #macro  PUSH_BACK(queue, i)
     #end_for
@@ -150,14 +160,13 @@ GET_ARGS:
         #macro  join_thread(pid)
     #end_for
 
-    load    mImax, IMAX
-    load    mMax, MAX
+    load    mImax, gIMAX
+    load    mMax, gMAX
     #call   printf("Max %d found at %d\n", mMax, mImax)
     #return 0
-GET_ARGS_FAILED:
+$GET_ARGS_FAILED:
     #call   puts("You must supply a positive integer argument.")
     #return 1
-MAIN_END:
 #end_func
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -194,7 +203,7 @@ MAIN_END:
 ///////////////////////////////////////////////////////////////////////////////
 
 #global PRECOMPUTED: .dci   0       // Heap address of cache (0 until allocated)
-PRECOMPUTED_SIZE: .dci  500000      // Number of memoized entries
+PRECOMPUTED_SIZE: .dci  8000000     // Number of memoized entries
 #def_func   compute_hailstone(arg)
     #var    i,i0,isOdd,cache,cacheSize,hailstone
     
@@ -202,18 +211,21 @@ PRECOMPUTED_SIZE: .dci  500000      // Number of memoized entries
     load    cacheSize, PRECOMPUTED_SIZE
     load    cache, PRECOMPUTED
     jump    nz, BEGIN_COMPUTE
-    #call   ALLOC(cacheSize)
+    #call   alloc(cacheSize)
     move    cache, r0
     store   cache, PRECOMPUTED
     #if_cond    cache, eq, 0
         #call   printf("Can\'t allocate cache size %d\n", cacheSize)
         #call   exit(1)
     #end_cond
-    #call   MEMCLEAR(cache, cacheSize)
-    store   1, cache[0]             // Seed base cases for the cache
-    store   1, cache[1]
+    #call   memclear(cache, cacheSize)
+    // Seed base cases for the cache
+    store   1, cache[0]             // degenerate case
+    store   1, cache[1]             // by definition
     store   2, cache[2]
+    store   8, cache[3]
     store   3, cache[4]
+    store   6, cache[5]
 BEGIN_COMPUTE:
     // Return the cached result if it has already been computed.
     load    i, arg
@@ -253,7 +265,7 @@ END:
 // Arguments:
 //   queue  Address of the shared work-queue Vector.  Each element is the
 //          starting index of a work unit; a work unit covers the candidate
-//          range [d, d + WORKSIZE).
+//          range [d, d + gWORKSIZE).
 //
 // Behavior:
 //   1. Pop a work-unit start index d from the queue (protected by the
@@ -261,16 +273,16 @@ END:
 //      a sentinel meaning "no more work".
 //   2. While a work unit is available:
 //        a. Compute the hailstone sequence length for every candidate in
-//           [d, d + WORKSIZE), tracking the local best (wMax) and the starting
+//           [d, d + gWORKSIZE), tracking the local best (wMax) and the starting
 //           number that produced it (wImax).
 //        b. Under MY_MUTEX, merge the local best into the global best
-//           (MAX/IMAX).  The global best is updated when the local best is
+//           (gMAX/gIMAX).  The global best is updated when the local best is
 //           longer, or equal in length but found at a smaller starting number.
 //        c. Pop the next work unit from the queue.
 //   3. Exit when no more work units remain.
 //
 // Globals used:
-//   WORKSIZE (read), MAX (read/write), IMAX (read/write),
+//   gWORKSIZE (read), gMAX (read/write), gIMAX (read/write),
 //   MY_MUTEX (lock), queue's _VECTOR_MUTEX (lock)
 //
 // Returns:
@@ -279,7 +291,7 @@ END:
 
 #def_func worker(queue)
     #var    i, d, hs, ws, pid, limit, wImax, wMax, quo, remain, q
-    int iGET_PID
+    int     iGET_PID
     move    pid, r0
     load    q, queue
     // Pop the first work unit (or -1 if the queue is already empty).
@@ -293,10 +305,13 @@ END:
         #end_cond
     #end_sync
     #while  d, ne, -1
-        // Process the work unit covering [d, d + WORKSIZE).
+        // Process the work unit covering [d, d + gWORKSIZE).
         move    limit, d
-        load    ws, WORKSIZE
-        add limit, ws
+        load    ws, gWORKSIZE
+        add     limit, ws
+        load    r1, gLIMIT
+        #macro  MIN(limit, r1)
+        move    limit, r0
         #call   printf("Thread work unit %d executing with PID %d...\n", d, pid)
         clear   wMax
         #for    d, i < limit, 1
@@ -309,8 +324,8 @@ END:
         #end_for
         // Merge this work unit's local best into the shared global best.
         #sync   MY_MUTEX
-            load    hs, MAX
-            load    i, IMAX
+            load    hs, gMAX
+            load    i, gIMAX
             // Update if wMax > hs || (wMax == hs && wImax < i)
             cmp     wMax, hs
             move    gt, r0, -1, 0
@@ -322,8 +337,8 @@ END:
             or      r0, r1
             #if_cond_sr nz
                 #call   printf("New high: %d:%d (%d)\n", wImax, wMax, pid)
-                store   wMax, MAX
-                store   wImax, IMAX
+                store   wMax, gMAX
+                store   wImax, gIMAX
             #end_cond
         #end_sync
 

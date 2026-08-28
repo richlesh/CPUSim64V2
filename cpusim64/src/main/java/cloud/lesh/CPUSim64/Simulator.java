@@ -21,6 +21,8 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.VarHandle;
 import java.nio.charset.StandardCharsets;
@@ -158,6 +160,10 @@ public class Simulator {
 	private static AtomicLong nextPID = new AtomicLong(1);
 	private Vector<Simulator> childCPUs = new Vector<>();
 	private static Vector<Simulator> threadCPUs = new Vector<>();
+	// Registry of active "root" simulators (one per running program) so that a
+	// master Kill All can forcibly terminate a runaway program from outside the
+	// simulation thread (e.g. the IDE's Kill All menu item).
+	private static final Vector<Simulator> activeRootCPUs = new Vector<>();
 	private ChildProcess process = null;    // If this is a child what is its process object.
 	private ChildThread thread = null;		// If this is a thread what i its thread object.
 	private Map<Long, String> reverseSymbolMap = null;	// Used by disassembler
@@ -229,6 +235,8 @@ public class Simulator {
 		setPortHandler(2, ph);
 		this.args = args;
 		SR = SR_Z;
+		// Track this as an active root simulator so a master Kill All can find it.
+		activeRootCPUs.add(this);
 	}
 
 	public Simulator(Simulator cloneMe, boolean makeProcess) throws CPUException {
@@ -325,9 +333,29 @@ public class Simulator {
 		public long c1;
 		long c2;
 		int c3;
+		int argCount;            // number of operands, computed once during decode
 
 		public static Decoded decode(long w) {
 			Decoded d = new Decoded();
+			d.decodeInto(w);
+			return d;
+		}
+
+		/**
+		 * Decode instruction word {@code w} into this object, reusing it in
+		 * place instead of allocating a new {@link Decoded}. All fields are
+		 * reset first so the result is identical to a freshly allocated,
+		 * zero-initialized instance (some instruction types only populate a
+		 * subset of the fields).
+		 */
+		public void decodeInto(long w) {
+			Decoded d = this;
+			d.a = d.b = d.c = d.d = 0;
+			d.v0 = d.v1 = d.v2 = d.v3 = 0;
+			d.c1 = 0L;
+			d.c2 = 0L;
+			d.c3 = 0;
+			d.argCount = 0;
 			d.tt = (int) ((w >>> 62) & 0x3);
 			d.op = (int) ((w >>> 56) & 0x3F);
 			switch (d.tt) {
@@ -367,10 +395,10 @@ public class Simulator {
 					d.c3 = (int) signExtend(raw, 28);
 				}
 			}
-			return d;
+			d.argCount = d.computeArgCount();
 		}
 
-		public int getArgCount() {
+		private int computeArgCount() {
 			int count = 0;
 			switch (tt) {
 				case 0:
@@ -396,6 +424,10 @@ public class Simulator {
 					break;
 			}
 			return count;
+		}
+
+		public int getArgCount() {
+			return argCount;
 		}
 
 		public static String getRegisterOrValue(int type, long num) {
@@ -540,6 +572,61 @@ public class Simulator {
 	long cycles = 0;
 	String[] args;
 
+	// ===== Per-instruction extra cycle times =====
+	// Loaded once at class load from /instructions.data (a "key:cycles" table).
+	// These are EXTRA cycles charged on top of the base +1 already charged in
+	// fetch()/memRead()/memWrite(). Each instruction handler looks up its own
+	// key. Floating-point ADD/SUB/MULT/DIV use the "fxxxx" key when at least one
+	// operand is floating point; conditional JUMP/CALL/INTERRUPT use the "xxx0"
+	// key when the branch is not taken and the "xxx1" key when it is taken.
+	private static final Map<String, Integer> EXTRA_CYCLES = loadInstructionCycles();
+
+	private static Map<String, Integer> loadInstructionCycles() {
+		Map<String, Integer> map = new HashMap<>();
+		try (InputStream in = Simulator.class.getResourceAsStream("/instructions.data")) {
+			if (in != null) {
+				try (BufferedReader br = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8))) {
+					String line;
+					while ((line = br.readLine()) != null) {
+						line = line.trim();
+						if (line.isEmpty() || line.startsWith("#")) continue;
+						int colon = line.indexOf(':');
+						if (colon <= 0) continue;
+						String key = line.substring(0, colon).trim();
+						try {
+							int val = Integer.parseInt(line.substring(colon + 1).trim());
+							map.put(key, val);
+						} catch (NumberFormatException ignore) {
+							// skip malformed entries
+						}
+					}
+				}
+			}
+		} catch (IOException ignore) {
+			// If the table can't be read, extra cycles default to 0 everywhere.
+		}
+		return map;
+	}
+
+	// Add the extra cycles for the given instruction key (0 if the key is absent).
+	private void addCycles(String key) {
+		Integer extra = EXTRA_CYCLES.get(key);
+		if (extra != null) cycles += extra;
+	}
+
+	// True if any operand of the decoded instruction is a floating-point value.
+	// Used to select the "fxxxx" cycle-time key for ADD/SUB/MULT/DIV/NEGATE when
+	// at least one argument is floating point.
+	private boolean anyFP(Decoded d) {
+		return isFPKind(d.a) || isFPKind(d.b) || isFPKind(d.c) || isFPKind(d.d);
+	}
+
+	// Reusable decode target for the execution loop / single-step. Each
+	// Simulator instance is driven by exactly one thread (child processes and
+	// threads each get their own Simulator), so this scratch object needs no
+	// synchronization and avoids allocating a Decoded per instruction.
+	private final Decoded decoded = new Decoded();
+
 	// ===== UTILITIES =====
 	public static long signExtend(long v, int bits) {
 		long m = 1L << (bits - 1);
@@ -646,6 +733,28 @@ public class Simulator {
 		return sharedMem.get(a);
 	}
 
+	/**
+	 * Fetch an instruction word at {@code pc}.
+	 *
+	 * Code lives in the region [0, heapStart), which is written once at load
+	 * time (before any child thread is started) and is treated as read-only
+	 * during execution (see the READONLY instruction / protectedMemory). It is
+	 * therefore safe to read it with a plain, non-volatile array access rather
+	 * than the volatile access used for the shared, mutable heap.
+	 *
+	 * For the unusual case of executing from the heap region (pc >= heapStart)
+	 * we fall back to the volatile {@link #memRead} path so any cross-thread
+	 * writes are observed.
+	 */
+	public long fetch(long pc) {
+		if (pc >= 0 && pc < heapStart) {
+			int a = (int) pc;
+			++cycles;
+			return mem[a];
+		}
+		return memRead(pc);
+	}
+
 	public long memRead(long addr) {
 		long val = 0;
 		if (addr < 0) {
@@ -654,9 +763,9 @@ public class Simulator {
 			try {
 				int a = Math.toIntExact(addr);
 				if (a < heapLimit)
-					val = (long) atomicMem.getVolatile(mem, a);                        // val = mem[a];
+					val = (long) atomicMem.getVolatile(mem, a);                        // heap is shared across threads: volatile
 				else
-					val = (long) atomicMem.getVolatile(stack, a - (int) heapLimit);    // val = stack[a - (int) heapLimit];
+					val = stack[a - (int) heapLimit];                                  // stack is per-thread: plain access
 				++cycles;
 			} catch (Exception ex) {
 				throw new CPUException(String.format("Illegal memory read access of " + fmtAddress, addr));
@@ -682,17 +791,19 @@ public class Simulator {
 		} else {
 			if (addr >= stackBase)
 				throw new CPUException(String.format("Illegal stack write access of " + fmtAddress, addr));
-			for (var p : protectedMemory) {
-				if (addr >= p.first && addr < p.second) {
-					throw new CPUException(String.format("Write access violation of " + fmtAddress, addr));
+			if (!protectedMemory.isEmpty()) {
+				for (var p : protectedMemory) {
+					if (addr >= p.first && addr < p.second) {
+						throw new CPUException(String.format("Write access violation of " + fmtAddress, addr));
+					}
 				}
 			}
 			try {
 				int a = Math.toIntExact(addr);
 				if (a < heapLimit)
-					atomicMem.setVolatile(mem, a, val);                            // mem[a] = val;
+					atomicMem.setVolatile(mem, a, val);                            // heap is shared across threads: volatile
 				else
-					atomicMem.setVolatile(stack, a - (int) heapLimit, val);    // stack[a - (int) heapLimit] = val;
+					stack[a - (int) heapLimit] = val;                              // stack is per-thread: plain access
 				++cycles;
 			} catch (Exception ex) {
 				throw new CPUException(String.format("Illegal memory write access of " + fmtAddress, addr));
@@ -802,13 +913,17 @@ public class Simulator {
 		R[R_PC] = startPC;				// Load program start address
 		String fmt = "%5d:%-60.60s" + fmtAddress + " ";
 
+		long instrCount = 0;
 		while (running) {
-			if (Thread.currentThread().isInterrupted()) { stopAll(); break; }
+			// Check for cancellation periodically rather than every instruction
+			// to keep the hot loop tight. 0xFFF => every 4096 instructions.
+			if ((instrCount++ & 0xFFFL) == 0L && Thread.currentThread().isInterrupted()) { stopAll(); break; }
 			long pc = R[R_PC];
-			long instr = memRead(pc);	// This increments cycles by 1
+			long instr = fetch(pc);		// This increments cycles by 1
 			R[R_PC] = pc + 1;
 
-			Decoded d = Decoded.decode(instr);
+			Decoded d = decoded;
+			d.decodeInto(instr);
 
 			if (trace) {
 				synchronized(System.out) {
@@ -903,44 +1018,44 @@ public class Simulator {
 	private void exec(Decoded d) {
 		switch (d.op) {
 			case 0 -> opNOP_DEBUG(d);
-			case 1 -> opCLEAR(d);
-			case 2 -> opMOVE(d);
-			case 3 -> opLOAD(d);
-			case 4 -> opSTORE(d);
-			case 5 -> opPOP(d);
-			case 6 -> opPUSH(d);
-			case 7 -> opJUMP(d);
-			case 8 -> opCALL(d);
-			case 9 -> opRETURN(d);
-			case 10 -> opINTERRUPT(d);
-			case 11 -> running = false; // STOP
-			case 12 -> opNEGATE(d);
-			case 13 -> opADD(d);
-			case 14 -> opSUB(d);
-			case 15 -> opMULT(d);
-			case 16 -> opDIV_or_RECIP(d);
-			case 17 -> opCOMPL(d);
-			case 18 -> bitwise(d);		// AND
-			case 19 -> bitwise(d);		// OR
-			case 20 -> bitwise(d);		// XOR
-			case 21 -> opTEST(d);
-			case 22 -> opCMP(d);
-			case 23 -> bitwise(d);		// LSH
-			case 24 -> bitwise(d);		// RSH
-			case 25 -> bitwise(d);		// arithmetic RSH>>
-			case 26 -> bitwise(d);		// LROT
-			case 27 -> bitwise(d);		// RROT
-			case 28 -> opIN(d);
-			case 29 -> opOUT(d);
-			case 30 -> opPACK(d);
-			case 31 -> opPACK64(d);
-			case 32 -> opUNPACK(d);
-			case 33 -> opUNPACK64(d);
-			case 34 -> opCAS(d);
-			case 35 -> opENDIAN(d);
-			case 36 -> opSAVE(d);
-			case 37 -> opRESTORE(d);
-			case 38 -> opREADONLY(d);
+			case 1 -> { opCLEAR(d); addCycles("clear"); }
+			case 2 -> { opMOVE(d); addCycles("move"); }
+			case 3 -> { opLOAD(d); addCycles("load"); }
+			case 4 -> { opSTORE(d); addCycles("store"); }
+			case 5 -> { opPOP(d); addCycles("pop"); }
+			case 6 -> { opPUSH(d); addCycles("push"); }
+			case 7 -> opJUMP(d);			// self-charges jump/jump0/jump1
+			case 8 -> opCALL(d);			// self-charges call/call0/call1
+			case 9 -> { opRETURN(d); addCycles("return"); }
+			case 10 -> opINTERRUPT(d);		// self-charges interrupt/interrupt0
+			case 11 -> { running = false; addCycles("stop"); } // STOP
+			case 12 -> { opNEGATE(d); addCycles(anyFP(d) ? "fnegate" : "negate"); }
+			case 13 -> { opADD(d); addCycles(anyFP(d) ? "fadd" : "add"); }
+			case 14 -> { opSUB(d); addCycles(anyFP(d) ? "fsubtract" : "subtract"); }
+			case 15 -> { opMULT(d); addCycles(anyFP(d) ? "fmultiply" : "multiply"); }
+			case 16 -> { opDIV_or_RECIP(d); addCycles(anyFP(d) ? "fdivide" : "divide"); }
+			case 17 -> { opCOMPL(d); addCycles("compliment"); }
+			case 18 -> { bitwise(d); addCycles("and"); }
+			case 19 -> { bitwise(d); addCycles("or"); }
+			case 20 -> { bitwise(d); addCycles("xor"); }
+			case 21 -> { opTEST(d); addCycles("test"); }
+			case 22 -> { opCMP(d); addCycles("compare"); }
+			case 23 -> { bitwise(d); addCycles("lshift"); }
+			case 24 -> { bitwise(d); addCycles("rshift"); }
+			case 25 -> { bitwise(d); addCycles("arshift"); }
+			case 26 -> { bitwise(d); addCycles("lrotate"); }
+			case 27 -> { bitwise(d); addCycles("rrotate"); }
+			case 28 -> { long ioStart = System.nanoTime(); opIN(d); totalSystemTime += System.nanoTime() - ioStart; addCycles("in"); }
+			case 29 -> { long ioStart = System.nanoTime(); opOUT(d); totalSystemTime += System.nanoTime() - ioStart; addCycles("out"); }
+			case 30 -> { opPACK(d); addCycles("pack"); }
+			case 31 -> { opPACK64(d); addCycles("pack64"); }
+			case 32 -> { opUNPACK(d); addCycles("unpack"); }
+			case 33 -> { opUNPACK64(d); addCycles("unpack64"); }
+			case 34 -> { opCAS(d); addCycles("cas"); }
+			case 35 -> { opENDIAN(d); addCycles("endian"); }
+			case 36 -> { opSAVE(d); addCycles("save"); }
+			case 37 -> { opRESTORE(d); addCycles("restore"); }
+			case 38 -> { opREADONLY(d); addCycles("readonly"); }
 			default -> throw new IllegalStateException("Unimplemented opcode: " + d.op);
 		}
 	}
@@ -1241,14 +1356,24 @@ public class Simulator {
 
 	// ---- 7: JUMP ----
 	private void opJUMP(Decoded d) {
-		if (d.tt != 1 && isConstKind(d.a)) {
-			if (!testCond(getConst(d.a, d.v0)))
+		boolean conditional = (d.tt != 1 && isConstKind(d.a));
+		if (conditional) {
+			if (!testCond(getConst(d.a, d.v0))) {
+				addCycles("jump0");	// conditional branch not taken
 				return;
-			cycles += 1; // conditional branch taken penalty
+			}
+			addCycles("jump1");		// conditional branch taken
+		} else {
+			addCycles("jump");		// unconditional
 		}
+		setJumpTarget(d);
+	}
+
+	// Compute and set the PC for a JUMP/CALL target. Does not charge cycles or
+	// evaluate the branch condition (callers handle those).
+	private void setJumpTarget(Decoded d) {
 		if (d.tt == 1) {        			// C
 			R[R_PC] = d.c1;
-			return;
 		} else if (isConstKind(d.a)) {		// z, memref
 			long addr = getO(d.b, d.v1) + getO(d.c, d.v2) + d.c1 + d.c2 + d.c3;
 			R[R_PC] = addr;
@@ -1262,17 +1387,19 @@ public class Simulator {
 
 	// ---- 8: CALL ----
 	private void opCALL(Decoded d) {
-		if (d.tt != 1 && isConstKind(d.a)) {
-			if (!testCond(getConst(d.a, d.v0)))
-				return;
+		boolean conditional = (d.tt != 1 && isConstKind(d.a));
+		if (conditional && !testCond(getConst(d.a, d.v0))) {
+			addCycles("call0");		// conditional call not taken
+			return;
 		}
+		addCycles(conditional ? "call1" : "call");
 		// Prologue:
 		memWrite(R[R_SP], R[R_PC]);
 		R[R_SP]--;
 		memWrite(R[R_SP], R[R_SF]);
 		R[R_SP]--;
 		R[R_SF] = R[R_SP];
-		opJUMP(d);
+		setJumpTarget(d);
 	}
 
 	// ---- 9: RETURN ----
@@ -1288,9 +1415,11 @@ public class Simulator {
 	// ---- 10: INTERRUPT ----
 	private void opINTERRUPT(Decoded d) {
 		long code = -1;            // -1 Illegal, 0 don't interrupt, 1... valid interrupts
+		boolean conditional = false;
 		if (d.tt == 1) {        // C
 			code = d.c1;
 		} else if (d.tt == 2) { // ZC
+			conditional = true;
 			if (testCond(getConst(d.a, d.v0)))
 				code = d.c2;
 			else code = 0;
@@ -1300,18 +1429,22 @@ public class Simulator {
 			if (count == 1 && isOKind(d.a)) {
 				code = getO(d.a, d.v0);
 			} else if (count == 2 && isOKind(d.b)) {
+				conditional = true;
 				if (testCond(getConst(d.a, d.v0)))
 					code = getO(d.b, d.v1);
 				else code = 0;
 			}
 		}
 		if (code > 0) {
-			cycles += 10; // interrupt trap/return overhead
+			// Unconditional -> "interrupt"; conditional taken -> "interrupt1".
+			addCycles(conditional ? "interrupt1" : "interrupt");
 			long start = System.nanoTime();
 			interruptHandler.dispatch((int) code);
 			long stop = System.nanoTime();
 			totalSystemTime += stop - start;
-		} else if (code < 0)
+		} else if (code == 0) {
+			addCycles("interrupt0");	// conditional interrupt not taken
+		} else
 			throw new IllegalStateException("Illegal INTERRUPT arguments.");
 	}
 
@@ -1320,7 +1453,6 @@ public class Simulator {
 		if (d.tt == 0 && isFPKind(d.a)) {
 			int f = toRegIndex(d.a, d.v0);
 			F[f] = -F[f];
-			cycles += 2; // FP negate latency
 		} else if (d.tt == 0 && isRegKind(d.a)) {
 			int r = toRegIndex(d.a, d.v0);
 			long res = -R[r];
@@ -1354,7 +1486,6 @@ public class Simulator {
 					double res = before + rhs;
 					F[rd] = res;
 					setFlags(res);
-					cycles += 2; // FP latency
 					return;
 				}
 			} else if (count == 3) {
@@ -1376,7 +1507,6 @@ public class Simulator {
 					double res = before + rhs;
 					F[toRegIndex(d.a, d.v0)] = res;
 					setFlags(res);
-					cycles += 2; // FP latency
 					return;
 				}
 			}
@@ -1400,7 +1530,6 @@ public class Simulator {
 				double res = before + rhs;
 				F[rd] = res;
 				setFlags(res);
-				cycles += 2; // FP latency
 				return;
 			}
 		} else if (d.tt == 3) {
@@ -1423,7 +1552,6 @@ public class Simulator {
 				double res = before + rhs;
 				F[toRegIndex(d.a, d.v0)] = res;
 				setFlags(res);
-				cycles += 2; // FP latency
 				return;
 			}
 		}
@@ -1453,7 +1581,6 @@ public class Simulator {
 					double res = before - rhs;
 					F[rd] = res;
 					setFlags(res);
-					cycles += 2; // FP latency
 					return;
 				}
 			} else if (count == 3) {
@@ -1475,7 +1602,6 @@ public class Simulator {
 					double res = before - rhs;
 					F[toRegIndex(d.a, d.v0)] = res;
 					setFlags(res);
-					cycles += 2; // FP latency
 					return;
 				}
 			}
@@ -1499,7 +1625,6 @@ public class Simulator {
 				double res = before - rhs;
 				F[rd] = res;
 				setFlags(res);
-				cycles += 2; // FP latency
 				return;
 			}
 		} else if (d.tt == 3) {
@@ -1522,7 +1647,6 @@ public class Simulator {
 				double res = before - rhs;
 				F[toRegIndex(d.a, d.v0)] = res;
 				setFlags(res);
-				cycles += 2; // FP latency
 				return;
 			}
 		}
@@ -1543,7 +1667,6 @@ public class Simulator {
 					boolean of = res != 0 && res / rhs != before;
 					R[rd] = res;
 					setFlags(res, of);
-					cycles += 2; // integer multiply latency
 					return;
 				} else if (isFPKind(d.a)) {
 					// FX
@@ -1553,7 +1676,6 @@ public class Simulator {
 					double res = before * rhs;
 					F[rd] = res;
 					setFlags(res);
-					cycles += 2; // FP multiply latency
 					return;
 				}
 			} else if (count == 3) {
@@ -1566,7 +1688,6 @@ public class Simulator {
 					boolean of = res != 0 && res / rhs != before;
 					R[toRegIndex(d.a, d.v0)] = res;
 					setFlags(res, of);
-					cycles += 2; // integer multiply latency
 					return;
 				} else if (isFPKind(d.a) && isFPKind(d.b)) {
 					// FFX
@@ -1576,7 +1697,6 @@ public class Simulator {
 					double res = before * rhs;
 					F[toRegIndex(d.a, d.v0)] = res;
 					setFlags(res);
-					cycles += 2; // FP multiply latency
 					return;
 				}
 			}
@@ -1591,7 +1711,6 @@ public class Simulator {
 				boolean of = res == 0 && res / rhs != before;
 				R[rd] = res;
 				setFlags(res, of);
-				cycles += 2; // integer multiply latency
 				return;
 			} else if (isFPKind(d.a)) {
 				// FC
@@ -1601,7 +1720,6 @@ public class Simulator {
 				double res = before * rhs;
 				F[rd] = res;
 				setFlags(res);
-				cycles += 2; // FP multiply latency
 				return;
 			}
 		} else if (d.tt == 3) {
@@ -1615,7 +1733,6 @@ public class Simulator {
 				boolean of = res == 0 && res / rhs != before;
 				R[toRegIndex(d.a, d.v0)] = res;
 				setFlags(res, of);
-				cycles += 2; // integer multiply latency
 				return;
 			} else if (isFPKind(d.a) && isFPKind(d.b)) {
 				// FC
@@ -1625,7 +1742,6 @@ public class Simulator {
 				double res = before * rhs;
 				F[toRegIndex(d.a, d.v0)] = res;
 				setFlags(res);
-				cycles += 2; // FP multiply latency
 				return;
 			}
 		}
@@ -1641,7 +1757,6 @@ public class Simulator {
 				double res = 1.0 / getFP(d.a, d.v0);
 				F[toRegIndex(d.a, d.v0)] = res;
 				setFlags(res);
-				cycles += 9; // FP divide/recip latency
 				return;
 			} else if (count == 2) {
 				if (isRegKind(d.a) && isRegKind(d.b)) {
@@ -1653,7 +1768,6 @@ public class Simulator {
 					boolean of = (before == Long.MIN_VALUE && rhs == -1);
 					R[rd] = res;
 					setFlags(res, of);
-					cycles += 11; // integer divide latency
 					return;
 				} else if (isFPKind(d.a)) {
 					// FX
@@ -1663,7 +1777,6 @@ public class Simulator {
 					double res = before / rhs;
 					F[rd] = res;
 					setFlags(res);
-					cycles += 9; // FP divide latency
 					return;
 				}
 			} else if (count == 3) {
@@ -1676,7 +1789,6 @@ public class Simulator {
 					boolean of = (before == Long.MIN_VALUE && rhs == -1);
 					R[toRegIndex(d.a, d.v0)] = res;
 					setFlags(res, of);
-					cycles += 11; // integer divide latency
 					return;
 				} else if (isFPKind(d.a) && isFPKind(d.b)) {
 					// FFX
@@ -1686,7 +1798,6 @@ public class Simulator {
 					double res = before / rhs;
 					F[toRegIndex(d.a, d.v0)] = res;
 					setFlags(res);
-					cycles += 9; // FP divide latency
 					return;
 				}
 			} else if (count == 4) {
@@ -1696,7 +1807,6 @@ public class Simulator {
 				setR(d.b, d.v1, a % b);
 				boolean of = (a == Long.MIN_VALUE && b == -1);
 				setFlags(getR(d.a), of);
-				cycles += 11; // integer divide latency
 				return;
 			}
 		} else if (d.tt == 2 && isYKind(d.a)) {
@@ -1710,7 +1820,6 @@ public class Simulator {
 				boolean of = (before == Long.MIN_VALUE && rhs == -1);
 				R[rd] = res;
 				setFlags(res, of);
-				cycles += 11; // integer divide latency
 				return;
 			} else if (isFPKind(d.a)) {
 				// FC
@@ -1720,7 +1829,6 @@ public class Simulator {
 				double res = before / rhs;
 				F[rd] = res;
 				setFlags(res);
-				cycles += 9; // FP divide latency
 				return;
 			}
 		} else if (d.tt == 3) {
@@ -1734,7 +1842,6 @@ public class Simulator {
 				boolean of = (before == Long.MIN_VALUE && rhs == -1);
 				R[toRegIndex(d.a, d.v0)] = res;
 				setFlags(res, of);
-				cycles += 11; // integer divide latency
 				return;
 			} else if (isFPKind(d.a) && isFPKind(d.b)) {
 				// FC
@@ -1744,7 +1851,6 @@ public class Simulator {
 				double res = before / rhs;
 				F[toRegIndex(d.a, d.v0)] = res;
 				setFlags(res);
-				cycles += 9; // FP divide latency
 				return;
 			}
 		}
@@ -2019,10 +2125,8 @@ public class Simulator {
 						}
 					} else if (addr < heapLimit) {
 						ok = atomicMem.compareAndSet(mem, Math.toIntExact(addr), oldVal, newVal);
-						cycles += 2;
 					} else {
 						ok = atomicMem.compareAndSet(stack, Math.toIntExact(addr - heapLimit), oldVal, newVal);
-						cycles += 2;
 					}
 					setFlags(newVal, ok);
 					return;
@@ -2850,9 +2954,10 @@ public class Simulator {
 	public int stepOne() {
 		if (!running) return -1;
 		long pc = R[R_PC];
-		long instr = memRead(pc);
+		long instr = fetch(pc);
 		R[R_PC] = pc + 1;
-		Decoded d = Decoded.decode(instr);
+		Decoded d = decoded;
+		d.decodeInto(instr);
 		exec(d);
 		return d.getOpCode();
 	}
@@ -2871,6 +2976,40 @@ public class Simulator {
 		synchronized (childCPUs) {
 			for (var child : childCPUs) child.stopAll();
 		}
+	}
+
+	/**
+	 * Master "Kill All": forcibly stop every running simulator, process, and
+	 * thread. This is a safety net for a runaway program that is not responding
+	 * to a normal cooperative Stop. It:
+	 *   1) sets {@code running = false} on every active root simulator and all of
+	 *      their child CPUs (cooperative stop), and
+	 *   2) interrupts every child thread's underlying Java thread so any thread
+	 *      blocked in sleep/wait/join/I/O wakes up and observes the stop flag.
+	 * Safe to call from any thread (e.g. the IDE's Event Dispatch Thread).
+	 */
+	public static void killAll() {
+		// Stop all root simulator trees (each recursively stops its child CPUs).
+		synchronized (activeRootCPUs) {
+			for (var root : activeRootCPUs) {
+				try { root.stopAll(); } catch (Throwable ignore) {}
+			}
+		}
+		// Stop and interrupt every registered child thread's Java thread.
+		synchronized (threadCPUs) {
+			for (var t : threadCPUs) {
+				try {
+					t.stopAll();
+					ChildThread ct = t.getThread();
+					if (ct != null) ct.interrupt();
+				} catch (Throwable ignore) {}
+			}
+		}
+	}
+
+	/** Remove this simulator from the active-root registry (call when a run ends). */
+	public void unregister() {
+		activeRootCPUs.remove(this);
 	}
 	public Map<Long, String> getReverseSymbolMap() { return reverseSymbolMap; }
 

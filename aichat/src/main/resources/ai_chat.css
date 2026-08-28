@@ -232,6 +232,24 @@ li:has(> input[type=checkbox]) {
     animation: pulse 1.5s ease-in-out infinite;
 }
 
+.thinking .cancel-btn {
+    margin-left: 4px;
+    background: none;
+    border: none;
+    color: #cc0000;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    padding: 0 2px;
+    line-height: 1;
+    animation: none;
+    opacity: 1;
+}
+
+.thinking .cancel-btn:hover {
+    color: #ff0000;
+}
+
 @keyframes pulse {
     0%, 100% { opacity: 0.4; }
     50% { opacity: 1; }

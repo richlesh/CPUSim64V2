@@ -9,6 +9,7 @@ projects/Hailstone5.asm
 projects/Pi.asm
 projects/Renard.asm
 projects/Renard2.asm
+projects/Tower_of_Hanoi.asm
 projects/Vigenere.asm
 projects/XORCipher.asm
 projects/hashcode.asm
@@ -20,5 +21,6 @@ projects/mandelbrot_histogram_balanced.asm
 projects/md5.asm
 projects/progress_bar.asm
 projects/progress_bar2.asm
+projects/rainbow.asm
 projects/rot13.asm
 projects/working_bar.asm

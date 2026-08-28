@@ -29,6 +29,8 @@ public class WebResources {
     private static final String HLJS_GITHUB_CSS = loadResourceAsString("/hljs-github.min.css");
     private static final String HLJS_GITHUB_DARK_CSS = loadResourceAsString("/hljs-github-dark.min.css");
     private static final String TEX_SVG_JS = loadResourceAsString("/tex-svg.js");
+    private static final String LIGHTBOX_CSS = loadResourceAsString("/lightbox.css");
+    private static final String LIGHTBOX_JS = loadResourceAsString("/lightbox.js");
 
     private static String loadResourceAsString(String path) {
         try (var is = AIChatPanel.class.getResourceAsStream(path)) {
@@ -59,5 +61,15 @@ public class WebResources {
     /** Returns the file:// URI for MathJax tex-svg.js */
     public static String mathjaxJs() {
         return TEX_SVG_JS;
+    }
+
+    /** Returns the lightbox CSS */
+    public static String lightboxCss() {
+        return LIGHTBOX_CSS;
+    }
+
+    /** Returns the lightbox JS */
+    public static String lightboxJs() {
+        return LIGHTBOX_JS;
     }
 }
