@@ -113,7 +113,8 @@ jobs:
       - name: Compile cpusim64 CLI tool
         shell: bash
         run: |
-          sed -i.bak "s/Version 2.0.0/Version ${APP_VERSION}/" cpusim64/src/main/cpp/cpusim64.cpp
+          sed -i.bak -E "s/Version [0-9]+\.[0-9]+\.[0-9]+/Version ${APP_VERSION}/" cpusim64/src/main/cpp/cpusim64.cpp
+          rm -f cpusim64/src/main/cpp/cpusim64.cpp.bak
           if [ "${{ runner.os }}" = "Windows" ]; then
             cl.exe /std:c++17 /O2 /Fe:ide/src/main/resources/cpusim64.exe cpusim64/src/main/cpp/cpusim64.cpp || \
             g++ -std=c++17 -O2 -static -o ide/src/main/resources/cpusim64.exe cpusim64/src/main/cpp/cpusim64.cpp
