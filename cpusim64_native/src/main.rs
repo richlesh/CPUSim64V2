@@ -15,7 +15,7 @@ fn main() {
 fn run(args: &[String]) -> i32 {
     if args.is_empty() {
         eprintln!(
-            "Usage: simulation [--debug] [--trace] [--verbose] \n        [--mem=memsize] [--stack=stacksize] <input.o64>"
+            "Syntax: cpusim64_native [--debug] [--trace] [--verbose] \n        [--mem=memsize] [--stack=stacksize] <input.o64>"
         );
         return 2;
     }
