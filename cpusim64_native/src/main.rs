@@ -14,6 +14,11 @@ fn main() {
 
 fn run(args: &[String]) -> i32 {
     if args.is_empty() {
+        eprintln!("CPUSim64: A native 64-bit CPU simulator");
+        eprintln!("Version {}", buildinfo::VERSION);
+        eprintln!("Built with Rust");
+        eprintln!("Copyright \u{00A9}2026 Richard Lesh");
+        eprintln!();
         eprintln!(
             "Syntax: cpusim64_native [--debug] [--trace] [--verbose] \n        [--mem=memsize] [--stack=stacksize] <input.o64>"
         );
