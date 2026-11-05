@@ -13,6 +13,7 @@ It includes:
 - A 64-bit virtual CPU with a simple instruction set  
 - A Java-based assembler built using ANTLR4 grammars  
 - A cycle-accurate simulation engine  
+- A native Rust reimplementation of the simulator (`cpusim64_native`) for faster, standalone execution  
 - A simple IDE with code editor, console, and integrated run/debug  
 - A native CLI tool for command-line workflows  
 - An agentic AI assistant with RAG-based context retrieval for writing and debugging assembly code  
@@ -70,6 +71,16 @@ The project is designed for educational use, computer architecture instruction, 
 - Trace mode for instruction-by-instruction tracing  
 - Disassemble feature to disassemble object files
 
+### **Native Rust Simulator (`cpusim64_native`)**
+- Standalone Rust port of the CPUSim64 interpreter for faster, dependency-free execution  
+- Full behavioral parity with the Java simulator: all 39 opcodes, the complete interrupt/syscall surface, endian-aware port I/O, file I/O, the Fibonacci-block heap allocator, and the fork/thread/shared-memory concurrency model  
+- Byte-for-byte identical `printCPUState`, dump, and trace output — including a port of the OpenJDK Schubfach `Double.toString` algorithm so even subnormal floats format exactly like Java  
+- Reads the same gzip-compressed `.o64` object files and `.sym1` symbol maps; accepts the same CLI flags (`--debug`, `--trace`, `--verbose`, `--mem=`, `--stack=`)  
+- Cycle-timing table built in by default, overridable at runtime by dropping an `instructions.data` file next to the executable  
+- Validation harness compares output against the committed reference `.out` files  
+- **"Use Native CPUSim64 Simulator"** setting in the IDE — when enabled, Run/Debug/Trace launch `cpusim64_native` instead of the in-process Java simulator  
+- Bundled into the IDE JAR and all native installers, and installable via the IDE's CLI Tools menu  
+
 ### **Symbolic Debugger**
 - Integrated GUI debugger launched from the IDE  
 - Disassembly view with live instruction markers and label annotations  
@@ -114,7 +125,7 @@ The project is designed for educational use, computer architecture instruction, 
 ### **CLI Tool (`cpusim64`)**
 - Native C++ command-line interface  
 - Commands: `assemble`, `run`, `debug`, `trace`, `disassemble`, `preprocess`  
-- Installable via the IDE's CLI Tools menu  
+- Installable via the IDE's CLI Tools menu — installs the `cpusim64_native` Rust simulator and its `instructions.data` timing table alongside it  
 
 ### **Native Installers**
 - macOS DMG (signed and notarized) — ARM64  
@@ -127,7 +138,7 @@ The project is designed for educational use, computer architecture instruction, 
 
 ## 📦 Project Structure (CPUSim64V2)
 
-The project uses a multi-module Maven layout separating the AI chat library, simulator/assembler core, and IDE.
+The project uses a multi-module Maven layout separating the AI chat library, simulator/assembler core, native Rust simulator, and IDE.
 
 ```
 CPUSim64V2/
@@ -163,6 +174,16 @@ CPUSim64V2/
 │   ├── src/test/
 │   └── validation/
 │
+├── cpusim64_native/                 (Native Rust Simulator Module)
+│   ├── Cargo.toml                   (Rust crate manifest)
+│   ├── pom.xml                      (Maven wrapper — runs `cargo build`)
+│   └── src/
+│       ├── main.rs                  (CLI entry ≈ Simulation.java)
+│       ├── decode.rs                (instruction decode)
+│       ├── cpu/                     (exec, heap, memory, cycles, format, interrupts, concurrency)
+│       ├── ports/                   (stdio / file / raw port handlers)
+│       └── javacompat/              (Java Formatter + Schubfach Double.toString)
+│
 ├── ide/                             (IDE Module)
 │   ├── pom.xml
 │   └── src/main/java/com/glowingcat/cpusim64ide/
@@ -188,11 +209,12 @@ CPUSim64V2/
 
 ### Module Overview
 
-| Module     | Artifact                | Description                                              |
-|------------|-------------------------|----------------------------------------------------------|
-| `aichat`   | `org.lesh:aichat`       | Reusable AI chat panel with LLM integration and RAG      |
-| `cpusim64` | `org.lesh:CPUSim64`     | Assembler, simulator, CLI tool, ANTLR grammars           |
-| `ide`      | `org.lesh:CPUSim64IDE`  | JavaFX/Swing GUI IDE, depends on both modules above      |
+| Module            | Artifact                   | Description                                              |
+|-------------------|----------------------------|----------------------------------------------------------|
+| `aichat`          | `org.lesh:aichat`          | Reusable AI chat panel with LLM integration and RAG      |
+| `cpusim64`        | `org.lesh:CPUSim64`        | Assembler, simulator, CLI tool, ANTLR grammars           |
+| `cpusim64_native` | `org.lesh:cpusim64_native` | Native Rust port of the interpreter (built via cargo)    |
+| `ide`             | `org.lesh:CPUSim64IDE`     | JavaFX/Swing GUI IDE, depends on the modules above       |
 
 ---
 
@@ -201,21 +223,34 @@ CPUSim64V2/
 ### Prerequisites
 - JDK 21+
 - Maven 3.9+
+- Rust toolchain (`cargo`) — required to build the `cpusim64_native` module. On a machine without Rust, skip it with `-Dcpusim64.native.skip=true`.
 
 ### Build
 ```bash
 mvn clean package
 ```
+The `cpusim64_native` Maven module runs `cargo build --release` and the IDE module bundles the resulting executable (plus its `instructions.data` timing table) into the IDE JAR.
 
 ### Build for release (JavaFX provided by runtime):
 ```bash
 mvn clean package -P release -DskipTests=true
 ```
 
+### Build without the native simulator (no Rust toolchain):
+```bash
+mvn clean package -Dcpusim64.native.skip=true
+```
+
 ### Run the IDE locally:
 ```bash
 ./ide.sh
 ```
+
+### Key dependencies
+- JavaFX **21.0.13** (LTS)
+- ANTLR **4.13.2**
+- JUnit **5.14.0**, commonmark **0.24.0**
+- Rust crate deps (pinned): `flate2 1.0.30`, `regex 1.10.4`
 
 ---
 
