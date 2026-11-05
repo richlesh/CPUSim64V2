@@ -225,6 +225,24 @@ public class StdInterruptHandler extends InterruptHandler
 
 	public StdInterruptHandler(Simulator c) { cpu = c; }
 
+	/**
+	 * Frees the lazily-allocated command-line argument vector (argv) and each of
+	 * its argument strings. iARGS allocates these on first use and caches the
+	 * array in argv_ptr; nothing else references them, so they must be released
+	 * during simulator teardown to avoid residual "leaked" heap blocks at exit.
+	 * Safe to call multiple times: after freeing, argv_ptr is reset to 0.
+	 */
+	public void freeArgs() {
+		if (argv_ptr == 0) return;
+		int argc = cpu.getCommandLineCount();
+		for (int i = 0; i < argc; ++i) {
+			long strAddr = cpu.memRead(argv_ptr + i);
+			if (strAddr > 0) cpu.free(strAddr);				// free each argument string
+		}
+		cpu.free(argv_ptr);									// free the argv pointer array itself
+		argv_ptr = 0;
+	}
+
 	@Override
 	public boolean dispatch(int id) throws Simulator.CPUException
 	{
@@ -384,7 +402,12 @@ public class StdInterruptHandler extends InterruptHandler
 				try {
 					Thread.sleep(cpu.getR(1));
 				} catch (InterruptedException e) {
-					Thread.currentThread().interrupt();
+					// An interrupt here is a wake signal (e.g. from wakeThread on
+					// mutex release), NOT a cancellation. Do not re-assert the
+					// interrupt flag: doing so would make the run() loop treat the
+					// wake as a kill. Cooperative cancellation is driven by the
+					// 'running' flag (set by stopAll/killAll), which also interrupts
+					// the thread so this sleep returns promptly.
 				}
 				break;
 			case iWAKE_THREAD:
@@ -682,8 +705,8 @@ public class StdInterruptHandler extends InterruptHandler
 							codepoints.add(cp);
 						}
 					}
-					if (cp == -1 && s.isEmpty()) {
-						cpu.setR(0, 0);
+					if (cp == -1 && codepoints.isEmpty()) {
+						cpu.setR(0, 0);					// EOF with no data read this call
 					} else {
 						// Convert to primitive int[] (needed by String constructor)
 						int[] cps = codepoints.stream().mapToInt(Integer::intValue).toArray();
@@ -691,6 +714,7 @@ public class StdInterruptHandler extends InterruptHandler
 						s = new String(cps, 0, cps.length);
 						long newAlloc = cpu.allocString(s, cpu.getR(2));
 						cpu.setR(0, newAlloc);
+						cpu.setR(2, newAlloc);			// r2 reflects the (re)allocated buffer for reuse
 					}
 				} else {
 					cpu.setR(0, 0);

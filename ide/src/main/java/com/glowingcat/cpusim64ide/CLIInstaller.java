@@ -35,6 +35,7 @@ public class CLIInstaller {
     public static void install() {
         try {
             String toolName = IS_WINDOWS ? "cpusim64.exe" : "cpusim64";
+            String nativeName = IS_WINDOWS ? "cpusim64_native.exe" : "cpusim64_native";
 
             InputStream in = CLIInstaller.class.getResourceAsStream("/" + toolName);
             if (in == null) {
@@ -59,8 +60,31 @@ public class CLIInstaller {
                 destToolPath.toFile().setExecutable(true, false);
             }
 
+            // Also install the native Rust simulator and its timing table, if
+            // they are bundled. The native tool reads instructions.data from its
+            // own directory, so it goes into the same bin directory.
+            StringBuilder extra = new StringBuilder();
+            try (InputStream nin = CLIInstaller.class.getResourceAsStream("/" + nativeName)) {
+                if (nin != null) {
+                    Path destNative = destDir.resolve(nativeName);
+                    Files.copy(nin, destNative, StandardCopyOption.REPLACE_EXISTING);
+                    if (!IS_WINDOWS) destNative.toFile().setExecutable(true, false);
+                    extra.append("\n").append(destNative);
+                }
+            }
+            try (InputStream din = CLIInstaller.class.getResourceAsStream("/instructions.data")) {
+                if (din != null) {
+                    Path destData = destDir.resolve("instructions.data");
+                    Files.copy(din, destData, StandardCopyOption.REPLACE_EXISTING);
+                    extra.append("\n").append(destData);
+                }
+            }
+
             String pathMessage = addToPath(destDir.toString());
             String message = "Command line tools installed successfully to " + destToolPath;
+            if (extra.length() > 0) {
+                message += extra;
+            }
             if (pathMessage != null) {
                 message += "\n\n" + pathMessage;
             }
@@ -90,6 +114,8 @@ public class CLIInstaller {
             Path exe = destDir.resolve("cpusim64.exe");
 
             Files.deleteIfExists(exe);
+            Files.deleteIfExists(destDir.resolve("cpusim64_native.exe"));
+            Files.deleteIfExists(destDir.resolve("instructions.data"));
             try { Files.deleteIfExists(destDir); } catch (Exception ignored) {}
 
             removeFromPathWindows(destDir.toString());
@@ -102,6 +128,8 @@ public class CLIInstaller {
             Path exe = destDir.resolve("cpusim64");
 
             Files.deleteIfExists(exe);
+            Files.deleteIfExists(destDir.resolve("cpusim64_native"));
+            Files.deleteIfExists(destDir.resolve("instructions.data"));
 
             Path profilePath = IS_MAC
                 ? Path.of(System.getProperty("user.home"), ".zprofile")

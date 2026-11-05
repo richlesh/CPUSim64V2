@@ -18,6 +18,7 @@
 package cloud.lesh.CPUSim64;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStreamReader;
@@ -25,7 +26,7 @@ import java.nio.charset.StandardCharsets;
 
 public class FilePortHandler extends PortHandler
 {
-	private FileOutputStream os;
+	private BufferedOutputStream os;
 	private FileInputStream fis;
 	private BufferedInputStream bis;
 	private InputStreamReader is;
@@ -45,10 +46,10 @@ public class FilePortHandler extends PortHandler
 					is = new InputStreamReader(bis, StandardCharsets.UTF_8);
 					break;
 				case 1:
-					os = new FileOutputStream(filespec);
+					os = new BufferedOutputStream(new FileOutputStream(filespec));
 					break;
 				case 2:
-					os = new FileOutputStream(filespec, true);
+					os = new BufferedOutputStream(new FileOutputStream(filespec, true));
 					break;
 				default:
 					throw cpu.new CPUException("Illegal file open mode!");

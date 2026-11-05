@@ -94,8 +94,10 @@ $loop:
 	store	0, addr[0]
 	store	0, addr[1]
 	#call	alloc(10)
-	store   r0, addr[2]
-	store	0, r0
+	store   r0, addr[2]									// 0 here means the queue could not be allocated
+	#if_cond	r0 != 0								// Only initialize the queue if alloc succeeded
+		store	0, r0								// Empty queue: leading count = 0
+	#end_cond
 	move	r0, addr[3]
 	#call	initializeSpinLock(r0)
 #end_func
@@ -108,12 +110,16 @@ $loop:
 #end_func
 
 #def_func	acquireMutex(mutexAddr)
-	#var	pid, lockPID, addr, queue, queueSize, queueAllocSize, i
+	#var	pid, lockPID, addr, queue, queueSize, queueAllocSize, i, sleepDuration
+	#fvar	mutex_exp_wait_factor, mutex_max_exp_wait
 	load	addr, mutexAddr
 	int		iGET_PID										// Get our PID
 	move	pid, r0
 	load	lockPID, addr[0]
 	#if_cond	lockPID != pid								// if re-entrant, we already have the lock
+		load	mutex_exp_wait_factor, _MUTEX_EXP_WAIT_FACTOR
+		load	mutex_max_exp_wait, _MUTEX_MAX_EXP_WAIT
+		move	sleepDuration, 10						// Initial backoff: 10 ms (grows exponentially)
         #while TRUE
             cas		0, pid, addr[0]							// set PID atomically to get lock
             #if_cond_sr o									// We got the lock so break
@@ -136,7 +142,22 @@ $loop:
 				#if_cond	queueSize == queueAllocSize		// If sizes are the same we need to realloc
 					add		r0, queueSize, 1				// New alloc size is new queue size + leading count
 					#call	REALLOC(queue, r0)
-					move	queue, r0
+					#if_cond	r0 == 0						// realloc failed: heap exhausted
+						// Do NOT overwrite queue or addr[2]; the original
+						// block is still valid and referenced by addr[2].
+						sub		queueSize, 1				// Revert the local size increment (not yet stored)
+						move	r0, addr[3]
+						#call	releaseSpinLock(r0)			// Release queue spinlock before retrying
+						#call	sleep(sleepDuration)		// Exponential backoff, then retry
+						move	f0, sleepDuration			// Grow the backoff: sleepDuration *= factor
+						mult	f0, mutex_exp_wait_factor
+						#if_cond	f0, gt, mutex_max_exp_wait
+							move	f0, mutex_max_exp_wait	// Cap at the max backoff
+						#end_cond
+						move	sleepDuration, f0
+						#continue							// Restart the outer #while loop
+					#end_cond
+					move	queue, r0						// realloc succeeded: adopt new block
 					store	queue, addr[2]					// Store the realloc block
 				#end_cond
 				store	queueSize, queue[0]					// Store the new queue size
@@ -144,7 +165,13 @@ $loop:
 			#end_cond
 			move	r0, addr[3]
 			#call	releaseSpinLock(r0)
-			#call   sleep(10000)							// Sleep until awoken or 10 sec.
+			#call   sleep(sleepDuration)					// Wait until awoken (interrupt) or backoff expires
+			move	f0, sleepDuration						// Grow the backoff: sleepDuration *= factor
+			mult	f0, mutex_exp_wait_factor
+			#if_cond	f0, gt, mutex_max_exp_wait
+				move	f0, mutex_max_exp_wait				// Cap at the max backoff
+			#end_cond
+			move	sleepDuration, f0
        #end_while
 	#end_cond
 	load	r0, addr[1]										// Increase the re-entry count

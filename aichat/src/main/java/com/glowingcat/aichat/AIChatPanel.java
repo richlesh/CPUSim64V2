@@ -55,8 +55,6 @@ public class AIChatPanel extends JPanel {
     private boolean useWebView = false;
     // Strong reference to prevent GC of the JavaScript bridge object
     private ChatBridge chatBridge;
-    // Status bar for showing document/system prompt sizes
-    private JLabel statusBar;
     private Runnable statusUpdater;
 
     // Fallback rendering
@@ -255,7 +253,6 @@ public class AIChatPanel extends JPanel {
         inputPanel.add(btnPanel, BorderLayout.EAST);
 
         JLabel statusBar = new JLabel(" ");
-        this.statusBar = statusBar;
         statusBar.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 10));
         statusBar.setBorder(BorderFactory.createEmptyBorder(2, 4, 2, 4));
 
@@ -322,7 +319,6 @@ public class AIChatPanel extends JPanel {
     private void renderFallbackChat() {
         fallbackChatPanel.removeAll();
         Font chatFont = new Font(aiPreferences.getAiFontFamily(), Font.PLAIN, aiPreferences.getAiFontSize());
-        Font codeFont = new Font(aiPreferences.getAiCodeFontFamily(), Font.PLAIN, aiPreferences.getAiCodeFontSize());
         ImageIcon humanIcon = loadScaledIcon("/human.png", 24);
         ImageIcon aiIcon = loadScaledIcon("/AI.png", 24);
 
@@ -701,9 +697,19 @@ public class AIChatPanel extends JPanel {
             writeDevFile(".glowingcat-ai-system-prompt.md", systemPrompt);
         }
 
+        // Store only the bare user text in durable history. The ephemeral per-turn
+        // context (current document, console output, and RAG-retrieved chunks) is NOT
+        // persisted — it would otherwise accumulate across every turn, re-sending stale
+        // document snapshots and retrieved chunks on each subsequent request.
+        messages.add(Map.of("role", "user", "content", text));
 
+        // Build the transient message list sent for THIS turn only: a copy of history
+        // whose final user message is augmented with the ephemeral context. History
+        // (messages) keeps just the clean user text.
         String fullUserMessage = context + "\n\nUser request: " + text;
-        messages.add(Map.of("role", "user", "content", fullUserMessage));
+        List<Map<String, String>> turnMessages = new ArrayList<>(messages);
+        turnMessages.set(turnMessages.size() - 1,
+            Map.of("role", "user", "content", fullUserMessage));
 
         // In developer mode, write the composed prompt to a file for inspection
         if (isDeveloperMode()) {
@@ -720,9 +726,10 @@ public class AIChatPanel extends JPanel {
         renderChat();
 
         final LLMClient client = llmClient;
+        final List<Map<String, String>> outboundMessages = turnMessages;
         currentThread = new Thread(() -> {
             try {
-                String response = client.chat(messages, systemPrompt);
+                String response = client.chat(outboundMessages, systemPrompt);
                 messages.add(Map.of("role", "assistant", "content", response));
                 // In developer mode, write the AI response to a file for inspection
                 if (isDeveloperMode()) {

@@ -400,23 +400,40 @@ MOV F0, 3.14
 	@Test
 	void testCall() {
 		String src = """
+			#def_func myFunc(a,b,c)
+			#end_func
 			#call bubblegum()
 			#call myFunc(1, 2, 3)
+			stop
+			stop
 			""";
 		String expected = """
-			.LINE «TEST.ASM», 1
-			CALL BUBBLEGUM
-			.LINE_BEGIN «TEST.ASM», 2
-			PUSH 3
-			PUSH 2
-			PUSH 1
-			CALL MYFUNC
-			ADD SP, 3
-			.LINE_END
+.LINE «TEST.ASM», 1
+MYFUNC:
+.BLOCK _MYFUNC
+.LINE_BEGIN «TEST.ASM», 2
+MYFUNC$_RETURN:
+RETURN
+.BLOCK_END _MYFUNC
+.LINE_END
+.LINE «TEST.ASM», 3
+CALL BUBBLEGUM
+.LINE_BEGIN «TEST.ASM», 4
+PUSH 3
+PUSH 2
+PUSH 1
+CALL MYFUNC
+ADD SP, 3
+.LINE_END
+.LINE «TEST.ASM», 5
+STOP
+.LINE «TEST.ASM», 6
+STOP
 			""";
 		var loader = new IncludeLoader(Path.of("."));
 		PreprocessorVisitor pp = new PreprocessorVisitor("Test.asm", loader);
 		String preprocessed = pp.preprocessText(src);
+System.out.println(preprocessed.toUpperCase());
 		assertEquals(expected, preprocessed.toUpperCase());
 	}
 
@@ -701,11 +718,11 @@ FINIS:
 	@Test
 	void testMacroVarArg() {
 		String src = """
-			#def_macro	DEBUG(...)
+			#def_macro	mDEBUG(...)
 				#call	debug(STDOUT, ${...})
 			#end_macro
-			#macro DEBUG("Test message", 1, 2, 3)
-			#macro DEBUG("Another message")
+			#macro mDEBUG("Test message", 1, 2, 3)
+			#macro mDEBUG("Another message")
 			""";
 		String expected = """
 			.LINE_BEGIN «TEST.ASM», 4

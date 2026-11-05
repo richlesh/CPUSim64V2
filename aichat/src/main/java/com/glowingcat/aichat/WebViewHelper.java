@@ -20,8 +20,6 @@ class WebViewHelper {
 
     public final JFXPanel fxPanel;
     private volatile WebEngine webEngine;
-    private volatile boolean ready = false;
-    private Object jsBridge; // strong reference to prevent GC
     private Runnable onReady; // callback when WebView is initialized
 
     WebViewHelper(Object bridge, Runnable onReady) {
@@ -40,8 +38,6 @@ class WebViewHelper {
                         netscape.javascript.JSObject win =
                             (netscape.javascript.JSObject) webEngine.executeScript("window");
                         win.setMember("chatBridge", bridge);
-                        jsBridge = bridge;
-                        ready = true;
                     }
                 });
 

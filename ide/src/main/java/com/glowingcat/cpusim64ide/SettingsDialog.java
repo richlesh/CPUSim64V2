@@ -170,6 +170,17 @@ public class SettingsDialog {
         panel.add(consoleColorsPanel, gbc);
         gbc.gridwidth = 1;
 
+        // Native simulator option
+        JCheckBox nativeSimCheck = new JCheckBox("Use Native CPUSim64 Simulator");
+        nativeSimCheck.setToolTipText(
+            "Run/Debug/Trace programs with the bundled native cpusim64_native "
+            + "executable instead of the in-process Java simulator.");
+        nativeSimCheck.setSelected(settings.useNativeSimulator);
+        gbc.gridy = 5; gbc.gridx = 0; gbc.gridwidth = 2;
+        gbc.fill = GridBagConstraints.NONE;
+        panel.add(nativeSimCheck, gbc);
+        gbc.gridwidth = 1;
+
         // Buttons
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         JButton okBtn = new JButton("OK");
@@ -189,6 +200,7 @@ public class SettingsDialog {
             System.arraycopy(colors, 0, settings.colors, 0, colors.length);
             settings.consoleFg = conFg[0];
             settings.consoleBg = conBg[0];
+            settings.useNativeSimulator = nativeSimCheck.isSelected();
             settings.save();
 
             dialog.dispose();

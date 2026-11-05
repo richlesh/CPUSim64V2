@@ -43,7 +43,7 @@
 
 // PIDS[0] holds the number of children (band count). PIDS[1..N] hold the
 // process IDs of the spawned child processes.
-#global PIDS:   .dca    16
+#global PIDS:   .dca    100
 
 // Global bounds of the complex plane region being rendered. These are computed
 // by main() from the command line center (x,y) and radius and read back by the
@@ -89,7 +89,7 @@ kONE_HALF: .dcf 0.5
         #return 1
     #end_cond
 
-GET_ARGS:
+    // Get command line args
     #call   args(1)
     #macro  PARSE_FLOAT(r0)
     move    x, f0
@@ -126,9 +126,20 @@ GET_ARGS:
 // its first and last row, generate the temp filename, and spawn a child to
 // render it. The child's PID is recorded in PIDS[i].
     load    numChildren, PIDS[0]
+    int     iGET_NUM_CORES
+    #if_cond    r0 < numChildren
+        move    numChildren, r0
+        store   numChildren, PIDS[0]
+    #end_cond
+
+    #if_cond    imageSize < numChildren
+        move    numChildren, imageSize
+    #end_cond
     #call   printf("Number of children: %d\n", numChildren)
+
     move    firstRow, 0
     #for    1, i <= numChildren, 1
+        // Compute last row (exclusive)
         move    f0, imageSize
         div     f0, numChildren
         mult    f0, i
@@ -138,18 +149,21 @@ GET_ARGS:
         move    childFilename, r0
         #call   spawnChild(childFilename, firstRow, lastRow, imageSize)
         move    pid, r0
-        #if_cond    pid, gt, 0
+        #if_cond    pid > 0
             #call   printf("Spawn child for %d...into %s\n", pid, childFilename)
-        store   pid, PIDS[i]
+            store   pid, PIDS[i]
+        #else_cond
+            #call   printf("Spawn child for %d failed!\n", pid)
+            store   0, PIDS[i]
         #end_cond
         move    firstRow, lastRow
-        add     firstRow, 1
+        #call   free(childFilename)
     #end_for
 
 // Wait for each spawned child to finish before merging output.
     #for    1, i <= numChildren, 1
         load    pid, PIDS[i]
-        #if_cond    pid, gt, 0
+        #if_cond    pid > 0
             #call   printf("Waiting for %d...\n", pid)
             move    r1, pid
             int iWAIT_PID
@@ -159,7 +173,6 @@ GET_ARGS:
 // Merge all per-band temp files into the final .pgm image.
     #call   combine_output(filename, imageSize)
     #return 0
-MAIN_END:
 #end_func
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -184,6 +197,8 @@ MAIN_END:
 #def_func spawnChild(name, firstRow, lastRow, width)
     #var    child_pid, childName, first, last, w, port
     load    childName, name
+    #macro  STRCOPY(childName)      // Make our own copy
+    move    childName, r0
     load    first, firstRow
     load    last, lastRow
     load    w, width
@@ -212,10 +227,12 @@ MAIN_END:
                 #call   closeFile(port)
                 #call   printf("Child %s done!\n", childName)
             #end_cond
+            #call   free(childName)
             stop
         #end_cond
     #else_cond
         #call   printf("Fork %s failed!\n", childName)
+        #call   free(childName)
         #return -1
     #end_cond
 END:
@@ -254,7 +271,7 @@ END:
     #call   printf("compute_mandelbrot(%d, %d, %d, %d)\n", p, first, last, w)
     sub     xWidth, xMax, xMin
     sub     yHeight, yMax, yMin
-    #for    first, j <= last, 1
+    #for    first, j < last, 1
         #for    0, i < w, 1
             // x0 = xWidth / width * (i + 0.5) + xMin
             move    f0, i
@@ -306,7 +323,7 @@ END:
 kFOUR:      .dcf 4.0
 #def_func   compute_escape(x0_arg, y0_arg)
     #var    iteration, max_iteration
-    #fvar   x, y, x0, y0, x2, y2, four, one_half, normalized
+    #fvar   x, y, x0, y0, x2, y2, four
     load    max_iteration, gMAX_ITERATION
     clear   iteration
     clear   x2
@@ -316,32 +333,30 @@ kFOUR:      .dcf 4.0
     load    four, kFOUR
     load    x0, x0_arg
     load    y0, y0_arg
-    push    r1
 
     #do_while
 //    y:= 2 * x * y + y0
-    mult    y, x
-    mult    y, 2
-    add     y, y0
+        mult    y, x
+        mult    y, 2
+        add     y, y0
 //    x:= x2 - y2 + x0
-    sub     x, x2, y2
-    add     x, x0
+        sub     x, x2, y2
+        add     x, x0
 //    x2:= x * x
-    mult    x2, x, x
+        mult    x2, x, x
 //    y2:= y * y
-    mult    y2, y, y
-    add     iteration, 1
-LOOP_COND:
-// while (x2 + y2 ≤ 4 and iteration < max_iteration) do
+        mult    y2, y, y
+        add     iteration, 1
+        // Compute loop condition
+        // while (x2 + y2 ≤ 4 and iteration < max_iteration) do
         add     f0, x2, y2
         #macro COMPARE(f0, le, four)
         move    r1, r0
         #macro COMPARE(iteration, lt, max_iteration)
         and     r0, r1
     #end_do_while r0 != 0
-    
-    pop     r1
-    #if_cond    iteration, eq, max_iteration
+
+    #if_cond    iteration == max_iteration
         clear   f0
     #else_cond
         move    f0, iteration
@@ -359,7 +374,7 @@ LOOP_COND:
 // verbatim into the output file. The temporary files are opened and closed one
 // at a time to avoid exhausting available ports.
 //
-// The output file is a valid PGM P5 (ASCII grayscale) image with:
+// The output file is a valid PGM P5 (Binary grayscale) image with:
 //   - width  = imageSize pixels
 //   - height = imageSize pixels
 //   - max grayscale value = 255
@@ -377,6 +392,10 @@ LOOP_COND:
 // Create binary file in write mode.
     #call   sprintf("%s.pgm", fn)
     #call   openRawFile(r0, WRITE_MODE)
+    #if_cond    r0 == -1
+        #call   printf("Can\'t open %s.pgm...\n", fn)
+        #return -1
+    #end_cond
     move    out_port, r0
     #call   sprintf("P5\n%d %d\n%d\n", size, size, 255)
     move    header, r0
@@ -387,8 +406,8 @@ LOOP_COND:
         load    c, codePoints[i]
         #macro  OUT1(c, out_port)
     #end_for
-    #call	free(header)
-    #call	free(codePoints)
+    #call   free(header)
+    #call   free(codePoints)
     
     load    numChildren, PIDS[0]
     #call   printf("NUM FILES: %d\n", numChildren)
@@ -398,9 +417,12 @@ LOOP_COND:
         #call   printf("Merging %s\n", tempFile)
         #call   openRawFile(tempFile, READ_MODE)
         move    in_port, r0
-        #call   copy_raw_file(in_port, out_port)
-        #call   closeFile(in_port)
+        #if_cond    in_port != -1
+            #call   copy_raw_file(in_port, out_port)
+            #call   closeFile(in_port)
+        #end_cond
         #call   deleteFile(tempFile)
+        #call   free(tempFile)
     #end_for
 
     #call   closeFile(out_port)

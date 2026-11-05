@@ -33,7 +33,17 @@ public class AnthropicClient implements LLMClient {
             .filter(m -> "system".equals(m.get("role")))
             .map(m -> m.get("content"))
             .findFirst().orElse("");
-        body.append("\"system\":").append(jsonString(sys)).append(",\"messages\":[");
+        // Send the system prompt as a structured content block with a cache_control
+        // breakpoint. The reference documentation baked into the system prompt is a
+        // large, stable prefix that is identical on every turn, so caching it means we
+        // pay full input price once and ~10% on each subsequent turn (5-minute TTL).
+        // Only emit a cache breakpoint when there is actually system content to cache.
+        if (sys.isEmpty()) {
+            body.append("\"system\":").append(jsonString(sys)).append(",\"messages\":[");
+        } else {
+            body.append("\"system\":[{\"type\":\"text\",\"text\":").append(jsonString(sys))
+                .append(",\"cache_control\":{\"type\":\"ephemeral\"}}],\"messages\":[");
+        }
         boolean first = true;
         for (var m : messages) {
             if ("system".equals(m.get("role"))) continue;
@@ -49,7 +59,7 @@ public class AnthropicClient implements LLMClient {
             .header("Content-Type", "application/json")
             .header("x-api-key", apiKey)
             .header("anthropic-version", "2023-06-01")
-            .timeout(Duration.ofSeconds(600))
+            .timeout(Duration.ofSeconds(1200))
             .POST(HttpRequest.BodyPublishers.ofString(body.toString()))
             .build();
 

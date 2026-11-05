@@ -64,8 +64,10 @@ public class IDEApp {
     private JMenuItem runItem, debugItem;
     private JMenuItem killAllItem;
     private JCheckBoxMenuItem aiMenuItem;
+    private JMenu windowMenu;
     private JButton runBtn, debugBtn;
     private volatile Thread runThread;
+    private volatile Process nativeProcess;
     private int runDebugCount = 0;
 
     public static void main(String[] args) {
@@ -342,6 +344,88 @@ public class IDEApp {
         shiftRightItem.addActionListener(e -> shiftIndent(true));
         editMenu.add(shiftRightItem);
 
+        // Window menu
+        windowMenu = new JMenu("Window");
+        int shortcutMask = Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx();
+
+        JMenuItem minimizeItem = new JMenuItem("Minimize");
+        minimizeItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_M, shortcutMask));
+        minimizeItem.addActionListener(e -> {
+            Frame f = activeFrame();
+            if (f != null) f.setExtendedState(f.getExtendedState() | Frame.ICONIFIED);
+        });
+        windowMenu.add(minimizeItem);
+
+        JMenuItem zoomItem = new JMenuItem("Zoom");
+        zoomItem.addActionListener(e -> {
+            Frame f = activeFrame();
+            if (f != null) {
+                // Toggle maximized-both state.
+                if ((f.getExtendedState() & Frame.MAXIMIZED_BOTH) == Frame.MAXIMIZED_BOTH)
+                    f.setExtendedState(f.getExtendedState() & ~Frame.MAXIMIZED_BOTH);
+                else
+                    f.setExtendedState(f.getExtendedState() | Frame.MAXIMIZED_BOTH);
+            }
+        });
+        windowMenu.add(zoomItem);
+
+        windowMenu.addSeparator();
+
+        JMenuItem prevItem = new JMenuItem("Previous");
+        // Cmd/Ctrl + Shift + ','
+        prevItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_COMMA, shortcutMask | InputEvent.SHIFT_DOWN_MASK));
+        prevItem.addActionListener(e -> cycleWindow(-1));
+        windowMenu.add(prevItem);
+
+        JMenuItem nextItem = new JMenuItem("Next");
+        // Cmd/Ctrl + Shift + '.'
+        nextItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_PERIOD, shortcutMask | InputEvent.SHIFT_DOWN_MASK));
+        nextItem.addActionListener(e -> cycleWindow(1));
+        windowMenu.add(nextItem);
+
+        windowMenu.addSeparator();
+
+        JMenuItem cascadeItem = new JMenuItem("Cascade All");
+        cascadeItem.addActionListener(e -> cascadeAllWindows());
+        windowMenu.add(cascadeItem);
+
+        JMenuItem tileItem = new JMenuItem("Tile All");
+        tileItem.addActionListener(e -> tileAllWindows());
+        windowMenu.add(tileItem);
+
+        // Separator marking the boundary between the static items above and the
+        // dynamic, alphabetized window list below. rebuildWindowList() preserves
+        // everything up to and including this separator.
+        windowMenu.addSeparator();
+
+        // The alphabetized list of open windows is rebuilt each time the menu
+        // opens so it always reflects the current set of visible windows.
+        windowMenu.addMenuListener(new javax.swing.event.MenuListener() {
+            @Override public void menuSelected(javax.swing.event.MenuEvent ev) { rebuildWindowList(windowMenu); }
+            @Override public void menuDeselected(javax.swing.event.MenuEvent ev) {}
+            @Override public void menuCanceled(javax.swing.event.MenuEvent ev) {}
+        });
+
+        // Also rebuild the list proactively whenever any window is opened or
+        // closed so a closed window is dropped from the menu immediately, even
+        // if the menu was already open or is opened via its keyboard mnemonic.
+        // Additionally, when the last application window closes, shut the app
+        // down. On macOS in particular, disposing the final window does not quit
+        // the JVM, so we must exit explicitly.
+        Toolkit.getDefaultToolkit().addAWTEventListener(ev -> {
+            int id = ev.getID();
+            if (id == WindowEvent.WINDOW_CLOSED || id == WindowEvent.WINDOW_OPENED) {
+                // Defer so the closing window has finished disposing before we
+                // enumerate Frame.getFrames().
+                SwingUtilities.invokeLater(() -> {
+                    rebuildWindowList(windowMenu);
+                    if (id == WindowEvent.WINDOW_CLOSED && listAppWindows().isEmpty()) {
+                        shutdown();
+                    }
+                });
+            }
+        }, AWTEvent.WINDOW_EVENT_MASK);
+
         // Help menu
         JMenu helpMenu = new JMenu("Help");
         JMenuItem onlineDocsItem = new JMenuItem("Online Documentation");
@@ -360,6 +444,7 @@ public class IDEApp {
 
         menuBar.add(fileMenu);
         menuBar.add(editMenu);
+        menuBar.add(windowMenu);
         menuBar.add(helpMenu);
         menuBar.add(Box.createHorizontalGlue());
         var aiIconUrl = IDEApp.class.getResource("/AI.png");
@@ -373,6 +458,148 @@ public class IDEApp {
         aiBtn.addActionListener(e -> toggleAIPanel());
         menuBar.add(aiBtn);
         return menuBar;
+    }
+
+    // ===== Window menu support =====
+
+    /** Guard so shutdown runs exactly once. */
+    private boolean shuttingDown = false;
+
+    /**
+     * Terminate the application. Invoked when the last application window has
+     * closed. Stops any running simulation (so no simulator/child threads keep
+     * the JVM alive) and then exits. On macOS the JVM does not quit on its own
+     * when the final window is disposed, so an explicit exit is required.
+     */
+    private void shutdown() {
+        if (shuttingDown) return;
+        shuttingDown = true;
+        try { killAll(); } catch (Throwable ignore) {}
+        System.exit(0);
+    }
+
+    /**
+     * Returns the list of application windows that should appear in the Window
+     * menu: visible, non-disposed top-level Frames that have a title. This
+     * automatically includes the main IDE frame plus any Debugger/Memory
+     * windows without requiring manual registration.
+     */
+    private java.util.List<Frame> listAppWindows() {
+        java.util.List<Frame> result = new java.util.ArrayList<>();
+        for (Frame f : Frame.getFrames()) {
+            if (f.isDisplayable() && f.isVisible() && f.getTitle() != null && !f.getTitle().isEmpty()) {
+                result.add(f);
+            }
+        }
+        return result;
+    }
+
+    /** The currently active/focused application frame, or the main frame as a fallback. */
+    private Frame activeFrame() {
+        for (Frame f : listAppWindows()) {
+            if (f.isActive() || f.isFocused()) return f;
+        }
+        return frame;
+    }
+
+    /** Bring the given window to the front, de-iconifying it if necessary. */
+    private void bringToFront(Frame f) {
+        if (f == null) return;
+        if ((f.getExtendedState() & Frame.ICONIFIED) == Frame.ICONIFIED)
+            f.setExtendedState(f.getExtendedState() & ~Frame.ICONIFIED);
+        f.setVisible(true);
+        f.toFront();
+        f.requestFocus();
+    }
+
+    /** Cycle focus to the previous (-1) or next (+1) window in alphabetical order. */
+    private void cycleWindow(int direction) {
+        java.util.List<Frame> windows = listAppWindows();
+        if (windows.size() < 2) return;
+        windows.sort(java.util.Comparator.comparing(Frame::getTitle, String.CASE_INSENSITIVE_ORDER));
+        Frame current = activeFrame();
+        int idx = windows.indexOf(current);
+        if (idx < 0) idx = 0;
+        int next = (idx + direction + windows.size()) % windows.size();
+        bringToFront(windows.get(next));
+    }
+
+    /** Cascade all application windows from the top-left with a fixed offset. */
+    private void cascadeAllWindows() {
+        java.util.List<Frame> windows = listAppWindows();
+        windows.sort(java.util.Comparator.comparing(Frame::getTitle, String.CASE_INSENSITIVE_ORDER));
+        GraphicsConfiguration gc = frame.getGraphicsConfiguration();
+        Rectangle bounds = gc.getBounds();
+        Insets insets = Toolkit.getDefaultToolkit().getScreenInsets(gc);
+        int x0 = bounds.x + insets.left;
+        int y0 = bounds.y + insets.top;
+        int offset = 32;
+        int i = 0;
+        for (Frame f : windows) {
+            if ((f.getExtendedState() & Frame.ICONIFIED) == Frame.ICONIFIED)
+                f.setExtendedState(f.getExtendedState() & ~Frame.ICONIFIED);
+            f.setExtendedState(f.getExtendedState() & ~Frame.MAXIMIZED_BOTH);
+            int x = x0 + (i * offset);
+            int y = y0 + (i * offset);
+            f.setBounds(x, y, Math.max(f.getWidth(), 400), Math.max(f.getHeight(), 300));
+            bringToFront(f);
+            i++;
+        }
+    }
+
+    /** Tile all application windows in a grid that fills the screen work area. */
+    private void tileAllWindows() {
+        java.util.List<Frame> windows = listAppWindows();
+        if (windows.isEmpty()) return;
+        windows.sort(java.util.Comparator.comparing(Frame::getTitle, String.CASE_INSENSITIVE_ORDER));
+        GraphicsConfiguration gc = frame.getGraphicsConfiguration();
+        Rectangle bounds = gc.getBounds();
+        Insets insets = Toolkit.getDefaultToolkit().getScreenInsets(gc);
+        int workX = bounds.x + insets.left;
+        int workY = bounds.y + insets.top;
+        int workW = bounds.width - insets.left - insets.right;
+        int workH = bounds.height - insets.top - insets.bottom;
+        int n = windows.size();
+        int cols = (int) Math.ceil(Math.sqrt(n));
+        int rows = (int) Math.ceil((double) n / cols);
+        int cellW = workW / cols;
+        int cellH = workH / rows;
+        for (int i = 0; i < n; i++) {
+            Frame f = windows.get(i);
+            int r = i / cols;
+            int c = i % cols;
+            if ((f.getExtendedState() & Frame.ICONIFIED) == Frame.ICONIFIED)
+                f.setExtendedState(f.getExtendedState() & ~Frame.ICONIFIED);
+            f.setExtendedState(f.getExtendedState() & ~Frame.MAXIMIZED_BOTH);
+            f.setBounds(workX + c * cellW, workY + r * cellH, cellW, cellH);
+            bringToFront(f);
+        }
+    }
+
+    /**
+     * Rebuild the dynamic, alphabetized window list at the bottom of the Window
+     * menu. Everything up to and including the last separator (after "Tile All")
+     * is preserved; items below it are the current windows and are regenerated.
+     */
+    private void rebuildWindowList(JMenu windowMenu) {
+        // Find the index of the last separator; the static items end there.
+        int lastSep = -1;
+        for (int i = 0; i < windowMenu.getMenuComponentCount(); i++) {
+            if (windowMenu.getMenuComponent(i) instanceof JPopupMenu.Separator) lastSep = i;
+        }
+        // Remove any previously-added dynamic window items.
+        while (windowMenu.getMenuComponentCount() > lastSep + 1) {
+            windowMenu.remove(windowMenu.getMenuComponentCount() - 1);
+        }
+        java.util.List<Frame> windows = listAppWindows();
+        windows.sort(java.util.Comparator.comparing(Frame::getTitle, String.CASE_INSENSITIVE_ORDER));
+        Frame current = activeFrame();
+        for (Frame f : windows) {
+            JCheckBoxMenuItem item = new JCheckBoxMenuItem(f.getTitle());
+            item.setSelected(f == current);   // check-mark the frontmost window
+            item.addActionListener(e -> bringToFront(f));
+            windowMenu.add(item);
+        }
     }
 
     private JSplitPane createMainPanel() {
@@ -493,8 +720,8 @@ public class IDEApp {
         var retriever = new com.glowingcat.aichat.DocumentRetriever(
             java.nio.file.Path.of(System.getProperty("user.home"), ".cpusim64"),
             java.util.List.of(
-                "/documentation/examples-index.txt"
-//                "/documentation/projects-index.txt"
+                "/documentation/examples-index.txt",
+                "/documentation/projects-index.txt"
             ),
             10
         );
@@ -740,6 +967,8 @@ public class IDEApp {
 
     private void runFile() {
         if (runThread != null) {
+            Process np = nativeProcess;
+            if (np != null) np.destroyForcibly();
             runThread.interrupt();
             return;
         }
@@ -763,6 +992,11 @@ public class IDEApp {
         Thread t = runThread;
         if (t != null) {
             t.interrupt();
+        }
+        // Forcibly terminate a native simulator subprocess, if one is running.
+        Process np = nativeProcess;
+        if (np != null) {
+            np.destroyForcibly();
         }
         appendConsole("\n*** Kill All: forcibly stopping simulator and all threads/processes. ***\n");
     }
@@ -791,7 +1025,11 @@ public class IDEApp {
 
         new Thread(() -> {
             runThread = Thread.currentThread();
-            console.setInterruptHandler(() -> { if (runThread != null) runThread.interrupt(); });
+            console.setInterruptHandler(() -> {
+                Process np = nativeProcess;
+                if (np != null) np.destroyForcibly();
+                if (runThread != null) runThread.interrupt();
+            });
             SwingUtilities.invokeLater(() -> { runBtn.setText("Stop"); runItem.setText("Stop"); });
             PrintStream origOut = System.out;
             PrintStream origErr = System.err;
@@ -876,7 +1114,12 @@ public class IDEApp {
                 if (!userArgs.isEmpty()) {
                     for (String arg : userArgs.split("\\s+")) simArgs.add(arg);
                 }
-                Simulation.run(simArgs.toArray(new String[0]));
+
+                if (settings.useNativeSimulator) {
+                    runNative(simArgs, pis, consoleStream);
+                } else {
+                    Simulation.run(simArgs.toArray(new String[0]));
+                }
 
             } catch (Exception e) {
                 SwingUtilities.invokeLater(() -> appendConsole("Error: " + e.getMessage() + "\n"));
@@ -893,6 +1136,11 @@ public class IDEApp {
                 System.setOut(origOut);
                 System.setErr(origErr);
                 System.setIn(origIn);
+                Process np = nativeProcess;
+                if (np != null) {
+                    np.destroyForcibly();
+                    nativeProcess = null;
+                }
                 runThread = null;
                 SwingUtilities.invokeLater(() -> {
                     runBtn.setText("Run"); runItem.setText("Run");
@@ -901,6 +1149,74 @@ public class IDEApp {
                 });
             }
         }).start();
+    }
+
+    /**
+     * Run a program with the bundled native cpusim64_native executable instead
+     * of the in-process Java simulator. Wires the subprocess stdout/stderr to the
+     * console stream and the console input pipe ({@code pis}) to the subprocess
+     * stdin. Honors Stop/Kill via {@link #nativeProcess} destruction.
+     */
+    private void runNative(java.util.List<String> simArgs, InputStream consoleIn, PrintStream consoleStream)
+            throws IOException, InterruptedException {
+        Path exe = NativeSimulator.resolveExecutable();
+        if (exe == null) {
+            SwingUtilities.invokeLater(() -> appendConsole(
+                "\nNative simulator (cpusim64_native) not found. "
+                + "Disable 'Use Native CPUSim64 Simulator' in Settings or reinstall.\n"));
+            return;
+        }
+
+        java.util.List<String> cmd = new java.util.ArrayList<>();
+        cmd.add(exe.toString());
+        cmd.addAll(simArgs);
+
+        ProcessBuilder pb = new ProcessBuilder(cmd);
+        pb.redirectErrorStream(true); // merge stderr into stdout → single console stream
+        // Run in the object file's directory so relative file I/O resolves as expected.
+        Path objPath = Path.of(simArgs.get(0)).toAbsolutePath();
+        if (objPath.getParent() != null) pb.directory(objPath.getParent().toFile());
+
+        Process proc = pb.start();
+        nativeProcess = proc;
+
+        // Pump console input → subprocess stdin on a daemon thread.
+        Thread stdinPump = new Thread(() -> {
+            try (OutputStream pout = proc.getOutputStream()) {
+                byte[] buf = new byte[1024];
+                int n;
+                while ((n = consoleIn.read(buf)) != -1) {
+                    pout.write(buf, 0, n);
+                    pout.flush();
+                }
+            } catch (IOException ignored) {
+                // pipe closed / process ended
+            }
+        }, "native-stdin-pump");
+        stdinPump.setDaemon(true);
+        stdinPump.start();
+
+        // Pump subprocess stdout → console stream on this thread.
+        try (InputStream pin = proc.getInputStream()) {
+            byte[] buf = new byte[1024];
+            int n;
+            while ((n = pin.read(buf)) != -1) {
+                consoleStream.write(buf, 0, n);
+            }
+        } catch (IOException ignored) {
+            // process ended or stream closed
+        }
+
+        try {
+            proc.waitFor();
+        } catch (InterruptedException ie) {
+            // Stop/Kill requested: terminate the subprocess.
+            proc.destroyForcibly();
+            Thread.currentThread().interrupt();
+            throw ie;
+        } finally {
+            if (nativeProcess == proc) nativeProcess = null;
+        }
     }
 
     private void launchDebugger() {

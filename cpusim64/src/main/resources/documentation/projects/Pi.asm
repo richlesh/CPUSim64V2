@@ -28,7 +28,7 @@
 #include <system/system.def>
 
     #call   main()
-    int     iEXIT
+    #call   exit(r0)
 
 ///////////////////////////////////////////////////////////////////////////////
 // main()
@@ -43,25 +43,24 @@
     // Require exactly one command line argument (program name + terms).
     int     iARGC
     move    argc, r0
-    cmp     argc, 2
-    jump    ne, GET_ARGS_FAILED
-
-GET_ARGS:
+    #if_cond    argc != 2
+        // No argument supplied: print usage and signal an error.
+        #call   putline("You must supply the number of terms 1-11")
+        #return 1
+    #end_cond
     // Convert the first command line argument (a string) to an integer.
     #call   args(1)
     #macro  PARSE_INT(r0)
     move    terms, r0
+    #macro  COMPARE_RANGE(0, lt, terms, le, 11)
+    #if_cond_sr z
+        #call   putline("You must supply the number of terms in the range [1-11]")
+        #return 1
+    #end_cond
     // Compute π using the requested number of terms and print it.
     #call   compute_pi(terms)
     #call   printf("PI(%d): %.16f\n", terms, f0)
-GET_ARGS_END:
     #return 0
-    jump    MAIN_END
-GET_ARGS_FAILED:
-    // No argument supplied: print usage and signal an error.
-    #call   puts("You must supply the number of terms 1-11")
-    #return 1
-MAIN_END:
 #end_func
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -84,7 +83,7 @@ MAIN_END:
 ///////////////////////////////////////////////////////////////////////////////
 #def_func compute_pi(terms)
     #var    k, loopLimit
-    #fvar   myPi, base, term, termsum, denom
+    #fvar   myPi, base, termsum, denom
     clear   myPi                // Running total starts at 0.0
     load    loopLimit, terms    // Number of terms to sum
     move    k, 0                // Term index

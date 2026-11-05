@@ -1,0 +1,21 @@
+[package]
+name = "cpusim64_native"
+version = "0.1.0"
+edition = "2021"
+description = "Native Rust port of the CPUSim64 virtual CPU interpreter"
+license = "Apache-2.0"
+
+[lib]
+name = "cpusim64_native"
+path = "src/lib.rs"
+
+[[bin]]
+name = "cpusim64_native"
+path = "src/main.rs"
+
+[dependencies]
+flate2 = "=1.0.30"
+regex = "=1.10.4"
+
+[profile.release]
+opt-level = 3

@@ -166,6 +166,7 @@ public class Simulator {
 	private static final Vector<Simulator> activeRootCPUs = new Vector<>();
 	private ChildProcess process = null;    // If this is a child what is its process object.
 	private ChildThread thread = null;		// If this is a thread what i its thread object.
+	private boolean isRoot = false;			// True only for the top-level program (not threads/processes)
 	private Map<Long, String> reverseSymbolMap = null;	// Used by disassembler
 
 	private InterruptHandler interruptHandler;
@@ -237,6 +238,7 @@ public class Simulator {
 		SR = SR_Z;
 		// Track this as an active root simulator so a master Kill All can find it.
 		activeRootCPUs.add(this);
+		isRoot = true;					// Primary constructor => top-level program
 	}
 
 	public Simulator(Simulator cloneMe, boolean makeProcess) throws CPUException {
@@ -917,7 +919,12 @@ public class Simulator {
 		while (running) {
 			// Check for cancellation periodically rather than every instruction
 			// to keep the hot loop tight. 0xFFF => every 4096 instructions.
-			if ((instrCount++ & 0xFFFL) == 0L && Thread.currentThread().isInterrupted()) { stopAll(); break; }
+			// Cancellation is driven by the cooperative 'running' flag (set by
+			// stopAll/killAll). A stray interrupt flag observed here (e.g. a mutex
+			// wakeThread signal delivered outside a blocking call) is NOT a kill:
+			// Thread.interrupted() clears it, and we only stop if 'running' is
+			// already false.
+			if ((instrCount++ & 0xFFFL) == 0L && Thread.interrupted() && !running) { stopAll(); break; }
 			long pc = R[R_PC];
 			long instr = fetch(pc);		// This increments cycles by 1
 			R[R_PC] = pc + 1;
@@ -955,6 +962,9 @@ public class Simulator {
 				printCPUState();
 			}
 		}
+		// Release the lazily-allocated command-line argv (root program only) so
+		// it is not reported as a residual heap allocation at program end.
+		if (isRoot) interruptHandler.freeArgs();
 		return (int) R[0];
 	}
 

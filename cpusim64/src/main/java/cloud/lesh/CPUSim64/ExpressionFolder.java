@@ -301,7 +301,7 @@ public final class ExpressionFolder implements HasLocation {
 			for (int i = 0; i < errors.size(); ++i) {
 				System.err.println(errors.get(i));
 			}
-			System.exit(1);
+			throw new AssemblyException("Error: expression folding failed with " + errors.size() + " error(s).");
 		}
 		return rewriter.getText();
 	}

@@ -121,6 +121,32 @@ jobs:
             c++ -std=c++17 -O2 -o ide/src/main/resources/cpusim64 cpusim64/src/main/cpp/cpusim64.cpp
           fi
 
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Build cpusim64_native (Rust) via Maven
+        shell: bash
+        run: |
+          # Stamp the release version into the native tool's banner constant
+          # (mirrors how cpusim64.cpp is versioned above).
+          sed -i.bak -E "s/(pub const VERSION: &str = )\"[^\"]*\"/\\1\"${APP_VERSION}\"/" \
+            cpusim64_native/src/util.rs
+          rm -f cpusim64_native/src/util.rs.bak
+          # Build the native simulator through its Maven module (which invokes
+          # cargo build --release). Building it first lets macOS sign the binary
+          # before it is bundled into the JAR.
+          mvn -q -pl cpusim64_native -am package -DskipTests=true
+          # Stage the executable + its instructions.data timing file into the IDE
+          # resources directory (the same location as the cpusim64 C++ tool), so
+          # both ride inside the JAR and are available to the IDE/CLI installer.
+          if [ "${{ runner.os }}" = "Windows" ]; then
+            cp cpusim64_native/target/release/cpusim64_native.exe ide/src/main/resources/cpusim64_native.exe
+          else
+            cp cpusim64_native/target/release/cpusim64_native ide/src/main/resources/cpusim64_native
+            chmod +x ide/src/main/resources/cpusim64_native
+          fi
+          cp cpusim64/src/main/resources/instructions.data ide/src/main/resources/instructions.data
+
       - name: Sign cpusim64 binary (macOS)
         if: runner.os == 'macOS'
         run: |
@@ -129,6 +155,11 @@ jobs:
             --keychain $RUNNER_TEMP/build.keychain \
             --entitlements resources/entitlements.plist \
             ide/src/main/resources/cpusim64
+          codesign --force --options runtime --timestamp \
+            --sign "Developer ID Application: RICHARD A LESH (MMZ3Y97NTP)" \
+            --keychain $RUNNER_TEMP/build.keychain \
+            --entitlements resources/entitlements.plist \
+            ide/src/main/resources/cpusim64_native
 
       - name: Inject license salt
         shell: bash
@@ -151,9 +182,27 @@ jobs:
           else
             PLATFORM=win
           fi
-          mvn clean package -P release -DskipTests=true "-Djavafx.platform=$PLATFORM"
+          # The native simulator was already built (and, on macOS, signed) in a
+          # prior step and placed in ide/src/main/resources, so it flows into the
+          # JAR via normal resource processing. Skip the module's cargo rebuild /
+          # copy here to avoid overwriting the signed binary.
+          mvn clean package -P release -DskipTests=true -Dcpusim64.native.skip=true "-Djavafx.platform=$PLATFORM"
           mkdir -p lib
           cp ide/target/CPUSim64IDE-*.jar lib/CPUSim64-${APP_VERSION}.jar
+          # Assemble a /bin directory with the native simulator + its timing file.
+          mkdir -p bin
+          if [ "${{ runner.os }}" = "Windows" ]; then
+            cp ide/src/main/resources/cpusim64_native.exe bin/cpusim64_native.exe
+          else
+            cp ide/src/main/resources/cpusim64_native bin/cpusim64_native
+            chmod +x bin/cpusim64_native
+          fi
+          cp ide/src/main/resources/instructions.data bin/instructions.data
+          # jpackage copies the entire --input directory into the installed app's
+          # "app/" folder, so placing the native tool + instructions.data in lib/
+          # (the --input dir) ships them inside every OS/arch installer alongside
+          # the JAR.
+          cp bin/* lib/
 
       - name: Install RPM tools (Linux RPM)
         if: matrix.pkg_type == 'rpm'

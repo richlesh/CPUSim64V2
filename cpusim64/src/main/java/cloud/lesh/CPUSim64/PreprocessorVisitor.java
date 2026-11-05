@@ -261,8 +261,7 @@ public class PreprocessorVisitor extends cloud.lesh.CPUSim64.PreprocessorParserB
 	public Void visitErrorDir(cloud.lesh.CPUSim64.PreprocessorParser.ErrorDirContext ctx) {
 		System.err.println(getLocation() + ":ERROR: " + applyPlaceholders(ctx.INFO_TEXT().getText().trim()));
 		hasErrors = true;
-		System.exit(1);
-		return null;
+		throw new AssemblyException(getLocation() + ":ERROR: " + applyPlaceholders(ctx.INFO_TEXT().getText().trim()));
 	}
 
 	@Override

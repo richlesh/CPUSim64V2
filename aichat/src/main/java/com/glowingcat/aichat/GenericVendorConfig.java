@@ -218,7 +218,7 @@ public class GenericVendorConfig {
 
         HttpRequest.Builder reqBuilder = HttpRequest.newBuilder()
                 .uri(URI.create(uri))
-                .timeout(Duration.ofSeconds(600));
+                .timeout(Duration.ofSeconds(1200));
 
         for (Map.Entry<String, String> h : headers.entrySet()) {
             reqBuilder.header(h.getKey(), h.getValue());
@@ -609,7 +609,6 @@ public class GenericVendorConfig {
             // Check that this is at the top level of this object
             int depth = 0;
             boolean inString = false;
-            boolean valid = true;
             for (int i = 1; i < candidate; i++) { // start after opening {
                 char c = json.charAt(i);
                 if (inString) {

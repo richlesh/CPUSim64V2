@@ -30,8 +30,12 @@
 #include <system/string.def>
 #include <system/system.def>
 
+// Performance Optimizations
+#define USE_PRECOMPUTED_K_ARRAY
+#define INLINE_STORE_BYTE_IN_BUFFER
+
     #call   main()
-    int     iEXIT
+    #call   exit(r0)
 
 ///////////////////////////////////////////////////////////////////////////////
 // main()
@@ -49,37 +53,35 @@
 
 #def_func   main()
     #var    filename, port
-// if (argc < 2)
     int     iARGC
+    // if (argc < 2)
     #if_cond    r0 < 2
-// then we don't have command args use STDIN.
+        // then we don't have command args use STDIN.
         #call   md5(STDIN)
 
         #call   printbits(r0, 128)
         #call   put_nl()
         #return 0
     #end_cond
-PROCESS_FILE:
-// Get first command line argument and put it in filename.
+    // Get first command line argument and put it in filename.
     #call   args(1)
     move    filename, r0
-// Open text file in read mode.
-
+    // Open text file in read mode.
     #call   openRawFile(filename, READ_MODE)
-// Save the port returned.
+    // Save the port returned.
     move    port, r0
-// If the port returned is -1 we failed.
+    // If the port returned is -1 we failed.
     #if_cond    port == -1
         #call   putline("File open failed!")
         #return 1
     #end_cond
-// Process the input stream
+    // Process the input stream
     #call   md5(port)
     #call   printbits(r0, 128)
     #call   putc(' ')
     #call   puts(filename)
     #call   put_nl()
-// Close the file
+    // Close the file
     #call   closeFile(port)
     #return 0
 #end_func
@@ -91,17 +93,29 @@ PROCESS_FILE:
 
 #global MD5_hashcode: .dca   4
 
-// s specifies the per-round shift amounts
+// SHIFT_ARRAY specifies the per-round shift amounts
 SHIFT_ARRAY: 
     .dcw 7, 12, 17, 22,  7, 12, 17, 22,  7, 12, 17, 22,  7, 12, 17, 22, \
         5,  9, 14, 20,  5,  9, 14, 20,  5,  9, 14, 20,  5,  9, 14, 20, \
         4, 11, 16, 23,  4, 11, 16, 23,  4, 11, 16, 23,  4, 11, 16, 23, \
         6, 10, 15, 21,  6, 10, 15, 21,  6, 10, 15, 21,  6, 10, 15, 21
+
+#ifdef USE_PRECOMPUTED_K_ARRAY
 // Use binary integer part of the sines of integers (Radians) as constants:
-#global K_ARRAY: .dca 64
+    #global K_ARRAY: .dcw \
+        0xD76AA478,0xE8C7B756,0x242070DB,0xC1BDCEEE,0xF57C0FAF,0x4787C62A,0xA8304613,0xFD469501, \
+        0x698098D8,0x8B44F7AF,0xFFFF5BB1,0x895CD7BE,0x6B901122,0xFD987193,0xA679438E,0x49B40821, \
+        0xF61E2562,0xC040B340,0x265E5A51,0xE9B6C7AA,0xD62F105D,0x02441453,0xD8A1E681,0xE7D3FBC8, \
+        0x21E1CDE6,0xC33707D6,0xF4D50D87,0x455A14ED,0xA9E3E905,0xFCEFA3F8,0x676F02D9,0x8D2A4C8A, \
+        0xFFFA3942,0x8771F681,0x6D9D6122,0xFDE5380C,0xA4BEEA44,0x4BDECFA9,0xF6BB4B60,0xBEBFBC70, \
+        0x289B7EC6,0xEAA127FA,0xD4EF3085,0x04881D05,0xD9D4D039,0xE6DB99E5,0x1FA27CF8,0xC4AC5665, \
+        0xF4292244,0x432AFF97,0xAB9423A7,0xFC93A039,0x655B59C3,0x8F0CCC92,0xFFEFF47D,0x85845DD1, \
+        0x6FA87E4F,0xFE2CE6E0,0xA3014314,0x4E0811A1,0xF7537E82,0xBD3AF235,0x2AD7D2BB,0xEB86D391
+#else
+    #global K_ARRAY: .dca 64
 
 ///////////////////////////////////////////////////////////////////////////////
-// setup_k_array()
+// compute_k_array()
 //
 // Populates the global K_ARRAY with the 64 MD5 round constants. Each constant
 // K[i] is computed as floor(abs(sin(i)) * 2^32) for i = 1..64, matching the
@@ -111,7 +125,7 @@ SHIFT_ARRAY:
 // No arguments. No return value (modifies K_ARRAY in place).
 ///////////////////////////////////////////////////////////////////////////////
 
-#def_func   setup_k_array()
+#def_func   compute_k_array()
     #var    i
     #for    1, i <= 64, 1
         move    f1, i
@@ -123,15 +137,21 @@ SHIFT_ARRAY:
         int     iFLOOR
         move    r0, f0
         store   r0, K_ARRAY[i]
- //     #call   put_hex_size(r0, 8)
- //     #call   putc(' ')
+//        #call   put_hex_size(r0, 8)
+//        #call   putc(',')
     #end_for
 #end_func
+#endif
 
-#global a0: .dci 0x67452301   // A
-#global b0: .dci 0xefcdab89   // B
-#global c0: .dci 0x98badcfe   // C
-#global d0: .dci 0x10325476   // D
+#global a0init: .dci 0x67452301     // A
+#global b0init: .dci 0xefcdab89     // B
+#global c0init: .dci 0x98badcfe     // C
+#global d0init: .dci 0x10325476     // D
+
+#global a0: .dci 0                  // A
+#global b0: .dci 0                  // B
+#global c0: .dci 0                  // C
+#global d0: .dci 0                  // D
 
 ///////////////////////////////////////////////////////////////////////////////
 // md5(port)
@@ -159,10 +179,21 @@ SHIFT_ARRAY:
 #def_func   md5(port)
     #var    i, i1, M, p, a, b, c, d, F, g
     load    p, port
-    store   0, MD5_hashcode
-    store   0, MD5_hashcode[1]
-    #call   setup_k_array()
-    
+#ifndef USE_PRECOMPUTED_K_ARRAY
+    #call   compute_k_array()
+#endif
+    load    r0, a0init
+    store   r0, a0
+    load    r0, b0init
+    store   r0, b0
+    load    r0, c0init
+    store   r0, c0
+    load    r0, d0init
+    store   r0, d0
+    store   0, INPUT_LENGTH
+    store   FALSE, INPUT_DONE
+    store   FALSE, NEEDS_EXTRA_BUFFER
+
     #call   get512bits(p)
     #while  r0
         move    M, r0
@@ -172,7 +203,7 @@ SHIFT_ARRAY:
         load    d, d0
         // main loop
         #for    0, i < 64, 1
-            #if_cond    i, lt, 16
+            #if_cond    i < 16
                 // F := (B and C) or ((not B) and D)
                 // alternatly F := D xor (B and (C xor D))
                 xor     F, c, d
@@ -180,7 +211,7 @@ SHIFT_ARRAY:
                 xor     F, d
                 // g := i
                 move    g, i
-            #else_if_cond    i, lt, 32
+            #else_if_cond    i < 32
                 // F := (D and B) or ((not D) and C)
                 // alternatly F := C xor (D and (B xor C))
                 xor     F, b, c
@@ -190,7 +221,7 @@ SHIFT_ARRAY:
                 mult    r0, 5, i
                 add     r0, 1
                 div     r0, g, r0, 16
-            #else_if_cond    i, lt, 48
+            #else_if_cond    i < 48
                 // F := B xor C xor D
                 xor     r0, b, c
                 xor     F, r0, d
@@ -208,7 +239,7 @@ SHIFT_ARRAY:
                 mult    r0, 7, i
                 div     r0, g, r0, 16
             #end_cond
-        // F := F + A + K[i] + M[g]  // M[g] must be a 32-bits block
+            // F := F + A + K[i] + M[g]  // M[g] must be a 32-bits block
             add     F, a
             add     i1, i, 1
             load    r0, K_ARRAY[i1]
@@ -296,6 +327,68 @@ SHIFT_ARRAY:
 #global NEEDS_EXTRA_BUFFER: .dci FALSE
 
 ///////////////////////////////////////////////////////////////////////////////
+// storeByteInBuffer(v, length)
+//
+// Stores a single byte into the global BUFFER at the position implied by the
+// given byte offset within the current 512-bit block. The offset is reduced
+// modulo 64 to find the position inside BUFFER, then split into a word index
+// (offset / 4) and a byte position within that word (offset % 4). The byte is
+// shifted into place and OR-ed into the existing 32-bit word, packing bytes in
+// little-endian order within each word.
+//
+// Performance Optimization: We implment this as a macro to avoid function call 
+// overhead on code that is called for every byte in the file.
+//
+// Arguments:
+//   v      — byte value to store (masked to 8 bits).
+//   length — absolute byte offset; only its position within the block matters.
+//
+// No return value (modifies BUFFER in place).
+///////////////////////////////////////////////////////////////////////////////
+
+#ifdef INLINE_STORE_BYTE_IN_BUFFER
+#def_macro  storeByteInBuffer(v, length)
+// r1 = wordNum
+// r2 = shiftBits
+// r3 = byteValue
+// r4 = len
+    move    r4, ${length}       // load    len, length
+    move    r3, ${v}            // load    byteValue, v
+    and     r3, 0xff            // and     byteValue, 0xff
+    and     r4, 63              // len = len % 64
+    move    r1, r4              // move    wordNum, len
+    rshift  r1, 2               // wordNum = len / 4
+    and     r2, r4, 3           // shiftBits = len % 4
+    lshift  r2, 3               // shiftBits = shiftBits * 8
+    load    r0, BUFFER[r1]      // load    r0, BUFFER[wordNum]
+    lshift  r3, r2              // lshift  byteValue, shiftBits
+    or      r0, r3              // or      r0, byteValue
+    store   r0, BUFFER[r1]      // store   r0, BUFFER[wordNum]
+#end_macro
+
+#else
+#def_macro  storeByteInBuffer(v, length)
+    #call   storeByteInBufferFunc(${v}, ${length})
+#end_macro
+// Original Function form of storeByteInBuffer()
+#def_func storeByteInBufferFunc(v, length)
+    #var    byteValue, len, wordNum, shiftBits
+    load    len, length
+    load    byteValue, v
+    and     byteValue, 0xff
+    and     len, 63                     // len = len % 64
+    move    wordNum, len
+    rshift  wordNum, 2                  // wordNum = len / 4
+    and     shiftBits, len, 3           // shiftBits = len % 4
+    lshift  shiftBits, 3                // shiftBits = shiftBits * 8
+    load    r0, BUFFER[wordNum]
+    lshift  byteValue, shiftBits
+    or      r0, byteValue
+    store   r0, BUFFER[wordNum]
+#end_func
+#endif
+
+///////////////////////////////////////////////////////////////////////////////
 // get512bits(port)
 //
 // Fetches the next 512-bit (64-byte) MD5 message block from the input port,
@@ -345,67 +438,35 @@ SHIFT_ARRAY:
     #end_cond
 
     #do_while
-    // Read a byte
+        // Read a byte
         #macro  IN1(byteRead, p)
-    // If it is -1 we are at EOF.
+        // If it is -1 we are at EOF.
         #if_cond    byteRead == -1
             #break
         #end_cond
-    // add to buffer
+        // add to buffer
         load    len, INPUT_LENGTH
-        #call   storeByteInBuffer(byteRead, len)    
+        #macro   storeByteInBuffer(byteRead, len)    
         add     len, 1
         store   len, INPUT_LENGTH
-        div     r1, r2, len, 64
+        and     r2, len, 63             // r2 = len % 64
     #end_do_while   r2
 
     #if_cond    byteRead == -1
-    // padd with zeros and length
+        // padd with zeros and length
         load    r0, INPUT_LENGTH
-        div     r1, r2, r0, 64
-        #if_cond    r2, le, 55
-            #call   storeByteInBuffer(0x80, r2)
+        and     r2, r0, 63              // r2 = INPUT_LENGTH % 64
+        #if_cond    r2 <= 55
+            #macro   storeByteInBuffer(0x80, r2)
             load    r0, INPUT_LENGTH
             #call   storeLengthInBuffer(r0)
         #else_cond
-            #call   storeByteInBuffer(0x80, r2)
+            #macro   storeByteInBuffer(0x80, r2)
             store   TRUE, NEEDS_EXTRA_BUFFER
         #end_cond
         store   TRUE, INPUT_DONE
     #end_cond
     #return BUFFER
-#end_func
-
-///////////////////////////////////////////////////////////////////////////////
-// storeByteInBuffer(v, length)
-//
-// Stores a single byte into the global BUFFER at the position implied by the
-// given byte offset within the current 512-bit block. The offset is reduced
-// modulo 64 to find the position inside BUFFER, then split into a word index
-// (offset / 4) and a byte position within that word (offset % 4). The byte is
-// shifted into place and OR-ed into the existing 32-bit word, packing bytes in
-// little-endian order within each word.
-//
-// Arguments:
-//   v      — byte value to store (masked to 8 bits).
-//   length — absolute byte offset; only its position within the block matters.
-//
-// No return value (modifies BUFFER in place).
-///////////////////////////////////////////////////////////////////////////////
-
-#def_func storeByteInBuffer(v, length)
-    #var    len, wordNum, shiftBits, byteValue
-    load    len, length
-    load    byteValue, v
-    and     byteValue, 0xff
-    div     r0, len, len, 64
-    div     wordNum, shiftBits, len, 4
-//  sub     shiftBits, 3, shiftBits
-    mult    shiftBits, 8
-    load    r0, BUFFER[wordNum]
-    lshift  byteValue, shiftBits
-    or      r0, byteValue
-    store   r0, BUFFER[wordNum]
 #end_func
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -428,7 +489,7 @@ SHIFT_ARRAY:
     mult    len, 8
     #for    56, i < 64, 1
         and     b, len, 0xff
-        #call   storeByteInBuffer(b, i)
+        #macro   storeByteInBuffer(b, i)
         rshift  len, 8
     #end_for
 #end_func

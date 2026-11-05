@@ -227,7 +227,7 @@ Heap Blocks:
 		var result = tuple.getLeft();
 		var sim = tuple.getMiddle();
 		var diff = tuple.getRight();
-		assertEquals(9, diff.size());
+		assertEquals(8, diff.size());
 		assertEquals(expected, output);
 		diff.assertDiff(27, 1);
 		diff.assertDiff(26, 10);

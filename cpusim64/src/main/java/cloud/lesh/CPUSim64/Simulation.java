@@ -209,6 +209,8 @@ public class Simulation {
 				System.out.printf("User Time: %.3f sec\n", (totalTime - sim.getSystemClock()) / 1.e9);
 				System.out.printf("System Time: %.3f sec\n", sim.getSystemClock() / 1.e9);
 				System.out.printf("Total Time: %.3f sec\n", totalTime / 1.e9);
+				System.out.printf("Heap Allocated Blocks: %d\n", sim.countHeapBlocks(true, false));
+				System.out.printf("Heap Allocated Memory: %d words\n", sim.countHeapSize(true, false));
 			}
 		} finally {
 			sim.unregister();

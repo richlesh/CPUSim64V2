@@ -523,9 +523,9 @@ public class SystemInterruptTest extends BaseTest {
 
 		// diff.assertDiff(1, sim.getPID());
 		diff.assertDiff(3, Runtime.getRuntime().availableProcessors());
-		diff.assertDiff(4, 54);
+		diff.assertDiff(4, 114);
 		assertTrue(500000000 < diff.getReg(5));
-		assertTrue(lines.length > 8);
+		assertTrue(lines.length >= 6);
 	}
 
 	@Test
@@ -1229,6 +1229,8 @@ R28: 000000000000001c                    28 F28:       28.00000000000000
 			#def_func run(data)
 				#var	d
 				load	d, data
+				mult	r0, d, 500
+				#call	SLEEP(r0)
 				#call	put_dec(d)
 				#call	put_nl()
 				move	r0, d

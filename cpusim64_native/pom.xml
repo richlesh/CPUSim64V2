@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.lesh</groupId>
+        <artifactId>CPUSim64-parent</artifactId>
+        <version>2.8.0</version>
+    </parent>
+
+    <artifactId>cpusim64_native</artifactId>
+    <!-- No Java artifact is produced; this module only drives the Rust (cargo)
+         build of the native CPUSim64 simulator. -->
+    <packaging>pom</packaging>
+
+    <name>CPUSim64 Native Simulator</name>
+    <description>Native Rust port of the CPUSim64 interpreter (built via cargo)</description>
+
+    <properties>
+        <!-- Set -Dcpusim64.native.skip=true to skip the Rust build (e.g. on
+             machines without a Rust/cargo toolchain). -->
+        <cpusim64.native.skip>false</cpusim64.native.skip>
+    </properties>
+
+    <build>
+        <plugins>
+            <!-- Build the native simulator with cargo during the normal Maven
+                 build. Bound to compile so it runs for `mvn compile`/`package`. -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>3.1.1</version>
+                <executions>
+                    <execution>
+                        <id>cargo-build-native</id>
+                        <phase>compile</phase>
+                        <goals><goal>exec</goal></goals>
+                        <configuration>
+                            <skip>${cpusim64.native.skip}</skip>
+                            <executable>cargo</executable>
+                            <workingDirectory>${project.basedir}</workingDirectory>
+                            <arguments>
+                                <argument>build</argument>
+                                <argument>--release</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>

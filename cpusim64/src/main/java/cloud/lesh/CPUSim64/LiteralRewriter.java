@@ -90,7 +90,7 @@ public class LiteralRewriter extends LiteralSubstitutionBaseVisitor<Void> implem
 			for (int i = 0; i < errors.size(); ++i) {
 				System.err.println(errors.get(i));
 			}
-			System.exit(1);
+			throw new AssemblyException("Error: literal rewrite failed with " + errors.size() + " error(s).");
 		}
 
 		// Append trailer with symbol definitions

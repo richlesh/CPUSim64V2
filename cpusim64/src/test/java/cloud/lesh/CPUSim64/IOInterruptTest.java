@@ -530,7 +530,7 @@ HÉLLØ😀🇺🇸
 	void testFileGetLineLF() throws IOException {
 		String src = """
 			#include <system/system.def>
-			#include <system/io.def>
+			#include <system/io.asm>
 		
 			MAIN:
 			#var i, buffer, count
@@ -538,7 +538,8 @@ HÉLLØ😀🇺🇸
 				move	r1, 3
 				move	r2, "src/test/resources/usconst_lf.txt"
 				int		iOPEN_FILE_READ
-		
+				cmp		r0, 0
+				jump	eq, END
 				move	buffer, 0
 				move	count, 0
 			LOOP:
@@ -546,7 +547,7 @@ HÉLLØ😀🇺🇸
 				move	r2, buffer
 				int		iGET_LINE
 				move	buffer, r2
-				cmp		r0, -1
+				cmp		r0, 0
 				jump	eq, LOOP_END
 				load	r0, buffer[0]
 				add		count, r0
@@ -567,6 +568,7 @@ HÉLLØ😀🇺🇸
 		var result = tuple.getLeft();
 		var sim = tuple.getMiddle();
 		var diff = tuple.getRight();
+		System.out.println(result);
 		assertEquals(8, diff.size());
 		diff.assertDiff(0, 48301);
 	}
@@ -583,7 +585,8 @@ HÉLLØ😀🇺🇸
 				move	r1, 3
 				move	r2, "src/test/resources/usconst_crlf.txt"
 				int		iOPEN_FILE_READ
-		
+				cmp		r0, 0
+				jump	eq, END
 				move	buffer, 0
 				move	count, 0
 			LOOP:
@@ -591,14 +594,14 @@ HÉLLØ😀🇺🇸
 				move	r2, buffer
 				int		iGET_LINE
 				move	buffer, r2
-				cmp		r0, -1
+				cmp		r0, 0
 				jump	eq, LOOP_END
 				load	r0, buffer[0]
 				add		count, r0
 				add		count, 1
 				jump	LOOP
 			LOOP_END:
-			
+		
 			// Close the file
 				move	r1, 3
 				int		iCLOSE_FILE
@@ -612,6 +615,7 @@ HÉLLØ😀🇺🇸
 		var result = tuple.getLeft();
 		var sim = tuple.getMiddle();
 		var diff = tuple.getRight();
+		System.out.println(result);
 		assertEquals(8, diff.size());
 		diff.assertDiff(0, 48301);
 	}
@@ -628,11 +632,14 @@ HÉLLØ😀🇺🇸
 				move	r1, 3
 				move	r2, "src/test/resources/usconst_lf.txt"
 				int		iOPEN_FILE_READ
+				cmp		r0, 0
+				jump	eq, END
 			// Open file for writing in text mode
 				move	r1, 4
 				move	r2, "usconst.txt"
 				int		iOPEN_FILE_WRITE
-	
+				cmp		r0, 0
+				jump	eq, END
 				move	buffer, 0
 				move	count, 0
 			LOOP:
@@ -640,7 +647,7 @@ HÉLLØ😀🇺🇸
 				move	r2, buffer
 				int		iGET_LINE
 				move	buffer, r2
-				cmp		r0, -1
+				cmp		r0, 0
 				jump	eq, LOOP_END
 				move	r1, 4
 				move	r2, buffer

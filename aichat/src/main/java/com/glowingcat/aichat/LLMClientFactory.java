@@ -49,7 +49,7 @@ public class LLMClientFactory {
         // Local models (Ollama) need a longer timeout for model loading and slow generation
         Duration timeout = "Ollama".equals(vendor)
             ? Duration.ofSeconds(1200)
-            : Duration.ofSeconds(600);
+            : Duration.ofSeconds(1200);
 
         return new OpenAIClient(baseUrl, apiKey, model, timeout);
     }

@@ -105,6 +105,23 @@
 </table>
 
 
+	<h3>&lt;system/console.asm&gt;</h3>
+	<p>This file provides functions for drawing animated console widgets to STDOUT using ANSI colors and Unicode block characters.  Each function renders a single frame; call it repeatedly (redrawing on the same line with a carriage return) to animate.  Colors are specified using the labels from <code>&lt;system/ansi_color.asm&gt;</code> (for example <code>ANSI_COLOR$BRIGHT_MAGENTA</code>).</p>
+<table style="width:100%;">
+    <colgroup><col style="width:25%;"><col style="width:75%;"></colgroup>
+	<thead>
+		<tr><th>Function</th><th>Description</th></tr>
+	</thead>
+	<tbody>
+		<tr><td>progress_bar_percent</td><td><code>progress_bar_percent(num, pct, ANSI_color)</code><br>Renders one frame of a percentage progress bar <code>num</code> characters wide.  <code>pct</code> is a floating-point fill fraction, clamped to the range <code>[0.0, 1.0]</code>.  The filled portion is drawn with full-block characters in <code>ANSI_color</code> and the remainder with light-shade characters.  While below 100% the integral percentage is appended, right-aligned to 3 columns; at exactly 100% the percentage is omitted and the color is reset to the terminal default.  Returns <code>0</code> in <code>R0</code>.</td></tr>
+		<tr><td>progress_bar</td><td><code>progress_bar(num, cnt, ANSI_color)</code><br>Renders one frame of an indeterminate "Cylon-eye" scanner <code>num</code> characters wide.  <code>cnt</code> is a frame counter that advances the eye; the eye bounces back and forth across the bar as <code>cnt</code> increases, leaving a fading trail.  <code>ANSI_color</code> is the color of the eye and its trail; passing <code>0</code> hides the eye.  Returns <code>0</code> in <code>R0</code>.</td></tr>
+		<tr><td>working_bar</td><td><code>working_bar(size, percent_done, ANSI_color)</cdoe><br>
+Renders one frame of a bouncing "Cylon-eye" activity indicator drawn as <code>[   ●   ]</code> with a single dot (U+25CF BLACK CIRCLE) sweeping back and forth inside brackets. <code>size</code> is the interior width in characters. <code>percent_done</code> is a floating-point value driving the animation (0.0–1.0 is one full sweep cycle, and the value can exceed 1.0 to continue looping). The dot's position is computed from a cosine curve so it eases smoothly at each end before reversing direction. <code>ANSI_color sets</code> the dot's color while animating; pass 0 to hide the dot (renders a blank space instead). Prefix output with <code>'\r'</code> on repeated calls to redraw the bar in place and produce an animation effect. Returns nothing meaningful in <code>R0</code>.</td></tr>
+
+	</tbody>
+</table>
+
+
 <h3>&lt;system/debug.def&gt;</h3>
 	<p>These debug macros only compile into your code if the assembler is passed the <code>--DEBUG</code> option.  This allows you to retain debugging instructions and still create "non-debug" code that doesn't have the debugging instructions present just by omitting the <code>--DEBUG</code> option.</p>
 <table style="width:100%;">
@@ -208,7 +225,7 @@
 		<tr><td>copy_text_file</td><td><code>copy_text_file(fromPort, toPort)</code><br>Copies the text file from the open port <code>fromPort</code> to the open port <code>toPort</code>.</tr>
 		<tr><td>copy_raw_file</td><td><code>copy_raw_file(fromPort, toPort)</code><br>Copies the raw file from the open port <code>fromPort</code> to the open port <code>toPort</code>.</tr>
 		<tr><td>printIntArray</td><td><code>printIntArray(addrArg)</code><br>Prints the array of integers to STDOUT as a comma separated list.</tr>
-		<tr><td>printFloatArray</td><td><code>printFloatArray(addrArg)</code><br>Prints the array of floats to STDOUT as a comma separated list.</tr>
+		<tr><td>printFloatArray</td><td><code>printFloatArray(addrArg, precision)</code><br>Prints the array of floats to STDOUT as a comma separated list using the specified precision.</tr>
 		<tr><td>printStringArray</td><td><code>printStringArray(addrArg)</code><br>Prints the array of UTF-8 strings to STDOUT as a comma separated list.</tr>
 		<tr><td>printIntegerArrayWithIndex</td><td><code>printIntegerArrayWithIndex(a)</code><br>Prints an array of integers with the index and value.</td></tr>
 		<tr><td>printFloatArrayWithIndex</td><td><code>printFloatArrayWithIndex(a)</code><br>Prints an array of floats with the index and value.</td></tr>

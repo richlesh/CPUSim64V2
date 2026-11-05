@@ -47,6 +47,30 @@
     </dependencies>
 
     <build>
+        <resources>
+            <!-- Package all resources, but exclude sample-run artifacts and
+                 generated/reference material that don't belong in the distribution:
+                 - *.out : captured program output files
+                 - test*.* : scratch test data (test.raw, test.bin, test.txt, ...)
+                 - reference/ : reference material directories (any depth)
+                 - obj/ : compiled object-file directories (any depth) -->
+            <resource>
+                <directory>src/main/resources</directory>
+                <excludes>
+                    <exclude>**/*.out</exclude>
+                    <exclude>**/*.sh</exclude>
+                    <exclude>**/*.bat</exclude>
+                    <exclude>**/*.js</exclude>
+                    <exclude>**/test*.*</exclude>
+                    <exclude>**/data/**</exclude>
+                    <exclude>**/fonts/**</exclude>
+                    <exclude>**/images/**</exclude>
+                    <exclude>**/reference/**</exclude>
+                    <exclude>**/obj/**</exclude>
+                </excludes>
+            </resource>
+        </resources>
+
         <plugins>
             <!-- Generate ANTLR sources -->
             <plugin>
@@ -60,7 +84,11 @@
                         <goals><goal>antlr4</goal></goals>
                         <configuration>
                             <sourceDirectory>${basedir}/src/main/antlr4</sourceDirectory>
-                            <outputDirectory>${basedir}/src/generated-sources/antlr4</outputDirectory>
+                            <!-- Output into the package sub-path so generated files' location
+                                 matches their declared package (-package cloud.lesh.CPUSim64).
+                                 The source root added by build-helper stays src/generated-sources/antlr4,
+                                 so IDE tooling (Eclipse JDT) no longer reports package mismatches. -->
+                            <outputDirectory>${basedir}/src/generated-sources/antlr4/cloud/lesh/CPUSim64</outputDirectory>
                             <visitor>true</visitor>
                             <listener>true</listener>
                             <arguments>

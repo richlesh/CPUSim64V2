@@ -18,12 +18,13 @@
 package cloud.lesh.CPUSim64;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 
 public class RawFilePortHandler extends PortHandler
 {
-	private FileOutputStream os;
+	private BufferedOutputStream os;
 	private BufferedInputStream is;
 	private String filespec;
 
@@ -39,10 +40,10 @@ public class RawFilePortHandler extends PortHandler
 				is=new BufferedInputStream(new FileInputStream(filespec));
 				break;
 			case 1:
-				os=new FileOutputStream(filespec);
+				os=new BufferedOutputStream(new FileOutputStream(filespec));
 				break;
 			case 2:
-				os=new FileOutputStream(filespec,true);
+				os=new BufferedOutputStream(new FileOutputStream(filespec,true));
 				break;
 			default:
 					throw new Exception();

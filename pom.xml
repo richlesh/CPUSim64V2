@@ -46,6 +46,7 @@
     <modules>
         <module>aichat</module>
         <module>cpusim64</module>
+        <module>cpusim64_native</module>
         <module>ide</module>
     </modules>
 </project>

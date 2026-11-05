@@ -23,4 +23,11 @@ public abstract class InterruptHandler
 
 	public abstract boolean dispatch(int id) throws Simulator.CPUException;
 	public void setSuperHandler(InterruptHandler h) {superHandler=h;}
+
+	/**
+	 * Release any resources the handler lazily allocated on the heap (e.g. the
+	 * command-line argument vector). Called during simulator teardown. Default
+	 * is a no-op; handlers that allocate should override.
+	 */
+	public void freeArgs() {}
 }

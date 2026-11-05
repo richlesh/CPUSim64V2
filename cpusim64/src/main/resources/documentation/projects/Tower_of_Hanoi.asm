@@ -3,6 +3,8 @@
 //
 // Solves the Tower of Hanoi puzzle.
 //
+// https://en.wikipedia.org/wiki/Tower_of_Hanoi
+//
 // Usage: Hanoi [disks]
 //
 // Author:   Richard Lesh
@@ -183,14 +185,13 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #def_func   main()
-    #var    argc, n, i, j, base, steps, pm, rem, quo, mn
-    #fvar   fsteps
+    #var    argc, n, i, base, steps, pm, rem, quo, mn
 
     // if (argc != 2) error
     int     iARGC
     move    argc, r0
     #if_cond    argc, ne, 2
-        #call   puts("Syntax: Hanoi [disks]\n")
+        #call   putline("Syntax: Hanoi [disks]")
         #call   exit(1)
     #end_cond
 
@@ -205,18 +206,16 @@
 
     // Allocate gPEGS block: 3 * gNUM_DISCS ints
     mult    r1, n, 3
-    add     r1, 1           // account for size word from iALLOC
     int     iALLOC
     #if_cond    r0, eq, 0
-        #call   puts("Allocation failed!\n")
+        #call   putline("Allocation failed!")
         #call   exit(1)
     #end_cond
     move    base, r0
     store   base, gPEGS
 
     // Initialize all positions to 0
-    mult    r1, n, 3        // number of ints to clear
-    move    r2, r1
+    mult    r2, n, 3        // number of ints to clear
     move    r1, base
     int     iMEMCLEAR
 
@@ -227,18 +226,21 @@
     #end_for
 
     // SOLUTION_STEPS = pow(2, gNUM_DISCS) - 1
-    load    f1, 2.0
-    move    f2, n
-    int     iPOW
-    sub     f0, 1.0
-    int     iROUND
-    move    steps, f0
+    move    r0, 1
+    lshift  r0, n
+    sub     r0, 1
+    move    steps, r0
 
-    // gPRINT_MOD = SOLUTION_STEPS / 5 + 2
-    div     pm, steps, 5
+    // gPRINT_MOD = SOLUTION_STEPS / 10 + 2
+    div     pm, steps, 10
     add     pm, 2
+
     // gPRINT_MOD -= gPRINT_MOD % 5
-    div     quo, rem, pm, 5
+    #if_cond    n > 10
+        div     quo, rem, pm, 100
+    #else_cond
+        div     quo, rem, pm, 5
+    #end_cond
     sub     pm, rem
     // gPRINT_MOD = max(gPRINT_MOD, 1)
     #if_cond    pm, lt, 1

@@ -57,13 +57,14 @@
 // Returns: 0 in r0
 ///////////////////////////////////////////////////////////////////////////////
 
-#def_func    main()
+#def_func   main()
     #var    filename, outfilename, key, inport, outport
 
     // Require at least 4 command line arguments (program + 3 args).
     int     iARGC
     #if_cond    r0, lt, 4
-        #call   puts("Syntax: Vigenere [-]keyword input_file output_file")
+        #call   putline("Syntax: Vigenere [-]keyword input_file output_file")
+        #return 1
     #else_cond
         // ---- Argument 1: the keyword ----
         move    r1, 1
@@ -101,10 +102,12 @@
             #else_cond
                 // Output failed to open; clean up the input we already opened.
                 #call   closeFile(inport)
-                #call   puts("Output file creation failed!")
+                #call   putline("Output file creation failed!")
+                #return 3
             #end_cond
         #else_cond
-            #call   puts("Input file open failed!")
+            #call   putline("Input file open failed!")
+            #return 2
         #end_cond
     #end_cond
 
@@ -135,10 +138,11 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #def_func    Vigenere(key, inport, outport)
-    #var    charRead, k, p, po, index, decrypt, keylen, offset
+    #var    charRead, k, kcp, p, po, index, decrypt, keylen, offset
     // Load function arguments into working registers.
     load    k, key                  // k  = address of keyword string
     #macro  GET_CODEPOINTS(k)
+    move    kcp, r0
     move    k, r0
     load    p, inport               // p  = input port
     load    po, outport             // po = output port
@@ -156,6 +160,10 @@
         add     k, 1
     #end_cond
 
+    #if_cond    keylen == 0
+        #return 0                   // not used as this is a void function
+    #end_cond
+
     // index walks through the key, wrapping back to 0 after keylen characters.
     clear   index
 
@@ -165,12 +173,8 @@
     // Process input until end-of-file (-1).
     #while  charRead, ne, -1
         // Determine whether charRead is a printable character: '!' <= c <= '~'.
-        #macro  COMPARE(charRead, gt, ' ')      // c > ' '  -> r0
-        move    r1, r0
-        #macro  COMPARE(charRead, le, '~')      // c <= '~' -> r0
-        and     r0, r1                          // r0 = both conditions true?
-
-        #if_cond    r0, eq, TRUE
+        #macro  COMPARE_RANGE(' ', lt, charRead, le, '~')
+        #if_cond    r0, ne, FALSE
             // Map character into the 0..93 window.
             sub     charRead, '!'
 
@@ -179,7 +183,7 @@
             sub     offset, '!'
 
             // For decryption, the shift is reversed.
-            #if_cond    decrypt, eq, TRUE
+            #if_cond    decrypt, ne, FALSE
                 neg     offset
             #end_cond
 
@@ -211,6 +215,7 @@
         // Read the next character.
         #macro  IN0(charRead, p)
     #end_while
+    #call   free(kcp)
 #end_func
 
     stop

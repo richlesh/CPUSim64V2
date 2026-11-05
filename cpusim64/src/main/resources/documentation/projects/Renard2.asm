@@ -21,7 +21,7 @@
 //
 // Example:
 //      > run.sh Renard 10
-//       1.00 1.26 1.58 2.00 2.51 3.16 3.98 5.01 6.31 7.94
+//      1.00 1.26 1.58 2.00 2.51 3.16 3.98 5.01 6.31 7.94
 //
 // Author:   Richard Lesh
 // Modified: 2026/06/28
@@ -34,7 +34,7 @@
 #include <system/system.def>
 
     #call   main()
-    #call   exit(r0)             // Exit to OS, returning main's result code
+    #call   exit(r0)                 // Exit to OS, returning main's result code
 
 ///////////////////////////////////////////////////////////////////////////////
 // main()
@@ -47,20 +47,20 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #def_func   main()
-    #var    i, argc             // i: loop index over args, argc: argument count
+    #var    i, argc                 // i: loop index over args, argc: argument count
 
     // Require at least one series argument (argv[0] is the program name).
     int     iARGC
     move    argc, r0
     #if_cond    r0 >= 2
-
-    // Process each command line argument starting at index 1.
-    #for    1, i < argc, 1
-        #call   args(i)
-        #macro  PARSE_INT(r0)       // r0 <- integer value of the argument string
-        #call   print_renard(r0)    // Print the Renard series for this size
+        // Process each command line argument starting at index 1.
+        #for    1, i < argc, 1
+            #call   args(i)
+            #macro  PARSE_INT(r0)       // r0 <- integer value of the argument string
+            #call   print_renard(r0)    // Print the Renard series for this size
+        #end_for
     #else_cond
-        #call   puts("You must supply a series value 5, 10, 20 or 40")
+        #call   putline("You must supply a series value 5, 10, 20 or 40")
         #return 1                   // Failure: no argument supplied
     #end_cond
     #return 0
@@ -79,28 +79,28 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #def_func print_renard(series)
-    #var    i, loopLimit        // i: term index, loopLimit: number of terms
-    #fvar   base, factor        // base: 10.0, factor: common ratio 10^(1/series)
+    #var    i, s                    // i: term index, loopLimit: number of terms
+    #fvar   base, factor            // base: 10.0, factor: common ratio 10^(1/series)
     move    base, 10
-    load    loopLimit, series
+    load    s, series
 
     // Print the series size as a label, e.g. "10:".
-    #call   put_dec(loopLimit)
+    #call   put_dec(s)
     #call   putc(':')
 
     // Compute the common ratio: factor = 10 ^ (1/series).
-    move    f0, loopLimit
-    recip   f0                  // f0 <- 1 / series
-    #call   pow(base, f0)       // f0 <- 10 ^ (1/series)
+    move    f0, s
+    recip   f0                      // f0 <- 1 / series
+    #call   pow(base, f0)           // f0 <- 10 ^ (1/series)
     move    factor, f0
 
     // Print each term: factor^i for i = 0 .. series-1.
-    #for    0, i < loopLimit, 1
+    #for    0, i < s, 1
         move    f0, i               // Convert loop index i to floating point exponent
         #call   pow(factor, f0)     // f0 <- factor ^ i  (the i-th Renard term)
         #call   printf(" %.2f", f0)
     #end_for
-    #call   put_nl()            // End the line for this series
+    #call   put_nl()                // End the line for this series
 #end_func
 
     stop

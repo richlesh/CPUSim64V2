@@ -16,6 +16,16 @@
     <name>CPUSim64 IDE</name>
     <description>Integrated development environment for CPUSim64 assembly</description>
 
+    <properties>
+        <!-- Location of the Rust native simulator crate, relative to this module. -->
+        <cpusim64.native.dir>${project.basedir}/../cpusim64_native</cpusim64.native.dir>
+        <!-- Set -Dcpusim64.native.skip=true to skip building the Rust native
+             simulator (e.g. on machines without a Rust/cargo toolchain). -->
+        <cpusim64.native.skip>false</cpusim64.native.skip>
+        <!-- Overridden to cpusim64_native.exe by the windows-native profile. -->
+        <cpusim64.native.exe>cpusim64_native</cpusim64.native.exe>
+    </properties>
+
     <dependencies>
         <!-- Sibling modules -->
         <dependency>
@@ -27,6 +37,16 @@
             <groupId>org.lesh</groupId>
             <artifactId>aichat</artifactId>
             <version>${project.version}</version>
+        </dependency>
+        <!-- Native Rust simulator module (pom packaging): declared so the reactor
+             builds cpusim64_native before this module, guaranteeing the native
+             executable exists for the copy-native-tool step. -->
+        <dependency>
+            <groupId>org.lesh</groupId>
+            <artifactId>cpusim64_native</artifactId>
+            <version>${project.version}</version>
+            <type>pom</type>
+            <scope>provided</scope>
         </dependency>
 
         <!-- RSyntaxTextArea for code editor -->
@@ -100,6 +120,43 @@
                 </configuration>
             </plugin>
 
+            <!-- Copy the native executable (built by the cpusim64_native module)
+                 + instructions.data into the classes output so the shade plugin
+                 bundles them into the IDE JAR. Runs after compile (process-classes)
+                 and before shade (package). Skippable via
+                 -Dcpusim64.native.skip=true. -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>3.3.1</version>
+                <executions>
+                    <execution>
+                        <id>copy-native-tool</id>
+                        <phase>process-classes</phase>
+                        <goals><goal>copy-resources</goal></goals>
+                        <configuration>
+                            <skip>${cpusim64.native.skip}</skip>
+                            <outputDirectory>${project.build.outputDirectory}</outputDirectory>
+                            <overwrite>true</overwrite>
+                            <resources>
+                                <resource>
+                                    <directory>${cpusim64.native.dir}/target/release</directory>
+                                    <includes>
+                                        <include>${cpusim64.native.exe}</include>
+                                    </includes>
+                                </resource>
+                                <resource>
+                                    <directory>${project.basedir}/../cpusim64/src/main/resources</directory>
+                                    <includes>
+                                        <include>instructions.data</include>
+                                    </includes>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
             <!-- Shade into single fat JAR -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -146,4 +203,17 @@
             </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <!-- On Windows the cargo output is cpusim64_native.exe. -->
+        <profile>
+            <id>windows-native</id>
+            <activation>
+                <os><family>windows</family></os>
+            </activation>
+            <properties>
+                <cpusim64.native.exe>cpusim64_native.exe</cpusim64.native.exe>
+            </properties>
+        </profile>
+    </profiles>
 </project>

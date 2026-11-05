@@ -1,15 +1,14 @@
 ///////////////////////////////////////////////////////////////////////////////
 // mandelbrot_histogram.asm
 //
-// Multi-process Mandelbrot set image generator.
+// Multi-threaded Mandelbrot set image generator.
 //
 // This program renders the Mandelbrot set as a grayscale PGM (Portable Gray
 // Map) image. To speed up rendering, the image is divided into horizontal
-// bands and each band is computed by a separate child process (created with
-// iFORK). Each child writes its band to a temporary text file. After all
-// children finish, the parent process merges (concatenates) the temporary
-// files into a single .pgm image file with the proper binary PGM header.
-// Uses a histogram of pixel values to equalize the image.
+// bands and each band is computed by a separate threads (created with
+// iTHREAD). Each thread writes its band data into gIMAGE. After all
+// threads finish, the parent process computes a histogram to use in assigning
+// shades of gray in the .pgm image file with the proper binary PGM header.
 //
 // Computation is balanced by having a pool of worker threads that process one
 // image row at a time.
@@ -30,7 +29,6 @@
 //
 // Output:
 //   <filename>.pgm   - the final grayscale image
-//   <filename>_N.tmp - temporary per-band files (N = 1..numChildren)
 //
 // Author: Richard Lesh
 // Modified: 2026/06/28
@@ -46,13 +44,13 @@
     #call   main()
     #call   exit(r0)
 
-// PIDS[0] holds the number of children (band count). PIDS[1..N] hold the
-// process IDs of the spawned child processes.
-#global PIDS:   .dca    16
+// PIDS[0] holds the number of threads (band count). PIDS[1..N] hold the
+// process IDs of the spawned worker threads.
+#global PIDS:   .dca    100
 
 // Global bounds of the complex plane region being rendered. These are computed
 // by main() from the command line center (x,y) and radius and read back by the
-// child processes in compute_mandelbrot().
+// threads in compute_mandelbrot().
 #global gX_MIN: .dcf    -2.5
 #global gX_MAX: .dcf    0.5
 #global gY_MIN: .dcf    -1.5
@@ -72,10 +70,9 @@ kONE_HALF: .dcf 0.5
 // main()
 //
 // Program entry point. Parses the command line arguments, computes the bounds
-// of the complex plane region to render, divides the image into horizontal
-// bands (one per child), spawns a child process to render each band, waits for
-// all children to finish, then merges the per-band temporary files into the
-// final .pgm image.
+// of the complex plane region to render, spawns a thread to render rows, 
+// waits for all threads to finish, then computes pixel values based on the
+// histogram and writes into the final .pgm image.
 //
 // Command line (via argc/args):
 //   1: x            center x        (float)
@@ -90,7 +87,7 @@ kONE_HALF: .dcf 0.5
 ///////////////////////////////////////////////////////////////////////////////
 
 #def_func   main()
-    #var    argc, escape_limit, imageSize, filename, pid, i, numChildren, firstRow, lastRow, childFilename
+    #var    argc, escape_limit, imageSize, filename, pid, i, numChildren, firstRow, lastRow
     #fvar   x, y, radius, x_min, x_max, y_min, y_max
 
     int     iARGC
@@ -100,7 +97,7 @@ kONE_HALF: .dcf 0.5
         #return 1
     #end_cond
 
-GET_ARGS:
+    // Get command line args
     #call   args(1)
     #macro  PARSE_FLOAT(r0)
     move    x, f0
@@ -131,7 +128,8 @@ GET_ARGS:
     #end_cond
 
 
-// Compute limits of image
+// Compute limits of image from center (x,y) and radius, store in globals so
+// the threads can read them.
     sub     x_min, x, radius
     store   x_min, gX_MIN
     add     x_max, x, radius
@@ -142,32 +140,35 @@ GET_ARGS:
     store   y_max, gY_MAX
     #call   printf("Image Bounds: %f, %f, %f, %f\n", x_min, x_max, y_min, y_max)
 
-// Divide the image into numChildren horizontal bands. For each band, compute
-// its first and last row, generate the temp filename, and spawn a child to
-// render it. The child's PID is recorded in PIDS[i].
+// Spawn worker threads to render row by row. The thread's PID is recorded in PIDS[i].
     load    numChildren, PIDS[0]
-    #call   printf("Number of children: %d\n", numChildren)
-    move    firstRow, 0
+    int     iGET_NUM_CORES
+    #if_cond    r0 < numChildren
+        move    numChildren, r0
+        store   numChildren, PIDS[0]
+    #end_cond
+
+    #if_cond    imageSize < numChildren
+        move    numChildren, imageSize
+    #end_cond
+    #call   printf("Number of threads: %d\n", numChildren)
+
     #for    1, i <= numChildren, 1
-        move    f0, imageSize
-        div     f0, numChildren
-        mult    f0, i
-        #call   round(f0)
-        move    lastRow, f0
         #call   spawnChild(imageSize)
         move    pid, r0
-        #if_cond    pid, gt, 0
-            #call   printf("Spawn child for %d\n", pid)
-        store   pid, PIDS[i]
+        #if_cond    pid > 0
+            #call   printf("Spawn thread for %d\n", pid)
+            store   pid, PIDS[i]
+        #else_cond
+            #call   printf("Spawn thread for %d failed!\n", pid)
+            store   0, PIDS[i]
         #end_cond
-        move    firstRow, lastRow
-        add     firstRow, 1
     #end_for
 
-// Wait for each spawned child to finish before merging output.
+// Wait for each spawned thread to finish before merging output.
     #for    1, i <= numChildren, 1
         load    pid, PIDS[i]
-        #if_cond    pid, gt, 0
+        #if_cond    pid > 0
             #call   printf("Waiting for %d...\n", pid)
             #macro  JOIN_THREAD(pid)
         #end_cond
@@ -175,26 +176,23 @@ GET_ARGS:
 
 // Merge all per-band temp files into the final .pgm image.
     #call   combine_output(filename, imageSize)
-    load    r0, gImage
+    load    r0, gIMAGE
     #call   free(r0)
     #return 0
-MAIN_END:
 #end_func
 
 ///////////////////////////////////////////////////////////////////////////////
 // spawnChild(firstRow, lastRow, width)
 //
-// Forks a child process to render a single horizontal band of the image. The
-// parent returns immediately with the child's PID. The child opens the named
-// temporary file for writing, renders its assigned rows by calling
-// compute_mandelbrot(), closes the file, and then halts (stop).
+// Spawns worker thread to render a single horizontal row of the image. The
+// parent returns immediately with the thread's PID. The thread renders its 
+// assigned rows directly into gIMAGE buffer by calling compute_mandelbrot().
 //
 // Arguments:
 //   width    - width of the image in pixels (int)
 //
 // Returns (in parent only):
 //   child PID on success, -1 if the fork failed.
-// Note: the child process does not return; it stops after writing its band.
 ///////////////////////////////////////////////////////////////////////////////
 
 
@@ -209,7 +207,7 @@ MAIN_END:
     int iGET_PID
     move    pid, r0
     load    w, width
-    #call   printf("Child %d executing...%d\n", pid, w)
+    #call   printf("Thread %d executing...%d\n", pid, w)
     #while  TRUE
         #call   get_and_increment(gCOUNTER)
         move    first, r0
@@ -219,19 +217,16 @@ MAIN_END:
         #end_cond
         #call   compute_mandelbrot(first, last, w)
     #end_while
-    #call   printf("Child %d done!\n", pid)
+    #call   printf("Thread %d done!\n", pid)
 #end_func
 
 ///////////////////////////////////////////////////////////////////////////////
 // compute_mandelbrot(port, firstRow, lastRow, width)
 //
 // Renders a range of image rows (a horizontal band) of the Mandelbrot set and
-// writes the pixel intensity values as ASCII decimal numbers to the given
-// output port. For each pixel, the corresponding complex coordinate (x0, y0)
-// is computed from the global plane bounds, the escape value is obtained from
-// compute_escape(), scaled to a 0-255 grayscale value, and written out. A
-// space (or newline every 20 values) separates pixels and a newline ends each
-// row to keep output lines reasonably short.
+// writes the escape count to the gIMAGE array.  The corresponding complex 
+// coordinate (x0, y0) is computed from the global plane bounds.  The escape 
+// value is obtained from compute_escape().
 //
 // Arguments:
 //   firstRow - first row (inclusive) of this band (int)
@@ -241,7 +236,7 @@ MAIN_END:
 
 #def_func compute_mandelbrot(firstRow, lastRow, width)
     #var    i, j, first, last, w, level, image_buffer
-    #fvar   x0, y0, xWidth, yHeight, xMin, yMin, xMax, yMax, one_half
+    #fvar   x0, y0, xWidth, yHeight, xMin, yMin, xMax, yMax, one_half, inverse_width
     load    first, firstRow
     load    last, lastRow
     load    w, width
@@ -256,20 +251,22 @@ MAIN_END:
     // first row is at image_buffer + first * width
     mult    r0, first, w
     add     image_buffer, r0
-    #for    first, j <= last, 1
+    move    inverse_width, w
+    recip   inverse_width               // inverse_width = 1 / width
+    #for    first, j < last, 1
+        // y0 = yMax - yHeight / width * (j + 0.5)
+        move    f0, j
+        add     f0, one_half
+        mult    f0, yHeight
+        mult    f0, inverse_width
+        sub     y0, yMax, f0
         #for    0, i < w, 1
             // x0 = xWidth / width * (i + 0.5) + xMin
             move    f0, i
             add     f0, one_half
             mult    f0, xWidth
-            div     f0, w
+            mult    f0, inverse_width
             add     x0, f0, xMin
-            // y0 = yMax - yHeight / width * (j + 0.5)
-            move    f0, j
-            add     f0, one_half
-            mult    f0, yHeight
-            div     f0, w
-            sub     y0, yMax, f0
             #call   compute_escape(x0, y0)
             move    level, r0
             store   level, image_buffer[i]
@@ -292,58 +289,52 @@ MAIN_END:
 //
 // Iteration continues while |z|^2 = x^2 + y^2 <= 4 and the iteration count
 // is less than gMAX_ITERATION. Points that never escape (iteration reaches
-// gMAX_ITERATION) are considered inside the set and return 0.0. Points that
-// do escape return a normalized value in the range (0.0, 1.0] computed as
-// iteration / max_iteration, suitable for linear grayscale coloring.
+// gMAX_ITERATION) are considered inside the set and return 0. Points that
+// do escape return the escape count.
 //
 // Arguments:
 //   x0_arg - real part of the complex point c (float)
 //   y0_arg - imaginary part of the complex point c (float)
 //
 // Returns:
-//   f0 - 0.0 if the point is in the set (max iterations reached), otherwise
-//        a value in (0.0, 1.0] proportional to how quickly the point escaped.
+//   r0 - 0 if the point is in the set (max iterations reached), 
+//        otherwise a value in (0, max_iteration).
 ///////////////////////////////////////////////////////////////////////////////
 
 kFOUR:      .dcf 4.0
 #def_func   compute_escape(x0_arg, y0_arg)
     #var    iteration, max_iteration
-    #fvar   x, y, x0, y0, x2, y2, four, one_half, normalized
+    #fvar   x, y, x0, y0, x2, y2, four
     load    max_iteration, gMAX_ITERATION
     clear   iteration
-    clear   x2
-    clear   y2
-    clear   x
-    clear   y
+    clear   x2, y2, x, y
     load    four, kFOUR
     load    x0, x0_arg
     load    y0, y0_arg
-    push    r1
 
     #do_while
 //    y:= 2 * x * y + y0
-    mult    y, x
-    mult    y, 2
-    add     y, y0
+        mult    y, x
+        mult    y, 2
+        add     y, y0
 //    x:= x2 - y2 + x0
-    sub     x, x2, y2
-    add     x, x0
+        sub     x, x2, y2
+        add     x, x0
 //    x2:= x * x
-    mult    x2, x, x
+        mult    x2, x, x
 //    y2:= y * y
-    mult    y2, y, y
-    add     iteration, 1
-LOOP_COND:
-// while (x2 + y2 ≤ 4 and iteration < max_iteration) do
-    add     f0, x2, y2
-    #macro  COMPARE(f0, le, four)
-    move    r1, r0
-    #macro  COMPARE(iteration, lt, max_iteration)
-    and     r0, r1
+        mult    y2, y, y
+        add     iteration, 1
+        // Compute loop condition
+        // while (x2 + y2 ≤ 4 and iteration < max_iteration) do
+        add     f0, x2, y2
+        #macro COMPARE(f0, le, four)
+        move    r1, r0
+        #macro COMPARE(iteration, lt, max_iteration)
+        and     r0, r1
     #end_do_while r0 != 0
     
-    pop     r1
-    #if_cond    iteration, eq, max_iteration
+    #if_cond    iteration == max_iteration
         #return 0
     #else_cond
         #return iteration
@@ -354,20 +345,18 @@ LOOP_COND:
 // combine_output(filename, imageSize)
 //
 // Assembles the final PGM image file from the image data generated by the
-// child processes. Opens the output file <filename>.pgm for
-// writing, emits the PGM P5 header, then iterates over each child's temporary
-// file (<filename>_N.tmp, N = 1..numChildren), copying its pixel data
-// verbatim into the output file. The temporary files are opened and closed one
-// at a time to avoid exhausting available ports.
+// worker threads. Opens the output file <filename>.pgm for
+// writing, emits the PGM P5 header, then iterates over values in gIMAGE
+// building a histogram of value frequencies.  Then shades are assigned to the
+// final ouput file based on the frequencies to equalize the image.
 //
-// The output file is a valid PGM P5 (ASCII grayscale) image with:
+// The output file is a valid PGM P5 (Binary grayscale) image with:
 //   - width  = imageSize pixels
 //   - height = imageSize pixels
 //   - max grayscale value = 255
 //
 // Arguments:
-//   filename  - base name used to form <filename>.pgm (output) and
-//               <filename>_N.tmp (per-band input files) (string)
+//   filename  - base name used to form <filename>.pgm 
 //   imageSize - width and height of the square image in pixels (int)
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -387,9 +376,9 @@ LOOP_COND:
 // Create binary file in write mode.
     #call   sprintf("%s.pgm", fn)
     #call   openRawFile(r0, WRITE_MODE)
-    #if_cond    r0, eq, -1
+    #if_cond    r0 == -1
         #call   printf("Can\'t open %s.pgm...\n", fn)
-        #return  -1
+        #return -1
     #end_cond
     move    out_port, r0
     #call   sprintf("P5\n%d %d\n%d\n", size, size, 255)
@@ -405,15 +394,15 @@ LOOP_COND:
     #call   free(codePoints)
     mult    size, size
 
-    #for    0, i, lt, max_iteration, 1
+    #for    0, i < max_iteration, 1
         store   0, histogram[i]
     #end_for
 
     // Compute histogram for pixel value frequency
     clear   totalCount
-    #for    0, i, lt, size, 1
+    #for    0, i < size, 1
         load    pix_value, image_buffer[i]
-        #if_cond    pix_value, gt, 0
+        #if_cond    pix_value > 0
             load    r0, histogram[pix_value]
             add     r0, 1
             store   r0, histogram[pix_value]
@@ -423,7 +412,7 @@ LOOP_COND:
 
     // compute cumulative histogram
     clear   subtotal
-    #for    0, i, lt, max_iteration, 1
+    #for    0, i < max_iteration, 1
         load    r0, histogram[i]
         add     subtotal, r0
         move    f0, subtotal
@@ -434,7 +423,7 @@ LOOP_COND:
         store   r0, histogram[i]
     #end_for
 
-    #for    0, i, lt, size, 1
+    #for    0, i < size, 1
         load    pix_value, image_buffer[i]
         load    r0, histogram[pix_value]
         #macro  OUT1(r0, out_port)

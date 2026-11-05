@@ -80,6 +80,8 @@
         #end_cond
     #end_cond
 
+    move    r1, STDOUT
+    int     iWALK_HEAP
     #return 0
 #end_func
 

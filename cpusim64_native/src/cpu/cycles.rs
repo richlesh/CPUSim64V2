@@ -1,0 +1,186 @@
+//! Per-instruction extra cycle times (ports the `/instructions.data` table and
+//! `Simulator.addCycles`).
+//!
+//! These are EXTRA cycles charged on top of the base +1 already charged in
+//! fetch/memRead/memWrite.
+//!
+//! The built-in defaults match the committed
+//! `cpusim64/src/main/resources/instructions.data` exactly (including
+//! `load:1`, `fdivide:19`; `RECIP` is charged as `fdivide`, see
+//! `cpu/exec.rs`).
+//!
+//! At startup the table is overlaid with any `instructions.data` file found in
+//! the same directory as the running executable, so timings can be changed
+//! without recompiling (mirroring how the Java build ships the resource file).
+//!
+//! NOTE: the committed `reference/*.out` validation files were generated with a
+//! different table (`load:0`, `fdivide:9`, `RECIP` as `divide`). To reproduce
+//! those exactly, drop an `instructions.data` next to the executable overriding
+//! `load:0` and `fdivide:9` (the `RECIP` difference cannot be expressed in the
+//! file and would also require the source change noted in `exec.rs`).
+
+use super::Simulator;
+use std::collections::HashMap;
+use std::sync::OnceLock;
+
+/// Built-in default extra-cycle for a key (matches the committed
+/// `instructions.data`). Absent keys => 0.
+pub fn default_extra_cycles(key: &str) -> i64 {
+    match key {
+        "nop" => 0,
+        "clear" => 0,
+        "move" => 0,
+        "load" => 1,
+        "store" => 0,
+        "save" => 0,
+        "restore" => 0,
+        "pop" => 0,
+        "push" => 0,
+        "jump" => 0,
+        "jump0" => 0,
+        "jump1" => 1,
+        "call" => 0,
+        "call0" => 0,
+        "call1" => 1,
+        "return" => 0,
+        "interrupt" => 10,
+        "interrupt0" => 0,
+        "interrupt1" => 10,
+        "stop" => 0,
+        "negate" => 0,
+        "fnegate" => 0,
+        "add" => 0,
+        "fadd" => 2,
+        "subtract" => 0,
+        "fsubtract" => 2,
+        "multiply" => 2,
+        "fmultiply" => 2,
+        "divide" => 11,
+        "fdivide" => 19,
+        "compliment" => 0,
+        "and" => 0,
+        "or" => 0,
+        "xor" => 0,
+        "test" => 0,
+        "compare" => 0,
+        "lshift" => 0,
+        "rshift" => 0,
+        "arshift" => 0,
+        "lrotate" => 0,
+        "rrotate" => 0,
+        "in" => 0,
+        "out" => 0,
+        "pack" => 0,
+        "pack64" => 0,
+        "unpack" => 0,
+        "unpack64" => 0,
+        "cas" => 2,
+        "endian" => 0,
+        "readonly" => 0,
+        _ => 0,
+    }
+}
+
+/// All keys with a built-in default (used to seed the overrideable table).
+const KEYS: &[&str] = &[
+    "nop", "clear", "move", "load", "store", "save", "restore", "pop", "push", "jump", "jump0",
+    "jump1", "call", "call0", "call1", "return", "interrupt", "interrupt0", "interrupt1", "stop",
+    "negate", "fnegate", "add", "fadd", "subtract", "fsubtract", "multiply", "fmultiply", "divide",
+    "fdivide", "compliment", "and", "or", "xor", "test", "compare", "lshift", "rshift", "arshift",
+    "lrotate", "rrotate", "in", "out", "pack", "pack64", "unpack", "unpack64", "cas", "endian",
+    "readonly",
+];
+
+fn cycle_table() -> &'static HashMap<String, i64> {
+    static TABLE: OnceLock<HashMap<String, i64>> = OnceLock::new();
+    TABLE.get_or_init(|| {
+        // Seed with built-in defaults.
+        let mut map: HashMap<String, i64> = KEYS
+            .iter()
+            .map(|k| (k.to_string(), default_extra_cycles(k)))
+            .collect();
+        // Overlay with instructions.data next to the executable, if present.
+        if let Some(path) = instructions_data_path() {
+            if let Ok(contents) = std::fs::read_to_string(&path) {
+                apply_overrides(&mut map, &contents);
+            }
+        }
+        map
+    })
+}
+
+/// Path to `instructions.data` in the same directory as the running executable.
+fn instructions_data_path() -> Option<std::path::PathBuf> {
+    let exe = std::env::current_exe().ok()?;
+    let dir = exe.parent()?;
+    let candidate = dir.join("instructions.data");
+    if candidate.is_file() {
+        Some(candidate)
+    } else {
+        None
+    }
+}
+
+/// Parse `key:cycles` lines (skipping blanks and `#` comments) and overlay them
+/// onto `map`. Mirrors `Simulator.loadInstructionCycles` parsing.
+fn apply_overrides(map: &mut HashMap<String, i64>, contents: &str) {
+    for line in contents.lines() {
+        let line = line.trim();
+        if line.is_empty() || line.starts_with('#') {
+            continue;
+        }
+        let colon = match line.find(':') {
+            Some(c) if c > 0 => c,
+            _ => continue,
+        };
+        let key = line[..colon].trim();
+        let val_str = line[colon + 1..].trim();
+        if let Ok(val) = val_str.parse::<i64>() {
+            map.insert(key.to_string(), val);
+        }
+    }
+}
+
+/// Look up the effective extra-cycle count for an instruction key (built-in
+/// default, possibly overridden by `instructions.data`). Absent keys => 0.
+pub fn extra_cycles(key: &str) -> i64 {
+    *cycle_table().get(key).unwrap_or(&0)
+}
+
+impl Simulator {
+    #[inline]
+    pub fn add_cycles(&mut self, key: &str) {
+        self.cycles += extra_cycles(key);
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn defaults_match_instructions_data() {
+        // Built-in defaults equal the committed instructions.data.
+        assert_eq!(default_extra_cycles("load"), 1);
+        assert_eq!(default_extra_cycles("fdivide"), 19);
+        assert_eq!(default_extra_cycles("divide"), 11);
+        assert_eq!(default_extra_cycles("interrupt"), 10);
+        assert_eq!(default_extra_cycles("cas"), 2);
+        assert_eq!(default_extra_cycles("unknownkey"), 0);
+    }
+
+    #[test]
+    fn override_parsing() {
+        let mut map: HashMap<String, i64> = KEYS
+            .iter()
+            .map(|k| (k.to_string(), default_extra_cycles(k)))
+            .collect();
+        apply_overrides(&mut map, "# comment\nload:0\nfdivide:9\n\nbogusline\nspace : 7 \n");
+        assert_eq!(map["load"], 0);
+        assert_eq!(map["fdivide"], 9);
+        // untouched key keeps default
+        assert_eq!(map["divide"], 11);
+        // whitespace-trimmed key
+        assert_eq!(map["space"], 7);
+    }
+}

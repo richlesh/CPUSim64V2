@@ -31,10 +31,10 @@
 #include <system/io.asm>
 #include <system/math.asm>
 #include <system/string.def>
-#include <system/system.def>
+#include <system/system.asm>
 
-    #call   main()              // Call main(), exit with its return code
-    #call   exit(r0)
+    #call   main()
+    #call   exit(r0)                 // Exit to OS, returning main's result code
 
 ///////////////////////////////////////////////////////////////////////////////
 // main()
@@ -46,36 +46,39 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #def_func   main()
-    #var    series, i           // series = R-series length, i = loop counter
-    #fvar   base, factor        // base = 10.0, factor = common ratio
-    move    base, 10            // The decade base (10) used for the ratio
-GET_ARGS:
+    #var    series, i               // series = R-series length, i = loop counter
+    #fvar   base, factor            // base = 10.0, factor = common ratio
+    move    base, 10                // The decade base (10) used for the ratio
+
     // Require exactly one command-line argument (argc == 2: program + arg).
     int     iARGC
     #if_cond    r0 == 2
         #call   args(1)             // Get the first command-line argument
         #macro  PARSE_INT(r0)       // Convert the argument string to an integer
         move    series, r0          // series = requested R-series length
+        #if_cond    series < 2
+            #call   putline("You must supply a series value > 2")
+            #return 2               // Error: invalid argument
+        #end_cond
     #else_cond
-        #call   puts("You must supply a series value 5, 10, 20 or 40")
-        #return 1                   // Error: missing/invalid argument
+        #call   putline("You must supply a series value 5, 10, 20 or 40")
+        #return 1                   // Error: missing argument
     #end_cond
 
     // Compute the common ratio: factor = 10 ^ (1/series)
-    move    f0, series          // f0 = (float) series
-    recip   f0                  // f0 = 1 / series
-    #call   pow(base, f0)       // f0 = 10 ^ (1/series)
-    move    factor, f0          // Save the common ratio
+    move    f0, series              // f0 = (float) series
+    recip   f0                      // f0 = 1 / series
+    #call   pow(base, f0)           // f0 = 10 ^ (1/series)
+    move    factor, f0              // Save the common ratio
 
     // Print each term of the series: factor ^ i for i = 0 .. series-1
     #for    0, i < series, 1
         move    f0, i               // Convert loop index i to float
         #call   pow(factor, f0)     // f0 = factor ^ i  (the nth Renard value)
-        #call   fprintf(STDOUT, " %.2f", f0)  // Print with 2 decimal places
+        #call   fprintf(STDOUT, "%.2f ", f0)  // Print with 2 decimal places
     #end_for
-    #call   put_nl()            // Terminate the output line
-    #return 0                   // Success
-MAIN_END:
+    #call   put_nl()                // Terminate the output line
+    #return 0                       // Success
 #end_func
 
     stop

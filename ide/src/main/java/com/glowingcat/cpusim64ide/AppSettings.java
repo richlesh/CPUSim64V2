@@ -46,6 +46,10 @@ public class AppSettings {
     public boolean aiPanelVisible = false;
     public int aiPanelWidth = 400;
 
+    /** When true, Run/Debug/Trace launch the native cpusim64_native executable
+     *  instead of the in-process Java Simulation. */
+    public boolean useNativeSimulator = false;
+
     public void save() {
         try {
             StringBuilder sb = new StringBuilder("{\n");
@@ -97,6 +101,7 @@ public class AppSettings {
             sb.append("  \"mainWindowHeight\": ").append(mainWindowHeight).append(",\n");
             sb.append("  \"aiPanelVisible\": ").append(aiPanelVisible).append(",\n");
             sb.append("  \"aiPanelWidth\": ").append(aiPanelWidth).append(",\n");
+            sb.append("  \"useNativeSimulator\": ").append(useNativeSimulator).append(",\n");
             sb.setLength(sb.length() - 2); // remove trailing comma+newline
             sb.append("\n}");
             Files.writeString(SETTINGS_FILE, sb.toString());
@@ -179,6 +184,8 @@ public class AppSettings {
             if (apv != null) s.aiPanelVisible = apv;
             Integer apw = extractInt(json, "aiPanelWidth");
             if (apw != null) s.aiPanelWidth = apw;
+            Boolean uns = extractBoolean(json, "useNativeSimulator");
+            if (uns != null) s.useNativeSimulator = uns;
         } catch (Exception e) {
             // return defaults on any parse error
         }

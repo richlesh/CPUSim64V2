@@ -25,6 +25,9 @@ test.*
 *.jar
 *.zip
 src/main/resources/cpusim64
+ide/src/main/resources/cpusim64_native
+ide/src/main/resources/cpusim64_native.exe
+ide/src/main/resources/instructions.data
 old
 *.old
 
