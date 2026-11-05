@@ -128,7 +128,7 @@ static void usage() {
         << "CPUSim64: A simple 64-bit CPU simulator\n"
         << "Version 2.8.0\n"
         << "Copyright ©2026 Richard Lesh\n\n"
-        << "Usage: cpusim64 <command> <file> [options...]\n"
+        << "Syntax: cpusim64 <command> <file> [options...]\n"
         << "Commands: assemble, debug, disassemble, preprocess, run, trace\n";
     exit(1);
 }
