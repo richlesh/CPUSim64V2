@@ -42,22 +42,53 @@
             <artifactId>commonmark-ext-autolink</artifactId>
             <version>${commonmark.version}</version>
         </dependency>
+        <!-- JavaFX. OpenJFX ships classes only in platform-classified jars, and
+             its transitive classifier resolution is host-auto-detected and
+             unreliable on CI. Declare every used module explicitly with
+             <classifier>${javafx.platform}</classifier> so the correct native
+             jars are DIRECT dependencies on every platform. javafx.platform is
+             set by the OS-activated profiles in the parent POM (overridable via
+             -Djavafx.platform). -->
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-base</artifactId>
+            <version>${javafx.version}</version>
+            <classifier>${javafx.platform}</classifier>
+            <scope>${javafx.scope}</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-graphics</artifactId>
+            <version>${javafx.version}</version>
+            <classifier>${javafx.platform}</classifier>
+            <scope>${javafx.scope}</scope>
+        </dependency>
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-controls</artifactId>
             <version>${javafx.version}</version>
+            <classifier>${javafx.platform}</classifier>
+            <scope>${javafx.scope}</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-media</artifactId>
+            <version>${javafx.version}</version>
+            <classifier>${javafx.platform}</classifier>
             <scope>${javafx.scope}</scope>
         </dependency>
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-web</artifactId>
             <version>${javafx.version}</version>
+            <classifier>${javafx.platform}</classifier>
             <scope>${javafx.scope}</scope>
         </dependency>
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-swing</artifactId>
             <version>${javafx.version}</version>
+            <classifier>${javafx.platform}</classifier>
             <scope>${javafx.scope}</scope>
         </dependency>
         <dependency>
