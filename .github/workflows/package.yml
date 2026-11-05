@@ -276,7 +276,7 @@ jobs:
             jpackage \
               --input lib \
               --main-jar CPUSim64-${{ env.APP_VERSION }}.jar \
-              --main-class com.glowingcat.CPUSim64App \
+              --main-class com.glowingcat.cpusim64ide.IDEApp \
               --name CPUSim64 \
               --app-version "${{ env.APP_VERSION }}" \
               --vendor "Richard Lesh" \
@@ -298,7 +298,7 @@ jobs:
             jpackage \
               --input lib \
               --main-jar CPUSim64-${{ env.APP_VERSION }}.jar \
-              --main-class com.glowingcat.CPUSim64App \
+              --main-class com.glowingcat.cpusim64ide.IDEApp \
               --name CPUSim64 \
               --app-version "${{ env.APP_VERSION }}" \
               --vendor "Richard Lesh" \
@@ -336,7 +336,7 @@ jobs:
             jpackage \
               --input lib \
               --main-jar CPUSim64-${{ env.APP_VERSION }}.jar \
-              --main-class com.glowingcat.CPUSim64App \
+              --main-class com.glowingcat.cpusim64ide.IDEApp \
               --name CPUSim64 \
               --app-version "${{ env.APP_VERSION }}" \
               --vendor "Richard Lesh" \
