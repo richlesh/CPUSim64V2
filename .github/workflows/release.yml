@@ -36,7 +36,7 @@ jobs:
         run: |
           VERSION="${{ inputs.version }}"
           VERSION="${VERSION#v}"
-          mvn clean package -P release -DskipTests=true
+          mvn clean package -P release -DskipTests=true -Dcpusim64.native.skip=true -Dapp.version="${VERSION}"
           mkdir -p lib
           cp ide/target/CPUSim64IDE-*.jar lib/CPUSim64-${VERSION}.jar
 
