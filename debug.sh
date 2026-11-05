@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+USE_NATIVE=true
+
 MEMSIZE=16M
 STACKSIZE=8K
 
@@ -25,5 +27,9 @@ else
 fi
 
 if [[ -n "$O64_FILE" ]]; then
-	java -Dfile.encoding=UTF8 -cp "$SCRIPT_DIR"/lib/cpusim64-*.jar cloud.lesh.CPUSim64.Simulation "$O64_FILE" --verbose --debug --mem=$MEMSIZE --stack=$STACKSIZE $2 $3 $4 $5 $6 $7 $8 $9
+	if [[ "$USE_NATIVE" == "true" ]]; then
+		"$SCRIPT_DIR"/cpusim64_native/target/release/cpusim64_native "$O64_FILE" --verbose --debug --mem=$MEMSIZE --stack=$STACKSIZE $2 $3 $4 $5 $6 $7 $8 $9
+	else
+		java -Dfile.encoding=UTF8 -cp "$SCRIPT_DIR"/lib/cpusim64-*.jar cloud.lesh.CPUSim64.Simulation "$O64_FILE" --verbose --debug --mem=$MEMSIZE --stack=$STACKSIZE $2 $3 $4 $5 $6 $7 $8 $9
+	fi
 fi
