@@ -71,4 +71,21 @@
             <version>2.2</version>
         </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <!-- Pin the compiler plugin to match the other modules. Without this,
+                 the module inherits whatever default the local Maven ships, and
+                 newer defaults (e.g. 3.16.0 on CI runners) fail to compile the
+                 classifier-resolved JavaFX dependencies ("package javafx.* does
+                 not exist"). -->
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.11.0</version>
+                <configuration>
+                    <release>${maven.compiler.release}</release>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>
