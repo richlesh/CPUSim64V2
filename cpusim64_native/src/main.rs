@@ -14,7 +14,7 @@ fn main() {
 
 fn run(args: &[String]) -> i32 {
     if args.is_empty() {
-        eprintln!("CPUSim64: A native 64-bit CPU simulator");
+        eprintln!("CPUSim64: A native 64-bit CPU emulator");
         eprintln!("Version {}", buildinfo::VERSION);
         eprintln!("Built with Rust");
         eprintln!("Copyright \u{00A9}2026 Richard Lesh");

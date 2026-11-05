@@ -23,7 +23,7 @@ import java.nio.file.*;
  * Locates (and, if necessary, extracts from the application JAR) the native
  * {@code cpusim64_native} simulator executable together with its optional
  * {@code instructions.data} timing table, so the IDE can launch it as a
- * subprocess when the "Use Native CPUSim64 Simulator" setting is enabled.
+ * subprocess when the "Use Native CPUSim64 Emulator" setting is enabled.
  *
  * <p>The native tool reads {@code instructions.data} from its own directory, so
  * both files are placed in the same extraction directory.

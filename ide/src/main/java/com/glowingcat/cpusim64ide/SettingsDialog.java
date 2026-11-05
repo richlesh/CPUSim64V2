@@ -171,7 +171,7 @@ public class SettingsDialog {
         gbc.gridwidth = 1;
 
         // Native simulator option
-        JCheckBox nativeSimCheck = new JCheckBox("Use Native CPUSim64 Simulator");
+        JCheckBox nativeSimCheck = new JCheckBox("Use Native CPUSim64 Emulator");
         nativeSimCheck.setToolTipText(
             "Run/Debug/Trace programs with the bundled native cpusim64_native "
             + "executable instead of the in-process Java simulator.");

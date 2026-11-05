@@ -998,7 +998,7 @@ public class IDEApp {
         if (np != null) {
             np.destroyForcibly();
         }
-        appendConsole("\n*** Kill All: forcibly stopping simulator and all threads/processes. ***\n");
+        appendConsole("\n*** Kill All: forcibly stopping emulator and all threads/processes. ***\n");
     }
 
     private void runWithMode(String mode) {
@@ -1162,8 +1162,8 @@ public class IDEApp {
         Path exe = NativeSimulator.resolveExecutable();
         if (exe == null) {
             SwingUtilities.invokeLater(() -> appendConsole(
-                "\nNative simulator (cpusim64_native) not found. "
-                + "Disable 'Use Native CPUSim64 Simulator' in Settings or reinstall.\n"));
+                "\nNative emulator (cpusim64_native) not found. "
+                + "Disable 'Use Native CPUSim64 Emulator' in Settings or reinstall.\n"));
             return;
         }
 
