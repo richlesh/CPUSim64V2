@@ -20,26 +20,73 @@
         <junit.version>5.14.0</junit.version>
         <commonmark.version>0.24.0</commonmark.version>
         <javafx.version>21.0.13</javafx.version>
-        <javafx.scope>provided</javafx.scope>
+        <!-- Default scope for local/dev builds: JavaFX on the compile classpath
+             and bundled at runtime. The 'release' profile overrides this to
+             'provided' (JavaFX supplied by the jlink runtime image). Kept as a
+             plain default (not tied to an activeByDefault profile) so the
+             OS-activated javafx.platform profiles below do not suppress it. -->
+        <javafx.scope>compile</javafx.scope>
     </properties>
 
     <profiles>
-        <!-- Active by default for local development — makes JavaFX available at runtime -->
-        <profile>
-            <id>dev</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
-            <properties>
-                <javafx.scope>compile</javafx.scope>
-            </properties>
-        </profile>
-        <!-- Use for release/packaging builds: mvn -P release -->
+        <!-- Use for release/packaging builds: mvn -P release.
+             JavaFX is supplied by the jlink runtime image, so it is 'provided'
+             at compile time rather than bundled. -->
         <profile>
             <id>release</id>
             <properties>
                 <javafx.scope>provided</javafx.scope>
             </properties>
+        </profile>
+
+        <!-- OpenJFX ships its real classes in platform-classified jars
+             (javafx-*-<classifier>.jar); the default jar is an empty aggregator.
+             These OS/arch-activated profiles set javafx.platform so the OpenJFX
+             POMs resolve the correct native classifier automatically, without
+             relying on a -Djavafx.platform flag being threaded through every
+             Maven invocation. An explicit -Djavafx.platform on the CLI still
+             overrides these. -->
+        <profile>
+            <id>javafx-linux-x64</id>
+            <activation>
+                <os><family>unix</family><name>linux</name><arch>amd64</arch></os>
+            </activation>
+            <properties><javafx.platform>linux</javafx.platform></properties>
+        </profile>
+        <profile>
+            <id>javafx-linux-aarch64</id>
+            <activation>
+                <os><family>unix</family><name>linux</name><arch>aarch64</arch></os>
+            </activation>
+            <properties><javafx.platform>linux-aarch64</javafx.platform></properties>
+        </profile>
+        <profile>
+            <id>javafx-mac-x64</id>
+            <activation>
+                <os><family>mac</family><arch>x86_64</arch></os>
+            </activation>
+            <properties><javafx.platform>mac</javafx.platform></properties>
+        </profile>
+        <profile>
+            <id>javafx-mac-aarch64</id>
+            <activation>
+                <os><family>mac</family><arch>aarch64</arch></os>
+            </activation>
+            <properties><javafx.platform>mac-aarch64</javafx.platform></properties>
+        </profile>
+        <profile>
+            <id>javafx-win-x64</id>
+            <activation>
+                <os><family>windows</family><arch>amd64</arch></os>
+            </activation>
+            <properties><javafx.platform>win</javafx.platform></properties>
+        </profile>
+        <profile>
+            <id>javafx-win-aarch64</id>
+            <activation>
+                <os><family>windows</family><arch>aarch64</arch></os>
+            </activation>
+            <properties><javafx.platform>win</javafx.platform></properties>
         </profile>
     </profiles>
 
