@@ -1,6 +1,6 @@
 [package]
 name = "cpusim64_native"
-version = "0.1.0"
+version = "2.9.0"
 edition = "2021"
 description = "Native Rust port of the CPUSim64 virtual CPU interpreter"
 license = "Apache-2.0"

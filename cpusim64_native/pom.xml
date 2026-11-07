@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>org.lesh</groupId>
+        <groupId>cloud.lesh</groupId>
         <artifactId>CPUSim64-parent</artifactId>
         <version>2.9.0</version>
     </parent>
@@ -41,6 +41,13 @@
                             <skip>${cpusim64.native.skip}</skip>
                             <executable>cargo</executable>
                             <workingDirectory>${project.basedir}</workingDirectory>
+                            <!-- Propagate the Maven project version into the Rust
+                                 build so the native binary's version banner stays
+                                 in sync with the rest of the project. Read in Rust
+                                 via option_env!("CPUSIM64_VERSION"). -->
+                            <environmentVariables>
+                                <CPUSIM64_VERSION>${project.version}</CPUSIM64_VERSION>
+                            </environmentVariables>
                             <arguments>
                                 <argument>build</argument>
                                 <argument>--release</argument>

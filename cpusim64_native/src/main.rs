@@ -146,12 +146,12 @@ fn run(args: &[String]) -> i32 {
 
     if verbose {
         println!("Result: {result}");
+        let total_time = sim.get_clock();
+        let system_time = sim.get_system_clock();
         println!("User CPU Cycles: {}", sim.cycles);
-        // Timing fields are stripped by the validation harness; emit zeros so the
-        // overall shape matches without depending on wall-clock time.
-        println!("User Time: {:.3} sec", 0.0);
-        println!("System Time: {:.3} sec", 0.0);
-        println!("Total Time: {:.3} sec", 0.0);
+        println!("User Time: {:.3} sec", (total_time - system_time) as f64 / 1.0e9);
+        println!("System Time: {:.3} sec", system_time as f64 / 1.0e9);
+        println!("Total Time: {:.3} sec", total_time as f64 / 1.0e9);
         let blocks = sim.count_heap_blocks(true, false).unwrap_or(0);
         let mem = sim.count_heap_size(true, false).unwrap_or(0);
         println!("Heap Allocated Blocks: {blocks}");

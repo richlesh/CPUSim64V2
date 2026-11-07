@@ -10,8 +10,21 @@
 
 use std::fs::{File, OpenOptions};
 use std::io::{BufReader, BufWriter, Read, Write};
+use std::sync::{Mutex, OnceLock};
 
 pub const REG_SIZE_BYTES: usize = 8;
+
+/// Process-global console lock. All thread/child writes to STDOUT/STDERR are
+/// serialized through this so that a single `printf`/`put_str` line is emitted
+/// atomically rather than interleaving byte-by-byte with other threads.
+///
+/// Java serializes on the shared `System.out`/`System.err` `PrintStream`
+/// monitors; we take one lock covering both streams so their relative ordering
+/// is also preserved (mirroring the flush-on-port-switch behavior).
+fn console_lock() -> &'static Mutex<()> {
+    static LOCK: OnceLock<Mutex<()>> = OnceLock::new();
+    LOCK.get_or_init(|| Mutex::new(()))
+}
 
 /// Shared per-port state (ports the fields on the abstract `PortHandler`).
 #[derive(Clone)]
@@ -427,6 +440,7 @@ impl Port {
                 if self.state.port == 0 {
                     return Err(CpuException("Can't write to STDIN!".into()));
                 }
+                let _guard = console_lock().lock().unwrap();
                 if self.state.port == 2 {
                     let _ = std::io::stderr().write_all(&[b]);
                 } else {
@@ -456,6 +470,7 @@ impl Port {
                     .map(|c| c.to_string())
                     .unwrap_or_default();
                 let bytes = s.as_bytes();
+                let _guard = console_lock().lock().unwrap();
                 if self.state.port == 2 {
                     let _ = std::io::stderr().write_all(bytes);
                 } else {
@@ -473,6 +488,42 @@ impl Port {
                 w.write_all(s.as_bytes())
                     .map_err(|_| CpuException(format!("Write error on file \"{}\"!", filespec)))
             }
+        }
+    }
+
+    /// Write a whole string to this port atomically with respect to other
+    /// threads (the per-`printf` output unit). For STDOUT/STDERR the entire
+    /// UTF-8 encoding is written under the process-global console lock in a
+    /// single `write_all`, so concurrent threads never interleave mid-line. For
+    /// file ports (per-thread and uncontended in the validation programs) the
+    /// bytes are written directly.
+    pub fn write_str(&mut self, s: &str) -> CpuResult<()> {
+        match &mut self.io {
+            PortIo::Std => {
+                if self.state.port == 0 {
+                    return Err(CpuException("Can't write to STDIN!".into()));
+                }
+                let bytes = s.as_bytes();
+                let _guard = console_lock().lock().unwrap();
+                if self.state.port == 2 {
+                    let mut err = std::io::stderr().lock();
+                    let _ = err.write_all(bytes);
+                    let _ = err.flush();
+                } else {
+                    let mut out = std::io::stdout().lock();
+                    let _ = out.write_all(bytes);
+                    let _ = out.flush();
+                }
+                Ok(())
+            }
+            PortIo::File { writer, filespec, .. } => {
+                let w = writer.as_mut().ok_or_else(|| {
+                    CpuException(format!("File \"{}\" not open for output!", filespec))
+                })?;
+                w.write_all(s.as_bytes())
+                    .map_err(|_| CpuException(format!("Write error on file \"{}\"!", filespec)))
+            }
+            PortIo::Raw { .. } => Err(CpuException("Can't write chars to raw file!".into())),
         }
     }
 

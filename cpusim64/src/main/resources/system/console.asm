@@ -1,9 +1,12 @@
 #ifndef _CONSOLE_ASM
 #define _CONSOLE_ASM
-jump    _CONSOLE_ASM_END
 
 #include <system/ansi_color.asm>
 #include <system/io.asm>
+#include <system/math.asm>
+
+CONSOLE_ASM_START:
+jump CONSOLE_ASM_END
 
 #define EYE_WIDTH  3          // number of FULL BLOCK cells in the core
 #define TRAIL_LEN  4          // number of fading cells behind the eye
@@ -282,9 +285,6 @@ jump    _CONSOLE_ASM_END
     #end_cond
 #end_func
 
-_CONSOLE_ASM_END:    nop
-#endif
-
 ///////////////////////////////////////////////////////////////////////////////
 // working_bar(size, percent_done, ANSI_color)
 //
@@ -372,3 +372,7 @@ _CONSOLE_ASM_END:    nop
     // ---- Draw the closing bracket ----
     #call   putc(']')
 #end_func
+
+CONSOLE_ASM_END:    nop
+#endif
+

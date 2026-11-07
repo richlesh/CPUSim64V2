@@ -37,6 +37,15 @@ impl SharedMem {
         self.cells[i].store(v, Ordering::SeqCst);
     }
 
+    /// Atomic compare-and-set on a heap cell (ports `atomicMem.compareAndSet`).
+    /// Returns `true` if the cell held `expected` and was updated to `new`.
+    #[inline]
+    pub fn compare_and_set(&self, i: usize, expected: i64, new: i64) -> bool {
+        self.cells[i]
+            .compare_exchange(expected, new, Ordering::SeqCst, Ordering::SeqCst)
+            .is_ok()
+    }
+
     /// Deep copy the heap (ports the `mem = cloneMe.mem.clone()` path used by
     /// `fork`/process creation).
     pub fn deep_copy(&self) -> Arc<SharedMem> {
@@ -82,6 +91,23 @@ pub fn shared_mem_write(addr: i64, val: i64) -> Result<(), String> {
     Ok(())
 }
 
+/// Atomic compare-and-set on process-global shared memory (ports the
+/// `synchronized (Simulator.class)` block in `opCAS` for addr < 0). Holds the
+/// lock across the compare and the write so the operation is indivisible.
+pub fn shared_mem_compare_and_set(addr: i64, expected: i64, new: i64) -> Result<bool, String> {
+    let a = addr.wrapping_sub(i64::MIN);
+    let mut guard = shared_mem().lock().unwrap();
+    if a < 0 || (a as usize) >= guard.len() {
+        return Err(format!("Illegal CAS access of {:08x}", addr));
+    }
+    if guard[a as usize] == expected {
+        guard[a as usize] = new;
+        Ok(true)
+    } else {
+        Ok(false)
+    }
+}
+
 /// Allocate `size` words of shared memory, returning the base negative address
 /// (ports `allocShared`).
 pub fn alloc_shared(size: i64) -> i64 {
@@ -95,4 +121,47 @@ pub fn alloc_shared(size: i64) -> i64 {
 /// the JVM lifetime, but tests want isolation).
 pub fn reset_shared_mem() {
     shared_mem().lock().unwrap().clear();
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    /// Many threads each do CAS-based increments on one shared cell. With a true
+    /// atomic compare-and-set, no updates are lost and the final value equals
+    /// threads * iters. A non-atomic get-then-set would lose updates under
+    /// contention.
+    #[test]
+    fn shared_mem_cas_is_atomic_under_contention() {
+        const THREADS: usize = 8;
+        const ITERS: i64 = 50_000;
+        let mem = SharedMem::new(1);
+        std::thread::scope(|s| {
+            for _ in 0..THREADS {
+                let mem = &mem;
+                s.spawn(move || {
+                    for _ in 0..ITERS {
+                        // CAS retry loop, mirroring the assembly RAW_COUNTER loop.
+                        loop {
+                            let old = mem.get(0);
+                            if mem.compare_and_set(0, old, old + 1) {
+                                break;
+                            }
+                        }
+                    }
+                });
+            }
+        });
+        assert_eq!(mem.get(0), THREADS as i64 * ITERS);
+    }
+
+    #[test]
+    fn compare_and_set_basic() {
+        let mem = SharedMem::new(1);
+        mem.set(0, 42);
+        assert!(!mem.compare_and_set(0, 7, 99)); // wrong expected -> no change
+        assert_eq!(mem.get(0), 42);
+        assert!(mem.compare_and_set(0, 42, 99)); // correct expected -> swap
+        assert_eq!(mem.get(0), 99);
+    }
 }

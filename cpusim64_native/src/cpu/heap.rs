@@ -34,19 +34,28 @@ fn fibonacci_size(size: i64) -> i64 {
 
 impl Simulator {
     // free list helpers mirroring LinkedList<Long> used as a stack
-    fn free_list_push(&mut self, p: i64) {
-        self.free_list.insert(0, p);
+    // Free-list helpers mirroring the Java `LinkedList<Long>` used as a stack.
+    // They operate on an already-locked free list so the caller can hold the
+    // lock across a whole alloc/free (making the multi-step heap-metadata
+    // mutation atomic across threads).
+    fn free_list_push(free: &mut Vec<i64>, p: i64) {
+        free.insert(0, p);
     }
-    fn free_list_remove_value(&mut self, p: i64) {
-        if let Some(pos) = self.free_list.iter().position(|&x| x == p) {
-            self.free_list.remove(pos);
+    fn free_list_remove_value(free: &mut Vec<i64>, p: i64) {
+        if let Some(pos) = free.iter().position(|&x| x == p) {
+            free.remove(pos);
         }
     }
 
     /// Allocate `requested_words` of heap storage; returns a data pointer or 0
     /// on failure (ports `alloc`).
     pub fn alloc(&mut self, requested_words: i64) -> CpuResult<i64> {
-        if self.free_list.is_empty() {
+        // Lock the (possibly thread-shared) free list for the whole allocation
+        // so the read-modify-write of shared heap metadata is atomic.
+        let fl = self.free_list.clone();
+        let mut free = fl.lock().unwrap();
+
+        if free.is_empty() {
             return Ok(0);
         }
         if requested_words < 1 || requested_words > (i32::MAX as i64) - 3 {
@@ -58,14 +67,14 @@ impl Simulator {
         let num_words = fibonacci_size(requested_words + 3);
 
         // Iterate the free list front-to-back (snapshot to allow mutation).
-        let snapshot: Vec<i64> = self.free_list.clone();
+        let snapshot: Vec<i64> = free.clone();
         for p in snapshot {
             let size = self.mem_read(p + 2)?;
             if size < 0 && -size >= num_words {
                 if -size - num_words < FIBONACCI[0] {
                     // Use whole block.
                     self.mem_write(p + 2, -size)?;
-                    self.free_list_remove_value(p);
+                    Self::free_list_remove_value(&mut free, p);
                     return Ok(p + 3);
                 } else {
                     // Split into one alloc + one free block.
@@ -76,8 +85,8 @@ impl Simulator {
                     self.mem_write(new_p + 2, size + num_words)?;
                     self.mem_write(p + 1, new_p)?;
                     self.mem_write(p + 2, num_words)?;
-                    self.free_list_remove_value(p);
-                    self.free_list_push(new_p);
+                    Self::free_list_remove_value(&mut free, p);
+                    Self::free_list_push(&mut free, new_p);
                     return Ok(p + 3);
                 }
             }
@@ -106,7 +115,7 @@ impl Simulator {
         Ok(new_addr)
     }
 
-    fn combine_blocks(&mut self, p: i64) -> CpuResult<()> {
+    fn combine_blocks(&mut self, free: &mut Vec<i64>, p: i64) -> CpuResult<()> {
         if p <= 0 {
             return Ok(());
         }
@@ -127,7 +136,7 @@ impl Simulator {
                 self.mem_write(next, -1)?;
                 self.mem_write(next + 1, -1)?;
                 self.mem_write(next + 2, 0)?;
-                self.free_list_remove_value(next);
+                Self::free_list_remove_value(free, next);
             }
         }
         Ok(())
@@ -139,16 +148,21 @@ impl Simulator {
         if p <= 0 {
             return Ok(());
         }
+        // Lock the (possibly thread-shared) free list for the whole free so the
+        // push + coalescing is atomic across threads.
+        let fl = self.free_list.clone();
+        let mut free = fl.lock().unwrap();
+
         let size = self.mem_read(p + 2)?;
         if size > 0 {
             self.mem_write(p + 2, -size)?;
         } else {
             return Ok(());
         }
-        self.free_list_push(p);
-        self.combine_blocks(p)?;
+        Self::free_list_push(&mut free, p);
+        self.combine_blocks(&mut free, p)?;
         let prev = self.mem_read(p)?;
-        self.combine_blocks(prev)?;
+        self.combine_blocks(&mut free, prev)?;
         Ok(())
     }
 

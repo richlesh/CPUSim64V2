@@ -67,8 +67,16 @@ pub struct Simulator {
     pub stack_base: i64,
 
     // Heap bookkeeping (populated in Task 6).
+    //
+    // `free_list` is shared across all threads of a program (threads clone the
+    // `Arc`; a forked process gets a deep copy). The mutex is held across an
+    // entire alloc/free/realloc so the multi-step read-modify-write of the
+    // shared heap block metadata (which lives in the shared `mem`) is atomic —
+    // mirroring Java, where threads share the `freeList` object and heap array
+    // mutations are synchronized. Without this, concurrent allocations from
+    // `printf` and friends corrupt the heap.
     pub heap_list: i64,
-    pub free_list: Vec<i64>,
+    pub free_list: std::sync::Arc<std::sync::Mutex<Vec<i64>>>,
 
     // Protected memory ranges (READONLY).
     pub protected_memory: Vec<(i64, i64)>,
@@ -115,7 +123,7 @@ impl Simulator {
             stack_size: stack_size as i64,
             stack_base: memory_words as i64 + stack_size as i64,
             heap_list: 0,
-            free_list: Vec::new(),
+            free_list: std::sync::Arc::new(std::sync::Mutex::new(Vec::new())),
             protected_memory: Vec::new(),
             running: false,
             debug: false,
@@ -159,7 +167,7 @@ impl Simulator {
         self.mem_write(self.heap_start + 2, self.heap_start - self.heap_limit)
             .ok();
         self.heap_list = self.heap_start;
-        self.free_list = vec![self.heap_list];
+        *self.free_list.lock().unwrap() = vec![self.heap_list];
         self.reverse_symbol_map = reverse_symbol_map;
     }
 
@@ -369,6 +377,19 @@ impl Simulator {
         }
         self.f = [0.0; FPR_COUNT];
         self.sr = SR_Z;
+    }
+
+    // ===== Timing (ports getClock/getSystemClock) =====
+    /// Total elapsed wall-clock time of the run, in nanoseconds
+    /// (ports `getClock()` = `System.nanoTime() - startClock`).
+    pub fn get_clock(&self) -> i64 {
+        crate::util::nano_time() - self.start_clock_ns
+    }
+
+    /// Accumulated system (I/O + interrupt handler) time, in nanoseconds
+    /// (ports `getSystemClock()` = `totalSystemTime`).
+    pub fn get_system_clock(&self) -> i64 {
+        self.total_system_time_ns
     }
 }
 

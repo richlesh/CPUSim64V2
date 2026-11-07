@@ -217,11 +217,15 @@ impl Simulator {
                 self.add_cycles("rrotate");
             }
             28 => {
+                let io_start = crate::util::nano_time();
                 self.op_in(d)?;
+                self.total_system_time_ns += crate::util::nano_time() - io_start;
                 self.add_cycles("in");
             }
             29 => {
+                let io_start = crate::util::nano_time();
                 self.op_out(d)?;
+                self.total_system_time_ns += crate::util::nano_time() - io_start;
                 self.add_cycles("out");
             }
             30 => {
@@ -609,7 +613,9 @@ impl Simulator {
         }
         if code > 0 {
             self.add_cycles(if conditional { "interrupt1" } else { "interrupt" });
+            let start = crate::util::nano_time();
             self.dispatch_interrupt(code as i32)?;
+            self.total_system_time_ns += crate::util::nano_time() - start;
         } else if code == 0 {
             self.add_cycles("interrupt0");
         } else {
@@ -1204,32 +1210,23 @@ impl Simulator {
                 let base = self.get_r_kind(d.c, d.v2)?;
                 let offset = if count == 4 { self.get_o(d.d, d.v3)? } else { 0 };
                 let addr = base + offset;
-                // Java uses atomicMem.compareAndSet for heap/stack (no cycle
-                // charge); only the shared-memory (addr<0) path goes through the
-                // cycle-charging memRead/memWrite.
+                // Parity with Java opCAS: the compare-and-swap must be a single
+                // indivisible operation, not a separate read then write.
+                //   * addr < 0      -> shared memory: lock held across cmp+write.
+                //   * addr < limit  -> heap: atomic compare_exchange on the cell.
+                //   * else          -> stack: per-thread, plain cmp+write.
                 let ok = if addr < 0 {
-                    let cur = self.mem_read(addr)?;
-                    if cur == old_val {
-                        self.mem_write(addr, new_val)?;
-                        true
-                    } else {
-                        false
-                    }
+                    crate::cpu::memory::shared_mem_compare_and_set(addr, old_val, new_val)
+                        .map_err(CpuException)?
                 } else if addr < self.heap_limit {
                     let idx = addr as usize;
-                    if (idx) >= self.mem.len() {
+                    if idx >= self.mem.len() {
                         return Err(CpuException(format!(
                             "Illegal CAS access of {:08x}",
                             addr
                         )));
                     }
-                    let cur = self.mem.get(idx);
-                    if cur == old_val {
-                        self.mem.set(idx, new_val);
-                        true
-                    } else {
-                        false
-                    }
+                    self.mem.compare_and_set(idx, old_val, new_val)
                 } else {
                     let idx = (addr - self.heap_limit) as usize;
                     if idx >= self.stack.len() {
@@ -1338,6 +1335,7 @@ impl Simulator {
         self.running = true;
         self.cycles = 0;
         self.total_system_time_ns = 0;
+        self.start_clock_ns = crate::util::nano_time();
         self.r[R_PC] = start_pc;
         let mut decoded = Decoded::default();
         while self.running {
@@ -1363,6 +1361,7 @@ impl Simulator {
         self.running = true;
         self.cycles = 0;
         self.total_system_time_ns = 0;
+        self.start_clock_ns = crate::util::nano_time();
         self.r[R_PC] = start_pc;
     }
 

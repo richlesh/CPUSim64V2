@@ -158,7 +158,11 @@ impl Simulator {
             stack_size: self.stack_size,
             stack_base: self.stack_base,
             heap_list: self.heap_list,
-            free_list: self.free_list.clone(),
+            // Process = deep copy of the free list (fork COW semantics), NOT a
+            // shared Arc like threads use.
+            free_list: std::sync::Arc::new(std::sync::Mutex::new(
+                self.free_list.lock().unwrap().clone(),
+            )),
             protected_memory: self.protected_memory.clone(),
             running: false,
             debug: false,

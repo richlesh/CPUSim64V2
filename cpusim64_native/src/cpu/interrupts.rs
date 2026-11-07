@@ -317,7 +317,23 @@ impl Simulator {
                 let p = self.get_r(1);
                 self.join_thread(p)?;
             }
-            I_SLEEP => { /* no-op in deterministic native port */ }
+            I_SLEEP => {
+                // Sleep R1 milliseconds (ports `Thread.sleep(cpu.getR(1))`).
+                // Negative/zero delays return immediately. We sleep in short
+                // slices and re-check `running` so a cooperative stop (or a wake
+                // signal) ends the sleep promptly instead of blocking the whole
+                // duration, mirroring Java's interruptible sleep.
+                let ms = self.get_r(1);
+                if ms > 0 {
+                    let mut remaining = ms as u64;
+                    const SLICE_MS: u64 = 20;
+                    while remaining > 0 && self.running {
+                        let slice = remaining.min(SLICE_MS);
+                        std::thread::sleep(std::time::Duration::from_millis(slice));
+                        remaining -= slice;
+                    }
+                }
+            }
             I_WAKE_THREAD => {
                 let p = self.get_r(1);
                 self.wake_thread(p);
@@ -365,10 +381,14 @@ impl Simulator {
             I_MIN_FP => self.set_fp(0, self.get_fp(1).min(self.get_fp(2))),
             I_MAX => self.set_r(0, self.get_r(1).max(self.get_r(2))),
             I_MIN => self.set_r(0, self.get_r(1).min(self.get_r(2))),
-            I_RANDOM => self.set_fp(0, 0.0), // deterministic placeholder
+            I_RANDOM => self.set_fp(0, util::random()), // F0 = random [0.0, 1.0)
             I_RAND => {
+                // R0 = floor(random() * (R2 - R1 + 1)) + R1  -> integer in [R1, R2].
                 let lo = self.get_r(1);
-                self.set_r(0, lo);
+                let hi = self.get_r(2);
+                let span = (hi - lo + 1) as f64;
+                let v = (util::random() * span).floor() as i64 + lo;
+                self.set_r(0, v);
             }
             I_TO_DEGREES => self.set_fp(0, self.get_fp(1).to_degrees()),
             I_TO_RADIANS => self.set_fp(0, self.get_fp(1).to_radians()),
@@ -785,10 +805,13 @@ impl Simulator {
         if !self.has_port(port) {
             return Ok(());
         }
-        for cp in s.chars() {
-            self.port_out(port, cp as i64, 0)?;
-        }
-        Ok(())
+        // Write the whole formatted string as one atomic unit so concurrent
+        // threads never interleave mid-line (ports the per-`printf` output unit;
+        // STDOUT/STDERR are serialized through a process-global console lock).
+        let ph = self.get_port_handler_mut(port).ok_or_else(|| {
+            CpuException(format!("OUT: no handler registered for port {}", port))
+        })?;
+        ph.write_str(s)
     }
 
     /// Ports `sprintf(msgOffset)`: read fmt at [SF+msgOffset], pull args from the
