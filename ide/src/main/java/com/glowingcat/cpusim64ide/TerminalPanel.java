@@ -48,6 +48,19 @@ public class TerminalPanel extends JComponent implements Scrollable {
     private int charHeight;
     private int charAscent;
 
+    // Fallback fonts for codepoints the primary terminal font cannot display
+    // (notably supplementary-plane characters such as emoji). Resolved lazily
+    // and cached per codepoint to keep the paint loop cheap.
+    private final java.util.Map<Integer, Font> fallbackFontCache = new java.util.HashMap<>();
+    private static final String[] FALLBACK_FONT_FAMILIES = {
+        "Apple Color Emoji",   // macOS emoji
+        "Segoe UI Emoji",      // Windows emoji
+        "Noto Color Emoji",    // Linux emoji
+        "Noto Emoji",
+        "Symbola",
+        Font.SANS_SERIF        // last resort: platform default sans
+    };
+
     // ANSI state
     private Color currentFg = termFg;
     private Color currentBg = null; // null = use termBg
@@ -208,12 +221,71 @@ public class TerminalPanel extends JComponent implements Scrollable {
 
     public void setFont(String fontName, int fontSize) {
         termFont = new Font(fontName, Font.PLAIN, fontSize);
+        fallbackFontCache.clear();
         FontMetrics fm = getFontMetrics(termFont);
         charWidth = fm.charWidth('M');
         charHeight = fm.getHeight();
         charAscent = fm.getAscent();
         revalidate();
         repaint();
+    }
+
+    /**
+     * Returns a font that can display the given codepoint. Prefers the primary
+     * terminal font; if it lacks a glyph (common for emoji and other
+     * supplementary-plane codepoints) falls back to a platform emoji/symbol
+     * font. Results are cached per codepoint. The returned font preserves the
+     * terminal font size; bold/italic styling is applied by the caller.
+     */
+    private Font fontForCodepoint(int cp) {
+        if (termFont.canDisplay(cp)) return termFont;
+        Integer key = cp;
+        Font cached = fallbackFontCache.get(key);
+        if (cached != null) return cached;
+        Font chosen = termFont; // default if nothing better is found
+        for (String family : FALLBACK_FONT_FAMILIES) {
+            Font f = new Font(family, Font.PLAIN, termFont.getSize());
+            // new Font() never returns null and silently maps unknown family
+            // names to a default, so verify the glyph is actually available.
+            if (f.canDisplay(cp)) { chosen = f; break; }
+        }
+        fallbackFontCache.put(key, chosen);
+        return chosen;
+    }
+
+    /**
+     * Sentinel stored in the second cell occupied by a double-width character.
+     * Distinct from 0 (empty cell) and from any valid Unicode codepoint
+     * (which are always >= 0). Painting, selection and text extraction skip
+     * these cells so a wide glyph is rendered and copied exactly once.
+     */
+    private static final int WIDE_CONTINUATION = -1;
+
+    /**
+     * Returns true if the codepoint should occupy two terminal cells
+     * (double-width), matching how real terminals lay out emoji and East Asian
+     * wide characters. Covers emoji/symbol/pictographic supplementary ranges
+     * and the common CJK wide/fullwidth blocks.
+     */
+    private static boolean isWide(int cp) {
+        return
+            // Emoji / symbols / pictographs (supplementary plane)
+            (cp >= 0x1F000 && cp <= 0x1FAFF) ||
+            // Miscellaneous Symbols and Dingbats commonly rendered as emoji
+            (cp >= 0x2600 && cp <= 0x27BF) ||
+            // CJK Radicals .. Hangul syllables (wide)
+            (cp >= 0x1100 && cp <= 0x115F) ||   // Hangul Jamo
+            (cp >= 0x2E80 && cp <= 0x303E) ||   // CJK radicals, Kangxi, symbols
+            (cp >= 0x3041 && cp <= 0x33FF) ||   // Hiragana .. CJK compat
+            (cp >= 0x3400 && cp <= 0x4DBF) ||   // CJK Ext A
+            (cp >= 0x4E00 && cp <= 0x9FFF) ||   // CJK Unified Ideographs
+            (cp >= 0xA000 && cp <= 0xA4CF) ||   // Yi
+            (cp >= 0xAC00 && cp <= 0xD7A3) ||   // Hangul syllables
+            (cp >= 0xF900 && cp <= 0xFAFF) ||   // CJK compat ideographs
+            (cp >= 0xFE30 && cp <= 0xFE4F) ||   // CJK compat forms
+            (cp >= 0xFF00 && cp <= 0xFF60) ||   // Fullwidth forms
+            (cp >= 0xFFE0 && cp <= 0xFFE6) ||   // Fullwidth signs
+            (cp >= 0x20000 && cp <= 0x3FFFD);   // CJK Ext B+ (supplementary)
     }
 
     public int getVisibleRows() {
@@ -251,13 +323,44 @@ public class TerminalPanel extends JComponent implements Scrollable {
                 } else if (c == '\b') {
                     if (cursorCol > 0) cursorCol--;
                 } else {
+                    // Combine UTF-16 surrogate pairs into a single Unicode codepoint
+                    // so supplementary characters (e.g. emoji, U+10000 and above,
+                    // which are 4 bytes in UTF-8) occupy one cell and render as one
+                    // glyph instead of two broken surrogate halves.
+                    int cp = c;
+                    if (Character.isHighSurrogate(c) && i + 1 < text.length()) {
+                        char low = text.charAt(i + 1);
+                        if (Character.isLowSurrogate(low)) {
+                            cp = Character.toCodePoint(c, low);
+                            i++; // consumed the low surrogate
+                        }
+                    }
+                    boolean wide = isWide(cp);
+                    int cols = getVisibleCols();
+                    // A double-width char cannot straddle the right edge: if only
+                    // one column remains, wrap to the next line first (the trailing
+                    // column is left blank), matching real terminal behavior.
+                    if (wide && cursorCol == cols - 1) {
+                        cursorCol = 0;
+                        newLine();
+                    }
                     int idx = cursorRow * maxCols + cursorCol;
-                    chars[idx] = c;
+                    chars[idx] = cp;
                     colors[idx] = currentFg;
                     bgColors[idx] = currentBg;
                     attrs[idx] = currentAttrs;
                     cursorCol++;
-                    if (cursorCol >= getVisibleCols()) {
+                    if (wide) {
+                        // Reserve the second cell as a continuation marker so the
+                        // glyph owns two columns and nothing is drawn there.
+                        int idx2 = cursorRow * maxCols + cursorCol;
+                        chars[idx2] = WIDE_CONTINUATION;
+                        colors[idx2] = currentFg;
+                        bgColors[idx2] = currentBg;
+                        attrs[idx2] = currentAttrs;
+                        cursorCol++;
+                    }
+                    if (cursorCol >= cols) {
                         cursorCol = 0;
                         newLine();
                     }
@@ -440,7 +543,7 @@ public class TerminalPanel extends JComponent implements Scrollable {
             int r = inputStartRow, c = inputStartCol;
             while (r != cursorRow || c != cursorCol) {
                 int idx = r * maxCols + c;
-                if (chars[idx] != 0) sb.appendCodePoint(chars[idx]);
+                if (chars[idx] != 0 && chars[idx] != WIDE_CONTINUATION) sb.appendCodePoint(chars[idx]);
                 c++;
                 if (c >= maxCols) { c = 0; r = (r + 1) % totalLines; }
             }
@@ -484,7 +587,7 @@ public class TerminalPanel extends JComponent implements Scrollable {
                 int bufRow = (firstLine + r) % totalLines;
                 int idx = bufRow * maxCols + c;
                 int ch = chars[idx];
-                if (ch != 0) sb.appendCodePoint(ch);
+                if (ch != 0 && ch != WIDE_CONTINUATION) sb.appendCodePoint(ch);
                 c++;
                 if (c >= maxCols) {
                     sb.append('\n');
@@ -538,8 +641,10 @@ public class TerminalPanel extends JComponent implements Scrollable {
                         g2.setColor(bgColors[idx]);
                         g2.fillRect(col * charWidth, row * charHeight, charWidth, charHeight);
                     }
-                    if (ch != 0) {
+                    if (ch != 0 && ch != WIDE_CONTINUATION) {
                         byte attr = attrs[idx];
+                        boolean wide = isWide(ch);
+                        int cellW = wide ? charWidth * 2 : charWidth;
                         Color fg = inSelection ? Color.WHITE : (colors[idx] != null ? colors[idx] : termFg);
                         Color bg = bgColors[idx] != null ? bgColors[idx] : termBg;
                         if ((attr & ATTR_REVERSE) != 0) { Color t = fg; fg = bg; bg = t; }
@@ -548,23 +653,29 @@ public class TerminalPanel extends JComponent implements Scrollable {
                         if ((attr & ATTR_BLINK) != 0 && !cursorVisible) fg = bg; // blink off phase
                         if (!inSelection && !bg.equals(termBg) && !bg.equals(bgColors[idx])) {
                             g2.setColor(bg);
-                            g2.fillRect(col * charWidth, row * charHeight, charWidth, charHeight);
+                            g2.fillRect(col * charWidth, row * charHeight, cellW, charHeight);
                         }
                         if ((attr & ATTR_HIDDEN) == 0) {
-                            Font drawFont = termFont;
+                            Font drawFont = fontForCodepoint(ch);
                             if ((attr & ATTR_BOLD) != 0 && (attr & ATTR_ITALIC) != 0)
                                 drawFont = drawFont.deriveFont(Font.BOLD | Font.ITALIC);
                             else if ((attr & ATTR_BOLD) != 0) drawFont = drawFont.deriveFont(Font.BOLD);
                             else if ((attr & ATTR_ITALIC) != 0) drawFont = drawFont.deriveFont(Font.ITALIC);
                             g2.setFont(drawFont);
                             g2.setColor(fg);
-                            g2.drawString(new String(Character.toChars(ch)), col * charWidth, y);
+                            String glyph = new String(Character.toChars(ch));
+                            // Center the glyph within its cell box (two cells wide
+                            // for double-width characters) so emoji/CJK don't
+                            // overlap the following column.
+                            int gw = g2.getFontMetrics(drawFont).stringWidth(glyph);
+                            int gx = col * charWidth + Math.max(0, (cellW - gw) / 2);
+                            g2.drawString(glyph, gx, y);
                             if ((attr & ATTR_UNDERLINE) != 0) {
-                                g2.drawLine(col * charWidth, y + 1, (col + 1) * charWidth, y + 1);
+                                g2.drawLine(col * charWidth, y + 1, col * charWidth + cellW, y + 1);
                             }
                             if ((attr & ATTR_STRIKETHROUGH) != 0) {
                                 int midY = row * charHeight + charHeight / 2;
-                                g2.drawLine(col * charWidth, midY, (col + 1) * charWidth, midY);
+                                g2.drawLine(col * charWidth, midY, col * charWidth + cellW, midY);
                             }
                             g2.setFont(termFont);
                         }
@@ -629,6 +740,7 @@ public class TerminalPanel extends JComponent implements Scrollable {
                 }
                 for (int col = 0; col <= lastNonEmpty; col++) {
                     int ch = chars[bufRow * maxCols + col];
+                    if (ch == WIDE_CONTINUATION) continue; // second half of a wide char
                     sb.appendCodePoint(ch != 0 ? ch : ' ');
                 }
                 if (line < lineCount - 1) sb.append('\n');
