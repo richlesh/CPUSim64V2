@@ -15,7 +15,7 @@
 // Original: 2022/11/26
 // ============================================================
 
-#include <system/math.def>
+#include <system/math.asm>
 #include <system/io.asm>
 #include <system/console.asm>
 

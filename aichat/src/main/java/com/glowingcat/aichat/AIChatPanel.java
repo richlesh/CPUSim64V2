@@ -38,6 +38,7 @@ public class AIChatPanel extends JPanel {
     private final JTextArea inputArea;
     private final JButton sendBtn;
     private final DocumentEditor editor;
+	private final String contentType;
     private final AIChatPreferences aiPreferences;
     private ChatColors chatColors;
     private final List<Map<String, String>> messages = new ArrayList<>();
@@ -55,6 +56,8 @@ public class AIChatPanel extends JPanel {
     private boolean useWebView = false;
     // Strong reference to prevent GC of the JavaScript bridge object
     private ChatBridge chatBridge;
+    // Status bar for showing document/system prompt sizes
+    private JLabel statusBar;
     private Runnable statusUpdater;
 
     // Fallback rendering
@@ -100,6 +103,7 @@ public class AIChatPanel extends JPanel {
      */
     public static class Builder {
         private DocumentEditor editor;
+		private String contentType;
         private AIChatPreferences preferences;
         private ChatColors chatColors;
         private LLMClient llmClient;
@@ -108,7 +112,7 @@ public class AIChatPanel extends JPanel {
         private final List<ContextProvider> contextProviders = new ArrayList<>();
         private final List<String> systemPromptDocIndexPaths = new ArrayList<>();
 
-        private Builder() {}
+        private Builder() { contentType = "text"; }
 
         /** Set the document editor (required). */
         public Builder editor(DocumentEditor editor) {
@@ -116,6 +120,12 @@ public class AIChatPanel extends JPanel {
             return this;
         }
 
+		/** Set the type of the context in the editor. */
+		public Builder contentType(String type) {
+			this.contentType = type;
+			return this;
+		}
+		
         /** Set the AI chat preferences (required). */
         public Builder preferences(AIChatPreferences preferences) {
             this.preferences = preferences;
@@ -189,6 +199,7 @@ public class AIChatPanel extends JPanel {
     private AIChatPanel(Builder builder) {
         super(new BorderLayout());
         this.editor = builder.editor;
+		this.contentType = builder.contentType;
         this.aiPreferences = builder.preferences;
         this.chatColors = builder.chatColors;
         this.llmClient = builder.llmClient;
@@ -253,6 +264,7 @@ public class AIChatPanel extends JPanel {
         inputPanel.add(btnPanel, BorderLayout.EAST);
 
         JLabel statusBar = new JLabel(" ");
+        this.statusBar = statusBar;
         statusBar.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 10));
         statusBar.setBorder(BorderFactory.createEmptyBorder(2, 4, 2, 4));
 
@@ -319,6 +331,7 @@ public class AIChatPanel extends JPanel {
     private void renderFallbackChat() {
         fallbackChatPanel.removeAll();
         Font chatFont = new Font(aiPreferences.getAiFontFamily(), Font.PLAIN, aiPreferences.getAiFontSize());
+        Font codeFont = new Font(aiPreferences.getAiCodeFontFamily(), Font.PLAIN, aiPreferences.getAiCodeFontSize());
         ImageIcon humanIcon = loadScaledIcon("/human.png", 24);
         ImageIcon aiIcon = loadScaledIcon("/AI.png", 24);
 
@@ -333,7 +346,11 @@ public class AIChatPanel extends JPanel {
             icon.setVerticalAlignment(SwingConstants.TOP);
             row.add(icon, BorderLayout.WEST);
 
-            JTextArea textArea = new JTextArea(msg.markdown);
+            String displayText = msg.markdown;
+            if (msg instanceof ApprovalMessage am && am.diff != null) {
+                displayText += buildChangePreviewText(am.diff);
+            }
+            JTextArea textArea = new JTextArea(displayText);
             textArea.setFont(chatFont);
             textArea.setLineWrap(true);
             textArea.setWrapStyleWord(true);
@@ -529,11 +546,50 @@ public class AIChatPanel extends JPanel {
                         md = msg.markdown;
                     }
                     if (md != null) {
-                        StringSelection sel = new StringSelection(md);
-                        Toolkit.getDefaultToolkit().getSystemClipboard().setContents(sel, null);
+                        setClipboard(md);
                     }
                 }
             });
+        }
+
+        /**
+         * Called when the user clicks the copy icon on a fenced code block.
+         * The text is supplied directly from the page so arbitrary blocks can
+         * be copied without a message index.
+         */
+        public void copyText(String text) {
+            if (text == null) return;
+            SwingUtilities.invokeLater(() -> setClipboard(text));
+        }
+
+        /**
+         * Writes text to the system clipboard defensively. The system
+         * clipboard can be briefly owned by another process (notably on
+         * macOS), in which case setContents throws IllegalStateException.
+         * If that exception escaped a method invoked by the JavaFX WebView
+         * bridge it could crash the WebKit native layer, so all failures are
+         * swallowed here (with one short retry).
+         */
+        private void setClipboard(String text) {
+            StringSelection sel = new StringSelection(text);
+            for (int attempt = 0; attempt < 2; attempt++) {
+                try {
+                    Toolkit.getDefaultToolkit().getSystemClipboard().setContents(sel, null);
+                    return;
+                } catch (IllegalStateException ex) {
+                    // Clipboard temporarily unavailable; pause briefly and retry once.
+                    try {
+                        Thread.sleep(60);
+                    } catch (InterruptedException ie) {
+                        Thread.currentThread().interrupt();
+                        return;
+                    }
+                } catch (Exception ex) {
+                    // Any other clipboard failure must never propagate into the
+                    // native WebView call stack.
+                    return;
+                }
+            }
         }
 
         /** Called when a link is clicked. */
@@ -551,6 +607,23 @@ public class AIChatPanel extends JPanel {
         public void cancelRequest() {
             SwingUtilities.invokeLater(() -> cancelCurrentRequest());
         }
+    }
+
+    /**
+     * Programmatically submits a prompt through the same pipeline as a user
+     * typing in the input box and pressing Send. This reuses the full
+     * send/response/diff-apply flow, including the Allow/Reject change buttons.
+     * <p>
+     * Safe to call from any thread; the work is marshalled onto the EDT.
+     *
+     * @param prompt the prompt text to send; ignored if null or blank
+     */
+    public void submitPrompt(String prompt) {
+        if (prompt == null || prompt.isBlank()) return;
+        SwingUtilities.invokeLater(() -> {
+            inputArea.setText(prompt);
+            sendMessage();
+        });
     }
 
     /** Set or replace the LLM client at runtime (e.g., after preferences change). */
@@ -662,7 +735,7 @@ public class AIChatPanel extends JPanel {
         }
 
         String nowStr = ZonedDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssZZZZZ (zzzz)"));
-        String context = "Current date/time: " + nowStr + "\n\nCurrent document: " + editor.getFilepath() + "\n```cpusim64\n" + editor.getContextText() + "\n```";
+        String context = "Current date/time: " + nowStr + "\n\nCurrent document: " + editor.getFilepath() + "\n```"+contentType+"\n" + editor.getContextText() + "\n```";
         for (ContextProvider cp : contextProviders) {
             String extra = cp.supplier().get();
             if (extra != null && !extra.isEmpty()) {
@@ -677,7 +750,8 @@ public class AIChatPanel extends JPanel {
             String retrievalQuery = text;
             String docText = editor.getText();
             if (docText != null && !docText.isEmpty()) {
-                retrievalQuery = text + "\n\n" + docText;
+                String docSample = docText.length() > 500 ? docText.substring(0, 500) : docText;
+                retrievalQuery = text + "\n\n" + docSample;
             }
             List<String> relevantDocs = retriever.retrieve(retrievalQuery);
             if (!relevantDocs.isEmpty()) {
@@ -893,6 +967,83 @@ public class AIChatPanel extends JPanel {
         return -1;
     }
 
+    /**
+     * Builds an HTML fragment that previews each change in a unified diff.
+     * <p>
+     * Each change is rendered as its own block containing the post-change text
+     * (context + added lines), preceded by a short label. Added lines are shown
+     * in bold red so the actual changes clearly stand out from the surrounding
+     * (muted) context. This is emitted as HTML rather than markdown so the chat's
+     * syntax highlighter does not recolor the content. Returns "" if the diff has
+     * no parseable changes.
+     *
+     * @param diff the unified diff content
+     * @return an HTML fragment to append after the approval explanation, or "" if
+     *         there is nothing to preview
+     */
+    private static String buildChangePreviewHtml(String diff) {
+        if (diff == null || diff.isBlank()) return "";
+        List<DiffApplier.ChangePreview> previews = DiffApplier.previewReplacements(diff);
+        if (previews.isEmpty()) return "";
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("<div class=\"change-preview\">");
+        sb.append("<div class=\"change-preview-heading\">")
+          .append(escapeHtml(AIChatMessages.get("aichat.previewHeading")))
+          .append("</div>");
+        for (int i = 0; i < previews.size(); i++) {
+            DiffApplier.ChangePreview p = previews.get(i);
+            sb.append("<div class=\"change-preview-label\">")
+              .append(escapeHtml(AIChatMessages.get("aichat.previewChangeLabel",
+                      i + 1, p.added(), p.removed())))
+              .append("</div>");
+            sb.append("<pre class=\"change-preview-block\">");
+            for (DiffApplier.PreviewLine line : p.lines()) {
+                boolean added = line.kind() == DiffApplier.LineKind.ADDED;
+                // Keep empty lines visible with a zero-width space.
+                String text = line.text().isEmpty() ? "\u200b" : escapeHtml(line.text());
+                sb.append("<span class=\"")
+                  .append(added ? "change-added" : "change-context")
+                  .append("\">")
+                  .append(text)
+                  .append("</span>\n");
+            }
+            sb.append("</pre>");
+        }
+        sb.append("</div>");
+        return sb.toString();
+    }
+
+    /**
+     * Builds a plain-text preview of each change in a unified diff for the Swing
+     * fallback renderer (which has no HTML/CSS). Added lines are prefixed with
+     * "+ " and context lines with "  " so the changes remain distinguishable.
+     * Returns "" if the diff has no parseable changes.
+     *
+     * @param diff the unified diff content
+     * @return plain text to append after the approval explanation (starts with a
+     *         blank line), or "" if there is nothing to preview
+     */
+    private static String buildChangePreviewText(String diff) {
+        if (diff == null || diff.isBlank()) return "";
+        List<DiffApplier.ChangePreview> previews = DiffApplier.previewReplacements(diff);
+        if (previews.isEmpty()) return "";
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("\n\n").append(AIChatMessages.get("aichat.previewHeading"));
+        for (int i = 0; i < previews.size(); i++) {
+            DiffApplier.ChangePreview p = previews.get(i);
+            sb.append("\n\n")
+              .append(AIChatMessages.get("aichat.previewChangeLabel", i + 1, p.added(), p.removed()))
+              .append("\n");
+            for (DiffApplier.PreviewLine line : p.lines()) {
+                boolean added = line.kind() == DiffApplier.LineKind.ADDED;
+                sb.append(added ? "+ " : "  ").append(line.text()).append("\n");
+            }
+        }
+        return sb.toString();
+    }
+
     /** Special message type for document replacement approvals. */
     private static class ApprovalMessage extends ChatMessage {
         final String explanation;
@@ -949,6 +1100,8 @@ public class AIChatPanel extends JPanel {
         html.append("<style>").append(loadCssResource(darkMode)).append("</style>");
         // Emoji image styles
         html.append("<style>").append(EmojiReplacer.emojiCss()).append("</style>");
+        // Emoji image fallback handler (Twemoji -> GitHub) used by onerror="emojiFallback(this)"
+        html.append("<script>").append(EmojiReplacer.emojiFallbackScript()).append("</script>");
         html.append("<script>");
         html.append("MathJax = {");
         html.append("  tex: { inlineMath: [['$','$'], ['\\\\(','\\\\)']], displayMath: [['$$','$$'], ['\\\\[','\\\\]']] },");
@@ -977,6 +1130,34 @@ public class AIChatPanel extends JPanel {
         html.append("  var btn = event.currentTarget;");
         html.append("  btn.innerHTML = '<svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><path d=\"M3 8.5L6.5 12L13 4\"/></svg>';");
         html.append("}");
+        // Copy a single fenced code block. Routes the raw text through the Java
+        // bridge because the JavaFX WebView does not expose navigator.clipboard.
+        html.append("function copyCode(btn) {");
+        html.append("  var wrap = btn.closest('.code-block');");
+        html.append("  if(!wrap) return;");
+        html.append("  var code = wrap.querySelector('pre');");
+        html.append("  var text = code ? (code.innerText || code.textContent || '') : '';");
+        html.append("  if(window.chatBridge) window.chatBridge.copyText(text);");
+        html.append("  btn.innerHTML = '<svg width=\"13\" height=\"13\" viewBox=\"0 0 16 16\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><path d=\"M3 8.5L6.5 12L13 4\"/></svg>';");
+        html.append("  setTimeout(function(){ btn.innerHTML = '<svg width=\"13\" height=\"13\" viewBox=\"0 0 16 16\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><rect x=\"5\" y=\"5\" width=\"9\" height=\"9\" rx=\"1.5\"/><path d=\"M3 11V2.5A1.5 1.5 0 0 1 4.5 1H11\"/></svg>'; }, 1200);");
+        html.append("}");
+        // Wrap every code block in a positioned container and add a copy button.
+        html.append("function addCodeCopyButtons() {");
+        html.append("  document.querySelectorAll('pre').forEach(function(pre) {");
+        html.append("    if(pre.classList.contains('change-preview-block')) return;");
+        html.append("    if(pre.parentElement && pre.parentElement.classList.contains('code-block')) return;");
+        html.append("    var wrap = document.createElement('div');");
+        html.append("    wrap.className = 'code-block';");
+        html.append("    pre.parentNode.insertBefore(wrap, pre);");
+        html.append("    wrap.appendChild(pre);");
+        html.append("    var btn = document.createElement('button');");
+        html.append("    btn.className = 'code-copy-btn';");
+        html.append("    btn.title = 'Copy code';");
+        html.append("    btn.setAttribute('onclick', 'copyCode(this)');");
+        html.append("    btn.innerHTML = '<svg width=\"13\" height=\"13\" viewBox=\"0 0 16 16\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><rect x=\"5\" y=\"5\" width=\"9\" height=\"9\" rx=\"1.5\"/><path d=\"M3 11V2.5A1.5 1.5 0 0 1 4.5 1H11\"/></svg>';");
+        html.append("    wrap.appendChild(btn);");
+        html.append("  });");
+        html.append("}");
         html.append("document.addEventListener('DOMContentLoaded', function() {");
         html.append("  if(window.mermaid){document.querySelectorAll('pre code.language-mermaid').forEach(function(el){");
         html.append("    var pre=el.parentElement;var div=document.createElement('div');");
@@ -984,6 +1165,7 @@ public class AIChatPanel extends JPanel {
         html.append("    pre.parentElement.replaceChild(div,pre);});");
         html.append("  mermaid.run();}");
         html.append("  if(window.hljs){hljs.highlightAll();}");
+        html.append("  addCodeCopyButtons();");
         html.append("});");
         html.append("</script>");
         // Lightbox for images and Mermaid diagrams (right-click to enlarge)
@@ -1004,9 +1186,17 @@ public class AIChatPanel extends JPanel {
                 // AI message — render markdown as HTML
                 String renderedContent;
                 if (msg instanceof ApprovalMessage am) {
-                    renderedContent = renderMarkdownToHtml(am.explanation.isEmpty()
+                    String explanationMd = am.explanation.isEmpty()
                         ? AIChatMessages.get("aichat.updatedDocument")
-                        : am.explanation);
+                        : am.explanation;
+                    renderedContent = renderMarkdownToHtml(explanationMd);
+                    // When the change is a diff, append an HTML preview of each
+                    // change. Added lines are emphasized (bold red) and context
+                    // lines are muted, so the actual changes clearly stand out.
+                    // Built as HTML (not markdown) so highlight.js does not recolor it.
+                    if (am.diff != null) {
+                        renderedContent += buildChangePreviewHtml(am.diff);
+                    }
                 } else {
                     renderedContent = renderMarkdownToHtml(msg.markdown);
                 }
@@ -1051,6 +1241,7 @@ public class AIChatPanel extends JPanel {
         html.append("div.className='mermaid';div.textContent=el.textContent;");
         html.append("pre.parentElement.replaceChild(div,pre);});");
         html.append("mermaid.run();}");
+        html.append("if(typeof addCodeCopyButtons==='function') addCodeCopyButtons();");
         html.append("};</script>");
 
         html.append("</body></html>");
@@ -1062,8 +1253,12 @@ public class AIChatPanel extends JPanel {
         // Convert LaTeX-style math delimiters to dollar-sign delimiters before parsing
         String converted = markdown.replaceAll("\\\\\\((.+?)\\\\\\)", "\\$$1\\$");
         converted = converted.replaceAll("(?s)\\\\\\[(.+?)\\\\\\]", "\\$\\$$1\\$\\$");
+        // Apply GFM extras (emoji shortcodes, ~sub~ / ^sup^) before parsing.
+        converted = MarkdownExtras.preprocessMarkdown(converted);
         Node document = mdParser.parse(converted);
         String html = mdRenderer.render(document);
+        // Convert GitHub-style alert blockquotes (> [!NOTE] etc.) into styled callout divs.
+        html = MarkdownExtras.postProcessHtml(html);
         // Replace non-BMP characters (emoji) with Twemoji SVG images
         return EmojiReplacer.replaceEmoji(html);
     }
@@ -1082,10 +1277,10 @@ public class AIChatPanel extends JPanel {
             if (is != null) {
                 base = new String(is.readAllBytes(), StandardCharsets.UTF_8).trim();
             } else {
-                base = "You are an AI writing assistant. Help users write and improve markdown documents.";
+                base = "You are an AI writing assistant.";
             }
         } catch (Exception e) {
-            base = "You are an AI writing assistant. Help users write and improve markdown documents.";
+            base = "You are an AI writing assistant.";
         }
 
         StringBuilder sb = new StringBuilder(base);
@@ -1094,7 +1289,7 @@ public class AIChatPanel extends JPanel {
         if (docIndexPaths != null && !docIndexPaths.isEmpty()) {
             String docs = DocumentRetriever.loadAndStripDocuments(docIndexPaths);
             if (docs != null && !docs.isBlank()) {
-                sb.append("\n\n# CPUSim64 Reference Documentation\n");
+                sb.append("\n\n# Reference Documentation\n");
                 sb.append(docs);
             }
         }

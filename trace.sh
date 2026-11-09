@@ -1,10 +1,13 @@
 #!/usr/bin/env bash
 
+USE_NATIVE=true
+
 MEMSIZE=16M
 STACKSIZE=8K
 
 SCRIPT_PATH="$(realpath "${BASH_SOURCE[0]}")"
 SCRIPT_DIR="$(dirname "$SCRIPT_PATH")"
+CLASSPATH="$SCRIPT_DIR"/lib/cpusim64-*.jar
 
 # Determine the directory containing the .asm file and the base name
 ASM_DIR="$(dirname "$1")"
@@ -25,5 +28,9 @@ else
 fi
 
 if [[ -n "$O64_FILE" ]]; then
-	java -Dfile.encoding=UTF8 -cp "$SCRIPT_DIR"/lib/cpusim64-*.jar cloud.lesh.CPUSim64.Simulation "$O64_FILE" --verbose --trace --mem=$MEMSIZE --stack=$STACKSIZE $2 $3 $4 $5 $6 $7 $8 $9
+	if [[ "$USE_NATIVE" == "true" ]]; then
+		"$SCRIPT_DIR"/bin/cpusim64_native "$O64_FILE" --verbose --trace --mem=$MEMSIZE --stack=$STACKSIZE $2 $3 $4 $5 $6 $7 $8 $9
+	else
+		java -Dfile.encoding=UTF8 -cp "$SCRIPT_DIR"/lib/cpusim64-*.jar cloud.lesh.CPUSim64.Simulation "$O64_FILE" --verbose --trace --mem=$MEMSIZE --stack=$STACKSIZE $2 $3 $4 $5 $6 $7 $8 $9
+	fi
 fi

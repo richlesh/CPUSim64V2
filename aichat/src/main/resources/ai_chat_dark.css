@@ -270,3 +270,87 @@ mjx-container[display=true] {
 mjx-container svg {
     overflow: visible;
 }
+
+/* GitHub-style alerts / callouts (> [!NOTE] etc.) */
+.markdown-alert { border-left: 4px solid #666; padding: 8px 16px; margin: 12px 0; border-radius: 4px; }
+.markdown-alert > p { margin: 4px 0; }
+.markdown-alert-title { font-weight: 600; }
+.markdown-alert-note { border-left-color: #4493f8; } .markdown-alert-note .markdown-alert-title { color: #4493f8; }
+.markdown-alert-tip { border-left-color: #3fb950; } .markdown-alert-tip .markdown-alert-title { color: #3fb950; }
+.markdown-alert-important { border-left-color: #ab7df8; } .markdown-alert-important .markdown-alert-title { color: #ab7df8; }
+.markdown-alert-warning { border-left-color: #d29922; } .markdown-alert-warning .markdown-alert-title { color: #d29922; }
+.markdown-alert-caution { border-left-color: #f85149; } .markdown-alert-caution .markdown-alert-title { color: #f85149; }
+
+/* Per-code-block copy button */
+.code-block {
+    position: relative;
+}
+
+.code-block pre {
+    /* leave room so the copy button never overlaps code text */
+    padding-right: 36px;
+}
+
+.code-copy-btn {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    background: rgba(255, 255, 255, 0.12);
+    color: #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 4px;
+    padding: 3px;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.15s, background 0.15s;
+    line-height: 0;
+}
+
+.code-block:hover .code-copy-btn {
+    opacity: 0.8;
+}
+
+.code-copy-btn:hover {
+    opacity: 1;
+    background: rgba(255, 255, 255, 0.25);
+}
+
+.code-copy-btn:active {
+    background: rgba(255, 255, 255, 0.35);
+}
+
+/* AI change preview (diff-update suggestions) */
+.change-preview {
+    margin-top: 10px;
+}
+
+.change-preview-heading {
+    font-weight: 600;
+    margin: 6px 0 2px 0;
+}
+
+.change-preview-label {
+    font-size: 0.9em;
+    color: #aaaaaa;
+    margin: 8px 0 2px 0;
+}
+
+pre.change-preview-block {
+    color: #ffffff;
+    background: #333333;
+    padding: 10px;
+    border-radius: 5px;
+    overflow-x: auto;
+    line-height: 1.4;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+pre.change-preview-block .change-context {
+    color: #9a9a9a;
+}
+
+pre.change-preview-block .change-added {
+    color: #ff6b6b;
+    font-weight: bold;
+}

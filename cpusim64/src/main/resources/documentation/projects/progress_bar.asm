@@ -13,13 +13,12 @@
 // Original: 2022/11/26
 // ============================================================================
 
-#include <system/math.def>
+#include <system/math.asm>
 #include <system/io.asm>
 #include <system/console.asm>
 
 #call main()
-stop
-stop
+#call exit(r0)
 
 #define SIZE 74                         // Total width of the progress bar in chars
 

@@ -12,13 +12,13 @@ MAIN:
 	div		r0,r1		// r0 <- r0 / r1 (integer divide)
 	debug	r0
 
-	move	f0,1.234
-	move	f1,2.345
+	load	f0,1.234
+	load	f1,2.345
 	add		f0,f1		// f0 <- f0 + f1
 	debug	f0
 	sub		f0,f1		// f0 <- f0 - f1
 	debug	f0
-	move	f0,3.14159
+	load	f0,3.14159
 	mult	f0,f1		// f0 <- f0 * f1
 	debug	f0
 	div		f0,f1		// f0 <- f0 / f1 (FP divide)
@@ -37,12 +37,12 @@ MAIN:
 	div		r0,r1		// r0 <- r0 / r1 (integer divide)
 	debug	r0
 
-	move	f0,1.234
+	load	f0,1.234
 	add		f0,2		// f0 <- f0 + 2
 	debug	f0
 	sub		f0,2		// f0 <- f0 - 2
 	debug	f0
-	move	f0,3.14159
+	load	f0,3.14159
 	mult	f0,2		// f0 <- f0 * 2
 	debug	f0
 	div		f0,2		// f0 <- f0 / 2 (FP divide)

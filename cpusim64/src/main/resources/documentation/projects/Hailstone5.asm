@@ -12,27 +12,28 @@
 // and terminating when the value reaches 1.  The "length" of the sequence is
 // the count of terms generated (including the starting value and the final 1).
 //
-// PARALLEL, WORK-QUEUE DESIGN:
+// PARALLEL, WORK-COUNTER DESIGN:
 //   This version improves on the fixed-assignment threading of Hailstone4 by
-//   using a shared, thread-safe work queue.  The search range [0, limit) is
-//   divided into fixed-size "work units" of gWORKSIZE candidates each.  Each
-//   work unit's starting index is pushed onto a shared Vector (gWORKQUEUE),
-//   guarded by the Vector's own mutex.  One worker thread is spawned per CPU
-//   core; each worker repeatedly pops a work unit from the queue, processes
-//   it, and merges its local best result into the shared global best under
-//   MY_MUTEX.  Workers continue until the queue is empty.
+//   handing out work dynamically.  The search range [0, limit) is divided
+//   into fixed-size "work units" of gWORKSIZE candidates each.  A shared
+//   counter (gNEXT_UNIT) is atomically incremented with get_and_increment()
+//   to claim the next unit; no queue or queue mutex is needed.  One worker
+//   thread is spawned per CPU core; each worker repeatedly claims a work
+//   unit, processes it, and merges its local best result into the shared
+//   global best under MY_MUTEX.  Workers stop once the claimed unit starts
+//   at or beyond the limit.
 //
-//   Pulling work dynamically from a shared queue provides better load
-//   balancing than static partitioning, because work units that finish early
-//   (e.g. those served entirely from the memoization cache) let a thread
-//   immediately grab more work instead of sitting idle.
+//   Claiming work dynamically provides better load balancing than static
+//   partitioning, because work units that finish early (e.g. those served
+//   largely from the memoization cache) let a thread immediately grab more
+//   work instead of sitting idle.
 //
 //   Memoization (see compute_hailstone) caches previously computed sequence
 //   lengths to dramatically reduce redundant work.
 //
 // Usage:
 //     Hailstone5 <limit>
-//   <limit>  A positive integer; the largest starting number to test.
+//   <limit>  A positive integer >= 2; candidates 0 .. limit-1 are tested.
 //
 // Output:
 //   Progress messages from threads and a final line
@@ -49,7 +50,6 @@
 #include <system/string.asm>
 #include <system/system.asm>
 #include <system/thread.asm>
-#include <adt/vector.asm>
 
     #call   main()
     #call   exit(r0)
@@ -58,7 +58,7 @@
 #global gMAX:        .dci 0         // Longest sequence length found (shared)
 #global gIMAX:       .dci 0         // Starting number that produced gMAX (shared)
 #global gWORKSIZE:   .dci 100000    // Number of candidates per work unit
-#global gWORKQUEUE:  .dci 0         // Address of the shared work-queue Vector
+#global gNEXT_UNIT:  .dci -1        // Last claimed work unit (first claim yields 0)
 #global gLIMIT:      .dci 0         // Maximum number to test supplied by user
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -73,29 +73,25 @@
 //
 // Behavior:
 //   1. Validates that one command line argument was supplied and parses it
-//      into the search limit.
+//      into the search limit (stored in gLIMIT).
 //   2. Initializes the shared result mutex MY_MUTEX.
-//   3. Creates the shared work-queue Vector and stores it in gWORKQUEUE.
-//   4. Pushes work-unit start indices onto the queue.  Work unit 0 is handled
-//      directly (to force the memoization cache to be allocated before threads
-//      run), then the remaining work units are pushed in descending order.
-//   5. Queries the number of CPU cores and spawns one worker thread per core,
-//      each sharing the same queue.
-//   6. Joins all worker threads.
-//   7. Prints the overall maximum sequence length and the starting number
+//   3. Calls compute_hailstone(1) so the memoization cache is allocated and
+//      seeded while still single-threaded.
+//   4. Queries the number of CPU cores and spawns one worker thread per core.
+//      Workers claim work units from the shared atomic counter gNEXT_UNIT.
+//   5. Joins all worker threads.
+//   6. Prints the overall maximum sequence length and the starting number
 //      that produced it.
 //
 // Globals used:
-//   gWORKSIZE (read), gWORKQUEUE (write), gMAX (read), gIMAX (read),
-//   MY_MUTEX (init)
+//   gLIMIT (write), gMAX (read), gIMAX (read), MY_MUTEX (init)
 //
 // Returns:
-//   0 on success, 1 if the command line argument is missing.
+//   0 on success, 1 if the command line argument is missing or invalid.
 ///////////////////////////////////////////////////////////////////////////////
 
 #def_func   main()
-    #var    i, j, argc, arg, mImax, mMax, mWorksize, limit, queue, \
-            workunits, cores, pid, pids
+    #var    i, argc, arg, mImax, mMax, cores, pid, pids
     int     iARGC
     move    argc, r0
     cmp     argc, 2
@@ -105,40 +101,19 @@
     move    arg, r0
     #macro  PARSE_INT(arg)          // Convert the argument string to an integer
     #if_cond     r0 < 2
-        #call putline("Argument must be > 2!")
+        #call putline("Argument must be >= 2!")
         #return 1
     #end_cond
     store   r0, gLIMIT
-    move    limit, r0               // limit = upper bound on starting numbers
-    load    mWorksize, gWORKSIZE
     #call   initializeMutex(MY_MUTEX)
 
-    // Create the shared work queue and publish its address globally.
-    #call   newVector(10)
-    move    queue, r0
-    store   queue, gWORKQUEUE
-    
-    // Process work unit 0 directly first.  This forces compute_hailstone to
-    // lazily allocate and seed the memoization cache before any threads start,
-    // avoiding a race on first allocation.
-    #macro  PUSH_BACK(queue, 0)
-    #call   worker(queue)
+    // Force compute_hailstone to lazily allocate and seed the memoization
+    // cache now, while still single-threaded, avoiding a race on first
+    // allocation once the workers start.
+    #call   compute_hailstone(1)
 
-    // Push the remaining work-unit start indices (multiples of gWORKSIZE) onto
-    // the queue in descending order: workunits, ..., 2*gWORKSIZE, gWORKSIZE.
-    move    f0, limit
-    move    f1, mWorksize
-    div     f0, f1
-    #call   ceil(f0)
-    move    workunits, f0
-    sub     workunits, 1
-    mult    workunits, mWorksize
-    neg     mWorksize               // step downward by gWORKSIZE
-    #for    workunits, i > 0, mWorksize
-        #macro  PUSH_BACK(queue, i)
-    #end_for
-    
-    // Spawn one worker thread per CPU core, all sharing the same queue.
+    // Spawn one worker thread per CPU core.  Each worker claims work units
+    // from the shared atomic counter gNEXT_UNIT until none remain.
     int     iGET_NUM_CORES
     move    cores, r0
     #call   printf("Number of cores: %d\n", cores)
@@ -149,10 +124,10 @@
         #call   exit(1)
     #end_cond
     #for    0, i < cores, 1
-        #macro  create_thread(worker, queue)
+        #macro  create_thread(worker, i)    // i is passed as the thread index
         store   r0, pids[i]         // Save the new thread's PID
     #end_for
-    
+
     // Wait for all worker threads to finish.
     #for    0, i < cores, 1
         load    pid, pids[i]
@@ -165,7 +140,7 @@
     #call   printf("Max %d found at %d\n", mMax, mImax)
     #return 0
 $GET_ARGS_FAILED:
-    #call   puts("You must supply a positive integer argument.")
+    #call   putline("You must supply a positive integer argument.")
     #return 1
 #end_func
 
@@ -186,9 +161,10 @@ $GET_ARGS_FAILED:
 //   yet computed".
 //
 //   NOTE: The cache is shared global state with no internal locking.  This
-//   program relies on main() invoking worker() once (for work unit 0) BEFORE
-//   spawning threads, which forces the cache to be allocated and seeded while
-//   still single-threaded.
+//   program relies on main() calling compute_hailstone(1) BEFORE spawning
+//   threads, which forces the cache to be allocated and seeded while still
+//   single-threaded.  Concurrent writes of the same entry are benign because
+//   every thread computes the same value for a given index.
 //
 // Arguments:
 //   arg  The starting number of the hailstone sequence (integer).
@@ -210,10 +186,9 @@ PRECOMPUTED_SIZE: .dci  8000000     // Number of memoized entries
     // Lazily allocate the memoization cache on first use.
     load    cacheSize, PRECOMPUTED_SIZE
     load    cache, PRECOMPUTED
-    jump    nz, BEGIN_COMPUTE
+    jump    nz, $BEGIN_COMPUTE
     #call   alloc(cacheSize)
     move    cache, r0
-    store   cache, PRECOMPUTED
     #if_cond    cache, eq, 0
         #call   printf("Can\'t allocate cache size %d\n", cacheSize)
         #call   exit(1)
@@ -226,7 +201,8 @@ PRECOMPUTED_SIZE: .dci  8000000     // Number of memoized entries
     store   8, cache[3]
     store   3, cache[4]
     store   6, cache[5]
-BEGIN_COMPUTE:
+    store   cache, PRECOMPUTED      // Publish the cache only after seeding
+$BEGIN_COMPUTE:
     // Return the cached result if it has already been computed.
     load    i, arg
     #if_cond    i, lt, cacheSize
@@ -254,63 +230,53 @@ BEGIN_COMPUTE:
         store   hailstone, cache[i0]
     #end_cond
     #return hailstone
-END:
 #end_func
 
 ///////////////////////////////////////////////////////////////////////////////
-// worker(queue)
-// Worker thread entry point.  Repeatedly pulls work units from the shared
-// queue and processes them until the queue is exhausted.
+// worker(threadIndex)
+// Worker thread entry point.  Repeatedly claims work units from the shared
+// atomic counter gNEXT_UNIT and processes them until none remain.
 //
 // Arguments:
-//   queue  Address of the shared work-queue Vector.  Each element is the
-//          starting index of a work unit; a work unit covers the candidate
-//          range [d, d + gWORKSIZE).
+//   threadIndex  Index of this worker in main's spawn loop (informational
+//                only; not used for work assignment).
 //
 // Behavior:
-//   1. Pop a work-unit start index d from the queue (protected by the
-//      Vector's own mutex, _VECTOR_MUTEX).  If the queue is empty, use -1 as
-//      a sentinel meaning "no more work".
-//   2. While a work unit is available:
-//        a. Compute the hailstone sequence length for every candidate in
-//           [d, d + gWORKSIZE), tracking the local best (wMax) and the starting
-//           number that produced it (wImax).
-//        b. Under MY_MUTEX, merge the local best into the global best
-//           (gMAX/gIMAX).  The global best is updated when the local best is
-//           longer, or equal in length but found at a smaller starting number.
-//        c. Pop the next work unit from the queue.
-//   3. Exit when no more work units remain.
+//   1. Atomically claim the next work unit number u with
+//      get_and_increment(gNEXT_UNIT) and compute its start d = u * gWORKSIZE.
+//      If d >= gLIMIT there is no more work and the worker exits.
+//   2. Compute the hailstone sequence length for every candidate in
+//      [d, min(d + gWORKSIZE, gLIMIT)), tracking the local best (wMax) and the
+//      starting number that produced it (wImax).
+//   3. Under MY_MUTEX, merge the local best into the global best
+//      (gMAX/gIMAX).  The global best is updated when the local best is
+//      longer, or equal in length but found at a smaller starting number.
+//   4. Repeat from step 1.
 //
 // Globals used:
-//   gWORKSIZE (read), gMAX (read/write), gIMAX (read/write),
-//   MY_MUTEX (lock), queue's _VECTOR_MUTEX (lock)
+//   gWORKSIZE (read), gLIMIT (read), gNEXT_UNIT (atomic read/write),
+//   gMAX (read/write), gIMAX (read/write), MY_MUTEX (lock)
 //
 // Returns:
 //   Nothing.
 ///////////////////////////////////////////////////////////////////////////////
 
-#def_func worker(queue)
-    #var    i, d, hs, ws, pid, limit, wImax, wMax, quo, remain, q
+#def_func worker(threadIndex)
+    #var    i, d, hs, ws, pid, limit, gLim, wImax, wMax
     int     iGET_PID
     move    pid, r0
-    load    q, queue
-    // Pop the first work unit (or -1 if the queue is already empty).
-    #sync   q[_VECTOR_MUTEX]
-        #call   vectorIsEmpty(q)
-        #if_cond    r0, eq, 0
-            #macro  POP_BACK(q)
-            move    d, r0
-        #else_cond
-            move    d, -1           // sentinel: no work available
+    load    ws, gWORKSIZE
+    load    gLim, gLIMIT
+    #while  TRUE
+        // Atomically claim the next work unit and compute its start index.
+        #call   get_and_increment(gNEXT_UNIT)
+        mult    d, r0, ws               // d = unit * gWORKSIZE
+        #if_cond    d, ge, gLim
+            #break                      // no more work
         #end_cond
-    #end_sync
-    #while  d, ne, -1
-        // Process the work unit covering [d, d + gWORKSIZE).
-        move    limit, d
-        load    ws, gWORKSIZE
-        add     limit, ws
-        load    r1, gLIMIT
-        #macro  MIN(limit, r1)
+        // Process the work unit covering [d, min(d + gWORKSIZE, gLIMIT)).
+        add     limit, d, ws
+        #macro  MIN_MACRO(limit, gLim)
         move    limit, r0
         #call   printf("Thread work unit %d executing with PID %d...\n", d, pid)
         clear   wMax
@@ -339,17 +305,6 @@ END:
                 #call   printf("New high: %d:%d (%d)\n", wImax, wMax, pid)
                 store   wMax, gMAX
                 store   wImax, gIMAX
-            #end_cond
-        #end_sync
-
-        // Grab the next work unit (or -1 if the queue is now empty).
-        #sync   q[_VECTOR_MUTEX]
-            #call   vectorIsEmpty(q)
-            #if_cond    r0, eq, 0
-                #macro  POP_BACK(q)
-                move    d, r0
-            #else_cond
-                move    d, -1
             #end_cond
         #end_sync
     #end_while

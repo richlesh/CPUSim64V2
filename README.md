@@ -211,10 +211,10 @@ CPUSim64V2/
 
 | Module            | Artifact                   | Description                                              |
 |-------------------|----------------------------|----------------------------------------------------------|
-| `aichat`          | `org.lesh:aichat`          | Reusable AI chat panel with LLM integration and RAG      |
-| `cpusim64`        | `org.lesh:CPUSim64`        | Assembler, simulator, CLI tool, ANTLR grammars           |
-| `cpusim64_native` | `org.lesh:cpusim64_native` | Native Rust port of the interpreter (built via cargo)    |
-| `ide`             | `org.lesh:CPUSim64IDE`     | JavaFX/Swing GUI IDE, depends on the modules above       |
+| `aichat`          | `com.glowingcat:aichat`    | Reusable AI chat panel with LLM integration and RAG      |
+| `cpusim64`        | `cloud.lesh:CPUSim64`        | Assembler, simulator, CLI tool, ANTLR grammars           |
+| `cpusim64_native` | `cloud.lesh:cpusim64_native` | Native Rust port of the interpreter (built via cargo)    |
+| `ide`             | `cloud.lesh:CPUSim64IDE`     | JavaFX/Swing GUI IDE, depends on the modules above       |
 
 ---
 

@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>org.lesh</groupId>
+        <groupId>cloud.lesh</groupId>
         <artifactId>CPUSim64-parent</artifactId>
         <version>2.9.0</version>
     </parent>
@@ -29,20 +29,20 @@
     <dependencies>
         <!-- Sibling modules -->
         <dependency>
-            <groupId>org.lesh</groupId>
+            <groupId>cloud.lesh</groupId>
             <artifactId>cpusim64</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.lesh</groupId>
+            <groupId>com.glowingcat</groupId>
             <artifactId>aichat</artifactId>
-            <version>${project.version}</version>
+            <version>1.13.0</version>
         </dependency>
         <!-- Native Rust simulator module (pom packaging): declared so the reactor
              builds cpusim64_native before this module, guaranteeing the native
              executable exists for the copy-native-tool step. -->
         <dependency>
-            <groupId>org.lesh</groupId>
+            <groupId>cloud.lesh</groupId>
             <artifactId>cpusim64_native</artifactId>
             <version>${project.version}</version>
             <type>pom</type>
@@ -200,7 +200,7 @@
                                         <exclude>NOTICE</exclude>
                                         <!-- JLine ships prebuilt native Mach-O/ELF binaries that
                                              break macOS notarization (unsigned binaries inside the
-                                             JAR). These arrive via the shaded org.lesh:CPUSim64
+                                             JAR). These arrive via the shaded cloud.lesh:CPUSim64
                                              artifact, so match them across ALL artifacts, not just
                                              org.jline:jline. -->
                                         <exclude>org/jline/nativ/Mac/**</exclude>

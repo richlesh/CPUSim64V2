@@ -1,6 +1,6 @@
 	move	r0,326
 	move	r1,r0			// r1 <- r0
-	move	f0,3.1415926
+	load	f0,3.1415926
 	move	f1,f0			// f1 <- f0
 	
 	move	r2,f1			// r2 <- f1 truncating
@@ -11,7 +11,7 @@
 
 	move	r0,-326
 	move	r1,r0
-	move	f0,-3.1415926
+	load	f0,-3.1415926
 	move	f1,f0
 	
 	move	r2,f1

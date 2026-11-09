@@ -2,12 +2,13 @@
 
 SCRIPT_PATH="$(realpath "${BASH_SOURCE[0]}")"
 SCRIPT_DIR="$(dirname "$SCRIPT_PATH")"
+CLASSPATH="$SCRIPT_DIR"/lib/cpusim64-*.jar
 
 ./preprocess.sh $1 $2 $3 $4 $5 $6 $7 $8 $9
-java -Dfile.encoding=UTF8 -cp "$SCRIPT_DIR"/lib/cpusim64-*.jar org.antlr.v4.gui.TestRig cloud.lesh.CPUSim64.CPUSim64 program -tokens $1.pp.asm -tokens -gui
+java -Dfile.encoding=UTF8 -cp $CLASSPATH org.antlr.v4.gui.TestRig cloud.lesh.CPUSim64.CPUSim64 program -tokens $1.pp.asm -tokens -gui
 
 # Generate LR parse tree as SVG via Graphviz
-TREE_OUTPUT=$(java -Dfile.encoding=UTF8 -cp "$SCRIPT_DIR"/lib/cpusim64-*.jar org.antlr.v4.gui.TestRig cloud.lesh.CPUSim64.CPUSim64 program "$1.pp.asm" -tree)
+TREE_OUTPUT=$(java -Dfile.encoding=UTF8 -cp $CLASSPATH org.antlr.v4.gui.TestRig cloud.lesh.CPUSim64.CPUSim64 program "$1.pp.asm" -tree)
 
 DOT_FILE="$1_tree.dot"
 SVG_FILE="$1_tree.svg"

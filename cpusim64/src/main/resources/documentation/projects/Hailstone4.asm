@@ -235,7 +235,7 @@ $BEGIN_COMPUTE:
     load    ws, gWORKSIZE
     add     limit, ws                   // limit = data + WORKSIZE
     load    r1, gLIMIT
-    #macro  MIN(limit, r1)
+    #macro  MIN_MACRO(limit, r1)
     move    limit, r0
     int     iGET_PID
     move    pid, r0

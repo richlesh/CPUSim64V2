@@ -2,11 +2,12 @@
 
 SCRIPT_PATH="$(realpath "${BASH_SOURCE[0]}")"
 SCRIPT_DIR="$(dirname "$SCRIPT_PATH")"
+CLASSPATH="$SCRIPT_DIR"/lib/cpusim64-*.jar
 
-java -cp "$SCRIPT_DIR"/lib/cpusim64-*.jar org.antlr.v4.gui.TestRig cloud.lesh.CPUSim64.Preprocessor preproc "$1.asm" -tokens -gui
+java -cp $CLASSPATH org.antlr.v4.gui.TestRig cloud.lesh.CPUSim64.Preprocessor preproc "$1.asm" -tokens -gui
 
 # Generate top-down parse tree as SVG via Graphviz
-TREE_OUTPUT=$(java -cp "$SCRIPT_DIR"/lib/cpusim64-*.jar org.antlr.v4.gui.TestRig cloud.lesh.CPUSim64.Preprocessor preproc "$1.asm" -tree)
+TREE_OUTPUT=$(java -cp $CLASSPATH org.antlr.v4.gui.TestRig cloud.lesh.CPUSim64.Preprocessor preproc "$1.asm" -tree)
 
 DOT_FILE="$1_tree.dot"
 SVG_FILE="$1_tree.svg"

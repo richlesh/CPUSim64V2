@@ -30,6 +30,43 @@ fn thread_registry() -> &'static Mutex<Vec<(i64, JoinHandle<()>)>> {
     R.get_or_init(|| Mutex::new(Vec::new()))
 }
 
+/// Per-thread wake cell (ports the effect of `Thread.interrupt()` used by
+/// `wakeThread`): a sleeping thread parks on the condvar with a timeout and is
+/// woken early when another thread (e.g. a mutex releaser) signals its pid.
+/// The bool is a "wake pending" flag so a wake delivered just before the sleep
+/// starts is not lost.
+struct WakeCell {
+    lock: Mutex<bool>,
+    cvar: std::sync::Condvar,
+}
+
+/// Global pid -> WakeCell map. All access holds the map mutex briefly; the
+/// `Arc<WakeCell>` is cloned out before waiting/signalling so we never iterate
+/// or hold the map lock across a blocking wait (avoids the lock-coupling race
+/// that affected the Java emulator's threadCPUs iteration).
+fn wake_registry() -> &'static Mutex<std::collections::HashMap<i64, std::sync::Arc<WakeCell>>> {
+    static W: OnceLock<Mutex<std::collections::HashMap<i64, std::sync::Arc<WakeCell>>>> =
+        OnceLock::new();
+    W.get_or_init(|| Mutex::new(std::collections::HashMap::new()))
+}
+
+fn wake_register(pid: i64) -> std::sync::Arc<WakeCell> {
+    let cell = std::sync::Arc::new(WakeCell {
+        lock: Mutex::new(false),
+        cvar: std::sync::Condvar::new(),
+    });
+    wake_registry().lock().unwrap().insert(pid, cell.clone());
+    cell
+}
+
+fn wake_unregister(pid: i64) {
+    wake_registry().lock().unwrap().remove(&pid);
+}
+
+fn wake_lookup(pid: i64) -> Option<std::sync::Arc<WakeCell>> {
+    wake_registry().lock().unwrap().get(&pid).cloned()
+}
+
 impl Simulator {
     pub fn next_pid(&mut self) -> i64 {
         next_pid_counter().fetch_add(1, Ordering::SeqCst)
@@ -85,9 +122,15 @@ impl Simulator {
         child.r[R_SF] = child.r[R_SP];
         child.r[R_PC] = function;
         let start_pc = function;
+        // Register this pid's wake cell before the thread starts so an early
+        // wakeThread() from another thread is not lost.
+        wake_register(pid);
         let handle = std::thread::spawn(move || {
             let mut c = child;
             let _ = c.run_thread(start_pc);
+            // Thread finished: drop its wake cell so later wakeThread(pid) calls
+            // are harmless no-ops (parity with Java's null-safe wakeThread).
+            wake_unregister(pid);
         });
         thread_registry().lock().unwrap().push((pid, handle));
         Ok(pid)
@@ -104,7 +147,18 @@ impl Simulator {
             let instr = self.fetch(pc)?;
             self.r[R_PC] = pc + 1;
             d.decode_into(instr);
-            self.exec(&d)?;
+            if let Err(e) = self.exec(&d) {
+                // Same symbolic exception report as the main run loop.
+                let label =
+                    crate::decode::Decoded::find_nearest_label(&self.reverse_symbol_map, pc)
+                        .unwrap_or_default();
+                let disasm = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
+                    d.disassemble(&self.reverse_symbol_map)
+                }))
+                .unwrap_or_else(|_| "DECODE ERROR".to_string());
+                eprintln!("Exception at PC={} {}: {}", pc, label, disasm);
+                return Err(e);
+            }
         }
         Ok(self.r[0] as i32)
     }
@@ -124,8 +178,62 @@ impl Simulator {
         Ok(())
     }
 
-    pub fn wake_thread(&mut self, _pid: i64) {
-        // No blocking sleep model in the native port; wake is a no-op.
+    pub fn wake_thread(&mut self, pid: i64) {
+        // Signal the target pid's wake cell so a thread sleeping in acquireMutex
+        // retries immediately instead of waiting out its backoff. If the pid has
+        // already finished (cell removed), this is a harmless no-op, mirroring
+        // Java's null-safe wakeThread.
+        if let Some(cell) = wake_lookup(pid) {
+            let mut pending = cell.lock.lock().unwrap();
+            *pending = true;
+            cell.cvar.notify_all();
+        }
+    }
+
+    /// Sleep up to `ms` milliseconds, returning early if this thread's wake cell
+    /// is signalled (ports the interruptible `Thread.sleep` used by the mutex
+    /// backoff). Also stops promptly if `running` is cleared. Returns when the
+    /// timeout elapses, a wake arrives, or the thread is stopped.
+    pub fn interruptible_sleep(&self, ms: i64) {
+        if ms <= 0 {
+            return;
+        }
+        // Only registered threads (pid != root/unregistered) have a wake cell;
+        // the root/main thread falls back to a plain sliced sleep.
+        let cell = match wake_lookup(self.pid) {
+            Some(c) => c,
+            None => {
+                // No wake cell: sliced sleep that still honors `running`.
+                let mut remaining = ms as u64;
+                const SLICE_MS: u64 = 20;
+                while remaining > 0 && self.running {
+                    let slice = remaining.min(SLICE_MS);
+                    std::thread::sleep(std::time::Duration::from_millis(slice));
+                    remaining -= slice;
+                }
+                return;
+            }
+        };
+        let deadline = std::time::Instant::now() + std::time::Duration::from_millis(ms as u64);
+        let mut pending = cell.lock.lock().unwrap();
+        while self.running {
+            if *pending {
+                *pending = false; // consume the wake signal
+                return;
+            }
+            let now = std::time::Instant::now();
+            if now >= deadline {
+                return;
+            }
+            let (guard, timeout) = cell
+                .cvar
+                .wait_timeout(pending, deadline - now)
+                .unwrap();
+            pending = guard;
+            if timeout.timed_out() {
+                return;
+            }
+        }
     }
 
     /// Fork a child process (deep-copied heap), run it to completion, return pid.

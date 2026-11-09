@@ -12,9 +12,23 @@ zip -r "$OUTPUT" \
     *.sh \
     *.bat \
     lib \
-    src \
-    documentation \
+    aichat/pom.xml \
+    aichat/src \
+    cpusim64/pom.xml \
+    cpusim64/src \
+    cpusim64/validation \
+    cpusim64_native/pom.xml \
+    cpusim64_native/Cargo.toml \
+    cpusim64_native/src \
     NOTICE \
     LICENSE \
     README.md \
-    -x "**/.DS_Store"
+    -x "**/.DS_Store" \
+    -x "**/*.o64" \
+    -x "**/*.o64" \
+    -x "**/*.out*" \
+    -x "**/*.srcmap*" \
+    -x "**/*.sym*" \
+    -x "**/__pycache__/*" \
+    -x "**/obj/*" \
+    -x "**/bad/*"

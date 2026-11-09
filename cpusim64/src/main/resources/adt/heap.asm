@@ -91,7 +91,7 @@
 	#end_cond
 	// Make sure blockListSize is not below minimum size.
 	load	r0, _HEAP_DEFAULT_BLOCK_LIST_SIZE
-	#macro	MAX(r0, blockListSize)
+	#macro	MAX_MACRO(r0, blockListSize)
 	move	blockListSize, r0
 	// Allocate the Heap structure
 	#call	ALLOC(_HEAP_END)
@@ -149,7 +149,7 @@
 		#end_cond
 		// Make sure blockListSize is not below minimum size.
 		load	r0, _HEAP_DEFAULT_BLOCK_LIST_SIZE
-		#macro	MAX(r0, blockListSize)
+		#macro	MAX_MACRO(r0, blockListSize)
 		move	blockListSize, r0
 //#call debug(STDOUT, "newBlockListSize=%d\n", blockListSize)
 		
@@ -489,7 +489,7 @@
 			move	addr, block[blockOffset]
 			// Adjust the lenth of the heap if this index is larger than len.
 			add		i, 1
-			#macro	MAX(i, len)
+			#macro	MAX_MACRO(i, len)
 			store	r0, h[_HEAP_LEN]
 		#else_cond
 			#call	cond_fatal(TRUE, STDOUT, "Heap element invalid %d!\n", i)
@@ -590,7 +590,7 @@
 		sub		len, 1
 		#call	_heapIndexToBlockNum(h, len)
 		move	len, r0
-		#macro	MAX(len, 0)
+		#macro	MAX_MACRO(len, 0)
 		move	len, r0
 		#for	0, i, le, len, 1
 			#if_cond	i, ne, 0

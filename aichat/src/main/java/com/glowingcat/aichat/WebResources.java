@@ -3,6 +3,9 @@
  */
 package com.glowingcat.aichat;
 
+import java.io.*;
+import java.nio.file.*;
+
 /**
  * Extracts bundled JavaScript/CSS libraries to a temporary directory and
  * provides file:// URIs for use in JavaFX WebView HTML pages.
@@ -11,6 +14,14 @@ package com.glowingcat.aichat;
  * CDN downloads from within the WebView.
  */
 public class WebResources {
+
+    private static final String[] RESOURCE_NAMES = {
+        "highlight.min.js",
+        "github.min.css",
+        "github-dark.min.css",
+        "mermaid.min.js",
+        "tex-svg.js"
+    };
 
     // Bundled JS/CSS loaded from classpath resources (avoids CDN dependency)
     private static final String MERMAID_JS = loadResourceAsString("/mermaid.min.js");

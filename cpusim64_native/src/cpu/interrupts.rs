@@ -181,7 +181,7 @@ impl Simulator {
             I_POSITIVE_INFINITY => self.set_fp(0, f64::INFINITY),
             I_NAN => self.set_fp(0, f64::NAN),
             I_CYCLES => self.set_r(0, self.cycles),
-            I_CLOCK => self.set_r(0, 0), // wall clock; stripped by harness
+            I_CLOCK => self.set_r(0, self.get_clock()), // elapsed wall clock in ns (ports getClock)
             I_SAVE => {
                 let d = crate::decode::Decoded::decode(crate::decode::enc_t0(
                     crate::opcode::SAVE,
@@ -318,21 +318,12 @@ impl Simulator {
                 self.join_thread(p)?;
             }
             I_SLEEP => {
-                // Sleep R1 milliseconds (ports `Thread.sleep(cpu.getR(1))`).
-                // Negative/zero delays return immediately. We sleep in short
-                // slices and re-check `running` so a cooperative stop (or a wake
-                // signal) ends the sleep promptly instead of blocking the whole
-                // duration, mirroring Java's interruptible sleep.
+                // Sleep R1 milliseconds (ports `Thread.sleep(cpu.getR(1))`),
+                // interruptible by wakeThread() and by a cooperative stop so a
+                // mutex waiter wakes promptly instead of blocking the full
+                // backoff duration.
                 let ms = self.get_r(1);
-                if ms > 0 {
-                    let mut remaining = ms as u64;
-                    const SLICE_MS: u64 = 20;
-                    while remaining > 0 && self.running {
-                        let slice = remaining.min(SLICE_MS);
-                        std::thread::sleep(std::time::Duration::from_millis(slice));
-                        remaining -= slice;
-                    }
-                }
+                self.interruptible_sleep(ms);
             }
             I_WAKE_THREAD => {
                 let p = self.get_r(1);
@@ -552,7 +543,33 @@ impl Simulator {
                 self.set_r(0, if std::path::Path::new(&s).exists() { -1 } else { 0 });
             }
             I_FILES => self.list_files()?,
-            I_TEMP_DIR | I_TEMP_FILE => return Err(self.err("temp file/dir not supported in native port")),
+            I_TEMP_DIR => {
+                // R1 = prefix; create a unique temp directory in the system temp
+                // dir, return its absolute path (R0), or 0 on failure
+                // (ports Files.createTempDirectory).
+                let prefix = self.convert_string(self.get_r(1))?;
+                match create_temp_dir(&prefix) {
+                    Some(path) => {
+                        let p = self.alloc_string(&path, 0)?;
+                        self.set_r(0, p);
+                    }
+                    None => self.set_r(0, 0),
+                }
+            }
+            I_TEMP_FILE => {
+                // R1 = prefix, R2 = extension/suffix; create a unique temp file
+                // in the system temp dir, return its absolute path (R0), or 0 on
+                // failure (ports File.createTempFile).
+                let prefix = self.convert_string(self.get_r(1))?;
+                let suffix = self.convert_string(self.get_r(2))?;
+                match create_temp_file(&prefix, &suffix) {
+                    Some(path) => {
+                        let p = self.alloc_string(&path, 0)?;
+                        self.set_r(0, p);
+                    }
+                    None => self.set_r(0, 0),
+                }
+            }
             // ===== strings / formatting =====
             I_FMT_DEC => {
                 let s = self.get_r(1).to_string();
@@ -1053,6 +1070,72 @@ fn num_cpus() -> i64 {
     std::thread::available_parallelism()
         .map(|n| n.get() as i64)
         .unwrap_or(1)
+}
+
+/// Build a random alphanumeric token for unique temp names (uses the shared
+/// PRNG so it does not repeat within a run).
+fn temp_token() -> String {
+    const CHARS: &[u8] = b"0123456789abcdefghijklmnopqrstuvwxyz";
+    let mut s = String::with_capacity(12);
+    for _ in 0..12 {
+        let idx = (crate::util::random() * CHARS.len() as f64) as usize;
+        s.push(CHARS[idx.min(CHARS.len() - 1)] as char);
+    }
+    s
+}
+
+/// Create a unique temporary directory in the system temp dir (ports
+/// `Files.createTempDirectory(prefix)`). Returns the absolute path, or None on
+/// failure. Retries a few times to avoid collisions.
+fn create_temp_dir(prefix: &str) -> Option<String> {
+    let base = std::env::temp_dir();
+    for _ in 0..100 {
+        let dir = base.join(format!("{prefix}{}", temp_token()));
+        match std::fs::create_dir(&dir) {
+            Ok(()) => {
+                return Some(
+                    std::fs::canonicalize(&dir)
+                        .unwrap_or(dir)
+                        .to_string_lossy()
+                        .into_owned(),
+                );
+            }
+            // AlreadyExists -> try another name; any other error -> give up.
+            Err(e) if e.kind() == std::io::ErrorKind::AlreadyExists => continue,
+            Err(_) => return None,
+        }
+    }
+    None
+}
+
+/// Create a unique temporary file in the system temp dir (ports
+/// `File.createTempFile(prefix, suffix)`). Returns the absolute path, or None on
+/// failure. The file is created empty; the suffix is used verbatim (Java
+/// defaults to ".tmp" only when suffix is null, which never happens here since
+/// the caller always passes a string).
+fn create_temp_file(prefix: &str, suffix: &str) -> Option<String> {
+    use std::fs::OpenOptions;
+    let base = std::env::temp_dir();
+    for _ in 0..100 {
+        let file = base.join(format!("{prefix}{}{suffix}", temp_token()));
+        match OpenOptions::new()
+            .write(true)
+            .create_new(true) // fail if it already exists
+            .open(&file)
+        {
+            Ok(_) => {
+                return Some(
+                    std::fs::canonicalize(&file)
+                        .unwrap_or(file)
+                        .to_string_lossy()
+                        .into_owned(),
+                );
+            }
+            Err(e) if e.kind() == std::io::ErrorKind::AlreadyExists => continue,
+            Err(_) => return None,
+        }
+    }
+    None
 }
 
 fn ieee_remainder(a: f64, b: f64) -> f64 {

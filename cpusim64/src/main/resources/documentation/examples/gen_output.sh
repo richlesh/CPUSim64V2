@@ -1,13 +1,18 @@
 rm *.o64
 rm *.sym*
+rm *.srcmap
 rm *.out
 echo hello_world.asm
 ./runout.sh hello_world > hello_world.out
 echo example001.asm
-../../assemble.sh example001 > example001c.out
-../../debug.sh example001 > example001d.out
-../../trace.sh example001 > example001t.out
-../../run.sh example001 > example001r.out
+rm -rf obj
+../../../../../../assemble.sh example001 > example001c.out
+rm -rf obj
+../../../../../../debug.sh example001 > example001d.out
+rm -rf obj
+../../../../../../trace.sh example001 > example001t.out
+rm -rf obj
+../../../../../../run.sh example001 > example001r.out
 echo example003.asm
 ./debugout.sh example003 > example003.out
 echo example004.asm
@@ -26,7 +31,7 @@ echo example010.asm
 ./debugout.sh example010 > example010.out
 echo example011.asm
 ./debugout.sh example011 > example011.out
-../../disassemble.sh example011 > example011.disasm
+../../../../../../disassemble.sh example011 > example011.disasm
 echo example012.asm
 ./runout.sh example012 > example012.out
 echo example012b.asm

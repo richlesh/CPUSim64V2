@@ -2224,7 +2224,12 @@ public class Simulator {
 		return childCPUs.stream().map(x -> x.getPID()).collect(Collectors.toCollection(Vector::new));
 	}
 	public static Vector<Long> getThreadPIDs() {
-		return threadCPUs.stream().map(x -> x.getPID()).collect(Collectors.toCollection(Vector::new));
+		// Iterate under the same monitor used by thread()/joinThread() mutations
+		// (synchronized (threadCPUs)) so iteration cannot race a concurrent
+		// add/remove and throw ConcurrentModificationException.
+		synchronized (threadCPUs) {
+			return threadCPUs.stream().map(x -> x.getPID()).collect(Collectors.toCollection(Vector::new));
+		}
 	}
 	public synchronized Simulator getChildCPU(int pid) {
 		for (var child : childCPUs) {
@@ -2233,10 +2238,18 @@ public class Simulator {
 		}
 		return null;
 	}
-	public static synchronized Simulator getThreadCPU(int pid) {
-		for (var thread : threadCPUs) {
-			if (thread.getPID() == pid)
-				return thread;
+	public static Simulator getThreadCPU(int pid) {
+		// Must lock on 'threadCPUs' (NOT the class monitor via 'static
+		// synchronized'): thread()/joinThread() mutate the Vector under
+		// 'synchronized (threadCPUs)'. Using a different monitor here let this
+		// iteration race a concurrent remove(), intermittently throwing
+		// ConcurrentModificationException (observed as an exception on the
+		// iWAKE_THREAD during releaseMutex while main joins a worker).
+		synchronized (threadCPUs) {
+			for (var thread : threadCPUs) {
+				if (thread.getPID() == pid)
+					return thread;
+			}
 		}
 		return null;
 	}

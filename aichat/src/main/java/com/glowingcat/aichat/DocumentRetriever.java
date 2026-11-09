@@ -54,16 +54,15 @@ public class DocumentRetriever {
     /**
      * Check if the retriever needs (re-)initialization for the given vendor.
      * Returns true if the index doesn't exist or is out of date.
-     * This is a lightweight check — does not load indexes into memory.
      */
     public boolean needsInitialization(AIChatPreferences prefs) {
         String vendor = prefs.getLlmVendor();
+        String safeVendor = vendor.replaceAll("[^a-zA-Z0-9_-]", "_");
 
         // Already initialized for this vendor
         if (initialized && vendor.equals(initializedVendor)) return false;
 
         // Check if cache exists and is current
-        String safeVendor = vendor.replaceAll("[^a-zA-Z0-9_-]", "_");
         boolean supportsEmb = EmbeddingClient.supportsEmbeddings(vendor);
         Path cachePath = getCachePath(supportsEmb ? "embeddings" : "keywords", safeVendor);
         if (!Files.exists(cachePath)) return true;
@@ -71,13 +70,10 @@ public class DocumentRetriever {
         try {
             long cacheTime = Files.getLastModifiedTime(cachePath).toMillis();
             long sourceTime = getDocumentSourceTimestamp();
-            if (sourceTime > cacheTime) return true;
+            return sourceTime > cacheTime;
         } catch (Exception e) {
             return true;
         }
-
-        // Cache exists and is current — still needs initialization (loading into memory)
-        return true;
     }
 
     /**

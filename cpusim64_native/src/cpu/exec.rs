@@ -1346,7 +1346,19 @@ impl Simulator {
             if self.trace {
                 self.trace_line(pc, &decoded);
             }
-            self.exec(&decoded)?;
+            if let Err(e) = self.exec(&decoded) {
+                // Match the Java emulator: emit the symbolic location, PC, and
+                // disassembled instruction to stderr before the exception
+                // message propagates.
+                let label =
+                    Decoded::find_nearest_label(&self.reverse_symbol_map, pc).unwrap_or_default();
+                let disasm = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
+                    decoded.disassemble(&self.reverse_symbol_map)
+                }))
+                .unwrap_or_else(|_| "DECODE ERROR".to_string());
+                eprintln!("Exception at PC={} {}: {}", pc, label, disasm);
+                return Err(e);
+            }
         }
         if self.debug {
             self.print_cpu_state();

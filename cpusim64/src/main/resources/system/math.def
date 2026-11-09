@@ -58,22 +58,22 @@
 #define iACOSH		131
 #define iATANH		132
 
-#def_macro	MIN(a, b)
+#def_macro	MIN_MACRO(a, b)
 	cmp		${a}, ${b}
 	move	lt, r0, ${a}, ${b}
 #end_macro
 
-#def_macro	MAX(a, b)
+#def_macro	MAX_MACRO(a, b)
 	cmp		${a}, ${b}
 	move	gt, r0, ${a}, ${b}
 #end_macro
 
-#def_macro	FMIN(a, b)
+#def_macro	FMIN_MACRO(a, b)
 	cmp		${a}, ${b}
 	move	lt, f0, ${a}, ${b}
 #end_macro
 
-#def_macro	FMAX(a, b)
+#def_macro	FMAX_MACRO(a, b)
 	cmp		${a}, ${b}
 	move	gt, f0, ${a}, ${b}
 #end_macro

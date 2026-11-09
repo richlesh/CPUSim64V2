@@ -37,6 +37,82 @@ public class DiffApplier {
         return String.join("\n", result);
     }
 
+    /** A single line within a change preview, tagged by how it relates to the change. */
+    public enum LineKind { ADDED, CONTEXT }
+
+    /**
+     * One rendered line of a change preview.
+     *
+     * @param kind whether this line is newly ADDED or unchanged CONTEXT
+     * @param text the line text (without any diff prefix)
+     */
+    public record PreviewLine(LineKind kind, String text) {}
+
+    /**
+     * Represents a single changed region (hunk) for preview purposes.
+     *
+     * @param replacement the resulting text for this region (context + added lines,
+     *                    i.e. what the region will look like after the change)
+     * @param lines       the same content as {@code replacement}, split into lines
+     *                    and tagged ADDED vs CONTEXT so renderers can emphasize the
+     *                    actual changes
+     * @param added       the number of added lines in this hunk
+     * @param removed     the number of removed lines in this hunk
+     */
+    public record ChangePreview(String replacement, List<PreviewLine> lines, int added, int removed) {}
+
+    /**
+     * Builds a human-readable preview of each change in a unified diff.
+     * <p>
+     * For every hunk, the preview is the post-change text of that region:
+     * surrounding context lines plus the added (replacement) lines, with removed
+     * lines omitted. This lets the user see exactly what each section will look
+     * like after the diff is applied, without needing to mentally apply it.
+     *
+     * @param diff the unified diff content
+     * @return one {@link ChangePreview} per hunk, in document order; empty if the
+     *         diff has no parseable hunks
+     */
+    public static List<ChangePreview> previewReplacements(String diff) {
+        List<ChangePreview> previews = new ArrayList<>();
+        List<Hunk> hunks;
+        try {
+            hunks = parseHunks(diff);
+        } catch (DiffException e) {
+            return previews;
+        }
+        for (Hunk hunk : hunks) {
+            StringBuilder sb = new StringBuilder();
+            List<PreviewLine> lines = new ArrayList<>();
+            int added = 0;
+            int removed = 0;
+            for (Operation op : hunk.operations) {
+                switch (op.type) {
+                    case CONTEXT:
+                        sb.append(op.content).append('\n');
+                        lines.add(new PreviewLine(LineKind.CONTEXT, op.content));
+                        break;
+                    case ADD:
+                        sb.append(op.content).append('\n');
+                        lines.add(new PreviewLine(LineKind.ADDED, op.content));
+                        added++;
+                        break;
+                    case REMOVE:
+                        removed++;
+                        break;
+                }
+            }
+            // Trim a single trailing newline for cleaner code-block rendering.
+            String replacement = sb.length() > 0 && sb.charAt(sb.length() - 1) == '\n'
+                    ? sb.substring(0, sb.length() - 1)
+                    : sb.toString();
+            // Skip no-op hunks that neither add nor remove anything.
+            if (added == 0 && removed == 0) continue;
+            previews.add(new ChangePreview(replacement, lines, added, removed));
+        }
+        return previews;
+    }
+
     /**
      * Parse unified diff content into hunks.
      */

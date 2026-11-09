@@ -13,8 +13,8 @@ MAIN:
 	int		iPrintCPUState
 	move	f0,-10
 	move	f1,-1
-	move	f2,3.1415926
-	move	f3,1.e9
+	load	f2,3.1415926
+	load	f3,1.e9
 	debug	f0,f1,f2,f3
 	debug	SP,SF,PC
 	stop

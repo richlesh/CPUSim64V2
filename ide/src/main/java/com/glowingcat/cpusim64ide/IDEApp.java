@@ -738,6 +738,7 @@ public class IDEApp {
                     return currentFile != null ? currentFile.toString() : null;
                 }
             })
+            .contentType("cpusim64")
             .preferences(aiPreferences)
             .documentRetriever(retriever)
             .systemPromptDocs("/documentation/doc-index.txt")

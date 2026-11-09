@@ -7,7 +7,7 @@
 
 // Reciprocal
 	move	f0, 7
-	move	f1, 3.14159
+	load	f1, 3.14159
 	recip	f0			// f0 <- 1 / f0 (FP division)
 	recip	f1			// f1 <- 1 / f1 (FP division)
 	debug	f0, f1

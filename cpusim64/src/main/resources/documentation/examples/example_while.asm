@@ -36,7 +36,7 @@ MAIN:
 	load	incr, inc
 	clear	i
 	#while	i, le, m
-		#call	put_fp(i)
+		#call	put_fp(i, 6)
 		#call	putc(' ')
 		add		i, incr
 	#end_while

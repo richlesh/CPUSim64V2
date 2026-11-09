@@ -150,7 +150,8 @@
 
     #call   pi()
     move    pi_val, f0
-    #call   sqrt(3.0)
+    load    f1, 3.0
+    #call   sqrt(f1)
     move    sqrt3reg, f0
 
     #if_cond    disc > eps
@@ -185,11 +186,11 @@
         move    imagp, f0
 
         // Shift back to original x-space for the complex pair
-        sub     f0, realp, shift
+        sub     realp, realp, shift
 
         #call   printf("x1 = %.6f\n", x1)
-        #call   printf("x2 = %.6f + %.6fi\n", f0, imagp)
-        #call   printf("x3 = %.6f - %.6fi\n", f0, imagp)
+        #call   printf("x2 = %.6f + %.6fi\n", realp, imagp)
+        #call   printf("x3 = %.6f - %.6fi\n", realp, imagp)
     #else_if_cond    disc < neg_eps
         // ---- Three distinct real roots (trigonometric method) ----
         move    f0, p

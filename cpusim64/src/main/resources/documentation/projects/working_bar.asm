@@ -26,6 +26,7 @@
 #include <system/io.asm>
 #include <system/math.asm>
 #include <system/system.asm>
+#include <system/console.asm>
 
     // Program entry point: run main(), then exit with its return code.
     #call   main()
