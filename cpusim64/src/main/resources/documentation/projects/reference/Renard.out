@@ -1,0 +1,23 @@
+================================================================================
+CPUSim64 2.9.0 Assembler
+©2025–2026 Richard Lesh
+Assembles .asm source files into .o64 binary files.
+================================================================================
+Wrote 1525 words to /Users/rich/Desktop/Resources/CPUSim64V2/cpusim64/src/main/resources/documentation/projects/Renard.o64
+================================================================================
+CPUSim64 2.9.0 Emulator
+©2025–2026 Richard Lesh
+Implements a CPUSim64 Virtual Machine.
+================================================================================
+Debug: false
+Memory size: 128000000
+Stack size: 8000
+Read 1525 words from Renard.o64
+1.00 1.12 1.26 1.41 1.58 1.78 2.00 2.24 2.51 2.82 3.16 3.55 3.98 4.47 5.01 5.62 6.31 7.08 7.94 8.91 
+Result: 0
+User CPU Cycles: 1779
+User Time: 0.001 sec
+System Time: 0.007 sec
+Total Time: 0.009 sec
+Heap Allocated Blocks: 0
+Heap Allocated Memory: 0 words

@@ -1,0 +1,23 @@
+================================================================================
+CPUSim64 2.9.0 Assembler
+©2025–2026 Richard Lesh
+Assembles .asm source files into .o64 binary files.
+================================================================================
+Wrote 1564 words to /Users/rich/Desktop/Resources/CPUSim64V2/cpusim64/src/main/resources/documentation/projects/Pi.o64
+================================================================================
+CPUSim64 2.9.0 Emulator
+©2025–2026 Richard Lesh
+Implements a CPUSim64 Virtual Machine.
+================================================================================
+Debug: false
+Memory size: 128000000
+Stack size: 8000
+Read 1564 words from Pi.o64
+PI(11): 3.1415926535897930
+Result: 0
+User CPU Cycles: 3185
+User Time: 0.002 sec
+System Time: 0.004 sec
+Total Time: 0.006 sec
+Heap Allocated Blocks: 0
+Heap Allocated Memory: 0 words

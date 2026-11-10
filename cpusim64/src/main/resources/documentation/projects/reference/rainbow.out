@@ -1,0 +1,98 @@
+================================================================================
+CPUSim64 2.9.0 Assembler
+©2025–2026 Richard Lesh
+Assembles .asm source files into .o64 binary files.
+================================================================================
+Wrote 1663 words to /Users/rich/Desktop/Resources/CPUSim64V2/cpusim64/src/main/resources/documentation/projects/rainbow.o64
+================================================================================
+CPUSim64 2.9.0 Emulator
+©2025–2026 Richard Lesh
+Implements a CPUSim64 Virtual Machine.
+================================================================================
+Debug: false
+Memory size: 128000000
+Stack size: 8000
+Read 1663 words from rainbow.o64
+[40m[0K[0m
+[41m[0K[0m
+[42m[0K[0m
+[43m[0K[0m
+[44m[0K[0m
+[45m[0K[0m
+[46m[0K[0m
+[47m[0K[0m
+[100m[0K[0m
+[101m[0K[0m
+[102m[0K[0m
+[103m[0K[0m
+[104m[0K[0m
+[105m[0K[0m
+[106m[0K[0m
+[107m[0K[0m
+
+Regular
+[30mLorem ipsum dolor sit amet, consectetur adipiscing elit[0m
+[31mLorem ipsum dolor sit amet, consectetur adipiscing elit[0m
+[32mLorem ipsum dolor sit amet, consectetur adipiscing elit[0m
+[33mLorem ipsum dolor sit amet, consectetur adipiscing elit[0m
+[34mLorem ipsum dolor sit amet, consectetur adipiscing elit[0m
+[35mLorem ipsum dolor sit amet, consectetur adipiscing elit[0m
+[36mLorem ipsum dolor sit amet, consectetur adipiscing elit[0m
+[37mLorem ipsum dolor sit amet, consectetur adipiscing elit[0m
+
+Bright
+[90mLorem ipsum dolor sit amet, consectetur adipiscing elit[0m
+[91mLorem ipsum dolor sit amet, consectetur adipiscing elit[0m
+[92mLorem ipsum dolor sit amet, consectetur adipiscing elit[0m
+[93mLorem ipsum dolor sit amet, consectetur adipiscing elit[0m
+[94mLorem ipsum dolor sit amet, consectetur adipiscing elit[0m
+[95mLorem ipsum dolor sit amet, consectetur adipiscing elit[0m
+[96mLorem ipsum dolor sit amet, consectetur adipiscing elit[0m
+[97mLorem ipsum dolor sit amet, consectetur adipiscing elit[0m
+
+Regular Bold
+[30m[1mLorem ipsum dolor sit amet, consectetur adipiscing elit[0m
+[31m[1mLorem ipsum dolor sit amet, consectetur adipiscing elit[0m
+[32m[1mLorem ipsum dolor sit amet, consectetur adipiscing elit[0m
+[33m[1mLorem ipsum dolor sit amet, consectetur adipiscing elit[0m
+[34m[1mLorem ipsum dolor sit amet, consectetur adipiscing elit[0m
+[35m[1mLorem ipsum dolor sit amet, consectetur adipiscing elit[0m
+[36m[1mLorem ipsum dolor sit amet, consectetur adipiscing elit[0m
+[37m[1mLorem ipsum dolor sit amet, consectetur adipiscing elit[0m
+
+Bright Bold
+[90m[1mLorem ipsum dolor sit amet, consectetur adipiscing elit[0m
+[91m[1mLorem ipsum dolor sit amet, consectetur adipiscing elit[0m
+[92m[1mLorem ipsum dolor sit amet, consectetur adipiscing elit[0m
+[93m[1mLorem ipsum dolor sit amet, consectetur adipiscing elit[0m
+[94m[1mLorem ipsum dolor sit amet, consectetur adipiscing elit[0m
+[95m[1mLorem ipsum dolor sit amet, consectetur adipiscing elit[0m
+[96m[1mLorem ipsum dolor sit amet, consectetur adipiscing elit[0m
+[97m[1mLorem ipsum dolor sit amet, consectetur adipiscing elit[0m
+
+Regular Dim
+[30m[2mLorem ipsum dolor sit amet, consectetur adipiscing elit[0m
+[31m[2mLorem ipsum dolor sit amet, consectetur adipiscing elit[0m
+[32m[2mLorem ipsum dolor sit amet, consectetur adipiscing elit[0m
+[33m[2mLorem ipsum dolor sit amet, consectetur adipiscing elit[0m
+[34m[2mLorem ipsum dolor sit amet, consectetur adipiscing elit[0m
+[35m[2mLorem ipsum dolor sit amet, consectetur adipiscing elit[0m
+[36m[2mLorem ipsum dolor sit amet, consectetur adipiscing elit[0m
+[37m[2mLorem ipsum dolor sit amet, consectetur adipiscing elit[0m
+
+Bright Dim
+[90m[2mLorem ipsum dolor sit amet, consectetur adipiscing elit[0m
+[91m[2mLorem ipsum dolor sit amet, consectetur adipiscing elit[0m
+[92m[2mLorem ipsum dolor sit amet, consectetur adipiscing elit[0m
+[93m[2mLorem ipsum dolor sit amet, consectetur adipiscing elit[0m
+[94m[2mLorem ipsum dolor sit amet, consectetur adipiscing elit[0m
+[95m[2mLorem ipsum dolor sit amet, consectetur adipiscing elit[0m
+[96m[2mLorem ipsum dolor sit amet, consectetur adipiscing elit[0m
+[97m[2mLorem ipsum dolor sit amet, consectetur adipiscing elit[0m
+Result: 0
+User CPU Cycles: 38414
+User Time: 0.005 sec
+System Time: 0.011 sec
+Total Time: 0.016 sec
+Heap Allocated Blocks: 0
+Heap Allocated Memory: 0 words

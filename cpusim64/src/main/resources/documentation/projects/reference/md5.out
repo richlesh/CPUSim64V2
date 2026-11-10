@@ -1,0 +1,24 @@
+================================================================================
+CPUSim64 2.9.0 Assembler
+©2025–2026 Richard Lesh
+Assembles .asm source files into .o64 binary files.
+================================================================================
+Wrote 1699 words to /Users/rich/Desktop/Resources/CPUSim64V2/cpusim64/src/main/resources/documentation/projects/md5.o64
+================================================================================
+CPUSim64 2.9.0 Emulator
+©2025–2026 Richard Lesh
+Implements a CPUSim64 Virtual Machine.
+================================================================================
+Debug: false
+Memory size: 128000000
+Stack size: 8000
+Read 1699 words from md5.o64
+
+79464911BCC311F18A988E45AB3467AB data/Lincoln.txt
+Result: 0
+User CPU Cycles: 134339
+User Time: 0.009 sec
+System Time: 0.003 sec
+Total Time: 0.012 sec
+Heap Allocated Blocks: 0
+Heap Allocated Memory: 0 words

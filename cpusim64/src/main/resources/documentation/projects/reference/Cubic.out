@@ -1,0 +1,47 @@
+================================================================================
+CPUSim64 2.9.0 Assembler
+©2025–2026 Richard Lesh
+Assembles .asm source files into .o64 binary files.
+================================================================================
+Wrote 1748 words to /Users/rich/Desktop/Resources/CPUSim64V2/cpusim64/src/main/resources/documentation/projects/Cubic.o64
+================================================================================
+CPUSim64 2.9.0 Emulator
+©2025–2026 Richard Lesh
+Implements a CPUSim64 Virtual Machine.
+================================================================================
+Debug: false
+Memory size: 128000000
+Stack size: 8000
+Read 1748 words from Cubic.o64
+Solving 1.000000*x^3 + -1.000000*x^2 + -2.000000*x + 2.000000 = 0
+x1 = 1.414214
+x2 = 1.000000
+x3 = -1.414214
+Result: 0
+User CPU Cycles: 2477
+User Time: 0.001 sec
+System Time: 0.005 sec
+Total Time: 0.007 sec
+Heap Allocated Blocks: 0
+Heap Allocated Memory: 0 words
+Up to date: ./obj/Cubic.o64
+================================================================================
+CPUSim64 2.9.0 Emulator
+©2025–2026 Richard Lesh
+Implements a CPUSim64 Virtual Machine.
+================================================================================
+Debug: false
+Memory size: 128000000
+Stack size: 8000
+Read 1748 words from Cubic.o64
+Solving 1.000000*x^3 + -2.000000*x^2 + 2.000000*x + -1.000000 = 0
+x1 = 1.000000
+x2 = 0.500000 + 0.866025i
+x3 = 0.500000 - 0.866025i
+Result: 0
+User CPU Cycles: 2421
+User Time: 0.002 sec
+System Time: 0.006 sec
+Total Time: 0.008 sec
+Heap Allocated Blocks: 0
+Heap Allocated Memory: 0 words

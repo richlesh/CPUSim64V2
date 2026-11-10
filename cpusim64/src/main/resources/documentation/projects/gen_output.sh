@@ -68,10 +68,10 @@ echo "Rich\ngrail\nEuropean or African\n" | $RUN holy_grail  >> holy_grail.out
 echo InsertSorted.asm
 $RUN InsertSorted > InsertSorted.out
 
-x=-0.0452407411
-y=0.9868162204352258
-radius=5e-9
-escape_limit=1000
+x=-0.748127681290498
+y=0.09408613781852182
+radius=1e-6
+escape_limit=10000
 image_size=512
 
 echo mandelbrot.asm

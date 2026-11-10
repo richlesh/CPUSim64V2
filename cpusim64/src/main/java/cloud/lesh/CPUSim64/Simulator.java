@@ -2409,7 +2409,6 @@ public class Simulator {
 		if (p <= 0) { return; }							// Don't free null (0)
 		long size = memRead(p + 2);
 		if (size >= 0) return;							// block is not free
-		long prev = memRead(p);
 		long next = memRead(p + 1);
 		if (next > 0 ) {								// check for end of list
 			long nextSize = memRead(next + 2);

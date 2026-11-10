@@ -1,0 +1,23 @@
+================================================================================
+CPUSim64 2.9.0 Assembler
+©2025–2026 Richard Lesh
+Assembles .asm source files into .o64 binary files.
+================================================================================
+Wrote 1441 words to /Users/rich/Desktop/Resources/CPUSim64V2/cpusim64/src/main/resources/documentation/projects/Spinner.o64
+================================================================================
+CPUSim64 2.9.0 Emulator
+©2025–2026 Richard Lesh
+Implements a CPUSim64 Virtual Machine.
+================================================================================
+Debug: false
+Memory size: 128000000
+Stack size: 8000
+Read 1441 words from Spinner.o64
+[?25l[96mWorking: |[96mWorking: /[96mWorking: -[96mWorking: \[96mWorking: |[96mWorking: /[96mWorking: -[96mWorking: \[95mWorking: |[95mWorking: /[95mWorking: -[95mWorking: \[95mWorking: |[95mWorking: /[95mWorking: -[95mWorking: \[93mWorking: |[93mWorking: /[93mWorking: -[93mWorking: \[93mWorking: |[93mWorking: /[93mWorking: -[93mWorking: \[91mWorking: |[91mWorking: /[91mWorking: -[91mWorking: \[91mWorking: |[91mWorking: /[91mWorking: -[91mWorking: \[92mWorking: |[92mWorking: /[92mWorking: -[92mWorking: \[92mWorking: |[92mWorking: /[92mWorking: -[92mWorking: \[94mWorking: |[94mWorking: /[94mWorking: -[94mWorking: \[94mWorking: |[94mWorking: /[94mWorking: -[94mWorking: \[0m[?25hWorking: Done!        
+Result: 0
+User CPU Cycles: 28310
+User Time: 0.014 sec
+System Time: 14.603 sec
+Total Time: 14.617 sec
+Heap Allocated Blocks: 0
+Heap Allocated Memory: 0 words
