@@ -72,7 +72,7 @@ x=-0.748127681290498
 y=0.09408613781852182
 radius=1e-6
 escape_limit=10000
-image_size=512
+image_size=128
 
 echo mandelbrot.asm
 $RUN mandelbrot $x $y $radius $escape_limit $image_size mandelbrot > /dev/null
