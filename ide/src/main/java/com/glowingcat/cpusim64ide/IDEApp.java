@@ -179,6 +179,7 @@ public class IDEApp {
         // Center the window on the monitor (default position each session)
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
+        mainWindowShown = true;
 
         // Restore AI panel visibility from saved settings (after window is shown so
         // the split pane has a valid width for divider positioning)
@@ -480,7 +481,11 @@ public class IDEApp {
                 // enumerate Frame.getFrames().
                 SwingUtilities.invokeLater(() -> {
                     rebuildWindowList(windowMenu);
-                    if (id == WindowEvent.WINDOW_CLOSED && listAppWindows().isEmpty()) {
+                    // Only once the main window has been shown: during startup the
+                    // splash can close while no app frame is visible yet (e.g. while
+                    // JFXPanel waits for JavaFX in a nested event loop), which must
+                    // not be mistaken for "last window closed".
+                    if (id == WindowEvent.WINDOW_CLOSED && mainWindowShown && listAppWindows().isEmpty()) {
                         shutdown();
                     }
                 });
@@ -525,6 +530,9 @@ public class IDEApp {
 
     /** Guard so shutdown runs exactly once. */
     private boolean shuttingDown = false;
+
+    /** Set once the main IDE frame has been made visible; gates auto-shutdown. */
+    private boolean mainWindowShown = false;
 
     /**
      * Terminate the application. Invoked when the last application window has
