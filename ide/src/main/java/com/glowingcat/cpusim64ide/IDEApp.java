@@ -16,6 +16,7 @@
  */
 package com.glowingcat.cpusim64ide;
 
+import com.glowingcat.aichat.GenericVendorConfig;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -78,6 +79,23 @@ public class IDEApp {
         if (!IS_WINDOWS && !IS_MAC) {
             checkXWayland();
         }
+
+        // Apply custom trust store settings before any HTTPS connections
+        GenericVendorConfig.applyTrustStore();
+
+        // Load the full gemoji shortcode set (:tada: -> emoji) from the bundled dataset.
+        EmojiShortcodes.load();
+
+        // Augment the bundled set from https://api.github.com/emojis in the background so
+        // GitHub-only shortcodes (custom images with no Unicode character, e.g. :shipit:)
+        // resolve to their hosted image. Best-effort and app-wide: it populates the shared
+        // shortcode map and never blocks startup or requires network access.
+        Thread emojiRefresh = new Thread(EmojiShortcodeValidator::refreshFromGitHub,
+                "github-emoji-refresh");
+        emojiRefresh.setDaemon(true);
+        emojiRefresh.start();
+
+
         // On macOS, use the system menu bar at the top of the screen
         if (IS_MAC) {
             System.setProperty("apple.laf.useScreenMenuBar", "true");

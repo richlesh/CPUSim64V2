@@ -1,11 +1,11 @@
 ================================================================================
-CPUSim64 2.9.0 Assembler
+CPUSim64 2.10.0 Assembler
 ©2025–2026 Richard Lesh
 Assembles .asm source files into .o64 binary files.
 ================================================================================
 Wrote 1610 words to /Users/rich/Desktop/Resources/CPUSim64V2/cpusim64/src/main/resources/documentation/projects/Quadratic.o64
 ================================================================================
-CPUSim64 2.9.0 Emulator
+CPUSim64 2.10.0 Emulator
 ©2025–2026 Richard Lesh
 Implements a CPUSim64 Virtual Machine.
 ================================================================================
@@ -23,7 +23,7 @@ Heap Allocated Blocks: 0
 Heap Allocated Memory: 0 words
 Up to date: ./obj/Quadratic.o64
 ================================================================================
-CPUSim64 2.9.0 Emulator
+CPUSim64 2.10.0 Emulator
 ©2025–2026 Richard Lesh
 Implements a CPUSim64 Virtual Machine.
 ================================================================================
