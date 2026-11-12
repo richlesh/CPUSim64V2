@@ -358,6 +358,7 @@ jobs:
               --description "64-bit virtual CPU, assembler, and simulation environment" \
               --icon "${{ matrix.icon }}" \
               --jlink-options "--strip-debug --no-header-files --no-man-pages --compress zip-6" \
+              --dest appimage \
               --type app-image
           fi
 
@@ -368,7 +369,7 @@ jobs:
           # jpackage produced the CPUSim64\ app-image above; wrap it in an Inno Setup
           # installer that supports /ALLUSERS and /CURRENTUSER on the command line.
           ISCC.exe "/DAppVersion=${{ env.APP_VERSION }}" "/DArch=${{ matrix.arch }}" `
-            "/DRepoRoot=$env:GITHUB_WORKSPACE" "/DAppImageDir=$env:GITHUB_WORKSPACE\CPUSim64" `
+            "/DRepoRoot=$env:GITHUB_WORKSPACE" "/DAppImageDir=$env:GITHUB_WORKSPACE\appimage\CPUSim64" `
             "/DOutputDir=$env:GITHUB_WORKSPACE" resources\windows\CPUSim64.iss
           if ($LASTEXITCODE -ne 0) { throw "ISCC failed with exit code $LASTEXITCODE" }
 
