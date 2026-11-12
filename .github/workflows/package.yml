@@ -187,7 +187,11 @@ jobs:
           # prior step and placed in ide/src/main/resources, so it flows into the
           # JAR via normal resource processing. Skip the module's cargo rebuild /
           # copy here to avoid overwriting the signed binary.
-          mvn clean package -P release -DskipTests=true -Dcpusim64.native.skip=true -Dapp.version="${APP_VERSION}" "-Djavafx.platform=$PLATFORM"
+          # Do NOT use -P release here: it marks JavaFX as "provided", but the jpackage
+          # runtime (Temurin) contains no JavaFX, so the installed app would have no
+          # WebView and the AI chat would fall back to the plain Swing renderer.
+          # Without it, the platform JavaFX jars are bundled into the shaded jar.
+          mvn clean package -DskipTests=true -Dcpusim64.native.skip=true -Dapp.version="${APP_VERSION}" "-Djavafx.platform=$PLATFORM"
           mkdir -p lib
           cp ide/target/CPUSim64IDE-*.jar lib/CPUSim64-${APP_VERSION}.jar
           # Assemble a /bin directory with the native simulator + its timing file.
