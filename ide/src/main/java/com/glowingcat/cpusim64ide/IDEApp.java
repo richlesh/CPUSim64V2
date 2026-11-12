@@ -76,6 +76,11 @@ public class IDEApp {
             CLIInstaller.uninstall();
             return;
         }
+        // Installed builds have no console, so make any uncaught failure visible
+        // instead of letting the app silently exit.
+        // (Log only; the dialog is reserved for startup failures.)
+        Thread.setDefaultUncaughtExceptionHandler((t, e) ->
+                reportError("Uncaught exception in thread " + t.getName(), e, false));
         if (!IS_WINDOWS && !IS_MAC) {
             checkXWayland();
         }
@@ -105,7 +110,45 @@ public class IDEApp {
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         } catch (Exception ignored) {}
-        SwingUtilities.invokeLater(() -> new IDEApp().createAndShowGUI());
+        SwingUtilities.invokeLater(() -> {
+            try {
+                new IDEApp().createAndShowGUI();
+            } catch (Throwable e) {
+                // Without this, a failure before the main window is shown leaves only
+                // the splash screen, which closes and the app quits with no message.
+                reportError("CPUSim64 failed to start", e, true);
+                System.exit(1);
+            }
+        });
+    }
+
+    /**
+     * Writes the error to stderr and ~/.cpusim64/startup-error.log, optionally showing a dialog.
+     */
+    static void reportError(String title, Throwable e, boolean showDialog) {
+        StringWriter sw = new StringWriter();
+        e.printStackTrace(new PrintWriter(sw));
+        String trace = sw.toString();
+        System.err.println(title);
+        System.err.println(trace);
+        Path log = Path.of(System.getProperty("user.home"), ".cpusim64", "startup-error.log");
+        try {
+            Files.createDirectories(log.getParent());
+            Files.writeString(log, java.time.LocalDateTime.now() + "  " + title + System.lineSeparator()
+                    + "java " + System.getProperty("java.version") + ", " + System.getProperty("os.name")
+                    + " " + System.getProperty("os.arch") + System.lineSeparator() + trace + System.lineSeparator(),
+                    StandardOpenOption.CREATE, StandardOpenOption.APPEND);
+        } catch (Exception ignored) {}
+        if (!showDialog) return;
+        try {
+            JTextArea text = new JTextArea(trace, 15, 80);
+            text.setEditable(false);
+            JOptionPane.showMessageDialog(null, new Object[] {
+                    title + ": " + e, "Details were saved to " + log, new JScrollPane(text) },
+                    "CPUSim64", JOptionPane.ERROR_MESSAGE);
+        } catch (Throwable ignored) {
+            // Headless or display unavailable: stderr and the log file are all we can do.
+        }
     }
 
     void createAndShowGUI() {

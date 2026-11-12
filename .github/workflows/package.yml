@@ -176,22 +176,31 @@ jobs:
       - name: Build JAR
         shell: bash
         run: |
-          if [ "${{ runner.os }}" = "Linux" ]; then
-            PLATFORM=linux
-          elif [ "${{ runner.os }}" = "macOS" ]; then
-            PLATFORM=mac-aarch64
-          else
-            PLATFORM=win
-          fi
+          # JavaFX native libraries are per OS *and* architecture. The classifier must
+          # match the runner, otherwise e.g. ARM64 packages ship x86-64 .so/.dll files.
+          PROFILE_ARGS=""
+          case "${{ runner.os }}-${{ matrix.arch }}" in
+            Linux-x64)     PLATFORM=linux ;;
+            Linux-arm64)   PLATFORM=linux-aarch64 ;;
+            macOS-arm64)   PLATFORM=mac-aarch64 ;;
+            Windows-x64)   PLATFORM=win ;;
+            Windows-arm64)
+              # OpenJFX publishes no win-aarch64 build, so don't bundle JavaFX here
+              # (-P release => JavaFX "provided"); the AI chat uses its Swing renderer.
+              PLATFORM=win
+              PROFILE_ARGS="-P release" ;;
+            *) echo "Unsupported platform ${{ runner.os }}-${{ matrix.arch }}"; exit 1 ;;
+          esac
+          echo "JavaFX platform: $PLATFORM ${PROFILE_ARGS}"
           # The native simulator was already built (and, on macOS, signed) in a
           # prior step and placed in ide/src/main/resources, so it flows into the
           # JAR via normal resource processing. Skip the module's cargo rebuild /
           # copy here to avoid overwriting the signed binary.
-          # Do NOT use -P release here: it marks JavaFX as "provided", but the jpackage
-          # runtime (Temurin) contains no JavaFX, so the installed app would have no
-          # WebView and the AI chat would fall back to the plain Swing renderer.
-          # Without it, the platform JavaFX jars are bundled into the shaded jar.
-          mvn clean package -DskipTests=true -Dcpusim64.native.skip=true -Dapp.version="${APP_VERSION}" "-Djavafx.platform=$PLATFORM"
+          # -P release (used only where no JavaFX build exists) marks JavaFX as "provided",
+          # but the jpackage runtime (Temurin) contains no JavaFX, so the app would have no
+          # WebView and the AI chat would use its plain Swing renderer. Everywhere else the
+          # platform JavaFX jars are bundled into the shaded jar.
+          mvn clean package $PROFILE_ARGS -DskipTests=true -Dcpusim64.native.skip=true -Dapp.version="${APP_VERSION}" "-Djavafx.platform=$PLATFORM"
           mkdir -p lib
           cp ide/target/CPUSim64IDE-*.jar lib/CPUSim64-${APP_VERSION}.jar
           # Assemble a /bin directory with the native simulator + its timing file.
