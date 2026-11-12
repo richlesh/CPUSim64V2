@@ -129,7 +129,7 @@ The project is designed for educational use, computer architecture instruction, 
 
 ### **Native Installers**
 - macOS DMG (signed and notarized) — ARM64  
-- Windows MSI (Azure code signed) — x64 and ARM64  
+- Windows Inno Setup EXE (Azure code signed) — x64 and ARM64; supports `/ALLUSERS` (all users) and `/CURRENTUSER` (one user) command-line install scopes  
 - Linux DEB and RPM — x64 and ARM64  
 - File type associations for `.asm`, `.o64`, `.sym`, `.sym1`, `.sym2`, `.srcmap`, and `.def` files  
 - Built via GitHub Actions workflows

@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: 'Release version tag (e.g. 2.8.0)'
+        description: 'Release version tag (e.g. 2.10.0)'
         required: true
 
 permissions:
@@ -33,7 +33,7 @@ jobs:
             asm_icon: ide/src/main/resources/asm_icon.ico
             o64_icon: ide/src/main/resources/o64_icon.ico
             sym_icon: ide/src/main/resources/sym_icon.ico
-            pkg_type: msi
+            pkg_type: exe
             label: windows-x64
           - os: windows-11-arm
             arch: arm64
@@ -41,7 +41,7 @@ jobs:
             asm_icon: ide/src/main/resources/asm_icon.ico
             o64_icon: ide/src/main/resources/o64_icon.ico
             sym_icon: ide/src/main/resources/sym_icon.ico
-            pkg_type: msi
+            pkg_type: exe
             label: windows-arm64
           - os: ubuntu-22.04
             arch: x64
@@ -209,13 +209,15 @@ jobs:
         if: matrix.pkg_type == 'rpm'
         run: sudo apt-get update && sudo apt-get install -y rpm
 
-      - name: Install WiX Toolset (Windows)
+      - name: Install Inno Setup (Windows)
         if: runner.os == 'Windows'
         shell: powershell
         run: |
-          nuget install WiX -Version 3.11.2 -OutputDirectory $env:RUNNER_TEMP\wix
-          $wixDir = (Get-ChildItem "$env:RUNNER_TEMP\wix\WiX.*\tools" -Directory).FullName
-          echo "$wixDir" >> $env:GITHUB_PATH
+          choco install innosetup --version=6.4.3 -y --no-progress
+          $iscc = "${env:ProgramFiles(x86)}\Inno Setup 6"
+          if (-not (Test-Path "$iscc\ISCC.exe")) { $iscc = "$env:ProgramFiles\Inno Setup 6" }
+          if (-not (Test-Path "$iscc\ISCC.exe")) { throw "ISCC.exe not found after install" }
+          echo "$iscc" >> $env:GITHUB_PATH
 
       - name: Create file associations config
         shell: bash
@@ -344,18 +346,20 @@ jobs:
               --copyright "(C) 2025-2026 Richard Lesh" \
               --description "64-bit virtual CPU, assembler, and simulation environment" \
               --icon "${{ matrix.icon }}" \
-              --file-associations fa-asm.properties \
-              --file-associations fa-o64.properties \
-              --file-associations fa-sym.properties \
-              --file-associations fa-sym1.properties \
-              --file-associations fa-sym2.properties \
-              --file-associations fa-srcmap.properties \
-              --file-associations fa-def.properties \
               --jlink-options "--strip-debug --no-header-files --no-man-pages --compress zip-6" \
-              --win-menu \
-              --win-shortcut \
-              --type ${{ matrix.pkg_type }}
+              --type app-image
           fi
+
+      - name: Build Inno Setup installer (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          # jpackage produced the CPUSim64\ app-image above; wrap it in an Inno Setup
+          # installer that supports /ALLUSERS and /CURRENTUSER on the command line.
+          ISCC.exe "/DAppVersion=${{ env.APP_VERSION }}" "/DArch=${{ matrix.arch }}" `
+            "/DRepoRoot=$env:GITHUB_WORKSPACE" "/DAppImageDir=$env:GITHUB_WORKSPACE\CPUSim64" `
+            "/DOutputDir=$env:GITHUB_WORKSPACE" resources\windows\CPUSim64.iss
+          if ($LASTEXITCODE -ne 0) { throw "ISCC failed with exit code $LASTEXITCODE" }
 
       - name: Sign and notarize (macOS)
         if: runner.os == 'macOS'
@@ -435,7 +439,7 @@ jobs:
           signing-account-name: ${{ secrets.AZURE_SIGNING_ACCOUNT_NAME }}
           certificate-profile-name: ${{ secrets.AZURE_SIGNING_CERTIFICATE_PROFILE_NAME }}
           files-folder: ${{ github.workspace }}
-          files-folder-filter: msi
+          files-folder-filter: exe
           file-digest: SHA256
           timestamp-rfc3161: http://timestamp.acs.microsoft.com
           timestamp-digest: SHA256
@@ -444,7 +448,7 @@ jobs:
         shell: bash
         run: |
           for f in *.dmg; do [ -f "$f" ] && mv "$f" "${f%.dmg}-${{ matrix.arch }}.dmg" || true; done
-          for f in *.msi; do [ -f "$f" ] && mv "$f" "${f%.msi}-${{ matrix.arch }}.msi" || true; done
+          # Windows .exe installers are already named CPUSim64-<version>-<arch>.exe by Inno Setup.
 
       - name: Upload package artifact
         uses: actions/upload-artifact@v7
@@ -452,7 +456,7 @@ jobs:
           name: CPUSim64-${{ matrix.label }}
           path: |
             *.dmg
-            *.msi
+            *.exe
             *.deb
             *.rpm
 
@@ -464,6 +468,6 @@ jobs:
           name: CPUSim64 ${{ inputs.version }}
           files: |
             *.dmg
-            *.msi
+            *.exe
             *.deb
             *.rpm
