@@ -1,0 +1,1 @@
+sema_conflicting.c:2: error: conflicting types for 'f'

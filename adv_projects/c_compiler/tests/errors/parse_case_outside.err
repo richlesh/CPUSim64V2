@@ -1,0 +1,1 @@
+parse_case_outside.c:2: error: case label not within a switch statement

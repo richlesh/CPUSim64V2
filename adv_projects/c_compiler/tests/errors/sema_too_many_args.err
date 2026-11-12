@@ -1,0 +1,1 @@
+sema_too_many_args.c:3: error: too many arguments to function 'f'

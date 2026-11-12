@@ -1,0 +1,16 @@
+len=5 first=50 second=40
+total=150
+r=(11,22) size=2
+copy=(0,22) r.x=11
+gpt=(3,4) via ptr 4
+union size=1 d=1.5
+u.c=A
+red green blue 6
+42 -1 9
+10 -3
+bob:25:2.5 ann:31:1.5 cy:40:3.5 
+1 3 5 7 9 
+ann 32 3.0
+3 5 5
+0 0 8 9
+23

@@ -1,0 +1,1 @@
+parse_float.c:1: error: float is not supported (use double)

@@ -1,0 +1,1 @@
+pp_bad_directive.c:1: error: invalid preprocessing directive 'bogus'

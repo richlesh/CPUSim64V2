@@ -1,0 +1,394 @@
+///////////////////////////////////////////////////////////////////////////////
+// defs.def
+//
+// Shared constants for the CPUSim64 C compiler: token kinds, AST node kinds,
+// type kinds, symbol kinds and the field offsets of every heap structure.
+//
+// All structures are heap blocks of 64-bit words accessed as ptr[OFFSET].
+///////////////////////////////////////////////////////////////////////////////
+
+#ifndef _CC_DEFS
+#define _CC_DEFS
+
+// ---------------------------------------------------------------------------
+// Vector:   v[VEC_ARR] -> arr, v[VEC_CAP] = capacity
+//           arr[0] = length, arr[1..length] = elements (1-based)
+// A vector of codepoints doubles as a string builder; its arr is a "wstr".
+// ---------------------------------------------------------------------------
+#define VEC_ARR     0
+#define VEC_CAP     1
+
+// ---------------------------------------------------------------------------
+// Intern table entry (one per distinct identifier / name)
+// ---------------------------------------------------------------------------
+#define E_W         0       // wstr: [0]=len, [1..] codepoints
+#define E_P         1       // packed string (lazily created)
+#define E_HASH      2
+#define E_NEXT      3       // hash chain
+#define E_KW        4       // keyword token kind or 0
+#define E_MACRO     5       // macro definition or 0
+#define E_DIS       6       // macro disabled while expanding
+#define E_SYM       7       // innermost ordinary-identifier binding (Sym)
+#define E_TAG       8       // innermost struct/union/enum tag binding (Tag)
+#define E_SPEC      9       // special pp identifier code
+#define E_GLOBAL    10      // file-scope function / variable Sym (registry)
+#define E_CRT       11      // runtime chunk record (codegen) or 0
+#define E_SIZE      12
+
+#define IT_BUCKETS  4096
+#define IT_MASK     4095
+
+// special pp identifiers (E_SPEC)
+#define SPEC_LINE       1
+#define SPEC_FILE       2
+#define SPEC_DEFINED    3
+#define SPEC_VAARGS     4
+// directive names
+#define SPEC_D_DEFINE   10
+#define SPEC_D_UNDEF    11
+#define SPEC_D_INCLUDE  12
+#define SPEC_D_IF       13
+#define SPEC_D_IFDEF    14
+#define SPEC_D_IFNDEF   15
+#define SPEC_D_ELIF     16
+#define SPEC_D_ELSE     17
+#define SPEC_D_ENDIF    18
+#define SPEC_D_ERROR    19
+#define SPEC_D_PRAGMA   20
+#define SPEC_D_LINE     21
+#define SPEC_D_WARNING  22
+
+// ---------------------------------------------------------------------------
+// Token
+// ---------------------------------------------------------------------------
+#define TK_KIND     0
+#define TK_VAL      1       // int value, double bits, intern entry, wstr
+#define TK_LINE     2
+#define TK_FILE     3       // intern entry of the file name
+#define TK_FLAGS    4
+#define TK_TEXT     5       // wstr spelling (non-punctuators)
+#define TK_AUX      6       // integer suffix flags / literal id
+#define TK_SIZE     7
+
+// token flags
+#define TF_BOL      1       // first token on a line
+#define TF_SPACE    2       // preceded by whitespace
+#define TF_NOEXP    4       // never macro-expand (painted blue)
+
+// integer suffix flags (TK_AUX of TK_INT)
+#define IS_UNSIGNED 1
+#define IS_LONG     2
+
+// token kinds
+#define TK_EOF      0
+#define TK_IDENT    1
+#define TK_INT      2
+#define TK_FLOAT    3
+#define TK_CHAR     4
+#define TK_STR      5
+#define TK_MEND     6       // internal: end of a macro expansion
+#define TK_PPNUM    7       // internal: unconverted pp-number
+
+// punctuators: order MUST match PUNCT_SPELLINGS in lexer.asm
+#define TK_PUNCT_BASE 10
+#define TK_ELLIPSIS 10
+#define TK_SHLEQ    11
+#define TK_SHREQ    12
+#define TK_ARROW    13
+#define TK_INC      14
+#define TK_DEC      15
+#define TK_SHL      16
+#define TK_SHR      17
+#define TK_LE       18
+#define TK_GE       19
+#define TK_EQ       20
+#define TK_NE       21
+#define TK_ANDAND   22
+#define TK_OROR     23
+#define TK_MULEQ    24
+#define TK_DIVEQ    25
+#define TK_MODEQ    26
+#define TK_ADDEQ    27
+#define TK_SUBEQ    28
+#define TK_ANDEQ    29
+#define TK_XOREQ    30
+#define TK_OREQ     31
+#define TK_HASHHASH 32
+#define TK_LBRACK   33
+#define TK_RBRACK   34
+#define TK_LPAREN   35
+#define TK_RPAREN   36
+#define TK_LBRACE   37
+#define TK_RBRACE   38
+#define TK_DOT      39
+#define TK_AMP      40
+#define TK_STAR     41
+#define TK_PLUS     42
+#define TK_MINUS    43
+#define TK_TILDE    44
+#define TK_NOT      45
+#define TK_SLASH    46
+#define TK_PERCENT  47
+#define TK_LT       48
+#define TK_GT       49
+#define TK_CARET    50
+#define TK_PIPE     51
+#define TK_QUESTION 52
+#define TK_COLON    53
+#define TK_SEMI     54
+#define TK_ASSIGN   55
+#define TK_COMMA    56
+#define TK_HASH     57
+#define TK_PUNCT_END 58
+
+// keywords: order MUST match KEYWORD_SPELLINGS in lexer.asm
+#define KW_BASE     100
+#define KW_AUTO     100
+#define KW_BREAK    101
+#define KW_CASE     102
+#define KW_CHAR     103
+#define KW_CONST    104
+#define KW_CONTINUE 105
+#define KW_DEFAULT  106
+#define KW_DO       107
+#define KW_DOUBLE   108
+#define KW_ELSE     109
+#define KW_ENUM     110
+#define KW_EXTERN   111
+#define KW_FLOAT    112
+#define KW_FOR      113
+#define KW_GOTO     114
+#define KW_IF       115
+#define KW_INLINE   116
+#define KW_INT      117
+#define KW_LONG     118
+#define KW_REGISTER 119
+#define KW_RESTRICT 120
+#define KW_RETURN   121
+#define KW_SHORT    122
+#define KW_SIGNED   123
+#define KW_SIZEOF   124
+#define KW_STATIC   125
+#define KW_STRUCT   126
+#define KW_SWITCH   127
+#define KW_TYPEDEF  128
+#define KW_UNION    129
+#define KW_UNSIGNED 130
+#define KW_VOID     131
+#define KW_VOLATILE 132
+#define KW_WHILE    133
+#define KW_BOOL_    134     // _Bool
+#define KW_NORETURN 135
+#define KW_BOOL     136     // bool
+#define KW_TRUE     137
+#define KW_FALSE    138
+#define KW_COMPLEX  139
+#define KW_ATOMIC   140
+#define KW_GENERIC  141
+#define KW_ALIGNAS  142
+#define KW_THREADL  143
+#define KW_IMAG     144
+#define KW_SASSERT  145
+#define KW_NULLPTR  146
+#define KW_FUNC     147     // __func__
+#define KW_PSTR     148     // __pstr (packed CPUSim64 string type)
+#define KW_ALIGNOF  149
+#define KW_ASM      150
+#define KW_END      151
+
+// ---------------------------------------------------------------------------
+// Macro definition
+// ---------------------------------------------------------------------------
+#define M_FUNC      0       // function-like?
+#define M_PARAMS    1       // vec of intern entries
+#define M_BODY      2       // vec of tokens
+#define M_VARIADIC  3
+#define M_SIZE      4
+
+// ---------------------------------------------------------------------------
+// Types   (all sizes are in 64-bit words)
+// ---------------------------------------------------------------------------
+#define T_KIND      0
+#define T_SIZE      1
+#define T_BASE      2       // pointee / element / return type
+#define T_LEN       3       // array length (-1 = incomplete)
+#define T_MEMBERS   4       // struct/union: vec of Member
+#define T_PARAMS    5       // function: vec of param types
+#define T_FLAGS     6
+#define T_TAG       7       // tag intern entry
+#define T_ORIGIN    8       // for typedef'd array/qualified copies
+#define T_PNAMES    9       // function: vec of parameter name tokens
+#define T_SIZEOF    10
+
+#define TY_VOID     1
+#define TY_BOOL     2
+#define TY_CHAR     3
+#define TY_INT      4       // short/int/long/long long: 64-bit word
+#define TY_DOUBLE   5
+#define TY_ENUM     6
+#define TY_PTR      7
+#define TY_ARRAY    8
+#define TY_FUNC     9
+#define TY_STRUCT   10
+#define TY_UNION    11
+#define TY_PSTR     12      // packed CPUSim64 string
+
+// type flags
+#define TYF_UNSIGNED    1
+#define TYF_VARIADIC    2
+#define TYF_COMPLETE    4   // struct/union definition seen
+#define TYF_OLDSTYLE    8   // function declared with () - unchecked args
+
+// struct/union member
+#define MB_NAME     0
+#define MB_TYPE     1
+#define MB_OFFSET   2
+#define MB_SIZE     3
+
+// ---------------------------------------------------------------------------
+// Symbols (ordinary identifiers)
+// ---------------------------------------------------------------------------
+#define S_KIND      0
+#define S_NAME      1       // intern entry
+#define S_TYPE      2
+#define S_OFFSET    3       // local: SF-relative word offset; enum: value
+#define S_NEXT      4       // next outer binding of the same name
+#define S_LABEL     5       // packed label for globals / functions
+#define S_FLAGS     6
+#define S_INIT      7       // global initializer (vec of InitItem) / func body
+#define S_PARAMS    8       // function: vec of param Syms
+#define S_FRAME     9       // function: frame size in words
+#define S_DEPTH     10      // scope depth where declared
+#define S_LINE      11
+#define S_ALIAS     12      // block-scope alias: the real (file-scope) Sym
+#define S_MEM       13      // cached packed memory operand (codegen)
+#define S_BODYPOS   14      // lazy prelude function: token index of '{'
+#define S_SIZE      15
+
+#define SK_LVAR     1
+#define SK_GVAR     2
+#define SK_FUNC     3
+#define SK_TYPEDEF  4
+#define SK_ENUMC    5
+
+#define SF_STATIC   1
+#define SF_EXTERN   2
+#define SF_DEFINED  4       // function body / global definition seen
+#define SF_BUILTIN  8       // provided by the runtime (crt_ label)
+#define SF_USED     16
+#define SF_PARAM    32
+#define SF_TENTATIVE 64
+#define SF_LAZY     128     // prelude function whose body is parsed on demand
+#define SF_PRELUDE  256     // declared by the prelude
+
+// struct/union/enum tags
+#define G_NAME      0
+#define G_TYPE      1
+#define G_NEXT      2
+#define G_DEPTH     3
+#define G_SIZE      4
+
+// ---------------------------------------------------------------------------
+// AST nodes
+// ---------------------------------------------------------------------------
+#define N_KIND      0
+#define N_TYPE      1
+#define N_LINE      2
+#define N_A         3
+#define N_B         4
+#define N_C         5
+#define N_D         6
+#define N_VAL       7
+#define N_VAL2      8
+#define N_FILE      9
+#define N_SIZE      10
+
+// expressions
+#define ND_NUM      1       // VAL = integer value
+#define ND_FNUM     2       // VAL = double bits
+#define ND_STR      3       // VAL = string literal id
+#define ND_VAR      4       // VAL = Sym
+#define ND_ADD      5
+#define ND_SUB      6
+#define ND_MUL      7
+#define ND_DIV      8
+#define ND_MOD      9
+#define ND_BAND     10
+#define ND_BOR      11
+#define ND_BXOR     12
+#define ND_SHL      13
+#define ND_SHR      14
+#define ND_EQ       15
+#define ND_NE       16
+#define ND_LT       17
+#define ND_LE       18
+#define ND_LAND     19
+#define ND_LOR      20
+#define ND_NOT      21
+#define ND_BNOT     22
+#define ND_NEG      23
+#define ND_ADDR     24
+#define ND_DEREF    25
+#define ND_ASSIGN   26
+#define ND_COND     27      // A ? B : C
+#define ND_COMMA    28
+#define ND_CALL     29      // A = callee, VAL = vec of args
+#define ND_MEMBER   30      // A = struct expr, VAL = Member
+#define ND_CAST     31      // A = expr, TYPE = target
+#define ND_INCDEC   32      // A = lvalue, VAL = delta, VAL2 = 1 if postfix
+#define ND_OPASSIGN 33      // A = lvalue, B = rhs, VAL = binary node kind
+#define ND_P2C      34      // A = ND_STR node: packed literal -> char*
+#define ND_C2P      35      // A = char* expr -> temporary packed string
+#define ND_MEMZERO  36      // VAL = Sym (local) : zero the variable
+#define ND_STMTEXPR 37      // unused
+#define ND_GT       38      // parser only (rewritten)
+#define ND_GE       39      // parser only (rewritten)
+#define ND_FUNCNAME 40      // __func__
+
+// statements
+#define ND_RETURN   50      // A = expr or 0
+#define ND_IF       51      // A cond, B then, C else
+#define ND_FOR      52      // A init, B cond, C inc, D body
+#define ND_DO       53      // A body, B cond
+#define ND_SWITCH   54      // A cond, B body, VAL = vec of case nodes, VAL2 = default
+#define ND_CASE     55      // A stmt, VAL = value, VAL2 = label number
+#define ND_BLOCK    56      // VAL = vec of statements
+#define ND_EXPR     57      // A = expr
+#define ND_GOTO     58      // VAL = intern entry
+#define ND_LABEL    59      // VAL = intern entry, A = stmt
+#define ND_BREAK    60
+#define ND_CONTINUE 61
+#define ND_NULL     62
+
+// binary operator precedences for precedence climbing
+#define PREC_NONE   0
+
+// global initializer items (vec of InitItem)
+#define II_KIND     0
+#define II_VAL      1
+#define II_SIZE     2
+#define II_INT      1       // VAL = integer word
+#define II_DBL      2       // VAL = double bits
+#define II_ADDR     3       // VAL = packed label string (address constant)
+#define II_ADDROFF  4       // VAL = packed label, VAL2... (unused)
+
+
+// VLEN(dst, v): dst = length of vector v      (clobbers r0)
+#def_macro VLEN(dst, v)
+    load    r0, ${v}[0]
+    load    ${dst}, r0[0]
+#end_macro
+
+// VGET(dst, v, i): dst = v[i] (1-based)       (clobbers r0; i must not be r0)
+#def_macro VGET(dst, v, i)
+    load    r0, ${v}[0]
+    load    ${dst}, r0[${i}]
+#end_macro
+
+// VSET(v, i, x): v[i] = x                     (clobbers r0; i,x must not be r0)
+#def_macro VSET(v, i, x)
+    load    r0, ${v}[0]
+    store   ${x}, r0[${i}]
+#end_macro
+
+#endif

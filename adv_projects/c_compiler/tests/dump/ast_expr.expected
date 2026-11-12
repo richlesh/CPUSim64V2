@@ -1,0 +1,108 @@
+(global a int size=1)
+(global b int size=1)
+(global c int size=1)
+(global p *int size=1)
+(global pp **int size=1)
+(global d double size=1)
+(global u unsigned int size=1)
+(func f ()void frame=0
+  (block
+    (expr
+      (+ int
+        (var int a)
+        (* int
+          (var int b)
+          (var int c))))
+    (expr
+      (= int
+        (var int a)
+        (= int
+          (var int b)
+          (var int c))))
+    (expr
+      (- int
+        (- int
+          (var int a)
+          (var int b))
+        (var int c)))
+    (expr
+      (deref int
+        (incdec *int 1 post=1
+          (var *int p))))
+    (expr
+      (+ double
+        (cast double
+          (cast char
+            (var int a)))
+        (var double d)))
+    (expr
+      (== int
+        (< int
+          (var int a)
+          (var int b))
+        (< int
+          (var int a)
+          (var int c))))
+    (expr
+      (|| int
+        (&& int
+          (var int a)
+          (var int b))
+        (! int
+          (var int c))))
+    (expr
+      (?: int
+        (var int a)
+        (var int b)
+        (?: int
+          (var int c)
+          (var int a)
+          (var int b))))
+    (expr
+      (+ int
+        (neg int
+          (var int a))
+        (~ int
+          (var int b))))
+    (expr
+      (comma unsigned int
+        (opassign int <<=
+          (var int a)
+          (num int 2))
+        (>> unsigned int
+          (var unsigned int u)
+          (num int 1))))
+    (expr
+      (= int
+        (deref int
+          (+ *int
+            (deref *int
+              (+ **int
+                (var **int pp)
+                (num int 1)))
+            (num int 2)))
+        (== int
+          (addr *int
+            (var int a))
+          (var *int p))))
+    (expr
+      (+ unsigned int
+        (num unsigned int 1)
+        (num unsigned int 1)))
+    (expr
+      (incdec int 1 post=0
+        (var int a)))
+    (expr
+      (incdec int -1 post=0
+        (deref int
+          (var *int p))))
+    (expr
+      (= unsigned int
+        (var unsigned int u)
+        (cast unsigned int
+          (num int -1))))
+    (expr
+      (opassign double *=
+        (var double d)
+        (cast double
+          (var int a))))))

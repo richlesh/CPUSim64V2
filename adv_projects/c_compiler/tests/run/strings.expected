@@ -1,0 +1,15 @@
+Hello, world!
+Hello, world! (5 chars)
+puts literal
+world
+literal as char* e 16
+[42-world-z] 10
+Dup def
+123 -45 255
+fmt|    7|7    |00007|ff|A
+10 11 12 %
+é	"q"\
+abcdef
+stack
+1 1
+OK

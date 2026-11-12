@@ -1,0 +1,1 @@
+sema_no_member.c:3: error: no member named 'b'

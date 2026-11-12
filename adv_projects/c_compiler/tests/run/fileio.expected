@@ -1,0 +1,8 @@
+argc=3
+argv[1]=one len=3
+argv[2]=two-three len=9
+1: [line 1]
+2: [second line]
+3: [3]
+missing=1
+stdin: 14 chars 2 lines

@@ -1,0 +1,1 @@
+parse_vla.c:3: error: variable length arrays are not supported

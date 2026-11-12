@@ -1,0 +1,1 @@
+sema_call_nonfunc.c:3: error: called object is not a function or function pointer

@@ -1,0 +1,1 @@
+sema_void_return.c:2: error: 'return' with a value, in function returning void

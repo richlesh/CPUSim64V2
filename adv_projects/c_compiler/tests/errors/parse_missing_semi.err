@@ -1,0 +1,1 @@
+parse_missing_semi.c:3: error: expected ';' before 'return'

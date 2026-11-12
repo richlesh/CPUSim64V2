@@ -1,0 +1,1 @@
+sema_deref_int.c:3: error: invalid type argument of unary '*'

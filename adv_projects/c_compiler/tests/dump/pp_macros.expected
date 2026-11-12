@@ -1,0 +1,8 @@
+int inc_h = 3;
+int foobar = ((1+2)*(1+2));
+char *s = "3" "a \"b\\n\" '\"'";
+int yes = 1;
+int line = 21;
+printf("x"); printf("%d", 1, 2);
+z + f(z) + f(z + f(z));
+x = 0x1fUL + 012 + 1.5e3 + 'a' + '\n' + .5;

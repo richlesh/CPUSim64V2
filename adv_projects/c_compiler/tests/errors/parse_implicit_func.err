@@ -1,0 +1,1 @@
+parse_implicit_func.c:2: error: implicit declaration of function 'foo'

@@ -1,0 +1,154 @@
+(global fp *(int,*char)int size=1)
+(global a [3][4]int size=12)
+(global arr [5]double size=5
+  [0] (fnum double 1.50000)
+  [1] (cast double
+  (num int 2))
+  [4] (cast double
+  (num int 3)))
+(global pts [2]struct P size=4
+  [0] (num int 1)
+  [1] (num int 2)
+  [2] (num int 3)
+  [3] (num int 4))
+(global s [3]char size=3
+  [0] (num char 104)
+  [1] (num char 105)
+  [2] (num char 0))
+(global msg *char size=1
+  [0] (str [6]char "hello"))
+(global sizes [5]int size=5
+  [0] (cast int
+  (num unsigned int 2))
+  [1] (cast int
+  (num unsigned int 3))
+  [2] (cast int
+  (num unsigned int 12))
+  [3] (cast int
+  (num unsigned int 4))
+  [4] (num int 6))
+(func f (int,**char)int frame=5
+  (block
+    (expr
+      (memzero void nd))
+    (expr
+      (= int
+        (deref int
+          (cast *int
+            (addr *struct Node
+              (var struct Node nd))))
+        (num int 7)))
+    (expr
+      (= *struct Node
+        (deref *struct Node
+          (+ **struct Node
+            (cast **struct Node
+              (addr *struct Node
+                (var struct Node nd)))
+            (num int 1)))
+        (cast *struct Node
+          (num int 0))))
+    (expr
+      (= *struct Node
+        (var *struct Node p)
+        (addr *struct Node
+          (var struct Node nd))))
+    (expr
+      (= int
+        (var int sum)
+        (num int 0)))
+    (for
+      (expr
+        (= int
+          (var int i)
+          (num int 0)))
+      (< int
+        (var int i)
+        (var int n))
+      (incdec int 1 post=1
+        (var int i))
+      (block
+        (if
+          (% int
+            (var int i)
+            (num int 2))
+          (continue)
+          (expr
+            (opassign int +=
+              (var int sum)
+              (var int i))))))
+    (for
+      (< int
+        (num int 100)
+        (var int sum))
+      (expr
+        (incdec int -1 post=1
+          (var int sum))))
+    (do
+      (block
+        (expr
+          (incdec int 1 post=1
+            (var int sum))))
+      (< int
+        (var int sum)
+        (num int 3)))
+    (switch
+      (var int n)
+      (block
+        (case 1
+          (expr
+            (= int
+              (var int sum)
+              (num int 1))))
+        (break)
+        (case 0
+          (case default
+            (expr
+              (= int
+                (var int sum)
+                (num int 2)))))))
+    (expr
+      (= int
+        (member int .val@0
+          (deref struct Node
+            (var *struct Node p)))
+        (?: int
+          (member *struct Node .next@1
+            (deref struct Node
+              (var *struct Node p)))
+          (num int 1)
+          (num int 2))))
+    (expr
+      (= int
+        (deref int
+          (+ *int
+            (deref [4]int
+              (+ *[4]int
+                (var [3][4]int a)
+                (num int 4)))
+            (num int 2)))
+        (+ int
+          (cast int
+            (deref char
+              (deref *char
+                (+ **char
+                  (var **char v)
+                  (num int 0)))))
+          (cast int
+            (fnum double 3.70000)))))
+    (goto out)
+    (label out
+      (return
+        (+ int
+          (+ int
+            (+ int
+              (var int sum)
+              (member int .val@0
+                (var struct Node nd)))
+            (/ int
+              (- int
+                (var *struct Node p)
+                (addr *struct Node
+                  (var struct Node nd)))
+              (num int 2)))
+          (num int 0))))))

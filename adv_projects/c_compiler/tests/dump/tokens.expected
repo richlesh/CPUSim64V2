@@ -1,0 +1,17 @@
+1 ident a
+1 punct ->
+1 ident b
+1 punct ++
+1 punct <<=
+1 punct >>=
+1 punct ...
+1 punct ##
+1 ident x
+1 punct +=
+1 int 0x10u
+1 float 1.5e-3f
+1 char 'x'
+1 string L"w"
+1 string "s\t"
+1 keyword sizeof
+1 keyword _Bool
