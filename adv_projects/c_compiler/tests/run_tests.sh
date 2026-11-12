@@ -23,7 +23,23 @@
 
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 CC_DIR="$(dirname "$HERE")"
-ROOT="$(dirname "$CC_DIR")"
+# CPUSim64 install: $CPUSIM64_HOME, else the nearest ancestor of the compiler
+# directory that contains assemble.sh and lib/cpusim64-*.jar
+ROOT="${CPUSIM64_HOME:-}"
+if [[ -z "$ROOT" ]]; then
+    d="$CC_DIR"
+    while [[ "$d" != "/" ]]; do
+        d="$(dirname "$d")"
+        if [[ -x "$d/assemble.sh" ]] && ls "$d"/lib/cpusim64-*.jar > /dev/null 2>&1; then
+            ROOT="$d"
+            break
+        fi
+    done
+fi
+if [[ -z "$ROOT" ]]; then
+    echo "FATAL: CPUSim64 install not found; set CPUSIM64_HOME"
+    exit 1
+fi
 JAR="$(ls "$ROOT"/lib/cpusim64-*.jar | head -1)"
 MEM=16M
 STACK=256K

@@ -4,9 +4,9 @@ A C compiler written in CPUSim64 assembly language. It reads a C source file
 and writes CPUSim64 assembly, which the regular CPUSim64 tools assemble and run.
 
 ```
-../run.sh cc prog.c            # compile prog.c -> prog.asm
-../run.sh prog                 # assemble and run the generated program
-../run.sh prog arg1 arg2       # command line arguments reach main(argc, argv)
+../../run.sh cc prog.c            # compile prog.c -> prog.asm
+../../run.sh prog                 # assemble and run the generated program
+../../run.sh prog arg1 arg2       # command line arguments reach main(argc, argv)
 ```
 
 Run the `cc` command from this directory (`run.sh` looks for `cc.asm` in the
@@ -16,9 +16,9 @@ written next to it.
 Debugging dumps (instead of code generation):
 
 ```
-../run.sh cc prog.c --pp       # preprocessed source
-../run.sh cc prog.c --tokens   # token list (line, class, spelling)
-../run.sh cc prog.c --ast      # typed abstract syntax tree
+../../run.sh cc prog.c --pp       # preprocessed source
+../../run.sh cc prog.c --tokens   # token list (line, class, spelling)
+../../run.sh cc prog.c --ast      # typed abstract syntax tree
 ```
 
 The compiler stops at the first error, prints `file:line: error: message` to
