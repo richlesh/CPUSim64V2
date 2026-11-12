@@ -213,10 +213,21 @@ jobs:
         if: runner.os == 'Windows'
         shell: powershell
         run: |
-          choco install innosetup --version=6.4.3 -y --no-progress
-          $iscc = "${env:ProgramFiles(x86)}\Inno Setup 6"
-          if (-not (Test-Path "$iscc\ISCC.exe")) { $iscc = "$env:ProgramFiles\Inno Setup 6" }
-          if (-not (Test-Path "$iscc\ISCC.exe")) { throw "ISCC.exe not found after install" }
+          # Hosted Windows runners may already include Inno Setup (a newer version than
+          # we could pin), and choco refuses to downgrade. Use it if present; otherwise install.
+          function Find-Iscc {
+            foreach ($dir in @("${env:ProgramFiles(x86)}\Inno Setup 6", "$env:ProgramFiles\Inno Setup 6")) {
+              if (Test-Path "$dir\ISCC.exe") { return $dir }
+            }
+            return $null
+          }
+          $iscc = Find-Iscc
+          if (-not $iscc) {
+            choco install innosetup -y --no-progress
+            $iscc = Find-Iscc
+          }
+          if (-not $iscc) { throw "ISCC.exe not found" }
+          Write-Host "Using Inno Setup at $iscc"
           echo "$iscc" >> $env:GITHUB_PATH
 
       - name: Create file associations config
