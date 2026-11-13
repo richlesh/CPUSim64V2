@@ -3,6 +3,34 @@
 A C compiler written in CPUSim64 assembly language. It reads a C source file
 and writes CPUSim64 assembly, which the regular CPUSim64 tools assemble and run.
 
+The compiler targets a core subset of C11, roughly C99 plus a few C11 features. It defines __STDC_VERSION__ as 201112L, and its grammar follows the
+  ANTLR grammars-v4 C grammar.
+  
+  Supported:
+  - Types: int, long, char, double, pointers, arrays, structs, unions, enums, typedefs and function pointers.
+  - C99 features: compound literals, designated initializers, // comments, mixed declarations and code, for (int i…), _Bool, and variadic functions.
+  - C11 features: _Static_assert.
+  - Statements: all of them, including switch and goto.
+  - Preprocessor: built in.
+  - Library: stdio, stdlib, string, math, ctype, time, setjmp, stdarg, stddef, stdint, stdbool, limits, float and assert. The stdio formatted-input and
+  output follow the C99 conversions.
+  
+  Not supported (reported as errors):
+  - float, long double and _Complex
+  - _Atomic and _Generic
+  - bit-fields
+  - variable-length arrays
+  - K&R-style parameter lists
+  - GNU extensions
+  
+  Where it differs from standard C:
+  - Every scalar is one 64-bit word, so char, short, int and long are all 64 bits. Types don't wrap at their nominal widths, and sizeof counts words.
+  - char holds a Unicode codepoint.
+  - bool, true and false work as keywords even without <stdbool.h>, as in C23.
+  - There are no locales beyond "C", and output is unbuffered.
+
+## Usage
+
 ```
 ../../run.sh cc prog.c            # compile prog.c -> prog.asm
 ../../run.sh prog                 # assemble and run the generated program

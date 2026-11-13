@@ -217,6 +217,10 @@ jobs:
           # (the --input dir) ships them inside every OS/arch installer alongside
           # the JAR.
           cp bin/* lib/
+          # Compiler plug-ins (File > New Compiler): a compilers/ folder next to the jar
+          mkdir -p lib/compilers
+          cp -R compilers/. lib/compilers/
+          rm -rf lib/compilers/*/tests lib/compilers/*/obj
 
       - name: Install RPM tools (Linux RPM)
         if: matrix.pkg_type == 'rpm'

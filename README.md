@@ -52,6 +52,22 @@ The project is designed for educational use, computer architecture instruction, 
 - Undo/Redo support (text-snapshot based)  
 - File Open/Save remembers last used directory  
 - Splash screen and license key system  
+- **Pluggable compilers** — File → New Compiler lists the compiler plug-ins found in the `compilers/` folder (see below)  
+
+### **Compiler plug-ins**
+A compiler written in CPUSim64 assembly (for example the C11 compiler in `compilers/C11`) can be added to the IDE without changing it.
+The IDE looks for a `compilers` folder next to `CPUSim64IDE.jar` (installed app) or, when run from IntelliJ IDEA or a source checkout, next to the `ide` folder (override with `-Dcpusim64.compilers=DIR`).
+Every sub-folder with a `config.properties` is a plug-in; the folder name is the menu item (File → New Compiler → *name*) and the window title.
+
+| Plug-in file | Purpose |
+|---|---|
+| `config.properties` | `compiler_source` – the compiler's main `.asm` file (required, `.asm` optional)<br>`syntax_language` – RSyntaxTextArea style for highlighting, e.g. `text/c`<br>`file_extensions` – optional, e.g. `c,h` (first is the Save As default)<br>`compiler_mem`, `compiler_stack` – optional run sizes (default `16M`, `256K`) |
+| `system_prompt.md` | system prompt for the AI chat of that window |
+| `obj/` | the assembled compiler; rebuilt when missing or older than any `.asm`/`.def` file of the plug-in (kept in `~/.cpusim64/compilers/<name>` if the plug-in folder is read-only) |
+
+Run in such a window saves the file, assembles the compiler if needed, runs it with the source file path as its argument (it must write `<source>.asm` next to the source and exit with 0), assembles the result into `obj/<name>.o64` and runs it with the Args from the toolbar, using the Java or native simulator as selected in Settings.
+Errors from the compiler's assembly or from the compiler are shown in the console and stop the run.
+Debug compiles the same way and then opens the generated assembly in a regular window with the debugger.
 
 ### **Virtual CPU**
 - Custom 64-bit RISC-style architecture  
@@ -183,6 +199,8 @@ CPUSim64V2/
 │       ├── cpu/                     (exec, heap, memory, cycles, format, interrupts, concurrency)
 │       ├── ports/                   (stdio / file / raw port handlers)
 │       └── javacompat/              (Java Formatter + Schubfach Double.toString)
+│
+├── compilers/                       (IDE compiler plug-ins, e.g. C11/)
 │
 ├── ide/                             (IDE Module)
 │   ├── pom.xml

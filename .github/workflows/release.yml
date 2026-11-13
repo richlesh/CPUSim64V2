@@ -39,6 +39,10 @@ jobs:
           mvn clean package -P release -DskipTests=true -Dcpusim64.native.skip=true -Dapp.version="${VERSION}"
           mkdir -p lib
           cp ide/target/CPUSim64IDE-*.jar lib/CPUSim64-${VERSION}.jar
+          # Compiler plug-ins (File > New Compiler): a compilers/ folder next to the jar
+          mkdir -p lib/compilers
+          cp -R compilers/. lib/compilers/
+          rm -rf lib/compilers/*/tests lib/compilers/*/obj
 
       - name: Create distribution zip
         run: |

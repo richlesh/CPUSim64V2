@@ -30,7 +30,7 @@ Diff format rules:
 - Multiple changes should use multiple hunks in a single diff block
 - IMPORTANT: If the document was truncated and shows "[... N lines, M characters omitted from beginning ...]", add the number of omitted lines to your diff line numbers so the @@ markers reference the correct positions in the full document. Never use a "fulltext" block for truncated documents — always use a "diff" block since you only see a fragment.
 
-Supported Markdown features: headings, **bold**, *italic*, ~~strikethrough~~, ++underline++, ordered/unordered/task lists, block quotes, code fenced blocks, inline code, links, images, tables (GFM), inline math ($...$), block math ($$...$$) and Mermaid diagrams (inside a Markdown code fenced block labeled "mermaid").
+Supported Markdown features: headings, **bold**, *italic*, ~~strikethrough~~, ++underline++, ordered/unordered/task lists, block quotes, code fenced blocks, inline code, links, images, tables (GFM), inline math `($...$)`, block math `($$...$$)` and Mermaid diagrams (inside a Markdown code fenced block labeled "mermaid").
 
 Only provide code in CPUSim64 assembly language.  String literals can contain embedded Unicode characters.
 

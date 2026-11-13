@@ -111,6 +111,7 @@ public class AIChatPanel extends JPanel {
         private DocumentRetriever documentRetriever;
         private final List<ContextProvider> contextProviders = new ArrayList<>();
         private final List<String> systemPromptDocIndexPaths = new ArrayList<>();
+        private String systemPromptOverride;
 
         private Builder() { contentType = "text"; }
 
@@ -126,6 +127,15 @@ public class AIChatPanel extends JPanel {
 			return this;
 		}
 		
+        /**
+         * Replace the bundled base system prompt (/system_prompt.md) with the given
+         * text, e.g. the prompt supplied by a compiler plugin (optional).
+         */
+        public Builder systemPrompt(String prompt) {
+            this.systemPromptOverride = prompt;
+            return this;
+        }
+
         /** Set the AI chat preferences (required). */
         public Builder preferences(AIChatPreferences preferences) {
             this.preferences = preferences;
@@ -205,7 +215,7 @@ public class AIChatPanel extends JPanel {
         this.llmClient = builder.llmClient;
         this.promptNagCallback = builder.onPromptNag;
         this.contextProviders = List.copyOf(builder.contextProviders);
-        this.systemPrompt = buildSystemPrompt(builder.systemPromptDocIndexPaths);
+        this.systemPrompt = buildSystemPrompt(builder.systemPromptOverride, builder.systemPromptDocIndexPaths);
         this.humanIconDataUri = loadIconAsDataUri("/human.png");
         this.aiIconDataUri = loadIconAsDataUri("/AI.png");
         var humanUrl = AIChatPanel.class.getResource("/human.png");
@@ -1271,9 +1281,11 @@ public class AIChatPanel extends JPanel {
                    .replace("\n", "<br>");
     }
 
-    private String buildSystemPrompt(List<String> docIndexPaths) {
+    private String buildSystemPrompt(String override, List<String> docIndexPaths) {
         String base;
-        try (var is = AIChatPanel.class.getResourceAsStream("/system_prompt.md")) {
+        if (override != null && !override.isBlank()) {
+            base = override.trim();
+        } else try (var is = AIChatPanel.class.getResourceAsStream("/system_prompt.md")) {
             if (is != null) {
                 base = new String(is.readAllBytes(), StandardCharsets.UTF_8).trim();
             } else {

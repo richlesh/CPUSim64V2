@@ -70,6 +70,17 @@ public class IDEApp {
     private volatile Thread runThread;
     private volatile Process nativeProcess;
     private int runDebugCount = 0;
+    /** The compiler plugin this window edits for, or null for a plain assembly window. */
+    private final CompilerPlugin plugin;
+
+    public IDEApp() { this(null); }
+
+    public IDEApp(CompilerPlugin plugin) { this.plugin = plugin; }
+
+    /** "CPUSim64", or "CPUSim64 C11" in a window for the C11 compiler plugin. */
+    private String baseTitle() {
+        return plugin == null ? "CPUSim64" : "CPUSim64 " + plugin.getName();
+    }
 
     public static void main(String[] args) {
         if (args.length > 0 && args[0].equals("--uninstall")) {
@@ -157,7 +168,7 @@ public class IDEApp {
         if (!LicenseDialog.isLicensed(settings)) {
             SplashScreen.show();
         }
-        frame = new JFrame("CPUSim64");
+        frame = new JFrame(baseTitle());
         frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         frame.addWindowListener(new WindowAdapter() {
             @Override public void windowClosing(WindowEvent e) {
@@ -173,6 +184,11 @@ public class IDEApp {
 
         frame.setJMenuBar(createMenuBar());
         frame.add(createMainPanel(), BorderLayout.CENTER);
+        if (plugin != null) {
+            // Highlight the compiler's language (an RSyntaxTextArea style such as text/c)
+            codeEditor.setSyntaxEditingStyle(plugin.getSyntaxLanguage());
+            codeEditor.setAutoIndentEnabled(true);
+        }
 
         applySettings();
 
@@ -313,6 +329,14 @@ public class IDEApp {
         JMenuItem newItem = new JMenuItem("New");
         newItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx()));
         newItem.addActionListener(e -> SwingUtilities.invokeLater(() -> new IDEApp().createAndShowGUI()));
+        JMenu newCompilerMenu = new JMenu("New Compiler");
+        java.util.List<CompilerPlugin> compilers = CompilerPlugin.discover();
+        for (CompilerPlugin cp : compilers) {
+            JMenuItem cpItem = new JMenuItem(cp.getName());
+            cpItem.addActionListener(e -> SwingUtilities.invokeLater(() -> new IDEApp(cp).createAndShowGUI()));
+            newCompilerMenu.add(cpItem);
+        }
+        newCompilerMenu.setEnabled(!compilers.isEmpty());
         JMenuItem openItem = new JMenuItem("Open");
         openItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx()));
         openItem.addActionListener(e -> openFile());
@@ -330,6 +354,7 @@ public class IDEApp {
         runItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_R, Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx()));
         runItem.addActionListener(e -> runFile());
         fileMenu.add(newItem);
+        fileMenu.add(newCompilerMenu);
         fileMenu.add(openItem);
         fileMenu.add(closeItem);
         fileMenu.addSeparator();
@@ -795,7 +820,7 @@ public class IDEApp {
             10
         );
 
-        aiChatPanel = AIChatPanel.builder()
+        var aiBuilder = AIChatPanel.builder()
             .editor(new DocumentEditor() {
                 @Override public String getText() { return codeEditor.getText(); }
                 @Override public void setText(String text) {
@@ -807,10 +832,7 @@ public class IDEApp {
                     return currentFile != null ? currentFile.toString() : null;
                 }
             })
-            .contentType("cpusim64")
             .preferences(aiPreferences)
-            .documentRetriever(retriever)
-            .systemPromptDocs("/documentation/doc-index.txt")
             .contextProvider("Console output (truncated)", () -> {
                 String text = console.getText();
                 if (text.isEmpty()) return null;
@@ -824,8 +846,19 @@ public class IDEApp {
                     text = text.substring(text.length() - 2000);
                 }
                 return text;
-            })
-            .build();
+            });
+        if (plugin != null) {
+            // Compiler window: the plugin's own system_prompt.md replaces the assembly
+            // prompt, and the assembly reference documents / examples are left out.
+            String syn = plugin.getSyntaxLanguage();
+            aiBuilder.contentType(syn.startsWith("text/") ? syn.substring(5) : syn);
+            aiBuilder.systemPrompt(plugin.getSystemPrompt());
+        } else {
+            aiBuilder.contentType("cpusim64")
+                .documentRetriever(retriever)
+                .systemPromptDocs("/documentation/doc-index.txt");
+        }
+        aiChatPanel = aiBuilder.build();
         mainSplit = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, splitPane, aiChatPanel);
         mainSplit.setResizeWeight(1.0);
         aiChatPanel.setVisible(false);
@@ -866,10 +899,11 @@ public class IDEApp {
 
     private void openFile() {
         if (!promptSaveIfNeeded()) return;
-        FileDialog fd = new FileDialog(frame, "Open Assembly File", FileDialog.LOAD);
+        FileDialog fd = new FileDialog(frame, plugin == null ? "Open Assembly File"
+                : "Open " + plugin.getName() + " Source File", FileDialog.LOAD);
         if (lastDirectory != null) fd.setDirectory(lastDirectory.getAbsolutePath());
         else fd.setDirectory(System.getProperty("user.dir"));
-        fd.setFilenameFilter((dir, name) -> name.endsWith(".asm"));
+        fd.setFilenameFilter((dir, name) -> plugin == null ? name.endsWith(".asm") : plugin.acceptsFile(name));
         fd.setVisible(true);
         if (fd.getFile() != null) {
             lastDirectory = new File(fd.getDirectory());
@@ -905,7 +939,7 @@ public class IDEApp {
             codeEditor.setCaretPosition(0);
             undoInProgress = false;
             currentFile = path;
-            frame.setTitle("CPUSim64 - " + path.getFileName());
+            frame.setTitle(baseTitle() + " - " + path.getFileName());
             undoStack.clear();
             redoStack.clear();
             lastSavedText = codeEditor.getText();
@@ -932,21 +966,27 @@ public class IDEApp {
     }
 
     private void saveFileAs() {
-        FileDialog fd = new FileDialog(frame, "Save Assembly File", FileDialog.SAVE);
+        FileDialog fd = new FileDialog(frame, plugin == null ? "Save Assembly File"
+                : "Save " + plugin.getName() + " Source File", FileDialog.SAVE);
+        // Extension appended to a name typed without one: ".asm", or the plugin's first
+        // source extension (none if the plugin names no extensions).
+        final String defaultExt = plugin == null ? ".asm"
+                : plugin.getFileExtensions().isEmpty() ? "" : "." + plugin.getFileExtensions().get(0);
         if (lastDirectory != null) fd.setDirectory(lastDirectory.getAbsolutePath());
         else fd.setDirectory(System.getProperty("user.dir"));
         if (currentFile != null) fd.setFile(currentFile.getFileName().toString());
-        else fd.setFile("untitled.asm");
-        fd.setFilenameFilter((dir, name) -> name.endsWith(".asm"));
+        else fd.setFile("untitled" + defaultExt);
+        fd.setFilenameFilter((dir, name) -> plugin == null ? name.endsWith(".asm") : plugin.acceptsFile(name));
         fd.setVisible(true);
         if (fd.getFile() != null) {
             lastDirectory = new File(fd.getDirectory());
             currentFile = Path.of(fd.getDirectory(), fd.getFile());
-            if (!currentFile.toString().endsWith(".asm")) {
-                currentFile = Path.of(currentFile.toString() + ".asm");
+            if (plugin == null ? !currentFile.toString().endsWith(".asm")
+                    : !defaultExt.isEmpty() && !currentFile.getFileName().toString().contains(".")) {
+                currentFile = Path.of(currentFile.toString() + defaultExt);
             }
             saveFile();
-            frame.setTitle("CPUSim64 - " + currentFile.getFileName());
+            frame.setTitle(baseTitle() + " - " + currentFile.getFileName());
         }
     }
 
@@ -1072,11 +1112,17 @@ public class IDEApp {
     }
 
     private void runWithMode(String mode) {
+        if (plugin != null && currentFile == null) saveFileAs();   // the compiler needs a file on disk
         if (currentFile == null) {
-            appendConsole("No file open. Open an .asm file first.\n");
+            appendConsole(plugin == null ? "No file open. Open an .asm file first.\n"
+                    : "No file open. Open or save a " + plugin.getName() + " source file first.\n");
             return;
         }
         if (modified && !promptSaveIfNeeded()) return;
+        if (plugin != null && currentFile.toString().endsWith(".asm")) {
+            appendConsole("A " + plugin.getName() + " source file must not have the .asm extension.\n");
+            return;
+        }
 
         // Show splash screen every 10 Run/Debug actions when not licensed
         runDebugCount++;
@@ -1086,8 +1132,7 @@ public class IDEApp {
 
         console.clear();
 
-        String base = currentFile.toString();
-        if (base.endsWith(".asm")) base = base.substring(0, base.length() - 4);
+        String base = generatedBase();
         final String asmFile = base + ".asm";
         final String baseName = Path.of(base).getFileName().toString();
         final Path asmDir = Path.of(base).getParent();
@@ -1139,10 +1184,14 @@ public class IDEApp {
                 // Allow console to accept input
                 SwingUtilities.invokeLater(() -> console.enableInput(inputPipe));
 
-                SwingUtilities.invokeLater(() -> appendConsole("> Assembling " + currentFile.getFileName() + "...\n"));
-                int asmResult = Assembler.run(mode != null ? new String[]{asmFile, "--DEBUG"} : new String[]{asmFile});
+                if (plugin != null && compileSource() == null) return;   // errors are already in the console
+
+                // Say() writes through the buffered console stream so messages stay in order with
+                // the output of the assembler and the program.
+                System.out.println("> Assembling " + Path.of(asmFile).getFileName() + "...");
+                int asmResult = Assembler.run(assemblerArgs(Path.of(asmFile), mode != null));
                 if (asmResult != 0) {
-                    SwingUtilities.invokeLater(() -> appendConsole("\nAssembly failed.\n"));
+                    System.out.println("\nAssembly failed.");
                     return;
                 }
 
@@ -1164,11 +1213,11 @@ public class IDEApp {
                 } else if (Files.exists(asmDir.resolve(baseName + ".o64"))) {
                     objFile = asmDir.resolve(baseName + ".o64").toString();
                 } else {
-                    SwingUtilities.invokeLater(() -> appendConsole("\nNo .o64 file found after assembly.\n"));
+                    System.out.println("\nNo .o64 file found after assembly.");
                     return;
                 }
 
-                SwingUtilities.invokeLater(() -> appendConsole("> Running...\n"));
+                System.out.println("> Running...");
                 // Provide terminal dimensions to running programs
                 StdInterruptHandler.setGlobalTerminalSizeProvider(new StdInterruptHandler.TerminalSizeProvider() {
                     @Override public int getColumns() { return console.getVisibleCols(); }
@@ -1192,7 +1241,7 @@ public class IDEApp {
                 }
 
             } catch (Exception e) {
-                SwingUtilities.invokeLater(() -> appendConsole("Error: " + e.getMessage() + "\n"));
+                System.out.println("Error: " + e.getMessage());
             } finally {
                 consoleFlushTimer.stop();
                 // Final flush
@@ -1289,7 +1338,231 @@ public class IDEApp {
         }
     }
 
+    // ------------------------------------------------------------------
+    // Compiler plugin support
+    // ------------------------------------------------------------------
+
+    /** Path of the current file without its (last) extension; the compiler writes {@code <base>.asm}. */
+    private String generatedBase() {
+        String base = currentFile.toString();
+        if (plugin == null) {
+            return base.endsWith(".asm") ? base.substring(0, base.length() - 4) : base;
+        }
+        int slash = Math.max(base.lastIndexOf('/'), base.lastIndexOf('\\'));
+        int dot = base.lastIndexOf('.');
+        return dot > slash ? base.substring(0, dot) : base;
+    }
+
+    /** Command line for {@link Assembler#run}. */
+    private String[] assemblerArgs(Path asm, boolean debug) {
+        java.util.List<String> a = new java.util.ArrayList<>();
+        a.add(asm.toString());
+        if (debug) a.add("--DEBUG");
+        // Compilers and generated programs may start at a __MAIN__ label (as assemble.sh detects).
+        if (plugin != null && CompilerPlugin.hasMainLabel(asm)) a.add("--hasMain");
+        return a.toArray(new String[0]);
+    }
+
+    /** Moves the assembler's output files from the source directory into its obj/ subdirectory. */
+    private static void moveAssemblerOutputs(Path dir, String baseName) throws IOException {
+        Path obj = dir.resolve("obj");
+        Files.createDirectories(obj);
+        for (String ext : new String[] {".o64", ".sym", ".sym1", ".sym2", ".srcmap"}) {
+            Path src = dir.resolve(baseName + ext);
+            if (Files.exists(src)) {
+                Files.move(src, obj.resolve(baseName + ext), StandardCopyOption.REPLACE_EXISTING);
+            }
+        }
+    }
+
+    /**
+     * Compiler windows: (re)assembles the compiler when its object file is missing or older
+     * than its source, then compiles the current source file to {@code <source>.asm}.
+     * Runs on a worker thread with System.out/err pointing at the console. Returns the
+     * generated assembly file, or null after reporting the problem in the console.
+     */
+    private Path compileSource() throws Exception {
+        final CompilerPlugin pl = plugin;
+        Path root = pl.workingRoot();
+        Path compilerAsm = pl.compilerAsm(root);
+        if (!Files.isRegularFile(compilerAsm)) {
+            System.out.println("Compiler source not found: " + compilerAsm);
+            return null;
+        }
+        Path compilerObj = pl.compilerObj(root);
+        if (pl.needsBuild(root)) {
+            System.out.println("> Assembling the " + pl.getName() + " compiler (" + compilerAsm.getFileName() + ")...");
+            Files.deleteIfExists(compilerObj);
+            int rc = Assembler.run(assemblerArgs(compilerAsm, false));
+            moveAssemblerOutputs(root, pl.getCompilerSource());
+            if (rc != 0 || !Files.isRegularFile(compilerObj)) {
+                System.out.println("\nAssembly of the " + pl.getName() + " compiler failed.");
+                return null;
+            }
+        }
+
+        Path source = currentFile.toAbsolutePath();
+        Path asm = Path.of(generatedBase() + ".asm");
+        Files.deleteIfExists(asm);           // never run a stale result of an earlier compile
+        System.out.println("> Compiling " + source.getFileName() + "...");
+        int result = runCompiler(pl, compilerObj, source);
+        if (result != 0) {
+            System.out.println("\nCompilation failed" + (result > 0 ? " (exit code " + result + ")" : "") + ".");
+            return null;
+        }
+        if (!Files.isRegularFile(asm)) {
+            System.out.println("\nThe compiler did not produce " + asm.getFileName() + ".");
+            return null;
+        }
+        return asm;
+    }
+
+    /** Runs the compiler program on {@code source}; returns its exit code, or -1 if it did not finish. */
+    private int runCompiler(CompilerPlugin pl, Path compilerObj, Path source) throws Exception {
+        java.util.List<String> simArgs = new java.util.ArrayList<>();
+        simArgs.add(compilerObj.toString());
+        simArgs.add("--mem=" + pl.getCompilerMem());
+        simArgs.add("--stack=" + pl.getCompilerStack());
+        simArgs.add(source.toString());                  // the compiler's argument
+        if (settings.useNativeSimulator) {
+            return runCompilerNative(simArgs, source.getParent());
+        }
+        StdInterruptHandler.setGlobalTerminalSizeProvider(new StdInterruptHandler.TerminalSizeProvider() {
+            @Override public int getColumns() { return console.getVisibleCols(); }
+            @Override public int getRows() { return console.getVisibleRows(); }
+        });
+        long[] result = new long[1];
+        int rc = Simulation.run(simArgs.toArray(new String[0]), result);
+        return rc != 0 ? rc : (int) result[0];
+    }
+
+    /**
+     * Runs the compiler with the native simulator. Its exit code is only reported by --verbose
+     * ("Result: N"), so the banner and statistics that --verbose adds are filtered out again.
+     */
+    private int runCompilerNative(java.util.List<String> simArgs, Path workDir) throws IOException, InterruptedException {
+        Path exe = NativeSimulator.resolveExecutable();
+        if (exe == null) {
+            System.out.println("\nNative emulator (cpusim64_native) not found. "
+                + "Disable 'Use Native CPUSim64 Emulator' in Settings or reinstall.");
+            return -1;
+        }
+        java.util.List<String> cmd = new java.util.ArrayList<>();
+        cmd.add(exe.toString());
+        cmd.add(simArgs.get(0));
+        cmd.add("--verbose");
+        cmd.addAll(simArgs.subList(1, simArgs.size()));
+        ProcessBuilder pb = new ProcessBuilder(cmd);
+        pb.redirectErrorStream(true);
+        if (workDir != null) pb.directory(workDir.toFile());
+        Process proc = pb.start();
+        nativeProcess = proc;
+        proc.getOutputStream().close();                  // compilers do not read stdin
+        int result = -1;
+        try (java.io.BufferedReader in = new java.io.BufferedReader(
+                new java.io.InputStreamReader(proc.getInputStream(), java.nio.charset.StandardCharsets.UTF_8))) {
+            int phase = 0;                               // 0 banner, 1 program output, 2 statistics
+            String line;
+            while ((line = in.readLine()) != null) {
+                if (phase == 0 && line.matches("^(=+|CPUSim64 .*Emulator|\u00A9.*|Implements a CPUSim64.*|Debug: .*"
+                        + "|Memory size: .*|Stack size: .*|Read \\d+ words from .*)$")) {
+                    continue;
+                }
+                if (phase < 2) {
+                    phase = 1;
+                    Matcher m = Pattern.compile("^Result: (-?\\d+)$").matcher(line);
+                    if (m.matches()) {
+                        result = (int) Long.parseLong(m.group(1));
+                        phase = 2;
+                        continue;
+                    }
+                } else if (line.matches("^(User CPU Cycles|User Time|System Time|Total Time|Heap Allocated \\w+): .*")) {
+                    continue;
+                }
+                System.out.println(line);
+            }
+            proc.waitFor();
+        } catch (InterruptedException ie) {
+            proc.destroyForcibly();
+            Thread.currentThread().interrupt();
+            throw ie;
+        } finally {
+            if (nativeProcess == proc) nativeProcess = null;
+        }
+        return result;
+    }
+
+    /** Console output stream used when no run is in progress; every flush appends to the console. */
+    private final class ConsoleOut extends OutputStream {
+        private final ByteArrayOutputStream buf = new ByteArrayOutputStream();
+        @Override public synchronized void write(int b) { buf.write(b); }
+        @Override public synchronized void write(byte[] b, int off, int len) { buf.write(b, off, len); }
+        @Override public void flush() {
+            String text;
+            synchronized (this) {
+                text = buf.toString(java.nio.charset.StandardCharsets.UTF_8);
+                buf.reset();
+            }
+            if (!text.isEmpty()) SwingUtilities.invokeLater(() -> appendConsole(text));
+        }
+    }
+
+    /**
+     * Debug in a compiler window: compile the source, then open the generated assembly
+     * program in a regular CPUSim64 window and debug it there, so the debugger shows the
+     * assembly source.
+     */
+    private void launchCompilerDebugger() {
+        if (currentFile == null) saveFileAs();
+        if (currentFile == null) {
+            appendConsole("No file open. Open or save a " + plugin.getName() + " source file first.\n");
+            return;
+        }
+        if (modified && !promptSaveIfNeeded()) return;
+        if (currentFile.toString().endsWith(".asm")) {
+            appendConsole("A " + plugin.getName() + " source file must not have the .asm extension.\n");
+            return;
+        }
+        runDebugCount++;
+        if (runDebugCount % 10 == 0 && !LicenseDialog.isLicensed(settings)) {
+            SplashScreen.show();
+        }
+        console.clear();
+        final String userArgs = argsField.getText().trim();
+        new Thread(() -> {
+            PrintStream origOut = System.out;
+            PrintStream origErr = System.err;
+            PrintStream ps = new PrintStream(new ConsoleOut(), true, java.nio.charset.StandardCharsets.UTF_8);
+            Path generated = null;
+            try {
+                System.setOut(ps);
+                System.setErr(ps);
+                generated = compileSource();
+            } catch (Exception e) {
+                System.out.println("Error: " + e.getMessage());
+            } finally {
+                ps.flush();
+                System.setOut(origOut);
+                System.setErr(origErr);
+            }
+            if (generated == null) return;
+            final Path asm = generated;
+            SwingUtilities.invokeLater(() -> {
+                appendConsole("> Opening " + asm.getFileName() + " in the debugger...\n");
+                IDEApp app = new IDEApp();
+                app.createAndShowGUI();
+                app.loadFile(asm);
+                app.argsField.setText(userArgs);
+                app.launchDebugger();
+            });
+        }, "compile-for-debug").start();
+    }
+
     private void launchDebugger() {
+        if (plugin != null) {
+            launchCompilerDebugger();
+            return;
+        }
         if (currentFile == null) {
             appendConsole("No file open. Open an .asm file first.\n");
             return;
@@ -1315,7 +1588,7 @@ public class IDEApp {
             try {
                 // Assemble with --DEBUG
                 SwingUtilities.invokeLater(() -> appendConsole("> Assembling (debug) " + currentFile.getFileName() + "...\n"));
-                int asmResult = Assembler.run(new String[]{asmFile, "--DEBUG"});
+                int asmResult = Assembler.run(assemblerArgs(Path.of(asmFile), true));
                 if (asmResult != 0) {
                     SwingUtilities.invokeLater(() -> appendConsole("\nAssembly failed.\n"));
                     return;

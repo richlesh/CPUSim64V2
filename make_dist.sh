@@ -12,6 +12,7 @@ zip -r "$OUTPUT" \
     *.sh \
     *.bat \
     lib \
+    compilers \
     aichat/pom.xml \
     aichat/src \
     cpusim64/pom.xml \
@@ -31,4 +32,5 @@ zip -r "$OUTPUT" \
     -x "**/*.sym*" \
     -x "**/__pycache__/*" \
     -x "**/obj/*" \
+    -x "compilers/*/tests/*" \
     -x "**/bad/*"

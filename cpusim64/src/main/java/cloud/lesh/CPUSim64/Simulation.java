@@ -29,6 +29,16 @@ public class Simulation {
 	}
 
 	public static int run(String[] args) throws Exception {
+		return run(args, null);
+	}
+
+	/**
+	 * Same as {@link #run(String[])}, but when {@code programResult} is non-null its
+	 * first element receives the program's result (the value passed to iEXIT, or
+	 * left in r0 when the program stops).  Used by the IDE to find out whether a
+	 * compiler written in CPUSim64 assembly succeeded.
+	 */
+	public static int run(String[] args, long[] programResult) throws Exception {
 		if (args.length < 1) {
 			System.err.println("Usage: simulation [--debug] [--trace] [--verbose] \n" +
 					"        [--mem=memsize] [--stack=stacksize] <input.o64>");
@@ -202,6 +212,7 @@ public class Simulation {
 		sim.loadProgram(program, 0L, reverseSymbolMap);
 		try {
 			long result = sim.run(program.get(0));
+			if (programResult != null && programResult.length > 0) programResult[0] = result;
 			if (verbose) {
 				System.out.println("Result: " + result);
 				var totalTime = sim.getClock();
