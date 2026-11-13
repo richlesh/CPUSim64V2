@@ -1,0 +1,21 @@
+size 29
+read [alpha beta gamma
+]after patch tell 10
+continue [ gamma
+][alpha BETA gamma|second line|]
+r+ size 29
+[alpha BETA gamma|second LINE|]
+a+ first char a
+a+ tell after write 35
+a+ lines 3
+[alpha BETA gamma|second LINE|third|]
+utf8 bytes 9
+char at byte 3 starts with e-acute
+seek past end 0
+gap size 6
+[ab000Z]
+record 3: id=3 score=30
+total 169 records 5
+ungetc tell 1
+seek before start 1
+seek bad whence 1

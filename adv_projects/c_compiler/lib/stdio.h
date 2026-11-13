@@ -9,8 +9,11 @@
  * codepoint and C strings are 0-terminated arrays of such words.  Text
  * streams read and write UTF-8 encoded files one codepoint per char;
  * binary streams ("b" in the fopen mode) read and write one byte per char.
- * Positions (ftell, fseek) count chars on text streams and bytes on binary
- * streams.
+ *
+ * Files are CPUSim64 random-access ports (iOPEN_RANDOM_ACCESS_FILE), so every
+ * mode supports reading, writing and fseek / ftell as in C.  Positions are
+ * byte offsets in the file for text and binary streams alike (a non-ASCII
+ * character takes 2-4 bytes in a text file), as on Unix systems.
  *
  * Streams are unbuffered: every output call reaches the operating system
  * before it returns, so nothing needs flushing at exit.
@@ -46,10 +49,8 @@ typedef struct __FILE {
     long __unget;       /* pushed-back char, or EOF */
     long __eof;         /* end-of-file indicator */
     long __err;         /* error indicator */
-    long __pos;         /* position (chars or bytes) */
-    long __len;         /* file length if known, else -1 */
-    long __dir;         /* port direction: 0 none, 1 reading, 2 writing */
-    char *__name;       /* path, for repositioning; 0 for standard streams */
+    long __ungpos;      /* position before the pushed-back char */
+    char *__name;       /* path (tmpfile removes it on close) */
 } FILE;
 
 extern FILE __sio_std[3];
@@ -102,7 +103,8 @@ int putchar(int c);
 int fputs(const char *s, FILE *stream);
 int puts(const char *s);
 
-/* ---- direct I/O (sizes in chars, i.e. words) */
+/* ---- direct I/O (sizes in chars, i.e. words; binary streams keep one
+        byte per char) */
 size_t fread(void *ptr, size_t size, size_t count, FILE *stream);
 size_t fwrite(const void *ptr, size_t size, size_t count, FILE *stream);
 

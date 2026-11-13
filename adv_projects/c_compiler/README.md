@@ -183,15 +183,20 @@ calls CPUSim64 functions directly, but no standard library function uses it.
   `vsscanf` with `d i u o x X p f e g a s c [...] n %`, `*` suppression and
   widths; floating-point input is correctly rounded.
 
+Every file is a CPUSim64 random-access port (`iOPEN_RANDOM_ACCESS_FILE`), so
+all modes (`r w a`, `r+ w+ a+`) work as in C: a stream can be read and
+written, `fseek` / `ftell` use `iSEEK` / `iTELL`, `r+` updates in place,
+`a+` reads anywhere and appends every write, and seeking past the end then
+writing fills the gap with zero bytes.  Positions are byte offsets in the
+file for text and binary streams alike (as on Unix; a non-ASCII character
+takes 2-4 bytes in a text file).  Binary streams (`"b"`) read and write one
+byte per `char`, so `fwrite` of an `int` or `long` keeps only its low byte;
+`rename` copies the file.
+
 Streams are unbuffered: every output call reaches the operating system
 before it returns (one write per `printf`), so nothing is lost at exit and
-`stdout` and `stderr` interleave in program order.  Text streams count
-positions in characters and binary streams (`"b"`) in bytes, one byte per
-`char`.  CPUSim64 ports cannot seek, so `fseek` reopens the file and reads
-forward, and writing is only possible at the end of a file (appending,
-`"w"`, or after reading to the end); `rename` copies the file.  Literal
-`printf` and `scanf` formats are checked against their arguments at compile
-time.
+`stdout` and `stderr` interleave in program order.  Literal `printf` and
+`scanf` formats are checked against their arguments at compile time.
 `<stdlib.h>` (`lib/stdlib.h`, `lib/stdlib.c`): `malloc`, `calloc`,
 `realloc`, `free`, `exit`, `_Exit`, `abort`, `atexit`, `system`, `getenv`
 (always `NULL`), `abs`, `labs`, `llabs`, `div`, `ldiv`, `lldiv`, `atoi`,

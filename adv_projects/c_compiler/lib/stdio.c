@@ -5,13 +5,18 @@
  * compiled.  All private names start with __sio_ because this file shares
  * the program's macro namespace.
  *
+ * Every file is a CPUSim64 random-access port (iOPEN_RANDOM_ACCESS_FILE), so
+ * reading, writing and positioning (iSEEK / iTELL) work in every mode.
  * Operating-system access goes through these assembly primitives (runtime
  * library); they take C strings (0-terminated word arrays) and convert to
  * CPUSim64 packed strings internally:
  */
 #include <stdio.h>
 
-long __io_open(const char *__sio_name, long __sio_mode);   /* -> port or -1 */
+long __io_open(const char *__sio_name);         /* random-access port or -1 */
+long __io_seek(long __sio_port, long __sio_pos); /* new position or -1 */
+long __io_tell(long __sio_port);                 /* position or -1 */
+long __io_truncate(const char *__sio_name);      /* 0 or -1 */
 long __io_close(long __sio_port);
 long __io_getc(long __sio_port);                /* codepoint or -1 */
 long __io_getb(long __sio_port);                /* byte or -1 */
@@ -32,14 +37,18 @@ void free(void *__sio_p);
 #define __SIO_WR    2
 #define __SIO_APP   4
 #define __SIO_BIN   8
-#define __SIO_UPD   16
 #define __SIO_TMP   32
 #define __SIO_STD   64
+#define __SIO_EXCL  128
+#define __SIO_TRUNC 256
+
+/* iSEEK: any position at or past the end moves to the end */
+#define __SIO_SEEK_END 0x1FFFFFFFFFFL
 
 FILE __sio_std[3] = {
-    { 0, __SIO_RD | __SIO_STD, EOF, 0, 0, 0, -1, 1, 0 },
-    { 1, __SIO_WR | __SIO_STD, EOF, 0, 0, 0, -1, 2, 0 },
-    { 2, __SIO_WR | __SIO_STD, EOF, 0, 0, 0, -1, 2, 0 }
+    { 0, __SIO_RD | __SIO_STD, EOF, 0, 0, 0, 0 },
+    { 1, __SIO_WR | __SIO_STD, EOF, 0, 0, 0, 0 },
+    { 2, __SIO_WR | __SIO_STD, EOF, 0, 0, 0, 0 }
 };
 
 static long __sio_strlen(const char *__sio_s) {
@@ -60,75 +69,17 @@ static char *__sio_strdup(const char *__sio_s) {
 /* streams                                                               */
 /* ===================================================================== */
 
-/* opens the port for the stream's current file in direction dir (1 read,
-   2 write) positioned at __pos.  Returns 0 on failure. */
-static int __sio_reopen(FILE *__sio_f, int __sio_dir) {
-    long __sio_bin = (__sio_f->__flags & __SIO_BIN) ? 3 : 0;
-    long __sio_p, __sio_i;
-    if (__sio_f->__port >= 0) __io_close(__sio_f->__port);
-    __sio_f->__port = -1;
-    __sio_f->__dir = 0;
-    if (__sio_dir == 1) {
-        __sio_p = __io_open(__sio_f->__name, __sio_bin);
-        if (__sio_p < 0) return 0;
-        __sio_f->__port = __sio_p;
-        __sio_f->__dir = 1;
-        for (__sio_i = 0; __sio_i < __sio_f->__pos; __sio_i++) {
-            long __sio_c = __sio_bin ? __io_getb(__sio_p) : __io_getc(__sio_p);
-            if (__sio_c < 0) {
-                __sio_f->__pos = __sio_i;
-                __sio_f->__len = __sio_i;
-                break;
-            }
-        }
-        return 1;
-    }
-    /* writing is only possible at the end of the file (append) */
-    __sio_p = __io_open(__sio_f->__name, __sio_bin + 2);
-    if (__sio_p < 0) return 0;
-    __sio_f->__port = __sio_p;
-    __sio_f->__dir = 2;
-    return 1;
-}
-
-/* makes the stream ready to read (dir 1) or write (dir 2) */
-static int __sio_ready(FILE *__sio_f, int __sio_dir) {
-    if (__sio_f->__port < 0 && __sio_f->__dir == 0 && !__sio_f->__name) {
-        __sio_f->__err = 1;
-        return 0;
-    }
-    if (__sio_dir == 1 && !(__sio_f->__flags & __SIO_RD)) { __sio_f->__err = 1; return 0; }
-    if (__sio_dir == 2 && !(__sio_f->__flags & __SIO_WR)) { __sio_f->__err = 1; return 0; }
-    if (__sio_f->__dir == __sio_dir) return 1;
-    if (__sio_f->__flags & __SIO_STD) return 1;
-    if (__sio_dir == 2) {
-        /* append mode always writes at the end; otherwise the position
-           must be the end of the file */
-        if (!(__sio_f->__flags & __SIO_APP)
-                && (__sio_f->__len < 0 || __sio_f->__pos != __sio_f->__len)) {
-            __sio_f->__err = 1;
-            return 0;
-        }
-    }
-    if (!__sio_reopen(__sio_f, __sio_dir)) {
-        __sio_f->__err = 1;
-        return 0;
-    }
-    if (__sio_dir == 2 && __sio_f->__len >= 0) __sio_f->__pos = __sio_f->__len;
-    return 1;
-}
-
 /* parses an fopen mode; returns the flags or 0 if invalid */
 static long __sio_mode(const char *__sio_m) {
     long __sio_fl;
     if (*__sio_m == 'r') __sio_fl = __SIO_RD;
-    else if (*__sio_m == 'w') __sio_fl = __SIO_WR;
+    else if (*__sio_m == 'w') __sio_fl = __SIO_WR | __SIO_TRUNC;
     else if (*__sio_m == 'a') __sio_fl = __SIO_WR | __SIO_APP;
     else return 0;
     for (__sio_m++; *__sio_m; __sio_m++) {
         if (*__sio_m == 'b') __sio_fl = __sio_fl | __SIO_BIN;
-        else if (*__sio_m == '+') __sio_fl = __sio_fl | __SIO_RD | __SIO_WR | __SIO_UPD;
-        else if (*__sio_m == 'x') __sio_fl = __sio_fl | 128;
+        else if (*__sio_m == '+') __sio_fl = __sio_fl | __SIO_RD | __SIO_WR;
+        else if (*__sio_m == 'x') __sio_fl = __sio_fl | __SIO_EXCL;
         else if (*__sio_m == 't') ;
         else return 0;
     }
@@ -138,51 +89,21 @@ static long __sio_mode(const char *__sio_m) {
 /* opens name with mode into *f; returns f or 0 */
 static FILE *__sio_open(FILE *__sio_f, const char *__sio_name, const char *__sio_mstr) {
     long __sio_fl = __sio_mode(__sio_mstr);
-    long __sio_bin, __sio_p, __sio_how;
+    long __sio_p;
     if (!__sio_fl) return 0;
-    __sio_bin = (__sio_fl & __SIO_BIN) ? 3 : 0;
-    if (*__sio_mstr == 'r') {
-        if (!__io_exists(__sio_name)) return 0;
-        __sio_how = 0;
-    } else if (*__sio_mstr == 'w') {
-        if ((__sio_fl & 128) && __io_exists(__sio_name)) return 0;
-        __sio_how = 1;
-    } else {
-        __sio_how = 2;
-    }
-    __sio_p = __io_open(__sio_name, __sio_bin + __sio_how);
+    if (*__sio_mstr == 'r' && !__io_exists(__sio_name)) return 0;
+    if ((__sio_fl & __SIO_EXCL) && __io_exists(__sio_name)) return 0;
+    if ((__sio_fl & __SIO_TRUNC) && __io_exists(__sio_name) && __io_truncate(__sio_name) < 0) return 0;
+    __sio_p = __io_open(__sio_name);
     if (__sio_p < 0) return 0;
     __sio_f->__port = __sio_p;
-    __sio_f->__flags = __sio_fl & ~128L;
+    __sio_f->__flags = __sio_fl & ~(__SIO_EXCL | __SIO_TRUNC);
     __sio_f->__unget = EOF;
     __sio_f->__eof = 0;
     __sio_f->__err = 0;
-    __sio_f->__pos = 0;
-    __sio_f->__len = __sio_how == 1 ? 0 : -1;
-    __sio_f->__dir = __sio_how == 0 ? 1 : 2;
+    __sio_f->__ungpos = 0;
     __sio_f->__name = __sio_strdup(__sio_name);
-    if (__sio_how == 2) {
-        /* the length (and position) of an appended file is found lazily */
-        __sio_f->__pos = -1;
-    }
     return __sio_f;
-}
-
-/* finds the length of an appended file the first time it is needed */
-static void __sio_fixpos(FILE *__sio_f) {
-    long __sio_n = 0, __sio_p, __sio_c;
-    if (__sio_f->__pos >= 0) return;
-    __sio_p = __io_open(__sio_f->__name, (__sio_f->__flags & __SIO_BIN) ? 3 : 0);
-    if (__sio_p >= 0) {
-        for (;;) {
-            __sio_c = (__sio_f->__flags & __SIO_BIN) ? __io_getb(__sio_p) : __io_getc(__sio_p);
-            if (__sio_c < 0) break;
-            __sio_n++;
-        }
-        __io_close(__sio_p);
-    }
-    __sio_f->__pos = __sio_n;
-    __sio_f->__len = __sio_n;
 }
 
 FILE *fopen(const char *__sio_name, const char *__sio_m) {
@@ -200,7 +121,6 @@ FILE *fopen(const char *__sio_name, const char *__sio_m) {
 static void __sio_release(FILE *__sio_f) {
     if (__sio_f->__port > 2) __io_close(__sio_f->__port);
     __sio_f->__port = -1;
-    __sio_f->__dir = 0;
     if (__sio_f->__name) {
         if (__sio_f->__flags & __SIO_TMP) __io_remove(__sio_f->__name);
         free(__sio_f->__name);
@@ -209,10 +129,13 @@ static void __sio_release(FILE *__sio_f) {
 }
 
 FILE *freopen(const char *__sio_name, const char *__sio_m, FILE *__sio_f) {
-    long __sio_std = __sio_f->__flags & __SIO_STD;
     if (!__sio_name) return __sio_f;
-    if (!__sio_std) __sio_release(__sio_f);
-    else __sio_f->__port = -1;
+    if (__sio_f->__flags & __SIO_STD) {
+        if (__sio_f->__port > 2) __io_close(__sio_f->__port);
+        __sio_f->__port = -1;
+    } else {
+        __sio_release(__sio_f);
+    }
     if (!__sio_open(__sio_f, __sio_name, __sio_m)) return 0;
     return __sio_f;
 }
@@ -221,7 +144,6 @@ int fclose(FILE *__sio_f) {
     if (__sio_f->__flags & __SIO_STD) {
         if (__sio_f->__port > 2) __io_close(__sio_f->__port);
         __sio_f->__port = -1;
-        __sio_f->__dir = 0;
         __sio_f->__flags = __SIO_STD;
         return 0;
     }
@@ -236,7 +158,7 @@ int fflush(FILE *__sio_f) {
         __io_flush(2);
         return 0;
     }
-    if (__sio_f->__port >= 0 && __sio_f->__dir == 2) __io_flush(__sio_f->__port);
+    if (__sio_f->__port >= 0 && (__sio_f->__flags & __SIO_WR)) __io_flush(__sio_f->__port);
     return 0;
 }
 
@@ -251,9 +173,10 @@ int remove(const char *__sio_name) { return (int)__io_remove(__sio_name); }
 int rename(const char *__sio_from, const char *__sio_to) {
     long __sio_in, __sio_out, __sio_c;
     if (!__io_exists(__sio_from)) return -1;
-    __sio_in = __io_open(__sio_from, 3);
+    if (__io_exists(__sio_to) && __io_truncate(__sio_to) < 0) return -1;
+    __sio_in = __io_open(__sio_from);
     if (__sio_in < 0) return -1;
-    __sio_out = __io_open(__sio_to, 4);
+    __sio_out = __io_open(__sio_to);
     if (__sio_out < 0) {
         __io_close(__sio_in);
         return -1;
@@ -289,24 +212,30 @@ FILE *tmpfile(void) {
 /* character I/O                                                         */
 /* ===================================================================== */
 
+static int __sio_isfile(FILE *__sio_f) {
+    return __sio_f->__port >= 0 && !(__sio_f->__flags & __SIO_STD);
+}
+
 int fgetc(FILE *__sio_f) {
     long __sio_c;
     if (__sio_f->__unget != EOF) {
         __sio_c = __sio_f->__unget;
         __sio_f->__unget = EOF;
-        __sio_f->__pos++;
         return (int)__sio_c;
     }
-    if (__sio_f->__eof) return EOF;
-    if (!__sio_ready(__sio_f, 1)) return EOF;
+    if (__sio_f->__port < 0 || !(__sio_f->__flags & __SIO_RD)) {
+        __sio_f->__err = 1;
+        return EOF;
+    }
+    if (__sio_f->__eof && (__sio_f->__flags & __SIO_STD)) return EOF;
+    /* remember where this char starts, for ftell after ungetc */
+    if (__sio_isfile(__sio_f)) __sio_f->__ungpos = __io_tell(__sio_f->__port);
     if (__sio_f->__flags & __SIO_BIN) __sio_c = __io_getb(__sio_f->__port);
     else __sio_c = __io_getc(__sio_f->__port);
     if (__sio_c < 0) {
         __sio_f->__eof = 1;
-        if (!(__sio_f->__flags & __SIO_STD)) __sio_f->__len = __sio_f->__pos;
         return EOF;
     }
-    __sio_f->__pos++;
     return (int)__sio_c;
 }
 
@@ -316,18 +245,34 @@ int getchar(void) { return fgetc(stdin); }
 
 int ungetc(int __sio_c, FILE *__sio_f) {
     if (__sio_c == EOF || __sio_f->__unget != EOF) return EOF;
+    /* the position becomes that of the char just read (__ungpos, set by
+       fgetc); for a char that was not just read, one position back */
+    if (__sio_isfile(__sio_f) && __sio_f->__ungpos != __io_tell(__sio_f->__port) - 1
+            && (__sio_f->__flags & __SIO_BIN))
+        __sio_f->__ungpos = __io_tell(__sio_f->__port) - 1;
     __sio_f->__unget = __sio_c;
     __sio_f->__eof = 0;
-    __sio_f->__pos--;
     return __sio_c;
+}
+
+/* before writing: a pushed-back char is discarded and append mode moves to
+   the end of the file */
+static int __sio_prepare_write(FILE *__sio_f) {
+    if (__sio_f->__port < 0 || !(__sio_f->__flags & __SIO_WR)) {
+        __sio_f->__err = 1;
+        return 0;
+    }
+    __sio_f->__unget = EOF;
+    if ((__sio_f->__flags & __SIO_APP) && __sio_isfile(__sio_f))
+        __io_seek(__sio_f->__port, __SIO_SEEK_END);
+    return 1;
 }
 
 /* writes n chars; returns n or -1 */
 static long __sio_write(FILE *__sio_f, const char *__sio_s, long __sio_n) {
     long __sio_i;
     if (__sio_n <= 0) return 0;
-    if (!__sio_ready(__sio_f, 2)) return -1;
-    if (__sio_f->__pos < 0) __sio_fixpos(__sio_f);
+    if (!__sio_prepare_write(__sio_f)) return -1;
     if (__sio_f->__flags & __SIO_BIN) {
         for (__sio_i = 0; __sio_i < __sio_n; __sio_i++)
             __io_putb(__sio_f->__port, __sio_s[__sio_i] & 255);
@@ -336,8 +281,6 @@ static long __sio_write(FILE *__sio_f, const char *__sio_s, long __sio_n) {
     } else {
         __io_write(__sio_f->__port, __sio_s, __sio_n);
     }
-    __sio_f->__pos = __sio_f->__pos + __sio_n;
-    if (__sio_f->__len >= 0 && __sio_f->__pos > __sio_f->__len) __sio_f->__len = __sio_f->__pos;
     return __sio_n;
 }
 
@@ -427,58 +370,43 @@ size_t fwrite(const void *__sio_ptr, size_t __sio_size, size_t __sio_cnt, FILE *
 }
 
 /* ===================================================================== */
-/* positioning                                                           */
+/* positioning (iSEEK / iTELL on the random-access port)                 */
 /* ===================================================================== */
 
 long ftell(FILE *__sio_f) {
-    if (__sio_f->__flags & __SIO_STD) return -1;
-    if (__sio_f->__pos < 0) __sio_fixpos(__sio_f);
-    return __sio_f->__pos;
-}
-
-/* length of the file, reading it if necessary */
-static long __sio_length(FILE *__sio_f) {
-    if (__sio_f->__len >= 0) return __sio_f->__len;
-    if (__sio_f->__dir == 2 && __sio_f->__port >= 0) __io_flush(__sio_f->__port);
-    {
-        long __sio_save = __sio_f->__pos;
-        __sio_f->__pos = -1;
-        __sio_fixpos(__sio_f);
-        __sio_f->__pos = __sio_save;
-    }
-    return __sio_f->__len;
+    if (!__sio_isfile(__sio_f)) return -1;
+    if (__sio_f->__unget != EOF) return __sio_f->__ungpos;
+    return __io_tell(__sio_f->__port);
 }
 
 int fseek(FILE *__sio_f, long __sio_off, int __sio_whence) {
-    long __sio_target, __sio_cur;
-    if (__sio_f->__flags & __SIO_STD) return -1;
-    __sio_cur = ftell(__sio_f);
-    if (__sio_whence == SEEK_SET) __sio_target = __sio_off;
-    else if (__sio_whence == SEEK_CUR) __sio_target = __sio_cur + __sio_off;
-    else if (__sio_whence == SEEK_END) __sio_target = __sio_length(__sio_f) + __sio_off;
-    else return -1;
+    long __sio_target, __sio_len;
+    if (!__sio_isfile(__sio_f)) return -1;
+    if (__sio_whence == SEEK_SET) {
+        __sio_target = __sio_off;
+    } else if (__sio_whence == SEEK_CUR) {
+        __sio_target = ftell(__sio_f) + __sio_off;
+    } else if (__sio_whence == SEEK_END) {
+        __sio_len = __io_seek(__sio_f->__port, __SIO_SEEK_END);
+        if (__sio_len < 0) return -1;
+        __sio_target = __sio_len + __sio_off;
+    } else {
+        return -1;
+    }
     if (__sio_target < 0) return -1;
+    __sio_len = __io_seek(__sio_f->__port, __SIO_SEEK_END);
+    if (__sio_target > __sio_len) {
+        /* C allows seeking past the end: the gap is filled with zero bytes
+           when the file is extended */
+        if (!(__sio_f->__flags & __SIO_WR)) return -1;
+        while (__sio_len < __sio_target) {
+            __io_putb(__sio_f->__port, 0);
+            __sio_len++;
+        }
+    }
+    if (__io_seek(__sio_f->__port, __sio_target) < 0) return -1;
     __sio_f->__unget = EOF;
     __sio_f->__eof = 0;
-    if (__sio_f->__dir == 1 && __sio_target >= __sio_f->__pos) {
-        /* read forward */
-        while (__sio_f->__pos < __sio_target) {
-            if (fgetc(__sio_f) == EOF) {
-                __sio_f->__eof = 0;
-                break;
-            }
-        }
-        return 0;
-    }
-    if (__sio_f->__dir == 2) {
-        if (__sio_target == __sio_f->__pos) return 0;
-        __io_flush(__sio_f->__port);
-    }
-    /* reposition: the next read or write reopens the file */
-    if (__sio_f->__port >= 0) __io_close(__sio_f->__port);
-    __sio_f->__port = -1;
-    __sio_f->__dir = 0;
-    __sio_f->__pos = __sio_target;
     return 0;
 }
 
