@@ -1,0 +1,35 @@
+open w 1
+ftell after write 22
+[line one|line two 2|3|]
+[line one|line two 2|3|appended|]
+fgets [line one]
+fgets [line two 2]
+fgets [3]
+fgets [appended]
+feof 1 ferror 0 fgetc -1
+after clearerr feof 0
+first l ungetc Z then Z i
+seek 5: o ftell 6
+seek cur+2: 
+
+seek end-9: [appended] ftell 31
+fgetpos [ne ] again n
+small fgets e |
+getline lines=4 last len=0
+fwrite 5
+fread 5: 65 0 200 10 122 eof=1
+bin seek 200
+w+ [update]
+missing 1
+bad mode 1
+write to read-only -1 ferror 1
+rename 0
+old gone 1
+[line one|line two 2|3|appended|]
+remove 0 1
+tmpfile [temp data]
+tmpnam 1
+std 1 1 1
+puts adds newline
+fputs does not
+stdin chars 10

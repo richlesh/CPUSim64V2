@@ -961,9 +961,6 @@ ISV_SCALAR:
         #if_cond r0 == ND_C2P
             add     nfree, 1
         #end_cond
-        #if_cond r0 == ND_U2P
-            add     nfree, 1
-        #end_cond
         #call   gen_expr(a)
         #if_cond vc == VC_DBL
             #call   emit("    push    f0\n")
@@ -1029,9 +1026,6 @@ ISV_SCALAR:
             #if_cond r0 == ND_C2P
                 #call   emit("    load    r1, sp[%d]\n    int     iFREE\n", pos)
             #end_cond
-            #if_cond r0 == ND_U2P
-                #call   emit("    load    r1, sp[%d]\n    int     iFREE\n", pos)
-            #end_cond
             #call   rtype(a)
             move    t, r0
             move    sz, 1
@@ -1065,7 +1059,12 @@ ISV_SCALAR:
             #call   emit("    store   0, sf[%d]\n", r1)
         #end_for
     #else_cond
-        #call   emit("    add     r1, sf, %d\n    move    r2, %d\n    int     iMEMCLEAR\n", off, sz)
+        // iMEMCLEAR cannot address the stack (a separate memory area in
+        // the simulator), so locals are cleared with a loop
+        #call   new_lbl()
+        move    i, r0
+        #call   emit("    add     r1, sf, %d\n    move    r2, %d\n", off, sz)
+        #call   emit("__L%d:\n    sub     r2, 1\n    store   0, r1[r2]\n    test    r2\n    jump    nz, __L%d\n", i, i)
     #end_cond
 #end_func
 
@@ -1143,14 +1142,6 @@ ISV_SCALAR:
         #call   gen_expr(r1)
         #call   crt_use_p("c2p")
         #call   emit("    push    r0\n    call    __crt_c2p\n    add     sp, 1\n")
-        #return 0
-    #end_cond
-    #if_cond k == ND_U2P
-        load    r1, nd[N_A]
-        #call   gen_expr(r1)
-        #call   crt_use_p("__u2p")
-        load    r1, nd[N_VAL]
-        #call   emit("    push    %d\n    push    r0\n    call    __crt___u2p\n    add     sp, 2\n", r1)
         #return 0
     #end_cond
     #if_cond k == ND_NEG

@@ -917,14 +917,19 @@ SO_PTR:
             #end_cond
         #end_cond
     #end_cond
-    // calls to runtime library functions get packed-string conversions
+    // printf / scanf family of the C library: check the format literal
     move    bi, 0
     #if_cond name != 0
         load    r0, fn[N_VAL]
         load    r0, r0[S_FLAGS]
         and     r0, SF_PRELUDE
         #if_cond r0 != 0
-            move    bi, 1
+            load    r0, ft[T_FLAGS]
+            and     r0, TYF_VARIADIC
+            #if_cond r0 != 0
+                #call   format_kind(name)
+                move    bi, r0
+            #end_cond
         #end_cond
     #end_cond
     #for    1, i <= na, 1
@@ -934,27 +939,7 @@ SO_PTR:
             load    r4, tk
             #call   sem_assign_conv(a, pt, r4, "incompatible type for argument")
             move    a, r0
-            // printf-style format literal: rewrite C conversions for CPUSim64
-            #if_cond bi != 0
-                #if_cond i == nparm
-                    load    r0, ft[T_FLAGS]
-                    and     r0, TYF_VARIADIC
-                    #if_cond r0 != 0
-                        #call   fix_format_node(a)
-                        move    a, r0
-                    #end_cond
-                #end_cond
-            #end_cond
         #else_cond
-            #if_cond bi != 0
-                #call   rtype(a)
-                #call   ty_is_char_ptr(r0)
-                #if_cond r0 != 0
-                    load    r4, tk
-                    #call   to_pstr(a, r4)
-                    move    a, r0
-                #end_cond
-            #end_cond
             load    r4, tk
             #call   check_void(a, r4)
             load    r1, a[N_TYPE]
@@ -969,14 +954,9 @@ SO_PTR:
         #macro  VSET(margs, i, a)
     #end_for
     #if_cond bi != 0
-        load    r0, ft[T_FLAGS]
-        and     r0, TYF_VARIADIC
-        #if_cond r0 != 0
-            #if_cond nparm > 0
-                load    r4, tk
-                #call   check_format(margs, nparm, r4)
-                #call   lower_unsigned_format(margs, nparm)
-            #end_cond
+        #if_cond nparm > 0
+            load    r4, tk
+            #call   check_format(margs, nparm, r4, bi)
         #end_cond
     #end_cond
     load    r3, tk
@@ -990,10 +970,7 @@ SO_PTR:
 #end_func
 
 ///////////////////////////////////////////////////////////////////////////////
-// fix_format_node(node) -> node; a packed-string literal format is rewritten
-//      so that C conversions work with the CPUSim64 (Java) formatter:
-//      length modifiers (h l L q j z t) are dropped, %i -> %d,
-//      %p -> %x, %F -> %f.
+// format string helpers
 ///////////////////////////////////////////////////////////////////////////////
 #def_func is_fmt_flag(ch)
     #var    c
@@ -1043,24 +1020,96 @@ SO_PTR:
     #return 0
 #end_func
 
-#def_func fix_format_node(ndp)
-    #var    nd, w, cnt, i, c, outv, nw
-    load    nd, ndp
+///////////////////////////////////////////////////////////////////////////////
+// format_kind(name_entry) -> 1 for a *printf, 2 for a *scanf function name,
+//      else 0
+///////////////////////////////////////////////////////////////////////////////
+#def_func format_kind(ep)
+    #var    w, cnt
+    load    r0, ep
+    load    w, r0[E_W]
+    load    cnt, w[0]
+    #call   w_suffix(w, "printf")
+    #if_cond r0 != 0
+        #return 1
+    #end_cond
+    #call   w_suffix(w, "scanf")
+    #if_cond r0 != 0
+        #return 2
+    #end_cond
+    #return 0
+#end_func
+
+// w_suffix(wstr, packed) -> 1 if wstr ends with the packed string
+#def_func w_suffix(wp, pstr)
+    #var    w, sfx, n, m, i, c
+    load    w, wp
+    load    r1, pstr
+    #call   w_from_p(r1)
+    move    sfx, r0
+    load    n, w[0]
+    load    m, sfx[0]
+    #if_cond m > n
+        #return 0
+    #end_cond
+    #for    1, i <= m, 1
+        load    c, sfx[i]
+        sub     r1, n, m
+        add     r1, i
+        load    r2, w[r1]
+        #if_cond r2 != c
+            #return 0
+        #end_cond
+    #end_for
+    #return 1
+#end_func
+
+///////////////////////////////////////////////////////////////////////////////
+// format_arg(args, index, tok) -> type of the next variadic argument for a
+//      conversion; error if there is none
+///////////////////////////////////////////////////////////////////////////////
+#def_func format_arg(ap, ip, tk)
+    #var    margs, ai
+    load    margs, ap
+    load    ai, ip
+    #macro  VLEN(r1, margs)
+    #if_cond ai > r1
+        load    r1, tk
+        #call   error_tok(r1, "too few arguments for format")
+    #end_cond
+    #macro  VGET(r1, margs, ai)
+    #call   rtype(r1)
+#end_func
+
+///////////////////////////////////////////////////////////////////////////////
+// check_format(args, fmt_index, tok, kind): check the arguments of a call
+//      to the printf (kind 1) or scanf (kind 2) family against a literal
+//      format, as C compilers warn
+///////////////////////////////////////////////////////////////////////////////
+#def_func check_format(ap, fip, tk, kindp)
+    #var    margs, fi, nd, w, cnt, i, c, ai, t, k, kind, sup
+    load    margs, ap
+    load    fi, fip
+    load    kind, kindp
+    #macro  VGET(nd, margs, fi)
+    // look through the array-to-pointer conversion of a literal
+    load    r0, nd[N_KIND]
+    #if_cond r0 == ND_CAST
+        load    nd, nd[N_A]
+    #end_cond
     load    r0, nd[N_KIND]
     #if_cond r0 != ND_STR
-        #return nd
+        #return 0
     #end_cond
     load    r1, STRLITS
     load    r2, nd[N_VAL]
     #macro  VGET(w, r1, r2)
     load    cnt, w[0]
-    #call   vec_new()
-    move    outv, r0
+    add     ai, fi, 1
     move    i, 1
     #while  i <= cnt
         load    c, w[i]
         add     i, 1
-        #call   vec_push(outv, c)
         #if_cond c != '%'
             #continue
         #end_cond
@@ -1069,17 +1118,38 @@ SO_PTR:
         #end_cond
         load    c, w[i]
         #if_cond c == '%'
-            #call   vec_push(outv, c)
             add     i, 1
             #continue
         #end_cond
+        move    sup, 0
+        #if_cond kind == 2
+            #if_cond c == '*'
+                move    sup, 1
+                add     i, 1
+            #end_cond
+        #end_cond
+        // flags, width and precision ('*' takes an int argument in printf)
         #while  i <= cnt
             load    c, w[i]
+            #if_cond c == '*'
+                #if_cond kind == 1
+                    load    r3, tk
+                    #call   format_arg(margs, ai, r3)
+                    move    t, r0
+                    add     ai, 1
+                    #call   ty_is_integer(t)
+                    #if_cond r0 == 0
+                        load    r1, tk
+                        #call   error_tok(r1, "field width or precision '*' expects an int argument")
+                    #end_cond
+                #end_cond
+                add     i, 1
+                #continue
+            #end_cond
             #call   is_fmt_flag(c)
             #if_cond r0 == 0
                 #break
             #end_cond
-            #call   vec_push(outv, c)
             add     i, 1
         #end_while
         #while  i <= cnt
@@ -1095,288 +1165,144 @@ SO_PTR:
         #end_cond
         load    c, w[i]
         add     i, 1
-        #if_cond c == 'i'
-            move    c, 'd'
+        // ---- scanf: every assigned conversion takes a pointer
+        #if_cond kind == 2
+            #if_cond c == '['
+                // skip the scanset (']' first is part of the set)
+                #if_cond i <= cnt
+                    load    r1, w[i]
+                    #if_cond r1 == '^'
+                        add     i, 1
+                    #end_cond
+                #end_cond
+                #if_cond i <= cnt
+                    load    r1, w[i]
+                    #if_cond r1 == ']'
+                        add     i, 1
+                    #end_cond
+                #end_cond
+                #while  i <= cnt
+                    load    r1, w[i]
+                    add     i, 1
+                    #if_cond r1 == ']'
+                        #break
+                    #end_cond
+                #end_while
+            #end_cond
+            #if_cond sup != 0
+                #continue
+            #end_cond
+            load    r3, tk
+            #call   format_arg(margs, ai, r3)
+            move    t, r0
+            add     ai, 1
+            #call   ty_is_ptrlike(t)
+            #if_cond r0 == 0
+                load    r1, tk
+                #call   error_tok(r1, "format expects a pointer argument")
+            #end_cond
+            #continue
         #end_cond
-        #if_cond c == 'p'
-            move    c, 'x'
+        // ---- printf
+        move    k, 0                        // 1 integer, 2 double, 3 string, 4 pointer
+        #if_cond c == 'd'
+            move    k, 1
+        #end_cond
+        #if_cond c == 'i'
+            move    k, 1
+        #end_cond
+        #if_cond c == 'o'
+            move    k, 1
+        #end_cond
+        #if_cond c == 'u'
+            move    k, 1
+        #end_cond
+        #if_cond c == 'x'
+            move    k, 1
+        #end_cond
+        #if_cond c == 'X'
+            move    k, 1
+        #end_cond
+        #if_cond c == 'c'
+            move    k, 1
+        #end_cond
+        #if_cond c == 'e'
+            move    k, 2
+        #end_cond
+        #if_cond c == 'E'
+            move    k, 2
+        #end_cond
+        #if_cond c == 'f'
+            move    k, 2
         #end_cond
         #if_cond c == 'F'
-            move    c, 'f'
+            move    k, 2
         #end_cond
-        #call   vec_push(outv, c)
-    #end_while
-    #call   sb_to_w(outv)
-    move    nw, r0
-    #call   add_strlit(nw)
-    move    c, r0
-    #call   nd_at(ND_STR, nd)
-    move    outv, r0
-    store   c, outv[N_VAL]
-    load    r1, nd[N_TYPE]
-    store   r1, outv[N_TYPE]
-    #return outv
-#end_func
-
-///////////////////////////////////////////////////////////////////////////////
-// check_format(args, fmt_index, tok): the CPUSim64 formatter cannot survive
-//      mismatched printf arguments, so a literal format is checked here.
-///////////////////////////////////////////////////////////////////////////////
-#def_func check_format(ap, fip, tk)
-    #var    margs, fi, nd, w, cnt, i, c, ai, na, a, t, k
-    load    margs, ap
-    load    fi, fip
-    #macro  VGET(nd, margs, fi)
-    load    r0, nd[N_KIND]
-    #if_cond r0 != ND_STR
-        #return 0
-    #end_cond
-    load    r1, STRLITS
-    load    r2, nd[N_VAL]
-    #macro  VGET(w, r1, r2)
-    load    cnt, w[0]
-    #macro  VLEN(na, margs)
-    add     ai, fi, 1
-    move    i, 1
-    #while  i <= cnt
-        load    c, w[i]
-        add     i, 1
-        #if_cond c != '%'
-            #continue
+        #if_cond c == 'g'
+            move    k, 2
         #end_cond
-        #if_cond i > cnt
-            #break
+        #if_cond c == 'G'
+            move    k, 2
         #end_cond
-        load    c, w[i]
-        #if_cond c == '%'
-            add     i, 1
-            #continue
+        #if_cond c == 'a'
+            move    k, 2
         #end_cond
-        #while  i <= cnt
-            load    c, w[i]
-            #call   is_fmt_flag(c)
-            #if_cond r0 == 0
-                #break
-            #end_cond
-            add     i, 1
-        #end_while
-        #if_cond i > cnt
-            #break
+        #if_cond c == 'A'
+            move    k, 2
         #end_cond
-        load    c, w[i]
-        add     i, 1
-        #if_cond ai > na
-            load    r1, tk
-            #call   error_tok(r1, "too few arguments for format")
-        #end_cond
-        #macro  VGET(a, margs, ai)
-        add     ai, 1
-        #call   rtype(a)
-        move    t, r0
-        #call   ty_kind(t)
-        move    k, r0
         #if_cond c == 's'
-            #if_cond k != TY_PSTR
+            move    k, 3
+        #end_cond
+        #if_cond c == 'p'
+            move    k, 4
+        #end_cond
+        #if_cond c == 'n'
+            move    k, 4
+        #end_cond
+        #if_cond k == 0
+            #continue
+        #end_cond
+        load    r3, tk
+        #call   format_arg(margs, ai, r3)
+        move    t, r0
+        add     ai, 1
+        #if_cond k == 1
+            #call   ty_is_double(t)
+            #if_cond r0 != 0
+                load    r1, tk
+                #call   error_tok(r1, "format expects an integer argument but the argument has type 'double'")
+            #end_cond
+            #call   ty_is_struct(t)
+            #if_cond r0 != 0
+                load    r1, tk
+                #call   error_tok(r1, "format expects an integer argument")
+            #end_cond
+        #end_cond
+        #if_cond k == 2
+            #call   ty_is_double(t)
+            #if_cond r0 == 0
+                load    r1, tk
+                #call   error_tok(r1, "format expects a 'double' argument")
+            #end_cond
+        #end_cond
+        #if_cond k == 3
+            #call   ty_is_ptrlike(t)
+            #if_cond r0 == 0
                 load    r1, tk
                 #call   error_tok(r1, "format '%s' expects a string argument")
             #end_cond
-            #continue
         #end_cond
-        #if_cond c == 'f'
-            jump    CF_DOUBLE
-        #end_cond
-        #if_cond c == 'e'
-            jump    CF_DOUBLE
-        #end_cond
-        #if_cond c == 'g'
-            jump    CF_DOUBLE
-        #end_cond
-        #if_cond c == 'E'
-            jump    CF_DOUBLE
-        #end_cond
-        #if_cond c == 'G'
-            jump    CF_DOUBLE
-        #end_cond
-        #if_cond k == TY_DOUBLE
-            load    r1, tk
-            #call   error_tok(r1, "format expects an integer argument but the argument has type 'double'")
-        #end_cond
-        #call   ty_is_struct(t)
-        #if_cond r0 != 0
-            load    r1, tk
-            #call   error_tok(r1, "format expects an integer argument")
-        #end_cond
-        #continue
-CF_DOUBLE:
-        #if_cond k != TY_DOUBLE
-            load    r1, tk
-            #call   error_tok(r1, "format expects a 'double' argument")
-        #end_cond
-    #end_while
-#end_func
-
-///////////////////////////////////////////////////////////////////////////////
-// lower_unsigned_format(args, fmt_index): the CPUSim64 formatter has no
-//      unsigned conversion, so each %u in a literal format becomes %s and its
-//      argument is converted at run time to a decimal packed string
-//      (ND_U2P, freed after the call).  The '0' flag and a precision become
-//      zero padding done by the converter (Java rejects '0' with %s).
-///////////////////////////////////////////////////////////////////////////////
-#def_func lower_unsigned_format(ap, fip)
-    #var    margs, fi, nd, w, cnt, i, c, ai, outv, st, zero, minus, width, prec, pad, j, a, u, nw
-    load    margs, ap
-    load    fi, fip
-    #macro  VGET(nd, margs, fi)
-    load    r0, nd[N_KIND]
-    #if_cond r0 != ND_STR
-        #return 0
-    #end_cond
-    load    r1, STRLITS
-    load    r2, nd[N_VAL]
-    #macro  VGET(w, r1, r2)
-    load    cnt, w[0]
-    // quick exit when there is no %u
-    move    u, 0
-    move    i, 1
-    #while  i <= cnt
-        load    c, w[i]
-        add     i, 1
-        #if_cond c == '%'
-            #while  i <= cnt
-                load    c, w[i]
-                #call   is_fmt_flag(c)
-                #if_cond r0 == 0
-                    #break
-                #end_cond
-                add     i, 1
-            #end_while
-            #if_cond i <= cnt
-                load    c, w[i]
-                add     i, 1
-                #if_cond c == 'u'
-                    move    u, 1
-                #end_cond
-            #end_cond
-        #end_cond
-    #end_while
-    #if_cond u == 0
-        #return 0
-    #end_cond
-    #call   vec_new()
-    move    outv, r0
-    add     ai, fi, 1
-    move    i, 1
-    #while  i <= cnt
-        load    c, w[i]
-        add     i, 1
-        #call   vec_push(outv, c)
-        #if_cond c != '%'
-            #continue
-        #end_cond
-        #if_cond i > cnt
-            #break
-        #end_cond
-        load    c, w[i]
-        #if_cond c == '%'
-            #call   vec_push(outv, c)
-            add     i, 1
-            #continue
-        #end_cond
-        // flags, width and precision of this conversion
-        move    st, i
-        move    zero, 0
-        move    minus, 0
-        move    width, 0
-        move    prec, -1
-        #while  i <= cnt
-            load    c, w[i]
-            #if_cond c == '0'
-                #if_cond width == 0
-                    #if_cond prec < 0
-                        move    zero, 1
-                    #end_cond
-                #end_cond
-            #end_cond
-            #if_cond c == '-'
-                move    minus, 1
-            #end_cond
-            #if_cond c == '.'
-                move    prec, 0
-                add     i, 1
-                #continue
-            #end_cond
-            #call   is_digit(c)
-            #if_cond r0 != 0
-                sub     r1, c, '0'
-                #if_cond prec >= 0
-                    mult    prec, 10
-                    add     prec, r1
-                #else_cond
-                    #if_cond c != '0'
-                        mult    width, 10
-                        add     width, r1
-                    #else_cond
-                        #if_cond width != 0
-                            mult    width, 10
-                        #end_cond
-                    #end_cond
-                #end_cond
-                add     i, 1
-                #continue
-            #end_cond
-            #call   is_fmt_flag(c)
+        #if_cond k == 4
+            #call   ty_is_ptrlike(t)
             #if_cond r0 == 0
-                #break
-            #end_cond
-            add     i, 1
-        #end_while
-        #if_cond i > cnt
-            #break
-        #end_cond
-        load    c, w[i]
-        add     i, 1
-        #if_cond c != 'u'
-            // copy the conversion unchanged
-            move    j, st
-            #while  j < i
-                load    r1, w[j]
-                #call   vec_push(outv, r1)
-                add     j, 1
-            #end_while
-            add     ai, 1
-            #continue
-        #end_cond
-        // %u: zero padding moves into the converter
-        move    pad, 0
-        #if_cond zero != 0
-            #if_cond minus == 0
-                move    pad, width
-                move    width, 0
+                #call   ty_is_integer(t)
+                #if_cond r0 == 0
+                    load    r1, tk
+                    #call   error_tok(r1, "format expects a pointer argument")
+                #end_cond
             #end_cond
         #end_cond
-        #if_cond prec > pad
-            move    pad, prec
-        #end_cond
-        #if_cond minus != 0
-            #call   vec_push(outv, '-')
-        #end_cond
-        #if_cond width > 0
-            #call   sb_add_int(outv, width)
-        #end_cond
-        #call   vec_push(outv, 's')
-        #macro  VGET(a, margs, ai)
-        #call   nd_at(ND_U2P, a)
-        move    nw, r0
-        store   a, nw[N_A]
-        store   pad, nw[N_VAL]
-        load    r1, TY_PSTR_T
-        store   r1, nw[N_TYPE]
-        #macro  VSET(margs, ai, nw)
-        add     ai, 1
     #end_while
-    #call   sb_to_w(outv)
-    #call   add_strlit(r0)
-    store   r0, nd[N_VAL]
 #end_func
 
 ///////////////////////////////////////////////////////////////////////////////

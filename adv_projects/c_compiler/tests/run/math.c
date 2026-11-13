@@ -2,7 +2,7 @@
 #include <math.h>
 
 /* Prints results with fixed precision so the output can be compared with a
-   native build (cc -lm).  %g is avoided: CPUSim64 formats it like %f. */
+   native build (cc -lm). */
 static void p(const char *name, double v) { printf("%-10s %.6f\n", name, v); }
 static void pi(const char *name, long v) { printf("%-10s %ld\n", name, v); }
 

@@ -11,8 +11,9 @@
 //   --pp      print the preprocessed token stream
 //   --tokens  print the token list
 //   --ast     print the abstract syntax tree
-//   --lib=DIR library directory for <name.h> headers (default: the lib/
-//             directory next to the compiler's obj/ directory)
+//   --lib=DIR additional library directory for <name.h> headers, searched
+//             before the standard lib/ directory next to the compiler's
+//             obj/ directory (may be repeated)
 //
 // CPUSim64 has no linker, so this file includes every compiler module.
 ///////////////////////////////////////////////////////////////////////////////
@@ -26,7 +27,7 @@
 #global CC_INPATH:  .dci 0          // packed input path
 #global CC_INDIR:   .dci 0          // packed input directory prefix
 #global CC_PRELUDE: .dci 0          // intern entry "<built-in>"
-#global CC_LIBDIR:  .dci 0          // packed library directory ("" .. "/")
+#global CC_LIBDIRS: .dci 0          // vec of packed library directories ("dir/")
 
 #define MODE_COMPILE    0
 #define MODE_PP         1
@@ -58,11 +59,18 @@
             #call   cc_fatal2("unknown option", opt)
         #end_cond
     #end_for
-    load    r0, CC_LIBDIR
+    // --lib directories are searched first, then the standard library
+    #call   find_libdir()
+    move    r1, r0
+    load    r0, CC_LIBDIRS
     #if_cond r0 == 0
-        #call   find_libdir()
-        store   r0, CC_LIBDIR
+        push    r1
+        #call   vec_new()
+        store   r0, CC_LIBDIRS
+        pop     r1
     #end_cond
+    load    r0, CC_LIBDIRS
+    #call   vec_push(r0, r1)
     #call   intern_init()
     #call   intern_p(path)
     store   r0, ERR_FILE
@@ -178,7 +186,14 @@
         #call   vec_push(sb, '/')
     #end_cond
     #call   sb_to_p(sb)
-    store   r0, CC_LIBDIR
+    move    w, r0
+    load    r0, CC_LIBDIRS
+    #if_cond r0 == 0
+        #call   vec_new()
+        store   r0, CC_LIBDIRS
+    #end_cond
+    load    r0, CC_LIBDIRS
+    #call   vec_push(r0, w)
     #return 1
 #end_func
 

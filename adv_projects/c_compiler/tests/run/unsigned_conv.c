@@ -17,8 +17,9 @@ static unsigned long to_u(double d) { return d; }
 
 int main(void) {
     /* conversion at run time */
-    /* exact comparisons: the CPUSim64 formatter prints large doubles with
-       only 17 significant digits */
+    /* exact comparisons of the converted values, plus formatted output
+       (printf is exact) */
+    printf("u2d %.1f %.1f\n", to_d(BIG), to_d(TOP));
     printf("u2d %d %d %d %.1f %e\n", to_d(BIG) == 18446744073709551616.0,
            to_d(TOP) == 9223372036854775808.0, to_d(TOP + 1) == 9223372036854775808.0,
            to_d(12345), to_d(BIG));

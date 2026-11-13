@@ -117,8 +117,15 @@ PARSE_STMT_ASM_START:
     load    s, sp_
     load    lv, lvp
     load    ty, s[S_TYPE]
-    #call   ty_is_scalar(ty)
-    #if_cond r0 == 0
+    // aggregates (arrays, structs, unions) are zeroed before the leaves
+    // are stored, so that elements without an initializer are 0
+    #call   ty_is_struct(ty)
+    move    nd, r0
+    #call   ty_kind(ty)
+    #if_cond r0 == TY_ARRAY
+        move    nd, 1
+    #end_cond
+    #if_cond nd != 0
         load    r1, tk
         #call   nd_new(ND_MEMZERO, r1)
         move    nd, r0

@@ -21,8 +21,8 @@ Debugging dumps (instead of code generation):
 ../../run.sh cc prog.c --ast      # typed abstract syntax tree
 ```
 
-`--lib=DIR` selects the library directory (see *Library headers* below); it
-may be combined with the dump options, in any order after the file name.
+`--lib=DIR` adds a library directory (see *Library headers* below); it may
+be combined with the dump options, in any order after the file name.
 
 The compiler stops at the first error, prints `file:line: error: message` to
 STDERR, deletes any partial output and finishes with result 1.  Note that the
@@ -54,7 +54,7 @@ limits (deep recursion such as 50,000 nested calls works).
 | `ast.asm` | AST nodes and the `--ast` dumper |
 | `codegen.asm` | stack-machine code generation |
 | `runtime_emit.asm` | assembly runtime library, copied into programs on demand |
-| `lib/` | library headers and sources in C: `math`, `stdlib`, `string`, `time` (`.h` + `.c`) and `setjmp.h` |
+| `lib/` | library headers and sources in C: `stdio`, `math`, `stdlib`, `string`, `time` (`.h` + `.c`) and `setjmp.h` |
 
 Pipeline: source -> lexer -> preprocessor -> parser + semantic analysis ->
 code generation per function -> output file.  Library functions written in C
@@ -110,12 +110,13 @@ exists:
   program that calls only `sqrt` gets only the `sqrt` code.
 
 A `<...>` header without a `lib/` file is one of the built-in standard
-headers (`stdio.h`, `ctype.h`, `assert.h`, `stdarg.h`, `stddef.h`,
-`stdint.h`, `stdbool.h`, `limits.h`) and is accepted silently; those
+headers (`ctype.h`, `assert.h`, `stdarg.h`, `stddef.h`, `stdint.h`,
+`stdbool.h`, `limits.h`) and is accepted silently; those
 declarations are part of the prelude.
 
 The library directory is the `lib/` directory next to the compiler's `obj/`
-directory, found from the path of `cc.o64`; `--lib=DIR` overrides it.
+directory, found from the path of `cc.o64`.  `--lib=DIR` adds a directory
+that is searched first (it may be given more than once).
 
 A function in `lib/name.h` that has no body in `lib/name.c` is provided by the
 assembly runtime (`runtime_emit.asm`, label `__crt_<name>`).  If the program
@@ -124,7 +125,7 @@ the library body is ignored.
 
 The appended `.c` file is preprocessed after the program, so it sees the
 program's macros.  Library sources therefore use names that start with a
-library-specific prefix (`__m_`, `__sl_`, `__st_`, `__tm_`) for all locals,
+library-specific prefix (`__sio_`, `__m_`, `__sl_`, `__st_`, `__tm_`) for all locals,
 helpers and data.
 
 As in standard C, math functions must be declared: calling `sqrt` without
@@ -139,37 +140,58 @@ CPUSim64 memory is word addressed, so **every scalar is one 64-bit word**:
 arrays and `char *` strings store one character per word and end with 0.
 `CHAR_BIT` is 64 and `INT_MAX` is 2^63 - 1.
 
-## Strings and the pstr rule
+## Strings
 
-The CPUSim64 library uses *packed* strings: a length word followed by UTF-8
-bytes, 8 per word.  The compiler keeps both representations apart with an
-internal type `__pstr` (packed string):
+There are two string representations, and C code only ever sees the first:
 
-* A string literal is a `char[]` (word per character) in ordinary C use:
-  `char *s = "abc"; s[1]` works as in C.
-* Where a library function expects text (`printf` format, `puts`, `fopen`
-  file name, ...) the parameter is declared `__pstr` and a literal is passed
-  directly as packed `.dcs` data.
-* A `char *` passed to such a parameter, or as a `%s` argument to the printf
-  family, is converted to a temporary packed string, which is freed after the
-  call.
-* Format strings are adapted to the CPUSim64 formatter: length modifiers
-  (`l`, `ll`, `h`, `z`, ...) are dropped, `%i` becomes `%d` and `%p` becomes
-  `%x`.  The formatter has no unsigned conversion, so in a literal format
-  each `%u` becomes `%s` and its argument is converted to a decimal string at
-  run time (width, `-`, `0` padding and precision are kept).  A literal
-  format is checked against its arguments at compile time, because a
-  mismatch would crash the formatter at run time.
-* The formatter is Java's `String.format`, so `%g` prints like `%f`, `%x` of
-  a negative number prints all 64 bits, and `%f` prints at most 17
-  significant digits (2^64 prints as `18446744073709552000.0`).
+* **C strings** - 0-terminated arrays of `char`, one Unicode codepoint
+  (UTF-32) per 64-bit word.  Every `char *`, `char[]` and string literal is
+  one, and the whole C library (`string.h`, `stdio.h`, ...) works on them.
+* **CPUSim64 strings** - a length word followed by UTF-8 bytes packed 8 per
+  word (`.dcs` data).  Only the CPUSim64 operating system interrupts and
+  assembly library use them.
+
+The conversion happens inside a few assembly runtime routines at the
+operating-system boundary: file names are converted when a file is opened,
+deleted or tested, output text is converted when a formatted block is
+written, and `argv` strings are converted at startup.  Characters are read
+and written one codepoint at a time (`IN`/`OUT` with size `CHAR`), so text
+files are UTF-8 on disk and one codepoint per `char` in memory.
+
+The internal type `__pstr` (a packed string) is still accepted for code that
+calls CPUSim64 functions directly, but no standard library function uses it.
 
 ## C library
 
-`<stdio.h>`: `printf`, `fprintf`, `sprintf`, `snprintf`, `puts`, `fputs`,
-`putchar`, `fputc`, `putc`, `getchar`, `fgetc`, `getc`, `fgets`, `fopen`
-(`"r"`, `"w"`, `"a"`), `fclose`, `fflush`, `feof`, `perror`, `stdin`,
-`stdout`, `stderr`.
+`<stdio.h>` (`lib/stdio.h`, `lib/stdio.c`):
+* files: `fopen` (modes `r w a`, with `+`, `b`, `x`), `freopen`, `fclose`,
+  `fflush`, `setbuf`/`setvbuf` (accepted, no effect), `remove`, `rename`,
+  `tmpfile`, `tmpnam`, `fileno`, `stdin`, `stdout`, `stderr`;
+* characters and lines: `fgetc`, `getc`, `getchar`, `ungetc`, `fgets`,
+  `getline`, `getdelim`, `fputc`, `putc`, `putchar`, `fputs`, `puts`;
+* blocks: `fread`, `fwrite`;
+* positioning: `fseek`, `ftell`, `rewind`, `fgetpos`, `fsetpos`;
+* errors: `feof`, `ferror`, `clearerr`, `perror`;
+* formatted output: `printf`, `fprintf`, `sprintf`, `snprintf`, `vprintf`,
+  `vfprintf`, `vsprintf`, `vsnprintf` with all C99 conversions (`d i u o x
+  X c s p n f F e E g G a A %`), flags (`- + space # 0`), `*` width and
+  precision and length modifiers.  Floating-point output is exact and
+  rounded half-to-even like glibc (`%.2f` of 0.125 is `0.12`; `%.20f` of 0.1
+  prints all its digits).  `%c` prints any codepoint and field widths count
+  characters, not UTF-8 bytes;
+* formatted input: `scanf`, `fscanf`, `sscanf`, `vscanf`, `vfscanf`,
+  `vsscanf` with `d i u o x X p f e g a s c [...] n %`, `*` suppression and
+  widths; floating-point input is correctly rounded.
+
+Streams are unbuffered: every output call reaches the operating system
+before it returns (one write per `printf`), so nothing is lost at exit and
+`stdout` and `stderr` interleave in program order.  Text streams count
+positions in characters and binary streams (`"b"`) in bytes, one byte per
+`char`.  CPUSim64 ports cannot seek, so `fseek` reopens the file and reads
+forward, and writing is only possible at the end of a file (appending,
+`"w"`, or after reading to the end); `rename` copies the file.  Literal
+`printf` and `scanf` formats are checked against their arguments at compile
+time.
 `<stdlib.h>` (`lib/stdlib.h`, `lib/stdlib.c`): `malloc`, `calloc`,
 `realloc`, `free`, `exit`, `_Exit`, `abort`, `atexit`, `system`, `getenv`
 (always `NULL`), `abs`, `labs`, `llabs`, `div`, `ldiv`, `lldiv`, `atoi`,
@@ -213,8 +235,9 @@ Also `<assert.h>`, `<stdarg.h>`, `<stddef.h>`, `<stdint.h>`, `<stdbool.h>`
 and `<limits.h>` (built in).
 
 As in standard C, a library function must be declared by its header:
-calling `malloc` without `#include <stdlib.h>` or `strlen` without
-`#include <string.h>` is an "implicit declaration" error.  Unused library
+calling `printf` without `#include <stdio.h>`, `malloc` without
+`#include <stdlib.h>` or `strlen` without `#include <string.h>` is an
+"implicit declaration" error.  Unused library
 functions and data are not compiled into the program.
 
 A program may define its own function with a library name; its definition

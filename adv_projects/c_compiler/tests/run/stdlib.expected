@@ -1,7 +1,7 @@
 calloc zeros=10 a[19]=5
 xxxxx xxxxx
 5 65 113
--26 25.00 -0.13
+-26 25.00 -0.12
 sum=10 avg=2.50
 rand ok=1
 depth=20000

@@ -1285,14 +1285,15 @@ PP_ASM_START:
 #end_func
 
 ///////////////////////////////////////////////////////////////////////////////
-// pp_lib_header(name) -> packed path of LIBDIR/base.h or 0 if there is none.
-//      base is name without a trailing ".h".  LIBDIR/base.c, if present, is
-//      queued to be appended to the translation unit.
+// pp_lib_header(name) -> packed path of DIR/base.h for the first library
+//      directory DIR that has it, or 0.  base is name without a trailing
+//      ".h".  DIR/base.c, if present, is queued to be appended to the
+//      translation unit.
 ///////////////////////////////////////////////////////////////////////////////
 #def_func pp_lib_header(namep)
-    #var    w, cnt, base, sb, hpath, cpath, c
-    load    r0, CC_LIBDIR
-    #if_cond r0 == 0
+    #var    w, cnt, base, dirs, nd, di, d, hpath
+    load    dirs, CC_LIBDIRS
+    #if_cond dirs == 0
         #return 0
     #end_cond
     load    r1, namep
@@ -1300,11 +1301,11 @@ PP_ASM_START:
     move    w, r0
     load    cnt, w[0]
     #if_cond cnt >= 2
-        load    c, w[cnt]
-        #if_cond c == 'h'
+        load    r0, w[cnt]
+        #if_cond r0 == 'h'
             sub     r1, cnt, 1
-            load    c, w[r1]
-            #if_cond c == '.'
+            load    r0, w[r1]
+            #if_cond r0 == '.'
                 sub     cnt, 2
                 store   cnt, w[0]
             #end_cond
@@ -1315,33 +1316,38 @@ PP_ASM_START:
     #end_cond
     #call   p_from_w(w)
     move    base, r0
-    // LIBDIR + base + ".h"
+    // the first directory that has base.h provides the library
+    #macro  VLEN(nd, dirs)
+    #for    1, di <= nd, 1
+        #macro  VGET(d, dirs, di)
+        #call   lib_path(d, base, ".h")
+        move    hpath, r0
+        #call   isFile(hpath)
+        #if_cond r0 != 0
+            #call   lib_path(d, base, ".c")
+            move    w, r0
+            #call   isFile(w)
+            #if_cond r0 != 0
+                #call   pp_queue_lib(w)
+            #end_cond
+            #return hpath
+        #end_cond
+    #end_for
+    #return 0
+#end_func
+
+// lib_path(dir, base, ext) -> packed dir + base + ext
+#def_func lib_path(dirp, basep, extp)
+    #var    sb
     #call   vec_new()
     move    sb, r0
-    load    r1, CC_LIBDIR
+    load    r1, dirp
     #call   sb_add_p(sb, r1)
-    #call   sb_add_p(sb, base)
-    #call   sb_add_p(sb, ".h")
-    #call   sb_to_p(sb)
-    move    hpath, r0
-    #call   isFile(hpath)
-    #if_cond r0 == 0
-        #return 0
-    #end_cond
-    // LIBDIR + base + ".c"
-    #call   vec_new()
-    move    sb, r0
-    load    r1, CC_LIBDIR
+    load    r1, basep
     #call   sb_add_p(sb, r1)
-    #call   sb_add_p(sb, base)
-    #call   sb_add_p(sb, ".c")
+    load    r1, extp
+    #call   sb_add_p(sb, r1)
     #call   sb_to_p(sb)
-    move    cpath, r0
-    #call   isFile(cpath)
-    #if_cond r0 != 0
-        #call   pp_queue_lib(cpath)
-    #end_cond
-    #return hpath
 #end_func
 
 ///////////////////////////////////////////////////////////////////////////////
