@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <limits.h>
+#include <time.h>
 
 static int cmp_int(const void *a, const void *b) {
     int x = *(const int *)a, y = *(const int *)b;
@@ -53,6 +54,11 @@ int main(void) {
     printf("atof %.3f\n", atof("2.718"));
 
     /* random numbers: deterministic for a seed, within [0, RAND_MAX] */
+    srand((unsigned)time(NULL));          /* seeded from the wall clock */
+    int t1 = rand();
+    srand((unsigned)time(NULL) + 1);
+    int t2 = rand();
+    printf("time seeds differ: %d\n", t1 != t2);
     srand(42);
     int r1 = rand(), r2 = rand();
     srand(42);

@@ -18,6 +18,7 @@ strtod 0.50 rest=e
 strtod 0.00 rest=nope
 strtod inf 1 1 rest=[]
 atof 2.718
+time seeds differ: 1
 rand same=1 inrange=1 distinct=1 max=2147483647
 -10 -9 -8 -7 -6 -5 -3 -2 -1 0 1 2 3 4 6 7 8 9 11 12 
 sorted=1 found=0 missing=1

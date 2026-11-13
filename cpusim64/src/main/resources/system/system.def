@@ -34,6 +34,7 @@
 #define	iRESTORE		14
 #define	iRESTORE_FP		15
 #define iPrintCPUState	16
+#define iTIME			17
 
 #define	iALLOC			20
 #define	iREALLOC		21
@@ -60,6 +61,7 @@
 #define	iSLEEP			42
 #define iWAKE_THREAD    43
 #define iALLOC_SHARED	44
+#define iENV			45
 
 #define iTERM_COLS		50
 #define iTERM_ROWS		51

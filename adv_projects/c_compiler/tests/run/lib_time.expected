@@ -35,4 +35,5 @@ timegm 943920000 -> 1999-11-30
 gmtime_r 23:59:59 ctime: Thu Jan  1 23:59:59 1970
 difftime 750.0
 strftime small=0 full=4 [2359]
-time ok=1 clock ok=1
+time ok=1 store ok=1 clock ok=1
+year ok=1

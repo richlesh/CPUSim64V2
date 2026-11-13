@@ -82,6 +82,7 @@ public class StdInterruptHandler extends InterruptHandler
 	public static final int iRESTORE=14;
 	public static final int iRESTORE_FP=15;
 	public static final int iPrintCPUState=16;
+	public static final int iTIME=17;
 
 	public static final int iALLOC=20;
 	public static final int iREALLOC=21;
@@ -108,6 +109,7 @@ public class StdInterruptHandler extends InterruptHandler
 	public static final int iSLEEP=42;
 	public static final int iWAKE_THREAD=43;
 	public static final int iALLOC_SHARED=44;
+	public static final int iENV=45;
 
 	public static final int iTERM_COLS=50;
 	public static final int iTERM_ROWS=51;
@@ -226,6 +228,9 @@ public class StdInterruptHandler extends InterruptHandler
 
 	private long argv_ptr = 0;
 
+	// iENV cache: variable name -> address of its value string (0 if not set).
+	private final java.util.HashMap<String, Long> envCache = new java.util.HashMap<>();
+
 	public StdInterruptHandler(Simulator c) { cpu = c; }
 
 	/**
@@ -236,6 +241,10 @@ public class StdInterruptHandler extends InterruptHandler
 	 * Safe to call multiple times: after freeing, argv_ptr is reset to 0.
 	 */
 	public void freeArgs() {
+		for (long strAddr : envCache.values()) {
+			if (strAddr > 0) cpu.free(strAddr);				// free each cached iENV string
+		}
+		envCache.clear();
 		if (argv_ptr == 0) return;
 		int argc = cpu.getCommandLineCount();
 		for (int i = 0; i < argc; ++i) {
@@ -291,6 +300,11 @@ public class StdInterruptHandler extends InterruptHandler
 			case iCLOCK:							// returns current time in ns in r0
 				cpu.setR(0,cpu.getClock());
 				break;
+			case iTIME: {							// returns wall clock time in ns since 1970-01-01T00:00:00Z in r0
+				java.time.Instant now = java.time.Instant.now();
+				cpu.setR(0, now.getEpochSecond() * 1_000_000_000L + now.getNano());
+				break;
+			}
 			case iSAVE:								// saves r0-r28 on the stack
 				cpu.opSAVE(Simulator.Decoded.decode(cpu.encT0(Opcode.SAVE.code, 2,2,0,0, 0,cpu.GPR_COUNT - 4,0,0)));
 				break;
@@ -367,6 +381,21 @@ public class StdInterruptHandler extends InterruptHandler
 					cpu.memRead(argv_ptr + v) : 0;
 				cpu.setR(0, v);
 				break;
+			case iENV: {								// r1 = variable name; returns its value string in r0 or 0 if not set
+				// The result is cached (including "not set"), so a second fetch of the
+				// same variable returns the same string.  The caller must not free it.
+				long nameAddr = cpu.getR(1);
+				if (nameAddr == 0) { cpu.setR(0, 0); break; }
+				String name = cpu.convertString(nameAddr);
+				Long cached = envCache.get(name);
+				if (cached == null) {
+					String val = System.getenv(name);
+					cached = (val == null) ? 0L : cpu.allocString(val);
+					envCache.put(name, cached);
+				}
+				cpu.setR(0, cached);
+				break;
+			}
 			case iEXIT:								// exits process with return code in r1
 				cpu.exit((int)cpu.getR(1));
 				break;

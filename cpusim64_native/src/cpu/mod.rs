@@ -106,6 +106,9 @@ pub struct Simulator {
 
     // Lazily-allocated argv pointer (Task 10 iARGS/freeArgs).
     pub argv_ptr: i64,
+
+    // iENV cache: variable name -> address of its value string (0 if not set).
+    pub env_cache: HashMap<String, i64>,
 }
 
 impl Simulator {
@@ -137,6 +140,7 @@ impl Simulator {
             is_root: true,
             ports: std::collections::HashMap::new(),
             argv_ptr: 0,
+            env_cache: HashMap::new(),
         };
         for p in 0..=2 {
             sim.ports.insert(p, crate::ports::Port::new_std());

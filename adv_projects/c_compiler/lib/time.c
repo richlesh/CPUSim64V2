@@ -44,11 +44,12 @@ static long __tm_days_from_civil(long __tm_y, long __tm_m, long __tm_d) {
 }
 
 clock_t clock(void);
+long __time_now(void);          /* [rt] iTIME: seconds since the Unix epoch */
 
 time_t time(time_t *__tm_t) {
-    /* the simulator provides no calendar clock */
-    if (__tm_t) *__tm_t = (time_t)-1;
-    return (time_t)-1;
+    time_t __tm_now = (time_t)__time_now();
+    if (__tm_t) *__tm_t = __tm_now;
+    return __tm_now;
 }
 
 double difftime(time_t __tm_t1, time_t __tm_t0) {

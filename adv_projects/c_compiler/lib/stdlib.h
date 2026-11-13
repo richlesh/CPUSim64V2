@@ -31,7 +31,8 @@ void _Exit(int status);             /* [rt] */
 void abort(void);                   /* [rt] result 134 */
 int atexit(void (*func)(void));     /* up to 32 handlers */
 int system(__pstr command);         /* [rt] runs a host command */
-char *getenv(const char *name);     /* always NULL: no environment */
+char *getenv(const char *name);     /* value of an environment variable, or NULL;
+                                           the same variable returns the same string */
 
 /* ---- integer arithmetic */
 int abs(int n);
@@ -52,7 +53,8 @@ unsigned long strtoul(const char *s, char **end, int base);
 unsigned long long strtoull(const char *s, char **end, int base);
 double strtod(const char *s, char **end);
 
-/* ---- pseudo-random numbers (deterministic; srand(1) by default) */
+/* ---- pseudo-random numbers (deterministic; srand(1) by default;
+        srand(time(NULL)) gives a different sequence on every run) */
 int rand(void);
 void srand(unsigned seed);
 

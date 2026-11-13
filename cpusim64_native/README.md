@@ -151,6 +151,7 @@ These are documented, intentional differences surfaced during reconciliation:
 
 4. **Nondeterministic/host interrupts.** `iRANDOM`/`iRAND`/`iCLOCK` are
    deterministic placeholders (wall-clock is stripped by the harness anyway);
+   `iENV` is real (values cached and freed at exit); `iTIME` is real (nanoseconds since the Unix epoch, from `SystemTime`);
    `iSYSTEM` and temp-file/dir interrupts are unsupported in the native port.
 
 ## License

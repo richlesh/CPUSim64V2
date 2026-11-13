@@ -33,7 +33,29 @@ void exit(int __sl_status) {
     _Exit(__sl_status);
 }
 
-char *getenv(const char *__sl_name) { return 0; }
+/* getenv: iENV caches the packed value string, so the same variable always
+   yields the same packed address; that address keys a table of the C
+   (word) strings already converted, so repeated calls return the same
+   pointer and the string stays valid for the life of the program. */
+long __getenv_raw(const char *__sl_name);       /* [rt] packed value or 0 */
+char *__getenv_p2c(long __sl_ps);               /* [rt] packed -> C string */
+#define __SL_ENV_MAX 64
+static long __sl_env_key[__SL_ENV_MAX];
+static char *__sl_env_val[__SL_ENV_MAX];
+static int __sl_env_cnt;
+
+char *getenv(const char *__sl_name) {
+    long __sl_p = __getenv_raw(__sl_name);
+    if (__sl_p == 0) return 0;
+    for (int __sl_i = 0; __sl_i < __sl_env_cnt; __sl_i++)
+        if (__sl_env_key[__sl_i] == __sl_p) return __sl_env_val[__sl_i];
+    char *__sl_v = __getenv_p2c(__sl_p);
+    if (__sl_env_cnt < __SL_ENV_MAX) {
+        __sl_env_key[__sl_env_cnt] = __sl_p;
+        __sl_env_val[__sl_env_cnt++] = __sl_v;
+    }
+    return __sl_v;
+}
 
 /* ---- integer arithmetic (division truncates toward zero, as in C99) */
 int abs(int __sl_n) { return __sl_n < 0 ? -__sl_n : __sl_n; }

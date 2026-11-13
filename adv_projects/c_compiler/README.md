@@ -201,11 +201,11 @@ before it returns (one write per `printf`), so nothing is lost at exit and
 `scanf` formats are checked against their arguments at compile time.
 `<stdlib.h>` (`lib/stdlib.h`, `lib/stdlib.c`): `malloc`, `calloc`,
 `realloc`, `free`, `exit`, `_Exit`, `abort`, `atexit`, `system`, `getenv`
-(always `NULL`), `abs`, `labs`, `llabs`, `div`, `ldiv`, `lldiv`, `atoi`,
+(reads the host environment through `iENV`; `NULL` if unset), `abs`, `labs`, `llabs`, `div`, `ldiv`, `lldiv`, `atoi`,
 `atol`, `atoll`, `atof`, `strtol`, `strtoll`, `strtoul`, `strtoull`
 (overflow clamps to the limits), `strtod` (also `inf`/`nan`), `rand`,
 `srand` (a deterministic 64-bit LCG; without `srand` the sequence is that of
-`srand(1)`), `qsort` (heapsort, not stable), `bsearch`, and `EXIT_SUCCESS`,
+`srand(1)`; `srand(time(NULL))` seeds from the wall clock), `qsort` (heapsort, not stable), `bsearch`, and `EXIT_SUCCESS`,
 `EXIT_FAILURE`, `RAND_MAX`, `div_t`/`ldiv_t`/`lldiv_t`.  Returning from
 `main` runs the `atexit` handlers, as calling `exit` does.
 `<string.h>` (`lib/string.h`, `lib/string.c`): `memcpy`, `memmove`,
@@ -223,9 +223,9 @@ expressions values computed before the call can be lost.
 `gmtime`, `gmtime_r`, `localtime`, `localtime_r`, `asctime`, `ctime`,
 `strftime` (`%a %A %b %B %c %C %d %D %e %F %h %H %I %j %m %M %n %p %r %R %S
 %t %T %u %U %w %W %x %X %y %Y %z %Z %%`), `struct tm`, `time_t`, `clock_t`.
-The simulator has no calendar clock, so `time()` returns `(time_t)-1` ("not
-available", as the C standard allows); all conversions are in UTC, so
-`localtime` equals `gmtime` and `mktime` equals `timegm`.
+`time()` reads the wall clock (the `iTIME` interrupt, seconds since the Unix
+epoch); all conversions are in UTC, so `localtime` equals `gmtime` and
+`mktime` equals `timegm`.
 `<ctype.h>` (`lib/ctype.h`, `lib/ctype.c`): `isblank`, `isdigit`, `isalpha`, `isalnum`, `isspace`, `isupper`, `islower`,
 `isxdigit`, `isprint`, `isgraph`, `iscntrl`, `ispunct`, `toupper`, `tolower`.
 `<math.h>` (`lib/math.h`, `lib/math.c`): `sin`, `cos`, `tan`, `asin`,

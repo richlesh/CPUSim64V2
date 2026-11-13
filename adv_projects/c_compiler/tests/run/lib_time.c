@@ -58,7 +58,11 @@ int main(void) {
     int n1 = (int)strftime(small, sizeof small, "%Y-%m-%d", &r);
     int n2 = (int)strftime(small, sizeof small, "%H%M", &r);
     printf("strftime small=%d full=%d [%s]\n", n1, n2, small);
-    time_t now = time(NULL);
-    printf("time ok=%d clock ok=%d\n", now == (time_t)-1 || now > 1000000000, clock() >= 0);
+    time_t now = time(NULL), now2 = 0;
+    time_t ret = time(&now2);
+    printf("time ok=%d store ok=%d clock ok=%d\n", now > 1700000000L,
+           ret == now2 && now2 >= now && now2 - now < 5, clock() >= 0);
+    struct tm *cur = gmtime(&now);
+    printf("year ok=%d\n", cur->tm_year + 1900 >= 2023);
     return 0;
 }

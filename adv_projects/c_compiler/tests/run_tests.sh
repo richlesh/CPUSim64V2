@@ -26,6 +26,7 @@
 ###############################################################################
 
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+export CPUSIM64_TEST_VAR="hello world"   # read by tests/run/lib_getenv.c
 CC_DIR="$(dirname "$HERE")"
 # CPUSim64 install: $CPUSIM64_HOME, else the nearest ancestor of the compiler
 # directory that contains assemble.sh and lib/cpusim64-*.jar

@@ -1,0 +1,5 @@
+value=[hello world] same=1
+copy of name: same=1
+unset=1 again=1
+path set=1
+a still valid: [hello world]

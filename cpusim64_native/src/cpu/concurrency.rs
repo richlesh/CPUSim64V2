@@ -106,6 +106,7 @@ impl Simulator {
             is_root: false,
             ports,
             argv_ptr: 0,
+            env_cache: std::collections::HashMap::new(),
         }
     }
 
@@ -284,6 +285,7 @@ impl Simulator {
             is_root: false,
             ports,
             argv_ptr: 0,
+            env_cache: std::collections::HashMap::new(),
         }
     }
 

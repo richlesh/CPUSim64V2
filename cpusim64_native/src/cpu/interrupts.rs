@@ -26,6 +26,7 @@ const I_SAVE_FP: i32 = 13;
 const I_RESTORE: i32 = 14;
 const I_RESTORE_FP: i32 = 15;
 const I_PRINT_CPU_STATE: i32 = 16;
+const I_TIME: i32 = 17;
 
 const I_ALLOC: i32 = 20;
 const I_REALLOC: i32 = 21;
@@ -52,6 +53,7 @@ const I_JOIN_THREAD: i32 = 41;
 const I_SLEEP: i32 = 42;
 const I_WAKE_THREAD: i32 = 43;
 const I_ALLOC_SHARED: i32 = 44;
+const I_ENV: i32 = 45;
 
 const I_TERM_COLS: i32 = 50;
 const I_TERM_ROWS: i32 = 51;
@@ -185,6 +187,14 @@ impl Simulator {
             I_NAN => self.set_fp(0, f64::NAN),
             I_CYCLES => self.set_r(0, self.cycles),
             I_CLOCK => self.set_r(0, self.get_clock()), // elapsed wall clock in ns (ports getClock)
+            I_TIME => {
+                // wall clock time in ns since 1970-01-01T00:00:00Z
+                let ns = std::time::SystemTime::now()
+                    .duration_since(std::time::UNIX_EPOCH)
+                    .map(|d| d.as_nanos() as i64)
+                    .unwrap_or(0);
+                self.set_r(0, ns)
+            }
             I_SAVE => {
                 let d = crate::decode::Decoded::decode(crate::decode::enc_t0(
                     crate::opcode::SAVE,
@@ -290,6 +300,7 @@ impl Simulator {
                 self.set_r(0, argc);
             }
             I_ARGS => self.int_args()?,
+            I_ENV => self.int_env()?,
             I_EXIT => {
                 let code = self.get_r(1) as i32;
                 self.exit(code);
@@ -918,6 +929,29 @@ impl Simulator {
         Ok(message_format(&fmt, &args))
     }
 
+    /// iENV: r1 = variable name; r0 = cached value string (0 if not set).
+    fn int_env(&mut self) -> CpuResult<()> {
+        let name_addr = self.get_r(1);
+        if name_addr == 0 {
+            self.set_r(0, 0);
+            return Ok(());
+        }
+        let name = self.convert_string(name_addr)?;
+        let addr = match self.env_cache.get(&name) {
+            Some(&a) => a,
+            None => {
+                let a = match std::env::var(&name) {
+                    Ok(val) => self.alloc_string(&val, 0)?,
+                    Err(_) => 0,
+                };
+                self.env_cache.insert(name, a);
+                a
+            }
+        };
+        self.set_r(0, addr);
+        Ok(())
+    }
+
     fn int_args(&mut self) -> CpuResult<()> {
         let argc = self.args.len() as i64;
         if self.argv_ptr == 0 && argc > 0 {
@@ -1085,6 +1119,12 @@ impl Simulator {
 
     /// Free the lazily-allocated argv (ports `freeArgs`).
     pub fn free_args(&mut self) {
+        let cached: Vec<i64> = self.env_cache.drain().map(|(_, a)| a).collect();
+        for a in cached {
+            if a > 0 {
+                let _ = self.free(a);
+            }
+        }
         if self.argv_ptr == 0 {
             return;
         }
