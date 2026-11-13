@@ -1,0 +1,1 @@
+no_ctype.c:2: error: implicit declaration of function 'isdigit'

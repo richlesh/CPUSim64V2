@@ -24,6 +24,14 @@
 #ifndef _CPUSIM64_STDIO_H
 #define _CPUSIM64_STDIO_H
 
+#include <stddef.h>
+#include <stdarg.h>
+
+#ifndef __SSIZE_T_DEFINED
+#define __SSIZE_T_DEFINED
+typedef long ssize_t;
+#endif
+
 #ifndef EOF
 #define EOF (-1)
 #endif

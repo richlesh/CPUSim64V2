@@ -1,0 +1,1 @@
+no_limits.c:2: error: undeclared identifier 'INT_MAX'

@@ -6,6 +6,10 @@
  * the program's macro namespace.
  */
 #include <stdlib.h>
+#include <ctype.h>
+#include <limits.h>
+
+double __atof_exact(const char *__sl_s);   /* [rt] */
 
 /* ---- program termination */
 #define __SL_ATEXIT_MAX 32

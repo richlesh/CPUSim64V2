@@ -47,18 +47,18 @@ limits (deep recursion such as 50,000 nested calls works).
 | `source.asm` | file loading and path helpers |
 | `lexer.asm` | tokens per `CLexer.g4` (subset) |
 | `pp.asm` | token-level preprocessor |
-| `prelude.asm` | built-in C header text: macros, types, library declarations, C library bodies |
+| `prelude.asm` | predefined macros only (`__CPUSIM64__`, `__STDC__`, ...) |
 | `types.asm`, `symtab.asm` | type objects and scoped symbol table |
 | `parse_expr.asm`, `parse_decl.asm`, `parse_stmt.asm` | recursive-descent parser following `CParser.g4`, precedence climbing for binary operators |
 | `sema.asm` | type checking and implicit conversions (applied while parsing) |
 | `ast.asm` | AST nodes and the `--ast` dumper |
 | `codegen.asm` | stack-machine code generation |
 | `runtime_emit.asm` | assembly runtime library, copied into programs on demand |
-| `lib/` | library headers and sources in C: `stdio`, `math`, `stdlib`, `string`, `time` (`.h` + `.c`) and `setjmp.h` |
+| `lib/` | library headers and sources in C: `stdio`, `math`, `stdlib`, `string`, `time`, `ctype` (`.h` + `.c`) and the header-only `setjmp`, `stdarg`, `stddef`, `stdint`, `stdbool`, `limits`, `float`, `assert` |
 
 Pipeline: source -> lexer -> preprocessor -> parser + semantic analysis ->
 code generation per function -> output file.  Library functions written in C
-(in the prelude or in `lib/*.c`) are compiled only when a program uses them.
+(in `lib/*.c`) are compiled only when a program uses them.
 
 ### Generated code
 
@@ -109,10 +109,12 @@ exists:
   linker.  Its functions are compiled only if the program uses them, so a
   program that calls only `sqrt` gets only the `sqrt` code.
 
-A `<...>` header without a `lib/` file is one of the built-in standard
-headers (`ctype.h`, `assert.h`, `stdarg.h`, `stddef.h`, `stdint.h`,
-`stdbool.h`, `limits.h`) and is accepted silently; those
-declarations are part of the prelude.
+Everything else, including `size_t`, `NULL`, `va_list`, `INT_MAX`, `bool`
+and the `isdigit` family, comes from these headers (the built-in prelude
+defines only the `__CPUSIM64__` / `__STDC__` macros), so as in standard C
+a program must include `<stddef.h>`, `<limits.h>`, `<ctype.h>` and so on.
+The headers that need `size_t` or `va_list` include `<stddef.h>` and
+`<stdarg.h>` themselves.
 
 The library directory is the `lib/` directory next to the compiler's `obj/`
 directory, found from the path of `cc.o64`.  `--lib=DIR` adds a directory
@@ -224,7 +226,7 @@ expressions values computed before the call can be lost.
 The simulator has no calendar clock, so `time()` returns `(time_t)-1` ("not
 available", as the C standard allows); all conversions are in UTC, so
 `localtime` equals `gmtime` and `mktime` equals `timegm`.
-`<ctype.h>`: `isdigit`, `isalpha`, `isalnum`, `isspace`, `isupper`, `islower`,
+`<ctype.h>` (`lib/ctype.h`, `lib/ctype.c`): `isblank`, `isdigit`, `isalpha`, `isalnum`, `isspace`, `isupper`, `islower`,
 `isxdigit`, `isprint`, `isgraph`, `iscntrl`, `ispunct`, `toupper`, `tolower`.
 `<math.h>` (`lib/math.h`, `lib/math.c`): `sin`, `cos`, `tan`, `asin`,
 `acos`, `atan`, `atan2`, `sinh`, `cosh`, `tanh`, `asinh`, `acosh`, `atanh`,
@@ -236,8 +238,8 @@ available", as the C standard allows); all conversions are in UTC, so
 `M_*` constants, `INFINITY`, `NAN`, `HUGE_VAL`.  The simulator's
 floating-point compare treats NaN as equal to everything, so use `isnan()`
 rather than `x != x`.
-Also `<assert.h>`, `<stdarg.h>`, `<stddef.h>`, `<stdint.h>`, `<stdbool.h>`
-and `<limits.h>` (built in).
+Also `<assert.h>` (honours `NDEBUG`), `<stdarg.h>`, `<stddef.h>`, `<stdint.h>`,
+`<stdbool.h>`, `<limits.h>` and `<float.h>`.
 
 As in standard C, a library function must be declared by its header:
 calling `printf` without `#include <stdio.h>`, `malloc` without

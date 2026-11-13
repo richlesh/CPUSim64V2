@@ -5,6 +5,7 @@
 #include <assert.h>
 #include <stdarg.h>
 #include <ctype.h>
+#include <limits.h>
 int sum_ints(int n, ...) {
     va_list ap; int s = 0;
     va_start(ap, n);
