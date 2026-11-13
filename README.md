@@ -15,6 +15,7 @@ It includes:
 - A cycle-accurate simulation engine  
 - A native Rust reimplementation of the simulator (`cpusim64_native`) for faster, standalone execution  
 - A simple IDE with code editor, console, and integrated run/debug  
+- A pluggable compiler framework in the IDE, with a **C11 compiler written in CPUSim64 assembly** and its own C standard library (`compilers/C11`)  
 - A native CLI tool for command-line workflows  
 - An agentic AI assistant with RAG-based context retrieval for writing and debugging assembly code  
 - Native installers for macOS, Windows, and Linux (x64 and ARM64)  
@@ -69,6 +70,17 @@ Run in such a window saves the file, assembles the compiler if needed, runs it w
 Errors from the compiler's assembly or from the compiler are shown in the console and stop the run.
 Debug compiles the same way and then opens the generated assembly in a regular window with the debugger.
 
+### **C11 Compiler (`compilers/C11`)**
+A C compiler written entirely in CPUSim64 assembly.  It compiles a core subset of C11 to CPUSim64 `.asm` (run it with `run.sh cc prog.c`, or from the IDE through File → New Compiler → C11).
+- Hand-written recursive-descent parser following the ANTLR grammars-v4 C grammar, a built-in preprocessor, type checking, and stack-machine code generation; it stops at the first error with `file:line: error: message`  
+- Types: `int`, `long`, `char`, `double`, pointers, arrays, structs, unions, enums, typedefs, function pointers, `_Bool`; compound literals, designated initializers, variadic functions, `_Static_assert`, unsigned arithmetic and conversions  
+- Not supported (reported as errors): `float`, `long double`, `_Complex`, `_Atomic`, `_Generic`, bit-fields, variable length arrays, K&R parameter lists and GNU extensions  
+- Every scalar is one 64-bit word; `char` holds a Unicode codepoint  
+- Standard library written in C in `lib/` and compiled only when used: `stdio` (exact C `printf`/`scanf` families, files with `fseek`/`ftell`, `snprintf`, `getline`), `stdlib` (`malloc`, `qsort`, `strto*`, `rand`/`srand`, `atexit`, `getenv`), `string`, `math` (C99), `ctype`, `time`, `setjmp`, `assert`, `stdarg`, `stddef`, `stdint`, `stdbool`, `limits`, `float`  
+- `time()` returns the real wall-clock time (UTC) so `srand(time(NULL))` works; `getenv()` reads the host environment  
+- A header `#include <name.h>` is found in `lib/` (plus any `--lib=DIR`), and `lib/name.c` is appended once because there is no linker  
+- 92 regression tests: `compilers/C11/tests/run_tests.sh`  
+
 ### **Virtual CPU**
 - Custom 64-bit RISC-style architecture  
 - Support for integer/float arithmetic, branching, memory operations, and pseudo-instructions  
@@ -83,6 +95,10 @@ Debug compiles the same way and then opens the generated assembly in a regular w
 
 ### **Simulation Engine**
 - Cycle-accurate execution  
+- Random-access files: `iOPEN_RANDOM_ACCESS_FILE`, `iSEEK` and `iTELL` (with `SEEK_BEGIN`/`SEEK_END`) in both the Java and native simulators  
+- `iTIME` returns the wall-clock time in nanoseconds since the Unix epoch (UTC)  
+- `iENV` fetches an environment variable as a string (cached, so fetching it again returns the same string; do not free it)  
+- Matching `openRandomAccessFile`, `seek` and `tell` functions in `system/io.asm`; interrupt numbers in `system/system.def` and `system/io.def`  
 - Debug mode with stepping and register inspection  
 - Trace mode for instruction-by-instruction tracing  
 - Disassemble feature to disassemble object files
@@ -94,6 +110,7 @@ Debug compiles the same way and then opens the generated assembly in a regular w
 - Reads the same gzip-compressed `.o64` object files and `.sym1` symbol maps; accepts the same CLI flags (`--debug`, `--trace`, `--verbose`, `--mem=`, `--stack=`)  
 - Cycle-timing table built in by default, overridable at runtime by dropping an `instructions.data` file next to the executable  
 - Validation harness compares output against the committed reference `.out` files  
+- Implements the same interrupts as the Java simulator, including random-access files, `iTIME` and `iENV`; the validation tests require exact output and cycle parity for all 35 programs  
 - **"Use Native CPUSim64 Simulator"** setting in the IDE — when enabled, Run/Debug/Trace launch `cpusim64_native` instead of the in-process Java simulator  
 - Bundled into the IDE JAR and all native installers, and installable via the IDE's CLI Tools menu  
 
@@ -131,6 +148,7 @@ Debug compiles the same way and then opens the generated assembly in a regular w
 - Markdown rendering in responses with bold, italic, code spans, and LaTeX math  
 - Conversation history maintained across messages within a session  
 - System prompt includes full CPUSim64 documentation, examples, and projects for accurate assistance  
+- In a compiler window (File → New Compiler) the chat uses that plug-in's own `system_prompt.md`  
 - Clear button to reset conversation  
 - Status bar showing system prompt, program, and output sizes  
 - Separate AI font settings (sans-serif default) with code font for code blocks  
@@ -148,6 +166,7 @@ Debug compiles the same way and then opens the generated assembly in a regular w
 - Windows Inno Setup EXE (Azure code signed) — x64 and ARM64; supports `/ALLUSERS` (all users) and `/CURRENTUSER` (one user) command-line install scopes  
 - Linux DEB and RPM — x64 and ARM64  
 - File type associations for `.asm`, `.o64`, `.sym`, `.sym1`, `.sym2`, `.srcmap`, and `.def` files  
+- The `compilers/` folder (without tests) is installed next to the application JAR  
 - Built via GitHub Actions workflows
 
 ---

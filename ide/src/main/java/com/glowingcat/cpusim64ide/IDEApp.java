@@ -47,6 +47,7 @@ public class IDEApp {
     private JTextField argsField;
     private Path currentFile;
     private AppSettings settings;
+    private static AppSettings sharedSettings;
     private boolean undoInProgress = false;
     private final java.util.Deque<String> undoStack = new java.util.ArrayDeque<>();
     private final java.util.Deque<String> redoStack = new java.util.ArrayDeque<>();
@@ -163,7 +164,13 @@ public class IDEApp {
     }
 
     void createAndShowGUI() {
-        settings = AppSettings.load();
+        // All windows share one settings object: a change made in one window (for example
+        // "Use Native CPUSim64 Emulator") applies to every window, and a window closing later
+        // cannot write back its stale copy over the saved settings.
+        synchronized (IDEApp.class) {
+            if (sharedSettings == null) sharedSettings = AppSettings.load();
+            settings = sharedSettings;
+        }
         aiPreferences = AIChatPreferences.load();
         if (!LicenseDialog.isLicensed(settings)) {
             SplashScreen.show();
@@ -1464,8 +1471,10 @@ public class IDEApp {
             int phase = 0;                               // 0 banner, 1 program output, 2 statistics
             String line;
             while ((line = in.readLine()) != null) {
-                if (phase == 0 && line.matches("^(=+|CPUSim64 .*Emulator|\u00A9.*|Implements a CPUSim64.*|Debug: .*"
+                if (phase == 0 && line.matches("^(=+|CPUSim64 .*Emulator.*|\u00A9.*|Implements a CPUSim64.*|Debug: .*"
                         + "|Memory size: .*|Stack size: .*|Read \\d+ words from .*)$")) {
+                    // "Read N words" is the last banner line; everything after it is program output
+                    if (line.startsWith("Read ")) phase = 1;
                     continue;
                 }
                 if (phase < 2) {

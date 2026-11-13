@@ -85,7 +85,7 @@ public class Simulation {
 
 		if (verbose) {
 			System.out.println("=".repeat(80));
-			System.out.println("CPUSim64 " + BuildInfo.VERSION + " Emulator");
+			System.out.println("CPUSim64 Emulator " + BuildInfo.VERSION);
 			System.out.println(BuildInfo.COPYRIGHT + " Richard Lesh");
 			System.out.println("Implements a CPUSim64 Virtual Machine.");
 			System.out.println("=".repeat(80));

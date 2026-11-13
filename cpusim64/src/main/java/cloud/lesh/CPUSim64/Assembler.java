@@ -40,7 +40,7 @@ public class Assembler {
 
 	public static int run(String[] args) throws Exception {
 		System.out.println("=".repeat(80));
-		System.out.println("CPUSim64 " + BuildInfo.VERSION + " Assembler");
+		System.out.println("CPUSim64 Assembler " + BuildInfo.VERSION);
 		System.out.println(BuildInfo.COPYRIGHT + " Richard Lesh");
 		System.out.println("Assembles .asm source files into .o64 binary files.");
 		System.out.println("=".repeat(80));

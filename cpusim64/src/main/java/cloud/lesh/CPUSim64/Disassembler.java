@@ -28,7 +28,7 @@ public class Disassembler {
 
 	public static void main(String[] args) throws Exception {
 		System.out.println("=".repeat(80));
-		System.out.println("CPUSim64 " + BuildInfo.VERSION + " Disassembler");
+		System.out.println("CPUSim64 Disassembler " + BuildInfo.VERSION);
 		System.out.println(BuildInfo.COPYRIGHT + " Richard Lesh");
 		System.out.println("Disassembles .o64 object files into source code.");
 		System.out.println("=".repeat(80));

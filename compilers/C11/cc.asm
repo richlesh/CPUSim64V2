@@ -59,6 +59,15 @@
             #call   cc_fatal2("unknown option", opt)
         #end_cond
     #end_for
+    // banner (compile mode only: --pp, --tokens and --ast print machine-readable output)
+    load    r0, CC_MODE
+    #if_cond r0 == MODE_COMPILE
+        #call   putline("================================================================================")
+        #call   putline("CPUSim64 C11 Compiler 1.0")
+        #call   putline("©2026 Richard Lesh")
+        #call   putline("Compiles .c source files into CPUSim64 .asm files.")
+        #call   putline("================================================================================")
+    #end_cond
     // --lib directories are searched first, then the standard library
     #call   find_libdir()
     move    r1, r0

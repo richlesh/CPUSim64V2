@@ -22,7 +22,7 @@ import java.nio.file.Path;
 public class Preprocessor {
 	public static void main(String[] args) throws Exception {
 		System.out.println("=".repeat(80));
-		System.out.println("CPUSim64 " + BuildInfo.VERSION + " Preprocessor");
+		System.out.println("CPUSim64 Preprocessor " + BuildInfo.VERSION);
 		System.out.println(BuildInfo.COPYRIGHT + " Richard Lesh");
 		System.out.println("Preprocesses .asm source files into .pp.asm files.");
 		System.out.println("=".repeat(80));

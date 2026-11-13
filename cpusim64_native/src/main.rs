@@ -69,7 +69,7 @@ fn run(args: &[String]) -> i32 {
 
     if verbose {
         println!("{}", "=".repeat(80));
-        println!("CPUSim64 {} Native Emulator", buildinfo::VERSION);
+        println!("CPUSim64 Native Emulator {}", buildinfo::VERSION);
         println!("{} Richard Lesh", buildinfo::COPYRIGHT);
         println!("Implements a CPUSim64 Virtual Machine.");
         println!("{}", "=".repeat(80));
