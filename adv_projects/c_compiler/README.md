@@ -54,7 +54,7 @@ limits (deep recursion such as 50,000 nested calls works).
 | `ast.asm` | AST nodes and the `--ast` dumper |
 | `codegen.asm` | stack-machine code generation |
 | `runtime_emit.asm` | assembly runtime library, copied into programs on demand |
-| `lib/` | library headers and sources in C (`math.h`, `math.c`) |
+| `lib/` | library headers and sources in C: `math`, `stdlib`, `string`, `time` (`.h` + `.c`) and `setjmp.h` |
 
 Pipeline: source -> lexer -> preprocessor -> parser + semantic analysis ->
 code generation per function -> output file.  Library functions written in C
@@ -110,8 +110,9 @@ exists:
   program that calls only `sqrt` gets only the `sqrt` code.
 
 A `<...>` header without a `lib/` file is one of the built-in standard
-headers (`stdio.h`, `stdlib.h`, `string.h`, ...) and is accepted silently;
-those declarations are part of the prelude.
+headers (`stdio.h`, `ctype.h`, `assert.h`, `stdarg.h`, `stddef.h`,
+`stdint.h`, `stdbool.h`, `limits.h`) and is accepted silently; those
+declarations are part of the prelude.
 
 The library directory is the `lib/` directory next to the compiler's `obj/`
 directory, found from the path of `cc.o64`; `--lib=DIR` overrides it.
@@ -123,7 +124,8 @@ the library body is ignored.
 
 The appended `.c` file is preprocessed after the program, so it sees the
 program's macros.  Library sources therefore use names that start with a
-library-specific prefix (`__m_` in `math.c`) for all locals and helpers.
+library-specific prefix (`__m_`, `__sl_`, `__st_`, `__tm_`) for all locals,
+helpers and data.
 
 As in standard C, math functions must be declared: calling `sqrt` without
 `#include <math.h>` is an "implicit declaration" error.
@@ -152,11 +154,15 @@ internal type `__pstr` (packed string):
   family, is converted to a temporary packed string, which is freed after the
   call.
 * Format strings are adapted to the CPUSim64 formatter: length modifiers
-  (`l`, `ll`, `h`, `z`, ...) are dropped, and `%i`/`%u` become `%d`, `%p`
-  becomes `%x`.  A literal format is checked against its arguments at compile
-  time, because a mismatch would crash the formatter at run time.
-* The formatter is Java's `String.format`, so `%g` prints like `%f`, and `%x`
-  of a negative number prints all 64 bits.
+  (`l`, `ll`, `h`, `z`, ...) are dropped, `%i` becomes `%d` and `%p` becomes
+  `%x`.  The formatter has no unsigned conversion, so in a literal format
+  each `%u` becomes `%s` and its argument is converted to a decimal string at
+  run time (width, `-`, `0` padding and precision are kept).  A literal
+  format is checked against its arguments at compile time, because a
+  mismatch would crash the formatter at run time.
+* The formatter is Java's `String.format`, so `%g` prints like `%f`, `%x` of
+  a negative number prints all 64 bits, and `%f` prints at most 17
+  significant digits (2^64 prints as `18446744073709552000.0`).
 
 ## C library
 
@@ -164,12 +170,33 @@ internal type `__pstr` (packed string):
 `putchar`, `fputc`, `putc`, `getchar`, `fgetc`, `getc`, `fgets`, `fopen`
 (`"r"`, `"w"`, `"a"`), `fclose`, `fflush`, `feof`, `perror`, `stdin`,
 `stdout`, `stderr`.
-`<stdlib.h>`: `malloc`, `calloc`, `realloc`, `free`, `exit`, `abort`, `rand`,
-`srand`, `abs`, `labs`, `atoi`, `atol`, `atof`, `strtol`, `strtoul`, `strtod`,
-`qsort`, `bsearch`, `getenv`.
-`<string.h>`: `strlen`, `strcmp`, `strncmp`, `strcpy`, `strncpy`, `strcat`,
-`strncat`, `strchr`, `strrchr`, `strstr`, `strdup`, `memset`, `memcpy`,
-`memmove`, `memcmp`.
+`<stdlib.h>` (`lib/stdlib.h`, `lib/stdlib.c`): `malloc`, `calloc`,
+`realloc`, `free`, `exit`, `_Exit`, `abort`, `atexit`, `system`, `getenv`
+(always `NULL`), `abs`, `labs`, `llabs`, `div`, `ldiv`, `lldiv`, `atoi`,
+`atol`, `atoll`, `atof`, `strtol`, `strtoll`, `strtoul`, `strtoull`
+(overflow clamps to the limits), `strtod` (also `inf`/`nan`), `rand`,
+`srand` (a deterministic 64-bit LCG; without `srand` the sequence is that of
+`srand(1)`), `qsort` (heapsort, not stable), `bsearch`, and `EXIT_SUCCESS`,
+`EXIT_FAILURE`, `RAND_MAX`, `div_t`/`ldiv_t`/`lldiv_t`.  Returning from
+`main` runs the `atexit` handlers, as calling `exit` does.
+`<string.h>` (`lib/string.h`, `lib/string.c`): `memcpy`, `memmove`,
+`memset`, `memcmp`, `memchr`, `strcpy`, `strncpy`, `strcat`, `strncat`,
+`strcmp`, `strncmp`, `strcoll`, `strxfrm`, `strlen`, `strnlen`, `strchr`,
+`strrchr`, `strspn`, `strcspn`, `strpbrk`, `strstr`, `strtok`, `strtok_r`,
+`strdup`, `strndup`, `strerror`.  Comparisons return -1, 0 or 1.
+`<setjmp.h>` (`lib/setjmp.h`, runtime only): `jmp_buf`, `setjmp`,
+`longjmp`.  Use `setjmp` only where C allows it (the whole condition of an
+`if`/`switch`/loop, an operand of `!` or of a comparison with a constant, an
+expression statement, or the right side of a simple assignment); in other
+expressions values computed before the call can be lost.
+`<time.h>` (`lib/time.h`, `lib/time.c`): `clock` (run time in microseconds,
+`CLOCKS_PER_SEC` 1000000), `time`, `difftime`, `mktime`, `timegm`,
+`gmtime`, `gmtime_r`, `localtime`, `localtime_r`, `asctime`, `ctime`,
+`strftime` (`%a %A %b %B %c %C %d %D %e %F %h %H %I %j %m %M %n %p %r %R %S
+%t %T %u %U %w %W %x %X %y %Y %z %Z %%`), `struct tm`, `time_t`, `clock_t`.
+The simulator has no calendar clock, so `time()` returns `(time_t)-1` ("not
+available", as the C standard allows); all conversions are in UTC, so
+`localtime` equals `gmtime` and `mktime` equals `timegm`.
 `<ctype.h>`: `isdigit`, `isalpha`, `isalnum`, `isspace`, `isupper`, `islower`,
 `isxdigit`, `isprint`, `isgraph`, `iscntrl`, `ispunct`, `toupper`, `tolower`.
 `<math.h>` (`lib/math.h`, `lib/math.c`): `sin`, `cos`, `tan`, `asin`,
@@ -182,8 +209,13 @@ internal type `__pstr` (packed string):
 `M_*` constants, `INFINITY`, `NAN`, `HUGE_VAL`.  The simulator's
 floating-point compare treats NaN as equal to everything, so use `isnan()`
 rather than `x != x`.
-Also `<assert.h>`, `<stdarg.h>`, `<stddef.h>`, `<stdint.h>`, `<stdbool.h>`,
-`<limits.h>`, `<time.h>` (`time`, `clock`).
+Also `<assert.h>`, `<stdarg.h>`, `<stddef.h>`, `<stdint.h>`, `<stdbool.h>`
+and `<limits.h>` (built in).
+
+As in standard C, a library function must be declared by its header:
+calling `malloc` without `#include <stdlib.h>` or `strlen` without
+`#include <string.h>` is an "implicit declaration" error.  Unused library
+functions and data are not compiled into the program.
 
 A program may define its own function with a library name; its definition
 replaces the library version.

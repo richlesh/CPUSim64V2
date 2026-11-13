@@ -1,0 +1,8 @@
+first return 0
+longjmp returned 42 local=2 depth=1
+zero became 1
+attempt after code 0
+attempt after code 1
+attempt after code 2
+attempts=3
+switch got 7

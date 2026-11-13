@@ -346,6 +346,7 @@
 #define ND_GT       38      // parser only (rewritten)
 #define ND_GE       39      // parser only (rewritten)
 #define ND_FUNCNAME 40      // __func__
+#define ND_U2P      41      // A = unsigned value -> temporary packed decimal string, VAL = zero pad width
 
 // statements
 #define ND_RETURN   50      // A = expr or 0

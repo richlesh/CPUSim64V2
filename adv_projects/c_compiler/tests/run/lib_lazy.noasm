@@ -1,0 +1,12 @@
+__crt_strcpy
+__crt_memcpy
+__crt_malloc
+__crt_qsort
+__crt_strftime
+__crt_gmtime_r
+__crt_setjmp
+__crt_exit
+__crt_rand
+__G
+Sunday
+Unknown error

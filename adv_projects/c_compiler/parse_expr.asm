@@ -870,7 +870,13 @@ PARSE_EXPR_ASM_START:
         load    r1, a[N_TYPE]
         #call   ty_is_double(r1)
         #if_cond r0 != 0
+            #call   is_uns_int(ty)
+            move    q, r0
             #call   const_eval_d(a)
+            #if_cond q != 0
+                #call   d2u()
+                #return r0
+            #end_cond
             move    r0, f0
             #return r0
         #end_cond
@@ -942,12 +948,25 @@ PARSE_EXPR_ASM_START:
         #if_cond b == 0
             #call   error_node(nd, "division by zero in constant expression")
         #end_cond
+        load    r1, nd[N_TYPE]
+        #call   is_uns_int(r1)
+        #if_cond r0 != 0
+            #call   u_divmod(a, b)
+            #return r0
+        #end_cond
         div     r0, a, b
         #return r0
     #end_cond
     #if_cond k == ND_MOD
         #if_cond b == 0
             #call   error_node(nd, "division by zero in constant expression")
+        #end_cond
+        load    r1, nd[N_TYPE]
+        #call   is_uns_int(r1)
+        #if_cond r0 != 0
+            #call   u_divmod(a, b)
+            load    r0, U_REM
+            #return r0
         #end_cond
         div     q, r0, a, b
         #return r0
@@ -987,12 +1006,20 @@ PARSE_EXPR_ASM_START:
         move    ne, r0, 1, 0
         #return r0
     #end_cond
+    // < and <= compare as the (common) operand type: unsigned or signed
     #if_cond k == ND_LT
-        move    lt, r0, 1, 0
+        load    r1, nd[N_A]
+        load    r1, r1[N_TYPE]
+        #call   is_uns_int(r1)
+        #call   cmp_lt(a, b, r0)
         #return r0
     #end_cond
     #if_cond k == ND_LE
-        move    le, r0, 1, 0
+        load    r1, nd[N_A]
+        load    r1, r1[N_TYPE]
+        #call   is_uns_int(r1)
+        #call   cmp_lt(b, a, r0)
+        xor     r0, 1
         #return r0
     #end_cond
     #if_cond k == ND_LAND
@@ -1019,7 +1046,7 @@ PARSE_EXPR_ASM_START:
 
 // const_eval_d(node) -> f0 = double value of a constant expression
 #def_func const_eval_d(ndp)
-    #var    nd, k
+    #var    nd, k, iv
     load    nd, ndp
     load    k, nd[N_KIND]
     #if_cond k == ND_FNUM
@@ -1027,6 +1054,13 @@ PARSE_EXPR_ASM_START:
         #return 0
     #end_cond
     #if_cond k == ND_NUM
+        load    r1, nd[N_TYPE]
+        #call   is_uns_int(r1)
+        #if_cond r0 != 0
+            load    r1, nd[N_VAL]
+            #call   u2d(r1)
+            #return 0
+        #end_cond
         load    r0, nd[N_VAL]
         move    f0, r0
         #return 0
@@ -1042,7 +1076,15 @@ PARSE_EXPR_ASM_START:
         #end_cond
         load    r1, nd[N_A]
         #call   const_eval(r1)
-        move    f0, r0
+        move    iv, r0
+        load    r1, nd[N_A]
+        load    r1, r1[N_TYPE]
+        #call   is_uns_int(r1)
+        #if_cond r0 != 0
+            #call   u2d(iv)
+            #return 0
+        #end_cond
+        move    f0, iv
         #return 0
     #end_cond
     #if_cond k == ND_NEG

@@ -440,5 +440,114 @@ UTIL_ASM_START:
     store   r1, r0[E_SPEC]
 #end_func
 
+///////////////////////////////////////////////////////////////////////////////
+// u_divmod(a, b) -> unsigned a / b; the unsigned remainder is left in
+//      U_REM.  CPUSim64 only divides signed, so (a >> 1) / b is computed and
+//      corrected (for b >= 2^63 the quotient is 0 or 1).  b must not be 0.
+///////////////////////////////////////////////////////////////////////////////
+#global U_REM: .dci 0
+
+#def_func u_divmod(ap, bp)
+    #var    a, b, q, r
+    load    a, ap
+    load    b, bp
+    #if_cond b < 0
+        move    q, 0
+        move    r, a
+        #if_cond a < 0
+            #if_cond a >= b
+                move    q, 1
+                sub     r, a, b
+            #end_cond
+        #end_cond
+        store   r, U_REM
+        #return q
+    #end_cond
+    move    q, a
+    rshift  q, 1
+    div     q, b
+    lshift  q, 1
+    mult    r, q, b
+    sub     r, a, r
+    // r < 2b; fix up once if r >= b (r may exceed 2^63 - 1)
+    #if_cond r < 0
+        add     q, 1
+        sub     r, b
+    #else_cond
+        #if_cond r >= b
+            add     q, 1
+            sub     r, b
+        #end_cond
+    #end_cond
+    store   r, U_REM
+    #return q
+#end_func
+
+///////////////////////////////////////////////////////////////////////////////
+// cmp_lt(a, b, unsigned) -> 1 if a < b, else 0 (no subtraction overflow)
+///////////////////////////////////////////////////////////////////////////////
+#def_func cmp_lt(ap, bp, up)
+    #var    a, b, u
+    load    a, ap
+    load    b, bp
+    load    u, up
+    #if_cond u != 0
+        // flipping the sign bits maps unsigned order onto signed order
+        move    r1, 1
+        lshift  r1, 63
+        xor     a, r1
+        xor     b, r1
+    #end_cond
+    xor     r0, a, b
+    #if_cond r0 < 0
+        // different signs: a < b exactly when a is negative
+        #if_cond a < 0
+            #return 1
+        #end_cond
+        #return 0
+    #end_cond
+    #if_cond a < b
+        #return 1
+    #end_cond
+    #return 0
+#end_func
+
+///////////////////////////////////////////////////////////////////////////////
+// u2d(v) -> f0 = (double)v for an unsigned 64-bit v
+// d2u()  -> r0 = (unsigned 64-bit)f0
+///////////////////////////////////////////////////////////////////////////////
+#def_func u2d(vp)
+    #var    v, b
+    load    v, vp
+    #if_cond v >= 0
+        move    f0, v
+        #return 0
+    #end_cond
+    and     b, v, 1
+    rshift  v, 1
+    or      v, b
+    move    f0, v
+    add     f0, f0
+#end_func
+
+#def_func d2u()
+    #var    r
+    move    r1, 0x43E
+    lshift  r1, 52
+    store   r1, U_REM
+    load    f1, U_REM
+    cmp     f0, f1
+    #if_cond_sr lt
+        move    r0, f0
+        #return r0
+    #end_cond
+    sub     f0, f1
+    move    r, f0
+    move    r1, 1
+    lshift  r1, 63
+    xor     r, r1
+    #return r
+#end_func
+
 UTIL_ASM_END:
     nop

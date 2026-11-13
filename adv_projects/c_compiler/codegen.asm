@@ -435,6 +435,95 @@ ISV_SCALAR:
     #return 0
 #end_func
 
+// emit_udivmod(dst, src, result_reg): dst = dst / src (result "r2") or
+//      dst % src (result "r3"), unsigned, via the runtime helper.  The
+//      helper takes r2 / r3 and keeps r0 and r1.
+#def_func emit_udivmod(dst, src, res)
+    #var    d, s, rr
+    load    d, dst
+    load    s, src
+    load    rr, res
+    #call   crt_use_p("__udivmod")
+    #macro  STRCMP(d, "r2")
+    #if_cond r0 != 0
+        #call   emit("    move    r2, %s\n", d)
+    #end_cond
+    #call   emit("    move    r3, %s\n    call    __crt___udivmod\n", s)
+    #macro  STRCMP(d, rr)
+    #if_cond r0 != 0
+        #call   emit("    move    %s, %s\n", d, rr)
+    #end_cond
+#end_func
+
+// pow2_shift(value) -> n if value == 2^n (n in 0..62), else -1
+#def_func pow2_shift(val)
+    #var    v, n
+    load    v, val
+    #if_cond v <= 0
+        #return -1
+    #end_cond
+    sub     r1, v, 1
+    and     r0, v, r1
+    #if_cond r0 != 0
+        #return -1
+    #end_cond
+    move    n, 0
+    #while  v > 1
+        rshift  v, 1
+        add     n, 1
+    #end_while
+    #return n
+#end_func
+
+// emit_i2d(ireg, freg, unsigned): freg = (double)ireg   (uses r3, r4)
+//      An unsigned value >= 2^63 is halved (keeping the low bit so that
+//      rounding is correct), converted, and doubled.
+#def_func emit_i2d(ireg, freg, uns)
+    #var    ir, fr, l1, l2
+    load    ir, ireg
+    load    fr, freg
+    load    r0, uns
+    #if_cond r0 == 0
+        #call   emit("    move    %s, %s\n", fr, ir)
+        #return 0
+    #end_cond
+    #call   new_lbl()
+    move    l1, r0
+    #call   new_lbl()
+    move    l2, r0
+    #call   emit("    test    %s\n    jump    nn, __L%d\n", ir, l1)
+    #call   emit("    move    r4, %s\n    and     r4, 1\n    move    r3, %s\n", ir, ir)
+    #call   emit("    rshift  r3, 1\n    or      r3, r4\n    move    %s, r3\n", fr)
+    #call   emit("    add     %s, %s\n    jump    __L%d\n", fr, fr, l2)
+    #call   emit("__L%d:\n    move    %s, %s\n__L%d:\n", l1, fr, ir, l2)
+#end_func
+
+// emit_d2i(freg, ireg, unsigned): ireg = (integer)freg   (uses r3, f3; freg
+//      is clobbered).  Values >= 2^63 convert to unsigned by subtracting
+//      2^63 first and setting the top bit afterwards.
+#def_func emit_d2i(freg, ireg, uns)
+    #var    ir, fr, l1, l2, k
+    load    ir, ireg
+    load    fr, freg
+    load    r0, uns
+    #if_cond r0 == 0
+        #call   emit("    move    %s, %s\n", ir, fr)
+        #return 0
+    #end_cond
+    #call   new_lbl()
+    move    l1, r0
+    #call   new_lbl()
+    move    l2, r0
+    move    r1, 0x43E
+    lshift  r1, 52
+    #call   add_const(r1)
+    move    k, r0
+    #call   emit("    load    f3, __K%d\n    cmp     %s, f3\n    jump    lt, __L%d\n", k, fr, l1)
+    #call   emit("    sub     %s, f3\n    move    %s, %s\n", fr, ir, fr)
+    #call   emit("    move    r3, 1\n    lshift  r3, 63\n    xor     %s, r3\n    jump    __L%d\n", ir, l2)
+    #call   emit("__L%d:\n    move    %s, %s\n__L%d:\n", l1, ir, fr, l2)
+#end_func
+
 // int_op(kind, dst, src, unsigned): dst = dst op src  (r3/r4 may be used)
 #def_func int_op(kind, dst, src, uns)
     #var    k, d, s
@@ -451,10 +540,20 @@ ISV_SCALAR:
         #call   emit("    mult    %s, %s\n", d, s)
     #end_cond
     #if_cond k == ND_DIV
-        #call   emit("    div     %s, %s\n", d, s)
+        load    r0, uns
+        #if_cond r0 != 0
+            #call   emit_udivmod(d, s, "r2")
+        #else_cond
+            #call   emit("    div     %s, %s\n", d, s)
+        #end_cond
     #end_cond
     #if_cond k == ND_MOD
-        #call   emit("    div     r4, r3, %s, %s\n    move    %s, r3\n", d, s, d)
+        load    r0, uns
+        #if_cond r0 != 0
+            #call   emit_udivmod(d, s, "r3")
+        #else_cond
+            #call   emit("    div     r4, r3, %s, %s\n    move    %s, r3\n", d, s, d)
+        #end_cond
     #end_cond
     #if_cond k == ND_BAND
         #call   emit("    and     %s, %s\n", d, s)
@@ -555,6 +654,32 @@ ISV_SCALAR:
     #end_cond
     #call   is_uns_int(ot)
     move    uns, r0
+    // unsigned division by a power of two is a shift or a mask
+    #if_cond uns != 0
+        #call   is_const(b)
+        #if_cond r0 != 0
+            #call   const_eval(b)
+            move    l2, r0
+            #call   pow2_shift(l2)
+            move    l1, r0
+            #if_cond l1 >= 0
+                #if_cond k == ND_DIV
+                    #call   gen_expr(a)
+                    #if_cond l1 > 0
+                        #call   emit("    rshift  r0, %d\n", l1)
+                    #end_cond
+                    #return 0
+                #end_cond
+                #if_cond k == ND_MOD
+                    #call   gen_expr(a)
+                    sub     l2, 1
+                    #call   emit_imm("r1", l2)
+                    #call   emit("    and     r0, r1\n")
+                    #return 0
+                #end_cond
+            #end_cond
+        #end_cond
+    #end_cond
     #call   gen_expr(a)
     #call   load_simple_r1(b)
     #if_cond r0 == 0
@@ -697,13 +822,16 @@ ISV_SCALAR:
         #if_cond dl != 0
             #call   emit("    load    f2, r0[0]\n")
         #else_cond
-            #call   emit("    load    r2, r0[0]\n    move    f2, r2\n")
+            #call   emit("    load    r2, r0[0]\n")
+            #call   is_uns_int(ta)
+            #call   emit_i2d("r2", "f2", r0)
         #end_cond
         #call   dbl_op(op, "f2", "f1")
         #if_cond dl != 0
             #call   emit("    store   f2, r0[0]\n    move    f0, f2\n")
         #else_cond
-            #call   emit("    move    r2, f2\n")
+            #call   is_uns_int(ta)
+            #call   emit_d2i("f2", "r2", r0)
             #call   norm_bool(ta, "r2")
             #call   emit("    store   r2, r0[0]\n    move    r0, r2\n")
         #end_cond
@@ -792,12 +920,14 @@ ISV_SCALAR:
         #if_cond tk == TY_BOOL
             #call   emit("    test    f0\n    move    nz, r0, 1, 0\n")
         #else_cond
-            #call   emit("    move    r0, f0\n")
+            #call   is_uns_int(to)
+            #call   emit_d2i("f0", "r0", r0)
         #end_cond
         #return 0
     #end_cond
     #if_cond td != 0
-        #call   emit("    move    f0, r0\n")
+        #call   is_uns_int(from)
+        #call   emit_i2d("r0", "f0", r0)
         #return 0
     #end_cond
     #if_cond tk == TY_BOOL
@@ -829,6 +959,9 @@ ISV_SCALAR:
         move    vc, r0
         load    r0, a[N_KIND]
         #if_cond r0 == ND_C2P
+            add     nfree, 1
+        #end_cond
+        #if_cond r0 == ND_U2P
             add     nfree, 1
         #end_cond
         #call   gen_expr(a)
@@ -894,6 +1027,9 @@ ISV_SCALAR:
             #macro  VGET(a, margs, i)
             load    r0, a[N_KIND]
             #if_cond r0 == ND_C2P
+                #call   emit("    load    r1, sp[%d]\n    int     iFREE\n", pos)
+            #end_cond
+            #if_cond r0 == ND_U2P
                 #call   emit("    load    r1, sp[%d]\n    int     iFREE\n", pos)
             #end_cond
             #call   rtype(a)
@@ -1007,6 +1143,14 @@ ISV_SCALAR:
         #call   gen_expr(r1)
         #call   crt_use_p("c2p")
         #call   emit("    push    r0\n    call    __crt_c2p\n    add     sp, 1\n")
+        #return 0
+    #end_cond
+    #if_cond k == ND_U2P
+        load    r1, nd[N_A]
+        #call   gen_expr(r1)
+        #call   crt_use_p("__u2p")
+        load    r1, nd[N_VAL]
+        #call   emit("    push    %d\n    push    r0\n    call    __crt___u2p\n    add     sp, 2\n", r1)
         #return 0
     #end_cond
     #if_cond k == ND_NEG
@@ -1506,6 +1650,15 @@ AC_ADDSUB:
     #var    s, ty, sz, lv, words, cnt, i, l, e, lt, lab, g, v
     load    s, sp_
     load    lab, s[S_LABEL]
+    // library globals are emitted only if something references them
+    load    r0, s[S_FLAGS]
+    and     r1, r0, SF_PRELUDE
+    #if_cond r1 != 0
+        and     r1, r0, SF_USED
+        #if_cond r1 == 0
+            #return 0
+        #end_cond
+    #end_cond
     load    r0, s[S_FLAGS]
     and     r0, SF_EXTERN
     #if_cond r0 != 0
@@ -1673,6 +1826,18 @@ AC_ADDSUB:
     #end_cond
     load    r1, s[S_LABEL]
     #call   emit("    call    %s\n", r1)
+    // returning from main is equivalent to calling exit() (runs the atexit
+    // handlers) when the library exit() was compiled into the program
+    #call   intern_p("exit")
+    load    r1, r0[E_GLOBAL]
+    #if_cond r1 != 0
+        load    r0, r1[S_FLAGS]
+        and     r0, SF_DEFINED
+        #if_cond r0 != 0
+            load    r1, r1[S_LABEL]
+            #call   emit("    push    r0\n    call    %s\n", r1)
+        #end_cond
+    #end_cond
     #call   emit("    return\n")
     // ---- globals (collects address initializers)
     load    v, GLOBALS

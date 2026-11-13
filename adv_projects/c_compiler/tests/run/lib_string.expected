@@ -1,0 +1,28 @@
+strcpy=hello len=5
+strncpy=abc pad=000
+strncpy3=abc
+memmove fwd=0101234789
+memmove back=3456756789
+strdup=duplicate
+strndup=trunc
+cat=foobarbaz
+strcmp -1 0 1 -1
+strncmp 0 -1
+memcmp -1 0
+strcoll -1
+strxfrm 4 xfrm
+strchr=quick brown fox
+strrchr=ox
+strchr nul=1
+strchr none=1
+strstr=brown fox
+strstr none=1 empty=1
+memchr=brown fox
+memchr none=1
+strspn=5 strcspn=5
+strpbrk==value none=1
+[alpha][beta][gamma][delta]
+<a><b><c>
+memset=zzzz
+strnlen=3 2
+strerror ok=1

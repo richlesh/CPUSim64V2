@@ -975,6 +975,7 @@ SO_PTR:
             #if_cond nparm > 0
                 load    r4, tk
                 #call   check_format(margs, nparm, r4)
+                #call   lower_unsigned_format(margs, nparm)
             #end_cond
         #end_cond
     #end_cond
@@ -991,7 +992,7 @@ SO_PTR:
 ///////////////////////////////////////////////////////////////////////////////
 // fix_format_node(node) -> node; a packed-string literal format is rewritten
 //      so that C conversions work with the CPUSim64 (Java) formatter:
-//      length modifiers (h l L q j z t) are dropped, %i/%u -> %d,
+//      length modifiers (h l L q j z t) are dropped, %i -> %d,
 //      %p -> %x, %F -> %f.
 ///////////////////////////////////////////////////////////////////////////////
 #def_func is_fmt_flag(ch)
@@ -1095,9 +1096,6 @@ SO_PTR:
         load    c, w[i]
         add     i, 1
         #if_cond c == 'i'
-            move    c, 'd'
-        #end_cond
-        #if_cond c == 'u'
             move    c, 'd'
         #end_cond
         #if_cond c == 'p'
@@ -1215,6 +1213,170 @@ CF_DOUBLE:
             #call   error_tok(r1, "format expects a 'double' argument")
         #end_cond
     #end_while
+#end_func
+
+///////////////////////////////////////////////////////////////////////////////
+// lower_unsigned_format(args, fmt_index): the CPUSim64 formatter has no
+//      unsigned conversion, so each %u in a literal format becomes %s and its
+//      argument is converted at run time to a decimal packed string
+//      (ND_U2P, freed after the call).  The '0' flag and a precision become
+//      zero padding done by the converter (Java rejects '0' with %s).
+///////////////////////////////////////////////////////////////////////////////
+#def_func lower_unsigned_format(ap, fip)
+    #var    margs, fi, nd, w, cnt, i, c, ai, outv, st, zero, minus, width, prec, pad, j, a, u, nw
+    load    margs, ap
+    load    fi, fip
+    #macro  VGET(nd, margs, fi)
+    load    r0, nd[N_KIND]
+    #if_cond r0 != ND_STR
+        #return 0
+    #end_cond
+    load    r1, STRLITS
+    load    r2, nd[N_VAL]
+    #macro  VGET(w, r1, r2)
+    load    cnt, w[0]
+    // quick exit when there is no %u
+    move    u, 0
+    move    i, 1
+    #while  i <= cnt
+        load    c, w[i]
+        add     i, 1
+        #if_cond c == '%'
+            #while  i <= cnt
+                load    c, w[i]
+                #call   is_fmt_flag(c)
+                #if_cond r0 == 0
+                    #break
+                #end_cond
+                add     i, 1
+            #end_while
+            #if_cond i <= cnt
+                load    c, w[i]
+                add     i, 1
+                #if_cond c == 'u'
+                    move    u, 1
+                #end_cond
+            #end_cond
+        #end_cond
+    #end_while
+    #if_cond u == 0
+        #return 0
+    #end_cond
+    #call   vec_new()
+    move    outv, r0
+    add     ai, fi, 1
+    move    i, 1
+    #while  i <= cnt
+        load    c, w[i]
+        add     i, 1
+        #call   vec_push(outv, c)
+        #if_cond c != '%'
+            #continue
+        #end_cond
+        #if_cond i > cnt
+            #break
+        #end_cond
+        load    c, w[i]
+        #if_cond c == '%'
+            #call   vec_push(outv, c)
+            add     i, 1
+            #continue
+        #end_cond
+        // flags, width and precision of this conversion
+        move    st, i
+        move    zero, 0
+        move    minus, 0
+        move    width, 0
+        move    prec, -1
+        #while  i <= cnt
+            load    c, w[i]
+            #if_cond c == '0'
+                #if_cond width == 0
+                    #if_cond prec < 0
+                        move    zero, 1
+                    #end_cond
+                #end_cond
+            #end_cond
+            #if_cond c == '-'
+                move    minus, 1
+            #end_cond
+            #if_cond c == '.'
+                move    prec, 0
+                add     i, 1
+                #continue
+            #end_cond
+            #call   is_digit(c)
+            #if_cond r0 != 0
+                sub     r1, c, '0'
+                #if_cond prec >= 0
+                    mult    prec, 10
+                    add     prec, r1
+                #else_cond
+                    #if_cond c != '0'
+                        mult    width, 10
+                        add     width, r1
+                    #else_cond
+                        #if_cond width != 0
+                            mult    width, 10
+                        #end_cond
+                    #end_cond
+                #end_cond
+                add     i, 1
+                #continue
+            #end_cond
+            #call   is_fmt_flag(c)
+            #if_cond r0 == 0
+                #break
+            #end_cond
+            add     i, 1
+        #end_while
+        #if_cond i > cnt
+            #break
+        #end_cond
+        load    c, w[i]
+        add     i, 1
+        #if_cond c != 'u'
+            // copy the conversion unchanged
+            move    j, st
+            #while  j < i
+                load    r1, w[j]
+                #call   vec_push(outv, r1)
+                add     j, 1
+            #end_while
+            add     ai, 1
+            #continue
+        #end_cond
+        // %u: zero padding moves into the converter
+        move    pad, 0
+        #if_cond zero != 0
+            #if_cond minus == 0
+                move    pad, width
+                move    width, 0
+            #end_cond
+        #end_cond
+        #if_cond prec > pad
+            move    pad, prec
+        #end_cond
+        #if_cond minus != 0
+            #call   vec_push(outv, '-')
+        #end_cond
+        #if_cond width > 0
+            #call   sb_add_int(outv, width)
+        #end_cond
+        #call   vec_push(outv, 's')
+        #macro  VGET(a, margs, ai)
+        #call   nd_at(ND_U2P, a)
+        move    nw, r0
+        store   a, nw[N_A]
+        store   pad, nw[N_VAL]
+        load    r1, TY_PSTR_T
+        store   r1, nw[N_TYPE]
+        #macro  VSET(margs, ai, nw)
+        add     ai, 1
+    #end_while
+    #call   sb_to_w(outv)
+    #call   add_strlit(r0)
+    store   r0, nd[N_VAL]
 #end_func
 
 ///////////////////////////////////////////////////////////////////////////////

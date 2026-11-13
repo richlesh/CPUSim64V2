@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <math.h>
+#include <stdlib.h>
 double square(double x) { return x * x; }
 double avg(int n, double *v) { double s = 0; for (int i = 0; i < n; i++) s += v[i]; return s / n; }
 double mix(int a, double b, int c) { return a + b * c; }
