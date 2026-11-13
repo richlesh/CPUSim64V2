@@ -63,6 +63,34 @@ public abstract class PortHandler implements Cloneable {
 		pushback[pushbackCount++] = b & 0xFF;
 	}
 
+	// For handlers that decode multi-byte sequences themselves (UTF-8): the
+	// next byte, honoring bytes pushed back by a partial multi-byte read.
+	protected int readByteWithPushback() throws Simulator.CPUException {
+		return nextByte();
+	}
+
+	// Number of bytes consumed from the stream but pushed back (still unread
+	// from the program's point of view).  Used to report the logical position.
+	protected int pushbackPending() { return pushbackCount; }
+
+	// Discards pushed-back bytes and clears the EOF indicator (after a seek).
+	protected void resetReadState() {
+		pushbackCount = 0;
+		eof = false;
+	}
+
+	// Sets the error indicator.
+	protected void setError() { error = true; }
+
+	// Random access support.  Only random-access handlers support seeking;
+	// the defaults report failure with -1.
+	// seek(pos): pos >= 0 is relative to the beginning, pos < 0 is relative to
+	// the end (-1 is the last byte); positions past the end are clamped to
+	// the end.  Returns the new position or -1.
+	public long seek(long pos) throws Simulator.CPUException { return -1; }
+	// Current position or -1.
+	public long tell() throws Simulator.CPUException { return -1; }
+
 	// Bulk-read up to `len` bytes into buf[off..off+len). Returns the number of
 	// bytes actually read, which may be less than `len` only at end-of-stream.
 	// The default implementation loops the single-byte read() so that handlers

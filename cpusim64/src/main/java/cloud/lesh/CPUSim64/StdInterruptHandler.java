@@ -184,6 +184,9 @@ public class StdInterruptHandler extends InterruptHandler
 	public static final int iTEMP_FILE=236;
 	public static final int iFEOF=237;
 	public static final int iFERROR=238;
+	public static final int iOPEN_RANDOM_ACCESS_FILE=239;
+	public static final int iSEEK=240;
+	public static final int iTELL=241;
 	
 	public static final int iFMT_DEC=301;
 	public static final int iFMT_HEX=302;
@@ -868,6 +871,36 @@ public class StdInterruptHandler extends InterruptHandler
 				if (ph != null) {
 					ph.setPort(cpu.getR(1));
 					cpu.setR(0, ph.isError() ? -1 : 0);
+				} else
+					throw cpu.new CPUException("Port " + cpu.getR(1) + " not mapped!");
+				break;
+			case iOPEN_RANDOM_ACCESS_FILE:			// Open file on port r1 using filespec pointed to by r2 for random access
+				i = (int)cpu.getR(1);
+				ph = cpu.getPortHandler(i);
+				if (ph == null) {
+					try {
+						cpu.setPortHandler(i, new RandomAccessPortHandler(cpu, cpu.convertString(cpu.getR(2))));
+						cpu.setR(0, -1);
+					} catch (Simulator.CPUException ex) {
+						cpu.setR(0, 0);
+						break;
+					}
+				} else
+					throw cpu.new CPUException("Port " + i + " already mapped!");
+				break;
+			case iSEEK:								// r0 = new position of port r1 after seeking to r2 (-1 on error)
+				ph = cpu.getPortHandler((int)cpu.getR(1));
+				if (ph != null) {
+					ph.setPort(cpu.getR(1));
+					cpu.setR(0, ph.seek(cpu.getR(2)));
+				} else
+					throw cpu.new CPUException("Port " + cpu.getR(1) + " not mapped!");
+				break;
+			case iTELL:								// r0 = current position of port r1 (-1 if not seekable)
+				ph = cpu.getPortHandler((int)cpu.getR(1));
+				if (ph != null) {
+					ph.setPort(cpu.getR(1));
+					cpu.setR(0, ph.tell());
 				} else
 					throw cpu.new CPUException("Port " + cpu.getR(1) + " not mapped!");
 				break;

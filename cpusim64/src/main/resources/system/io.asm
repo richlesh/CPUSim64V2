@@ -572,6 +572,43 @@ jump    IO_ASM_END
     #end_cond
 #end_func
 
+// openRandomAccessFile(filename): opens filename for reading and writing at
+// any position.  The file is created if it does not exist and is never
+// truncated.  Returns the port, or -1 on error.
+#def_func   openRandomAccessFile(filename)
+    #var    fn, foundPort
+    load    fn, filename
+    #call   __getFreePort()
+    #if_cond    r0, eq, -1
+        #return -1              // all ports used
+    #end_cond
+    move    foundPort, r0
+    move    r1, foundPort
+    move    r2, fn
+    int     iOPEN_RANDOM_ACCESS_FILE
+    test    r0
+    #if_cond_sr z
+        #call   __unsetPortMap(foundPort)
+        #return -1
+    #end_cond_sr
+    #return foundPort
+#end_func
+
+// seek(port, position): positions a random-access port (position >= 0 from
+// the beginning, < 0 from the end, SEEK_END for the end).  Returns the new
+// position, or -1 on error.
+#def_func   seek(port, position)
+    load    r1, port
+    load    r2, position
+    int     iSEEK
+#end_func
+
+// tell(port): returns the current position of a random-access port, or -1.
+#def_func   tell(port)
+    load    r1, port
+    int     iTELL
+#end_func
+
 #def_func   closeFile(port)
     #var    p
     load    p, port

@@ -55,6 +55,9 @@
 #define	iTEMP_FILE				236
 #define	iFEOF					237
 #define	iFERROR					238
+#define	iOPEN_RANDOM_ACCESS_FILE	239
+#define	iSEEK					240
+#define	iTELL					241
 
 #define	CHAR	0
 #define	BYTE	1
@@ -72,6 +75,12 @@
 #define	READ_MODE	0
 #define	WRITE_MODE	1
 #define	APPEND_MODE	2
+
+// iSEEK positions: >= 0 counts from the beginning, < 0 from the end of the
+// file (-1 is the last byte).  Any position at or past the end, such as
+// SEEK_END (the largest MOVE immediate, 2^41 - 1), seeks to the end.
+#define	SEEK_BEGIN	0
+#define	SEEK_END	0x1FFFFFFFFFF
 
 #def_macro	IN0(register,port)
 	in	${register}, CHAR, ${port}
@@ -116,6 +125,19 @@
 #def_macro	FERROR(port)
 	move	r1, ${port}
 	int		iFERROR
+#end_macro
+// SEEK_PORT(port, position): positions a random-access port.  Sets r0 to the new
+// byte position, or -1 on error.
+#def_macro	SEEK_PORT(port, position)
+	move	r1, ${port}
+	move	r2, ${position}
+	int		iSEEK
+#end_macro
+// TELL_PORT(port): sets r0 to the current byte position of a random-access port,
+// or -1 if the port is not seekable.
+#def_macro	TELL_PORT(port)
+	move	r1, ${port}
+	int		iTELL
 #end_macro
 #endif
 

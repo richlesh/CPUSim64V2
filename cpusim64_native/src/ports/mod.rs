@@ -9,7 +9,7 @@
 //! on `Port`.
 
 use std::fs::{File, OpenOptions};
-use std::io::{BufReader, BufWriter, Read, Write};
+use std::io::{BufReader, BufWriter, Read, Seek, SeekFrom, Write};
 use std::sync::{Mutex, OnceLock};
 
 pub const REG_SIZE_BYTES: usize = 8;
@@ -66,6 +66,180 @@ pub enum PortIo {
         writer: Option<BufWriter<File>>,
         filespec: String,
     },
+    /// Random-access file (ports `RandomAccessPortHandler`): read, write and
+    /// seek on one port; byte and UTF-8 character I/O may be mixed.
+    Random(RandomFile),
+}
+
+const RA_BUF_SIZE: usize = 8192;
+
+/// A random-access file with a logical position and small read / write
+/// buffers that are invisible to the program.
+pub struct RandomFile {
+    file: Option<File>,
+    filespec: String,
+    writable: bool,
+    /// Logical position of the next byte.
+    pos: u64,
+    /// Read buffer holds file bytes [rstart, rstart + rbuf.len()), next at rpos.
+    rbuf: Vec<u8>,
+    rstart: u64,
+    rpos: usize,
+    /// Write buffer holds bytes for [wstart, wstart + wbuf.len()).
+    wbuf: Vec<u8>,
+    wstart: u64,
+}
+
+impl RandomFile {
+    /// Opens (creating if needed, never truncating) for read/write; falls
+    /// back to read-only access for an existing file that is not writable.
+    fn open(filespec: &str) -> CpuResult<RandomFile> {
+        let err = || CpuException(format!("File open error on \"{}\" for random access!", filespec));
+        let path = std::path::Path::new(filespec);
+        if path.is_dir() {
+            return Err(err());
+        }
+        let (file, writable) = match OpenOptions::new().read(true).write(true).create(true).open(filespec) {
+            Ok(f) => (f, true),
+            Err(_) => {
+                if !path.is_file() {
+                    return Err(err());
+                }
+                (File::open(filespec).map_err(|_| err())?, false)
+            }
+        };
+        Ok(RandomFile {
+            file: Some(file),
+            filespec: filespec.to_string(),
+            writable,
+            pos: 0,
+            rbuf: Vec::new(),
+            rstart: 0,
+            rpos: 0,
+            wbuf: Vec::new(),
+            wstart: 0,
+        })
+    }
+
+    fn file(&mut self) -> CpuResult<&mut File> {
+        let spec = self.filespec.clone();
+        self.file
+            .as_mut()
+            .ok_or_else(|| CpuException(format!("File \"{}\" is not open!", spec)))
+    }
+
+    fn flush_writes(&mut self) -> CpuResult<()> {
+        if self.wbuf.is_empty() {
+            return Ok(());
+        }
+        let start = self.wstart;
+        let data = std::mem::take(&mut self.wbuf);
+        let spec = self.filespec.clone();
+        let f = self.file()?;
+        f.seek(SeekFrom::Start(start))
+            .and_then(|_| f.write_all(&data))
+            .map_err(|_| CpuException(format!("Write error on file \"{}\"!", spec)))
+    }
+
+    fn drop_read_buffer(&mut self) {
+        self.rbuf.clear();
+        self.rpos = 0;
+    }
+
+    fn length(&mut self) -> CpuResult<u64> {
+        let spec = self.filespec.clone();
+        let mut len = self
+            .file()?
+            .metadata()
+            .map_err(|_| CpuException(format!("Error reading length of file \"{}\"!", spec)))?
+            .len();
+        let wend = self.wstart + self.wbuf.len() as u64;
+        if !self.wbuf.is_empty() && wend > len {
+            len = wend;
+        }
+        Ok(len)
+    }
+
+    fn read_byte(&mut self) -> CpuResult<i32> {
+        if self.rpos >= self.rbuf.len() {
+            self.flush_writes()?;
+            let pos = self.pos;
+            let spec = self.filespec.clone();
+            let mut buf = vec![0u8; RA_BUF_SIZE];
+            let f = self.file()?;
+            let n = f
+                .seek(SeekFrom::Start(pos))
+                .and_then(|_| f.read(&mut buf))
+                .map_err(|_| CpuException(format!("Read error on file \"{}\"!", spec)))?;
+            buf.truncate(n);
+            self.rbuf = buf;
+            self.rstart = pos;
+            self.rpos = 0;
+            if n == 0 {
+                return Ok(-1);
+            }
+        }
+        let b = self.rbuf[self.rpos];
+        self.rpos += 1;
+        self.pos += 1;
+        Ok(b as i32)
+    }
+
+    /// Steps back over the byte just read (used by the UTF-8 decoder).
+    fn unread(&mut self) {
+        if self.rpos > 0 {
+            self.rpos -= 1;
+        } else {
+            self.drop_read_buffer();
+        }
+        self.pos -= 1;
+    }
+
+    fn write_byte(&mut self, b: u8) -> CpuResult<()> {
+        if self.file.is_none() {
+            return Err(CpuException(format!("File \"{}\" is not open!", self.filespec)));
+        }
+        if !self.writable {
+            return Err(CpuException(format!("File \"{}\" is read-only!", self.filespec)));
+        }
+        self.drop_read_buffer();
+        if !self.wbuf.is_empty()
+            && (self.wstart + self.wbuf.len() as u64 != self.pos || self.wbuf.len() >= RA_BUF_SIZE)
+        {
+            self.flush_writes()?;
+        }
+        if self.wbuf.is_empty() {
+            self.wstart = self.pos;
+        }
+        self.wbuf.push(b);
+        self.pos += 1;
+        Ok(())
+    }
+
+    /// pos >= 0: from the beginning (clamped to the end); pos < 0: from the
+    /// end.  Returns the new position or -1.
+    fn seek(&mut self, p: i64) -> CpuResult<i64> {
+        self.flush_writes()?;
+        let len = self.length()? as i64;
+        let target = if p >= 0 { p.min(len) } else { len + p };
+        if target < 0 {
+            return Ok(-1);
+        }
+        let t = target as u64;
+        if !self.rbuf.is_empty() && t >= self.rstart && t < self.rstart + self.rbuf.len() as u64 {
+            self.rpos = (t - self.rstart) as usize;
+        } else {
+            self.drop_read_buffer();
+        }
+        self.pos = t;
+        Ok(target)
+    }
+
+    fn close(&mut self) -> CpuResult<()> {
+        let r = self.flush_writes();
+        self.file = None;
+        r
+    }
 }
 
 pub struct Port {
@@ -191,6 +365,79 @@ impl Port {
         })
     }
 
+    /// Open a random-access file (ports `RandomAccessPortHandler`).
+    pub fn new_random(filespec: &str) -> CpuResult<Port> {
+        Ok(Port {
+            state: PortState::default(),
+            io: PortIo::Random(RandomFile::open(filespec)?),
+        })
+    }
+
+    /// iSEEK: new position, or -1 (also -1 for ports that cannot seek).
+    pub fn seek(&mut self, pos: i64) -> CpuResult<i64> {
+        match &mut self.io {
+            PortIo::Random(rf) => {
+                let r = rf.seek(pos)?;
+                if r >= 0 {
+                    // pushed-back bytes and EOF belong to the old position
+                    self.state.pushback.clear();
+                    self.state.eof = false;
+                }
+                Ok(r)
+            }
+            _ => Ok(-1),
+        }
+    }
+
+    /// iTELL: current position, or -1 for ports that cannot seek.
+    pub fn tell(&mut self) -> CpuResult<i64> {
+        match &self.io {
+            PortIo::Random(rf) => {
+                if rf.file.is_none() {
+                    return Err(CpuException(format!("File \"{}\" is not open!", rf.filespec)));
+                }
+                Ok(rf.pos as i64 - self.state.pushback.len() as i64)
+            }
+            _ => Ok(-1),
+        }
+    }
+
+    /// UTF-8 decode one codepoint from a random-access port, honoring bytes
+    /// pushed back by a partial multi-byte read.
+    fn read_char_random(&mut self) -> CpuResult<i32> {
+        let b0 = self.next_byte()?;
+        if b0 < 0 {
+            return Ok(-1);
+        }
+        let (len, mut cp) = if b0 < 0x80 {
+            return Ok(b0);
+        } else if b0 >> 5 == 0x6 {
+            (2, b0 & 0x1F)
+        } else if b0 >> 4 == 0xE {
+            (3, b0 & 0x0F)
+        } else if b0 >> 3 == 0x1E {
+            (4, b0 & 0x07)
+        } else {
+            return Ok(b0);
+        };
+        for _ in 1..len {
+            let from_pushback = !self.state.pushback.is_empty();
+            let b = self.next_byte()?;
+            if b < 0 || (b & 0xC0) != 0x80 {
+                if b >= 0 {
+                    if from_pushback {
+                        self.push_back(b);
+                    } else if let PortIo::Random(rf) = &mut self.io {
+                        rf.unread();
+                    }
+                }
+                return Ok(b0);
+            }
+            cp = (cp << 6) | (b & 0x3F);
+        }
+        Ok(cp)
+    }
+
     pub fn set_port(&mut self, p: i32) {
         self.state.port = p;
     }
@@ -226,6 +473,7 @@ impl Port {
                     ))),
                 }
             }
+            PortIo::Random(rf) => rf.read_byte(),
             PortIo::File { reader, filespec, .. } | PortIo::Raw { reader, filespec, .. } => {
                 let r = reader.as_mut().ok_or_else(|| {
                     CpuException(format!("File \"{}\" not open for input!", filespec))
@@ -254,6 +502,19 @@ impl Port {
                         -1 => break,
                         r => {
                             buf[n] = r as u8;
+                            n += 1;
+                        }
+                    }
+                }
+                Ok(n)
+            }
+            PortIo::Random(rf) => {
+                let mut n = 0;
+                while n < buf.len() {
+                    match rf.read_byte()? {
+                        -1 => break,
+                        b => {
+                            buf[n] = b as u8;
                             n += 1;
                         }
                     }
@@ -369,6 +630,9 @@ impl Port {
 
     /// Read a single Unicode code point (ports readChar).
     pub fn read_char(&mut self) -> CpuResult<i32> {
+        if let PortIo::Random(_) = &self.io {
+            return self.read_char_random();
+        }
         match &self.io {
             PortIo::Raw { .. } => Err(CpuException("Can't read chars from raw file!".into())),
             PortIo::Std if self.state.port != 0 => {
@@ -448,6 +712,13 @@ impl Port {
                 }
                 Ok(())
             }
+            PortIo::Random(rf) => {
+                if let Err(e) = rf.write_byte(b) {
+                    self.state.error = true;
+                    return Err(e);
+                }
+                Ok(())
+            }
             PortIo::File { writer, filespec, .. } | PortIo::Raw { writer, filespec, .. } => {
                 let w = writer.as_mut().ok_or_else(|| {
                     CpuException(format!("File \"{}\" not open for output!", filespec))
@@ -460,8 +731,19 @@ impl Port {
 
     /// Write a single Unicode code point as UTF-8 (ports writeChar).
     pub fn write_char(&mut self, code_point: i32) -> CpuResult<()> {
+        if let PortIo::Random(_) = &self.io {
+            let s = char::from_u32(code_point as u32).ok_or_else(|| {
+                CpuException(format!("Invalid codepoint {} written to random-access file!", code_point))
+            })?;
+            let mut b = [0u8; 4];
+            for &x in s.encode_utf8(&mut b).as_bytes() {
+                self.write_byte(x)?;
+            }
+            return Ok(());
+        }
         match &mut self.io {
             PortIo::Raw { .. } => Err(CpuException("Can't write chars to raw file!".into())),
+            PortIo::Random(_) => unreachable!("handled above"),
             PortIo::Std => {
                 if self.state.port == 0 {
                     return Err(CpuException("Can't write to STDIN!".into()));
@@ -524,6 +806,12 @@ impl Port {
                     .map_err(|_| CpuException(format!("Write error on file \"{}\"!", filespec)))
             }
             PortIo::Raw { .. } => Err(CpuException("Can't write chars to raw file!".into())),
+            PortIo::Random(_) => {
+                for b in s.as_bytes().to_vec() {
+                    self.write_byte(b)?;
+                }
+                Ok(())
+            }
         }
     }
 
@@ -540,6 +828,7 @@ impl Port {
                 }
                 Ok(())
             }
+            PortIo::Random(rf) => rf.flush_writes(),
             PortIo::File { writer, filespec, .. } | PortIo::Raw { writer, filespec, .. } => {
                 let w = writer.as_mut().ok_or_else(|| {
                     CpuException(format!("File \"{}\" not open for output!", filespec))
@@ -553,6 +842,7 @@ impl Port {
     pub fn close(&mut self) -> CpuResult<()> {
         match &mut self.io {
             PortIo::Std => Err(CpuException("Can't close STDIO or STDERR!".into())),
+            PortIo::Random(rf) => rf.close(),
             PortIo::File { reader, writer, .. } | PortIo::Raw { reader, writer, .. } => {
                 if let Some(mut w) = writer.take() {
                     let _ = w.flush();
@@ -648,5 +938,101 @@ mod tests {
     #[test]
     fn construct_mem_port() {
         let _p = mem_port();
+    }
+
+    fn ra_path(tag: &str) -> String {
+        let dir = std::env::temp_dir();
+        let path = dir.join(format!("cpusim64_ra_{}_{}.bin", tag, std::process::id()));
+        let _ = std::fs::remove_file(&path);
+        path.to_str().unwrap().to_string()
+    }
+
+    #[test]
+    fn random_access_write_seek_read_tell() {
+        let ps = ra_path("basic");
+        let mut p = Port::new_random(&ps).unwrap();
+        p.write(0x0102_0304_0506_0708, 8).unwrap();
+        p.write(b'A' as i64, 1).unwrap();
+        p.write(b'B' as i64, 1).unwrap();
+        assert_eq!(p.tell().unwrap(), 10);
+        assert_eq!(p.seek(0).unwrap(), 0);
+        assert_eq!(p.read(8).unwrap(), 0x0102_0304_0506_0708);
+        assert_eq!(p.seek(-1).unwrap(), 9);
+        assert_eq!(p.read(1).unwrap(), b'B' as i64);
+        assert_eq!(p.read(1).unwrap(), -1);
+        assert!(p.is_eof());
+        // overwrite in place
+        assert_eq!(p.seek(2).unwrap(), 2);
+        p.write(0xEE, 1).unwrap();
+        assert_eq!(p.tell().unwrap(), 3);
+        p.seek(1).unwrap();
+        assert_eq!(p.read(1).unwrap(), 0x02);
+        assert_eq!(p.read(1).unwrap(), 0xEE);
+        assert_eq!(p.read(1).unwrap(), 0x04);
+        // end, clamping, before the start
+        assert_eq!(p.seek(0x1FF_FFFF_FFFF).unwrap(), 10);
+        assert_eq!(p.seek(i64::MAX).unwrap(), 10);
+        assert_eq!(p.seek(1000).unwrap(), 10);
+        assert_eq!(p.seek(-11).unwrap(), -1);
+        assert_eq!(p.tell().unwrap(), 10);
+        p.write(b'C' as i64, 1).unwrap();
+        p.close().unwrap();
+        // reopen: not truncated
+        let mut q = Port::new_random(&ps).unwrap();
+        assert_eq!(q.seek(i64::MAX).unwrap(), 11);
+        q.seek(-1).unwrap();
+        assert_eq!(q.read(1).unwrap(), b'C' as i64);
+        q.close().unwrap();
+        let bytes = std::fs::read(&ps).unwrap();
+        assert_eq!(bytes, vec![1, 2, 0xEE, 4, 5, 6, 7, 8, b'A', b'B', b'C']);
+        let _ = std::fs::remove_file(&ps);
+    }
+
+    #[test]
+    fn random_access_chars_and_endian() {
+        let ps = ra_path("char");
+        let mut p = Port::new_random(&ps).unwrap();
+        for cp in ['h' as i32, 0xE9, 0x4E16, 0x1F600] {
+            p.write_char(cp).unwrap();
+        }
+        assert_eq!(p.tell().unwrap(), 10);
+        p.seek(0).unwrap();
+        assert_eq!(p.read_char().unwrap(), 'h' as i32);
+        assert_eq!(p.read_char().unwrap(), 0xE9);
+        assert_eq!(p.tell().unwrap(), 3);
+        assert_eq!(p.read_char().unwrap(), 0x4E16);
+        assert_eq!(p.read_char().unwrap(), 0x1F600);
+        assert_eq!(p.read_char().unwrap(), -1);
+        p.set_little_endian(true);
+        p.seek(i64::MAX).unwrap();
+        p.write(0x0A0B, 2).unwrap();
+        p.seek(-2).unwrap();
+        assert_eq!(p.read(1).unwrap(), 0x0B);
+        p.seek(-2).unwrap();
+        assert_eq!(p.read(2).unwrap(), 0x0A0B);
+        p.close().unwrap();
+        let bytes = std::fs::read(&ps).unwrap();
+        assert_eq!(bytes.len(), 12);
+        assert_eq!(std::str::from_utf8(&bytes[..10]).unwrap(), "h\u{e9}\u{4e16}\u{1f600}");
+        let _ = std::fs::remove_file(&ps);
+    }
+
+    #[test]
+    fn random_access_partial_read_tell_and_errors() {
+        let ps = ra_path("partial");
+        let mut p = Port::new_random(&ps).unwrap();
+        p.write(0xABCD, 2).unwrap();
+        p.seek(0).unwrap();
+        // a 4-byte read at a 2-byte file fails and pushes the bytes back
+        assert_eq!(p.read(4).unwrap(), -1);
+        assert_eq!(p.tell().unwrap(), 0);
+        assert_eq!(p.read(1).unwrap(), 0xAB);
+        assert_eq!(p.tell().unwrap(), 1);
+        p.close().unwrap();
+        assert!(Port::new_random("/").is_err());
+        let mut s = Port::new_std();
+        assert_eq!(s.seek(0).unwrap(), -1);
+        assert_eq!(s.tell().unwrap(), -1);
+        let _ = std::fs::remove_file(&ps);
     }
 }

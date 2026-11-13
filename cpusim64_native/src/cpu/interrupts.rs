@@ -127,6 +127,9 @@ const I_TEMP_DIR: i32 = 235;
 const I_TEMP_FILE: i32 = 236;
 const I_FEOF: i32 = 237;
 const I_FERROR: i32 = 238;
+const I_OPEN_RANDOM_ACCESS_FILE: i32 = 239;
+const I_SEEK: i32 = 240;
+const I_TELL: i32 = 241;
 
 const I_FMT_DEC: i32 = 301;
 const I_FMT_HEX: i32 = 302;
@@ -511,6 +514,39 @@ impl Simulator {
                 if let Some(ph) = self.get_port_handler_mut(port) {
                     let e = ph.is_error();
                     self.set_r(0, if e { -1 } else { 0 });
+                } else {
+                    return Err(self.err(format!("Port {} not mapped!", port)));
+                }
+            }
+            I_OPEN_RANDOM_ACCESS_FILE => {
+                let port = self.get_r(1) as i32;
+                if self.has_port(port) {
+                    return Err(self.err(format!("Port {} already mapped!", port)));
+                }
+                let filespec = self.convert_string(self.get_r(2))?;
+                match crate::ports::Port::new_random(&filespec) {
+                    Ok(p) => {
+                        self.set_port_handler(port, Some(p));
+                        self.set_r(0, -1);
+                    }
+                    Err(_) => self.set_r(0, 0),
+                }
+            }
+            I_SEEK => {
+                let port = self.get_r(1) as i32;
+                let target = self.get_r(2);
+                if let Some(ph) = self.get_port_handler_mut(port) {
+                    let r = ph.seek(target)?;
+                    self.set_r(0, r);
+                } else {
+                    return Err(self.err(format!("Port {} not mapped!", port)));
+                }
+            }
+            I_TELL => {
+                let port = self.get_r(1) as i32;
+                if let Some(ph) = self.get_port_handler_mut(port) {
+                    let r = ph.tell()?;
+                    self.set_r(0, r);
                 } else {
                     return Err(self.err(format!("Port {} not mapped!", port)));
                 }

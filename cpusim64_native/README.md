@@ -62,7 +62,8 @@ cargo test --test validation    # just the reference comparison
 ```
 
 The harness (`tests/validation.rs`) runs every
-`../cpusim64/validation/*.asm` (via its committed `obj/<name>.o64`) with the same
+`../cpusim64/validation/*.asm` (via its generated `obj/<name>.o64`; run
+`../cpusim64/validation/runtests.py` once to create them) with the same
 flags `debug.sh` uses — `--verbose --debug --mem=16M --stack=8K --mem=1M` (the
 last `--mem` wins) — and compares the region between the `Read N words …` line
 and the `User CPU Cycles:` line against `../cpusim64/validation/reference/*.out`,
@@ -70,18 +71,23 @@ exactly as `runtests.py` does. It also checks the `User CPU Cycles:` value.
 
 ### Results
 
-* **Output parity: 34 / 34 deterministic tests match the reference
+* **Output parity: 35 / 35 deterministic tests match the reference
   byte-for-byte** (the full `printCPUState` register/stack/float dump plus all
   program output).
-* **Cycle parity: 27 / 34 match exactly.** The remaining few differ by a small,
-  constant number of cycles (see below).
-* `T105_SYNC` is **excluded** — see "Known deviations".
+* **Cycle parity: 35 / 35 match exactly** with the built-in cycle table.
+* `T105_SYNC` (in `validation/bad/`) is **excluded** — see "Known deviations".
+
+The references are produced by the Java simulator: run each test through
+`debug.sh` with `USE_NATIVE=false` (which is what `runtests.py` does when
+`debug.sh` uses Java) and save the output as `reference/<name>.out`.  They
+must be regenerated whenever the system library (`system/*.asm`) changes
+size, because the CPU dumps contain code addresses.
 
 Regenerating the object files from source (optional) requires the Java toolchain
 and mirrors `runtests.py`:
 
 ```bash
-cd ../cpusim64/validation && ../../assemble.sh <name>
+cd ../cpusim64/validation && ../../assemble.sh <name> --DEBUG
 ```
 
 ## Parity scope
@@ -133,38 +139,17 @@ These are documented, intentional differences surfaced during reconciliation:
    defaults (mirroring how Java loads the resource). This lets you retune
    timings without recompiling.
 
-   The committed `reference/*.out` files, however, were generated with an older
-   table (`load:0`, `fdivide:9`, and `RECIP` as `divide`). To reproduce those
-   cycle counts, drop an `instructions.data` next to the executable with:
+   The reference `.out` files are generated with the same default table, so
+   the validation harness checks cycle counts without any override; a separate
+   test installs an override file (`load:0`, `fdivide:9`) to check that the
+   override mechanism changes the timings.
 
-   ```
-   load:0
-   fdivide:9
-   ```
-
-   This recovers the `load`/`fdivide` differences for every test; the
-   `RECIP`-as-`divide` difference is a source-level dispatch choice that the
-   data file cannot express, so RECIP-executing programs (e.g. `T12_UNARY`)
-   retain a small, output-invisible cycle surplus under this build. The
-   validation harness installs exactly this override file automatically for its
-   cycle-count check.
-
-3. **Residual cycle counts.** A handful of interrupt-/thread-library-heavy
-   programs (`T101`, `T102`, `T103`, `T104`, `T28`, `T30`, `T34`, `T35`, plus
-   `T12_UNARY` as noted above) report a small constant cycle surplus versus the
-   reference. Every one of them still matches the reference **output**
-   byte-for-byte; only the internal `User CPU Cycles` tally differs, by a few
-   cycles attributable to how the reference-era Java charged certain
-   interrupt-internal / shared-library memory accesses. The validation harness
-   reports these as "known cycle delta" and asserts the overall match rate does
-   not regress.
-
-4. **Regex.** `java.util.regex` is approximated with the Rust `regex` crate.
+3. **Regex.** `java.util.regex` is approximated with the Rust `regex` crate.
    Constructs that crate does not support (backreferences, lookaround) surface
    as an error rather than silently differing; none of the current validation
    scripts rely on them.
 
-5. **Nondeterministic/host interrupts.** `iRANDOM`/`iRAND`/`iCLOCK` are
+4. **Nondeterministic/host interrupts.** `iRANDOM`/`iRAND`/`iCLOCK` are
    deterministic placeholders (wall-clock is stripped by the harness anyway);
    `iSYSTEM` and temp-file/dir interrupts are unsupported in the native port.
 
