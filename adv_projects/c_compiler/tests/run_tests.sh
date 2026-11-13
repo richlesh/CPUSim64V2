@@ -14,6 +14,10 @@
 #              [+ NAME.exit]    expected program result (default 0)
 #              [+ NAME.argv]    extra command line arguments for the program
 #              [+ NAME.stdin]   standard input for the program
+#              [+ NAME.ccargs]  extra compiler arguments ($HERE expands to
+#                               this directory)
+#              [+ NAME.noasm]   strings (one per line) that must not appear
+#                               in the generated assembly
 #   errors/NAME.c + NAME.err  compilation must fail (non-zero result) and the
 #                             compiler's stderr must contain NAME.err
 #
@@ -169,10 +173,24 @@ for t in "$HERE"/run/*.c; do
     want "$name" || continue
     base="${t%.c}"
     rm -f "$base.asm"
-    SIM_STDIN="" sim "$CC_OBJ" "$t"
+    ccargs=""
+    [[ -e "$base.ccargs" ]] && read -r ccargs < "$base.ccargs"
+    ccargs="${ccargs//\$HERE/$HERE}"
+    SIM_STDIN="" sim "$CC_OBJ" "$t" $ccargs
     if [[ "$(cat "$TMP/result")" != "0" || ! -e "$base.asm" ]]; then
         bad "$name" "compile failed: $(head -3 "$TMP/err")"
         continue
+    fi
+    if [[ -e "$base.noasm" ]]; then
+        hit=""
+        while IFS= read -r pat; do
+            [[ -z "$pat" ]] && continue
+            if grep -qF -- "$pat" "$base.asm"; then hit="$pat"; break; fi
+        done < "$base.noasm"
+        if [[ -n "$hit" ]]; then
+            bad "$name" "generated assembly contains '$hit'"
+            continue
+        fi
     fi
     if ! assemble "$base"; then
         bad "$name" "generated assembly failed: $(grep -i error "$TMP/asmlog" | head -3)"

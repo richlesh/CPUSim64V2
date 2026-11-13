@@ -248,8 +248,8 @@ PARSE_STMT_ASM_START:
             #if_cond r0 != 0
                 load    r1, tk
                 load    r1, r1[TK_FILE]
-                load    r2, CC_PRELUDE
-                #if_cond r1 != r2
+                #call   is_lib_file(r1)
+                #if_cond r0 == 0
                     load    r1, g[S_TYPE]
                     load    r1, r1[T_PARAMS]
                     #call   vec_len(r1)
@@ -295,8 +295,8 @@ PARSE_STMT_ASM_START:
     // functions declared by the prelude are provided by the runtime
     load    r1, tk
     load    r1, r1[TK_FILE]
-    load    r2, CC_PRELUDE
-    #if_cond r1 == r2
+    #call   is_lib_file(r1)
+    #if_cond r0 != 0
         load    r0, g[S_FLAGS]
         or      r0, SF_BUILTIN
         store   r0, g[S_FLAGS]
@@ -1176,8 +1176,8 @@ PTU_DECLS:
                         #call   ck()
                         #if_cond r0 == TK_LBRACE
                             load    r1, nt[TK_FILE]
-                            load    r2, CC_PRELUDE
-                            #if_cond r1 == r2
+                            #call   is_lib_file(r1)
+                            #if_cond r0 != 0
                                 #call   skip_lazy_body(s, ty)
                             #else_cond
                                 #call   parse_funcdef(s, ty, nt)
@@ -1216,18 +1216,19 @@ PTU_DECLS:
 #def_func skip_lazy_body(sp_, tp)
     #var    s, depth, k
     load    s, sp_
+    // a function the program already defined keeps its definition; the
+    // library body is skipped without being recorded
     load    r0, s[S_FLAGS]
     and     r0, SF_DEFINED
-    #if_cond r0 != 0
-        #return 0
+    #if_cond r0 == 0
+        load    r1, P_POS
+        store   r1, s[S_BODYPOS]
+        load    r1, tp
+        store   r1, s[S_TYPE]
+        load    r0, s[S_FLAGS]
+        or      r0, SF_LAZY
+        store   r0, s[S_FLAGS]
     #end_cond
-    load    r1, P_POS
-    store   r1, s[S_BODYPOS]
-    load    r1, tp
-    store   r1, s[S_TYPE]
-    load    r0, s[S_FLAGS]
-    or      r0, SF_LAZY
-    store   r0, s[S_FLAGS]
     move    depth, 0
     #while  TRUE
         #call   ck()

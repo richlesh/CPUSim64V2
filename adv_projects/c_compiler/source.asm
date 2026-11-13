@@ -82,6 +82,31 @@ SOURCE_ASM_START:
 #end_func
 
 ///////////////////////////////////////////////////////////////////////////////
+// path_parent(dir) -> packed parent of a directory prefix ("a/b/" -> "a/",
+//                     "b/" -> "", "./obj/" -> "./")
+///////////////////////////////////////////////////////////////////////////////
+#def_func path_parent(dirp)
+    #var    w, cnt, c, r
+    load    r1, dirp
+    int     iGET_CODEPOINTS
+    move    w, r0
+    load    cnt, w[0]
+    #if_cond cnt > 0
+        load    c, w[cnt]
+        #if_cond c == '/'
+            sub     cnt, 1
+            store   cnt, w[0]
+        #end_cond
+    #end_cond
+    move    r1, w
+    int     iFROM_CODEPOINTS
+    move    r, r0
+    move    r1, w
+    int     iFREE
+    #call   path_dir(r)
+#end_func
+
+///////////////////////////////////////////////////////////////////////////////
 // path_join(dir, name) -> packed dir + name (name returned as-is if absolute)
 ///////////////////////////////////////////////////////////////////////////////
 #def_func path_join(dirp, namep)

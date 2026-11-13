@@ -21,6 +21,9 @@ Debugging dumps (instead of code generation):
 ../../run.sh cc prog.c --ast      # typed abstract syntax tree
 ```
 
+`--lib=DIR` selects the library directory (see *Library headers* below); it
+may be combined with the dump options, in any order after the file name.
+
 The compiler stops at the first error, prints `file:line: error: message` to
 STDERR, deletes any partial output and finishes with result 1.  Note that the
 simulator's own exit status is always 0; the program result is the
@@ -51,10 +54,11 @@ limits (deep recursion such as 50,000 nested calls works).
 | `ast.asm` | AST nodes and the `--ast` dumper |
 | `codegen.asm` | stack-machine code generation |
 | `runtime_emit.asm` | assembly runtime library, copied into programs on demand |
+| `lib/` | library headers and sources in C (`math.h`, `math.c`) |
 
 Pipeline: source -> lexer -> preprocessor -> parser + semantic analysis ->
 code generation per function -> output file.  Library functions written in C
-in the prelude are compiled only when a program uses them.
+(in the prelude or in `lib/*.c`) are compiled only when a program uses them.
 
 ### Generated code
 
@@ -83,7 +87,8 @@ initializers, brace elision, string-literal concatenation, `__func__`,
 variadic functions via `<stdarg.h>`.
 
 Preprocessor: `#include "file"` (searched relative to the including file, then
-the main file) and `<file>` (standard headers are built in), object-like and
+the main file) and `<file>` (library headers from `lib/`, other standard
+headers are built in), object-like and
 function-like `#define` with `#`, `##` and `__VA_ARGS__`, `#undef`, `#if`,
 `#ifdef`, `#ifndef`, `#elif`, `#else`, `#endif`, `defined`, `#error`;
 `#pragma`, `#line` and `#warning` are ignored.  `__LINE__` and `__FILE__` are
@@ -92,6 +97,36 @@ predefined.
 Not supported (reported as errors): `float`, `long double`, `_Complex`,
 `_Atomic`, bit-fields, variable length arrays, K&R parameter lists,
 `_Generic` and GNU extensions.
+
+## Library headers
+
+`#include <name>` or `#include <name.h>` looks for `lib/name.h`.  If it
+exists:
+
+* `lib/name.h` is included at the point of the `#include`, like any header;
+* `lib/name.c`, if it exists, is appended to the end of the translation unit
+  (once, however often the header is included), because CPUSim64 has no
+  linker.  Its functions are compiled only if the program uses them, so a
+  program that calls only `sqrt` gets only the `sqrt` code.
+
+A `<...>` header without a `lib/` file is one of the built-in standard
+headers (`stdio.h`, `stdlib.h`, `string.h`, ...) and is accepted silently;
+those declarations are part of the prelude.
+
+The library directory is the `lib/` directory next to the compiler's `obj/`
+directory, found from the path of `cc.o64`; `--lib=DIR` overrides it.
+
+A function in `lib/name.h` that has no body in `lib/name.c` is provided by the
+assembly runtime (`runtime_emit.asm`, label `__crt_<name>`).  If the program
+defines a function with the same name, the program's definition is used and
+the library body is ignored.
+
+The appended `.c` file is preprocessed after the program, so it sees the
+program's macros.  Library sources therefore use names that start with a
+library-specific prefix (`__m_` in `math.c`) for all locals and helpers.
+
+As in standard C, math functions must be declared: calling `sqrt` without
+`#include <math.h>` is an "implicit declaration" error.
 
 ## Memory model
 
@@ -137,10 +172,16 @@ internal type `__pstr` (packed string):
 `memmove`, `memcmp`.
 `<ctype.h>`: `isdigit`, `isalpha`, `isalnum`, `isspace`, `isupper`, `islower`,
 `isxdigit`, `isprint`, `isgraph`, `iscntrl`, `ispunct`, `toupper`, `tolower`.
-`<math.h>`: `sqrt`, `sin`, `cos`, `tan`, `asin`, `acos`, `atan`, `atan2`,
-`sinh`, `cosh`, `tanh`, `exp`, `log`, `log10`, `log2`, `pow`, `fabs`,
-`floor`, `ceil`, `round`, `trunc`, `fmod`, `hypot`, `cbrt`, `fmin`, `fmax`,
-`M_PI` etc.
+`<math.h>` (`lib/math.h`, `lib/math.c`): `sin`, `cos`, `tan`, `asin`,
+`acos`, `atan`, `atan2`, `sinh`, `cosh`, `tanh`, `asinh`, `acosh`, `atanh`,
+`exp`, `exp2`, `expm1`, `log`, `log10`, `log2`, `log1p`, `pow`, `sqrt`,
+`cbrt`, `hypot`, `fabs`, `floor`, `ceil`, `round`, `trunc`, `rint`,
+`nearbyint`, `lround`, `llround`, `lrint`, `fmod`, `remainder`, `modf`,
+`frexp`, `ldexp`, `scalbn`, `copysign`, `fmin`, `fmax`, `fdim`, `fma`,
+`isnan`, `isinf`, `isfinite`, `signbit` (functions, not macros), and the
+`M_*` constants, `INFINITY`, `NAN`, `HUGE_VAL`.  The simulator's
+floating-point compare treats NaN as equal to everything, so use `isnan()`
+rather than `x != x`.
 Also `<assert.h>`, `<stdarg.h>`, `<stddef.h>`, `<stdint.h>`, `<stdbool.h>`,
 `<limits.h>`, `<time.h>` (`time`, `clock`).
 
@@ -158,7 +199,11 @@ tests/run_tests.sh run/       # only tests whose name contains "run/"
 * `tests/dump/` - `--pp`, `--tokens` and `--ast` output
 * `tests/errors/` - programs that must fail with a given message
 * `tests/run/` - programs that are compiled, run and compared with
-  `.expected` output (`.exit`, `.argv` and `.stdin` files are optional).
+  `.expected` output.  Optional files: `.exit` (expected result), `.argv`
+  and `.stdin` (program input), `.ccargs` (extra compiler arguments;
+  `$HERE` is the `tests/` directory) and `.noasm` (strings that must not
+  appear in the generated assembly, used to check lazy library compilation).
   Where C semantics allow, the expected output was produced by compiling
   the same program natively with gcc.
 * `tests/cli/` - command line handling
+* `tests/libfixture/` - a small library used to test the `lib/` mechanism

@@ -113,12 +113,13 @@ SYMTAB_ASM_START:
     store   r1, s[S_DEPTH]
     load    r1, tk
     #if_cond r1 != 0
-        load    r2, r1[TK_FILE]
-        load    r3, CC_PRELUDE
-        #if_cond r2 == r3
+        load    r1, r1[TK_FILE]
+        #call   is_lib_file(r1)
+        #if_cond r0 != 0
             move    r2, SF_PRELUDE
             store   r2, s[S_FLAGS]
         #end_cond
+        load    r1, tk
         load    r1, r1[TK_LINE]
     #end_cond
     store   r1, s[S_LINE]

@@ -417,5 +417,28 @@ UTIL_ASM_START:
     #end_cond
 #end_func
 
+///////////////////////////////////////////////////////////////////////////////
+// is_lib_file(file_entry) -> 1 if the file is a library source (the prelude
+//                            or a file from the lib/ directory)
+///////////////////////////////////////////////////////////////////////////////
+#def_func is_lib_file(ep)
+    load    r0, ep
+    #if_cond r0 == 0
+        #return 0
+    #end_cond
+    load    r0, r0[E_SPEC]
+    #if_cond r0 == SPEC_LIBFILE
+        #return 1
+    #end_cond
+    #return 0
+#end_func
+
+// mark_lib_file(file_entry)
+#def_func mark_lib_file(ep)
+    load    r0, ep
+    move    r1, SPEC_LIBFILE
+    store   r1, r0[E_SPEC]
+#end_func
+
 UTIL_ASM_END:
     nop

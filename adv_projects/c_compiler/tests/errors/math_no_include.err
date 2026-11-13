@@ -1,0 +1,1 @@
+math_no_include.c:2: error: implicit declaration of function 'sqrt'

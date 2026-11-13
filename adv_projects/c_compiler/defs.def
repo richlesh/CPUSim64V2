@@ -57,6 +57,8 @@
 #define SPEC_D_PRAGMA   20
 #define SPEC_D_LINE     21
 #define SPEC_D_WARNING  22
+// file-name entries of library sources (prelude, lib/*.h, lib/*.c)
+#define SPEC_LIBFILE    30
 
 // ---------------------------------------------------------------------------
 // Token

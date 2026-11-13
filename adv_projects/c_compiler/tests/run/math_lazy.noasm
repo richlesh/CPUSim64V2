@@ -1,0 +1,4 @@
+__crt_hypot
+__crt_fmod
+__crt_isnan
+__crt_log10

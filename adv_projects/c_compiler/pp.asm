@@ -25,6 +25,8 @@
 #global PP_DEPTH:   .dci 0          // include depth
 #global PP_RAW:     .dci 0          // >0 while expanding a token list only
 #global PP_LASTTOK: .dci 0          // last token read from the stack
+#global PP_PENDING: .dci 0          // queue of library .c paths to append
+#global PP_LIBSEEN: .dci 0          // intern entries of queued library .c paths
 
 #define MK_MACRO    0               // marker AUX values
 #define MK_FILE     1
@@ -147,6 +149,67 @@ PP_ASM_START:
     move    r0, 0
     store   r0, PP_DEPTH
     store   r0, PP_RAW
+    #call   vec_new()
+    store   r0, PP_PENDING
+    #call   vec_new()
+    store   r0, PP_LIBSEEN
+#end_func
+
+///////////////////////////////////////////////////////////////////////////////
+// pp_queue_lib(path): append library source path to the translation unit
+//                     (once per path)
+///////////////////////////////////////////////////////////////////////////////
+#def_func pp_queue_lib(pathp)
+    #var    pth, e, v, cnt, i
+    load    pth, pathp
+    #call   intern_p(pth)
+    move    e, r0
+    load    v, PP_LIBSEEN
+    #macro  VLEN(cnt, v)
+    #for    1, i <= cnt, 1
+        #macro  VGET(r1, v, i)
+        #if_cond r1 == e
+            #return 0
+        #end_cond
+    #end_for
+    #call   vec_push(v, e)
+    load    r1, PP_PENDING
+    #call   vec_push(r1, e)
+#end_func
+
+///////////////////////////////////////////////////////////////////////////////
+// pp_drain_lib() -> 1 if a queued library source was pushed, else 0
+///////////////////////////////////////////////////////////////////////////////
+#def_func pp_drain_lib()
+    #var    q, e, src, pth, i, cnt
+    load    q, PP_PENDING
+    #macro  VLEN(cnt, q)
+    #if_cond cnt == 0
+        #return 0
+    #end_cond
+    // take the oldest entry first
+    #macro  VGET(e, q, 1)
+    load    r1, q[VEC_ARR]
+    move    i, 1
+    #while  i < cnt
+        add     r2, i, 1
+        load    r3, r1[r2]
+        store   r3, r1[i]
+        add     i, 1
+    #end_while
+    sub     cnt, 1
+    store   cnt, r1[0]
+    #call   ent_p(e)
+    move    pth, r0
+    #call   read_file(pth)
+    move    src, r0
+    #if_cond src == 0
+        #call   cc_fatal2("cannot open library file", pth)
+    #end_cond
+    #call   mark_lib_file(e)
+    #call   lex_file(src, e)
+    #call   pp_include_tokens(r0)
+    #return 1
 #end_func
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -752,6 +815,11 @@ PP_ASM_START:
                 load    r1, PP_LASTTOK
                 #call   error_tok(r1, "unterminated conditional directive")
             #end_cond
+            // library sources are appended after the translation unit
+            #call   pp_drain_lib()
+            #if_cond r0 != 0
+                #continue
+            #end_cond
             load    r1, PP_LASTTOK
             #call   tok_new(TK_EOF, 0, 0, r1)
             #return r0
@@ -1162,6 +1230,27 @@ PP_ASM_START:
         #call   sb_to_p(s)
         move    name, r0
     #end_cond
+    // <name> / <name.h>: library header lib/name.h (+ queue lib/name.c)
+    #if_cond sys != 0
+        #call   pp_lib_header(name)
+        #if_cond r0 != 0
+            move    path, r0
+            #call   read_file(path)
+            move    src, r0
+            #if_cond src != 0
+                load    r0, PP_DEPTH
+                #if_cond r0 >= PP_MAX_DEPTH
+                    #call   error_tok(it, "#include nested too deeply")
+                #end_cond
+                #call   intern_p(path)
+                move    fe, r0
+                #call   mark_lib_file(fe)
+                #call   lex_file(src, fe)
+                #call   pp_include_tokens(r0)
+                #return 0
+            #end_cond
+        #end_cond
+    #end_cond
     // search the including file's directory, then the main file's directory
     load    r1, it[TK_FILE]
     #call   ent_p(r1)
@@ -1193,6 +1282,66 @@ PP_ASM_START:
     move    fe, r0
     #call   lex_file(src, fe)
     #call   pp_include_tokens(r0)
+#end_func
+
+///////////////////////////////////////////////////////////////////////////////
+// pp_lib_header(name) -> packed path of LIBDIR/base.h or 0 if there is none.
+//      base is name without a trailing ".h".  LIBDIR/base.c, if present, is
+//      queued to be appended to the translation unit.
+///////////////////////////////////////////////////////////////////////////////
+#def_func pp_lib_header(namep)
+    #var    w, cnt, base, sb, hpath, cpath, c
+    load    r0, CC_LIBDIR
+    #if_cond r0 == 0
+        #return 0
+    #end_cond
+    load    r1, namep
+    #call   w_from_p(r1)
+    move    w, r0
+    load    cnt, w[0]
+    #if_cond cnt >= 2
+        load    c, w[cnt]
+        #if_cond c == 'h'
+            sub     r1, cnt, 1
+            load    c, w[r1]
+            #if_cond c == '.'
+                sub     cnt, 2
+                store   cnt, w[0]
+            #end_cond
+        #end_cond
+    #end_cond
+    #if_cond cnt == 0
+        #return 0
+    #end_cond
+    #call   p_from_w(w)
+    move    base, r0
+    // LIBDIR + base + ".h"
+    #call   vec_new()
+    move    sb, r0
+    load    r1, CC_LIBDIR
+    #call   sb_add_p(sb, r1)
+    #call   sb_add_p(sb, base)
+    #call   sb_add_p(sb, ".h")
+    #call   sb_to_p(sb)
+    move    hpath, r0
+    #call   isFile(hpath)
+    #if_cond r0 == 0
+        #return 0
+    #end_cond
+    // LIBDIR + base + ".c"
+    #call   vec_new()
+    move    sb, r0
+    load    r1, CC_LIBDIR
+    #call   sb_add_p(sb, r1)
+    #call   sb_add_p(sb, base)
+    #call   sb_add_p(sb, ".c")
+    #call   sb_to_p(sb)
+    move    cpath, r0
+    #call   isFile(cpath)
+    #if_cond r0 != 0
+        #call   pp_queue_lib(cpath)
+    #end_cond
+    #return hpath
 #end_func
 
 ///////////////////////////////////////////////////////////////////////////////
