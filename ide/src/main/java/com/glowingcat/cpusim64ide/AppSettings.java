@@ -50,6 +50,27 @@ public class AppSettings {
      *  instead of the in-process Java Simulation. */
     public boolean useNativeSimulator = false;
 
+    /** Most recent values of the toolbar's Args field (newest first, unique). */
+    public List<String> argsHistory = new ArrayList<>();
+    /** Most recent values of a compiler window's Options field, by compiler plug-in name. */
+    public java.util.Map<String, List<String>> optionsHistory = new java.util.LinkedHashMap<>();
+    /** Number of values kept in each history. */
+    public static final int HISTORY_SIZE = 20;
+
+    /** Adds {@code value} to the front of {@code history}: unique, at most {@link #HISTORY_SIZE}. */
+    public static void remember(List<String> history, String value) {
+        if (value == null) return;
+        value = value.trim();
+        if (value.isEmpty()) return;
+        history.remove(value);
+        history.add(0, value);
+        while (history.size() > HISTORY_SIZE) history.remove(history.size() - 1);
+    }
+
+    public List<String> optionsHistoryFor(String compiler) {
+        return optionsHistory.computeIfAbsent(compiler, k -> new ArrayList<>());
+    }
+
     public void save() {
         try {
             StringBuilder sb = new StringBuilder("{\n");
@@ -102,6 +123,10 @@ public class AppSettings {
             sb.append("  \"aiPanelVisible\": ").append(aiPanelVisible).append(",\n");
             sb.append("  \"aiPanelWidth\": ").append(aiPanelWidth).append(",\n");
             sb.append("  \"useNativeSimulator\": ").append(useNativeSimulator).append(",\n");
+            sb.append("  \"argsHistory\": ").append(cloud.lesh.CPUSim64.MiniJson.write(new ArrayList<Object>(argsHistory)).trim()).append(",\n");
+            java.util.Map<String, Object> oh = new java.util.LinkedHashMap<>();
+            for (var e : optionsHistory.entrySet()) if (!e.getValue().isEmpty()) oh.put(e.getKey(), new ArrayList<Object>(e.getValue()));
+            sb.append("  \"optionsHistory\": ").append(cloud.lesh.CPUSim64.MiniJson.write(oh).trim().replace("\n", "\n  ")).append(",\n");
             sb.setLength(sb.length() - 2); // remove trailing comma+newline
             sb.append("\n}");
             Files.writeString(SETTINGS_FILE, sb.toString());
@@ -184,12 +209,33 @@ public class AppSettings {
             if (apv != null) s.aiPanelVisible = apv;
             Integer apw = extractInt(json, "aiPanelWidth");
             if (apw != null) s.aiPanelWidth = apw;
+            readHistories(json, s);
             Boolean uns = extractBoolean(json, "useNativeSimulator");
             if (uns != null) s.useNativeSimulator = uns;
         } catch (Exception e) {
             // return defaults on any parse error
         }
         return s;
+    }
+
+    /** Reads argsHistory and optionsHistory (strings may contain any character, so a real JSON parser is used). */
+    private static void readHistories(String json, AppSettings s) {
+        try {
+            var root = cloud.lesh.CPUSim64.MiniJson.obj(cloud.lesh.CPUSim64.MiniJson.parse(json), "settings");
+            for (Object o : cloud.lesh.CPUSim64.MiniJson.arr(root.get("argsHistory"), "argsHistory"))
+                if (o instanceof String str && s.argsHistory.size() < HISTORY_SIZE) s.argsHistory.add(str);
+            Object oh = root.get("optionsHistory");
+            if (oh != null) {
+                for (var e : cloud.lesh.CPUSim64.MiniJson.obj(oh, "optionsHistory").entrySet()) {
+                    List<String> l = new ArrayList<>();
+                    for (Object o : cloud.lesh.CPUSim64.MiniJson.arr(e.getValue(), "optionsHistory"))
+                        if (o instanceof String str && l.size() < HISTORY_SIZE) l.add(str);
+                    s.optionsHistory.put(e.getKey(), l);
+                }
+            }
+        } catch (RuntimeException ignored) {
+            // malformed or older settings file: no history
+        }
     }
 
     private static String colorToHex(Color c) {

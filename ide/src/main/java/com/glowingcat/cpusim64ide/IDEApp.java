@@ -43,8 +43,10 @@ public class IDEApp {
     private JFrame frame;
     private RSyntaxTextArea codeEditor;
     private TerminalPanel console;
-    private JTextField argsField;
-    private JTextField optionsField;            // compiler windows only
+    private JTextField argsField;               // the editor of argsCombo
+    private JTextField optionsField;            // compiler windows only (editor of optionsCombo)
+    private JComboBox<String> argsCombo, optionsCombo;
+    private JCheckBox useLinkerBox;
     /** The focused editor tab; codeEditor is its text area. */
     private SourceTab cur;
     private JTabbedPane editorTabs;
@@ -349,7 +351,9 @@ public class IDEApp {
         newCompilerMenu.setEnabled(!compilers.isEmpty());
         JMenuItem openItem = new JMenuItem("Open");
         openItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx()));
-        openItem.addActionListener(e -> openFile());
+        // shown after the menu has closed (a modal dialog opened from inside the menu action
+        // can make the macOS screen menu bar deliver the action a second time)
+        openItem.addActionListener(e -> SwingUtilities.invokeLater(this::openFile));
         JMenuItem closeItem = new JMenuItem("Close");
         closeItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_W, Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx()));
         closeItem.addActionListener(e -> closeTab(cur));
@@ -365,6 +369,15 @@ public class IDEApp {
         runItem.addActionListener(e -> runFile());
         fileMenu.add(newItem);
         fileMenu.add(newCompilerMenu);
+        // a new empty tab in this window (each window has its own menu bar, so on macOS
+        // the menu bar belongs to the front-most window)
+        JMenuItem newTabItem = new JMenuItem("New Tab");
+        newTabItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_T, Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx()));
+        newTabItem.addActionListener(e -> {
+            newTab();
+            codeEditor.requestFocusInWindow();
+        });
+        fileMenu.add(newTabItem);
         fileMenu.add(openItem);
         fileMenu.add(closeItem);
         fileMenu.addSeparator();
@@ -728,19 +741,26 @@ public class IDEApp {
         consoleToolBar.add(debugBtn);
         consoleToolBar.addSeparator();
         consoleToolBar.add(new JLabel("Args: "));
-        argsField = new JTextField(20);
-        argsField.setMaximumSize(new Dimension(300, 24));
-        consoleToolBar.add(argsField);
+        // editable, with a pick list of the last values used (saved in the settings file)
+        argsCombo = historyCombo(() -> settings.argsHistory, 300);
+        argsField = (JTextField) argsCombo.getEditor().getEditorComponent();
+        argsField.setToolTipText("Command line arguments of the program; pick a recent value from the list");
+        consoleToolBar.add(argsCombo);
         if (plugin != null) {
             // extra compiler arguments, e.g. more source files and -lstd for the C11 compiler
             consoleToolBar.addSeparator();
             consoleToolBar.add(new JLabel("Options: "));
-            optionsField = new JTextField(16);
-            optionsField.setMaximumSize(new Dimension(260, 24));
+            optionsCombo = historyCombo(() -> settings.optionsHistoryFor(plugin.getName()), 260);
+            optionsField = (JTextField) optionsCombo.getEditor().getEditorComponent();
             optionsField.setToolTipText("Extra compiler arguments (e.g. other source files, -lstd); "
                     + "relative file names are relative to the source file");
-            consoleToolBar.add(optionsField);
+            consoleToolBar.add(optionsCombo);
         }
+        consoleToolBar.addSeparator();
+        useLinkerBox = new JCheckBox("Use Linker");
+        useLinkerBox.setToolTipText("Assemble as a relocatable module (-r) and link it with the modules it "
+                + "#includes, even without #export / #extern");
+        consoleToolBar.add(useLinkerBox);
         consoleToolBar.addSeparator();
         consoleToolBar.add(new JLabel("Heap: "));
         JTextField heapField = new JTextField(String.valueOf(settings.heapSizeMiB), 5);
@@ -787,8 +807,7 @@ public class IDEApp {
                 @Override public String getText() { return codeEditor.getText(); }
                 @Override public void setText(String text) {
                     codeEditor.setText(text);
-                    cur.modified = true;
-                    saveItem.setEnabled(true);
+                    updateModified(cur);
                 }
                 @Override public String getFilepath() {
                     return cur.file != null ? cur.file.toString() : null;
@@ -838,7 +857,8 @@ public class IDEApp {
         Path file;                  // null for an untitled tab (or a library resource)
         String resource;            // classpath resource of a read-only library tab
         boolean modified;
-        String lastSavedText = "";
+        String lastSavedText = "";     // text before the last change (undo bookkeeping)
+        String savedContent = "";      // text as last loaded from or saved to the file
         final java.util.Deque<String> undoStack = new java.util.ArrayDeque<>();
         final java.util.Deque<String> redoStack = new java.util.ArrayDeque<>();
 
@@ -851,6 +871,15 @@ public class IDEApp {
         boolean isEmptyUntitled() {
             return file == null && resource == null && !modified && area.getText().isEmpty();
         }
+    }
+
+    /** A tab is modified when its text differs from the file (so undoing every change clears it). */
+    private void updateModified(SourceTab t) {
+        boolean m = !t.area.getText().equals(t.savedContent);
+        if (m == t.modified) return;
+        t.modified = m;
+        updateTabTitle(t);
+        if (t == cur && saveItem != null) saveItem.setEnabled(m && !t.readOnly());
     }
 
     /** Opens a new empty tab and focuses it. */
@@ -960,12 +989,9 @@ public class IDEApp {
             public void changedUpdate(javax.swing.event.DocumentEvent e) {}
             private void changed() {
                 runnableTimer.restart();
+                // modified = differs from the file (also after undo/redo, which bypass the rest)
+                SwingUtilities.invokeLater(() -> updateModified(t));
                 if (undoInProgress) return;
-                if (!t.modified) {
-                    t.modified = true;
-                    updateTabTitle(t);
-                    if (t == cur && saveItem != null) saveItem.setEnabled(!t.readOnly());
-                }
                 String current = a.getText();
                 if (current.equals(t.lastSavedText)) return;
                 t.undoStack.push(t.lastSavedText);
@@ -1091,6 +1117,7 @@ public class IDEApp {
         t.undoStack.clear();
         t.redoStack.clear();
         t.lastSavedText = t.area.getText();
+        t.savedContent = t.lastSavedText;
         t.modified = false;
         if (t == cur) {
             if (saveItem != null) saveItem.setEnabled(false);
@@ -1292,13 +1319,26 @@ public class IDEApp {
         if (aiMenuItem != null) aiMenuItem.setSelected(show);
     }
 
+    /** True while an Open dialog is shown; time it was closed (to drop a repeated Open action). */
+    private boolean openDialogShowing = false;
+    private long openDialogClosed = 0;
+
     private void openFile() {
+        // ignore an Open action that arrives while the dialog is shown or right after it
+        // closed: on macOS the action can be delivered again when the modal dialog returns
+        if (openDialogShowing || System.currentTimeMillis() - openDialogClosed < 750) return;
         FileDialog fd = new FileDialog(frame, plugin == null ? "Open Assembly File"
                 : "Open " + plugin.getName() + " Source File", FileDialog.LOAD);
         if (lastDirectory != null) fd.setDirectory(lastDirectory.getAbsolutePath());
         else fd.setDirectory(System.getProperty("user.dir"));
         fd.setFilenameFilter((dir, name) -> canOpen(name));
-        fd.setVisible(true);
+        openDialogShowing = true;
+        try {
+            fd.setVisible(true);
+        } finally {
+            openDialogShowing = false;
+            openDialogClosed = System.currentTimeMillis();
+        }
         if (fd.getFile() != null) {
             lastDirectory = new File(fd.getDirectory());
             Path p = Path.of(fd.getDirectory(), fd.getFile());
@@ -1347,6 +1387,7 @@ public class IDEApp {
         }
         try {
             Files.writeString(cur.file, codeEditor.getText());
+            cur.savedContent = codeEditor.getText();
             cur.modified = false;
             saveItem.setEnabled(false);
             updateTabTitle(cur);
@@ -1472,6 +1513,39 @@ public class IDEApp {
         return result == JOptionPane.NO_OPTION;
     }
 
+    /**
+     * An editable combo box whose drop-down list shows {@code history}; the list is
+     * refreshed each time it opens, so values used in other windows appear too.
+     */
+    private JComboBox<String> historyCombo(java.util.function.Supplier<java.util.List<String>> history, int width) {
+        JComboBox<String> combo = new JComboBox<>(new DefaultComboBoxModel<>(history.get().toArray(new String[0])));
+        combo.setEditable(true);
+        combo.setSelectedItem("");
+        combo.setMaximumSize(new Dimension(width, 26));
+        combo.setPreferredSize(new Dimension(width, 26));
+        combo.setMaximumRowCount(AppSettings.HISTORY_SIZE);
+        combo.addPopupMenuListener(new javax.swing.event.PopupMenuListener() {
+            @Override public void popupMenuWillBecomeVisible(javax.swing.event.PopupMenuEvent e) {
+                JTextField ed = (JTextField) combo.getEditor().getEditorComponent();
+                String text = ed.getText();
+                DefaultComboBoxModel<String> m = (DefaultComboBoxModel<String>) combo.getModel();
+                m.removeAllElements();
+                for (String v : history.get()) m.addElement(v);
+                m.setSelectedItem(text);        // keep what is being typed
+            }
+            @Override public void popupMenuWillBecomeInvisible(javax.swing.event.PopupMenuEvent e) {}
+            @Override public void popupMenuCanceled(javax.swing.event.PopupMenuEvent e) {}
+        });
+        return combo;
+    }
+
+    /** Remembers the Args and Options values of a Run or Debug in the settings file. */
+    private void rememberFieldValues() {
+        AppSettings.remember(settings.argsHistory, argsField.getText());
+        if (optionsField != null) AppSettings.remember(settings.optionsHistoryFor(plugin.getName()), optionsField.getText());
+        settings.save();
+    }
+
     private void runFile() {
         if (runThread != null) {
             Process np = nativeProcess;
@@ -1479,6 +1553,7 @@ public class IDEApp {
             runThread.interrupt();
             return;
         }
+        rememberFieldValues();
         runWithMode(null);
     }
 
@@ -1773,7 +1848,7 @@ public class IDEApp {
         java.util.List<String> a = new java.util.ArrayList<>();
         a.add(asm.toString());
         if (debug) a.add("--DEBUG");
-        if (needsLink(asm)) {
+        if ((useLinkerBox != null && useLinkerBox.isSelected()) || needsLink(asm)) {
             String base = asm.getFileName().toString().replaceAll("(?i)\\.asm$", "");
             a.add(0, "-r");
             a.add("-o");
@@ -2001,6 +2076,7 @@ public class IDEApp {
     }
 
     private void launchDebugger() {
+        rememberFieldValues();
         if (plugin != null) {
             launchCompilerDebugger();
             return;
