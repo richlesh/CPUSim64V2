@@ -57,7 +57,7 @@ be combined with the dump options, in any order after the file name.
 ```
 ../../run.sh cc main.c util.c data.c          # one module per file
 ../../run.sh cc main.c util.c -lstd           # ... and the C library as modules
-../../assemble.sh -r main.asm -o obj/main.o64 # link them (as cc prints)
+../../assemble.sh -r main.asm -o obj/main.o64 # link them
 ../../run.sh main                             # run obj/main.o64
 ```
 

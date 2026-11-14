@@ -32,6 +32,7 @@ public class Disassembler {
 		System.out.println(BuildInfo.COPYRIGHT + " Richard Lesh");
 		System.out.println("Disassembles .o64 object files into source code.");
 		System.out.println("=".repeat(80));
+		System.out.println("Arguments: " + String.join(" ", args));
 		if (args.length < 1) {
 			System.err.println("Usage: disassemble [-mainOnly] <input.o64>");
 			System.exit(2);

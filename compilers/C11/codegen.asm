@@ -1941,6 +1941,8 @@ CG_END_NO_STARTUP:
     #call   closeFile(r1)
     move    r0, 0
     store   r0, OUT_PORT
+    load    r1, OUT_PATH
+    #call   printf("Compiler output: %s\n", r1)
 #end_func
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -216,7 +216,10 @@ public final class Linker {
 			try {
 				Module m = load(ro64);
 				String fp = fingerprint(m.rel().inputs, defines);
-				if (fp != null && fp.equals(m.rel().fingerprint) && sourceId.equals(m.rel().source)) return m;
+				if (fp != null && fp.equals(m.rel().fingerprint) && sourceId.equals(m.rel().source)) {
+					found(ro64);
+					return m;
+				}
 			} catch (LinkException ignored) {
 				// unreadable or inconsistent: reassemble
 			}
@@ -238,6 +241,7 @@ public final class Linker {
 		} catch (IOException ex) {
 			throw new LinkException("Cannot write module " + ro64 + ": " + ex.getMessage(), ex);
 		}
+		found(ro64);
 		return new Module(ro64, r.rel(), r.words());
 	}
 
@@ -260,8 +264,14 @@ public final class Linker {
 		return r;
 	}
 
+	/** Reports a module that is linked. */
+	private void found(Path ro64) {
+		if (log != null) log.println("Found module " + ro64);
+	}
+
 	public Result link(List<Module> roots) throws LinkException {
 		if (roots.isEmpty()) throw new LinkException("Nothing to link");
+		for (Module m : roots) found(m.file());
 
 		// ---- main module: the one defining __MAIN__, else the first input
 		Module main = null;
@@ -573,6 +583,7 @@ public final class Linker {
 
 	public static int run(String[] args) {
 		printBanner(System.out);
+		System.out.println("Arguments: " + String.join(" ", args));
 		String out = null;
 		List<String> options = new ArrayList<>();
 		List<String> inputs = new ArrayList<>();

@@ -120,6 +120,13 @@
         #call   putline("©2026 Richard Lesh")
         #call   putline("Compiles .c source files into CPUSim64 .asm files.")
         #call   putline("================================================================================")
+        #call   puts("Arguments:")
+        #for    1, i < argc, 1
+            #call   args(i)
+            move    opt, r0
+            #call   printf(" %s", opt)
+        #end_for
+        #call   putline("")
     #end_cond
     load    r0, CC_LSTD
     #if_cond cnt == 1
@@ -182,14 +189,6 @@
         #call   cc_fatal("no 'main' function")
     #end_cond
     #call   check_imports()
-    load    r1, CC_FILES
-    #macro  VGET(path, r1, 1)
-    #call   path_out(path)
-    move    opt, r0
-    #call   path_dir(path)
-    move    i, r0
-    #call   path_base(path)
-    #call   printf("Link the modules with: assemble.sh -r %s -o %sobj/%s.o64\n", opt, i, r0)
     #return 0
 #end_func
 
