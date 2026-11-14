@@ -52,6 +52,10 @@ public class LiteralRewriter extends LiteralSubstitutionBaseVisitor<Void> implem
 		return originalSourceLocation == null ? "" : originalSourceLocation;
 	}
 
+	/** Optional label emitted before the literal trailer (marks a module's literal section). */
+	private String trailerLabel = null;
+	public LiteralRewriter trailerLabel(String label) { this.trailerLabel = label; return this; }
+
 	public String rewrite(String src) {
 		return rewrite(src, new HashMap<Integer, String>());
 	}
@@ -95,6 +99,7 @@ public class LiteralRewriter extends LiteralSubstitutionBaseVisitor<Void> implem
 
 		// Append trailer with symbol definitions
 		out.append(System.lineSeparator());
+		if (trailerLabel != null) out.append(trailerLabel).append(':').append(System.lineSeparator());
 		for (int i = 0; i < floats.size(); i++) {
 			out.append(symFP(i + 1)).append(": .DCF ").append(floats.get(i)).append(System.lineSeparator());
 		}

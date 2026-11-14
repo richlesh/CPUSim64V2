@@ -4,6 +4,46 @@ SCRIPT_PATH="$(realpath "${BASH_SOURCE[0]}")"
 SCRIPT_DIR="$(dirname "$SCRIPT_PATH")"
 CLASSPATH="$SCRIPT_DIR"/lib/cpusim64-*.jar
 
+# Relocatable modules and linking: assemble.sh -r name [-o out] [options]
+#                                   assemble.sh -o out a b ... [options]
+# (inputs may be given with or without .asm; .ro64 modules are linked as they are).
+# A single -r input without -o is written to obj/<name>.ro64 next to the source.
+NEEDS_LINKER=false
+INPUTS=0
+for a in "$@"; do
+	case "$a" in
+		-r|-o) NEEDS_LINKER=true ;;
+		-*) ;;
+		*) INPUTS=$((INPUTS + 1)) ;;
+	esac
+done
+if [[ $INPUTS -gt 1 ]]; then NEEDS_LINKER=true; fi
+if [[ "$NEEDS_LINKER" == "true" ]]; then
+	ARGS=()
+	RMODE=false
+	HAVE_OUT=false
+	FIRST=""
+	PREV=""
+	for a in "$@"; do
+		if [[ "$PREV" == "-o" ]]; then
+			ARGS+=("$a"); PREV=""; HAVE_OUT=true; continue
+		fi
+		case "$a" in
+			-o) ARGS+=("$a"); PREV="-o" ;;
+			-r) ARGS+=("$a"); RMODE=true ;;
+			-*) ARGS+=("$a") ;;
+			*.asm|*.ro64) ARGS+=("$a"); [[ -z "$FIRST" ]] && FIRST="$a" ;;
+			*) ARGS+=("$a.asm"); [[ -z "$FIRST" ]] && FIRST="$a.asm" ;;
+		esac
+	done
+	if [[ "$RMODE" == "true" && "$HAVE_OUT" == "false" && $INPUTS -eq 1 ]]; then
+		D="$(dirname "$FIRST")"; B="$(basename "$FIRST" .asm)"
+		mkdir -p "$D/obj"
+		ARGS+=("-o" "$D/obj/$B")
+	fi
+	exec java -Dfile.encoding=UTF8 -cp $CLASSPATH cloud.lesh.CPUSim64.Assembler "${ARGS[@]}"
+fi
+
 # Determine the directory containing the .asm file and the base name
 ASM_DIR="$(dirname "$1")"
 BASE_NAME="$(basename "$1")"
@@ -11,6 +51,16 @@ BASE_NAME="$(basename "$1")"
 # Create obj directory relative to the .asm file location
 OBJ_DIR="${ASM_DIR}/obj"
 mkdir -p "$OBJ_DIR"
+
+# A program without .asm source (e.g. linked with link.sh) is left alone
+if [[ ! -e "$1.asm" ]]; then
+	if [[ -e "$OBJ_DIR/${BASE_NAME}.o64" || -e "$1.o64" ]]; then
+		echo "No source $1.asm: using the existing ${BASE_NAME}.o64"
+		exit 0
+	fi
+	echo "Can't find file: $1.asm"
+	exit 3
+fi
 
 # Skip assembly if .o64 is newer than .asm source
 if [[ -e "$OBJ_DIR/${BASE_NAME}.o64" && "$OBJ_DIR/${BASE_NAME}.o64" -nt "$1.asm" ]]; then

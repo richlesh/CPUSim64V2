@@ -11,6 +11,7 @@
  *  - a register move between integer and double converts the value, so bit
  *    patterns are read and written through a union in memory.
  */
+#include <math.h>
 
 union __m_bits { double __m_d; unsigned long __m_u; };
 

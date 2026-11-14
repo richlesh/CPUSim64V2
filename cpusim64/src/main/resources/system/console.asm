@@ -1,6 +1,6 @@
 #ifndef _CONSOLE_ASM
 #define _CONSOLE_ASM
-
+#export *		// all labels are visible to other modules (assemble -r)
 #include <system/ansi_color.asm>
 #include <system/io.asm>
 #include <system/math.asm>

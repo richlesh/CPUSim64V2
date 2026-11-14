@@ -9,6 +9,7 @@
  * algorithms (proleptic Gregorian calendar).
  */
 #include <time.h>
+#include <stdio.h>          /* sprintf (asctime) */
 
 static const char *__tm_wday_name[7] = {
     "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"

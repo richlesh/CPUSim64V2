@@ -25,7 +25,7 @@
 #ifndef _ANSI_COLOR_ASM
 #define _ANSI_COLOR_ASM
 jump    _ANSI_COLOR_ASM_END
-
+#export *		// all labels are visible to other modules (assemble -r)
 .block ANSI_COLOR
 
 // Styles

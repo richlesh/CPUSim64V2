@@ -52,6 +52,42 @@ Debugging dumps (instead of code generation):
 `--lib=DIR` adds a library directory (see *Library headers* below); it may
 be combined with the dump options, in any order after the file name.
 
+### Several source files and -lstd
+
+```
+../../run.sh cc main.c util.c data.c          # one module per file
+../../run.sh cc main.c util.c -lstd           # ... and the C library as modules
+../../assemble.sh -r main.asm -o obj/main.o64 # link them (as cc prints)
+../../run.sh main                             # run obj/main.o64
+```
+
+With more than one source file, or with `-lstd`, every file is compiled on
+its own into a relocatable module (`x.asm` next to `x.c`) for the CPUSim64
+linker (see *Modules and the Linker* in the Programmer Guide):
+
+* functions and objects with external linkage get the label `__c_<name>`
+  and are `#export`ed; `static` ones stay private to their file;
+* functions and `extern` objects that a file uses but does not define are
+  imported (`#extern`); `cc` reports a symbol defined in two files
+  (`multiple definition of`) or defined in none (`undefined reference to`);
+* the start-up code of each file (the run-time initialization of globals
+  such as `const char *p = "x";`) becomes the module's `__INIT__`, and the
+  file that defines `main` gets `__MAIN__`;
+* the first file's module `#include`s the other modules, so assembling it
+  with `assemble.sh -r first.asm -o obj/first.o64` links the program.
+
+Without `-lstd`, the library functions a file uses are appended to that
+file's module as for a single file, so each module has its own private
+copy of them and of their state: `atexit` handlers, the `rand` seed and
+`ungetc` are not shared between files.  With `-lstd` the C library is linked
+instead: every library source that is needed (`lib/stdio.c` when a file
+includes `<stdio.h>`, and the libraries those need) is compiled whole into
+`obj/lib/<name>.asm` next to the first file and linked once, so all files
+share it, and each program module contains only its own code.
+
+The dump options (`--pp`, `--tokens`, `--ast`) need a single input file
+without `-lstd`.
+
 The compiler stops at the first error, prints `file:line: error: message` to
 STDERR, deletes any partial output and finishes with result 1.  Note that the
 simulator's own exit status is always 0; the program result is the
@@ -68,7 +104,7 @@ limits (deep recursion such as 50,000 nested calls works).
 
 | File | Purpose |
 |------|---------|
-| `cc.asm` | main program; includes every other module (CPUSim64 has no linker) |
+| `cc.asm` | main program (options, one or several translation units); includes every other module |
 | `defs.def` | token, AST, type and symbol layouts; vector macros |
 | `util.asm` | zeroed allocation, growable vectors, string builder, identifier interning |
 | `errors.asm` | fail-first error reporting |
@@ -133,9 +169,10 @@ exists:
 
 * `lib/name.h` is included at the point of the `#include`, like any header;
 * `lib/name.c`, if it exists, is appended to the end of the translation unit
-  (once, however often the header is included), because CPUSim64 has no
-  linker.  Its functions are compiled only if the program uses them, so a
-  program that calls only `sqrt` gets only the `sqrt` code.
+  (once, however often the header is included).  Its functions are compiled
+  only if the program uses them, so a program that calls only `sqrt` gets
+  only the `sqrt` code.  With `-lstd`, `lib/name.c` is linked as a whole
+  library module instead (see *Several source files and -lstd*).
 
 Everything else, including `size_t`, `NULL`, `va_list`, `INT_MAX`, `bool`
 and the `isdigit` family, comes from these headers (the built-in prelude
@@ -294,6 +331,8 @@ tests/run_tests.sh run/       # only tests whose name contains "run/"
   `$HERE` is the `tests/` directory) and `.noasm` (strings that must not
   appear in the generated assembly, used to check lazy library compilation).
   Where C semantics allow, the expected output was produced by compiling
-  the same program natively with gcc.
+  the same program natively with gcc.  A run test whose `.ccargs` names
+  more source files (kept in `tests/multi/`) or `-lstd` is compiled into
+  modules and linked (`multi_files`, `multi_lstd`, `lib_lstd`).
 * `tests/cli/` - command line handling
 * `tests/libfixture/` - a small library used to test the `lib/` mechanism

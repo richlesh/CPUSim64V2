@@ -20,7 +20,7 @@
 #include <system/string.def>
 #include <system/system.def>
 #include <system/io.def>
-
+#export *		// all labels are visible to other modules (assemble -r)
 STRING_ASM_START:
 jump	STRING_ASM_END
 

@@ -80,6 +80,47 @@ PARSE_DECL_ASM_START:
 #end_func
 
 ///////////////////////////////////////////////////////////////////////////////
+// link_label(prefix, entry, storage, tok) -> packed label of a file-scope
+//      function or object.  In module mode (several files, or -lstd) a
+//      symbol with external linkage gets the stable label "__c_<name>" that
+//      other modules can import; library objects get it only with -lstd
+//      (without -lstd every module has its own private copy of the library).
+//      Otherwise, and for static symbols, a private generated label.
+///////////////////////////////////////////////////////////////////////////////
+#def_func link_label(prefix, ep, stp, tk)
+    #var    e, st, sb
+    load    e, ep
+    load    st, stp
+    load    r0, CC_MODULE
+    #if_cond r0 == MOD_NONE
+        jump    LINK_LABEL_PRIVATE
+    #end_cond
+    and     r0, st, SC_STATIC
+    #if_cond r0 != 0
+        jump    LINK_LABEL_PRIVATE
+    #end_cond
+    load    r1, tk
+    load    r1, r1[TK_FILE]
+    #call   is_lib_file(r1)
+    #if_cond r0 != 0
+        load    r0, CC_LSTD
+        #if_cond r0 == 0
+            jump    LINK_LABEL_PRIVATE
+        #end_cond
+    #end_cond
+    #call   vec_new()
+    move    sb, r0
+    #call   sb_add_p(sb, "__c_")
+    load    r1, e[E_W]
+    #call   sb_add_w(sb, r1)
+    #call   sb_to_p(sb)
+    #return r0
+LINK_LABEL_PRIVATE:
+    load    r1, prefix
+    #call   new_label(r1, e)
+#end_func
+
+///////////////////////////////////////////////////////////////////////////////
 // is_typename(tok) -> 1 if tok starts a declaration specifier / type name
 ///////////////////////////////////////////////////////////////////////////////
 #def_func is_typename(tk)

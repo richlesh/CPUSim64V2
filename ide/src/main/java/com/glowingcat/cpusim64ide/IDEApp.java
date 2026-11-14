@@ -45,6 +45,7 @@ public class IDEApp {
     private EditorPanel editorPanel;
     private TerminalPanel console;
     private JTextField argsField;
+    private JTextField optionsField;            // compiler windows only
     private Path currentFile;
     private AppSettings settings;
     private static AppSettings sharedSettings;
@@ -786,6 +787,16 @@ public class IDEApp {
         argsField = new JTextField(20);
         argsField.setMaximumSize(new Dimension(300, 24));
         consoleToolBar.add(argsField);
+        if (plugin != null) {
+            // extra compiler arguments, e.g. more source files and -lstd for the C11 compiler
+            consoleToolBar.addSeparator();
+            consoleToolBar.add(new JLabel("Options: "));
+            optionsField = new JTextField(16);
+            optionsField.setMaximumSize(new Dimension(260, 24));
+            optionsField.setToolTipText("Extra compiler arguments (e.g. other source files, -lstd); "
+                    + "relative file names are relative to the source file");
+            consoleToolBar.add(optionsField);
+        }
         consoleToolBar.addSeparator();
         consoleToolBar.add(new JLabel("Heap: "));
         JTextField heapField = new JTextField(String.valueOf(settings.heapSizeMiB), 5);
@@ -1360,11 +1371,34 @@ public class IDEApp {
         return dot > slash ? base.substring(0, dot) : base;
     }
 
-    /** Command line for {@link Assembler#run}. */
+    /** {@code #export} / {@code #extern} lines mark a relocatable module that must be linked. */
+    private static final Pattern MODULE_DIRECTIVE = Pattern.compile("(?im)^\\s*#(export|extern)\\b");
+
+    /** True if {@code asm} is a module (it has #export or #extern) and is built with -r and linked. */
+    static boolean needsLink(Path asm) {
+        try {
+            return MODULE_DIRECTIVE.matcher(Files.readString(asm)).find();
+        } catch (IOException e) {
+            return false;
+        }
+    }
+
+    /**
+     * Command line for {@link Assembler#run}. A module ({@link #needsLink}) is
+     * assembled with -r and linked with the modules it #includes straight into
+     * obj/name.o64; other files are assembled as one program.
+     */
     private String[] assemblerArgs(Path asm, boolean debug) {
         java.util.List<String> a = new java.util.ArrayList<>();
         a.add(asm.toString());
         if (debug) a.add("--DEBUG");
+        if (needsLink(asm)) {
+            String base = asm.getFileName().toString().replaceAll("(?i)\\.asm$", "");
+            a.add(0, "-r");
+            a.add("-o");
+            a.add(asm.toAbsolutePath().resolveSibling("obj").resolve(base + ".o64").toString());
+            return a.toArray(new String[0]);
+        }
         // Compilers and generated programs may start at a __MAIN__ label (as assemble.sh detects).
         if (plugin != null && CompilerPlugin.hasMainLabel(asm)) a.add("--hasMain");
         return a.toArray(new String[0]);
@@ -1425,12 +1459,26 @@ public class IDEApp {
     }
 
     /** Runs the compiler program on {@code source}; returns its exit code, or -1 if it did not finish. */
+    /** The words of the Options field; file names are made absolute (relative to the source's directory). */
+    private java.util.List<String> compilerOptions(Path source) {
+        java.util.List<String> out = new java.util.ArrayList<>();
+        if (optionsField == null) return out;
+        String text = optionsField.getText().trim();
+        if (text.isEmpty()) return out;
+        for (String w : text.split("\\s+")) {
+            if (w.startsWith("-")) out.add(w);
+            else out.add(source.toAbsolutePath().getParent().resolve(w).normalize().toString());
+        }
+        return out;
+    }
+
     private int runCompiler(CompilerPlugin pl, Path compilerObj, Path source) throws Exception {
         java.util.List<String> simArgs = new java.util.ArrayList<>();
         simArgs.add(compilerObj.toString());
         simArgs.add("--mem=" + pl.getCompilerMem());
         simArgs.add("--stack=" + pl.getCompilerStack());
         simArgs.add(source.toString());                  // the compiler's argument
+        for (String opt : compilerOptions(source)) simArgs.add(opt);
         if (settings.useNativeSimulator) {
             return runCompilerNative(simArgs, source.getParent());
         }

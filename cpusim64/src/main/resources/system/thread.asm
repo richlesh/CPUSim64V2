@@ -20,7 +20,7 @@
 #include <system/system.asm>
 #include <system/thread.def>
 #include <system/io.asm>
-
+#export *		// all labels are visible to other modules (assemble -r)
 THREAD_ASM_START:
     jump    THREAD_ASM_END
 

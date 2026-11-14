@@ -939,6 +939,70 @@ cmp i, 5
 #call put_dec(MY_NAMESPACE$RED)		// This is a different label RED in namespace MY_NAMESPACE
 </div>
 
+<h2>Start-up Code and __MAIN__</h2>
+<p>A source file can define a start-up function named <code>__INIT__</code>, either with <code>#def_func __INIT__()</code> or as a label <code>__INIT__:</code> whose code ends with <code>return</code>.  The name is local to the file: every file, including every <code>#include</code>d library, can have its own <code>__INIT__</code>.  The system library <code>&lt;system/io.asm&gt;</code> uses one to set up its locks and port map.</p>
+<p>The assembler puts start-up code at address 1 of every program.  It protects the code segment (<code>READONLY __CODE_END__</code>) and calls the <code>__INIT__</code> function of every file, those of included files first.  If the program defines the label <code>__MAIN__</code>, it then calls <code>__MAIN__</code> and exits with the value <code>__MAIN__</code> returns in <code>r0</code>.  Otherwise execution continues with the first line of the program.</p>
+<div class='listingheader'>Start-up Function Example</div>
+<div class='listing'>#include &lt;system/io.asm&gt;
+
+#global gCount: .dci 0
+
+#def_func __INIT__()			// runs before __MAIN__
+	move	r0, 10
+	store	r0, gCount
+#end_func
+
+__MAIN__:
+	load	r0, gCount
+	#call	printf("gCount = %d\n", r0)
+	move	r0, 0			// exit code
+	return
+</div>
+<p>A library that is meant to be <code>#include</code>d starts with a jump over its own code (<code>jump MYLIB_END</code> ... <code>MYLIB_END: nop</code>), so that only its <code>__INIT__</code> runs at start-up.</p>
+
+<h2>Modules and the Linker</h2>
+<p>A program can be split into several source files that are assembled separately as <i>relocatable modules</i> and then linked into one program.  The simulators run the linked <code>.o64</code> file like any other program.</p>
+<ul>
+<li><code>assemble.sh -r util</code> assembles <code>util.asm</code> into the relocatable module <code>obj/util.ro64</code>.  Its relocation information (the JSON file <code>obj/util.rel</code>) and module-relative symbol files are written next to it.</li>
+<li><code>link.sh -o prog main.ro64 util.ro64</code> links modules into the program <code>prog.o64</code> with its symbol files (<code>.sym</code>, <code>.sym1</code>, <code>.sym2</code>, <code>.srcmap</code>).</li>
+<li><code>assemble.sh -o prog main util</code> does both: it assembles every <code>.asm</code> input with <code>-r</code> into <code>obj/</code> and links them.</li>
+</ul>
+<p>With more than one input file, <code>-o name</code> is required: it gives the name of the program and its symbol files.  With one input the name of the input is used.</p>
+
+<h3>#export and #extern</h3>
+<p>The labels of a module are private to it.  <code>#export name, ...</code> makes labels (including <code>#def_func</code> functions and <code>#global</code> data) visible to other modules, and <code>#export *</code> exports every label of the file except generated ones (function-local labels, loop labels, literals).  <code>#extern name, ...</code> declares labels defined in other modules.  <code>__MAIN__</code> is always exported.  Both directives are ignored when a file is assembled normally, so the same files can still be assembled as one program.</p>
+<div class='listingheader'>main.asm</div>
+<div class='listing'>#include &lt;system/io.asm&gt;
+#extern add3, gCalls
+
+__MAIN__:
+	#call	add3(10)
+	load	r1, gCalls
+	#call	printf("add3(10) = %d after %d call\n", r0, r1)
+	move	r0, 0
+	return
+</div>
+<div class='listingheader'>util.asm</div>
+<div class='listing'>#export add3, gCalls
+#global gCalls: .dci 0
+
+#def_func add3(n)
+	load	r0, gCalls
+	add	r0, 1
+	store	r0, gCalls
+	load	r0, n
+	add	r0, 3
+#end_func
+</div>
+<div class='console'>&gt; <b>assemble.sh -o prog main util</b><br>&gt; <b>run.sh prog</b></div>
+
+<h3>Libraries</h3>
+<p>When a file is assembled with <code>-r</code>, an <code>#include</code> of an <code>.asm</code> file is not copied into the module.  The included file is still read for its <code>#define</code>s, macros and function signatures, so <code>#call</code> and <code>#macro</code> work as usual, and the linker links in the included file's own module.  It finds that module in <code>obj/</code> next to the included file, or for the system and ADT libraries in <code>~/.cpusim64/modules/</code>.  It assembles the module when it is missing or out of date.  Included <code>.def</code> files are copied in as before.  The system and ADT libraries export all their labels (<code>#export *</code>).</p>
+
+<h3>Program layout and link errors</h3>
+<p>The linker places the start-up code first, then the code of every module, then their string and float literals, then their <code>#global</code> data.  Modules that a module includes come before it, and the main module (the one that defines <code>__MAIN__</code>, otherwise the first input) comes last.  The linker reports an error for a label that is exported by two modules (including two <code>__MAIN__</code> labels), for a label that is used but not exported by any module, and for an address that does not fit in its instruction.</p>
+<p>In a relocatable module a label can only be used where the instruction has a wide constant field (28, 42 or 56 bits).  For example <code>store r1, LABEL</code> and <code>move r0, LABEL+1</code> are allowed, but <code>store LABEL, r1[0]</code> (a label as a 12-bit constant) or <code>LABEL[4095]</code> are not, and the assembler reports an error for them.</p>
+
 <footer>
 <p><a href="index.html">Overview</a> |
 <a href="Architecture.html">Architecture&nbsp;Reference</a> |

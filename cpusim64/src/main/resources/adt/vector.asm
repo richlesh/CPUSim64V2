@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+#export *		// all labels are visible to other modules (assemble -r)
 #include <system/io.asm>
 #include <system/math.def>
 #include <system/system.def>

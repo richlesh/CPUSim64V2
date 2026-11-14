@@ -1,0 +1,7 @@
+add3(10) = 13
+counter = 10, calls = 1
+helper = 100, util_helper = 200
+via pointer: 4
+table: 10 20 30, name = multi
+apply: 42
+calls = 3

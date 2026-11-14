@@ -3,6 +3,58 @@ setlocal enabledelayedexpansion
 
 set "SCRIPT_DIR=%~dp0"
 
+:: Relocatable modules and linking: assemble.bat -r name [-o out] [options]
+::                                   assemble.bat -o out a b ... [options]
+:: (inputs may be given with or without .asm; .ro64 modules are linked as they are)
+set "NEEDS_LINKER="
+set "INPUTS=0"
+for %%A in (%*) do (
+    set "ARG=%%~A"
+    if "!ARG!"=="-r" set "NEEDS_LINKER=1"
+    if "!ARG!"=="-o" set "NEEDS_LINKER=1"
+    if not "!ARG:~0,1!"=="-" set /a INPUTS+=1
+)
+if !INPUTS! GTR 1 set "NEEDS_LINKER=1"
+if defined NEEDS_LINKER goto :linkmode
+goto :singlemode
+
+:linkmode
+set "ARGS="
+set "RMODE="
+set "HAVE_OUT="
+set "FIRST="
+set "PREV="
+for %%A in (%*) do (
+    set "ARG=%%~A"
+    if "!PREV!"=="-o" (
+        set "ARGS=!ARGS! "!ARG!""
+        set "PREV="
+        set "HAVE_OUT=1"
+    ) else if "!ARG!"=="-o" (
+        set "ARGS=!ARGS! -o"
+        set "PREV=-o"
+    ) else if "!ARG!"=="-r" (
+        set "ARGS=!ARGS! -r"
+        set "RMODE=1"
+    ) else if "!ARG:~0,1!"=="-" (
+        set "ARGS=!ARGS! !ARG!"
+    ) else (
+        set "IN=!ARG!"
+        if /i not "!IN:~-4!"==".asm" if /i not "!IN:~-5!"==".ro64" set "IN=!IN!.asm"
+        set "ARGS=!ARGS! "!IN!""
+        if not defined FIRST set "FIRST=!IN!"
+    )
+)
+if defined RMODE if not defined HAVE_OUT if !INPUTS! EQU 1 (
+    for %%F in ("!FIRST!") do (
+        if not exist "%%~dpFobj" mkdir "%%~dpFobj"
+        set "ARGS=!ARGS! -o "%%~dpFobj\%%~nF""
+    )
+)
+java -Dfile.encoding=UTF8 -cp "%SCRIPT_DIR%lib\*" cloud.lesh.CPUSim64.Assembler !ARGS!
+exit /b %errorlevel%
+
+:singlemode
 :: Determine the directory and base name of the input file
 for %%F in ("%~1") do (
     set "ASM_DIR=%%~dpF"
@@ -12,6 +64,20 @@ for %%F in ("%~1") do (
 :: Create obj directory relative to the .asm file location
 set "OBJ_DIR=%ASM_DIR%obj"
 if not exist "%OBJ_DIR%" mkdir "%OBJ_DIR%"
+
+:: A program without .asm source (e.g. linked with link.bat) is left alone
+if not exist "%~1.asm" (
+    if exist "%OBJ_DIR%\%BASE_NAME%.o64" (
+        echo No source %~1.asm: using the existing %BASE_NAME%.o64
+        exit /b 0
+    )
+    if exist "%~1.o64" (
+        echo No source %~1.asm: using the existing %BASE_NAME%.o64
+        exit /b 0
+    )
+    echo Can't find file: %~1.asm
+    exit /b 3
+)
 
 :: Skip assembly if .o64 is newer than .asm source
 if exist "%OBJ_DIR%\%BASE_NAME%.o64" (

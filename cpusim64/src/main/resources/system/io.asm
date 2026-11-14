@@ -17,20 +17,20 @@
 
 #ifndef _IO_ASM
 #define _IO_ASM
-
+#export *		// all labels are visible to other modules (assemble -r)
 #include <system/io.def>
 #include <system/system.def>
 #include <system/string.def>
 #include <system/thread.asm>
 
-IO_ASM_START:
+IO_ASM_START:   jump    IO_ASM_END
+#def_func   __INIT__()          // start-up code: the program calls it before it starts
 #macro DEFINE_SHARED_RECURSIVE_SPINLOCK(STDOUT_LOCK_HANDLE)
 load    r0, STDOUT_LOCK_HANDLE
 #call initializeRecursiveSpinLock(r0)
 #macro DEFINE_SHARED_RECURSIVE_SPINLOCK(PORTMAP_LOCK_HANDLE)
 load    r0, PORTMAP_LOCK_HANDLE
 #call initializeRecursiveSpinLock(r0)
-
 #global __PORT_MAP_HANDLE:   .dci    0
 #call   ALLOC_SHARED(4)         // Must match Architecture.NUM_PORTS / 64
 #if_cond    r0 == 0             // alloc_shared failed: cannot init port map
@@ -44,8 +44,8 @@ store   r0, __PORT_MAP_HANDLE
 #call   __setPortMap(0)         // STDIN
 #call   __setPortMap(1)         // STDOUT
 #call   __setPortMap(2)         // STDERR
+#end_func
 
-jump    IO_ASM_END
 
 #def_func   __setPortMap(bit)
     #var    b, addr, offset, mask, lock

@@ -315,7 +315,9 @@ PARSE_STMT_ASM_START:
         #call   sb_to_p(lab)
         store   r0, g[S_LABEL]
     #else_cond
-        #call   new_label("F", e)
+        load    r1, stp
+        load    r2, tk
+        #call   link_label("F", e, r1, r2)
         store   r0, g[S_LABEL]
     #end_cond
     load    r1, FUNCS
@@ -378,7 +380,8 @@ PARSE_STMT_ASM_START:
     #call   sym_declare(e, SK_GVAR, ty, r3)
     move    g, r0
     store   g, e[E_GLOBAL]
-    #call   new_label("G", e)
+    load    r1, tk
+    #call   link_label("G", e, st, r1)
     store   r0, g[S_LABEL]
     and     r0, st, SC_EXTERN
     #if_cond r0 != 0

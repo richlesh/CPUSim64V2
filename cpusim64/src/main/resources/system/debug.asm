@@ -17,7 +17,7 @@
 
 #ifndef _DEBUG_ASM
 #define _DEBUG_ASM
-
+#export *		// all labels are visible to other modules (assemble -r)
 #include <system/system.def>
 #include <system/debug.def>
 #include <system/io.asm>

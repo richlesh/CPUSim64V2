@@ -54,6 +54,7 @@ The project is designed for educational use, computer architecture instruction, 
 - File Open/Save remembers last used directory  
 - Splash screen and license key system  
 - **Pluggable compilers** — File → New Compiler lists the compiler plug-ins found in the `compilers/` folder (see below)  
+- Run/Debug link relocatable modules automatically (sources with `#export`/`#extern`)  
 
 ### **Compiler plug-ins**
 A compiler written in CPUSim64 assembly (for example the C11 compiler in `compilers/C11`) can be added to the IDE without changing it.
@@ -69,6 +70,9 @@ Every sub-folder with a `config.properties` is a plug-in; the folder name is the
 Run in such a window saves the file, assembles the compiler if needed, runs it with the source file path as its argument (it must write `<source>.asm` next to the source and exit with 0), assembles the result into `obj/<name>.o64` and runs it with the Args from the toolbar, using the Java or native simulator as selected in Settings.
 Errors from the compiler's assembly or from the compiler are shown in the console and stop the run.
 Debug compiles the same way and then opens the generated assembly in a regular window with the debugger.
+A compiler window also has an **Options** field for extra compiler arguments, such as other source files (relative to the source file) and `-lstd` for the C11 compiler.
+
+In any window, a source file that contains `#export` or `#extern` is a relocatable module: Run and Debug assemble it with `-r` and link it with the modules it `#include`s into `obj/<name>.o64` (with merged symbol and source-map files for the debugger); link errors appear in the console and stop the run.
 
 ### **C11 Compiler (`compilers/C11`)**
 A C compiler written entirely in CPUSim64 assembly.  It compiles a core subset of C11 to CPUSim64 `.asm` (run it with `run.sh cc prog.c`, or from the IDE through File → New Compiler → C11).
@@ -78,8 +82,9 @@ A C compiler written entirely in CPUSim64 assembly.  It compiles a core subset o
 - Every scalar is one 64-bit word; `char` holds a Unicode codepoint  
 - Standard library written in C in `lib/` and compiled only when used: `stdio` (exact C `printf`/`scanf` families, files with `fseek`/`ftell`, `snprintf`, `getline`), `stdlib` (`malloc`, `qsort`, `strto*`, `rand`/`srand`, `atexit`, `getenv`), `string`, `math` (C99), `ctype`, `time`, `setjmp`, `assert`, `stdarg`, `stddef`, `stdint`, `stdbool`, `limits`, `float`  
 - `time()` returns the real wall-clock time (UTC) so `srand(time(NULL))` works; `getenv()` reads the host environment  
-- A header `#include <name.h>` is found in `lib/` (plus any `--lib=DIR`), and `lib/name.c` is appended once because there is no linker  
-- 92 regression tests: `compilers/C11/tests/run_tests.sh`  
+- A header `#include <name.h>` is found in `lib/` (plus any `--lib=DIR`), and `lib/name.c` is appended once, compiling only the functions the program uses  
+- Separate compilation: `cc main.c util.c` compiles each file into its own linker module (external symbols exported, `static` ones private); `-lstd` links the C library as shared library modules instead of appending it  
+- 97 regression tests: `compilers/C11/tests/run_tests.sh`  
 
 ### **Virtual CPU**
 - Custom 64-bit RISC-style architecture  
@@ -92,6 +97,15 @@ A C compiler written entirely in CPUSim64 assembly.  It compiles a core subset o
 - Support for labels, immediates, directives, and constants  
 - Preprocessor with `#include`, `#define`, `#if`/`#else`/`#endif`, loops, macros, and functions  
 - Emits gzip-compressed `.o64` object files
+- Per-file start-up functions (`__INIT__`) run before the program; a program that defines `__MAIN__` exits with its return value
+
+### **Linker**
+- `assemble.sh -r name` writes a relocatable module (`obj/name.ro64`), with its relocation information in a JSON `.rel` file
+- `link.sh -o prog a.ro64 b.ro64 ...` links modules into one ordinary `.o64` with merged `.sym`/`.sym1`/`.sym2`/`.srcmap` files, so the simulators and the debugger need no changes
+- `assemble.sh -o prog a b ...` assembles and links in one step (`-o` is required with more than one input)
+- `#export name, ...` / `#export *` and `#extern name, ...` control which labels modules share; all labels are private by default
+- `#include`d `.asm` libraries are linked as their own modules, which are assembled automatically (system and ADT libraries are cached in `~/.cpusim64/modules/`)
+- Link errors for duplicate or undefined symbols, two `__MAIN__`s, and addresses that do not fit their field
 
 ### **Simulation Engine**
 - Cycle-accurate execution  

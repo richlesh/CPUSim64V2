@@ -23,18 +23,53 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+/**
+ * Loads {@code #include} files. {@code <path>} is a classpath resource (the
+ * system and ADT libraries); {@code "path"} is a file, looked up relative to the
+ * directory of the file containing the {@code #include} and then relative to
+ * the directories of the files that included that one, up to the main source
+ * file's directory.
+ */
 public class IncludeLoader implements PreprocessorVisitor.IncludeLoader {
 	private final Path baseDir;
+	private final IncludeLoader parent;
 
 	public IncludeLoader(Path baseDir) {
+		this(baseDir, null);
+	}
+
+	private IncludeLoader(Path baseDir, IncludeLoader parent) {
 		this.baseDir = baseDir;
+		this.parent = parent;
+	}
+
+	/** The local file for {@code filename}: in this directory or, failing that, an including file's directory. */
+	private Path localFile(String filename) {
+		for (IncludeLoader l = this; l != null; l = l.parent) {
+			Path p = l.baseDir.resolve(filename).normalize();
+			if (Files.isRegularFile(p)) return p;
+		}
+		return baseDir.resolve(filename).normalize();
+	}
+
+	@Override
+	public String resolve(String filename, boolean isSystemPath) {
+		if (isSystemPath) return filename.startsWith("/") ? filename.substring(1) : filename;
+		return localFile(filename).toAbsolutePath().normalize().toString();
+	}
+
+	@Override
+	public PreprocessorVisitor.IncludeLoader child(String filename, boolean isSystemPath) {
+		if (isSystemPath) return this;
+		Path dir = localFile(filename).toAbsolutePath().getParent();
+		if (dir == null || dir.equals(baseDir.toAbsolutePath().normalize())) return this;
+		return new IncludeLoader(dir, this);
 	}
 
 	public String load(String filename, boolean isSystemPath) {
 		if (!isSystemPath) {
 			try {
-				Path file = baseDir.resolve(filename).normalize();
-				return Files.readString(file);
+				return Files.readString(localFile(filename));
 			} catch (IOException e) {
 				throw new IllegalArgumentException("Failed to include local file " + filename, e);
 			}

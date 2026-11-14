@@ -17,6 +17,8 @@ test.*
 *.obj
 *.obj.gz
 *.o64
+*.ro64
+*.rel
 *.pp.asm
 *.bin
 *.out

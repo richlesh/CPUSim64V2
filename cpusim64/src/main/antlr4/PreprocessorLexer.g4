@@ -23,6 +23,8 @@ PP_DEF_MACRO: '#' [dD][eE][fF]([iI][nN][eE])? '_' [mM][aA][cC][rR][oO] -> pushMo
 PP_END_MACRO: '#' [eE][nN][dD] '_' [mM][aA][cC][rR][oO] ;
 PP_MACRO    : '#' [mM][aA][cC][rR][oO]               -> pushMode(DIRECTIVE_ARGS) ;
 PP_GLOBAL   : '#' [gG][lL][oO][bB][aA][lL] ;
+PP_EXPORT   : '#' [eE][xX][pP][oO][rR][tT]           -> pushMode(IDENT_LIST_ARGS) ;
+PP_EXTERN   : '#' [eE][xX][tT][eE][rR][nN]           -> pushMode(IDENT_LIST_ARGS) ;
 PP_SVAR     : '#' [sS][vV][aA][rR]                   -> pushMode(IDENT_LIST_ARGS) ;
 PP_VAR      : '#' [vV][aA][rR]                       -> pushMode(IDENT_LIST_ARGS) ;
 PP_FVAR     : '#' [fF][vV][aA][rR]                   -> pushMode(IDENT_LIST_ARGS) ;
@@ -111,6 +113,7 @@ COMMA_I         : ',' -> type(COMMA) ;
 LINE_CONT_I		: '\\' [ \t]* ( '//' ~[\r\n]* )? ('/*' ( '\r'? '\n' | . )*? '*/')? [ \t]* ('\r'? '\n') -> type(LINE_CONT);     // backslash at end of physical line (plus optional spaces)
 NL_I 			: ('\r'? '\n')+ -> type(NL), popMode ;
 IDENT_I		    : ([\p{L}_$] [\p{L}\p{Nd}_${}]*) -> type(IDENT) ;
+MULTIPLY_I      : '*' -> type(MULTIPLY) ;		// #export *
 
 
 // ---- Then the mode block ----

@@ -78,7 +78,14 @@ public class LabelVisitor extends CPUSim64BaseVisitor<Void> implements HasLocati
 		return filename + ", " + Integer.toString(lineNum);
 	}
 
+	/** Relocatable module (assemble -r): image starts at 0, no linker-provided labels, no .ORG. */
+	private boolean relocatable = false;
+	public void setRelocatable(boolean on) { relocatable = on; }
+	/** Address after the last word (= image size). */
+	public long getCurrentAddress() { return currentAddress; }
+
 	public Map<String, Long> getLabelMap() {
+		if (relocatable) return labelMap;
 		labelMap.putIfAbsent("__START__", 0L);
 		labelMap.putIfAbsent("__CODE__", 0L);
 		labelMap.putIfAbsent("__CODE_END__", currentAddress);
@@ -222,6 +229,11 @@ public class LabelVisitor extends CPUSim64BaseVisitor<Void> implements HasLocati
 
 	@Override
 	public Void visitORG_Directive(CPUSim64Parser.ORG_DirectiveContext ctx) {
+		if (relocatable) {
+			System.err.println(getLocation(lineNum) + ":ASMERROR:.ORG cannot be used in a relocatable module (assemble -r)");
+			hasErrors = true;
+			return null;
+		}
 		if (ctx.INTLIT() != null) {
 			currentAddress = Long.parseLong(ctx.INTLIT().getText());
 		} else if (ctx.HEXLIT() != null) {

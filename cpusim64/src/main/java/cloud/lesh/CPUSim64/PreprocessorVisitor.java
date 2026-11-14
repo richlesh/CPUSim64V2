@@ -70,6 +70,22 @@ public class PreprocessorVisitor extends cloud.lesh.CPUSim64.PreprocessorParserB
 	public interface IncludeLoader {
 		/** Return the full text of the included file, or throw if not found. */
 		String load(String includePath, boolean isSystemPath);
+
+		/**
+		 * Return a stable identifier for an include target: the classpath path for
+		 * system includes, the absolute normalized file path for local includes.
+		 */
+		default String resolve(String includePath, boolean isSystemPath) {
+			return includePath;
+		}
+
+		/**
+		 * Loader for the #include directives inside the included file: local
+		 * includes are looked up in that file's directory first.
+		 */
+		default IncludeLoader child(String includePath, boolean isSystemPath) {
+			return this;
+		}
 	}
 
 	/** Holds a #define value and kind so we can coerce in conditions. */
@@ -282,13 +298,22 @@ public class PreprocessorVisitor extends cloud.lesh.CPUSim64.PreprocessorParserB
 		}
 
 		final String path = normalizeIncludeTarget(raw); // strip <> when needed
-		if (!previouslyIncluded.contains(path)) {
+		// a file is included once, however it is named (key: the file it resolves to)
+		final String key = (isSystem ? "<" : "\"") + includeLoader.resolve(path, isSystem);
+		if (relocatable && path.toLowerCase(Locale.ROOT).endsWith(".asm")) {
+			includeAsModule(path, isSystem, key);
+			return null;
+		}
+		if (relocatable && !previouslyIncluded.contains(key)) {
+			addLinkInput(path, isSystem);
+		}
+		if (!previouslyIncluded.contains(key)) {
 			try {
-				previouslyIncluded.add(path);
+				previouslyIncluded.add(key);
 				final String included = includeLoader.load(path, isSystem);
 				Path filename = Path.of(path).getFileName();
 				emitLine(filename.toString().replace("/","$").replace(".","$") + ":", false);
-				PreprocessorVisitor pp = new PreprocessorVisitor(filename.toString(), includeLoader);
+				PreprocessorVisitor pp = new PreprocessorVisitor(filename.toString(), includeLoader.child(path, isSystem));
 				final String preprocessed = pp.preprocessText(included, defines, macros, previouslyIncluded, substituteInsideDirectives, 0);
 				hasErrors |= pp.hasErrors();
 				out.append(preprocessed);
@@ -296,6 +321,177 @@ public class PreprocessorVisitor extends cloud.lesh.CPUSim64.PreprocessorParserB
 				throw new PreprocessorException(ex);
 			}
 		}
+		return null;
+	}
+
+	// ------------------------------------------------------------------
+	// __INIT__: per-file start-up functions
+	// ------------------------------------------------------------------
+
+	/**
+	 * A file may define a start-up function named {@code __INIT__} (with
+	 * {@code #def_func __INIT__()} or a label {@code __INIT__:} ending in
+	 * {@code return}). The name is local to the file: the preprocessor renames it
+	 * {@code __INIT__<FILE>} (e.g. {@code __INIT__IO_ASM}). The start-up code that
+	 * {@link #addGlobals} (or the linker) puts at the start of the program calls
+	 * the start-up function of every file, the files a file includes first.
+	 */
+	public static final String INIT = "__INIT__";
+	private static final Set<String> definedInits = new LinkedHashSet<>();
+	private static final List<String> initOrder = new ArrayList<>();
+
+	/** The file-local name of {@code __INIT__} in {@code file}. */
+	public static String initLabel(String file) {
+		String f = file == null ? "" : Path.of(file).getFileName().toString();
+		return INIT + f.toUpperCase(Locale.ROOT).replaceAll("[^\\p{L}\\p{Nd}_]", "_");
+	}
+
+	/** Records that the current file defines {@code __INIT__} and returns its file-local name. */
+	private String defineInit() {
+		String name = initLabel(filename);
+		if (skipDepth == 0) definedInits.add(name);
+		return name;
+	}
+
+	/** Start-up functions defined so far, in calling order (included files first). */
+	public static List<String> getInitFunctions() {
+		List<String> out = new ArrayList<>(initOrder);
+		for (String n : definedInits) if (!out.contains(n)) out.add(n);
+		return out;
+	}
+
+	/** {@code __MAIN__:} label definition in preprocessed text. */
+	private static final Pattern MAIN_DEF = Pattern.compile("(?im)^\\s*__MAIN__\\s*:");
+
+	/**
+	 * Start-up code placed after {@code READONLY __CODE_END__} at address 1:
+	 * a call of every start-up function, then, if the program defines
+	 * {@code __MAIN__}, {@code call __MAIN__} and an exit with its result.
+	 * Without {@code __MAIN__} execution continues with the program's code.
+	 */
+	public static List<String> startupLines(List<String> inits, boolean hasMain) {
+		List<String> lines = new ArrayList<>();
+		for (String i : inits) lines.add("call " + i);
+		if (hasMain) {
+			lines.add("call __MAIN__");
+			lines.add("move r1, r0");
+			lines.add("int 32");		// iEXIT with the result of __MAIN__
+		}
+		return lines;
+	}
+
+	// ------------------------------------------------------------------
+	// Relocatable modules (assemble -r) and the linker
+	// ------------------------------------------------------------------
+
+	/** Label definitions at the start of a preprocessed line (not local labels containing $). */
+	private static final Pattern LABEL_DEF = Pattern.compile("^\\s*([\\p{L}_][\\p{L}\\p{Nd}_{}]*)\\s*:");
+
+	private static boolean relocatable = false;
+	private static int skipDepth = 0;
+	private static boolean exportAll = false;
+	private static final Set<String> exportNames = new LinkedHashSet<>();
+	private static final Set<String> externNames = new LinkedHashSet<>();
+	private static final Set<String> moduleLabels = new LinkedHashSet<>();
+	private static final List<RelocInfo.Require> linkRequires = new ArrayList<>();
+	private static final List<String> linkInputs = new ArrayList<>();
+
+	/**
+	 * Selects relocatable-module preprocessing (assemble -r): {@code #include}d
+	 * {@code .asm} files are not inlined but recorded as modules to link, and
+	 * {@code #export} / {@code #extern} take effect. Call after {@link #resetGlobals()}.
+	 */
+	public static void setRelocatable(boolean on) { relocatable = on; }
+	public static boolean isRelocatable() { return relocatable; }
+
+	/** What the preprocessor learned for the linker; see {@link #takeLinkInfo()}. */
+	public record LinkInfo(boolean exportAll, Set<String> exports, Set<String> externs,
+						   Set<String> moduleLabels, List<RelocInfo.Require> requires, List<String> inputs,
+						   List<String> inits) {}
+
+	/** Linker information gathered by the last relocatable preprocessing run. */
+	public static LinkInfo takeLinkInfo() {
+		return new LinkInfo(exportAll, new LinkedHashSet<>(exportNames), new LinkedHashSet<>(externNames),
+				new LinkedHashSet<>(moduleLabels), new ArrayList<>(linkRequires), new ArrayList<>(linkInputs),
+				getInitFunctions());
+	}
+
+	/**
+	 * {@code #include} of an {@code .asm} file in relocatable mode: the file is
+	 * preprocessed for its definitions only ({@code #define}, macros, {@code #def_func}
+	 * signatures), its code, data and {@code #global}s are discarded, its labels
+	 * become names this module may import, and the file is recorded as a module
+	 * that the linker must link in.
+	 */
+	private void includeAsModule(String path, boolean isSystem, String key) {
+		if (previouslyIncluded.contains(key)) return;
+		previouslyIncluded.add(key);
+		if (skipDepth == 0) {
+			linkRequires.add(new RelocInfo.Require(isSystem, includeLoader.resolve(path, isSystem)));
+		}
+		addLinkInput(path, isSystem);
+		final int savedGlobals = globals.size();
+		final int savedLine = preprocessedLineNum;
+		++skipDepth;
+		try {
+			final String included = includeLoader.load(path, isSystem);
+			Path filename = Path.of(path).getFileName();
+			PreprocessorVisitor pp = new PreprocessorVisitor(filename.toString(), includeLoader.child(path, isSystem));
+			final String preprocessed = pp.preprocessText(included, defines, macros, previouslyIncluded, substituteInsideDirectives, 0);
+			hasErrors |= pp.hasErrors();
+			collectLabels(preprocessed.lines().iterator());
+			collectLabels(globals.subList(savedGlobals, globals.size()).iterator());
+		} catch (IllegalArgumentException ex) {
+			throw new PreprocessorException(ex);
+		} finally {
+			--skipDepth;
+			globals.subList(savedGlobals, globals.size()).clear();
+			sourceLocations.keySet().removeIf(k -> k >= savedLine);
+			preprocessedLineNum = savedLine;
+		}
+	}
+
+	/** Records a file read while preprocessing a module (for the module's fingerprint). */
+	private void addLinkInput(String path, boolean isSystem) {
+		String id = (isSystem ? "resource:" : "") + includeLoader.resolve(path, isSystem);
+		if (!linkInputs.contains(id)) linkInputs.add(id);
+	}
+
+	private static final Pattern BLOCK_BEGIN = Pattern.compile("^\\s*\\.block\\s+(\\S+)", Pattern.CASE_INSENSITIVE);
+	private static final Pattern BLOCK_END = Pattern.compile("^\\s*\\.block_end\\b", Pattern.CASE_INSENSITIVE);
+	private static final Pattern SCOPED_DEF = Pattern.compile("^\\s*(\\$[\\p{L}\\p{Nd}_{}]+)\\s*:");
+
+	/** Collects the labels that preprocessed text defines, including labels of user .block scopes. */
+	private static void collectLabels(Iterator<String> lines) {
+		Deque<String> blocks = new ArrayDeque<>();
+		while (lines.hasNext()) {
+			String line = lines.next();
+			Matcher b = BLOCK_BEGIN.matcher(line);
+			if (b.find()) { blocks.addLast(b.group(1).toUpperCase(Locale.ROOT)); continue; }
+			if (BLOCK_END.matcher(line).find()) { if (!blocks.isEmpty()) blocks.removeLast(); continue; }
+			Matcher m = LABEL_DEF.matcher(line);
+			if (m.find()) { moduleLabels.add(m.group(1).toUpperCase(Locale.ROOT)); continue; }
+			Matcher s = SCOPED_DEF.matcher(line);
+			if (s.find() && !blocks.isEmpty())
+				moduleLabels.add(String.join("$", blocks) + s.group(1).toUpperCase(Locale.ROOT));
+		}
+	}
+
+	@Override
+	public Void visitExportDir(cloud.lesh.CPUSim64.PreprocessorParser.ExportDirContext ctx) {
+		if (!relocatable || skipDepth > 0) return null;		// ignored unless assembling a module
+		if (ctx.MULTIPLY() != null) {
+			exportAll = true;
+		} else {
+			for (var id : ctx.identList().IDENT()) exportNames.add(id.getText().toUpperCase(Locale.ROOT));
+		}
+		return null;
+	}
+
+	@Override
+	public Void visitExternDir(cloud.lesh.CPUSim64.PreprocessorParser.ExternDirContext ctx) {
+		if (!relocatable || skipDepth > 0) return null;		// ignored unless assembling a module
+		for (var id : ctx.identList().IDENT()) externNames.add(id.getText().toUpperCase(Locale.ROOT));
 		return null;
 	}
 
@@ -440,13 +636,41 @@ public class PreprocessorVisitor extends cloud.lesh.CPUSim64.PreprocessorParserB
 		functionParamCounts.clear();
 		varArgsFunctions.clear();
 		preprocessedLineNum = 1;
+		relocatable = false;
+		skipDepth = 0;
+		exportAll = false;
+		exportNames.clear();
+		externNames.clear();
+		moduleLabels.clear();
+		linkRequires.clear();
+		linkInputs.clear();
+		definedInits.clear();
+		initOrder.clear();
+	}
+
+	/** Marker label between a relocatable module's code and data sections. */
+	public static final String MODULE_DATA_MARKER = "__MODULE$DATA";
+
+	/**
+	 * Relocatable counterpart of {@link #addGlobals}: no start-up code and no
+	 * linker symbols, just the code followed by the {@code #global} data, with
+	 * {@link #MODULE_DATA_MARKER} between them.
+	 */
+	public static String addGlobalsRelocatable(String preprocessed) {
+		preprocessed = preprocessed + System.lineSeparator() +
+				MODULE_DATA_MARKER + ":" + System.lineSeparator() +
+				String.join(System.lineSeparator(), PreprocessorVisitor.getGlobals()) + System.lineSeparator();
+		resetGlobals();
+		return preprocessed;
 	}
 
 	public static String addGlobals(String preprocessed, boolean hasMain) {
+		hasMain |= MAIN_DEF.matcher(preprocessed).find();
+		List<String> startup = startupLines(getInitFunctions(), hasMain);
 		preprocessed =
 				".org 1" + System.lineSeparator() +
 				"__CODE__: READONLY __CODE_END__" + System.lineSeparator() +
-				(hasMain ? "jump __MAIN__" + System.lineSeparator() : "") +
+				(startup.isEmpty() ? "" : String.join(System.lineSeparator(), startup) + System.lineSeparator()) +
 				preprocessed + System.lineSeparator() +
 				"__CODE_END__:" + System.lineSeparator() +
 				"__DATA__:" + System.lineSeparator() +
@@ -575,6 +799,7 @@ public class PreprocessorVisitor extends cloud.lesh.CPUSim64.PreprocessorParserB
 				varSet.clear();
 				pushScope();
 				funcName = ctx.IDENT().getText().toUpperCase();
+				if (funcName.equals(INIT)) funcName = defineInit();
 				emitLine(funcName + ":", false);
 				int paramCount = 0;
 				if (ctx.paramList() != null) {
@@ -1365,7 +1590,15 @@ public class PreprocessorVisitor extends cloud.lesh.CPUSim64.PreprocessorParserB
 			// Skip label definitions (token immediately followed by ':')
 			int end = m.end();
 			if (end < line.length() && line.charAt(end) == ':') {
+				if (m.group().equalsIgnoreCase(INIT)) {
+					m.appendReplacement(sb, Matcher.quoteReplacement(defineInit()));
+					continue;
+				}
 				m.appendReplacement(sb, Matcher.quoteReplacement(m.group()));
+				continue;
+			}
+			if (m.group().equalsIgnoreCase(INIT)) {
+				m.appendReplacement(sb, Matcher.quoteReplacement(initLabel(filename)));
 				continue;
 			}
 			String ident = m.group().toUpperCase();
@@ -1562,6 +1795,8 @@ public class PreprocessorVisitor extends cloud.lesh.CPUSim64.PreprocessorParserB
 		v.pauseLineSync = pauseLineSync;
 		v.previouslyIncluded = seedIncludes != null ? seedIncludes : new HashSet<>();
 		v.visit(parser.preproc());
+		String done = initLabel(filename);
+		if (definedInits.contains(done) && !initOrder.contains(done)) initOrder.add(done);
 		String preprocessed = v.getOutput();
 		if (v.hasErrors()) throw new RuntimeException("Too many preprocessor errors!");
 		return preprocessed;

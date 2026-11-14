@@ -19,7 +19,7 @@
 #define _MATH_ASM
 #include <system/math.def>
 #include <system/system.def>
-
+#export *		// all labels are visible to other modules (assemble -r)
 MATH_ASM_START:
 jump	MATH_ASM_END
 

@@ -15,11 +15,14 @@
 #              [+ NAME.argv]    extra command line arguments for the program
 #              [+ NAME.stdin]   standard input for the program
 #              [+ NAME.ccargs]  extra compiler arguments ($HERE expands to
-#                               this directory)
+#                               this directory); with more .c files (kept in
+#                               multi/) or -lstd the compiler writes modules,
+#                               which are assembled and linked with -r
 #              [+ NAME.noasm]   strings (one per line) that must not appear
 #                               in the generated assembly
 #   errors/NAME.c + NAME.err  compilation must fail (non-zero result) and the
 #                             compiler's stderr must contain NAME.err
+#              [+ NAME.ccargs]  extra compiler arguments, as for run tests
 #
 # The simulator always exits with status 0, so the program result is taken
 # from the "Result: N" line printed in --verbose mode.
@@ -155,7 +158,10 @@ for t in "$HERE"/errors/*.c; do
     name="errors/$(basename "$t" .c)"
     want "$name" || continue
     base="${t%.c}"
-    SIM_STDIN="" sim "$CC_OBJ" "$t"
+    ccargs=""
+    [[ -e "$base.ccargs" ]] && read -r ccargs < "$base.ccargs"
+    ccargs="${ccargs//\$HERE/$HERE}"
+    SIM_STDIN="" sim "$CC_OBJ" "$t" $ccargs
     res="$(cat "$TMP/result")"
     expect="$(cat "$base.err")"
     if [[ "$res" == "0" ]]; then
@@ -193,7 +199,16 @@ for t in "$HERE"/run/*.c; do
             continue
         fi
     fi
-    if ! assemble "$base"; then
+    if [[ "$ccargs" == *.c* || "$ccargs" == *-lstd* ]]; then
+        # modules: assemble the first one with -r and link it with the others
+        rm -f "$HERE/run/obj/$(basename "$base").o64"
+        CPUSIM64_CACHE="$TMP/cache" "$ROOT/assemble.sh" -r "$base.asm" \
+            -o "$HERE/run/obj/$(basename "$base").o64" > "$TMP/asmlog" 2>&1
+        if [[ ! -e "$HERE/run/obj/$(basename "$base").o64" ]]; then
+            bad "$name" "linking failed: $(grep -i error "$TMP/asmlog" | head -3)"
+            continue
+        fi
+    elif ! assemble "$base"; then
         bad "$name" "generated assembly failed: $(grep -i error "$TMP/asmlog" | head -3)"
         continue
     fi

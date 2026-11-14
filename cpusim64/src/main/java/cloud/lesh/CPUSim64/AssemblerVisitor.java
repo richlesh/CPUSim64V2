@@ -74,6 +74,69 @@ public class AssemblerVisitor extends CPUSim64BaseVisitor<Void> implements HasLo
 		this.reverseLabelMap = reverseLabelMap;
 	}
 
+	// ---- Relocatable modules (assemble -r) ----
+	//
+	// Every label of the module is looked up as RELOC_BIAS + its image offset, and
+	// every external or linker-provided symbol as RELOC_BIAS. The bias is too large
+	// for a 12-bit field, so a label always lands in an instruction's wide field
+	// (imm56/imm42/imm28): either because the encoder picks the wide field for the
+	// value that does not fit in 12 bits, or because fitSigned rejects it. When a
+	// word is emitted after a label lookup, the wide field minus the label's biased
+	// value is the addend (label + constant), and a relocation is recorded.
+
+	/** Bias added to label values while assembling a relocatable module. */
+	public static final long RELOC_BIAS = 1L << 26;
+	/** Largest relocatable module image (words), so biased values fit in imm28. */
+	public static final long MAX_MODULE_SIZE = 1L << 25;
+
+	private boolean relocatable = false;
+	private Set<String> relocExterns = Set.of();
+	private Set<String> relocLinkerSymbols = Set.of();
+	private final List<String> pendingLabels = new ArrayList<>();
+	private final List<RelocInfo.Reloc> relocs = new ArrayList<>();
+
+	/**
+	 * Assemble a relocatable module. {@code labelMap} must hold biased values
+	 * ({@link #RELOC_BIAS} + image offset); {@code externs} are names that may be
+	 * imported from other modules; {@code linkerSymbols} are provided by the linker.
+	 * Relocations to labels of the module are recorded with section CODE and the
+	 * label's image offset; the caller maps them to their sections.
+	 */
+	public void setRelocatable(Set<String> externs, Set<String> linkerSymbols) {
+		relocatable = true;
+		relocExterns = externs;
+		relocLinkerSymbols = linkerSymbols;
+	}
+
+	public List<RelocInfo.Reloc> getRelocs() { return relocs; }
+
+	private void recordRelocation(long word) {
+		String name = pendingLabels.get(0);
+		if (pendingLabels.size() > 1) {
+			pendingLabels.clear();
+			throw new AssemblerException("Only one label per instruction can be relocated (assemble -r): " + name);
+		}
+		pendingLabels.clear();
+		int tt = (int) (word >>> 62);
+		RelocInfo.Field field = RelocInfo.Field.forType(tt);
+		if (field == null)
+			throw new AssemblerException("Label " + name + " cannot be used in a 12-bit field (assemble -r)");
+		Long local = labelMap.get(name);
+		long base = local != null ? local : RELOC_BIAS;
+		long addend = field.get(word) - base;
+		if (Math.abs(addend) >= (1L << 24))
+			throw new AssemblerException("Unsupported use of label " + name + " (assemble -r relocates label or label+constant only)");
+		long at = out.size();
+		if (local != null) {
+			long offset = local - RELOC_BIAS;
+			relocs.add(new RelocInfo.Reloc(at, field, null, RelocInfo.Section.CODE, offset, addend));
+			out.add(field.put(word, offset + addend));		// module-relative value until linked
+		} else {
+			relocs.add(new RelocInfo.Reloc(at, field, name, null, 0, addend));
+			out.add(field.put(word, addend));
+		}
+	}
+
 	// Result: one 64-bit word per assembled instruction
 	private final List<Long> out = new ArrayList<>();
 
@@ -100,6 +163,10 @@ public class AssemblerVisitor extends CPUSim64BaseVisitor<Void> implements HasLo
 	private static final int OT_FP = 3;
 
 	void addWord(LabelType type, long word) {
+		if (relocatable && !pendingLabels.isEmpty()) {
+			recordRelocation(word);
+			return;
+		}
 		if (type != LabelType.CODE) {
 			String lastLabel = Simulator.Decoded.findNearestLabel(reverseLabelMap, out.size());
 			if (lastLabel != null) {
@@ -259,7 +326,15 @@ public class AssemblerVisitor extends CPUSim64BaseVisitor<Void> implements HasLo
 					text = getScopeName() + text;
 				}
 			}
-			var v = labelMap.get(text.toUpperCase());
+			String name = text.toUpperCase();
+			var v = labelMap.get(name);
+			if (relocatable) {
+				if (v == null && !relocExterns.contains(name) && !relocLinkerSymbols.contains(name))
+					throw new AssemblerException("Invalid integer/label: " + text
+							+ " (use #extern for symbols of other modules)");
+				pendingLabels.add(name);
+				return v != null ? v : RELOC_BIAS;
+			}
 			if (v != null)
 				return Long.valueOf(v);
 			else
@@ -355,6 +430,11 @@ public class AssemblerVisitor extends CPUSim64BaseVisitor<Void> implements HasLo
 	private long fitSigned(long val, int bits) {
 		long min = -(1L << (bits - 1));
 		long max = (1L << (bits - 1)) - 1;
+		if ((val < min || val > max) && relocatable && !pendingLabels.isEmpty() && bits <= C0_BITS) {
+			String name = pendingLabels.get(0);
+			pendingLabels.clear();
+			throw new AssemblerException("Label " + name + " cannot be used in a 12-bit field (assemble -r)");
+		}
 		if (val < min || val > max) {
 			throw new AssemblerException("Immediate " + val + " does not fit in " + bits + " signed bits");
 		}
@@ -395,6 +475,7 @@ public class AssemblerVisitor extends CPUSim64BaseVisitor<Void> implements HasLo
 	@Override
 	public Void visitProgram(CPUSim64Parser.ProgramContext ctx) {
 		for (var child : ctx.children) {
+			pendingLabels.clear();
 			try {
 				visit(child);
 			} catch (AssemblerException ex) {
@@ -1627,6 +1708,8 @@ public class AssemblerVisitor extends CPUSim64BaseVisitor<Void> implements HasLo
 
 	@Override
 	public Void visitORG_Directive(CPUSim64Parser.ORG_DirectiveContext ctx) {
+		if (relocatable)
+			throw new AssemblerException(".ORG cannot be used in a relocatable module (assemble -r)");
 		long currentAddress = 0;
 		if (ctx.INTLIT() != null) {
 			currentAddress = Long.parseLong(ctx.INTLIT().getText());

@@ -173,6 +173,12 @@ PP_ASM_START:
         #end_cond
     #end_for
     #call   vec_push(v, e)
+    // with -lstd the library source is linked as a module instead (see
+    // emit_link_directives), so it is only recorded in PP_LIBSEEN
+    load    r0, CC_LSTD
+    #if_cond r0 != 0
+        #return 0
+    #end_cond
     load    r1, PP_PENDING
     #call   vec_push(r1, e)
 #end_func

@@ -18,7 +18,7 @@
 #ifndef _SYSTEM_ASM
 #define _SYSTEM_ASM
 #include <system/system.def>
-
+#export *		// all labels are visible to other modules (assemble -r)
 SYSTEM_ASM_START:
 	jump	SYSTEM_ASM_END
 

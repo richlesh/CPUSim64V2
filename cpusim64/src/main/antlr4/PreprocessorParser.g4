@@ -34,6 +34,8 @@ directive
   | defMacroDir
   | macroDir
   | globalDir
+  | exportDir
+  | externDir
   | svarDir
   | varDir
   | fvarDir
@@ -126,6 +128,16 @@ globalDir
 /* #svar a, b, c      (stack variables / aliases) */
 svarDir
   : PP_SVAR identList NL+
+  ;
+
+/* #export name, ...  |  #export *      (symbols visible to other modules; used with assemble -r) */
+exportDir
+  : PP_EXPORT ( MULTIPLY | identList ) NL+
+  ;
+
+/* #extern name, ...   (symbols defined in another module; used with assemble -r) */
+externDir
+  : PP_EXTERN identList NL+
   ;
 
 /* #var a, b          (integer register aliases) */
