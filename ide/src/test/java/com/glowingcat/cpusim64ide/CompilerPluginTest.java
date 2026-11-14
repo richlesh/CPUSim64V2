@@ -39,6 +39,7 @@ class CompilerPluginTest {
         assertTrue(alpha.acceptsFile("anything.xyz"));
         assertNull(alpha.getSystemPrompt());
         assertEquals("16M", alpha.getCompilerMem());
+        assertNull(alpha.getEntryLabel());
         assertEquals("256K", alpha.getCompilerStack());
 
         CompilerPlugin cc = found.get(1);

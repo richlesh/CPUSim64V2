@@ -32,7 +32,11 @@ import java.util.stream.Stream;
  *       <li>{@code compiler_mem}, {@code compiler_stack} - optional memory and
  *           stack sizes used when running the compiler (default 16M and 256K);</li>
  *       <li>{@code main_function} - name of the program's entry function (default
- *           {@code main}): Run and Debug are enabled for a source that defines it.</li>
+ *           {@code main}): Run and Debug are enabled for a source that defines it;</li>
+ *       <li>{@code entry_label} - for assembly-like languages: the program's entry
+ *           label (e.g. {@code Main} for MMIX); when set, Run and Debug are enabled
+ *           for a source with a line that starts with this label, instead of
+ *           looking for a C function {@code main_function}.</li>
  *     </ul></li>
  *   <li>{@code system_prompt.md} - optional AI Chat system prompt;</li>
  *   <li>{@code obj/} - the assembled compiler is kept here (created on demand).</li>
@@ -54,6 +58,7 @@ public final class CompilerPlugin {
     private final String compilerMem;
     private final String compilerStack;
     private final String mainFunction;
+    private final String entryLabel;
     private final String systemPrompt;
 
     private CompilerPlugin(String name, Path dir, Properties props) {
@@ -74,6 +79,8 @@ public final class CompilerPlugin {
         this.compilerStack = props.getProperty("compiler_stack", "256K").trim();
         String mf = props.getProperty("main_function", "main").trim();
         this.mainFunction = mf.isEmpty() ? "main" : mf;
+        String el = props.getProperty("entry_label", "").trim();
+        this.entryLabel = el.isEmpty() ? null : el;
         String prompt = null;
         Path p = dir.resolve("system_prompt.md");
         if (Files.isRegularFile(p)) {
@@ -98,6 +105,8 @@ public final class CompilerPlugin {
     public String getCompilerStack() { return compilerStack; }
     /** Name of the program entry function (config {@code main_function}, default {@code main}). */
     public String getMainFunction() { return mainFunction; }
+    /** Entry label of an assembly-like language (config {@code entry_label}), or null. */
+    public String getEntryLabel() { return entryLabel; }
     /** Contents of {@code system_prompt.md}, or null if the plugin has none. */
     public String getSystemPrompt() { return systemPrompt; }
 

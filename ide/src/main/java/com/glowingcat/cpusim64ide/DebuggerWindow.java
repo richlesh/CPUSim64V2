@@ -447,7 +447,12 @@ public class DebuggerWindow extends JFrame {
             attached.put(p, file);
             p.setBreakpointChangeListener((srcLine) -> {
                 syncBreakpointsFromSource();
+                // the editor may be listed under several names (file name, absolute path)
                 Long addr = sourceLineToAddr.getOrDefault(file, Map.of()).get(srcLine);
+                for (var k : sources.openEditors().entrySet()) {
+                    if (addr != null) break;
+                    if (k.getValue() == p) addr = sourceLineToAddr.getOrDefault(k.getKey(), Map.of()).get(srcLine);
+                }
                 if (addr != null) {
                     scrollDisassemblyToAddress(addr);
                 } else {

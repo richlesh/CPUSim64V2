@@ -257,7 +257,12 @@ public class PreprocessorVisitor extends cloud.lesh.CPUSim64.PreprocessorParserB
 			pendingSpace = true;
 		}
 
-		emitLine(logical.toString(), true);
+		String text = logical.toString();
+		// .source "file", line: a relative file name is relative to this file
+		if (ctx.more.get(0).getType() == cloud.lesh.CPUSim64.PreprocessorLexer.COMP_DIR
+				&& ctx.more.get(0).getText().equalsIgnoreCase(".source"))
+			text = Utils.absolutizeSourceDirective(text, p -> includeLoader.resolve(p, false));
+		emitLine(text, true);
 		return null;
 	}
 

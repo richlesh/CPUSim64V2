@@ -27,6 +27,10 @@
 #global CG_GINIT:   .dci 0          // vec of runtime global-address inits
 #global CG_FUNC:    .dci 0          // function being generated
 #global CG_ADDEND:  .dci 0          // addend from addr_const
+#global CG_SRC_FILE: .dci 0         // file entry of the open .source region (0: none)
+#global CG_SRC_LINE: .dci 0         // its line
+#global CG_SRC_LIT:  .dci 0         // its file name as a string literal (packed)
+#global CG_LIT_FILE: .dci 0         // file entry that CG_SRC_LIT was made for
 
 // value classes
 #define VC_INT      0
@@ -1242,6 +1246,9 @@ ISV_SCALAR:
         #return 0
     #end_cond
     load    k, nd[N_KIND]
+    #if_cond k != ND_BLOCK
+        #call   src_at(nd)
+    #end_cond
     #if_cond k == ND_EXPR
         load    r1, nd[N_A]
         #call   gen_expr(r1)
@@ -1297,6 +1304,8 @@ ISV_SCALAR:
         load    r0, nd[N_B]
         #if_cond r0 != 0
             load    r1, nd[N_B]
+            #call   src_at(r1)              // the condition's line
+            load    r1, nd[N_B]
             #call   gen_cond_false(r1, l3)
         #end_cond
         load    r1, CG_BRK
@@ -1312,6 +1321,8 @@ ISV_SCALAR:
         #call   emit_label(l2)
         load    r0, nd[N_C]
         #if_cond r0 != 0
+            load    r1, nd[N_C]
+            #call   src_at(r1)              // the increment's line
             load    r1, nd[N_C]
             #call   gen_expr(r1)
         #end_cond
@@ -1338,6 +1349,8 @@ ISV_SCALAR:
         load    r1, CG_CONT
         #call   vec_pop(r1)
         #call   emit_label(l2)
+        load    r1, nd[N_B]
+        #call   src_at(r1)                  // the condition's line
         load    r1, nd[N_B]
         #call   gen_expr(r1)
         load    r1, nd[N_B]
@@ -1447,6 +1460,239 @@ ISV_SCALAR:
 #end_func
 
 ///////////////////////////////////////////////////////////////////////////////
+// source lines for the debugger: .source "file", line before the code of a
+// statement of the program (the file name relative to the .asm file), and
+// .source_end where code that has no C source line follows (library code)
+///////////////////////////////////////////////////////////////////////////////
+
+// rel_path(file, dir) -> packed path of file relative to the directory prefix
+//      dir ("" or ending in '/'); both relative to the working directory or
+//      both absolute.  Otherwise (or if dir has "." or ".." parts) the
+//      absolute path of the file.
+#def_func rel_path(filep, dirp)
+    #var    w, d, wl, dl, i, j, m, ups, sb, c, fa, da, k, r
+    load    r1, filep
+    int     iGET_CODEPOINTS
+    move    w, r0
+    load    wl, w[0]
+    load    r1, dirp
+    int     iGET_CODEPOINTS
+    move    d, r0
+    load    dl, d[0]
+    #call   vec_new()
+    move    sb, r0
+    #if_cond dl == 0
+        #call   sb_add_w(sb, w)
+        jump    RP_DONE
+    #end_cond
+    // dir is a prefix of the file: the rest
+    #if_cond dl < wl
+        move    i, 1
+        #while  i <= dl
+            load    r1, w[i]
+            load    r2, d[i]
+            #if_cond r1 != r2
+                #break
+            #end_cond
+            add     i, 1
+        #end_while
+        #if_cond i > dl
+            add     k, dl, 1
+            #while  k <= wl
+                load    r1, w[k]
+                #call   vec_push(sb, r1)
+                add     k, 1
+            #end_while
+            jump    RP_DONE
+        #end_cond
+    #end_cond
+    move    fa, 0
+    #if_cond wl > 0
+        load    r1, w[1]
+        #if_cond r1 == '/'
+            move    fa, 1
+        #end_cond
+    #end_cond
+    move    da, 0
+    load    r1, d[1]
+    #if_cond r1 == '/'
+        move    da, 1
+    #end_cond
+    #if_cond fa != da
+        jump    RP_ABS
+    #end_cond
+    // a "." or ".." part of dir: no relative path
+    move    i, 1
+    move    j, 1                            // start of the current part
+    #while  i <= dl
+        load    c, d[i]
+        #if_cond c == '/'
+            sub     r1, i, j                // length of the part
+            #if_cond r1 == 1
+                load    r2, d[j]
+                #if_cond r2 == '.'
+                    jump    RP_ABS
+                #end_cond
+            #end_cond
+            #if_cond r1 == 2
+                load    r2, d[j]
+                add     r3, j, 1
+                load    r3, d[r3]
+                #if_cond r2 == '.'
+                    #if_cond r3 == '.'
+                        jump    RP_ABS
+                    #end_cond
+                #end_cond
+            #end_cond
+            add     j, i, 1
+        #end_cond
+        add     i, 1
+    #end_while
+    // common directory part: up to the last '/' of the common prefix
+    move    m, 0
+    #while  m < dl
+        #if_cond m >= wl
+            #break
+        #end_cond
+        add     r1, m, 1
+        load    r2, w[r1]
+        load    r3, d[r1]
+        #if_cond r2 != r3
+            #break
+        #end_cond
+        add     m, 1
+    #end_while
+    move    j, m
+    #while  j > 0
+        load    r2, d[j]
+        #if_cond r2 == '/'
+            #break
+        #end_cond
+        sub     j, 1
+    #end_while
+    // one "../" per part of dir after the common part
+    move    ups, 0
+    add     k, j, 1
+    #while  k <= dl
+        load    r2, d[k]
+        #if_cond r2 == '/'
+            add     ups, 1
+        #end_cond
+        add     k, 1
+    #end_while
+    #while  ups > 0
+        #call   sb_add_p(sb, "../")
+        sub     ups, 1
+    #end_while
+    add     k, j, 1
+    #while  k <= wl
+        load    r1, w[k]
+        #call   vec_push(sb, r1)
+        add     k, 1
+    #end_while
+    jump    RP_DONE
+RP_ABS:
+    #if_cond fa == 0
+        move    r1, "PWD"
+        int     iENV
+        #if_cond r0 != 0
+            move    r1, r0
+            #call   sb_add_p(sb, r1)
+            #call   sb_add_p(sb, "/")
+        #end_cond
+    #end_cond
+    #call   sb_add_w(sb, w)
+RP_DONE:
+    move    r1, w
+    int     iFREE
+    move    r1, d
+    int     iFREE
+    #call   sb_to_p(sb)
+#end_func
+
+// src_literal(file_entry) -> packed string literal of the file name for .source
+#def_func src_literal(fe)
+    #var    w, cnt, i, c, sb, rel
+    load    r1, fe
+    #call   ent_p(r1)
+    move    rel, r0
+    load    r1, OUT_PATH
+    #call   path_dir(r1)
+    #call   rel_path(rel, r0)
+    move    r1, r0
+    int     iGET_CODEPOINTS
+    move    w, r0
+    load    cnt, w[0]
+    #call   vec_new()
+    move    sb, r0
+    #call   vec_push(sb, '"')
+    #for    1, i <= cnt, 1
+        load    c, w[i]
+        #if_cond c == '"'
+            #call   vec_push(sb, '\\')
+        #end_cond
+        #if_cond c == '\\'
+            #call   vec_push(sb, '\\')
+        #end_cond
+        #call   vec_push(sb, c)
+    #end_for
+    #call   vec_push(sb, '"')
+    move    r1, w
+    int     iFREE
+    #call   sb_to_p(sb)
+#end_func
+
+// src_end(): ends the open .source region
+#def_func src_end()
+    load    r0, CG_SRC_FILE
+    #if_cond r0 != 0
+        #call   emit(".source_end\n")
+        move    r0, 0
+        store   r0, CG_SRC_FILE
+        store   r0, CG_SRC_LINE
+    #end_cond
+#end_func
+
+// src_at(node): the following code comes from the node's source line
+#def_func src_at(ndp)
+    #var    nd, f, l
+    load    nd, ndp
+    #if_cond nd == 0
+        #return 0
+    #end_cond
+    load    f, nd[N_FILE]
+    load    l, nd[N_LINE]
+    #if_cond f == 0
+        #return 0
+    #end_cond
+    #if_cond l < 1
+        #return 0
+    #end_cond
+    #call   is_lib_file(f)
+    #if_cond r0 != 0
+        #call   src_end()
+        #return 0
+    #end_cond
+    load    r0, CG_SRC_FILE
+    #if_cond r0 == f
+        load    r0, CG_SRC_LINE
+        #if_cond r0 == l
+            #return 0
+        #end_cond
+    #end_cond
+    load    r0, CG_LIT_FILE
+    #if_cond r0 != f
+        #call   src_literal(f)
+        store   r0, CG_SRC_LIT
+        store   f, CG_LIT_FILE
+    #end_cond
+    store   f, CG_SRC_FILE
+    store   l, CG_SRC_LINE
+    load    r1, CG_SRC_LIT
+    #call   emit(".source %s, %d\n", r1, l)
+#end_func
+
+///////////////////////////////////////////////////////////////////////////////
 // functions
 ///////////////////////////////////////////////////////////////////////////////
 #def_func gen_function(sp_)
@@ -1458,6 +1704,8 @@ ISV_SCALAR:
     #call   emit("\n// %s\n", r0)
     load    r1, s[S_LABEL]
     #call   emit("%s:\n", r1)
+    load    r1, s[S_INIT]
+    #call   src_at(r1)                      // the prologue: the line of the body's '{'
     load    fr, s[S_FRAME]
     #if_cond fr > 0
         #call   emit("    add     sp, -%d\n", fr)
@@ -1465,6 +1713,7 @@ ISV_SCALAR:
     load    r1, s[S_INIT]
     #call   gen_stmt(r1)
     #call   emit("    move    r0, 0\n    return\n")
+    #call   src_end()
 #end_func
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1482,6 +1731,10 @@ ISV_SCALAR:
     store   r0, CG_CONT
     #call   vec_new()
     store   r0, CG_GINIT
+    move    r0, 0
+    store   r0, CG_SRC_FILE
+    store   r0, CG_SRC_LINE
+    store   r0, CG_LIT_FILE
     #call   crt_init()
     load    r1, path
     #call   module_out_path(r1)

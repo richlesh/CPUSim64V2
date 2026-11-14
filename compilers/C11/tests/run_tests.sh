@@ -78,6 +78,33 @@ sim() {
     ' "$TMP/out" "$TMP/result" < "$TMP/raw"
 }
 
+# srcmap_ok ASM SRCMAP C : the source map has lines of C (by absolute path),
+# and each of them is a line named by a .source directive of ASM
+srcmap_ok() {
+    perl -e '
+        use Cwd qw(abs_path);
+        use File::Basename qw(dirname);
+        my ($asm, $map, $c) = @ARGV;
+        my $want = abs_path($c);
+        my $dir = dirname($asm);
+        my (%a, %m);
+        open(my $f, "<", $asm) or die;
+        while (<$f>) {
+            next unless /^\.source\s+"((?:[^"\\]|\\.)*)",\s*(\d+)/;
+            my ($p, $l) = ($1, $2); $p =~ s/\\(.)/$1/g;
+            $p = "$dir/$p" unless $p =~ m{^/};
+            $a{$l} = 1 if (abs_path($p) // "") eq $want;
+        }
+        close $f;
+        open($f, "<", $map) or do { print "no $map\n"; exit 1 };
+        while (<$f>) { if (/\xc2\xab(.*)\xc2\xbb:(\d+)/) { $m{$2} = 1 if (abs_path($1) // "") eq $want; } }
+        my @m = sort { $a <=> $b } keys %m;
+        my @x = grep { !$a{$_} } @m;
+        if (!@m) { print "no lines of $c\n"; exit 1 }
+        if (@x) { print "lines @x are not .source lines\n"; exit 1 }
+    ' "$1" "$2" "$3" > "$TMP/srcmap_err" 2>&1
+}
+
 # assemble BASE_WITHOUT_EXT : returns 0 if the object file was produced
 assemble() {
     local base="$1"
@@ -210,6 +237,11 @@ for t in "$HERE"/run/*.c; do
         fi
     elif ! assemble "$base"; then
         bad "$name" "generated assembly failed: $(grep -i error "$TMP/asmlog" | head -3)"
+        continue
+    fi
+    # the source map gives the .c lines of the code (.source directives)
+    if ! srcmap_ok "$base.asm" "$HERE/run/obj/$(basename "$base").srcmap" "$t"; then
+        bad "$name" "source map: $(cat "$TMP/srcmap_err")"
         continue
     fi
     argv=""

@@ -23,6 +23,8 @@ directive
   | LINE FILENAMELIT ','? INTLIT			# LINE_Directive
   | LINE_BEGIN FILENAMELIT ','? INTLIT		# LINE_BEGIN_Directive
   | LINE_END								# LINE_END_Directive
+  | SOURCE STRINGLIT ','? INTLIT			# SOURCE_Directive
+  | SOURCE_END							# SOURCE_END_Directive
   | BLOCK_BEGIN IDENT						# BLOCK_BEGIN_Directive
   | BLOCK_END IDENT?						# BLOCK_END_Directive
   ;
@@ -486,6 +488,8 @@ ORG : '.' [oO][rR][gG] ;
 LINE : '.' [lL][iI][nN][eE] ;
 LINE_BEGIN : '.' [lL][iI][nN][eE] '_' [bB][eE][gG][iI][nN] ;
 LINE_END : '.' [lL][iI][nN][eE] '_' [eE][nN][dD] ;
+SOURCE : '.' [sS][oO][uU][rR][cC][eE] ;
+SOURCE_END : '.' [sS][oO][uU][rR][cC][eE] '_' [eE][nN][dD] ;
 BLOCK_BEGIN : '.' [bB][lL][oO][cC][kK] ;
 BLOCK_END : '.' [bB][lL][oO][cC][kK] '_' [eE][nN][dD] ;
 

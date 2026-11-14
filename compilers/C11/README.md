@@ -134,6 +134,12 @@ code generation per function -> output file.  Library functions written in C
 * A function returning a struct receives a hidden result pointer.
 * Globals are `#global` data; string literals are `.dcs` (packed) or `.dcw`
   (word-per-character) data, emitted only in the forms the program uses.
+* `.source "prog.c", N` before the code of each statement (and of a loop's
+  condition and increment) and `.source_end` after each function give the
+  assembler the C source lines, so the IDE's debugger (Debug in a C11
+  window) shows the `.c` or `.h` line that is executing and takes breakpoints
+  set in them (stepping is still by CPUSim64 instruction).  File names are relative to the `.asm` file.  Library code (`lib/`)
+  and the assembly runtime keep their assembly lines.
 
 ## Supported language
 

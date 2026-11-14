@@ -15,7 +15,7 @@ It includes:
 - A cycle-accurate simulation engine  
 - A native Rust reimplementation of the simulator (`cpusim64_native`) for faster, standalone execution  
 - A simple IDE with code editor, console, and integrated run/debug  
-- A pluggable compiler framework in the IDE, with a **C11 compiler written in CPUSim64 assembly** and its own C standard library (`compilers/C11`)  
+- A pluggable compiler framework in the IDE, with a **C11 compiler written in CPUSim64 assembly** and its own C standard library (`compilers/C11`), and an **MMIX translator** that runs Knuth's MMIXAL programs (`compilers/MMIX`)  
 - A native CLI tool for command-line workflows  
 - An agentic AI assistant with RAG-based context retrieval for writing and debugging assembly code  
 - Native installers for macOS, Windows, and Linux (x64 and ARM64)  
@@ -30,7 +30,7 @@ The project is designed for educational use, computer architecture instruction, 
 ### **Integrated Development Environment**
 - Code editor with syntax highlighting for CPUSim64 assembly
 - Tabbed editor: File → Open opens a file in a new tab (or in the editor if it is empty); a CPUSim64 window opens `.asm` and `.def` files, a compiler window only its own source files (`.c` and `.h` for C11). File → New opens a new CPUSim64 window, File → New Compiler a new compiler window  
-- Run and Debug act on the focused tab and are enabled only for a program: an `.asm` file with `__MAIN__`, or one that is not a library or module (not a `.def` file, no include guard, no `#export`); a C file that defines `main()` (the name is `main_function` in the plug-in's `config.properties`)  
+- Run and Debug act on the focused tab and are enabled only for a program: an `.asm` file with `__MAIN__`, or one that is not a library or module (not a `.def` file, no include guard, no `#export`); a C file that defines `main()` (the name is `main_function` in the plug-in's `config.properties`); an MMIXAL file with the label `Main` in column 1 (`entry_label`)  
 - Cmd+click (macOS) / Ctrl+click on a file name in an `#include` opens it in a tab; system libraries (`<system/io.asm>`) open read-only, and `<stdio.h>` in a C11 window opens the compiler's `lib/stdio.h`  
 - The debugger switches to (or opens) the tab of the source file that is executing, and follows the breakpoints of every open tab  
 - The AI chat works on the focused tab
@@ -66,13 +66,13 @@ Every sub-folder with a `config.properties` is a plug-in; the folder name is the
 
 | Plug-in file | Purpose |
 |---|---|
-| `config.properties` | `compiler_source` – the compiler's main `.asm` file (required, `.asm` optional)<br>`syntax_language` – RSyntaxTextArea style for highlighting, e.g. `text/c`<br>`file_extensions` – optional, e.g. `c,h` (first is the Save As default)<br>`compiler_mem`, `compiler_stack` – optional run sizes (default `16M`, `256K`)<br>`main_function` – name of the entry function (default `main`): Run and Debug are enabled for a source that defines it |
+| `config.properties` | `compiler_source` – the compiler's main `.asm` file (required, `.asm` optional)<br>`syntax_language` – RSyntaxTextArea style for highlighting, e.g. `text/c`<br>`file_extensions` – optional, e.g. `c,h` (first is the Save As default)<br>`compiler_mem`, `compiler_stack` – optional run sizes (default `16M`, `256K`)<br>`main_function` – name of the entry function (default `main`): Run and Debug are enabled for a source that defines it<br>`entry_label` – instead of `main_function`: Run and Debug are enabled for a source with a line that starts with this label (MMIX: `Main`) |
 | `system_prompt.md` | system prompt for the AI chat of that window |
 | `obj/` | the assembled compiler; rebuilt when missing or older than any `.asm`/`.def` file of the plug-in (kept in `~/.cpusim64/compilers/<name>` if the plug-in folder is read-only) |
 
 Run in such a window saves the file, assembles the compiler if needed, runs it with the source file path as its argument (it must write `<source>.asm` next to the source and exit with 0), assembles the result into `obj/<name>.o64` and runs it with the Args from the toolbar, using the Java or native simulator as selected in Settings.
 Errors from the compiler's assembly or from the compiler are shown in the console and stop the run.
-Debug compiles the same way and then opens the generated assembly in a regular window with the debugger.
+Debug compiles the same way and assembles the result. If the compiler puts `.source "file", line` directives in its output (as the C11 compiler and the MMIX translator do), the debugger shows the source file in the compiler window: the execution line and the breakpoints use the source lines (stepping is by instruction). Otherwise the generated assembly opens in a regular window with the debugger.
 A compiler window also has an **Options** field for extra compiler arguments, such as other source files (relative to the source file) and `-lstd` for the C11 compiler.
 
 In any window, a source file that contains `#export` or `#extern` is a relocatable module: Run and Debug assemble it with `-r` and link it with the modules it `#include`s into `obj/<name>.o64` (with merged symbol and source-map files for the debugger); link errors appear in the console and stop the run.
@@ -88,6 +88,14 @@ A C compiler written entirely in CPUSim64 assembly.  It compiles a core subset o
 - A header `#include <name.h>` is found in `lib/` (plus any `--lib=DIR`), and `lib/name.c` is appended once, compiling only the functions the program uses  
 - Separate compilation: `cc main.c util.c` compiles each file into its own linker module (external symbols exported, `static` ones private); `-lstd` links the C library as shared library modules instead of appending it  
 - 97 regression tests: `compilers/C11/tests/run_tests.sh`  
+
+### **MMIX Translator (`compilers/MMIX`)**
+Runs programs written in MMIXAL, the assembly language of Knuth's 64-bit MMIX computer, by translating them to CPUSim64 assembly (File → New Compiler → MMIX, or `compilers/MMIX/obj/mmixc.o64 prog.mms` on a simulator).
+- The translator is written in portable C (`src/`) and compiled by the C11 compiler; its MMIXAL front end assembles exactly as Knuth's `mmixal` (`PREFIX`, `GREG`, local labels, future references, the same error messages)  
+- Full user-mode MMIX: integer, logic, branch and memory instructions, the register stack (`PUSHJ`, `POP`, `SAVE`, `UNSAVE`), all floating-point operations with the four rounding modes, the exception flags and trip handlers in `rA` (`TRIP`, `RESUME`), and the `TRAP` I/O system calls of the MMIXware simulator (`Fopen` … `Ftell`, `Halt`)  
+- The arithmetic run-time library (`rt/mmix_rt.c`) is a port of Knuth's `mmix-arith`, so results, rounding and flags are those of the real `mmix`  
+- Kernel features (virtual memory, interrupts, the timer registers) are not supported  
+- Tests compare with the real `mmixal` and `mmix`: `compilers/MMIX/tests/run_tests.sh` and the randomised `tests/random_diff.sh`  
 
 ### **Virtual CPU**
 - Custom 64-bit RISC-style architecture  
@@ -236,7 +244,7 @@ CPUSim64V2/
 │       ├── ports/                   (stdio / file / raw port handlers)
 │       └── javacompat/              (Java Formatter + Schubfach Double.toString)
 │
-├── compilers/                       (IDE compiler plug-ins, e.g. C11/)
+├── compilers/                       (IDE compiler plug-ins: C11/, MMIX/)
 │
 ├── ide/                             (IDE Module)
 │   ├── pom.xml

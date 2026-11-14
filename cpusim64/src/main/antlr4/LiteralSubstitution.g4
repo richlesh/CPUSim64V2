@@ -31,6 +31,7 @@ piece
 DIRECTIVE_LINE
   : {getCharPositionInLine()==0}? SP* LABEL? SP* '.'[dD][cC][fFsSwW] SP+ ~[\r\n]*
   | {getCharPositionInLine()==0}? SP* '.' [lL][iI][nN][eE] SP+ ~[\r\n]*
+  | {getCharPositionInLine()==0}? SP* '.' [sS][oO][uU][rR][cC][eE] SP+ ~[\r\n]*
   ;
 
 FILENAME

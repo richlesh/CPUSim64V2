@@ -1231,7 +1231,18 @@ public class IDEApp {
             return !EXPORT_DIRECTIVE.matcher(code).find();
         }
         if (n.endsWith(".h")) return false;
+        if (plugin.getEntryLabel() != null) return definesLabel(text, plugin.getEntryLabel());
         return definesFunction(text, plugin.getMainFunction());
+    }
+
+    /**
+     * True if assembly-like source {@code text} has a line that starts (in column 1)
+     * with the label {@code name}, e.g. "Main  SET $0,1" or "Main:" (MMIXAL labels
+     * have no colon; a following ':' is accepted too).
+     */
+    static boolean definesLabel(String text, String name) {
+        return Pattern.compile("(?m)^" + Pattern.quote(name) + "(?![\\w:.])|^" + Pattern.quote(name) + ":")
+                .matcher(text).find();
     }
 
     /** True if C source {@code text} defines (not just declares) the function {@code name}. */
@@ -1253,6 +1264,42 @@ public class IDEApp {
 
     // ----- Debugger: editors of the tabs
 
+    /** True if {@code fileName} (a .srcmap file name) is an absolute path, as {@code .source} directives give. */
+    static boolean isAbsoluteSourceName(String fileName) {
+        try {
+            return Path.of(fileName).isAbsolute();
+        } catch (java.nio.file.InvalidPathException e) {
+            return false;
+        }
+    }
+
+    /**
+     * True if the tab showing {@code tabFile} (null for an untitled or library
+     * tab) with the name {@code tabName} is the .srcmap file {@code fileName}:
+     * an absolute path must be the tab's file, a plain name (an assembly file of
+     * the program) its name.
+     */
+    static boolean tabMatchesSource(Path tabFile, String tabName, String fileName) {
+        if (isAbsoluteSourceName(fileName)) return tabFile != null && sameFile(tabFile, Path.of(fileName));
+        return tabName.equals(fileName);
+    }
+
+    /** True if a and b are the same file (also through symbolic links, such as /tmp and /private/tmp on macOS). */
+    static boolean sameFile(Path a, Path b) {
+        Path x = a.toAbsolutePath().normalize(), y = b.toAbsolutePath().normalize();
+        if (x.equals(y)) return true;
+        try {
+            return Files.exists(x) && Files.exists(y) && Files.isSameFile(x, y);
+        } catch (IOException e) {
+            return false;
+        }
+    }
+
+    /** The file of the .srcmap file name {@code fileName}: an absolute path, or a name in {@code dir}. */
+    static Path sourceFileFor(Path dir, String fileName) {
+        return isAbsoluteSourceName(fileName) ? Path.of(fileName).normalize() : dir.resolve(fileName);
+    }
+
     /** Gives the debugger the tabs of this window, opening the source files it steps into. */
     private DebuggerWindow.SourceProvider sourceProvider(Path programSource) {
         final Path dir = programSource.toAbsolutePath().getParent();
@@ -1260,11 +1307,11 @@ public class IDEApp {
             @Override public EditorPanel editorFor(String fileName, boolean open) {
                 SourceTab found = null;
                 for (SourceTab t : tabs) {
-                    if (!t.name().equals(fileName)) continue;
+                    if (!tabMatchesSource(t.file, t.name(), fileName)) continue;
                     if (found == null || (t.file != null && dir.equals(t.file.toAbsolutePath().getParent()))) found = t;
                 }
-                if (found == null && open && canOpen(fileName)) {
-                    Path p = dir.resolve(fileName);
+                if (found == null && open && canOpen(Path.of(fileName).getFileName().toString())) {
+                    Path p = sourceFileFor(dir, fileName);
                     if (Files.isRegularFile(p)) {
                         loadFile(p);
                         found = cur;
@@ -1281,8 +1328,17 @@ public class IDEApp {
                 return found == null ? null : found.panel;
             }
             @Override public java.util.Map<String, EditorPanel> openEditors() {
+                // each tab by name (assembly files) and by absolute path (.source files)
                 java.util.Map<String, EditorPanel> m = new java.util.LinkedHashMap<>();
-                for (SourceTab t : tabs) m.putIfAbsent(t.name(), t.panel);
+                for (SourceTab t : tabs) {
+                    m.putIfAbsent(t.name(), t.panel);
+                    if (t.file != null) {
+                        m.putIfAbsent(t.file.toAbsolutePath().normalize().toString(), t.panel);
+                        try {
+                            m.putIfAbsent(t.file.toRealPath().toString(), t.panel);
+                        } catch (IOException ignored) {}
+                    }
+                }
                 return m;
             }
         };
@@ -2046,6 +2102,8 @@ public class IDEApp {
         }
         console.clear();
         final String userArgs = argsField.getText().trim();
+        final SourceTab sourceTab = cur;
+        final Path source = cur.file;
         new Thread(() -> {
             PrintStream origOut = System.out;
             PrintStream origErr = System.err;
@@ -2064,6 +2122,35 @@ public class IDEApp {
             }
             if (generated == null) return;
             final Path asm = generated;
+            // With .source directives (the .srcmap names the source file) the debugger
+            // shows the source in this window; otherwise the generated assembly opens
+            // in a CPUSim64 window and is debugged there.
+            String obj = null;
+            try {
+                System.setOut(ps);
+                System.setErr(ps);
+                obj = assembleForSourceDebug(asm, source);
+            } catch (Exception e) {
+                System.out.println("Error: " + e.getMessage());
+            } finally {
+                ps.flush();
+                System.setOut(origOut);
+                System.setErr(origErr);
+            }
+            if (obj == FAILED) return;
+            if (obj != null) {
+                final String objFile = obj;
+                SwingUtilities.invokeLater(() -> {
+                    appendConsole("> Opening the debugger...\n");
+                    debuggerOpen = true;
+                    updateRunnable();
+                    Runnable onClose = () -> { debuggerOpen = false; updateRunnable(); };
+                    editorTabs.setSelectedComponent(sourceTab.panel);
+                    new DebuggerWindow(frame, objFile, asm.toString(), sourceTab.panel, sourceProvider(source),
+                            userArgs, settings, console, onClose);
+                });
+                return;
+            }
             SwingUtilities.invokeLater(() -> {
                 appendConsole("> Opening " + asm.getFileName() + " in the debugger...\n");
                 IDEApp app = new IDEApp();
@@ -2073,6 +2160,49 @@ public class IDEApp {
                 app.launchDebugger();
             });
         }, "compile-for-debug").start();
+    }
+
+    /** Result of {@link #assembleForSourceDebug} when assembly failed (reported in the console). */
+    private static final String FAILED = "";
+
+    /**
+     * Assembles the compiler output {@code asm} for the debugger. Returns its object
+     * file if the .srcmap maps code to {@code source} (the compiler emits .source
+     * directives), null if it does not (debug the assembly instead), or
+     * {@link #FAILED}.
+     */
+    private String assembleForSourceDebug(Path asm, Path source) throws Exception {
+        String baseName = asm.getFileName().toString().replaceAll("(?i)\\.asm$", "");
+        Path dir = asm.toAbsolutePath().getParent();
+        System.out.println("> Assembling (debug) " + asm.getFileName() + "...");
+        if (Assembler.run(assemblerArgs(asm, true)) != 0) {
+            System.out.println("\nAssembly failed.");
+            return FAILED;
+        }
+        moveAssemblerOutputs(dir, baseName);
+        Path obj = dir.resolve("obj").resolve(baseName + ".o64");
+        if (!Files.isRegularFile(obj)) {
+            System.out.println("\nNo .o64 file found after assembly.");
+            return FAILED;
+        }
+        Path srcmap = dir.resolve("obj").resolve(baseName + ".srcmap");
+        return srcmapMentions(srcmap, source) ? obj.toString() : null;
+    }
+
+    /** True if the .srcmap file maps an address to {@code source} (by absolute path). */
+    static boolean srcmapMentions(Path srcmap, Path source) {
+        java.util.Set<String> files = new java.util.HashSet<>();
+        try (java.util.stream.Stream<String> lines = Files.lines(srcmap)) {
+            lines.forEach(l -> {
+                int a = l.indexOf('\u00ab'), b = l.lastIndexOf('\u00bb');
+                if (a >= 0 && b > a) files.add(l.substring(a + 1, b));
+            });
+        } catch (IOException | java.io.UncheckedIOException e) {
+            return false;
+        }
+        for (String f : files)
+            if (isAbsoluteSourceName(f) && sameFile(source, Path.of(f))) return true;
+        return false;
     }
 
     private void launchDebugger() {

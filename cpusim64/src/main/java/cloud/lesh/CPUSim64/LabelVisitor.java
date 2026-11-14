@@ -40,6 +40,10 @@ public class LabelVisitor extends CPUSim64BaseVisitor<Void> implements HasLocati
 	private boolean hasErrors = false;
 	// Maps address → «filename»:lineNum for each instruction
 	private final Map<Long, String> addressToSourceLocation = new HashMap<>();
+	// Location set by .source "file", line (a compiler's source file), or null
+	// after .source_end: it replaces the .LINE location in the source map
+	private String sourceFile = null;
+	private int sourceLine = 0;
 
 	// TODO remove
 	String filename = null;
@@ -165,7 +169,9 @@ public class LabelVisitor extends CPUSim64BaseVisitor<Void> implements HasLocati
 		if (ctx.instrMOVE() != null && Utils.isRedundantSelfMove(ctx.instrMOVE())) {
 			return null;
 		}
-		if (filename != null) {
+		if (sourceFile != null) {
+			addressToSourceLocation.put(currentAddress, "\u00ab" + sourceFile + "\u00bb:" + sourceLine);
+		} else if (filename != null) {
 			addressToSourceLocation.put(currentAddress, filename + ":" + lineNum);
 		}
 		++currentAddress;
@@ -269,6 +275,23 @@ public class LabelVisitor extends CPUSim64BaseVisitor<Void> implements HasLocati
 	@Override
 	public Void visitLINE_END_Directive(CPUSim64Parser.LINE_END_DirectiveContext ctx) {
 		pauseLineIncrement = false;
+		out.append(reflowTokens(ctx) + System.lineSeparator());
+		return null;
+	}
+
+	/** .source "file", line: the following instructions come from line of file (for the debugger). */
+	@Override
+	public Void visitSOURCE_Directive(CPUSim64Parser.SOURCE_DirectiveContext ctx) {
+		sourceFile = Utils.sourceDirectivePath(ctx.STRINGLIT().getText());
+		sourceLine = Integer.parseInt(ctx.INTLIT().getText());
+		out.append(reflowTokens(ctx) + System.lineSeparator());
+		return null;
+	}
+
+	/** .source_end: the following instructions map to their assembly lines again. */
+	@Override
+	public Void visitSOURCE_END_Directive(CPUSim64Parser.SOURCE_END_DirectiveContext ctx) {
+		sourceFile = null;
 		out.append(reflowTokens(ctx) + System.lineSeparator());
 		return null;
 	}

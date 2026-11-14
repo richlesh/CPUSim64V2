@@ -567,6 +567,47 @@ public class Utils {
 		return result;
 	}
 
+	/**
+	 * The file name of a {@code .source "file", line} directive: the string
+	 * literal without its quotes and with the escapes {@code \\} and
+	 * {@code \"} undone.
+	 */
+	public static String sourceDirectivePath(String literal) {
+		String s = literal;
+		if (s.length() >= 2 && s.startsWith("\"") && s.endsWith("\"")) s = s.substring(1, s.length() - 1);
+		StringBuilder b = new StringBuilder(s.length());
+		for (int i = 0; i < s.length(); i++) {
+			char c = s.charAt(i);
+			if (c == '\\' && i + 1 < s.length()) c = s.charAt(++i);
+			b.append(c);
+		}
+		return b.toString();
+	}
+
+	/** A file name as a {@code .source} string literal (quotes added, {@code \} and {@code "} escaped). */
+	public static String sourceDirectiveLiteral(String path) {
+		return "\"" + path.replace("\\", "\\\\").replace("\"", "\\\"") + "\"";
+	}
+
+	private static final Pattern SOURCE_PATTERN = Pattern.compile(
+			"^(\\s*\\.[sS][oO][uU][rR][cC][eE])\\s+(\"(?:[^\"\\\\]|\\\\.)*\")(.*)$");
+
+	/**
+	 * Rewrites a {@code .source "file", line} line so that a relative file
+	 * name becomes absolute: {@code resolver} maps the name to an absolute path
+	 * (relative to the file that contains the directive).  Other lines are
+	 * returned unchanged.
+	 */
+	public static String absolutizeSourceDirective(String line, java.util.function.UnaryOperator<String> resolver) {
+		Matcher m = SOURCE_PATTERN.matcher(line);
+		if (!m.matches()) return line;
+		String path = sourceDirectivePath(m.group(2));
+		if (java.nio.file.Path.of(path).isAbsolute()) return line;
+		String abs = resolver.apply(path);
+		if (abs == null || abs.equals(path)) return line;
+		return m.group(1) + " " + sourceDirectiveLiteral(abs) + m.group(3);
+	}
+
 	// Matches:
 	// .LINE «temp.asm», 12
 	// .LINE_BEGIN «temp.asm», 16

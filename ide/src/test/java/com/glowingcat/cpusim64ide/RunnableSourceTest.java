@@ -34,4 +34,15 @@ class RunnableSourceTest {
         assertTrue(s.startsWith("a "));
         assertTrue(s.contains("c"));
     }
+
+    @Test
+    void entryLabelInColumnOne() {
+        assertTrue(IDEApp.definesLabel("t IS $255\nMain   SET $0,1\n", "Main"));
+        assertTrue(IDEApp.definesLabel("Main\tTRAP 0,Halt,0", "Main"));
+        assertTrue(IDEApp.definesLabel("Main:\n", "Main"));
+        assertFalse(IDEApp.definesLabel("  Main SET $0,1\n", "Main"), "not in column 1");
+        assertFalse(IDEApp.definesLabel("MainLoop SET $0,1\n", "Main"));
+        assertFalse(IDEApp.definesLabel("x JMP Main\n", "Main"));
+        assertFalse(IDEApp.definesLabel("% Main is the entry\n", "Main"));
+    }
 }
