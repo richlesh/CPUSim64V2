@@ -468,6 +468,7 @@ public class Assembler {
 				roots.add(new Linker.Module(Linker.withExt(base, ".ro64"), r.rel(), r.words()));
 			}
 			Path outBase = Linker.outputBase(out);
+			Linker.printBanner(System.out);
 			Linker.Result res = new Linker(Linker.definesOf(ppOptions), System.out).linkAndWrite(roots, outBase);
 			System.out.println("Linked " + res.order().size() + " modules: wrote " + res.words().size()
 					+ " words to " + Linker.withExt(outBase, ".o64"));

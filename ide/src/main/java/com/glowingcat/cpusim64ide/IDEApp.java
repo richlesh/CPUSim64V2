@@ -890,11 +890,17 @@ public class IDEApp {
     private void updateTabTitle(SourceTab t) {
         String title = t.name() + (t.modified ? " *" : "") + (t.readOnly() ? " (read-only)" : "");
         t.titleLabel.setText(title);
+        // full path of the tab's file; set on the custom header too, which would otherwise
+        // receive the mouse events and hide the tab's own tooltip
+        String tip = t.file != null ? t.file.toAbsolutePath().normalize().toString()
+                : t.resource != null ? "<" + t.resource + "> (read-only library file)" : "untitled";
+        t.titleLabel.setToolTipText(tip);
         int idx = editorTabs.indexOfComponent(t.panel);
         if (idx >= 0) {
             editorTabs.setTitleAt(idx, title);
-            editorTabs.setToolTipTextAt(idx, t.file != null ? t.file.toString()
-                    : t.resource != null ? "<" + t.resource + ">" : "untitled");
+            editorTabs.setToolTipTextAt(idx, tip);
+            Component header = editorTabs.getTabComponentAt(idx);
+            if (header instanceof JComponent jc) jc.setToolTipText(tip);
         }
         if (t == cur) updateTitle();
     }

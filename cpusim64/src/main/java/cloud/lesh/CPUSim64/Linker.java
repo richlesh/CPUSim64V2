@@ -234,6 +234,7 @@ public final class Linker {
 		try {
 			Files.createDirectories(ro64.getParent());
 			Assembler.writeModule(r, sibling(ro64, ""));
+			if (log != null) log.println("Wrote " + r.words().size() + " words to " + ro64);
 		} catch (IOException ex) {
 			throw new LinkException("Cannot write module " + ro64 + ": " + ex.getMessage(), ex);
 		}
@@ -561,12 +562,17 @@ public final class Linker {
 		System.exit(run(args));
 	}
 
+	/** The start-up banner, printed when the linker runs (also when the assembler links). */
+	public static void printBanner(PrintStream out) {
+		out.println("=".repeat(80));
+		out.println("CPUSim64 Linker " + BuildInfo.VERSION);
+		out.println("\u00a92026 Richard Lesh");
+		out.println("Links relocatable CPUSim64 object files into a single executable object file.");
+		out.println("=".repeat(80));
+	}
+
 	public static int run(String[] args) {
-		System.out.println("=".repeat(80));
-		System.out.println("CPUSim64 Linker " + BuildInfo.VERSION);
-		System.out.println(BuildInfo.COPYRIGHT + " Richard Lesh");
-		System.out.println("Links relocatable .ro64 modules into a .o64 program.");
-		System.out.println("=".repeat(80));
+		printBanner(System.out);
 		String out = null;
 		List<String> options = new ArrayList<>();
 		List<String> inputs = new ArrayList<>();
