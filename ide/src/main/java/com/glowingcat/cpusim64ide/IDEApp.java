@@ -125,6 +125,20 @@ public class IDEApp {
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         } catch (Exception ignored) {}
+        // Files opened from the desktop: macOS (Finder) sends them as an open-files
+        // event, also when it launches the app; Windows and Linux file associations
+        // pass them as arguments.
+        try {
+            if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.APP_OPEN_FILE)) {
+                Desktop.getDesktop().setOpenFileHandler(e -> {
+                    java.util.List<Path> files = e.getFiles().stream().map(java.io.File::toPath).toList();
+                    SwingUtilities.invokeLater(() -> openFromSystem(files));
+                });
+            }
+        } catch (Exception | Error e) {
+            reportError("Could not register the open-file handler", e, false);
+        }
+        final java.util.List<Path> argFiles = filesFromArgs(args);
         SwingUtilities.invokeLater(() -> {
             try {
                 new IDEApp().createAndShowGUI();
@@ -134,7 +148,101 @@ public class IDEApp {
                 reportError("CPUSim64 failed to start", e, true);
                 System.exit(1);
             }
+            if (!argFiles.isEmpty()) openFromSystem(argFiles);
         });
+    }
+
+    // ----- Files opened by the desktop (Finder, file associations, command line)
+
+    /** IDE windows, the most recently active last. */
+    private static final java.util.List<IDEApp> WINDOWS = new java.util.ArrayList<>();
+    /** Files that arrived before the first window was shown. */
+    private static final java.util.List<Path> PENDING_FILES = new java.util.ArrayList<>();
+    private static boolean firstWindowShown = false;
+
+    /** The command line arguments that name existing files. */
+    static java.util.List<Path> filesFromArgs(String[] args) {
+        java.util.List<Path> files = new java.util.ArrayList<>();
+        for (String a : args) {
+            if (a.startsWith("-")) continue;
+            try {
+                Path p = Path.of(a);
+                if (Files.isRegularFile(p)) files.add(p.toAbsolutePath().normalize());
+            } catch (java.nio.file.InvalidPathException ignored) {}
+        }
+        return files;
+    }
+
+    /** True for the source files of a CPUSim64 window (.asm and .def). */
+    static boolean isCpuSim64Source(String fileName) {
+        String n = fileName.toLowerCase(java.util.Locale.ROOT);
+        return n.endsWith(".asm") || n.endsWith(".def");
+    }
+
+    /** The compiler plug-in whose source files include {@code fileName}, or null. */
+    static CompilerPlugin pluginFor(String fileName, java.util.List<CompilerPlugin> plugins) {
+        for (CompilerPlugin cp : plugins)
+            if (!cp.getFileExtensions().isEmpty() && cp.acceptsFile(fileName)) return cp;
+        return null;
+    }
+
+    /**
+     * Opens files given by the desktop (on the event thread): each one in a tab of the
+     * most recently active window of its kind (CPUSim64 for .asm and .def, otherwise
+     * the compiler plug-in that takes the extension), opening a window if there is none.
+     */
+    static void openFromSystem(java.util.List<Path> files) {
+        if (!firstWindowShown) {
+            PENDING_FILES.addAll(files);
+            return;
+        }
+        java.util.List<CompilerPlugin> plugins = null;
+        for (Path f : files) {
+            String name = f.getFileName().toString();
+            CompilerPlugin cp = null;
+            if (!isCpuSim64Source(name)) {
+                if (plugins == null) plugins = CompilerPlugin.discover();
+                cp = pluginFor(name, plugins);
+            }
+            IDEApp target = null;
+            for (int i = WINDOWS.size() - 1; i >= 0 && target == null; i--) {
+                IDEApp w = WINDOWS.get(i);
+                if (cp == null ? w.plugin == null : (w.plugin != null && w.plugin.getName().equals(cp.getName())))
+                    target = w;
+            }
+            if (target == null) {
+                target = cp == null ? new IDEApp() : new IDEApp(cp);
+                target.createAndShowGUI();
+            }
+            if (cp == null && !isCpuSim64Source(name)) {
+                target.appendConsole("Can't open " + f + ": only .asm and .def files open in the editor.\n");
+            } else {
+                target.loadFile(f);
+            }
+            target.bringToFront(target.frame);
+        }
+    }
+
+    /** Registers a shown window, and gives the first one the files that arrived early. */
+    private void registerWindow() {
+        WINDOWS.add(this);
+        frame.addWindowListener(new WindowAdapter() {
+            @Override public void windowActivated(WindowEvent e) {
+                WINDOWS.remove(IDEApp.this);
+                WINDOWS.add(IDEApp.this);
+            }
+            @Override public void windowClosed(WindowEvent e) {
+                WINDOWS.remove(IDEApp.this);
+            }
+        });
+        if (!firstWindowShown) {
+            firstWindowShown = true;
+            if (!PENDING_FILES.isEmpty()) {
+                java.util.List<Path> files = new java.util.ArrayList<>(PENDING_FILES);
+                PENDING_FILES.clear();
+                SwingUtilities.invokeLater(() -> openFromSystem(files));
+            }
+        }
     }
 
     /**
@@ -201,6 +309,7 @@ public class IDEApp {
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
         mainWindowShown = true;
+        registerWindow();
 
         // Restore AI panel visibility from saved settings (after window is shown so
         // the split pane has a valid width for divider positioning)
