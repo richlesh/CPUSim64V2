@@ -51,7 +51,7 @@ public class Assembler {
 		System.out.println(BuildInfo.COPYRIGHT + " Richard Lesh");
 		System.out.println("Assembles .asm source files into .o64 binary files.");
 		System.out.println("=".repeat(80));
-		System.out.println("Arguments: " + String.join(" ", args));
+		System.out.println("Arguments: " + Utils.displayArgs(args));
 		if (args.length < 1) {
 			System.err.println(USAGE);
 			return 2;
@@ -472,7 +472,7 @@ public class Assembler {
 			linkArgs.add("-o");
 			linkArgs.add(out);
 			for (Linker.Module m : roots) linkArgs.add(m.file().toString());
-			System.out.println("Arguments: " + String.join(" ", linkArgs));
+			System.out.println("Arguments: " + Utils.displayArgs(linkArgs));
 			Linker.Result res = new Linker(Linker.definesOf(ppOptions), System.out).linkAndWrite(roots, outBase);
 			System.out.println("Linked " + res.order().size() + " modules: wrote " + res.words().size()
 					+ " words to " + Linker.withExt(outBase, ".o64"));

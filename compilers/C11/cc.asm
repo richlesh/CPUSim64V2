@@ -124,6 +124,11 @@
         #for    1, i < argc, 1
             #call   args(i)
             move    opt, r0
+            #call   p_first_char(opt)
+            #if_cond r0 != '-'
+                #call   display_path(opt)
+                move    opt, r0
+            #end_cond
             #call   printf(" %s", opt)
         #end_for
         #call   putline("")

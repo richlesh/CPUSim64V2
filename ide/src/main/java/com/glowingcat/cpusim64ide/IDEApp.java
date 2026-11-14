@@ -1890,7 +1890,10 @@ public class IDEApp {
         cmd.addAll(simArgs.subList(1, simArgs.size()));
         ProcessBuilder pb = new ProcessBuilder(cmd);
         pb.redirectErrorStream(true);
-        if (workDir != null) pb.directory(workDir.toFile());
+        if (workDir != null) {
+            pb.directory(workDir.toFile());
+            pb.environment().put("PWD", workDir.toAbsolutePath().toString());   // the compiler shows paths relative to it
+        }
         Process proc = pb.start();
         nativeProcess = proc;
         proc.getOutputStream().close();                  // compilers do not read stdin

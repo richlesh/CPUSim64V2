@@ -67,6 +67,58 @@ public class Utils {
 	 * @param ctx the parsed MOVE instruction context
 	 * @return {@code true} if the instruction is a redundant no-op move
 	 */
+	/**
+	 * Command line arguments for the "Arguments:" line of the tools: a path
+	 * argument is shown relative to the working directory when that is shorter
+	 * (options starting with '-' are shown as they are).
+	 */
+	public static String displayArgs(java.util.List<String> args) {
+		StringBuilder sb = new StringBuilder();
+		for (String a : args) {
+			if (sb.length() > 0) sb.append(' ');
+			sb.append(a.startsWith("-") ? a : displayPath(a));
+		}
+		return sb.toString();
+	}
+
+	public static String displayArgs(String[] args) {
+		return displayArgs(java.util.Arrays.asList(args));
+	}
+
+	/**
+	 * {@code path} relative to the working directory if that is shorter, else as
+	 * given. The working directory is tried as the JVM sees it and as the shell
+	 * names it ({@code $PWD}), and the path also with symbolic links resolved
+	 * (e.g. /tmp and /private/tmp on macOS).
+	 */
+	public static String displayPath(String path) {
+		try {
+			java.nio.file.Path p = java.nio.file.Path.of(path);
+			if (!p.isAbsolute()) return path;
+			java.util.List<java.nio.file.Path> cwds = new java.util.ArrayList<>();
+			cwds.add(java.nio.file.Path.of("").toAbsolutePath().normalize());
+			String pwd = System.getenv("PWD");
+			if (pwd != null && !pwd.isBlank()) cwds.add(java.nio.file.Path.of(pwd).toAbsolutePath().normalize());
+			java.util.List<java.nio.file.Path> paths = new java.util.ArrayList<>();
+			paths.add(p.normalize());
+			java.nio.file.Path parent = p.normalize().getParent();
+			if (parent != null && java.nio.file.Files.isDirectory(parent))
+				paths.add(parent.toRealPath().resolve(p.getFileName()));
+			String best = path;
+			for (java.nio.file.Path c : cwds) {
+				for (java.nio.file.Path q : paths) {
+					if (q.getRoot() == null || !q.getRoot().equals(c.getRoot())) continue;
+					String rel = c.relativize(q).toString();
+					if (rel.isEmpty()) rel = ".";
+					if (rel.length() < best.length()) best = rel;
+				}
+			}
+			return best;
+		} catch (RuntimeException | java.io.IOException e) {
+			return path;
+		}
+	}
+
 	public static boolean isRedundantSelfMove(CPUSim64Parser.InstrMOVEContext ctx) {
 		if (ctx == null) return false;
 		return isSelfMoveYY(ctx) || isZeroOffsetSelfMove(ctx);

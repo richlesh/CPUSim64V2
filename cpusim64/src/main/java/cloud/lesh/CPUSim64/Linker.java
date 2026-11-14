@@ -583,7 +583,7 @@ public final class Linker {
 
 	public static int run(String[] args) {
 		printBanner(System.out);
-		System.out.println("Arguments: " + String.join(" ", args));
+		System.out.println("Arguments: " + Utils.displayArgs(args));
 		String out = null;
 		List<String> options = new ArrayList<>();
 		List<String> inputs = new ArrayList<>();
