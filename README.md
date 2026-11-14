@@ -29,6 +29,11 @@ The project is designed for educational use, computer architecture instruction, 
 
 ### **Integrated Development Environment**
 - Code editor with syntax highlighting for CPUSim64 assembly
+- Tabbed editor: File → Open opens a file in a new tab (or in the editor if it is empty); a CPUSim64 window opens `.asm` and `.def` files, a compiler window only its own source files (`.c` and `.h` for C11). File → New opens a new CPUSim64 window, File → New Compiler a new compiler window  
+- Run and Debug act on the focused tab and are enabled only for a program: an `.asm` file with `__MAIN__`, or one that is not a library or module (not a `.def` file, no include guard, no `#export`); a C file that defines `main()` (the name is `main_function` in the plug-in's `config.properties`)  
+- Cmd+click (macOS) / Ctrl+click on a file name in an `#include` opens it in a tab; system libraries (`<system/io.asm>`) open read-only, and `<stdio.h>` in a C11 window opens the compiler's `lib/stdio.h`  
+- The debugger switches to (or opens) the tab of the source file that is executing, and follows the breakpoints of every open tab  
+- The AI chat works on the focused tab
 - Line number margin  
 - Custom terminal console with ANSI terminal support and fast rendering  
   - ANSI foreground and background colors (standard and bright)
@@ -42,8 +47,6 @@ The project is designed for educational use, computer architecture instruction, 
 - Configurable Heap Size (MiB) and Stack Size (kiB) in the toolbar  
 - Find and Replace with regex/grep support and capture groups  
 - Shift Selection Left/Right (Cmd+[/]) for block indent/dedent  
-- Cmd+click (macOS) / Ctrl+click to navigate `#include` files  
-- System include files open in a read-only viewer  
 - Configurable fonts, sizes, and syntax highlighting colors  
 - Settings persisted to `~/.cpusim64-settings.json`  
 - Tab key inserts spaces to 4-character tab stops  
@@ -63,7 +66,7 @@ Every sub-folder with a `config.properties` is a plug-in; the folder name is the
 
 | Plug-in file | Purpose |
 |---|---|
-| `config.properties` | `compiler_source` – the compiler's main `.asm` file (required, `.asm` optional)<br>`syntax_language` – RSyntaxTextArea style for highlighting, e.g. `text/c`<br>`file_extensions` – optional, e.g. `c,h` (first is the Save As default)<br>`compiler_mem`, `compiler_stack` – optional run sizes (default `16M`, `256K`) |
+| `config.properties` | `compiler_source` – the compiler's main `.asm` file (required, `.asm` optional)<br>`syntax_language` – RSyntaxTextArea style for highlighting, e.g. `text/c`<br>`file_extensions` – optional, e.g. `c,h` (first is the Save As default)<br>`compiler_mem`, `compiler_stack` – optional run sizes (default `16M`, `256K`)<br>`main_function` – name of the entry function (default `main`): Run and Debug are enabled for a source that defines it |
 | `system_prompt.md` | system prompt for the AI chat of that window |
 | `obj/` | the assembled compiler; rebuilt when missing or older than any `.asm`/`.def` file of the plug-in (kept in `~/.cpusim64/compilers/<name>` if the plug-in folder is read-only) |
 

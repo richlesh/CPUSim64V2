@@ -42,19 +42,19 @@ public class IDEApp {
 
     private JFrame frame;
     private RSyntaxTextArea codeEditor;
-    private EditorPanel editorPanel;
     private TerminalPanel console;
     private JTextField argsField;
     private JTextField optionsField;            // compiler windows only
-    private Path currentFile;
+    /** The focused editor tab; codeEditor is its text area. */
+    private SourceTab cur;
+    private JTabbedPane editorTabs;
+    private final java.util.List<SourceTab> tabs = new java.util.ArrayList<>();
+    /** File being built/run (fixed while a run is in progress, even if another tab is focused). */
+    private Path buildFile;
     private AppSettings settings;
     private static AppSettings sharedSettings;
     private boolean undoInProgress = false;
-    private final java.util.Deque<String> undoStack = new java.util.ArrayDeque<>();
-    private final java.util.Deque<String> redoStack = new java.util.ArrayDeque<>();
     private static final int MAX_UNDO = 200;
-    private String lastSavedText = "";
-    private boolean modified = false;
     private JMenuItem saveItem;
     private JMenuItem undoItem, redoItem;
     private FindReplaceDialog findReplaceDialog;
@@ -180,7 +180,7 @@ public class IDEApp {
         frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         frame.addWindowListener(new WindowAdapter() {
             @Override public void windowClosing(WindowEvent e) {
-                if (promptSaveIfNeeded()) {
+                if (promptSaveAll()) {
                     saveWindowState();
                     frame.dispose();
                 }
@@ -192,13 +192,8 @@ public class IDEApp {
 
         frame.setJMenuBar(createMenuBar());
         frame.add(createMainPanel(), BorderLayout.CENTER);
-        if (plugin != null) {
-            // Highlight the compiler's language (an RSyntaxTextArea style such as text/c)
-            codeEditor.setSyntaxEditingStyle(plugin.getSyntaxLanguage());
-            codeEditor.setAutoIndentEnabled(true);
-        }
-
         applySettings();
+        updateRunnable();
 
         // Center the window on the monitor (default position each session)
         frame.setLocationRelativeTo(null);
@@ -234,14 +229,22 @@ public class IDEApp {
 
     private void applySettings() {
         Font font = new Font(settings.fontName, Font.PLAIN, settings.fontSize);
-        editorPanel.setEditorFont(font);
         console.setFont(settings.fontName, settings.fontSize);
         console.setColors(settings.consoleFg, settings.consoleBg);
         if (consoleToolBar != null) {
             for (Component c : consoleToolBar.getComponents()) c.setFont(font);
         }
+        for (SourceTab t : tabs) applyEditorSettings(t);
+        // Update AI chat panel font
+        if (aiChatPanel != null) aiChatPanel.updateFont();
+    }
+
+    /** Font and syntax colors of one tab's editor. */
+    private void applyEditorSettings(SourceTab t) {
+        Font font = new Font(settings.fontName, Font.PLAIN, settings.fontSize);
+        t.panel.setEditorFont(font);
         // Apply syntax colors to RSyntaxTextArea scheme
-        SyntaxScheme scheme = codeEditor.getSyntaxScheme();
+        SyntaxScheme scheme = t.area.getSyntaxScheme();
         scheme.getStyle(Token.IDENTIFIER).foreground = settings.colors[0]; // Normal
         scheme.getStyle(Token.RESERVED_WORD).foreground = settings.colors[1]; // Keywords
         scheme.getStyle(Token.RESERVED_WORD).font = font.deriveFont(Font.BOLD);
@@ -259,13 +262,12 @@ public class IDEApp {
         scheme.getStyle(Token.DATA_TYPE).foreground = settings.colors[8]; // Conditions
         scheme.getStyle(Token.PREPROCESSOR).foreground = settings.colors[2]; // PP directives same as directives
         scheme.getStyle(Token.PREPROCESSOR).font = font.deriveFont(Font.BOLD);
-        codeEditor.setSyntaxScheme(scheme);
-        codeEditor.setForeground(settings.colors[0]);
-        codeEditor.revalidate();
-        codeEditor.repaint();
-        // Update AI chat panel font
-        if (aiChatPanel != null) aiChatPanel.updateFont();
+        t.area.setSyntaxScheme(scheme);
+        t.area.setForeground(settings.colors[0]);
+        t.area.revalidate();
+        t.area.repaint();
     }
+
 
     private JMenuBar createMenuBar() {
         menuBar = new JMenuBar();
@@ -350,7 +352,7 @@ public class IDEApp {
         openItem.addActionListener(e -> openFile());
         JMenuItem closeItem = new JMenuItem("Close");
         closeItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_W, Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx()));
-        closeItem.addActionListener(e -> { if (promptSaveIfNeeded()) { saveWindowState(); frame.dispose(); } });
+        closeItem.addActionListener(e -> closeTab(cur));
         saveItem = new JMenuItem("Save");
         saveItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx()));
         saveItem.setEnabled(false);
@@ -705,67 +707,9 @@ public class IDEApp {
     }
 
     private JSplitPane createMainPanel() {
-        editorPanel = new EditorPanel();
-        codeEditor = editorPanel.getTextArea();
-        codeEditor.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 14));
-
-        // Cmd+click (macOS) / Ctrl+click to navigate #include files
-        codeEditor.addMouseListener(new MouseAdapter() {
-            public void mouseClicked(MouseEvent e) {
-                boolean modClick = IS_MAC ? e.isMetaDown() : e.isControlDown();
-                if (modClick && e.getButton() == MouseEvent.BUTTON1 && e.getClickCount() == 1 && currentFile != null) {
-                    int pos = codeEditor.viewToModel2D(e.getPoint());
-                    if (pos < 0) return;
-                    String text = codeEditor.getText();
-                    Pattern p = Pattern.compile("#[iI][nN][cC][lL][uU][dD][eE]\\s+[<\"](.+?)[>\"]");
-                    Matcher m = p.matcher(text);
-                    while (m.find()) {
-                        if (pos >= m.start(1) && pos <= m.end(1)) {
-                            String file = m.group(1);
-                            openIncludeFile(file);
-                            break;
-                        }
-                    }
-                }
-            }
-        });
-
-        // Undo/redo key bindings
-        int mod = Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx();
-        codeEditor.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_Z, mod), "safe-undo");
-        codeEditor.getActionMap().put("safe-undo", new javax.swing.AbstractAction() {
-            public void actionPerformed(java.awt.event.ActionEvent e) { performUndo(); }
-        });
-        codeEditor.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_Z, mod | KeyEvent.SHIFT_DOWN_MASK), "safe-redo");
-        codeEditor.getActionMap().put("safe-redo", new javax.swing.AbstractAction() {
-            public void actionPerformed(java.awt.event.ActionEvent e) { performRedo(); }
-        });
-
-        // Shift indent key bindings
-        codeEditor.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_OPEN_BRACKET, mod), "shift-left");
-        codeEditor.getActionMap().put("shift-left", new javax.swing.AbstractAction() {
-            public void actionPerformed(java.awt.event.ActionEvent e) { shiftIndent(false); }
-        });
-        codeEditor.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_CLOSE_BRACKET, mod), "shift-right");
-        codeEditor.getActionMap().put("shift-right", new javax.swing.AbstractAction() {
-            public void actionPerformed(java.awt.event.ActionEvent e) { shiftIndent(true); }
-        });
-
-        codeEditor.getDocument().addDocumentListener(new javax.swing.event.DocumentListener() {
-            public void insertUpdate(javax.swing.event.DocumentEvent e) { markModified(); recordUndo(); }
-            public void removeUpdate(javax.swing.event.DocumentEvent e) { markModified(); recordUndo(); }
-            public void changedUpdate(javax.swing.event.DocumentEvent e) {}
-            private void recordUndo() {
-                if (undoInProgress) return;
-                String current = codeEditor.getText();
-                if (current.equals(lastSavedText)) return;
-                undoStack.push(lastSavedText);
-                if (undoStack.size() > MAX_UNDO) ((java.util.ArrayDeque<String>)undoStack).removeLast();
-                redoStack.clear();
-                lastSavedText = current;
-                updateUndoRedo();
-            }
-        });
+        editorTabs = new JTabbedPane(JTabbedPane.TOP, JTabbedPane.SCROLL_TAB_LAYOUT);
+        editorTabs.addChangeListener(e -> tabSelected());
+        newTab();
         console = new TerminalPanel(settings.fontName, settings.fontSize);
         console.setColors(settings.consoleFg, settings.consoleBg);
         JScrollBar consoleScrollBar = new JScrollBar(JScrollBar.VERTICAL);
@@ -826,7 +770,7 @@ public class IDEApp {
         consolePanel.add(consoleToolBar, BorderLayout.NORTH);
         consolePanel.add(consoleScrollPanel, BorderLayout.CENTER);
 
-        JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, editorPanel, consolePanel);
+        JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, editorTabs, consolePanel);
         splitPane.setResizeWeight(0.7);
 
         var retriever = new com.glowingcat.aichat.DocumentRetriever(
@@ -843,11 +787,11 @@ public class IDEApp {
                 @Override public String getText() { return codeEditor.getText(); }
                 @Override public void setText(String text) {
                     codeEditor.setText(text);
-                    modified = true;
+                    cur.modified = true;
                     saveItem.setEnabled(true);
                 }
                 @Override public String getFilepath() {
-                    return currentFile != null ? currentFile.toString() : null;
+                    return cur.file != null ? cur.file.toString() : null;
                 }
             })
             .preferences(aiPreferences)
@@ -884,6 +828,433 @@ public class IDEApp {
         return mainSplit;
     }
 
+    // ===== Editor tabs =====
+
+    /** A source file open in an editor tab. */
+    final class SourceTab {
+        final EditorPanel panel = new EditorPanel();
+        final RSyntaxTextArea area = panel.getTextArea();
+        final JLabel titleLabel = new JLabel();
+        Path file;                  // null for an untitled tab (or a library resource)
+        String resource;            // classpath resource of a read-only library tab
+        boolean modified;
+        String lastSavedText = "";
+        final java.util.Deque<String> undoStack = new java.util.ArrayDeque<>();
+        final java.util.Deque<String> redoStack = new java.util.ArrayDeque<>();
+
+        boolean readOnly() { return resource != null; }
+        String name() {
+            if (file != null) return file.getFileName().toString();
+            if (resource != null) return Path.of(resource).getFileName().toString();
+            return "untitled";
+        }
+        boolean isEmptyUntitled() {
+            return file == null && resource == null && !modified && area.getText().isEmpty();
+        }
+    }
+
+    /** Opens a new empty tab and focuses it. */
+    private SourceTab newTab() {
+        SourceTab t = new SourceTab();
+        setupEditor(t);
+        tabs.add(t);
+        editorTabs.addTab(t.name(), t.panel);
+        int idx = editorTabs.indexOfComponent(t.panel);
+        editorTabs.setTabComponentAt(idx, tabHeader(t));
+        if (settings != null) applyEditorSettings(t);
+        editorTabs.setSelectedComponent(t.panel);
+        tabSelected();
+        updateTabTitle(t);
+        return t;
+    }
+
+    /** Tab header: the file name and a close button. */
+    private JComponent tabHeader(SourceTab t) {
+        JPanel p = new JPanel(new FlowLayout(FlowLayout.LEFT, 4, 0));
+        p.setOpaque(false);
+        p.add(t.titleLabel);
+        JButton close = new JButton("\u00d7");
+        close.setBorder(BorderFactory.createEmptyBorder(0, 2, 0, 2));
+        close.setContentAreaFilled(false);
+        close.setFocusable(false);
+        close.setToolTipText("Close " + t.name());
+        close.addActionListener(e -> closeTab(t));
+        p.add(close);
+        // clicking the label selects the tab (the custom header would otherwise swallow the click)
+        t.titleLabel.addMouseListener(new MouseAdapter() {
+            @Override public void mousePressed(MouseEvent e) { editorTabs.setSelectedComponent(t.panel); }
+        });
+        return p;
+    }
+
+    private void updateTabTitle(SourceTab t) {
+        String title = t.name() + (t.modified ? " *" : "") + (t.readOnly() ? " (read-only)" : "");
+        t.titleLabel.setText(title);
+        int idx = editorTabs.indexOfComponent(t.panel);
+        if (idx >= 0) {
+            editorTabs.setTitleAt(idx, title);
+            editorTabs.setToolTipTextAt(idx, t.file != null ? t.file.toString()
+                    : t.resource != null ? "<" + t.resource + ">" : "untitled");
+        }
+        if (t == cur) updateTitle();
+    }
+
+    private void updateTitle() {
+        if (frame == null || cur == null) return;
+        boolean named = cur.file != null || cur.resource != null;
+        frame.setTitle(baseTitle() + (named ? " - " + cur.name() : ""));
+    }
+
+    /** Called when another tab is selected: makes it the focused tab. */
+    private void tabSelected() {
+        Component c = editorTabs.getSelectedComponent();
+        for (SourceTab t : tabs) {
+            if (t.panel == c) {
+                cur = t;
+                codeEditor = t.area;
+            }
+        }
+        if (cur == null) return;
+        updateTitle();
+        if (saveItem != null) saveItem.setEnabled(cur.modified && !cur.readOnly());
+        if (undoItem != null) updateUndoRedo();
+        updateRunnable();
+    }
+
+    /** Key bindings, change tracking, include links and syntax style of a tab's editor. */
+    private void setupEditor(SourceTab t) {
+        RSyntaxTextArea a = t.area;
+        if (plugin != null) {
+            // Highlight the compiler's language (an RSyntaxTextArea style such as text/c)
+            a.setSyntaxEditingStyle(plugin.getSyntaxLanguage());
+            a.setAutoIndentEnabled(true);
+        }
+        // Undo/redo key bindings
+        int mod = Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx();
+        a.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_Z, mod), "safe-undo");
+        a.getActionMap().put("safe-undo", new javax.swing.AbstractAction() {
+            public void actionPerformed(java.awt.event.ActionEvent e) { performUndo(); }
+        });
+        a.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_Z, mod | KeyEvent.SHIFT_DOWN_MASK), "safe-redo");
+        a.getActionMap().put("safe-redo", new javax.swing.AbstractAction() {
+            public void actionPerformed(java.awt.event.ActionEvent e) { performRedo(); }
+        });
+        // Shift indent key bindings
+        a.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_OPEN_BRACKET, mod), "shift-left");
+        a.getActionMap().put("shift-left", new javax.swing.AbstractAction() {
+            public void actionPerformed(java.awt.event.ActionEvent e) { shiftIndent(false); }
+        });
+        a.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_CLOSE_BRACKET, mod), "shift-right");
+        a.getActionMap().put("shift-right", new javax.swing.AbstractAction() {
+            public void actionPerformed(java.awt.event.ActionEvent e) { shiftIndent(true); }
+        });
+        a.getDocument().addDocumentListener(new javax.swing.event.DocumentListener() {
+            public void insertUpdate(javax.swing.event.DocumentEvent e) { changed(); }
+            public void removeUpdate(javax.swing.event.DocumentEvent e) { changed(); }
+            public void changedUpdate(javax.swing.event.DocumentEvent e) {}
+            private void changed() {
+                runnableTimer.restart();
+                if (undoInProgress) return;
+                if (!t.modified) {
+                    t.modified = true;
+                    updateTabTitle(t);
+                    if (t == cur && saveItem != null) saveItem.setEnabled(!t.readOnly());
+                }
+                String current = a.getText();
+                if (current.equals(t.lastSavedText)) return;
+                t.undoStack.push(t.lastSavedText);
+                if (t.undoStack.size() > MAX_UNDO) ((java.util.ArrayDeque<String>) t.undoStack).removeLast();
+                t.redoStack.clear();
+                t.lastSavedText = current;
+                if (t == cur) updateUndoRedo();
+            }
+        });
+        // Cmd+click (macOS) / Ctrl+click on a file name in an #include opens it in a tab
+        a.setHyperlinksEnabled(true);
+        a.setLinkScanningMask(IS_MAC ? InputEvent.META_DOWN_MASK : InputEvent.CTRL_DOWN_MASK);
+        a.setLinkGenerator((ta, offs) -> includeLinkAt(t, offs));
+    }
+
+    // ----- #include links
+
+    private static final Pattern INCLUDE_LINE = Pattern.compile("^[ \t]*#[ \t]*include[ \t]*([<\"])([^>\"\r\n]+)[>\"]",
+            Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
+
+    /** The #include link at offset {@code offs} (a token start on an #include line), or null. */
+    private org.fife.ui.rsyntaxtextarea.LinkGeneratorResult includeLinkAt(SourceTab t, int offs) {
+        String text = t.area.getText();
+        if (offs < 0 || offs > text.length()) return null;
+        int lineStart = text.lastIndexOf('\n', Math.max(0, offs - 1)) + 1;
+        if (offs > 0 && offs <= text.length() && text.charAt(offs - 1) == '\n') lineStart = offs;
+        int lineEnd = text.indexOf('\n', lineStart);
+        if (lineEnd < 0) lineEnd = text.length();
+        Matcher m = INCLUDE_LINE.matcher(text.substring(lineStart, lineEnd));
+        if (!m.find()) return null;
+        if (offs > lineStart + m.end(2)) return null;
+        final String name = m.group(2).trim();
+        final boolean system = m.group(1).equals("<");
+        final int src = offs;
+        return new org.fife.ui.rsyntaxtextarea.LinkGeneratorResult() {
+            @Override public javax.swing.event.HyperlinkEvent execute() {
+                SwingUtilities.invokeLater(() -> openInclude(t, name, system));
+                return null;
+            }
+            @Override public int getSourceOffset() { return src; }
+        };
+    }
+
+    /** True if this window may open a file with this name (.asm/.def, or the compiler's extensions). */
+    private boolean canOpen(String fileName) {
+        String n = fileName.toLowerCase(java.util.Locale.ROOT);
+        if (plugin == null) return n.endsWith(".asm") || n.endsWith(".def");
+        return !plugin.getFileExtensions().isEmpty() && plugin.acceptsFile(fileName);
+    }
+
+    private String allowedDescription() {
+        if (plugin == null) return ".asm and .def files";
+        java.util.List<String> e = plugin.getFileExtensions();
+        return e.isEmpty() ? plugin.getName() + " source files"
+                : String.join(", ", e.stream().map(x -> "." + x).toList()) + " files";
+    }
+
+    /** Opens the file named in an #include of {@code from} in a tab. */
+    private void openInclude(SourceTab from, String name, boolean system) {
+        String file = name;
+        if (plugin != null && system && !name.contains(".")) file = name + ".h";	// <stdio> = <stdio.h>
+        if (!canOpen(file)) {
+            appendConsole("This " + baseTitle() + " window opens only " + allowedDescription() + ": " + name + "\n");
+            return;
+        }
+        if (!system) {
+            Path dir = from.file != null ? from.file.toAbsolutePath().getParent() : null;
+            if (dir == null && from.resource != null) {
+                // a local include in a library resource: another resource next to it
+                String parent = Path.of(from.resource).getParent() == null ? "" : Path.of(from.resource).getParent() + "/";
+                openResource(parent + file);
+                return;
+            }
+            if (dir == null) dir = lastDirectory != null ? lastDirectory.toPath() : Path.of("").toAbsolutePath();
+            Path target = dir.resolve(file).normalize();
+            if (Files.isRegularFile(target)) loadFile(target);
+            else appendConsole("Include file not found: " + target + "\n");
+            return;
+        }
+        if (plugin != null) {
+            // <name.h>: the compiler's library headers (lib/ in the plug-in folder)
+            Path target = plugin.getDir().resolve("lib").resolve(file).normalize();
+            if (Files.isRegularFile(target)) loadFile(target);
+            else appendConsole("Library header not found: " + target + "\n");
+            return;
+        }
+        openResource(file.startsWith("/") ? file.substring(1) : file);
+    }
+
+    /** Opens a system/ADT library (classpath resource) in a read-only tab. */
+    private SourceTab openResource(String resource) {
+        for (SourceTab t : tabs) {
+            if (resource.equals(t.resource)) {
+                editorTabs.setSelectedComponent(t.panel);
+                return t;
+            }
+        }
+        try (InputStream is = IDEApp.class.getResourceAsStream("/" + resource)) {
+            if (is == null) {
+                appendConsole("Library file not found: <" + resource + ">\n");
+                return null;
+            }
+            String content = new String(is.readAllBytes(), java.nio.charset.StandardCharsets.UTF_8);
+            SourceTab t = cur != null && cur.isEmptyUntitled() ? cur : newTab();
+            t.resource = resource;
+            setTabText(t, expandTabs(content));
+            t.area.setEditable(false);
+            updateTabTitle(t);
+            tabSelected();
+            return t;
+        } catch (IOException e) {
+            appendConsole("Error opening <" + resource + ">: " + e.getMessage() + "\n");
+            return null;
+        }
+    }
+
+    /** Replaces a tab's text without recording an undo step or marking it modified. */
+    private void setTabText(SourceTab t, String content) {
+        undoInProgress = true;
+        t.area.setText(content);
+        t.area.setCaretPosition(0);
+        undoInProgress = false;
+        t.undoStack.clear();
+        t.redoStack.clear();
+        t.lastSavedText = t.area.getText();
+        t.modified = false;
+        if (t == cur) {
+            if (saveItem != null) saveItem.setEnabled(false);
+            updateUndoRedo();
+        }
+        updateRunnable();
+    }
+
+    private static String expandTabs(String content) {
+        if (content.indexOf('\t') < 0) return content;
+        StringBuilder sb = new StringBuilder();
+        int col = 0;
+        for (int i = 0; i < content.length(); i++) {
+            char c = content.charAt(i);
+            if (c == '\t') {
+                int spaces = 4 - (col % 4);
+                sb.append(" ".repeat(spaces));
+                col += spaces;
+            } else if (c == '\n') {
+                sb.append(c);
+                col = 0;
+            } else {
+                sb.append(c);
+                col++;
+            }
+        }
+        return sb.toString();
+    }
+
+    /** Closes a tab (asking to save it); closing the last tab closes the window. */
+    private void closeTab(SourceTab t) {
+        if (t.modified) {
+            editorTabs.setSelectedComponent(t.panel);
+            if (!promptSaveIfNeeded()) return;
+        }
+        if (tabs.size() == 1) {
+            saveWindowState();
+            frame.dispose();
+            return;
+        }
+        tabs.remove(t);
+        editorTabs.remove(t.panel);
+        tabSelected();
+    }
+
+    /** Asks to save every modified tab; false if the user cancelled. */
+    private boolean promptSaveAll() {
+        for (SourceTab t : new java.util.ArrayList<>(tabs)) {
+            if (!t.modified) continue;
+            editorTabs.setSelectedComponent(t.panel);
+            if (!promptSaveIfNeeded()) return false;
+        }
+        return true;
+    }
+
+    // ----- Run / Debug enablement
+
+    private final javax.swing.Timer runnableTimer = new javax.swing.Timer(300, e -> updateRunnable());
+    { runnableTimer.setRepeats(false); }
+    private boolean debuggerOpen = false;
+
+    private static final Pattern MAIN_LABEL = Pattern.compile("(?im)^[ \t]*__MAIN__[ \t]*:");
+    private static final Pattern EXPORT_DIRECTIVE = Pattern.compile("(?im)^[ \t]*#export\\b");
+    private static final Pattern INCLUDE_GUARD = Pattern.compile("(?is)^#ifndef[ \t]+(\\w+)\\s+#define[ \t]+\\1\\b");
+
+    /** Removes // and /* *\/ comments, and (if {@code literals}) string and character literals. */
+    static String stripComments(String text, boolean literals) {
+        StringBuilder sb = new StringBuilder(text.length());
+        int n = text.length();
+        for (int i = 0; i < n; i++) {
+            char c = text.charAt(i);
+            if (c == '/' && i + 1 < n && text.charAt(i + 1) == '/') {
+                while (i < n && text.charAt(i) != '\n') i++;
+                if (i < n) sb.append('\n');
+            } else if (c == '/' && i + 1 < n && text.charAt(i + 1) == '*') {
+                int end = text.indexOf("*/", i + 2);
+                if (end < 0) end = n - 2;
+                for (int k = i; k < end + 2 && k < n; k++) if (text.charAt(k) == '\n') sb.append('\n');
+                sb.append(' ');
+                i = end + 1;
+            } else if (literals && (c == '"' || c == '\'')) {
+                int k = i + 1;
+                while (k < n && text.charAt(k) != c && text.charAt(k) != '\n') {
+                    if (text.charAt(k) == '\\') k++;
+                    k++;
+                }
+                sb.append(c).append(c);
+                i = k;
+            } else {
+                sb.append(c);
+            }
+        }
+        return sb.toString();
+    }
+
+    /**
+     * True if the tab holds a program that can be run: an assembly program with
+     * a {@code __MAIN__:} label, or one that is not a library or module (not a
+     * .def file, no include guard, no #export); a C program that defines the
+     * compiler's main function.
+     */
+    boolean isRunnable(SourceTab t) {
+        String text = t.area.getText();
+        String n = t.name().toLowerCase(java.util.Locale.ROOT);
+        if (plugin == null) {
+            if (n.endsWith(".def")) return false;
+            if (MAIN_LABEL.matcher(text).find()) return true;
+            if (t.readOnly() || text.isBlank()) return false;
+            String code = stripComments(text, false).stripLeading();
+            if (INCLUDE_GUARD.matcher(code).find()) return false;
+            return !EXPORT_DIRECTIVE.matcher(code).find();
+        }
+        if (n.endsWith(".h")) return false;
+        return definesFunction(text, plugin.getMainFunction());
+    }
+
+    /** True if C source {@code text} defines (not just declares) the function {@code name}. */
+    static boolean definesFunction(String text, String name) {
+        String code = stripComments(text, true);
+        return Pattern.compile("(?<![\\w.>])" + Pattern.quote(name) + "\\s*\\(([^()]|\\([^()]*\\))*\\)\\s*\\{")
+                .matcher(code).find();
+    }
+
+    /** Enables Run and Debug when the focused tab is a runnable program. */
+    private void updateRunnable() {
+        if (runBtn == null || cur == null || runThread != null) return;
+        boolean ok = !debuggerOpen && isRunnable(cur);
+        runBtn.setEnabled(ok);
+        debugBtn.setEnabled(ok);
+        if (runItem != null) runItem.setEnabled(ok);
+        if (debugItem != null) debugItem.setEnabled(ok);
+    }
+
+    // ----- Debugger: editors of the tabs
+
+    /** Gives the debugger the tabs of this window, opening the source files it steps into. */
+    private DebuggerWindow.SourceProvider sourceProvider(Path programSource) {
+        final Path dir = programSource.toAbsolutePath().getParent();
+        return new DebuggerWindow.SourceProvider() {
+            @Override public EditorPanel editorFor(String fileName, boolean open) {
+                SourceTab found = null;
+                for (SourceTab t : tabs) {
+                    if (!t.name().equals(fileName)) continue;
+                    if (found == null || (t.file != null && dir.equals(t.file.toAbsolutePath().getParent()))) found = t;
+                }
+                if (found == null && open && canOpen(fileName)) {
+                    Path p = dir.resolve(fileName);
+                    if (Files.isRegularFile(p)) {
+                        loadFile(p);
+                        found = cur;
+                    } else if (plugin == null) {
+                        for (String lib : new String[] {"system/", "adt/"}) {
+                            if (IDEApp.class.getResource("/" + lib + fileName) != null) {
+                                found = openResource(lib + fileName);
+                                break;
+                            }
+                        }
+                    }
+                }
+                if (found != null && open && found != cur) editorTabs.setSelectedComponent(found.panel);
+                return found == null ? null : found.panel;
+            }
+            @Override public java.util.Map<String, EditorPanel> openEditors() {
+                java.util.Map<String, EditorPanel> m = new java.util.LinkedHashMap<>();
+                for (SourceTab t : tabs) m.putIfAbsent(t.name(), t.panel);
+                return m;
+            }
+        };
+    }
+
     private void showAIChatSettings() {
         AIChatPreferencesDialog dlg = new AIChatPreferencesDialog(frame, aiPreferences);
         dlg.setVisible(true);
@@ -916,68 +1287,63 @@ public class IDEApp {
     }
 
     private void openFile() {
-        if (!promptSaveIfNeeded()) return;
         FileDialog fd = new FileDialog(frame, plugin == null ? "Open Assembly File"
                 : "Open " + plugin.getName() + " Source File", FileDialog.LOAD);
         if (lastDirectory != null) fd.setDirectory(lastDirectory.getAbsolutePath());
         else fd.setDirectory(System.getProperty("user.dir"));
-        fd.setFilenameFilter((dir, name) -> plugin == null ? name.endsWith(".asm") : plugin.acceptsFile(name));
+        fd.setFilenameFilter((dir, name) -> canOpen(name));
         fd.setVisible(true);
         if (fd.getFile() != null) {
             lastDirectory = new File(fd.getDirectory());
-            loadFile(Path.of(fd.getDirectory(), fd.getFile()));
+            Path p = Path.of(fd.getDirectory(), fd.getFile());
+            if (!canOpen(p.getFileName().toString())) {
+                JOptionPane.showMessageDialog(frame, "This " + baseTitle() + " window opens only "
+                        + allowedDescription() + ".", baseTitle(), JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+            loadFile(p);
         }
     }
 
+    /**
+     * Opens {@code path} in a tab: selects its tab if it is already open, else loads it
+     * into the editor if that is an empty untitled tab, else into a new tab.
+     */
     void loadFile(Path path) {
-        console.clear();
-        try {
-            String content = Files.readString(path);
-            if (content.indexOf('\t') >= 0) {
-                StringBuilder sb = new StringBuilder();
-                int col = 0;
-                for (int i = 0; i < content.length(); i++) {
-                    char c = content.charAt(i);
-                    if (c == '\t') {
-                        int spaces = 4 - (col % 4);
-                        sb.append(" ".repeat(spaces));
-                        col += spaces;
-                    } else if (c == '\n') {
-                        sb.append(c);
-                        col = 0;
-                    } else {
-                        sb.append(c);
-                        col++;
-                    }
-                }
-                content = sb.toString();
+        Path abs = path.toAbsolutePath().normalize();
+        for (SourceTab t : tabs) {
+            if (t.file != null && t.file.toAbsolutePath().normalize().equals(abs)) {
+                editorTabs.setSelectedComponent(t.panel);
+                return;
             }
-            undoInProgress = true;
-            codeEditor.setText(content);
-            codeEditor.setCaretPosition(0);
-            undoInProgress = false;
-            currentFile = path;
-            frame.setTitle(baseTitle() + " - " + path.getFileName());
-            undoStack.clear();
-            redoStack.clear();
-            lastSavedText = codeEditor.getText();
-            modified = false;
-            saveItem.setEnabled(false);
-            updateUndoRedo();
+        }
+        try {
+            String content = expandTabs(Files.readString(path));
+            SourceTab t = cur != null && cur.isEmptyUntitled() ? cur : newTab();
+            t.file = path;
+            setTabText(t, content);
+            updateTabTitle(t);
+            if (t.file.getParent() != null) lastDirectory = t.file.toAbsolutePath().getParent().toFile();
+            tabSelected();
         } catch (IOException e) {
-            appendConsole("Error opening file: " + e.getMessage());
+            appendConsole("Error opening file: " + e.getMessage() + "\n");
         }
     }
 
     private void saveFile() {
-        if (currentFile == null) {
+        if (cur.readOnly()) {
+            appendConsole(cur.name() + " is a read-only library file.\n");
+            return;
+        }
+        if (cur.file == null) {
             saveFileAs();
             return;
         }
         try {
-            Files.writeString(currentFile, codeEditor.getText());
-            modified = false;
+            Files.writeString(cur.file, codeEditor.getText());
+            cur.modified = false;
             saveItem.setEnabled(false);
+            updateTabTitle(cur);
         } catch (IOException e) {
             appendConsole("Error saving file: " + e.getMessage() + "\n");
         }
@@ -992,55 +1358,62 @@ public class IDEApp {
                 : plugin.getFileExtensions().isEmpty() ? "" : "." + plugin.getFileExtensions().get(0);
         if (lastDirectory != null) fd.setDirectory(lastDirectory.getAbsolutePath());
         else fd.setDirectory(System.getProperty("user.dir"));
-        if (currentFile != null) fd.setFile(currentFile.getFileName().toString());
+        if (cur.file != null) fd.setFile(cur.file.getFileName().toString());
         else fd.setFile("untitled" + defaultExt);
-        fd.setFilenameFilter((dir, name) -> plugin == null ? name.endsWith(".asm") : plugin.acceptsFile(name));
+        fd.setFilenameFilter((dir, name) -> canOpen(name));
         fd.setVisible(true);
         if (fd.getFile() != null) {
             lastDirectory = new File(fd.getDirectory());
-            currentFile = Path.of(fd.getDirectory(), fd.getFile());
-            if (plugin == null ? !currentFile.toString().endsWith(".asm")
-                    : !defaultExt.isEmpty() && !currentFile.getFileName().toString().contains(".")) {
-                currentFile = Path.of(currentFile.toString() + defaultExt);
+            Path target = Path.of(fd.getDirectory(), fd.getFile());
+            if (!target.getFileName().toString().contains(".") || (plugin == null && !canOpen(target.getFileName().toString())))
+                target = Path.of(target.toString() + defaultExt);
+            if (!canOpen(target.getFileName().toString())) {
+                JOptionPane.showMessageDialog(frame, "This " + baseTitle() + " window saves only "
+                        + allowedDescription() + ".", baseTitle(), JOptionPane.WARNING_MESSAGE);
+                return;
             }
+            cur.resource = null;
+            cur.area.setEditable(true);
+            cur.file = target;
             saveFile();
-            frame.setTitle(baseTitle() + " - " + currentFile.getFileName());
+            updateTabTitle(cur);
+            updateRunnable();
         }
     }
 
     private void markModified() {
-        if (!undoInProgress && !modified) {
-            modified = true;
+        if (!undoInProgress && !cur.modified) {
+            cur.modified = true;
             saveItem.setEnabled(true);
         }
         updateUndoRedo();
     }
 
     private void updateUndoRedo() {
-        undoItem.setEnabled(!undoStack.isEmpty());
-        redoItem.setEnabled(!redoStack.isEmpty());
+        undoItem.setEnabled(!cur.undoStack.isEmpty());
+        redoItem.setEnabled(!cur.redoStack.isEmpty());
     }
 
     private void performUndo() {
-        if (undoStack.isEmpty()) return;
+        if (cur.undoStack.isEmpty()) return;
         undoInProgress = true;
-        redoStack.push(lastSavedText);
-        lastSavedText = undoStack.pop();
+        cur.redoStack.push(cur.lastSavedText);
+        cur.lastSavedText = cur.undoStack.pop();
         int caret = codeEditor.getCaretPosition();
-        codeEditor.setText(lastSavedText);
-        codeEditor.setCaretPosition(Math.min(caret, lastSavedText.length()));
+        codeEditor.setText(cur.lastSavedText);
+        codeEditor.setCaretPosition(Math.min(caret, cur.lastSavedText.length()));
         undoInProgress = false;
         updateUndoRedo();
     }
 
     private void performRedo() {
-        if (redoStack.isEmpty()) return;
+        if (cur.redoStack.isEmpty()) return;
         undoInProgress = true;
-        undoStack.push(lastSavedText);
-        lastSavedText = redoStack.pop();
+        cur.undoStack.push(cur.lastSavedText);
+        cur.lastSavedText = cur.redoStack.pop();
         int caret = codeEditor.getCaretPosition();
-        codeEditor.setText(lastSavedText);
-        codeEditor.setCaretPosition(Math.min(caret, lastSavedText.length()));
+        codeEditor.setText(cur.lastSavedText);
+        codeEditor.setCaretPosition(Math.min(caret, cur.lastSavedText.length()));
         undoInProgress = false;
         updateUndoRedo();
     }
@@ -1082,13 +1455,13 @@ public class IDEApp {
         } catch (javax.swing.text.BadLocationException ignored) {}
     }
     private boolean promptSaveIfNeeded() {
-        if (!modified) return true;
+        if (!cur.modified) return true;
         int result = JOptionPane.showConfirmDialog(frame,
             "Do you want to save changes?", "CPUSim64",
             JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE);
         if (result == JOptionPane.YES_OPTION) {
             saveFile();
-            return !modified; // false if save was cancelled
+            return !cur.modified; // false if save was cancelled
         }
         return result == JOptionPane.NO_OPTION;
     }
@@ -1130,17 +1503,18 @@ public class IDEApp {
     }
 
     private void runWithMode(String mode) {
-        if (plugin != null && currentFile == null) saveFileAs();   // the compiler needs a file on disk
-        if (currentFile == null) {
+        if (plugin != null && cur.file == null) saveFileAs();   // the compiler needs a file on disk
+        if (cur.file == null) {
             appendConsole(plugin == null ? "No file open. Open an .asm file first.\n"
                     : "No file open. Open or save a " + plugin.getName() + " source file first.\n");
             return;
         }
-        if (modified && !promptSaveIfNeeded()) return;
-        if (plugin != null && currentFile.toString().endsWith(".asm")) {
+        if (cur.modified && !promptSaveIfNeeded()) return;
+        if (plugin != null && cur.file.toString().endsWith(".asm")) {
             appendConsole("A " + plugin.getName() + " source file must not have the .asm extension.\n");
             return;
         }
+        buildFile = cur.file;
 
         // Show splash screen every 10 Run/Debug actions when not licensed
         runDebugCount++;
@@ -1281,6 +1655,7 @@ public class IDEApp {
                 runThread = null;
                 SwingUtilities.invokeLater(() -> {
                     runBtn.setText("Run"); runItem.setText("Run");
+                    updateRunnable();
                     console.disableInput();
                     console.setInterruptHandler(null);
                 });
@@ -1362,7 +1737,7 @@ public class IDEApp {
 
     /** Path of the current file without its (last) extension; the compiler writes {@code <base>.asm}. */
     private String generatedBase() {
-        String base = currentFile.toString();
+        String base = buildFile.toString();
         if (plugin == null) {
             return base.endsWith(".asm") ? base.substring(0, base.length() - 4) : base;
         }
@@ -1442,7 +1817,7 @@ public class IDEApp {
             }
         }
 
-        Path source = currentFile.toAbsolutePath();
+        Path source = buildFile.toAbsolutePath();
         Path asm = Path.of(generatedBase() + ".asm");
         Files.deleteIfExists(asm);           // never run a stale result of an earlier compile
         System.out.println("> Compiling " + source.getFileName() + "...");
@@ -1570,16 +1945,17 @@ public class IDEApp {
      * assembly source.
      */
     private void launchCompilerDebugger() {
-        if (currentFile == null) saveFileAs();
-        if (currentFile == null) {
+        if (cur.file == null) saveFileAs();
+        if (cur.file == null) {
             appendConsole("No file open. Open or save a " + plugin.getName() + " source file first.\n");
             return;
         }
-        if (modified && !promptSaveIfNeeded()) return;
-        if (currentFile.toString().endsWith(".asm")) {
+        if (cur.modified && !promptSaveIfNeeded()) return;
+        if (cur.file.toString().endsWith(".asm")) {
             appendConsole("A " + plugin.getName() + " source file must not have the .asm extension.\n");
             return;
         }
+        buildFile = cur.file;
         runDebugCount++;
         if (runDebugCount % 10 == 0 && !LicenseDialog.isLicensed(settings)) {
             SplashScreen.show();
@@ -1620,11 +1996,11 @@ public class IDEApp {
             launchCompilerDebugger();
             return;
         }
-        if (currentFile == null) {
+        if (cur.file == null) {
             appendConsole("No file open. Open an .asm file first.\n");
             return;
         }
-        if (modified && !promptSaveIfNeeded()) return;
+        if (cur.modified && !promptSaveIfNeeded()) return;
 
         // Show splash screen every 10 Run/Debug actions when not licensed
         runDebugCount++;
@@ -1634,7 +2010,10 @@ public class IDEApp {
 
         console.clear();
 
-        String base = currentFile.toString();
+        buildFile = cur.file;
+        final SourceTab debugTab = cur;
+        final Path debugFile = cur.file;
+        String base = cur.file.toString();
         if (base.endsWith(".asm")) base = base.substring(0, base.length() - 4);
         final String asmFile = base + ".asm";
         final String baseName = Path.of(base).getFileName().toString();
@@ -1644,7 +2023,7 @@ public class IDEApp {
         new Thread(() -> {
             try {
                 // Assemble with --DEBUG
-                SwingUtilities.invokeLater(() -> appendConsole("> Assembling (debug) " + currentFile.getFileName() + "...\n"));
+                SwingUtilities.invokeLater(() -> appendConsole("> Assembling (debug) " + debugFile.getFileName() + "...\n"));
                 int asmResult = Assembler.run(assemblerArgs(Path.of(asmFile), true));
                 if (asmResult != 0) {
                     SwingUtilities.invokeLater(() -> appendConsole("\nAssembly failed.\n"));
@@ -1675,42 +2054,17 @@ public class IDEApp {
 
                 SwingUtilities.invokeLater(() -> {
                     appendConsole("> Opening debugger...\n");
-                    runItem.setEnabled(false);
-                    debugItem.setEnabled(false);
-                    runBtn.setEnabled(false);
-                    debugBtn.setEnabled(false);
-                    Runnable onClose = () -> { runItem.setEnabled(true); debugItem.setEnabled(true); runBtn.setEnabled(true); debugBtn.setEnabled(true); };
-                    new DebuggerWindow(frame, objFile, asmFile, editorPanel, argsField.getText().trim(), settings, console, onClose);
+                    debuggerOpen = true;
+                    updateRunnable();
+                    Runnable onClose = () -> { debuggerOpen = false; updateRunnable(); };
+                    editorTabs.setSelectedComponent(debugTab.panel);
+                    new DebuggerWindow(frame, objFile, asmFile, debugTab.panel, sourceProvider(debugFile),
+                            argsField.getText().trim(), settings, console, onClose);
                 });
             } catch (Exception e) {
                 SwingUtilities.invokeLater(() -> appendConsole("Error: " + e.getMessage() + "\n"));
             }
         }).start();
-    }
-
-    private void openIncludeFile(String file) {
-        // Try local file first
-        if (currentFile != null) {
-            Path dir = currentFile.getParent();
-            Path target = dir.resolve(file);
-            if (Files.exists(target)) {
-                SwingUtilities.invokeLater(() -> {
-                    IDEApp app = new IDEApp();
-                    app.createAndShowGUI();
-                    app.loadFile(target);
-                });
-                return;
-            }
-        }
-        // Try JAR resource
-        InputStream is = IDEApp.class.getResourceAsStream("/" + file);
-        if (is != null) {
-            try {
-                String content = new String(is.readAllBytes(), java.nio.charset.StandardCharsets.UTF_8);
-                is.close();
-                openReadOnlyViewer(file, content);
-            } catch (IOException ignored) {}
-        }
     }
 
     private void openReadOnlyViewer(String title, String content) {

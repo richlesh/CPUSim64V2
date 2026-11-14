@@ -12,8 +12,26 @@ import java.util.List;
 import cloud.lesh.CPUSim64.*;
 
 public class DebuggerWindow extends JFrame {
+    /**
+     * Supplies the editors of the IDE window's tabs, so the debugger can show the
+     * execution line and breakpoints in whichever source file the program is in.
+     */
+    public interface SourceProvider {
+        /** The editor of the tab showing {@code fileName} (a .srcmap file name), opening it if
+         *  {@code open} is true and it can be found; null if not available. */
+        EditorPanel editorFor(String fileName, boolean open);
+        /** Editors of the open tabs, by file name. */
+        Map<String, EditorPanel> openEditors();
+    }
+
+    private record Loc(String file, int line) {}
+
     private Simulator sim;
-    private final EditorPanel editorPanel;
+    /** Editor showing the current execution line. */
+    private EditorPanel editorPanel;
+    private final SourceProvider sources;
+    /** Editors whose breakpoints this debugger follows (listener attached), by file name. */
+    private final Map<EditorPanel, String> attached = new HashMap<>();
     private JTextArea disasmArea;
     private JTable regTable;
     private DefaultTableModel regModel;
@@ -29,8 +47,10 @@ public class DebuggerWindow extends JFrame {
     private final Map<Long, Integer> stackDisplayMode = new HashMap<>();
     private final List<Long> stackRowAddresses = new ArrayList<>();
 
-    private final Map<Integer, Long> sourceLineToAddr = new HashMap<>();
-    private final Map<Long, Integer> addrToSourceLine = new HashMap<>();
+    /** file name -> (source line -> first address) */
+    private final Map<String, Map<Integer, Long>> sourceLineToAddr = new HashMap<>();
+    /** address -> source file and line */
+    private final Map<Long, Loc> addrToSourceLine = new HashMap<>();
     private JSplitPane mainSplit;
     private JSplitPane regStackSplit;
     private final AppSettings settings;
@@ -39,8 +59,18 @@ public class DebuggerWindow extends JFrame {
     private final InputStream origIn = System.in;
 
     public DebuggerWindow(JFrame parent, String objFilePath, String sourceFilePath, EditorPanel editorPanel, String userArgs, AppSettings settings, TerminalPanel console, Runnable onClose) {
+        this(parent, objFilePath, sourceFilePath, editorPanel, null, userArgs, settings, console, onClose);
+    }
+
+    public DebuggerWindow(JFrame parent, String objFilePath, String sourceFilePath, EditorPanel editorPanel,
+                          SourceProvider sources, String userArgs, AppSettings settings, TerminalPanel console, Runnable onClose) {
         super("CPUSim64 Debugger");
         this.editorPanel = editorPanel;
+        final String mainFile = Path.of(sourceFilePath).getFileName().toString();
+        this.sources = sources != null ? sources : new SourceProvider() {
+            @Override public EditorPanel editorFor(String f, boolean open) { return f.equals(mainFile) ? editorPanel : null; }
+            @Override public Map<String, EditorPanel> openEditors() { return Map.of(mainFile, editorPanel); }
+        };
         this.settings = settings;
         Font monoFont = new Font(settings.fontName, Font.PLAIN, settings.fontSize);
 
@@ -108,16 +138,8 @@ public class DebuggerWindow extends JFrame {
         buildLineMap(objPath, sourceFilePath);
         syncBreakpointsFromSource();
 
-        // Listen for source breakpoint changes during debugging
-        editorPanel.setBreakpointChangeListener((srcLine) -> {
-            syncBreakpointsFromSource();
-            Long addr = sourceLineToAddr.get(srcLine);
-            if (addr != null) {
-                scrollDisassemblyToAddress(addr);
-            } else {
-                updateDisassembly(false);
-            }
-        });
+        // Listen for source breakpoint changes during debugging (in every open tab)
+        attachEditors();
 
         // Build UI
         setSize(settings.debugWindowWidth, settings.debugWindowHeight);
@@ -140,7 +162,10 @@ public class DebuggerWindow extends JFrame {
                     runningThread = null;
                 }
                 editorPanel.clearExecutionLine();
-                editorPanel.setBreakpointChangeListener(null);
+                for (EditorPanel p : attached.keySet()) {
+                    p.clearExecutionLine();
+                    p.setBreakpointChangeListener(null);
+                }
                 System.setOut(origOut);
                 System.setErr(origErr);
                 System.setIn(origIn);
@@ -413,33 +438,59 @@ public class DebuggerWindow extends JFrame {
         return breakpointAddresses.contains(pc);
     }
 
-    /** Sync source line breakpoints to debugger address breakpoints */
-    private void syncBreakpointsFromSource() {
-        Set<Integer> srcBps = editorPanel.getEnabledBreakpoints();
-        // Build the expected set of addresses from source breakpoints
-        Set<Long> expected = new HashSet<>();
-        for (int line : srcBps) {
-            Long addr = sourceLineToAddr.get(line);
-            if (addr != null) expected.add(addr);
+    /** Follows the breakpoints of every open editor tab (attaches a change listener once per editor). */
+    private void attachEditors() {
+        for (var e : sources.openEditors().entrySet()) {
+            EditorPanel p = e.getValue();
+            String file = e.getKey();
+            if (attached.containsKey(p)) continue;
+            attached.put(p, file);
+            p.setBreakpointChangeListener((srcLine) -> {
+                syncBreakpointsFromSource();
+                Long addr = sourceLineToAddr.getOrDefault(file, Map.of()).get(srcLine);
+                if (addr != null) {
+                    scrollDisassemblyToAddress(addr);
+                } else {
+                    updateDisassembly(false);
+                }
+            });
         }
-        // Add missing, remove stale (only for addresses that have a source mapping)
-        for (var entry : addrToSourceLine.entrySet()) {
-            long addr = entry.getKey();
-            if (expected.contains(addr)) {
-                breakpointAddresses.add(addr);
-            } else {
-                breakpointAddresses.remove(addr);
+    }
+
+    /** Sync source line breakpoints (of every open tab) to debugger address breakpoints */
+    private void syncBreakpointsFromSource() {
+        attachEditors();
+        for (var e : sources.openEditors().entrySet()) {
+            String file = e.getKey();
+            Map<Integer, Long> lines = sourceLineToAddr.get(file);
+            if (lines == null) continue;
+            // Build the expected set of addresses from the file's source breakpoints
+            Set<Long> expected = new HashSet<>();
+            for (int line : e.getValue().getEnabledBreakpoints()) {
+                Long addr = lines.get(line);
+                if (addr != null) expected.add(addr);
+            }
+            // Add missing, remove stale (only for addresses that map to this file)
+            for (var entry : addrToSourceLine.entrySet()) {
+                if (!entry.getValue().file().equals(file)) continue;
+                long addr = entry.getKey();
+                if (expected.contains(addr)) {
+                    breakpointAddresses.add(addr);
+                } else {
+                    breakpointAddresses.remove(addr);
+                }
             }
         }
     }
 
     /** When a breakpoint is set/removed in disasm, update the source line panel */
     private void syncBreakpointToSource(long addr, boolean set) {
-        Integer srcLine = addrToSourceLine.get(addr);
-        if (srcLine != null) {
-            if (set) editorPanel.setBreakpoint(srcLine);
-            else editorPanel.removeBreakpoint(srcLine);
-        }
+        Loc loc = addrToSourceLine.get(addr);
+        if (loc == null) return;
+        EditorPanel p = sources.editorFor(loc.file(), false);
+        if (p == null) return;
+        if (set) p.setBreakpoint(loc.line());
+        else p.removeBreakpoint(loc.line());
     }
 
     private void buildLineMap(Path objPath, String sourceFilePath) {
@@ -448,7 +499,6 @@ public class DebuggerWindow extends JFrame {
         Path srcmapPath = objPath.resolveSibling(baseName + ".srcmap");
         if (!Files.exists(srcmapPath)) return;
 
-        String sourceFileName = Path.of(sourceFilePath).getFileName().toString();
         try (BufferedReader reader = new BufferedReader(new FileReader(srcmapPath.toFile()))) {
             String line;
             while ((line = reader.readLine()) != null) {
@@ -471,11 +521,9 @@ public class DebuggerWindow extends JFrame {
                 // Strip «» from filename
                 if (file.startsWith("\u00ab")) file = file.substring(1);
                 if (file.endsWith("\u00bb")) file = file.substring(0, file.length() - 1);
-                // Only map lines from the main source file
-                if (!file.equals(sourceFileName)) continue;
                 // First address for a given source line wins (most relevant for breakpoints)
-                sourceLineToAddr.putIfAbsent(srcLine, addr);
-                addrToSourceLine.putIfAbsent(addr, srcLine);
+                sourceLineToAddr.computeIfAbsent(file, k -> new HashMap<>()).putIfAbsent(srcLine, addr);
+                addrToSourceLine.putIfAbsent(addr, new Loc(file, srcLine));
             }
         } catch (Exception ignored) {}
     }
@@ -486,10 +534,17 @@ public class DebuggerWindow extends JFrame {
         updateRegisters();
         updateStack();
         if (sim.isRunning()) {
-            Integer srcLine = addrToSourceLine.get(sim.getPC());
-            if (srcLine != null) {
-                editorPanel.setExecutionLine(srcLine);
-                editorPanel.scrollToLine(srcLine);
+            Loc loc = addrToSourceLine.get(sim.getPC());
+            // switch to (or open) the tab of the source file the program is executing
+            EditorPanel p = loc != null ? sources.editorFor(loc.file(), true) : null;
+            if (p != null) {
+                if (p != editorPanel) {
+                    editorPanel.clearExecutionLine();
+                    editorPanel = p;
+                    attachEditors();
+                }
+                editorPanel.setExecutionLine(loc.line());
+                editorPanel.scrollToLine(loc.line());
             }
             else editorPanel.clearExecutionLine();
         } else {
