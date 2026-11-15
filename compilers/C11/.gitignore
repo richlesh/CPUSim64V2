@@ -1,0 +1,2 @@
+# compiler output written by tests/run_tests.sh
+tests/run/*.asm

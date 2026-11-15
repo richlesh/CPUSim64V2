@@ -16,6 +16,13 @@
 #global LX_POS:     .dci 0          // current index (1-based)
 #global LX_LINE:    .dci 0
 #global LX_FILE:    .dci 0          // intern entry of the file name
+// "#line N "file"" map, applied at the end of the directive line
+#global LX_PEND:    .dci 0          // 1 if a #line map is pending
+#global LX_PLINE:   .dci 0          // line number of the line after the directive
+#global LX_PFILE:   .dci 0          // new file entry or 0 (keep the file)
+#global LX_BASE:    .dci 0          // file entry that lex_file was called with
+#global LX_CRAW:    .dci 0          // cache: last name given to #line (entry)
+#global LX_CFILE:   .dci 0          //   ... and the file entry it resolved to
 #global LX_PUNCTS:   .dci 0          // vec of punctuator wstrs (kind = 9 + index)
 #global LX_KWNAMES: .dci 0          // vec of keyword entries (kind = 99 + index)
 
@@ -603,6 +610,147 @@ KEYWORD_SPELLINGS:
 #end_func
 
 ///////////////////////////////////////////////////////////////////////////////
+// lx_blank(i) -> first index >= i that is not a space or tab
+///////////////////////////////////////////////////////////////////////////////
+#def_func lx_blank(ip)
+    #var    i, cnt, src, c
+    load    i, ip
+    load    cnt, LX_LEN
+    load    src, LX_SRC
+    #while  i <= cnt
+        load    c, src[i]
+        #if_cond c != ' '
+            #if_cond c != 9
+                #break
+            #end_cond
+        #end_cond
+        add     i, 1
+    #end_while
+    #return i
+#end_func
+
+///////////////////////////////////////////////////////////////////////////////
+// lx_line_directive()
+//
+// LX_POS is at a '#' that starts a line.  If the line is "# line N" or
+// "# line N "file"", record a pending line map: when the lexer reaches the
+// end of this line, the next line becomes line N (of "file", which is taken
+// relative to the directory of the file being lexed).  The directive tokens
+// themselves are lexed as usual; the preprocessor ignores them.
+// (The lexer does not know about #if: a #line in a skipped group applies too.)
+///////////////////////////////////////////////////////////////////////////////
+#def_func lx_line_directive()
+    #var    src, cnt, i, c, n, nd, st, raw, base, f
+    load    src, LX_SRC
+    load    cnt, LX_LEN
+    load    i, LX_POS
+    add     i, 1
+    #call   lx_blank(i)
+    move    i, r0
+    add     r1, i, 3
+    #if_cond r1 > cnt
+        #return 0
+    #end_cond
+    load    c, src[i]
+    #if_cond c != 'l'
+        #return 0
+    #end_cond
+    add     r1, i, 1
+    load    c, src[r1]
+    #if_cond c != 'i'
+        #return 0
+    #end_cond
+    add     r1, i, 2
+    load    c, src[r1]
+    #if_cond c != 'n'
+        #return 0
+    #end_cond
+    add     r1, i, 3
+    load    c, src[r1]
+    #if_cond c != 'e'
+        #return 0
+    #end_cond
+    add     i, 4
+    #if_cond i <= cnt
+        load    c, src[i]
+        #call   is_ident_char(c)
+        #if_cond r0 != 0
+            #return 0
+        #end_cond
+    #end_cond
+    #call   lx_blank(i)
+    move    i, r0
+    // the line number
+    move    n, 0
+    move    nd, 0
+    #while  i <= cnt
+        load    c, src[i]
+        #call   is_digit(c)
+        #if_cond r0 == 0
+            #break
+        #end_cond
+        mult    n, 10
+        add     n, c
+        sub     n, 48
+        add     nd, 1
+        add     i, 1
+    #end_while
+    #if_cond nd == 0
+        #return 0
+    #end_cond
+    // an optional "file"
+    move    f, 0
+    #call   lx_blank(i)
+    move    i, r0
+    #if_cond i <= cnt
+        load    c, src[i]
+        #if_cond c == '"'
+            add     i, 1
+            move    st, i
+            #while  i <= cnt
+                load    c, src[i]
+                #if_cond c == '"'
+                    #break
+                #end_cond
+                #if_cond c == 10
+                    #return 0
+                #end_cond
+                add     i, 1
+            #end_while
+            #if_cond i > cnt
+                #return 0
+            #end_cond
+            sub     r2, i, st
+            #if_cond r2 == 0
+                #return 0
+            #end_cond
+            #call   intern(src, st, r2)
+            move    raw, r0
+            load    r0, LX_CRAW
+            #if_cond r0 == raw
+                load    f, LX_CFILE
+            #else_cond
+                load    r1, LX_BASE
+                #call   ent_p(r1)
+                #call   path_dir(r0)
+                move    base, r0
+                #call   ent_p(raw)
+                #call   path_join(base, r0)
+                #call   intern_p(r0)
+                move    f, r0
+                store   raw, LX_CRAW
+                store   f, LX_CFILE
+            #end_cond
+        #end_cond
+    #end_cond
+    move    r0, 1
+    store   r0, LX_PEND
+    store   n, LX_PLINE
+    store   f, LX_PFILE
+    #return 0
+#end_func
+
+///////////////////////////////////////////////////////////////////////////////
 // lex_file(src, file_entry) -> vector of tokens
 ///////////////////////////////////////////////////////////////////////////////
 #def_func lex_file(srcp, filep)
@@ -613,6 +761,11 @@ KEYWORD_SPELLINGS:
     store   cnt, LX_LEN
     load    r0, filep
     store   r0, LX_FILE
+    store   r0, LX_BASE
+    move    r0, 0
+    store   r0, LX_PEND
+    store   r0, LX_CRAW
+    store   r0, LX_CFILE
     move    r0, 1
     store   r0, LX_LINE
     store   r0, LX_POS
@@ -628,9 +781,22 @@ KEYWORD_SPELLINGS:
         load    c, src[pos]
         // ---- whitespace and newlines
         #if_cond c == '\n'
-            load    r0, LX_LINE
-            add     r0, 1
-            store   r0, LX_LINE
+            load    r0, LX_PEND
+            #if_cond r0 != 0
+                // end of a #line directive: the next line is line N
+                load    r0, LX_PLINE
+                store   r0, LX_LINE
+                load    r0, LX_PFILE
+                #if_cond r0 != 0
+                    store   r0, LX_FILE
+                #end_cond
+                move    r0, 0
+                store   r0, LX_PEND
+            #else_cond
+                load    r0, LX_LINE
+                add     r0, 1
+                store   r0, LX_LINE
+            #end_cond
             add     pos, 1
             store   pos, LX_POS
             move    bol, 1
@@ -699,6 +865,11 @@ KEYWORD_SPELLINGS:
             #end_cond
         #end_cond
         // ---- start of a token
+        #if_cond bol != 0
+            #if_cond c == '#'
+                #call   lx_line_directive()
+            #end_cond
+        #end_cond
         move    flags, 0
         #if_cond bol != 0
             or      flags, TF_BOL

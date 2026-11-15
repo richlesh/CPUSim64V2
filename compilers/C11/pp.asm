@@ -12,9 +12,12 @@
 //
 // Supported: #include "file" / <file>, object-like and function-like
 // #define (including variadic macros, # and ##), #undef, #if, #ifdef,
-// #ifndef, #elif, #else, #endif, #error; #pragma, #line and #warning are
-// accepted and ignored.  <standard headers> are built in: when no such file
-// exists the directive is ignored (the prelude declares the library).
+// #ifndef, #elif, #else, #endif, #error; #pragma and #warning are accepted and
+// ignored.  "#line N ["file"]" is applied by the lexer (lx_line_directive):
+// the following lines are numbered from N, in "file" (relative to the including
+// file's directory) when given; the pp ignores the directive itself.
+// <standard headers> are built in: when no such file exists the directive is
+// ignored (the prelude declares the library).
 //
 //   pp_init()                  set up state
 //   pp_run(tokens) -> vector   fully preprocessed tokens, ending in TK_EOF

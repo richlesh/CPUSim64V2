@@ -161,7 +161,9 @@ the main file) and `<file>` (library headers from `lib/`, other standard
 headers are built in), object-like and
 function-like `#define` with `#`, `##` and `__VA_ARGS__`, `#undef`, `#if`,
 `#ifdef`, `#ifndef`, `#elif`, `#else`, `#endif`, `defined`, `#error`;
-`#pragma`, `#line` and `#warning` are ignored.  `__LINE__` and `__FILE__` are
+`#line N "file"` renumbers the following lines (and names the file in `.source`
+directives and error messages; the lexer applies it, even inside a skipped `#if`
+group); `#pragma` and `#warning` are ignored.  `__LINE__` and `__FILE__` are
 predefined.
 
 Not supported (reported as errors): `float`, `long double`, `_Complex`,
