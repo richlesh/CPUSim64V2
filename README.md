@@ -15,7 +15,7 @@ It includes:
 - A cycle-accurate simulation engine  
 - A native Rust reimplementation of the simulator (`cpusim64_native`) for faster, standalone execution  
 - A simple IDE with code editor, console, and integrated run/debug  
-- A pluggable compiler framework in the IDE, with a **C11 compiler written in CPUSim64 assembly** and its own C standard library (`compilers/C11`), an **MMIX translator** that runs Knuth's MMIXAL programs (`compilers/MMIX`), and a **C++ translator** (`compilers/C++14`) that runs C++14/17 programs through the C11 compiler  
+- A pluggable compiler framework in the IDE, with a **C11 compiler written in CPUSim64 assembly** and its own C standard library (`compilers/C11`).  The C11 compiler is then used to bootstrap a **VB.Net compiler**, an **MMIX translator** that runs Knuth's [MMIXAL](http://mmix.cs.hm.edu/) programs (`compilers/MMIX`), and a **C++ translator** (`compilers/C++14`) that runs C++14 (with some C++17 additions) programs through the C11 compiler.  
 - A native CLI tool for command-line workflows  
 - An agentic AI assistant with RAG-based context retrieval for writing and debugging assembly code  
 - Native installers for macOS, Windows, and Linux (x64 and ARM64)  
@@ -88,7 +88,8 @@ A C compiler written entirely in CPUSim64 assembly.  It compiles a core subset o
 - A header `#include <name.h>` is found in `lib/` (plus any `--lib=DIR`), and `lib/name.c` is appended once, compiling only the functions the program uses  
 - Separate compilation: `cc main.c util.c` compiles each file into its own linker module (external symbols exported, `static` ones private); `-lstd` links the C library as shared library modules instead of appending it  
 - `#line N "file"` renumbers the following lines (and names the file in `.source` directives and error messages), so a translator that emits C can be debugged on its own source  
-- 100 regression tests: `compilers/C11/tests/run_tests.sh`  
+- `<thread.h>`: threads, `fork`, shared memory, atomics, spin locks and mutexes  
+- 102 regression tests: `compilers/C11/tests/run_tests.sh`; C versions of the documentation projects in `compilers/C11/projects`  
 
 ### **MMIX Translator (`compilers/MMIX`)**
 Runs programs written in MMIXAL, the assembly language of Knuth's 64-bit MMIX computer, by translating them to CPUSim64 assembly (File → New Compiler → MMIX, or `compilers/MMIX/obj/mmixc.o64 prog.mms` on a simulator).
