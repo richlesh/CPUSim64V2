@@ -2152,7 +2152,12 @@ CG_END_NO_STARTUP:
         #call   emit("    move    r0, %s+%d\n", r1, r2)
         load    r1, g[GI_LABEL]
         load    r2, g[GI_OFF]
-        #call   emit("    store   r0, %s+%d\n", r1, r2)
+        // a store to label+offset needs an offset of 12 bits; larger ones go through r1
+        #if_cond r2 < 2048
+            #call   emit("    store   r0, %s+%d\n", r1, r2)
+        #else_cond
+            #call   emit("    move    r1, %s+%d\n    store   r0, r1[0]\n", r1, r2)
+        #end_cond
     #end_for
     #call   emit("    return\n")
     // ---- runtime library chunks
