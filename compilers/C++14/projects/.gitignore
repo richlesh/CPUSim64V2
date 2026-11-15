@@ -1,0 +1,4 @@
+*.asm
+*.gen.c
+obj/
+output/

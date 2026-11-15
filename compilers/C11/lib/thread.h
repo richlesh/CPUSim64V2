@@ -51,7 +51,7 @@ int spinlock_trylock(spinlock_t *lock);         /* 1 if the lock was taken */
 void spinlock_unlock(spinlock_t *lock);
 
 /* ---- mutexes: recursive (the owner may lock again); a waiting thread sleeps with growing pauses */
-typedef struct {
+typedef struct mutex_t {
     long owner;                     /* the id of the owner, 0 when free */
     long count;                     /* how many times the owner has locked it */
 } mutex_t;
