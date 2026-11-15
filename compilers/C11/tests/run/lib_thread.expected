@@ -1,0 +1,12 @@
+counter=1200 mutex=3000 spin=1200
+result 0 = 100
+result 1 = 200
+result 2 = 300
+result 3 = 400
+cas 1 0 x=9
+add 19 dec 18
+trylock 1 0
+woke=1
+shared=6 counter=1
+child pid ok: 1
+cores ok: 1

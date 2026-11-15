@@ -44,6 +44,7 @@ Only provide code in a subset of the C11 language.  String literals can contain 
   - Preprocessor: built in.
   - Library: stdio, stdlib, string, math, ctype, time, setjmp, stdarg, stddef, stdint, stdbool, limits, float and assert. The stdio formatted-input and
   output follow the C99 conversions.
+  - CPUSim64's own `<thread.h>`: threads, `fork`, shared memory, atomic operations, spin locks, mutexes and `sleep_ms`.
   
   Not supported (reported as errors):
   - float, long double and _Complex

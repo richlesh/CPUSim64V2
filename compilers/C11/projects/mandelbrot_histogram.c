@@ -1,0 +1,192 @@
+/*
+ * mandelbrot_histogram.c
+ *
+ * Multi-threaded Mandelbrot set image generator with histogram coloring.  It
+ * renders the set as a binary (P5) PGM image.  The image is cut into bands of
+ * rows, one thread per processor core (at most MAX_THREADS); each thread
+ * stores the iteration count of every pixel of its band in a shared image
+ * buffer.  The main thread then counts how many pixels have each iteration
+ * count and gives a pixel the gray level 256 * (the fraction of the pixels
+ * with an iteration count up to its own), which spreads the gray levels
+ * evenly over the image.  Pixels in the set (count 0) stay black.
+ * C11 version of documentation/projects/mandelbrot_histogram.asm; it uses
+ * <thread.h>.
+ *
+ * Usage:
+ *     mandelbrot_histogram x y radius escape_limit image_size filename
+ *
+ *     x, y         - the center of the view (floats)
+ *     radius       - half the width and height of the view (float)
+ *     escape_limit - the iterations after which a point counts as in the set
+ *     image_size   - the width and height of the image in pixels
+ *     filename     - the image is written to filename.pgm
+ *
+ * Example (the image of the documentation):
+ *     > mandelbrot_histogram -0.748127681290498 0.09408613781852182 1e-6 10000 128 mandelbrot_histogram
+ *
+ * Author:   Richard Lesh
+ */
+#include <stdio.h>
+#include <stdlib.h>
+#include <thread.h>
+
+#define MAX_THREADS 100
+
+static double gXMin = -2.5, gXMax = 0.5, gYMin = -1.5, gYMax = 1.5;
+static long gMaxIteration = 50;
+static long *gImage;                /* the iteration count of every pixel, row by row */
+static long gNumThreads = MAX_THREADS;
+
+/* the number of iterations of the point (x0, y0) before it escapes, 0 if it never does */
+static long compute_escape(double x0, double y0)
+{
+    double x = 0, y = 0, x2 = 0, y2 = 0;
+    long iteration = 0;
+    do {
+        y = y * x * 2 + y0;
+        x = x2 - y2 + x0;
+        x2 = x * x;
+        y2 = y * y;
+        iteration++;
+    } while (x2 + y2 <= 4.0 && iteration < gMaxIteration);
+    if (iteration == gMaxIteration) return 0;
+    return iteration;
+}
+
+/* fills in the rows first .. last-1 of the image buffer */
+static void compute_mandelbrot(long first, long last, long w)
+{
+    long i, j;
+    double xWidth = gXMax - gXMin, yHeight = gYMax - gYMin;
+    double inverse_width = 1.0 / (double)w;
+    long *row = gImage + first * w;
+    for (j = first; j < last; j++) {
+        double y0 = gYMax - ((double)j + 0.5) * yHeight * inverse_width;
+        for (i = 0; i < w; i++) {
+            double x0 = ((double)i + 0.5) * xWidth * inverse_width + gXMin;
+            row[i] = compute_escape(x0, y0);
+        }
+        row += w;
+    }
+}
+
+typedef struct { long first, last, width; } band_t;
+
+/* the thread function: computes one band */
+static void run(void *arg)
+{
+    band_t *b = arg;
+    long pid = get_pid();
+    printf("Thread %ld executing...%ld %ld %ld\n", pid, b->first, b->last, b->width);
+    compute_mandelbrot(b->first, b->last, b->width);
+    printf("Thread %ld done!\n", pid);
+    free(b);
+}
+
+/* starts a thread for the rows first .. last-1; returns its id, or -1 */
+static long spawn_thread(long first, long last, long width)
+{
+    band_t *b = malloc(sizeof(band_t));
+    long tid;
+    if (!b) {
+        puts("Error: thread data allocation failed!");
+        return -1;
+    }
+    b->first = first;
+    b->last = last;
+    b->width = width;
+    tid = thread_create(run, b);
+    if (tid <= 0) free(b);
+    return tid;
+}
+
+/* writes the image as filename.pgm with the gray levels from the histogram */
+static int combine_output(const char *filename, long size)
+{
+    char name[512];
+    FILE *out;
+    long *histogram;
+    long i, total = 0, subtotal = 0, pixels = size * size;
+    sprintf(name, "%s.pgm", filename);
+    histogram = calloc(gMaxIteration, sizeof(long));
+    if (!histogram) {
+        puts("Error: histogram allocation failed!");
+        return 1;
+    }
+    out = fopen(name, "wb");
+    if (!out) {
+        printf("Can't open %s.pgm...\n", filename);
+        free(histogram);
+        return -1;
+    }
+    fprintf(out, "P5\n%ld %ld\n%d\n", size, size, 255);
+    for (i = 0; i < pixels; i++) {              /* the number of pixels of each iteration count */
+        long v = gImage[i];
+        if (v > 0) {
+            histogram[v]++;
+            total++;
+        }
+    }
+    for (i = 0; i < gMaxIteration; i++) {       /* the gray level of an iteration count */
+        subtotal += histogram[i];
+        histogram[i] = (long)((double)subtotal / (double)total * 256);
+    }
+    for (i = 0; i < pixels; i++) fputc((int)histogram[gImage[i]], out);
+    fclose(out);
+    free(histogram);
+    return 0;
+}
+
+int main(int argc, char **argv)
+{
+    long imageSize, i, firstRow = 0, cores;
+    long tids[MAX_THREADS + 1];
+    double x, y, radius;
+    const char *filename;
+    if (argc != 7) {
+        puts("Syntax: mandelbrot_histogram x y radius escape_limit image_size filename");
+        return 1;
+    }
+    x = atof(argv[1]);
+    y = atof(argv[2]);
+    radius = atof(argv[3]);
+    gMaxIteration = atol(argv[4]);
+    imageSize = atol(argv[5]);
+    filename = argv[6];
+    printf("Image: %f, %f, %f\n", x, y, radius);
+    gXMin = x - radius;
+    gXMax = x + radius;
+    gYMin = y - radius;
+    gYMax = y + radius;
+    printf("Image Bounds: %f, %f, %f, %f\n", gXMin, gXMax, gYMin, gYMax);
+    gImage = malloc(imageSize * imageSize * sizeof(long));
+    if (!gImage) {
+        puts("Error: image allocation failed!");
+        return 1;
+    }
+    cores = get_num_cores();
+    if (cores < gNumThreads) gNumThreads = cores;
+    if (imageSize < gNumThreads) gNumThreads = imageSize;
+    printf("Number of threads: %ld\n", gNumThreads);
+    for (i = 1; i <= gNumThreads; i++) {
+        long lastRow = (long)((double)imageSize / (double)gNumThreads * (double)i + 0.5);
+        long tid = spawn_thread(firstRow, lastRow, imageSize);
+        if (tid > 0) {
+            printf("Spawn thread for %ld\n", tid);
+            tids[i] = tid;
+        } else {
+            printf("Spawn thread for %ld failed!\n", tid);
+            tids[i] = 0;
+        }
+        firstRow = lastRow;
+    }
+    for (i = 1; i <= gNumThreads; i++) {
+        if (tids[i] > 0) {
+            printf("Waiting for %ld...\n", tids[i]);
+            thread_join(tids[i]);
+        }
+    }
+    combine_output(filename, imageSize);
+    free(gImage);
+    return 0;
+}

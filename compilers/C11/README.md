@@ -14,6 +14,7 @@ The compiler targets a core subset of C11, roughly C99 plus a few C11 features. 
   - Preprocessor: built in.
   - Library: stdio, stdlib, string, math, ctype, time, setjmp, stdarg, stddef, stdint, stdbool, limits, float and assert. The stdio formatted-input and
   output follow the C99 conversions.
+  - CPUSim64's own `<thread.h>`: threads, `fork`, shared memory, atomic operations, spin locks, mutexes and `sleep_ms`.
   
   Not supported (reported as errors):
   - float, long double and _Complex
@@ -118,7 +119,7 @@ limits (deep recursion such as 50,000 nested calls works).
 | `ast.asm` | AST nodes and the `--ast` dumper |
 | `codegen.asm` | stack-machine code generation |
 | `runtime_emit.asm` | assembly runtime library, copied into programs on demand |
-| `lib/` | library headers and sources in C: `stdio`, `math`, `stdlib`, `string`, `time`, `ctype` (`.h` + `.c`) and the header-only `setjmp`, `stdarg`, `stddef`, `stdint`, `stdbool`, `limits`, `float`, `assert` |
+| `lib/` | library headers and sources in C: `stdio`, `math`, `stdlib`, `string`, `time`, `ctype`, `thread` (`.h` + `.c`) and the header-only `setjmp`, `stdarg`, `stddef`, `stdint`, `stdbool`, `limits`, `float`, `assert` |
 
 Pipeline: source -> lexer -> preprocessor -> parser + semantic analysis ->
 code generation per function -> output file.  Library functions written in C
@@ -291,6 +292,19 @@ before it returns (one write per `printf`), so nothing is lost at exit and
 `if`/`switch`/loop, an operand of `!` or of a comparison with a constant, an
 expression statement, or the right side of a simple assignment); in other
 expressions values computed before the call can be lost.
+`<thread.h>` (`lib/thread.h`, `lib/thread.c`; CPUSim64's own header, like
+`system/thread.asm`): `thread_create(fn, arg)` (`void fn(void *)`; returns
+the thread id), `thread_join`, `thread_wake`, `fork` (0 in the child),
+`wait_pid`, `wait_all`, `alloc_shared(words)` (memory shared with child
+processes), `sleep_ms`, `get_pid`, `get_num_cores`, `atomic_cas(addr,
+expected, desired)`, `atomic_add`, `atomic_increment`, `atomic_decrement`
+(return the new value), `spinlock_t` with `spinlock_init`/`lock`/`trylock`/
+`unlock`, and the recursive `mutex_t` with `mutex_init`/`lock`/`trylock`/
+`unlock` (a waiting thread sleeps 1 to 16 ms between tries).  Threads share the
+heap and the globals, but each has its own stack: give a thread global or
+`malloc`ed data, not the address of a local variable.  A `fork`ed child gets a
+copy of the memory; only `alloc_shared` memory (where the locks for several
+processes must be) is shared.
 `<time.h>` (`lib/time.h`, `lib/time.c`): `clock` (run time in microseconds,
 `CLOCKS_PER_SEC` 1000000), `time`, `difftime`, `mktime`, `timegm`,
 `gmtime`, `gmtime_r`, `localtime`, `localtime_r`, `asctime`, `ctime`,
