@@ -1,0 +1,1 @@
+stmt_using_type.vb:5: error: 'Using' operand of type 'C' must implement 'System.IDisposable'.

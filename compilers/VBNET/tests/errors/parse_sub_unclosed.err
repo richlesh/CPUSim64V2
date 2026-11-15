@@ -1,0 +1,1 @@
+parse_sub_unclosed.vb:2: error: 'Sub' must end with a matching 'End Sub'.

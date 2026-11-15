@@ -1,0 +1,1 @@
+gen_type_constraint.vb:9: error: Type argument 'B' does not inherit from or implement the constraint type 'A'.

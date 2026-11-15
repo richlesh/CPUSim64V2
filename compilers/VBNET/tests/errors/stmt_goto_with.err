@@ -1,0 +1,1 @@
+stmt_goto_with.vb:3: error: 'GoTo inside' is not valid because 'inside' is inside a 'With' statement that does not contain this statement.

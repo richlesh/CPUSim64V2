@@ -1,0 +1,376 @@
+File @1
+  members:
+    Module Ops @1
+      members:
+        Method Main 'Sub' +Parens @2
+          body:
+            Local Dim @3
+              Declarator @3
+                type:
+                  Type 'Byte' : Byte @3
+                names:
+                  Variable by : Byte @3
+                    Integer 1 : Byte @3
+              Declarator @3
+                type:
+                  Type 'SByte' : SByte @3
+                names:
+                  Variable sb : SByte @3
+                    Integer 1 : SByte @3
+              Declarator @3
+                type:
+                  Type 'Short' : Short @3
+                names:
+                  Variable sh : Short @3
+                    Integer 1 : Short @3
+              Declarator @3
+                type:
+                  Type 'UShort' : UShort @3
+                names:
+                  Variable us : UShort @3
+                    Integer 1 : UShort @3
+            Local Dim @4
+              Declarator @4
+                type:
+                  Type 'Integer' : Integer @4
+                names:
+                  Variable i : Integer @4
+                    Integer 1 : Integer @4
+              Declarator @4
+                type:
+                  Type 'UInteger' : UInteger @4
+                names:
+                  Variable ui : UInteger @4
+                    Integer 1 : UInteger @4
+              Declarator @4
+                type:
+                  Type 'Long' : Long @4
+                names:
+                  Variable l : Long @4
+                    Integer 1 : Long @4
+              Declarator @4
+                type:
+                  Type 'ULong' : ULong @4
+                names:
+                  Variable ul : ULong @4
+                    Integer 1 : ULong @4
+            Local Dim @5
+              Declarator @5
+                type:
+                  Type 'Single' : Single @5
+                names:
+                  Variable f : Single @5
+                    Float 1 : Single @5
+              Declarator @5
+                type:
+                  Type 'Double' : Double @5
+                names:
+                  Variable d : Double @5
+                    Float 1 : Double @5
+              Declarator @5
+                type:
+                  Type 'Boolean' : Boolean @5
+                names:
+                  Variable b : Boolean @5
+                    Boolean True : Boolean @5
+              Declarator @5
+                type:
+                  Type 'Char' : Char @5
+                names:
+                  Variable c : Char @5
+                    Char U+0063 : Char @5
+              Declarator @5
+                type:
+                  Type 'String' : String @5
+                names:
+                  Variable s : String @5
+                    String "s" : String @5
+            Local Dim @6
+              Declarator @6
+                names:
+                  Variable r01 : Byte @6
+                    Binary '+' : Byte @6
+                      Name by : Byte -> local by @6
+                      Name by : Byte -> local by @6
+            Local Dim @7
+              Declarator @7
+                names:
+                  Variable r02 : Short @7
+                    Binary '+' : Short @7
+                      Convert : Short @7
+                        Name sb : SByte -> local sb @7
+                      Convert : Short @7
+                        Name by : Byte -> local by @7
+            Local Dim @8
+              Declarator @8
+                names:
+                  Variable r03 : Integer @8
+                    Binary '+' : Integer @8
+                      Convert : Integer @8
+                        Name sh : Short -> local sh @8
+                      Convert : Integer @8
+                        Name us : UShort -> local us @8
+            Local Dim @9
+              Declarator @9
+                names:
+                  Variable r04 : Long @9
+                    Binary '+' : Long @9
+                      Convert : Long @9
+                        Name i : Integer -> local i @9
+                      Convert : Long @9
+                        Name ui : UInteger -> local ui @9
+            Local Dim @10
+              Declarator @10
+                names:
+                  Variable r05 : Short @10
+                    Binary '+' : Short @10
+                      Convert : Short @10
+                        Name by : Byte -> local by @10
+                      Name sh : Short -> local sh @10
+            Local Dim @11
+              Declarator @11
+                names:
+                  Variable r06 : Short @11
+                    Binary '+' : Short @11
+                      Convert : Short @11
+                        Name b : Boolean -> local b @11
+                      Convert : Short @11
+                        Name b : Boolean -> local b @11
+            Local Dim @12
+              Declarator @12
+                names:
+                  Variable r07 : Short @12
+                    Binary '+' : Short @12
+                      Convert : Short @12
+                        Name b : Boolean -> local b @12
+                      Convert : Short @12
+                        Name by : Byte -> local by @12
+            Local Dim @13
+              Declarator @13
+                names:
+                  Variable r08 : Single @13
+                    Binary '+' : Single @13
+                      Convert : Single @13
+                        Name i : Integer -> local i @13
+                      Name f : Single -> local f @13
+            Local Dim @14
+              Declarator @14
+                names:
+                  Variable r09 : Double @14
+                    Binary '+' : Double @14
+                      Convert : Double @14
+                        Name l : Long -> local l @14
+                      Name d : Double -> local d @14
+            Local Dim @15
+              Declarator @15
+                names:
+                  Variable r10 : Double @15
+                    Binary '/' : Double @15
+                      Convert : Double @15
+                        Name i : Integer -> local i @15
+                      Convert : Double @15
+                        Name i : Integer -> local i @15
+            Local Dim @16
+              Declarator @16
+                names:
+                  Variable r11 : Single @16
+                    Binary '/' : Single @16
+                      Name f : Single -> local f @16
+                      Convert : Single @16
+                        Name i : Integer -> local i @16
+            Local Dim @17
+              Declarator @17
+                names:
+                  Variable r12 : Long @17
+                    Binary '\' : Long @17
+                      Convert : Long @17
+                        Name d : Double -> local d @17
+                      Convert : Long @17
+                        Name i : Integer -> local i @17
+            Local Dim @18
+              Declarator @18
+                names:
+                  Variable r13 : Double @18
+                    Binary 'Mod' : Double @18
+                      Name d : Double -> local d @18
+                      Convert : Double @18
+                        Name i : Integer -> local i @18
+            Local Dim @19
+              Declarator @19
+                names:
+                  Variable r14 : Double @19
+                    Binary '^' : Double @19
+                      Convert : Double @19
+                        Name by : Byte -> local by @19
+                      Convert : Double @19
+                        Name by : Byte -> local by @19
+            Local Dim @20
+              Declarator @20
+                names:
+                  Variable r15 : String @20
+                    Binary '&' : String @20
+                      Convert : String @20
+                        Name i : Integer -> local i @20
+                      Convert : String @20
+                        Name d : Double -> local d @20
+            Local Dim @21
+              Declarator @21
+                names:
+                  Variable r16 : Short @21
+                    Binary '<<' : Short @21
+                      Name sh : Short -> local sh @21
+                      Integer 2 : Integer @21
+            Local Dim @22
+              Declarator @22
+                names:
+                  Variable r17 : Long @22
+                    Binary '>>' : Long @22
+                      Convert : Long @22
+                        Name d : Double -> local d @22
+                      Integer 1 : Integer @22
+            Local Dim @23
+              Declarator @23
+                names:
+                  Variable r18 : Long @23
+                    Unary 'Not' : Long @23
+                      Convert : Long @23
+                        Name d : Double -> local d @23
+            Local Dim @24
+              Declarator @24
+                names:
+                  Variable r19 : Byte @24
+                    Unary 'Not' : Byte @24
+                      Name by : Byte -> local by @24
+            Local Dim @25
+              Declarator @25
+                names:
+                  Variable r20 : Short @25
+                    Unary '-' : Short @25
+                      Convert : Short @25
+                        Name by : Byte -> local by @25
+            Local Dim @26
+              Declarator @26
+                names:
+                  Variable r21 : Integer @26
+                    Unary '-' : Integer @26
+                      Convert : Integer @26
+                        Name us : UShort -> local us @26
+            Local Dim @27
+              Declarator @27
+                names:
+                  Variable r22 : Double @27
+                    Binary '+' : Double @27
+                      Convert : Double @27
+                        Name s : String -> local s @27
+                      Convert : Double @27
+                        Name i : Integer -> local i @27
+            Local Dim @28
+              Declarator @28
+                names:
+                  Variable r23 : String @28
+                    Binary '+' : String @28
+                      Convert : String @28
+                        Name c : Char -> local c @28
+                      Convert : String @28
+                        Name c : Char -> local c @28
+            Local Dim @29
+              Declarator @29
+                names:
+                  Variable r24 : Boolean @29
+                    Binary '=' : Boolean @29
+                      Name s : String -> local s @29
+                      Convert : String @29
+                        Name c : Char -> local c @29
+            Local Dim @30
+              Declarator @30
+                names:
+                  Variable r25 : Long @30
+                    Binary 'And' : Long @30
+                      Convert : Long @30
+                        Name i : Integer -> local i @30
+                      Convert : Long @30
+                        Name ul : ULong -> local ul @30
+            Local Dim @31
+              Declarator @31
+                names:
+                  Variable r26 : Boolean @31
+                    Binary 'And' : Boolean @31
+                      Name b : Boolean -> local b @31
+                      Name b : Boolean -> local b @31
+            Local Dim @32
+              Declarator @32
+                names:
+                  Variable r27 : Boolean @32
+                    Binary 'AndAlso' : Boolean @32
+                      Convert : Boolean @32
+                        Name i : Integer -> local i @32
+                      Name b : Boolean -> local b @32
+            Local Dim @33
+              Declarator @33
+                names:
+                  Variable r28 : Integer @33
+                    Integer 3 : Integer @33
+            Local Dim @34
+              Declarator @34
+                names:
+                  Variable r29 : Integer @34
+                    Integer 4 : Integer @34
+            Local Dim @35
+              Declarator @35
+                names:
+                  Variable r30 : Short @35
+                    Integer 254 : Short @35
+            Local Dim @36
+              Declarator @36
+                names:
+                  Variable r31 : Long @36
+                    Integer 2147549693 : Long @36
+            Local Dim @37
+              Declarator @37
+                names:
+                  Variable r32 : Integer @37
+                    Integer 2 : Integer @37
+            Local Dim @38
+              Declarator @38
+                names:
+                  Variable r33 : Long @38
+                    Integer 2147483648 : Long @38
+            Local Dim @39
+              Declarator @39
+                names:
+                  Variable r34 : String @39
+                    String "abTrue" : String @39
+            Local Dim @40
+              Declarator @40
+                names:
+                  Variable r35 : Single @40
+                    Float 3.5 : Single @40
+            Local Dim @41
+              Declarator @41
+                names:
+                  Variable r36 : Long @41
+                    IfOperator : Long @41
+                      Name b : Boolean -> local b @41
+                      Convert : Long @41
+                        Name i : Integer -> local i @41
+                      Name l : Long -> local l @41
+            Local Dim @42
+              Declarator @42
+                names:
+                  Variable r37 : String @42
+                    String "r36" : String @42
+            Local Dim @43
+              Declarator @43
+                names:
+                  Variable r38 : Double @43
+                    Float 5 : Double @43
+            Local Dim @44
+              Declarator @44
+                names:
+                  Variable r39 : Boolean @44
+                    Boolean True : Boolean @44
+            Local Dim @45
+              Declarator @45
+                names:
+                  Variable r40 : Long @45
+                    Integer 4294967296 : Long @45

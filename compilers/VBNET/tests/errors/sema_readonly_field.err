@@ -1,0 +1,1 @@
+sema_readonly_field.vb:4: error: 'ReadOnly' variable cannot be the target of an assignment.

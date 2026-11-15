@@ -1,0 +1,1 @@
+sema_is_value.vb:3: error: 'Is' operator does not accept operands of type 'Integer'. Operands must be reference or nullable types.

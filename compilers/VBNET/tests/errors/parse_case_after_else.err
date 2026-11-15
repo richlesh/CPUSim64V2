@@ -1,0 +1,1 @@
+parse_case_after_else.vb:5: error: 'Case' cannot follow a 'Case Else' in the same 'Select' statement.

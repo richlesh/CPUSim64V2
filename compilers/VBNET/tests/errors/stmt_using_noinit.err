@@ -1,0 +1,1 @@
+stmt_using_noinit.vb:8: error: 'Using' resource variable must have an explicit initialization.

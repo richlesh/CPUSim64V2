@@ -1,0 +1,1 @@
+sema_for_string.vb:4: error: 'For' loop control variable cannot be of type 'String' because the type does not support the required operators.

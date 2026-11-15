@@ -1,0 +1,655 @@
+File @1
+  options:
+    Option strict On @1
+    Imports @2
+      TypeName @2
+        Part System @2
+        Part Collections @2
+        Part Generic @2
+    Imports SB @3
+      TypeName @3
+        Part System @3
+        Part Text @3
+        Part StringBuilder @3
+  members:
+    Namespace @5
+      name:
+        TypeName @5
+          Part Demo @5
+          Part Shapes @5
+      members:
+        Class Shape Public MustInherit @6
+          implements:
+            TypeName @7
+              Part IComparable @7
+                typeargs:
+                  TypeName @7
+                    Part Shape @7
+          members:
+            Method Area 'Function' Public MustOverride +Parens @8
+              returns:
+                Type 'Double' @8
+            Property Name Public +Auto @9
+              type:
+                Type 'String' @9
+              init:
+                String "shape" @9
+            Field Private @10
+              Declarator @10
+                type:
+                  Type 'Integer' @10
+                names:
+                  Variable _id @10
+            Property Id Public ReadOnly @11
+              type:
+                Type 'Integer' @11
+              accessors:
+                Accessor 'Get' @12
+                  body:
+                    Return @13
+                      Name _id @13
+            Method CompareTo 'Function' Public +Parens @16
+              returns:
+                Type 'Integer' @16
+              clause:
+                Clause 'Implements' @16
+                  TypeName @16
+                    Part IComparable @16
+                      typeargs:
+                        TypeName @16
+                          Part Shape @16
+                    Part CompareTo @16
+              params:
+                Param other @16
+                  type:
+                    TypeName @16
+                      Part Shape @16
+              body:
+                Return @17
+                  Invoke @17
+                    Member CompareTo @17
+                      Invoke @17
+                        Name Area @17
+                    args:
+                      Arg @17
+                        Invoke @17
+                          Member Area @17
+                            Name other @17
+            Operator '+' Public Shared @19
+              returns:
+                Type 'Double' @19
+              params:
+                Param a @19
+                  type:
+                    TypeName @19
+                      Part Shape @19
+                Param b @19
+                  type:
+                    TypeName @19
+                      Part Shape @19
+              body:
+                Return @20
+                  Binary '+' @20
+                    Invoke @20
+                      Member Area @20
+                        Name a @20
+                    Invoke @20
+                      Member Area @20
+                        Name b @20
+            Event Changed Public @22
+              params:
+                Param sender @22
+                  type:
+                    Type 'Object' @22
+        Class Circle Public @25
+          inherits:
+            TypeName @25
+              Part Shape @25
+          members:
+            Field Private @26
+              Declarator @26
+                type:
+                  Type 'Double' @26
+                names:
+                  Variable r @26
+            Constructor New @27
+              params:
+                Param r @27
+                  type:
+                    Type 'Double' @27
+              body:
+                Assign '=' @28
+                  target:
+                    Member r @28
+                      Me @28
+                  value:
+                    Name r @28
+            Method Area 'Function' Public Overrides +Parens @30
+              returns:
+                Type 'Double' @30
+              body:
+                Return @31
+                  Binary '*' @31
+                    Member PI @31
+                      Name Math @31
+                    Binary '^' @31
+                      Name r @31
+                      Integer 2 @31
+        Enum Color @35
+          as:
+            Type 'Byte' @35
+          members:
+            EnumMember Red @36
+              value:
+                Integer 1 @36
+            EnumMember Green @37
+            EnumMember Blue @38
+              value:
+                Binary '+' @38
+                  Name Green @38
+                  Integer 2 @38
+        Structure Point @41
+          members:
+            Field Public @42
+              Declarator @42
+                type:
+                  Type 'Integer' @42
+                names:
+                  Variable X @42
+                  Variable Y @42
+        Interface IThing @45
+          typeparams:
+            TypeParam T +In @45
+          members:
+            Method DoIt 'Sub' +Parens @46
+              params:
+                Param x @46
+                  type:
+                    TypeName @46
+                      Part T @46
+            Property Count ReadOnly @47
+              type:
+                Type 'Integer' @47
+        Delegate Mapper 'Function' +Parens @50
+          returns:
+            TypeName @50
+              Part T @50
+          typeparams:
+            TypeParam T @50
+          params:
+            Param x @50
+              type:
+                TypeName @50
+                  Part T @50
+    Module Program @53
+      members:
+        Method Main 'Sub' +Parens @54
+          params:
+            Param args @54
+              type:
+                ArrayOf rank 1 @54
+                  Type 'String' @54
+          body:
+            Local Dim @55
+              Declarator @55
+                type:
+                  Type 'Integer' @55
+                names:
+                  Variable a @55
+                    bounds:
+                      Integer 9 @55
+                    arraymods:
+                      ArrayOf rank 1 @55
+              Declarator @55
+                type:
+                  Type 'String' @55
+                init:
+                  Collection @55
+                    String "x" @55
+                    String "y" @55
+                names:
+                  Variable b @55
+                    arraymods:
+                      ArrayOf rank 1 @55
+            Local Dim @56
+              Declarator +AsNew @56
+                init:
+                  New @56
+                    type:
+                      TypeName @56
+                        Part Dictionary @56
+                          typeargs:
+                            Type 'String' @56
+                            TypeName @56
+                              Part List @56
+                                typeargs:
+                                  Type 'Integer' @56
+                names:
+                  Variable m @56
+            Local Const @57
+              Declarator @57
+                type:
+                  Type 'Integer' @57
+                init:
+                  Integer 10 @57
+                names:
+                  Variable Limit @57
+            Local Static @58
+              Declarator @58
+                names:
+                  Variable count type% @58
+            For @59
+              var:
+                LoopVar i @59
+                  type:
+                    Type 'Integer' @59
+              from:
+                Integer 0 @59
+              to:
+                Integer 9 @59
+              step:
+                Integer 2 @59
+              body:
+                Assign '=' @60
+                  target:
+                    Invoke @60
+                      Name a @60
+                      args:
+                        Arg @60
+                          Name i @60
+                  value:
+                    Binary '*' @60
+                      Name i @60
+                      Name i @60
+            ForEach @62
+              var:
+                Name s @62
+              in:
+                Name b @62
+              body:
+                CallStatement @62
+                  Invoke @62
+                    Member WriteLine @62
+                      Name Console @62
+                    args:
+                      Arg @62
+                        Name s @62
+            Local Dim @63
+              Declarator @63
+                init:
+                  Integer 0 @63
+                names:
+                  Variable n @63
+            Do +Top +While @64
+              cond:
+                Binary '<' @64
+                  Name n @64
+                  Integer 5 @64
+              body:
+                Assign '+=' @65
+                  target:
+                    Name n @65
+                  value:
+                    Integer 1 @65
+                If +SingleLine @66
+                  cond:
+                    Binary '=' @66
+                      Name n @66
+                      Integer 3 @66
+                  then:
+                    Continue 'Do' @66
+            Do +Bottom +Until @68
+              cond:
+                Binary '<=' @68
+                  Name n @68
+                  Integer 0 @68
+              body:
+                Assign '-=' @68
+                  target:
+                    Name n @68
+                  value:
+                    Integer 1 @68
+            While @69
+              cond:
+                Binary '<' @69
+                  Name n @69
+                  Integer 3 @69
+              body:
+                Assign '=' @69
+                  target:
+                    Name n @69
+                  value:
+                    Binary '+' @69
+                      Name n @69
+                      Integer 1 @69
+            Select @70
+              expr:
+                Name n @70
+              cases:
+                Case @71
+                  clauses:
+                    CaseValue @71
+                      Integer 1 @71
+                    CaseRange @71
+                      from:
+                        Integer 2 @71
+                      to:
+                        Integer 4 @71
+                    CaseIs '>' @71
+                      Integer 10 @71
+                  body:
+                    CallStatement @72
+                      Invoke @72
+                        Member WriteLine @72
+                          Name Console @72
+                        args:
+                          Arg @72
+                            String "a" @72
+                Case +Else @73
+                  body:
+                    CallStatement @74
+                      Invoke @74
+                        Member WriteLine @74
+                          Name Console @74
+                        args:
+                          Arg @74
+                            String "b" @74
+            If +HasElse @76
+              cond:
+                Binary 'AndAlso' @76
+                  Binary '>' @76
+                    Name n @76
+                    Integer 1 @76
+                  Unary 'Not' @76
+                    Binary '=' @76
+                      Name n @76
+                      Integer 2 @76
+              then:
+                Assign '=' @77
+                  target:
+                    Name n @77
+                  value:
+                    Unary '-' @77
+                      Binary '^' @77
+                        Integer 2 @77
+                        Integer 2 @77
+              elseif:
+                ElseIf @78
+                  cond:
+                    Binary '<' @78
+                      Name n @78
+                      Integer 0 @78
+                  body:
+                    Assign '=' @79
+                      target:
+                        Name n @79
+                      value:
+                        Binary 'Mod' @79
+                          Binary '\' @79
+                            Integer 7 @79
+                            Integer 2 @79
+                          Integer 3 @79
+              else:
+                Assign '=' @81
+                  target:
+                    Name n @81
+                  value:
+                    IfOperator @81
+                      Binary '>' @81
+                        Name n @81
+                        Integer 0 @81
+                      Integer 1 @81
+                      Integer 2 @81
+            If +SingleLine +HasElse @83
+              cond:
+                Binary '=' @83
+                  Name n @83
+                  Integer 1 @83
+              then:
+                Assign '=' @83
+                  target:
+                    Name n @83
+                  value:
+                    Integer 2 @83
+              else:
+                Assign '=' @83
+                  target:
+                    Name n @83
+                  value:
+                    Integer 3 @83
+            Try +HasFinally @84
+              body:
+                Throw @85
+                  New +HasArgs @85
+                    type:
+                      TypeName @85
+                        Part InvalidOperationException @85
+                    args:
+                      Arg @85
+                        String "bad" @85
+              catch:
+                Catch ex @86
+                  type:
+                    TypeName @86
+                      Part InvalidOperationException @86
+                  when:
+                    Binary '<>' @86
+                      Member Message @86
+                        Name ex @86
+                      String "" @86
+                  body:
+                    CallStatement @87
+                      Invoke @87
+                        Member WriteLine @87
+                          Name Console @87
+                        args:
+                          Arg @87
+                            Member Message @87
+                              Name ex @87
+                Catch @88
+              finally:
+                Assign '=' @90
+                  target:
+                    Name n @90
+                  value:
+                    Integer 0 @90
+            Local Dim @92
+              Declarator @92
+                init:
+                  Lambda 'Function' @92
+                    expr:
+                      Binary '*' @92
+                        Name x @92
+                        Name x @92
+                    params:
+                      Param x @92
+                        type:
+                          Type 'Integer' @92
+                names:
+                  Variable sq @92
+            Local Dim @93
+              Declarator @93
+                init:
+                  Lambda 'Sub' @93
+                    params:
+                      Param x @93
+                    body:
+                      CallStatement @93
+                        Invoke @93
+                          Member WriteLine @93
+                            Name Console @93
+                          args:
+                            Arg @93
+                              Name x @93
+                names:
+                  Variable pr @93
+            Local Dim @94
+              Declarator @94
+                init:
+                  Lambda 'Function' +MultiLine @94
+                    returns:
+                      Type 'Integer' @94
+                    params:
+                      Param x @94
+                        type:
+                          Type 'Integer' @94
+                    body:
+                      Return @95
+                        Binary '+' @95
+                          Name x @95
+                          Integer 1 @95
+                names:
+                  Variable big @94
+            Local Dim @97
+              Declarator @97
+                init:
+                  Query @97
+                    QueryOp From @97
+                      items:
+                        RangeVar x @97
+                          expr:
+                            Name a @97
+                    QueryOp Where @97
+                      Binary '>' @97
+                        Name x @97
+                        Integer 2 @97
+                    QueryOp Order By @97
+                      items:
+                        OrderKey +Descending @97
+                          Name x @97
+                    QueryOp Select @97
+                      items:
+                        RangeVar @97
+                          expr:
+                            Binary '*' @97
+                              Name x @97
+                              Integer 2 @97
+                names:
+                  Variable q @97
+            Local Dim @98
+              Declarator @98
+                init:
+                  Interpolated @98
+                    String "n=" @98
+                    Hole format "D2" @98
+                      Name n @98
+                      align:
+                        Integer 5 @98
+                    String " sum=" @98
+                    Hole @98
+                      Binary '+' @98
+                        Invoke @98
+                          Name sq @98
+                          args:
+                            Arg @98
+                              Integer 3 @98
+                        Integer 1 @98
+                    String "{}" @98
+                names:
+                  Variable s2 @98
+            ReDim +Preserve @99
+              ReDimClause @99
+                target:
+                  Name a @99
+                bounds:
+                  Bound @99
+                    lower:
+                      Integer 0 @99
+                    upper:
+                      Integer 19 @99
+            Local Dim @100
+              Declarator +AsNew @100
+                init:
+                  New @100
+                    type:
+                      TypeName @100
+                        Part Point @100
+                    init:
+                      With @100
+                        FieldInit X @100
+                          Integer 1 @100
+                        FieldInit Y @100
+                          Integer 2 @100
+                names:
+                  Variable p @100
+            Local Dim @101
+              Declarator @101
+                init:
+                  NewAnonymous @101
+                    init:
+                      With @101
+                        FieldInit A +Key @101
+                          Integer 1 @101
+                        FieldInit B @101
+                          String "b" @101
+                names:
+                  Variable o @101
+            Local Dim @102
+              Declarator @102
+                init:
+                  NewArray @102
+                    type:
+                      Type 'Integer' @102
+                    init:
+                      Collection @102
+                        Collection @102
+                          Integer 1 @102
+                          Integer 2 @102
+                        Collection @102
+                          Integer 3 @102
+                          Integer 4 @102
+                    arraymods:
+                      ArrayOf rank 2 @102
+                names:
+                  Variable arr @102
+            Local Dim @103
+              Declarator @103
+                type:
+                  Type 'Char' @103
+                init:
+                  Char U+0078 @103
+                names:
+                  Variable c @103
+            With @104
+              expr:
+                Name p @104
+              body:
+                Assign '=' @105
+                  target:
+                    Member X @105
+                  value:
+                    Binary '+' @105
+                      Member Y @105
+                      Integer 1 @105
+            Using @107
+              declarators:
+                Declarator +AsNew @107
+                  init:
+                    New +HasArgs @107
+                      type:
+                        TypeName @107
+                          Part SB @107
+                  names:
+                    Variable sbx @107
+            AddHandler @109
+              event:
+                Member Changed @109
+                  Name obj @109
+              handler:
+                AddressOf @109
+                  Name Handler @109
+            CallStatement @110
+              Invoke @110
+                Member WriteLine @110
+                  Name Console @110
+                args:
+                  Arg @110
+                    TypeOf @110
+                      Name o @110
+                      type:
+                        Type 'Object' @110
+            CallStatement +CallKeyword @111
+              Name Foo @111
+            GoTo done @112
+            Label done @113
+            Exit 'Sub' @114

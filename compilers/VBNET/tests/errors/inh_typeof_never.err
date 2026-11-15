@@ -1,0 +1,1 @@
+inh_typeof_never.vb:8: error: Expression of type 'A' can never be of type 'B'.

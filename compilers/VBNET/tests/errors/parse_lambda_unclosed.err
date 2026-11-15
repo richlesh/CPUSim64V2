@@ -1,0 +1,1 @@
+parse_lambda_unclosed.vb:3: error: 'Function' must end with a matching 'End Function'.

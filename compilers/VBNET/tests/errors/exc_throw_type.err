@@ -1,0 +1,1 @@
+exc_throw_type.vb:3: error: Value of type 'Integer' cannot be converted to 'System.Exception'.

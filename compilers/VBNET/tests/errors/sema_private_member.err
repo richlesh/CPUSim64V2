@@ -1,0 +1,1 @@
+sema_private_member.vb:7: error: 'x' is not accessible in this context because it is 'Private'.

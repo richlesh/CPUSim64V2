@@ -1,0 +1,1 @@
+sema_concat_class.vb:6: error: Operator '&' is not defined for types 'C' and 'String'.

@@ -1,0 +1,1 @@
+sema_const_overflow.vb:3: error: Constant expression not representable in type 'Integer'.

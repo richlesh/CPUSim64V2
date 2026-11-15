@@ -1,0 +1,1 @@
+sema_too_many_args.vb:5: error: Too many arguments to 'Public Sub F(x As Integer)'.

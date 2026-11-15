@@ -1,0 +1,1 @@
+gen_struct_constraint.vb:5: error: Type argument 'String' does not satisfy the 'Structure' constraint for type parameter 'T'.

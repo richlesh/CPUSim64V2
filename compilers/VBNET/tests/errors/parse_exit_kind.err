@@ -1,0 +1,1 @@
+parse_exit_kind.vb:3: error: 'Exit' must be followed by 'Sub', 'Function', 'Property', 'Do', 'For', 'While', 'Select', or 'Try'.

@@ -1,0 +1,1 @@
+inh_iface_missing.vb:4: error: Class 'C' must implement 'Public Sub F()' for interface 'I'.

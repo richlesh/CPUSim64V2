@@ -1,0 +1,1 @@
+parse_module_unclosed.vb:1: error: 'Module' statement must end with a matching 'End Module'.

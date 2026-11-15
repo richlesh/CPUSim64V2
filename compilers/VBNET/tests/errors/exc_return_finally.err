@@ -1,0 +1,1 @@
+exc_return_finally.vb:5: error: Branching out of a 'Finally' is not valid.

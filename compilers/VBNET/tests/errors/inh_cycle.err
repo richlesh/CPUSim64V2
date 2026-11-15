@@ -1,0 +1,1 @@
+inh_cycle.vb:5: error: Class 'B' cannot inherit from itself.

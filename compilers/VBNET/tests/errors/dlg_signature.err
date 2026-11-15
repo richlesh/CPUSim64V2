@@ -1,0 +1,1 @@
+dlg_signature.vb:6: error: Method 'Public Sub F(x As Integer)' does not have a signature compatible with delegate 'Delegate Sub D(s As String)'.

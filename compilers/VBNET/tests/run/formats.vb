@@ -1,0 +1,23 @@
+Module Fmt
+    Sub Main()
+        Console.WriteLine(Math.Sqrt(2))
+        Console.WriteLine(Math.Abs(-5) & " " & Math.Abs(-2.5))
+        Console.WriteLine(Math.Max(3, 7) & " " & Math.Min(2.5, 1.5))
+        Console.WriteLine(Math.Floor(-2.5) & " " & Math.Ceiling(2.1) & " " & Math.Round(2.5) & " " & Math.Round(3.5) & " " & Math.Round(2.675, 2))
+        Console.WriteLine(Math.Pow(2, 10) & " " & Math.Truncate(-3.7) & " " & Math.Sign(-4.2) & " " & Math.Log(Math.E))
+        Console.WriteLine(Math.Log10(1000) & " " & Math.Sin(0) & " " & Math.Cos(0) & " " & Math.Atan2(1, 1) * 4 & " " & Math.PI)
+        Console.WriteLine((1234.5678).ToString("F2") & " " & (1234.5678).ToString("N2") & " " & (0.125).ToString("F2") & " " & (2.5).ToString("F0"))
+        Console.WriteLine((1234567).ToString("N0") & " " & (42).ToString("D5") & " " & (255).ToString("X") & " " & (255).ToString("x4") & " " & (-1).ToString("X"))
+        Console.WriteLine((0.1234).ToString("P1") & " " & (1234.5678).ToString("E2") & " " & (1234.5678).ToString("G3") & " " & (0.000012345).ToString("G3") & " " & (123.456).ToString("G5"))
+        Console.WriteLine((1234.5).ToString("0.00") & " " & (1234.5).ToString("#,##0.0") & " " & (5).ToString("000") & " " & (0.5).ToString("#.##") & " " & (3.14159).ToString("0.###"))
+        Console.WriteLine((-5.5).ToString("0.0;(0.0)") & " " & (1234567890L).ToString("###-###-####") & " " & (0.256).ToString("0%"))
+        Console.WriteLine(String.Format("{0:N1}|{1,8:F2}|{2:D3}|{3,-4}|", 1234.56, 3.14159, 7, "ab"))
+        Console.WriteLine($"{1.5:F3} {42,5} {"x",-3}|")
+        Console.WriteLine(Format(1234.5, "Standard") & " " & Format(0.25, "Percent") & " " & Format(3.14159, "0.00"))
+        Console.WriteLine(Rnd() & " " & Rnd())
+        Console.WriteLine(CInt(Int(Rnd() * 100)) + 1)
+        Console.WriteLine("bye")
+        Environment.Exit(3)
+        Console.WriteLine("not reached")
+    End Sub
+End Module

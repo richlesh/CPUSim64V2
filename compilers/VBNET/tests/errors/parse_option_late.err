@@ -1,0 +1,1 @@
+parse_option_late.vb:3: error: 'Option' statements must precede any declarations or 'Imports' statements.

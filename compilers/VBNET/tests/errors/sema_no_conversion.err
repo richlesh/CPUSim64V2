@@ -1,0 +1,1 @@
+sema_no_conversion.vb:4: error: Value of type 'Char' cannot be converted to 'Integer'.

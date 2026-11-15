@@ -1,0 +1,1 @@
+sema_continue_do.vb:4: error: 'Continue Do' can only appear inside a 'Do' statement.

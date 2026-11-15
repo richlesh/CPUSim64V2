@@ -1,0 +1,2 @@
+Enum E
+End Enum

@@ -1,0 +1,1 @@
+inh_mustoverride.vb:4: error: Class 'B' must either be declared 'MustInherit' or override the following inherited 'MustOverride' member(s): Public Sub F().

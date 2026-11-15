@@ -1,0 +1,1 @@
+lex_interp_brace.vb:1: error: Unescaped '}' in an interpolated string; use '}}'.

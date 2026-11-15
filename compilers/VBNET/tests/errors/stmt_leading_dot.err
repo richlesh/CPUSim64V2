@@ -1,0 +1,1 @@
+stmt_leading_dot.vb:3: error: Leading '.' or '!' can only appear inside a 'With' statement.

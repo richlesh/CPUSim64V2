@@ -1,0 +1,1 @@
+sema_prop_both.vb:2: error: Property without a 'ReadOnly' or 'WriteOnly' specifier must provide both a 'Get' and a 'Set'.

@@ -1,0 +1,100 @@
+1:1 keyword Dim
+1:5 identifier [End] = end escaped
+1:11 punct =
+1:13 integer 1 = 1
+1:14 punct ,
+1:16 identifier [Integer]% = integer type %
+1:27 punct ,
+1:29 identifier x% = x type %
+1:32 punct =
+1:34 integer 1 = 1
+1:35 punct ,
+1:37 identifier s$ = s type $
+1:40 punct =
+1:42 string "" = []
+1:44 punct ,
+1:46 identifier d# = d type #
+1:49 punct =
+1:51 integer 2 = 2
+1:52 punct ,
+1:54 identifier l& = l type &
+1:57 punct =
+1:59 integer 3 = 3
+1:60 punct ,
+1:62 identifier n! = n type !
+1:65 punct =
+1:67 integer 4 = 4
+1:68 newline
+3:1 keyword Dim
+3:5 identifier r
+3:7 punct =
+3:9 identifier dict
+3:13 punct !
+3:14 identifier key
+3:18 punct +
+3:20 identifier l& = l type &
+3:22 newline
+5:1 keyword Dim
+5:5 identifier Remark
+5:12 punct =
+5:14 integer 1 = 1
+5:15 newline
+6:1 identifier y
+6:3 punct =
+6:5 identifier a
+6:6 punct &
+6:7 identifier b
+6:9 punct &
+6:11 identifier c
+6:13 punct &=
+6:16 identifier d
+6:17 newline
+7:1 identifier x
+7:3 punct =
+7:5 identifier [Rem] = rem escaped
+7:10 newline
+8:1 identifier z
+8:3 punct =
+8:5 identifier Nullable
+8:13 punct ?.
+8:15 identifier Value
+8:21 punct <>
+8:24 integer 1 = 1
+8:26 punct <=
+8:29 integer 2 = 2
+8:31 punct >=
+8:34 integer 3 = 3
+8:36 punct <<
+8:39 integer 4 = 4
+8:41 punct >>
+8:44 integer 5 = 5
+8:46 punct <<=
+8:50 integer 6 = 6
+8:52 punct >>=
+8:56 integer 7 = 7
+8:58 punct \=
+8:61 integer 8 = 8
+8:63 punct ^=
+8:66 integer 9 = 9
+8:68 punct &=
+8:71 integer 10 = 10
+8:74 punct :=
+8:77 integer 11 = 11
+8:79 newline
+9:1 keyword Dim
+9:5 identifier café
+9:10 punct =
+9:12 integer 1 = 1
+9:14 punct :
+9:16 keyword Dim
+9:20 identifier ÉCOLE
+9:26 punct =
+9:28 identifier café
+9:32 newline
+10:1 keyword Module
+10:8 keyword mOdUlE
+10:15 punct :
+10:17 keyword END
+10:21 keyword module
+10:27 newline
+11:1 eof

@@ -1,0 +1,1 @@
+inh_not_overridable.vb:7: error: 'Public Sub F()' cannot override 'Public Sub F()' because it is not declared 'Overridable'.

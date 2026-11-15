@@ -1,0 +1,1 @@
+sema_label_dup.vb:4: error: Label 'x' is already defined in the current method.

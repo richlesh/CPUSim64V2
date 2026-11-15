@@ -1,0 +1,1 @@
+parse_inherits_late.vb:3: error: 'Inherits' statements must precede all declarations in a class.

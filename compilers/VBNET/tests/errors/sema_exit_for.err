@@ -1,0 +1,1 @@
+sema_exit_for.vb:3: error: 'Exit For' can only appear inside a 'For' statement.

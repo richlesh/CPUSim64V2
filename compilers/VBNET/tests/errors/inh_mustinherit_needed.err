@@ -1,0 +1,1 @@
+inh_mustinherit_needed.vb:1: error: Class 'A' must be declared 'MustInherit' because it contains methods declared 'MustOverride'.

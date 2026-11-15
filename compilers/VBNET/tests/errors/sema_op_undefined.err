@@ -1,0 +1,1 @@
+sema_op_undefined.vb:3: error: Operator '+' is not defined for types 'Boolean' and 'Char'.

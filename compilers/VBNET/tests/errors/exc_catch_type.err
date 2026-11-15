@@ -1,0 +1,1 @@
+exc_catch_type.vb:4: error: 'Catch' cannot catch type 'String' because it is not 'System.Exception' or a class that inherits from 'System.Exception'.

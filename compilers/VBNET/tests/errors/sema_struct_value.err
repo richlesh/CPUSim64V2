@@ -1,0 +1,1 @@
+sema_struct_value.vb:9: error: Expression is a value and therefore cannot be the target of an assignment.

@@ -1,0 +1,1 @@
+parse_redim_bounds.vb:3: error: 'ReDim' statements require a parenthesized list of the new bounds of each dimension of the array.

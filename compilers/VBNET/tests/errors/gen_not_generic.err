@@ -1,0 +1,1 @@
+gen_not_generic.vb:5: error: 'C' has no type parameters and so cannot have type arguments.

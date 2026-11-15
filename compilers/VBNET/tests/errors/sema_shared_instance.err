@@ -1,0 +1,1 @@
+sema_shared_instance.vb:4: error: Cannot refer to an instance member of a class from within a shared method or shared member initializer without an explicit instance of the class.

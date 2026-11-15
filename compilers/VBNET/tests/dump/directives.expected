@@ -1,0 +1,17 @@
+4:1 identifier a
+4:3 punct =
+4:5 integer 1 = 1
+4:6 newline
+18:1 identifier b
+18:3 punct =
+18:5 integer 1 = 1
+18:6 newline
+22:1 identifier c
+22:3 punct =
+22:5 integer 7 = 7
+22:6 newline
+28:1 identifier good
+28:6 punct =
+28:8 integer 1 = 1
+28:9 newline
+30:1 eof

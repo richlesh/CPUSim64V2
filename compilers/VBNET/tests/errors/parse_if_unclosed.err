@@ -1,0 +1,1 @@
+parse_if_unclosed.vb:3: error: 'If' must end with a matching 'End If'.

@@ -1,0 +1,1 @@
+gen_class_constraint.vb:5: error: Type argument 'Integer' does not satisfy the 'Class' constraint for type parameter 'T'.

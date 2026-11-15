@@ -1,0 +1,1 @@
+gen_infer.vb:6: error: Data type(s) of the type parameter(s) in method 'F(Of T)' cannot be inferred from these arguments. Specifying the data type(s) explicitly might correct this error.

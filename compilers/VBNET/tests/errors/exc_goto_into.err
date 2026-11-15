@@ -1,0 +1,1 @@
+exc_goto_into.vb:3: error: 'GoTo inside' is not valid because 'inside' is inside a 'Try', 'Catch' or 'Finally' statement that does not contain this statement.

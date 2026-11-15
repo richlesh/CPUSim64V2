@@ -1,0 +1,1 @@
+inh_typeof_value.vb:4: error: 'TypeOf ... Is' requires its left operand to have a reference type, but this operand has the value type 'Integer'.

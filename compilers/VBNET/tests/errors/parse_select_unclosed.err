@@ -1,0 +1,1 @@
+parse_select_unclosed.vb:3: error: 'Select Case' must end with a matching 'End Select'.

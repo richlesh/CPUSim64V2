@@ -1,0 +1,1 @@
+exc_exit_try.vb:3: error: 'Exit Try' can only appear inside a 'Try' statement.

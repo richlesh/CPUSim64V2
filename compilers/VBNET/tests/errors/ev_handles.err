@@ -1,0 +1,1 @@
+ev_handles.vb:2: error: Handles clause requires a WithEvents variable defined in the containing type or one of its base types.

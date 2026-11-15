@@ -1,0 +1,1 @@
+parse_loop_both.vb:4: error: 'Loop' cannot have a condition if matching 'Do' has one.

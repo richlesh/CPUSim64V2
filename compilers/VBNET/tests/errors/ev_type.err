@@ -1,0 +1,1 @@
+ev_type.vb:2: error: Event 'E' cannot be of type 'String' because it is not a delegate type.

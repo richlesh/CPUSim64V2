@@ -1,0 +1,1 @@
+dlg_addressof_obj.vb:5: error: 'AddressOf' expression cannot be converted to 'Object' because 'Object' is not a delegate type.

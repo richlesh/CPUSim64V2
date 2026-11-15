@@ -1,0 +1,22 @@
+caught: Attempted to divide by zero.
+system: Index was outside the bounds of the array.
+withdrawn 30
+Insufficient funds: need 150.50 / 150.5
+finally 1
+zero other
+caught one
+[finally 0][finally 2][finally 1]
+7 <1>f1F1f2F2<3>f3F3f4F4
+inner caught
+inner finally
+outer: Object reference not set to an instance of an object.
+wrapped <- bad format
+System.InvalidOperationException: wrapped ---> System.FormatException: bad format
+   --- End of inner exception stack trace ---
+Error in the application.
+Exception of type 'Custom' was thrown.
+Value cannot be null. (Parameter 'name')
+System.Exception: plain
+Conversion from string "text" to type 'Integer' is not valid.
+True
+i1 fin1 fin2 i3 fin3 

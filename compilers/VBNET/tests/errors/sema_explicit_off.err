@@ -1,0 +1,1 @@
+sema_explicit_off.vb:6: error: Late binding is not supported: operator '+' with an operand of type 'Object'.

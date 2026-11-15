@@ -1,0 +1,3 @@
+run/*.asm
+run/obj/
+errors/*.asm

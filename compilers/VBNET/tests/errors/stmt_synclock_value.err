@@ -1,0 +1,1 @@
+stmt_synclock_value.vb:3: error: 'SyncLock' operand cannot be of type 'Integer' because 'Integer' is not a reference type.

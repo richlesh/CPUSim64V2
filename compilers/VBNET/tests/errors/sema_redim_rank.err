@@ -1,0 +1,1 @@
+sema_redim_rank.vb:4: error: 'ReDim' cannot change the number of dimensions of an array.

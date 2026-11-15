@@ -1,0 +1,1 @@
+pp_stray_endif.vb:2: error: '#End If' must be preceded by a matching '#If'.

@@ -1,0 +1,1 @@
+inh_sealed.vb:4: error: 'B' cannot inherit from class 'A' because 'A' is declared 'NotInheritable'.

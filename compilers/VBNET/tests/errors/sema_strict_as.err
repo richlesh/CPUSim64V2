@@ -1,0 +1,1 @@
+sema_strict_as.vb:4: error: Option Strict On requires all variable declarations to have an 'As' clause.

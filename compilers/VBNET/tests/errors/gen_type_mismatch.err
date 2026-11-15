@@ -1,0 +1,1 @@
+gen_type_mismatch.vb:7: error: Value of type 'Char' cannot be converted to 'Integer'.

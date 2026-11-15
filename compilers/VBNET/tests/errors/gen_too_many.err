@@ -1,0 +1,1 @@
+gen_too_many.vb:6: error: Too many type arguments to 'Box(Of T)'.

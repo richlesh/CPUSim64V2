@@ -1,0 +1,1 @@
+sema_goto_into_for.vb:3: error: 'GoTo inside' is not valid because 'inside' is inside a 'For' or 'For Each' statement that does not contain this statement.

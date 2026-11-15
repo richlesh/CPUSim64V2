@@ -1,0 +1,1 @@
+sema_struct_ctor.vb:3: error: Structures cannot declare a non-shared 'Sub New' with no parameters.

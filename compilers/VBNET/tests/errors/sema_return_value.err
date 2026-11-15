@@ -1,0 +1,1 @@
+sema_return_value.vb:3: error: 'Return' statement in a Sub or a Set cannot return a value.

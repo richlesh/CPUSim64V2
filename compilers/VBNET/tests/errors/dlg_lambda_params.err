@@ -1,0 +1,1 @@
+dlg_lambda_params.vb:3: error: Nested function does not have a signature that is compatible with delegate 'Delegate Function Func(Of Integer, Integer)(arg As Integer) As Integer'.

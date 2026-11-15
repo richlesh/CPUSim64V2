@@ -1,0 +1,1 @@
+sema_return_missing.vb:3: error: 'Return' statement in a Function, Get, or Operator must return a value.

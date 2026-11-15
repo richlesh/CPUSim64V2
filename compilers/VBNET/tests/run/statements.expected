@@ -1,0 +1,21 @@
+3 2 1 (enumerator disposed)
+
+(enumerator disposed)
+2
+ALPHA GAMMA 
+[x][y]
+open A
+open B
+using AB
+close B
+close A
+open C
+close C
+caught boom
+open D
+inside
+close D
+box 3x4
+10
+HELLO5
+locked

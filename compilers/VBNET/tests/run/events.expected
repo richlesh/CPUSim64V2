@@ -1,0 +1,17 @@
+created kitchen
+  self check: 20
+  self check: 21.5
+  logger #1 21.5
+  self check: 35
+  logger #2 35
+  display kitchen: 35.0
+  display ALARM
+created garage
+  self check: 22
+  logger #3 22
+  self check: 5
+  display garage: 5.0
+  self check: 23
+  self check: 40
+  self check: 41
+alarms 2, logged 3

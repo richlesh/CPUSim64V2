@@ -1,0 +1,1 @@
+inh_new_abstract.vb:5: error: 'New' cannot be used on a class that is declared 'MustInherit'.

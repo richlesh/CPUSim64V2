@@ -1,0 +1,23 @@
+[7, 5, 3, 8, 1, 9] count=6
+[1, 3, 5, 7, 8, 9] 1 4 False
+[9, 7, 5, 42] -5
+4 42
+[Bob(25), Ann(31), Cy(40)]
+3 32 True False
+ann=32 bob=25 cy=40 
+[ann, dan, cy] [32, 19, 40]
+True 40 False 0
+The given key 'nobody' was not present in the dictionary.
+An item with the same key has already been added. Key: cy
+four [[1, one], [2, four]]
+5 [the, cat, and, hat, bat] True False
+[c, b, a] c b 2
+10 20 30 [30, 40, 50, 60]
+>1-2.5T
+8 >
+apple,Apple,fig,pear 2
+0,0,2,1,3
+pi 3.14 (pi, 3.14)
+1434747710 14 5 0.522764
+Collection was modified; enumeration operation may not execute.
+Index was out of range. Must be non-negative and less than the size of the collection. (Parameter 'index')

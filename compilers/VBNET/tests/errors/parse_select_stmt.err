@@ -1,0 +1,1 @@
+parse_select_stmt.vb:4: error: Statements and labels are not valid between 'Select Case' and first 'Case'.

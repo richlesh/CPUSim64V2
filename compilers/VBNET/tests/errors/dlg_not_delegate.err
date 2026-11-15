@@ -1,0 +1,1 @@
+dlg_not_delegate.vb:3: error: Lambda expression cannot be converted to 'Integer' because 'Integer' is not a delegate type.

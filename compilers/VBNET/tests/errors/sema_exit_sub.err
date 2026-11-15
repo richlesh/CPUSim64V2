@@ -1,0 +1,1 @@
+sema_exit_sub.vb:3: error: 'Exit Sub' is not valid in a Function or Property.

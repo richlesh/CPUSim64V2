@@ -1,0 +1,1 @@
+inh_no_default_ctor.vb:5: error: First statement of this 'Sub New' must be a call to 'MyBase.New' or 'MyClass.New' because base class 'A' of 'B' does not have an accessible 'Sub New' that can be called with no arguments.

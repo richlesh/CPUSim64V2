@@ -1,0 +1,1 @@
+sema_not_member_class.vb:6: error: 'Foo' is not a member of 'C'.

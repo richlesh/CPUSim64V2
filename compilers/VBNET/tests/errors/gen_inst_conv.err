@@ -1,0 +1,1 @@
+gen_inst_conv.vb:6: error: Value of type 'Box(Of Long)' cannot be converted to 'Box(Of Integer)'.

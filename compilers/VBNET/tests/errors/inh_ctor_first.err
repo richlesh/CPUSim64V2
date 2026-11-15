@@ -1,0 +1,1 @@
+inh_ctor_first.vb:7: error: Constructor call is valid only as the first statement in an instance constructor.

@@ -1,0 +1,1 @@
+sema_not_member.vb:3: error: 'WriteLin' is not a member of 'System.Console'.

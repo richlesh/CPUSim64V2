@@ -1,0 +1,307 @@
+File @1
+  members:
+    Module Program @1
+      members:
+        Const @2
+          Declarator @2
+            type:
+              Type 'String' : String @2
+            names:
+              Variable Greeting : String @2
+                String "Hello, World" : String @2
+        Const @3
+          Declarator @3
+            names:
+              Variable Big : Integer @3
+                Integer 200 : Integer @3
+        Const @4
+          Declarator @4
+            names:
+              Variable Limit : Integer @4
+                Integer 100 : Integer @4
+        Field Dim @5
+          Declarator @5
+            type:
+              Type 'Integer' : Integer @5
+            names:
+              Variable counter : Integer @5
+                Integer 5 : Integer @5
+        Field Private @6
+          Declarator @6
+            type:
+              Type 'String' : String @6
+            names:
+              Variable names : String() @6
+                Collection : String() @6
+                  String "a" : String @6
+                  String "b" : String @6
+                arraymods:
+                  ArrayOf rank 1 @6
+        Method Square 'Function' +Parens : Integer @8
+          returns:
+            Type 'Integer' : Integer @8
+          params:
+            Param x : Integer @8
+              type:
+                Type 'Integer' : Integer @8
+          body:
+            Return @9
+              Binary '*' : Integer @9
+                Name x : Integer -> param x @9
+                Name x : Integer -> param x @9
+        Method Sum 'Function' +Parens : Long @12
+          returns:
+            Type 'Long' : Long @12
+          params:
+            Param xs ParamArray : Integer() @12
+              type:
+                Type 'Integer' : Integer @12
+              arraymods:
+                ArrayOf rank 1 @12
+          body:
+            Local Dim @13
+              Declarator @13
+                type:
+                  Type 'Long' : Long @13
+                names:
+                  Variable total : Long @13
+            ForEach @14
+              var:
+                Name x : Integer -> local x @14
+              in:
+                Name xs : Integer() -> param xs @14
+              AssignTarget : Integer @14
+              body:
+                Assign '+=' @15
+                  target:
+                    Name total : Long -> local total @15
+                  value:
+                    Binary '+' : Long @15
+                      AssignTarget : Long @15
+                      Convert : Long @15
+                        Name x : Integer -> local x @15
+            Assign '=' @17
+              target:
+                Name Sum : Long -> return value Sum @17
+              value:
+                Name total : Long -> local total @17
+        Method Show 'Sub' +Parens @20
+          params:
+            Param label Optional : String @20
+              type:
+                Type 'String' : String @20
+              default:
+                String "n" : String @20
+            Param n ByRef Optional : Long @20
+              type:
+                Type 'Long' : Long @20
+              default:
+                Integer 0 : Integer @20
+          body:
+            CallStatement @21
+              Invoke -> method WriteLine @21
+                args:
+                  Arg value : String @21
+                    Binary '&' : String @21
+                      Binary '&' : String @21
+                        Name label : String -> param label @21
+                        String "=" : String @21
+                      Convert : String @21
+                        Name n : Long -> param n @21
+        Method Main 'Sub' +Parens @24
+          body:
+            Local Dim @25
+              Declarator @25
+                names:
+                  Variable a : Integer @25
+                    Integer 7 : Integer @25
+            Local Dim @26
+              Declarator @26
+                type:
+                  Type 'Byte' : Byte @26
+                names:
+                  Variable b : Byte @26
+                    Integer 200 : Byte @26
+            Local Dim @27
+              Declarator @27
+                names:
+                  Variable c : Byte @27
+                    Binary '+' : Byte @27
+                      Name b : Byte -> local b @27
+                      Name b : Byte -> local b @27
+            Local Dim @28
+              Declarator @28
+                names:
+                  Variable d : Double @28
+                    Float 3.5 : Double @28
+            Local Dim @29
+              Declarator @29
+                type:
+                  Type 'Double' : Double @29
+                names:
+                  Variable e : Double @29
+                    Convert : Double @29
+                      Name a : Integer -> local a @29
+            Local Dim @30
+              Declarator @30
+                names:
+                  Variable s : String @30
+                    String "Hello, World!" : String @30
+            Local Dim @31
+              Declarator @31
+                type:
+                  Type 'Integer' : Integer @31
+                names:
+                  Variable arr : Integer() @31
+                    bounds:
+                      Integer 9 : Integer @31
+                    arraymods:
+                      ArrayOf rank 1 @31
+            Local Dim @32
+              Declarator @32
+                names:
+                  Variable grid : Integer(,) @32
+                    Collection : Integer(,) @32
+                      Collection @32
+                        Integer 1 : Integer @32
+                        Integer 2 : Integer @32
+                      Collection @32
+                        Integer 3 : Integer @32
+                        Integer 4 : Integer @32
+            For @33
+              var:
+                Name i : Integer -> local i @33
+              from:
+                Integer 0 : Integer @33
+              to:
+                Binary '-' : Integer @33
+                  Invoke : Integer -> method Length @33
+                    Name arr : Integer() -> local arr @33
+                  Integer 1 : Integer @33
+              body:
+                Assign '=' @34
+                  target:
+                    Index : Integer @34
+                      Name arr : Integer() -> local arr @34
+                      indices:
+                        Name i : Integer -> local i @34
+                  value:
+                    Invoke : Integer -> method Square @34
+                      args:
+                        Arg x : Integer @34
+                          Name i : Integer -> local i @34
+            If +SingleLine @36
+              cond:
+                Binary 'AndAlso' : Boolean @36
+                  Binary '>' : Boolean @36
+                    Name a : Integer -> local a @36
+                    Integer 3 : Integer @36
+                  Binary '>' : Boolean @36
+                    Invoke : Integer -> method Length @36
+                      Name s : String -> local s @36
+                    Integer 0 : Integer @36
+              then:
+                CallStatement @36
+                  Invoke -> method WriteLine @36
+                    args:
+                      Arg value : String @36
+                        Name s : String -> local s @36
+            Select @37
+              expr:
+                Name a : Integer -> local a @37
+              cases:
+                Case @38
+                  clauses:
+                    CaseValue : Boolean @38
+                      Binary '=' : Boolean @38
+                        SelectValue : Integer @38
+                        Integer 1 : Integer @38
+                    CaseRange : Boolean @38
+                      from:
+                        Binary 'AndAlso' : Boolean @38
+                          Binary '>=' : Boolean @38
+                            SelectValue : Integer @38
+                            Integer 2 : Integer @38
+                          Binary '<=' : Boolean @38
+                            SelectValue : Integer @38
+                            Integer 5 : Integer @38
+                  body:
+                    CallStatement @39
+                      Invoke -> method WriteLine @39
+                        args:
+                          Arg value : String @39
+                            String "small" : String @39
+                Case @40
+                  clauses:
+                    CaseIs '>' : Boolean @40
+                      Binary '>' : Boolean @40
+                        SelectValue : Integer @40
+                        Integer 100 : Integer @40
+                Case +Else @41
+                  body:
+                    CallStatement @42
+                      Invoke -> method WriteLine @42
+                        args:
+                          Arg value : Integer @42
+                            Integer 200 : Integer @42
+            CallStatement @44
+              Invoke -> method Show @44
+                args:
+                  Arg label : String @44
+                    String "n" : String @44
+                  Arg n : Long @44
+                    Integer 0 : Long @44
+            CallStatement @45
+              Invoke -> method Show @45
+                args:
+                  Arg label : String @45
+                    String "total" : String @45
+                  Arg n 'ByRef' : Long @45
+                    Invoke : Long -> method Sum @45
+                      args:
+                        Arg xs : Integer() @45
+                          NewArray : Integer() @45
+                            init:
+                              Collection : Integer() @45
+                                Integer 1 : Integer @45
+                                Integer 2 : Integer @45
+                                Integer 3 : Integer @45
+            CallStatement @46
+              Invoke -> method WriteLine @46
+                args:
+                  Arg value : Integer @46
+                    Integer 2147483647 : Integer @46
+            CallStatement @47
+              Invoke -> method WriteLine @47
+                args:
+                  Arg format : String @47
+                    String "{0} {1}" : String @47
+                  Arg arg0 : Object @47
+                    Convert : Object @47
+                      Name a : Integer -> local a @47
+                  Arg arg1 : Object @47
+                    Convert : Object @47
+                      Name c : Byte -> local c @47
+            CallStatement @48
+              Invoke -> method WriteLine @48
+                args:
+                  Arg value : Integer @48
+                    Integer 6 : Integer @48
+            CallStatement @49
+              Invoke -> method WriteLine @49
+                args:
+                  Arg value : Integer @49
+                    Integer -1 : Integer @49
+            CallStatement @50
+              Invoke -> method WriteLine @50
+                args:
+                  Arg value : Double @50
+                    Float -4 : Double @50
+            CallStatement @51
+              Invoke -> method WriteLine @51
+                args:
+                  Arg value : String @51
+                    Interpolated : String @51
+                      String "a=" : String @51
+                      Hole : Integer @51
+                        Name a : Integer -> local a @51

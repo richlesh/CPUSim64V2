@@ -1,0 +1,1 @@
+sema_assign_value.vb:4: error: Expression is a value and therefore cannot be the target of an assignment.

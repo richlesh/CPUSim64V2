@@ -1,0 +1,1 @@
+parse_for_unclosed.vb:3: error: 'For' must end with a matching 'Next'.

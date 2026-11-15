@@ -1,0 +1,1 @@
+sema_struct_init.vb:2: error: Initializers on structure members are valid only for 'Shared' members and constants.

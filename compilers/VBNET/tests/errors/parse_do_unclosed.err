@@ -1,0 +1,1 @@
+parse_do_unclosed.vb:3: error: 'Do' must end with a matching 'Loop'.

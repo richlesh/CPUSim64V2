@@ -1,0 +1,5 @@
+Guess my number (1-100).
+Your guess: Too low.
+Your guess: 'abc' is not a number from 1 to 100.
+Your guess: Too high.
+Your guess: Correct! You needed 3 tries.

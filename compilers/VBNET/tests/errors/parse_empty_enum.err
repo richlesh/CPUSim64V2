@@ -1,0 +1,1 @@
+parse_empty_enum.vb:1: error: 'Enum' must contain at least one member.
