@@ -72,7 +72,10 @@ code 1.
 
 Not supported: `Async`/`Await`, `Iterator`/`Yield`, late binding, `On
 Error`, `Decimal` and `Date`, XML literals, reflection (`GetType`),
-threads, `My`, arithmetic on nullable values, Custom events, variance.  They
+`My`, arithmetic on nullable values, Custom events, variance, thread pools
+and tasks (`ThreadPool`, `Task`), `Monitor.Wait`/`Pulse`.  `New Object()`
+and `New String(c, n)` are not supported (lock an object of a class of
+your own; use `StrDup(n, c)`).  They
 are reported as errors ("... not supported yet").
 
 ## The library
@@ -87,7 +90,19 @@ are reported as errors ("... not supported yet").
   same as in .NET), `Array`, `Tuple`, `Nullable`.
 - `Action`, `Func`, `Predicate`, `Comparison`, `EventHandler`.
 - `System.Linq.Enumerable`: the query operators and aggregates.
-- `File`, `StreamReader`, `StreamWriter`.
+- `File` (also `ReadAllBytes`, `WriteAllBytes`), `StreamReader`,
+  `StreamWriter`, `Environment.GetEnvironmentVariable`.
+- Threads: `System.Threading.Thread` (`ThreadStart` and
+  `ParameterizedThreadStart`, `Start`, `Join`, `Sleep`, `CurrentThread`,
+  `ManagedThreadId`), `Interlocked` (`Increment`, `Decrement`, `Add`,
+  `Exchange`, `CompareExchange`, `Read`), `Monitor` (`Enter`, `Exit`,
+  `TryEnter`) and `SyncLock`, `Environment.ProcessorCount`.  Console output
+  is thread-safe (a line is never mixed with another thread's).  While other
+  threads run the garbage collector waits; it runs again when they have all
+  ended.
+- `CPUSim64.Process.Fork()` (0 in the child, the child's id in the parent),
+  `Wait(pid)` and `WaitAll()`: processes with a copy of the memory, as the
+  simulator's `iFORK` makes them (not a .NET API).
 
 ## How it works
 
@@ -101,8 +116,8 @@ are reported as errors ("... not supported yet").
 | Lambdas, delegates, anonymous types | `src/sema_lambda.c` |
 | Query expressions | `src/sema_query.c` |
 | Code generation | `src/codegen.c`, `src/codegen_stmt.c` |
-| Run-time library (C, compiled by C11) | `rt/vb_rt.c`, `vb_gc.c`, `vb_fmt.c`, `vb_strings.c`, `vb_io.c` → `rt/vb_rt.asm` |
-| Library in VB, part of every program | `lib/System.vb`, `lib/Collections.vb`, `lib/Linq.vb` |
+| Run-time library (C, compiled by C11) | `rt/vb_rt.c`, `vb_gc.c`, `vb_fmt.c`, `vb_strings.c`, `vb_io.c`, `vb_thread.c` → `rt/vb_rt.asm` |
+| Library in VB, part of every program | `lib/System.vb`, `lib/Collections.vb`, `lib/Linq.vb`, `lib/Threading.vb` |
 | Grammars for checking the parser with ANTLR | `grammar/` |
 
 - Every value is one 64-bit word.  `Integer`, `Short`, `Byte` and the
@@ -115,6 +130,11 @@ are reported as errors ("... not supported yet").
   arguments.  A lambda is a method whose `Me` is an environment object of
   the captured variables.
 - Exceptions use a chain of handler records; `Finally` runs on every exit.
+  The head of the chain is a stack word, so every thread has its own.
+- Threads run on the simulator's threads (the C11 library's `<thread.h>`);
+  while they run, allocation is locked and the collector does not run.
+  `SyncLock` is `Monitor.Enter`, then a `Try` with `Monitor.Exit` in its
+  `Finally`.
 - A mark-and-sweep garbage collector (precise for the heap, conservative
   for the stack) runs when the allocation since the last collection exceeds
   the live data.

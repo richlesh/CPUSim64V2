@@ -368,7 +368,9 @@ static int label_of(Node *l) {
 
 /* ------------------------------------------------------------ exceptions */
 
-/* A Try pushes a handler record of 4 words onto the chain __vb_handler:
+/* A Try pushes a handler record of 4 words onto the chain whose head is
+   the stack word at the address in __vb_handler (thread-local: vb_program
+   reserves it on the main stack, and a thread's stack starts zeroed):
    rec[0] the address of its Catch code, rec[1] SP, rec[2] SF, rec[3] the
    previous record.  __vb_throw (r0 = the exception) pops the innermost
    record, restores SP and SF, and jumps to its Catch code.  Leaving a Try
@@ -415,15 +417,17 @@ static void push_record(TryLv *lv, int catch_label) {
     emit("store   r1, sf[%d]", -(k + 3));
     emit("store   sp, sf[%d]", -(k + 2));
     emit("store   sf, sf[%d]", -(k + 1));
-    emit("load    r1, __vb_handler+1");
+    emit("load    r6, __vb_handler+1");
+    emit("load    r1, r6[0]");
     emit("store   r1, sf[%d]", -k);
     emit("add     r1, sf, %d", -(k + 3));
-    emit("store   r1, __vb_handler+1");
+    emit("store   r1, r6[0]");
 }
 
 static void pop_record(TryLv *lv) {
     emit("load    r1, sf[%d]", -lv->rec);
-    emit("store   r1, __vb_handler+1");
+    emit("load    r6, __vb_handler+1");
+    emit("store   r1, r6[0]");
 }
 
 /* a jump to the label from inside Try statements: through their Finally blocks */
@@ -1133,6 +1137,8 @@ void codegen(const char *out_path, const char *rt_dir) {
     fprintf(cg_out, "#include \"%s/vb_rt.asm\"\n", rt_dir);
     fprintf(cg_out, "\n// vb_program(): the field initializers, then Main\n");
     fprintf(cg_out, "__c_vb_program:\n");
+    /* the head of the main thread's exception handler chain (see push_record) */
+    fprintf(cg_out, "    push    0\n    add     r0, sp, 1\n    store   r0, __vb_handler+1\n");
     /* the garbage collector: the program's globals and the top of the stack */
     fprintf(cg_out, "    push    sf\n    move    r0, __vb_gend+1\n    push    r0\n    move    r0, __vb_gstart\n    push    r0\n");
     fprintf(cg_out, "    call    __c_vbrt_gc_init\n    add     sp, 3\n");
@@ -1147,7 +1153,7 @@ void codegen(const char *out_path, const char *rt_dir) {
     fprintf(cg_out, "    call    __vbM%d\n", method_label(mn));
     if (mn->params.n) fprintf(cg_out, "    add     sp, 1\n");
     if (!mn->type) fprintf(cg_out, "    move    r0, 0\n");
-    fprintf(cg_out, "    return\n");
+    fprintf(cg_out, "    add     sp, 1\n    return\n");
     gen_init();
     for (i = 0; i < prog_modules.n; i++) {
         Sym *mod = prog_modules.v[i];
@@ -1175,8 +1181,8 @@ void codegen(const char *out_path, const char *rt_dir) {
         Sym *mk = h ? scope_find(h->members, intern_word("makeexception")) : 0;
         if (!mk) serr(0, "lib/System.vb has no VBRuntimeHelpers.MakeException");
         fprintf(cg_out, "\n// exceptions\n");
-        fprintf(cg_out, "__vb_throw:\n    load    r1, __vb_handler+1\n    test    r1\n    jump    z, __vb_unhandled\n");
-        fprintf(cg_out, "    load    r2, r1[3]\n    store   r2, __vb_handler+1\n    load    r2, r1[0]\n");
+        fprintf(cg_out, "__vb_throw:\n    load    r6, __vb_handler+1\n    load    r1, r6[0]\n    test    r1\n    jump    z, __vb_unhandled\n");
+        fprintf(cg_out, "    load    r2, r1[3]\n    store   r2, r6[0]\n    load    r2, r1[0]\n");
         fprintf(cg_out, "    load    sp, r1[1]\n    load    sf, r1[2]\n    jump    r2\n");
         fprintf(cg_out, "__vb_unhandled:\n    push    r0\n    call    __c_vbrt_unhandled\n");
         fprintf(cg_out, "__c_vb_throw_obj:\n    load    r0, sf[3]\n    jump    __vb_throw\n");

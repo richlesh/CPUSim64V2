@@ -1,0 +1,16 @@
+counter 2000 total 6000 box 4000 words 20
+total 7000
+caught inside in a thread: True
+lock free again: True
+Exit without Enter: Object synchronization method was called from an unsynchronized block of code.
+restart: Thread is running or terminated; it cannot restart.
+main caught main
+5 7
+7 7
+7 11 10
+-2147483648
+cores > 0: True, main id 1
+unset variable: True
+child: counter 2000
+parent: counter 2000
+6 bytes: 0 128 255 13

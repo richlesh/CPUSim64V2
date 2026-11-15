@@ -159,7 +159,7 @@ int main(int argc, char **argv) {
         lib_dir = p;
     }
     {
-        static const char *lib_files[] = { "System.vb", "Collections.vb", "Linq.vb", 0 };
+        static const char *lib_files[] = { "System.vb", "Collections.vb", "Linq.vb", "Threading.vb", 0 };
         int k;
         for (k = 0; lib_files[k]; k++) {
             char *p = xalloc(strlen(lib_dir) + 32);

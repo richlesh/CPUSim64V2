@@ -62,16 +62,30 @@ lines.  Write programs that are valid VB.NET.
   `FileNotFoundException`, `IOException`, and classes derived from them.
 - Files: `File.ReadAllText`, `ReadAllLines`, `WriteAllText`,
   `AppendAllText`, `WriteAllLines`, `Exists`, `Delete`; `StreamReader`
-  (`ReadLine`, `ReadToEnd`, `EndOfStream`); `StreamWriter`.
+  (`ReadLine`, `ReadToEnd`, `EndOfStream`); `StreamWriter`;
+  `File.ReadAllBytes`, `WriteAllBytes`; `Environment.GetEnvironmentVariable`.
+- Threads: `System.Threading.Thread` (`ThreadStart` and
+  `ParameterizedThreadStart`, `Start`, `Join`, `Sleep`, `CurrentThread`,
+  `ManagedThreadId`), `Interlocked` (`Increment`, `Decrement`, `Add`,
+  `Exchange`, `CompareExchange`, `Read`), `Monitor` (`Enter`, `Exit`,
+  `TryEnter`) and `SyncLock`, `Environment.ProcessorCount`.  Console output
+  is thread-safe (a line is never mixed with another thread's).  While other
+  threads run the garbage collector waits; it runs again when they have all
+  ended.
+- `CPUSim64.Process.Fork()` (0 in the child, the child's id in the parent),
+  `Wait(pid)` and `WaitAll()`: processes with a copy of the memory, as the
+  simulator's `iFORK` makes them (not a .NET API).
 - `GC.Collect`, `GC.GetTotalMemory`: memory is garbage collected.
 
 ## Not supported
 
 `Async`/`Await`, `Iterator`/`Yield`, late binding on `Object` (use a cast),
 `On Error`/`Resume`, `Decimal`, `Date`, XML literals, reflection and
-`GetType`, threads, `My`, WinForms, arithmetic on nullable values
+`GetType`, `ThreadPool` and `Task`, `My`, WinForms, arithmetic on nullable values
 (`a + 1` with `a As Integer?`: use `a.Value` or `If(a, 0)`), Custom events,
 `Overridable` generic methods.  Using them gives "... not supported yet".
+`New Object()` and `New String(c, n)` are not supported: lock an object of a
+class of your own, and use `StrDup(n, c)`.
 
 ## Messages
 

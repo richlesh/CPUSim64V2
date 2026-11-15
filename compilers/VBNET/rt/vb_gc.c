@@ -14,6 +14,9 @@
  * the stack (generated code and the library's C frames) and of the
  * program's #global data that points into an object (anywhere inside it)
  * keeps it alive.
+ *
+ * While other threads run (vb_thread.c) allocation is locked and the
+ * collector does not run.
  */
 
 #define PAGE 4096
@@ -253,7 +256,8 @@ static void sweep(void) {
 
 static void gc_collect(void) {
     long here = 0, *p;
-    if (gc_running || !gc_stack_top) return;
+    /* not while other threads run: only the main stack is scanned, and the threads are not stopped */
+    if (gc_running || !gc_stack_top || thr_active) return;
     gc_running = 1;
     gc_collections++;
     nmark = 0;
@@ -284,7 +288,7 @@ static long size_class(long need) {
 }
 
 /* an object of n words after its two header words, zeroed; tag: p[-2] */
-long *vbrt_alloc(long n, long tag) {
+static long *gc_alloc(long n, long tag) {
     long need = n + 2, c = size_class(need), i;
     long *cell;
     if (gc_stress || gc_allocated > gc_threshold) gc_collect();
@@ -317,4 +321,12 @@ long *vbrt_alloc(long n, long tag) {
     gc_allocated += class_words[c];
     cell[0] = tag;
     return cell + 2;
+}
+
+/* vbrt_alloc: gc_alloc, locked while other threads run */
+long *vbrt_alloc(long n, long tag) {
+    long locked = thr_lock(&thr_alloc_lock);
+    long *p = gc_alloc(n, tag);
+    if (locked) spinlock_unlock(&thr_alloc_lock);
+    return p;
 }

@@ -38,6 +38,7 @@
 #include <math.h>
 #include <stdarg.h>
 #include <time.h>
+#include <thread.h>
 
 /* must match the TY_* kinds of src/vbc.h */
 #define K_BOOLEAN 1
@@ -80,6 +81,18 @@ static long *format_obj(long *o, long *fmt);          /* vb_fmt.c */
 
 static long vb_argc;
 static char **vb_argv;
+
+/* threads (vb_thread.c): the number running, and the locks of the allocator and of the console */
+static long thr_active;
+static spinlock_t thr_alloc_lock;
+static spinlock_t thr_out_lock;
+
+/* takes the lock if other threads run; returns whether it did */
+static long thr_lock(spinlock_t *l) {
+    if (!thr_active) return 0;
+    spinlock_lock(l);
+    return 1;
+}
 
 /* ------------------------------------------------------------ errors */
 
@@ -866,6 +879,7 @@ long *vbrt_format(long *fmt, long *args) {
 /* Console.Write/WriteLine of a value of a kind (String, Object, Char()
    arrays and the primitive kinds) */
 void vbrt_write(long kind, long bits, long nl) {
+    long locked = thr_lock(&thr_out_lock);
     if (kind == K_STRING) put_str((long *)bits);
     else if (kind == K_OBJECT) put_str(vbrt_obj_str((long *)bits));
     else if (kind == K_ARRAY) {
@@ -878,11 +892,15 @@ void vbrt_write(long kind, long bits, long nl) {
         fputs(buf, stdout);
     }
     if (nl) putchar('\n');
+    if (locked) spinlock_unlock(&thr_out_lock);
 }
 
 void vbrt_write_format(long *fmt, long *args, long nl) {
-    put_str(vbrt_format(fmt, args));
+    long *s = vbrt_format(fmt, args);
+    long locked = thr_lock(&thr_out_lock);
+    put_str(s);
     if (nl) putchar('\n');
+    if (locked) spinlock_unlock(&thr_out_lock);
 }
 
 long *vbrt_readline(void) {
@@ -920,6 +938,7 @@ void vbrt_end(void) {
 #include "vb_fmt.c"
 #include "vb_strings.c"
 #include "vb_io.c"
+#include "vb_thread.c"
 
 int main(int argc, char **argv) {
     long r;

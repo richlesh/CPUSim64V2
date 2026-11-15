@@ -1449,6 +1449,14 @@ Namespace System.IO
         Public Shared Sub Delete(path As String)
             Microsoft.VisualBasic.CompilerServices.Utils.FileDelete(path)
         End Sub
+
+        Public Shared Function ReadAllBytes(path As String) As Byte()
+            Return Microsoft.VisualBasic.CompilerServices.Utils.FileReadBytes(path)
+        End Function
+
+        Public Shared Sub WriteAllBytes(path As String, bytes As Byte())
+            Microsoft.VisualBasic.CompilerServices.Utils.FileWriteBytes(path, bytes)
+        End Sub
     End Class
 
     Public Class StreamReader

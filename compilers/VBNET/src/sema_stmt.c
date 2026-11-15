@@ -842,6 +842,20 @@ static void bind_with(Node *st) {
     nv_push(st->list, body);
 }
 
+/* the statement System.Threading.Monitor.<name>(h) */
+static Node *monitor_call(const char *name, Sym *h, Node *at) {
+    Sym *mon = scope_find(ns_path("System.Threading")->members, intern_word("monitor"));
+    Sym *m = mon ? scope_find(mon->members, intern_word(name)) : 0;
+    NodeVec *args = nv_new();
+    Node *a = lit_node(N_ARG, 0, at);
+    if (!m) serr(at, "System.Threading.Monitor.%s is missing.", name);
+    a->cls = EC_NONE;
+    a->type = 0;
+    a->a = sym_ref(h, at, 0);
+    nv_push(args, a);
+    return stmt_of_call(resolve_call(m, 0, args, at), at);
+}
+
 static void bind_synclock(Node *st) {
     Node *v = rvalue(st->a), *body;
     Sym *h;
@@ -854,10 +868,17 @@ static void bind_synclock(Node *st) {
     body->list = st->list;
     bind_block(body->list);
     nctl--;
+    /* h = v: Monitor.Enter(h): Try body Finally Monitor.Exit(h) */
     st->kind = N_BLOCK;
     st->list = nv_new();
     nv_push(st->list, assign_node(sym_ref(h, st, 0), coerce(v, ty[TY_OBJECT]), st));
-    nv_push(st->list, body);
+    nv_push(st->list, monitor_call("enter", h, st));
+    {
+        NodeVec *tb = nv_new(), *fin = nv_new();
+        nv_push(tb, body);
+        nv_push(fin, monitor_call("exit", h, st));
+        nv_push(st->list, try_node(tb, fin, st));
+    }
 }
 
 static void check_disposable(Type *t, Node *at) {
