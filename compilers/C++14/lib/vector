@@ -1,0 +1,271 @@
+// <vector> - std::vector for the CPUSim64 C++ translator.
+// Storage is malloc'd and the elements are built with placement new, so a vector of
+// move-only types works.  The iterators are plain pointers.
+#ifndef CPPC_VECTOR
+#define CPPC_VECTOR
+
+#include <cstddef>
+#include <cstdlib>
+#include <new>
+#include <utility>
+#include <iterator>
+#include <initializer_list>
+#include <stdexcept>
+#include <type_traits>
+#include <algorithm>
+
+namespace std {
+
+template<class T> class vector {
+    T *p_;
+    size_t n_;
+    size_t cap_;
+
+    static T *alloc(size_t n) { return n ? (T *)malloc(n * sizeof(T)) : (T *)0; }
+
+    // moves the elements into a new buffer of the capacity nc; the old buffer is released
+    void relocate(size_t nc) {
+        T *np = alloc(nc);
+        for (size_t i = 0; i < n_; i++) { new (np + i) T(std::move(p_[i])); p_[i].~T(); }
+        free(p_);
+        p_ = np;
+        cap_ = nc;
+    }
+    size_t grown(size_t need) const {
+        size_t nc = cap_ ? cap_ * 2 : 4;
+        return nc < need ? need : nc;
+    }
+    void destroy_all() { for (size_t i = n_; i > 0; i--) p_[i - 1].~T(); n_ = 0; }
+
+    template<class It> void init_range(It first, It last, false_type) {
+        for (; first != last; ++first) emplace_back(*first);
+    }
+    void init_range(size_t n, const T &v, true_type) {
+        if (n) {
+            p_ = alloc(n);
+            cap_ = n;
+            for (size_t i = 0; i < n; i++) new (p_ + i) T(v);
+            n_ = n;
+        }
+    }
+
+public:
+    typedef T value_type;
+    typedef T &reference;
+    typedef const T &const_reference;
+    typedef T *pointer;
+    typedef const T *const_pointer;
+    typedef T *iterator;
+    typedef const T *const_iterator;
+    typedef std::reverse_iterator<iterator> reverse_iterator;
+    typedef std::reverse_iterator<const_iterator> const_reverse_iterator;
+    typedef size_t size_type;
+    typedef ptrdiff_t difference_type;
+
+    vector() : p_(0), n_(0), cap_(0) {}
+    explicit vector(size_t n) : p_(0), n_(0), cap_(0) {
+        if (n) { p_ = alloc(n); cap_ = n; for (size_t i = 0; i < n; i++) new (p_ + i) T(); n_ = n; }
+    }
+    vector(size_t n, const T &v) : p_(0), n_(0), cap_(0) { init_range(n, v, true_type()); }
+    template<class It> vector(It first, It last) : p_(0), n_(0), cap_(0) { init_range(first, last, typename is_integral<It>::type()); }
+    vector(initializer_list<T> l) : p_(0), n_(0), cap_(0) {
+        if (l.size()) {
+            p_ = alloc(l.size());
+            cap_ = l.size();
+            for (const T *i = l.begin(); i != l.end(); ++i) { new (p_ + n_) T(*i); ++n_; }
+        }
+    }
+    vector(const vector &o) : p_(0), n_(0), cap_(0) {
+        if (o.n_) {
+            p_ = alloc(o.n_);
+            cap_ = o.n_;
+            for (size_t i = 0; i < o.n_; i++) { new (p_ + i) T(o.p_[i]); n_ = i + 1; }
+        }
+    }
+    vector(vector &&o) : p_(o.p_), n_(o.n_), cap_(o.cap_) { o.p_ = 0; o.n_ = 0; o.cap_ = 0; }
+    ~vector() { destroy_all(); free(p_); }
+
+    vector &operator=(const vector &o) {
+        if (this != &o) {
+            destroy_all();
+            if (cap_ < o.n_) { free(p_); p_ = alloc(o.n_); cap_ = o.n_; }
+            for (size_t i = 0; i < o.n_; i++) { new (p_ + i) T(o.p_[i]); n_ = i + 1; }
+        }
+        return *this;
+    }
+    vector &operator=(vector &&o) {
+        if (this != &o) {
+            destroy_all();
+            free(p_);
+            p_ = o.p_;
+            n_ = o.n_;
+            cap_ = o.cap_;
+            o.p_ = 0;
+            o.n_ = 0;
+            o.cap_ = 0;
+        }
+        return *this;
+    }
+    vector &operator=(initializer_list<T> l) { assign(l.begin(), l.end()); return *this; }
+
+    void assign(size_t n, const T &v) {
+        destroy_all();
+        if (cap_ < n) { free(p_); p_ = alloc(n); cap_ = n; }
+        for (size_t i = 0; i < n; i++) { new (p_ + i) T(v); n_ = i + 1; }
+    }
+    template<class It> void assign(It first, It last) {
+        destroy_all();
+        for (; first != last; ++first) emplace_back(*first);
+    }
+    void assign(initializer_list<T> l) { assign(l.begin(), l.end()); }
+
+    iterator begin() { return p_; }
+    const_iterator begin() const { return p_; }
+    const_iterator cbegin() const { return p_; }
+    iterator end() { return p_ + n_; }
+    const_iterator end() const { return p_ + n_; }
+    const_iterator cend() const { return p_ + n_; }
+    reverse_iterator rbegin() { return reverse_iterator(end()); }
+    const_reverse_iterator rbegin() const { return const_reverse_iterator(end()); }
+    reverse_iterator rend() { return reverse_iterator(begin()); }
+    const_reverse_iterator rend() const { return const_reverse_iterator(begin()); }
+
+    size_t size() const { return n_; }
+    size_t max_size() const { return (size_t)-1 / sizeof(T); }
+    size_t capacity() const { return cap_; }
+    bool empty() const { return n_ == 0; }
+    void reserve(size_t n) { if (n > cap_) relocate(n); }
+    void shrink_to_fit() { if (cap_ > n_) relocate(n_); }
+
+    T &operator[](size_t i) { return p_[i]; }
+    const T &operator[](size_t i) const { return p_[i]; }
+    T &at(size_t i) { if (i >= n_) throw out_of_range("vector::at"); return p_[i]; }
+    const T &at(size_t i) const { if (i >= n_) throw out_of_range("vector::at"); return p_[i]; }
+    T &front() { return p_[0]; }
+    const T &front() const { return p_[0]; }
+    T &back() { return p_[n_ - 1]; }
+    const T &back() const { return p_[n_ - 1]; }
+    T *data() { return p_; }
+    const T *data() const { return p_; }
+
+    void clear() { destroy_all(); }
+
+    template<class... A> void emplace_back(A &&... a) {
+        if (n_ == cap_) {
+            // the new element is built first: an argument may refer to an element of this vector
+            size_t nc = grown(n_ + 1);
+            T *np = alloc(nc);
+            new (np + n_) T(std::forward<A>(a)...);
+            for (size_t i = 0; i < n_; i++) { new (np + i) T(std::move(p_[i])); p_[i].~T(); }
+            free(p_);
+            p_ = np;
+            cap_ = nc;
+        } else new (p_ + n_) T(std::forward<A>(a)...);
+        ++n_;
+    }
+    void push_back(const T &v) { emplace_back(v); }
+    void push_back(T &&v) { emplace_back(std::move(v)); }
+    void pop_back() { p_[n_ - 1].~T(); --n_; }
+
+    template<class... A> iterator emplace(const_iterator pos, A &&... a) {
+        size_t i = pos - p_;
+        T tmp(std::forward<A>(a)...);
+        if (n_ == cap_) relocate(grown(n_ + 1));
+        if (i == n_) new (p_ + n_) T(std::move(tmp));
+        else {
+            new (p_ + n_) T(std::move(p_[n_ - 1]));
+            for (size_t j = n_ - 1; j > i; --j) p_[j] = std::move(p_[j - 1]);
+            p_[i] = std::move(tmp);
+        }
+        ++n_;
+        return p_ + i;
+    }
+    iterator insert(const_iterator pos, const T &v) { return emplace(pos, v); }
+    iterator insert(const_iterator pos, T &&v) { return emplace(pos, std::move(v)); }
+    iterator insert(const_iterator pos, size_t n, const T &v) {
+        size_t i = pos - p_;
+        T tmp(v);
+        if (n_ + n > cap_) relocate(grown(n_ + n));
+        for (size_t j = n_; j > i; --j) {
+            if (j - 1 + n >= n_) new (p_ + j - 1 + n) T(std::move(p_[j - 1]));
+            else p_[j - 1 + n] = std::move(p_[j - 1]);
+        }
+        for (size_t k = 0; k < n; k++) {
+            if (i + k < n_) p_[i + k] = tmp;
+            else new (p_ + i + k) T(tmp);
+        }
+        n_ += n;
+        return p_ + i;
+    }
+    template<class It> iterator insert(const_iterator pos, It first, It last) {
+        return insert_range(pos, first, last, typename is_integral<It>::type());
+    }
+    iterator insert(const_iterator pos, initializer_list<T> l) { return insert_range(pos, l.begin(), l.end(), false_type()); }
+
+private:
+    iterator insert_range(const_iterator pos, size_t n, const T &v, true_type) { return insert(pos, n, v); }
+    template<class It> iterator insert_range(const_iterator pos, It first, It last, false_type) {
+        size_t i = pos - p_;
+        vector tmp(first, last);
+        size_t n = tmp.n_;
+        if (n_ + n > cap_) relocate(grown(n_ + n));
+        for (size_t j = n_; j > i; --j) {
+            if (j - 1 + n >= n_) new (p_ + j - 1 + n) T(std::move(p_[j - 1]));
+            else p_[j - 1 + n] = std::move(p_[j - 1]);
+        }
+        for (size_t k = 0; k < n; k++) {
+            if (i + k < n_) p_[i + k] = std::move(tmp.p_[k]);
+            else new (p_ + i + k) T(std::move(tmp.p_[k]));
+        }
+        n_ += n;
+        return p_ + i;
+    }
+
+public:
+    iterator erase(const_iterator pos) { return erase(pos, pos + 1); }
+    iterator erase(const_iterator first, const_iterator last) {
+        size_t i = first - p_, n = last - first;
+        if (n == 0) return p_ + i;
+        for (size_t j = i; j + n < n_; j++) p_[j] = std::move(p_[j + n]);
+        for (size_t j = n_; j > n_ - n; j--) p_[j - 1].~T();
+        n_ -= n;
+        return p_ + i;
+    }
+
+    void resize(size_t n) {
+        if (n < n_) { for (size_t j = n_; j > n; j--) p_[j - 1].~T(); n_ = n; }
+        else {
+            if (n > cap_) relocate(n);
+            for (; n_ < n; ++n_) new (p_ + n_) T();
+        }
+    }
+    void resize(size_t n, const T &v) {
+        if (n < n_) { for (size_t j = n_; j > n; j--) p_[j - 1].~T(); n_ = n; }
+        else {
+            if (n > cap_) relocate(n);
+            for (; n_ < n; ++n_) new (p_ + n_) T(v);
+        }
+    }
+
+    void swap(vector &o) {
+        T *tp = p_; p_ = o.p_; o.p_ = tp;
+        size_t t = n_; n_ = o.n_; o.n_ = t;
+        t = cap_; cap_ = o.cap_; o.cap_ = t;
+    }
+};
+
+template<class T> inline bool operator==(const vector<T> &a, const vector<T> &b) {
+    if (a.size() != b.size()) return false;
+    for (size_t i = 0; i < a.size(); i++) if (!(a[i] == b[i])) return false;
+    return true;
+}
+template<class T> inline bool operator!=(const vector<T> &a, const vector<T> &b) { return !(a == b); }
+template<class T> inline bool operator<(const vector<T> &a, const vector<T> &b) { return lexicographical_compare(a.begin(), a.end(), b.begin(), b.end()); }
+template<class T> inline bool operator>(const vector<T> &a, const vector<T> &b) { return b < a; }
+template<class T> inline bool operator<=(const vector<T> &a, const vector<T> &b) { return !(b < a); }
+template<class T> inline bool operator>=(const vector<T> &a, const vector<T> &b) { return !(a < b); }
+template<class T> inline void swap(vector<T> &a, vector<T> &b) { a.swap(b); }
+
+}
+
+#endif

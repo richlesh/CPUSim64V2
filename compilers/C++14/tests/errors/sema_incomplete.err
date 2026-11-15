@@ -1,0 +1,1 @@
+sema_incomplete.cpp:4: error: invalid use of incomplete type 'B'

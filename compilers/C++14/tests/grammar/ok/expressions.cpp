@@ -1,0 +1,38 @@
+struct S { int m; int f(int); static int sm; };
+int S::sm = 0;
+int h(int, int);
+int e(int a, int b, S *sp, S &sr, int *ip) {
+    int x = a + b * 2 - (a % 3) / 1;
+    x = a << 2 | b >> 1 & 3 ^ 4;
+    bool t = a < b && b <= 3 || a != b && !(a == b);
+    x += 1; x -= 2; x *= 3; x /= 4; x %= 5; x <<= 1; x >>= 1; x &= 7; x |= 8; x ^= 9;
+    x = a ? b : (x ? 1 : 2);
+    x = ++a + b-- - -a + +b + ~a;
+    x = sp->m + sr.m + (*sp).m + sp->f(1) + sr.f(2) + S::sm;
+    int S::*pm = &S::m;
+    x = sr.*pm + sp->*pm;
+    x = ip[0] + *ip + *(ip + 1) + (&x != 0);
+    x = (int)3.5 + static_cast<int>(2.5) + reinterpret_cast<long>(ip) + (long)ip;
+    const S *cs = const_cast<const S *>(sp);
+    x = sizeof(int) + sizeof x + sizeof(S) + alignof(S);
+    int *np = new int;
+    int *na = new int[10];
+    S *ns = new S;
+    S *ns2 = new (np) S;
+    delete np;
+    delete[] na;
+    x = h(1, 2), x = h(3, 4);
+    x = int(3) + long(4) + S().m;
+    auto lam = [=](int q) mutable -> int { return q + x; };
+    auto lam2 = [&x, y = 3](int q) { return q * y; };
+    auto lam3 = [] { return 1; };
+    x = lam(1) + lam2(2) + lam3();
+    char c = 'a', d = '\n', e2 = '\x41';
+    const char *s = "a\tb" "c";
+    x = nullptr == ip;
+    int list[] = {1, 2, 3};
+    S s1 = {1};
+    S s2{2};
+    throw 1;
+    return x;
+}

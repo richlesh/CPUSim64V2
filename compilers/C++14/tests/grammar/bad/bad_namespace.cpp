@@ -1,0 +1,1 @@
+namespace N { int x; 

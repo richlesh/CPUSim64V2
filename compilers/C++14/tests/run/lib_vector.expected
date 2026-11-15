@@ -1,0 +1,24 @@
+v: 0 3 6 2 5 1 4 0 3 6 (size 10)
+sorted: 0 0 1 2 3 3 4 5 6 6 (size 10)
+reversed: 6 6 5 4 3 3 2 1 0 0 (size 10)
+erased: 6 6 3 2 1 0 0 (size 7)
+inserted: 6 99 6 3 2 1 0 0 7 7 7 (size 11)
+6 7
+w: 8 5 3 1 (size 4)
+z: 2 2 2 2 (size 4)
+z2: 8 5 3 1 (size 4)
+17
+2
+3
+1 8
+1a 2b 3c 
+10
+alpha bravo charlie delta 
+5
+0 50 100
+a
+1 4 4
+1 two
+out_of_range
+1 1
+1

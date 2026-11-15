@@ -1,0 +1,1 @@
+sema_tmpl_noargs.cpp:2: error: 'X' is a template and needs template arguments

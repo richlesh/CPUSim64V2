@@ -1,0 +1,1 @@
+sema_cout_missing.cpp:3: error: 'cout' was not declared in this scope

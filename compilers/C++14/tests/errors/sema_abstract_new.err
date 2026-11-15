@@ -1,0 +1,1 @@
+sema_abstract_new.cpp:4: error: cannot create an object of the abstract class 'B'

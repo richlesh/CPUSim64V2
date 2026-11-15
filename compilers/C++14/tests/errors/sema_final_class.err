@@ -1,0 +1,1 @@
+sema_final_class.cpp:2: error: cannot derive from the final class 'A'

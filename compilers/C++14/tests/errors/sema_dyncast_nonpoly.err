@@ -1,0 +1,1 @@
+sema_dyncast_nonpoly.cpp:5: error: 'A' is not polymorphic: dynamic_cast needs a class with virtual functions

@@ -1,0 +1,379 @@
+// <iostream> - cout, cin, cerr, clog for the CPUSim64 C++ translator.
+// The streams are classes written on top of the C library's FILEs.
+#ifndef _CPPC_IOSTREAM
+#define _CPPC_IOSTREAM
+#include <string>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <cctype>
+
+namespace std {
+
+class ios_base {
+public:
+    static bool sync_with_stdio(bool b = true) { return true; }
+};
+typedef ios_base ios;
+
+class ostream {
+    FILE *f_;
+    string *str_;                // a string stream writes here instead
+    int width_;
+    int prec_;
+    int base_;
+    char fill_;
+    bool fixed_, sci_, left_, boolalpha_, showpos_, uppercase_, showbase_;
+
+    void out_char(char c) { if (str_) str_->push_back(c); else fputc(c, f_); }
+    void put_padded(const char *s, size_t n)
+    {
+        size_t pad = 0;
+        if (width_ > 0 && (size_t)width_ > n) pad = (size_t)width_ - n;
+        width_ = 0;
+        if (!left_) for (size_t i = 0; i < pad; i++) out_char(fill_);
+        for (size_t i = 0; i < n; i++) out_char(s[i]);
+        if (left_) for (size_t i = 0; i < pad; i++) out_char(fill_);
+    }
+    ostream &put_signed(long long v)
+    {
+        char b[80];
+        if (base_ == 16) snprintf(b, 80, uppercase_ ? "%s%llX" : "%s%llx", showbase_ ? (uppercase_ ? "0X" : "0x") : "", v);
+        else if (base_ == 8) snprintf(b, 80, "%s%llo", showbase_ ? "0" : "", v);
+        else snprintf(b, 80, showpos_ ? "%+lld" : "%lld", v);
+        put_padded(b, strlen(b));
+        return *this;
+    }
+    ostream &put_unsigned(unsigned long long v)
+    {
+        char b[80];
+        if (base_ == 16) snprintf(b, 80, uppercase_ ? "%s%llX" : "%s%llx", showbase_ ? (uppercase_ ? "0X" : "0x") : "", v);
+        else if (base_ == 8) snprintf(b, 80, "%s%llo", showbase_ ? "0" : "", v);
+        else snprintf(b, 80, "%llu", v);
+        put_padded(b, strlen(b));
+        return *this;
+    }
+
+public:
+    explicit ostream(string *s) : f_(0), str_(s), width_(0), prec_(6), base_(10), fill_(' '), fixed_(false), sci_(false), left_(false),
+                       boolalpha_(false), showpos_(false), uppercase_(false), showbase_(false) {}
+    ostream(FILE *f) : f_(f), str_(0), width_(0), prec_(6), base_(10), fill_(' '), fixed_(false), sci_(false), left_(false),
+                       boolalpha_(false), showpos_(false), uppercase_(false), showbase_(false) {}
+
+    ostream &operator<<(int v) { return put_signed(v); }
+    ostream &operator<<(short v) { return put_signed(v); }
+    ostream &operator<<(long v) { return put_signed(v); }
+    ostream &operator<<(long long v) { return put_signed(v); }
+    ostream &operator<<(unsigned v) { return put_unsigned(v); }
+    ostream &operator<<(unsigned short v) { return put_unsigned(v); }
+    ostream &operator<<(unsigned long v) { return put_unsigned(v); }
+    ostream &operator<<(unsigned long long v) { return put_unsigned(v); }
+    ostream &operator<<(double v)
+    {
+        char b[400];
+        if (fixed_) snprintf(b, 400, showpos_ ? "%+.*f" : "%.*f", prec_, v);
+        else if (sci_) snprintf(b, 400, uppercase_ ? "%.*E" : "%.*e", prec_, v);
+        else snprintf(b, 400, showpos_ ? "%+.*g" : "%.*g", prec_, v);
+        put_padded(b, strlen(b));
+        return *this;
+    }
+    ostream &operator<<(bool v)
+    {
+        if (boolalpha_) {
+            const char *s = v ? "true" : "false";
+            put_padded(s, strlen(s));
+            return *this;
+        }
+        return put_signed(v ? 1 : 0);
+    }
+    ostream &operator<<(char c) { put_padded(&c, 1); return *this; }
+    ostream &operator<<(signed char c) { char x = (char)c; put_padded(&x, 1); return *this; }
+    ostream &operator<<(unsigned char c) { char x = (char)c; put_padded(&x, 1); return *this; }
+    ostream &operator<<(const char *s)
+    {
+        if (!s) s = "(null)";
+        put_padded(s, strlen(s));
+        return *this;
+    }
+    ostream &operator<<(const void *p)
+    {
+        char b[40];
+        snprintf(b, 40, "0x%lx", (unsigned long)p);
+        put_padded(b, strlen(b));
+        return *this;
+    }
+    ostream &operator<<(ostream &(*manip)(ostream &)) { return manip(*this); }
+
+    ostream &put(char c) { out_char(c); return *this; }
+    ostream &write(const char *s, size_t n) { for (size_t i = 0; i < n; i++) out_char(s[i]); return *this; }
+    ostream &write_padded(const char *s, size_t n) { put_padded(s, n); return *this; }
+    ostream &flush() { if (f_) fflush(f_); return *this; }
+
+    int width() const { return width_; }
+    int width(int w) { int o = width_; width_ = w; return o; }
+    int precision() const { return prec_; }
+    int precision(int p) { int o = prec_; prec_ = p; return o; }
+    char fill() const { return fill_; }
+    char fill(char c) { char o = fill_; fill_ = c; return o; }
+
+    // formatting state used by the manipulators
+    void set_base(int b) { base_ = b; }
+    void set_fixed(bool on) { fixed_ = on; if (on) sci_ = false; }
+    void set_scientific(bool on) { sci_ = on; if (on) fixed_ = false; }
+    void set_left(bool on) { left_ = on; }
+    void set_boolalpha(bool on) { boolalpha_ = on; }
+    void set_showpos(bool on) { showpos_ = on; }
+    void set_uppercase(bool on) { uppercase_ = on; }
+    void set_showbase(bool on) { showbase_ = on; }
+    void reset_float() { fixed_ = false; sci_ = false; }
+    virtual ~ostream() {}
+};
+
+inline ostream &endl(ostream &os) { os.put('\n'); os.flush(); return os; }
+inline ostream &ends(ostream &os) { os.put(0); return os; }
+inline ostream &flush(ostream &os) { os.flush(); return os; }
+inline ostream &dec(ostream &os) { os.set_base(10); return os; }
+inline ostream &hex(ostream &os) { os.set_base(16); return os; }
+inline ostream &oct(ostream &os) { os.set_base(8); return os; }
+inline ostream &fixed(ostream &os) { os.set_fixed(true); return os; }
+inline ostream &scientific(ostream &os) { os.set_scientific(true); return os; }
+inline ostream &defaultfloat(ostream &os) { os.reset_float(); return os; }
+inline ostream &left(ostream &os) { os.set_left(true); return os; }
+inline ostream &right(ostream &os) { os.set_left(false); return os; }
+inline ostream &boolalpha(ostream &os) { os.set_boolalpha(true); return os; }
+inline ostream &noboolalpha(ostream &os) { os.set_boolalpha(false); return os; }
+inline ostream &showpos(ostream &os) { os.set_showpos(true); return os; }
+inline ostream &noshowpos(ostream &os) { os.set_showpos(false); return os; }
+inline ostream &uppercase(ostream &os) { os.set_uppercase(true); return os; }
+inline ostream &nouppercase(ostream &os) { os.set_uppercase(false); return os; }
+inline ostream &showbase(ostream &os) { os.set_showbase(true); return os; }
+inline ostream &noshowbase(ostream &os) { os.set_showbase(false); return os; }
+
+inline ostream &operator<<(ostream &os, const string &s) { os.write_padded(s.c_str(), s.size()); return os; }
+
+// the manipulators with an argument
+struct _Setw { int n; };
+struct _Setprecision { int n; };
+struct _Setfill { char c; };
+struct _Setbase { int n; };
+inline _Setw setw(int n) { _Setw m; m.n = n; return m; }
+inline _Setprecision setprecision(int n) { _Setprecision m; m.n = n; return m; }
+inline _Setfill setfill(char c) { _Setfill m; m.c = c; return m; }
+inline _Setbase setbase(int n) { _Setbase m; m.n = n; return m; }
+inline ostream &operator<<(ostream &os, _Setw m) { os.width(m.n); return os; }
+inline ostream &operator<<(ostream &os, _Setprecision m) { os.precision(m.n); return os; }
+inline ostream &operator<<(ostream &os, _Setfill m) { os.fill(m.c); return os; }
+inline ostream &operator<<(ostream &os, _Setbase m) { os.set_base(m.n); return os; }
+
+class istream {
+    FILE *f_;
+    const string *src_;          // a string stream reads from here instead
+    size_t pos_;
+    bool eof_, fail_;
+    long count_;
+
+    int in_get()
+    {
+        if (!src_) return fgetc(f_);
+        if (pos_ < src_->size()) return (unsigned char)(*src_)[pos_++];
+        return EOF;
+    }
+    void in_unget(int c)
+    {
+        if (!src_) ungetc(c, f_);
+        else if (c != EOF && pos_ > 0) pos_--;
+    }
+    int next() { int c = in_get(); if (c == EOF) eof_ = true; return c; }
+    void skip_ws()
+    {
+        for (;;) {
+            int c = in_get();
+            if (c == EOF) { eof_ = true; return; }
+            if (!isspace(c)) { in_unget(c); return; }
+        }
+    }
+    // reads the characters of a number into b: those that satisfy accept()
+    int read_token(char *b, int max, const char *accept)
+    {
+        int n = 0;
+        skip_ws();
+        for (;;) {
+            int c = in_get();
+            if (c == EOF) { eof_ = true; break; }
+            if (n < max - 1 && strchr(accept, c) != 0 && c != 0) b[n++] = (char)c;
+            else { in_unget(c); break; }
+        }
+        b[n] = 0;
+        return n;
+    }
+
+public:
+    istream(FILE *f) : f_(f), src_(0), pos_(0), eof_(false), fail_(false), count_(0) {}
+    explicit istream(const string *s) : f_(0), src_(s), pos_(0), eof_(false), fail_(false), count_(0) {}
+    virtual ~istream() {}
+    void rewind_source() { pos_ = 0; eof_ = false; fail_ = false; }
+
+    bool eof() const { return eof_; }
+    bool fail() const { return fail_; }
+    bool bad() const { return false; }
+    bool good() const { return !fail_ && !eof_; }
+    void clear() { fail_ = false; eof_ = false; }
+    explicit operator bool() const { return !fail_; }
+    void set_fail() { fail_ = true; }
+    void set_state(bool eof, bool fail) { eof_ = eof; fail_ = fail; }
+    bool operator!() const { return fail_; }
+    ostream *tie(ostream *) { return 0; }
+    long gcount() const { return count_; }
+
+    int get()
+    {
+        int c = in_get();
+        if (c == EOF) { eof_ = true; fail_ = true; count_ = 0; }
+        else count_ = 1;
+        return c;
+    }
+    istream &get(char &c)
+    {
+        int x = get();
+        if (x != EOF) c = (char)x;
+        return *this;
+    }
+    int peek()
+    {
+        int c = in_get();
+        if (c == EOF) { eof_ = true; return EOF; }
+        in_unget(c);
+        return c;
+    }
+    istream &ignore(long n = 1, int delim = EOF)
+    {
+        for (long i = 0; i < n; i++) {
+            int c = in_get();
+            if (c == EOF) { eof_ = true; break; }
+            if (c == delim) break;
+        }
+        return *this;
+    }
+    istream &getline(char *s, long n, char delim = '\n')
+    {
+        long i = 0;
+        count_ = 0;
+        for (;;) {
+            int c = in_get();
+            if (c == EOF) { eof_ = true; if (i == 0) fail_ = true; break; }
+            count_++;
+            if (c == delim) break;
+            if (i < n - 1) s[i++] = (char)c;
+        }
+        s[i] = 0;
+        return *this;
+    }
+    istream &read(char *s, long n)
+    {
+        for (long i = 0; i < n; i++) {
+            int c = in_get();
+            if (c == EOF) { eof_ = true; fail_ = true; break; }
+            s[i] = (char)c;
+        }
+        return *this;
+    }
+
+    istream &operator>>(long &v)
+    {
+        char b[64];
+        if (read_token(b, 64, "+-0123456789") == 0) { fail_ = true; return *this; }
+        v = strtol(b, 0, 10);
+        return *this;
+    }
+    istream &operator>>(int &v) { long x = 0; *this >> x; if (!fail_) v = (int)x; return *this; }
+    istream &operator>>(short &v) { long x = 0; *this >> x; if (!fail_) v = (short)x; return *this; }
+    istream &operator>>(long long &v) { long x = 0; *this >> x; if (!fail_) v = x; return *this; }
+    istream &operator>>(unsigned long &v)
+    {
+        char b[64];
+        if (read_token(b, 64, "+0123456789") == 0) { fail_ = true; return *this; }
+        v = strtoul(b, 0, 10);
+        return *this;
+    }
+    istream &operator>>(unsigned &v) { unsigned long x = 0; *this >> x; if (!fail_) v = (unsigned)x; return *this; }
+    istream &operator>>(double &v)
+    {
+        char b[128];
+        if (read_token(b, 128, "+-0123456789.eE") == 0) { fail_ = true; return *this; }
+        v = strtod(b, 0);
+        return *this;
+    }
+    istream &operator>>(float &v) { double x = 0; *this >> x; if (!fail_) v = (float)x; return *this; }
+    istream &operator>>(char &c)
+    {
+        skip_ws();
+        int x = next();
+        if (x == EOF) fail_ = true;
+        else c = (char)x;
+        return *this;
+    }
+    istream &operator>>(char *s)
+    {
+        int n = 0;
+        skip_ws();
+        for (;;) {
+            int c = in_get();
+            if (c == EOF) { eof_ = true; break; }
+            if (isspace(c)) { in_unget(c); break; }
+            s[n++] = (char)c;
+        }
+        s[n] = 0;
+        if (n == 0) fail_ = true;
+        return *this;
+    }
+    istream &operator>>(istream &(*manip)(istream &)) { return manip(*this); }
+};
+
+inline istream &ws(istream &is) { is.ignore(0); while (isspace(is.peek())) is.get(); return is; }
+
+inline istream &operator>>(istream &is, string &s)
+{
+    s.clear();
+    char c;
+    is >> c;
+    if (is.fail()) return is;
+    s.push_back(c);
+    for (;;) {
+        int x = is.peek();
+        if (x == EOF || isspace(x)) break;
+        s.push_back((char)is.get());
+    }
+    return is;
+}
+
+inline istream &getline(istream &is, string &s, char delim = '\n')
+{
+    s.clear();
+    bool any = false;
+    for (;;) {
+        int c = is.get();
+        if (c == EOF) {
+            is.set_state(true, !any);      /* the last line without a newline is still a line */
+            return is;
+        }
+        any = true;
+        if (c == delim) return is;
+        s.push_back((char)c);
+    }
+}
+
+extern ostream cout;
+extern ostream cerr;
+extern ostream clog;
+extern istream cin;
+
+#ifndef _CPPC_NO_STREAM_OBJECTS
+ostream cout(stdout);
+ostream cerr(stderr);
+ostream clog(stderr);
+istream cin(stdin);
+#endif
+
+}  // namespace std
+
+#endif

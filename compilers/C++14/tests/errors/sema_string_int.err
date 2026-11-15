@@ -1,0 +1,1 @@
+sema_string_int.cpp:3: error: cannot convert 'int' to 'std::string' in copy-initialization

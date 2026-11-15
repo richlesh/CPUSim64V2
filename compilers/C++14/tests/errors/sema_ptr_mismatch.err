@@ -1,0 +1,1 @@
+sema_ptr_mismatch.cpp:3: error: cannot convert 'int*' to 'char*'

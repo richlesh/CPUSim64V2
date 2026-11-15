@@ -1,0 +1,39 @@
+// <typeinfo> - std::type_info, bad_cast and bad_typeid for the CPUSim64 C++ translator.
+// A type_info object is a pointer to the translator's type descriptor, whose first
+// member is the name of the type.  name() returns the C++ spelling of the type
+// (not the mangled name that g++ returns).
+#ifndef CPPC_TYPEINFO
+#define CPPC_TYPEINFO
+
+#include <exception>
+#include <cstring>
+
+namespace std {
+
+class type_info {
+    const void *d_;
+public:
+    const char *name() const { return *(const char *const *)d_; }
+    // every unit of a program has its own descriptors: equal types have equal names
+    bool operator==(const type_info &o) const { return d_ == o.d_ || strcmp(name(), o.name()) == 0; }
+    bool operator!=(const type_info &o) const { return !(*this == o); }
+    bool before(const type_info &o) const { return strcmp(name(), o.name()) < 0; }
+    unsigned long hash_code() const { return (unsigned long)d_; }
+};
+
+class bad_cast : public exception {
+public:
+    virtual const char *what() const noexcept { return "std::bad_cast"; }
+};
+
+class bad_typeid : public exception {
+public:
+    virtual const char *what() const noexcept { return "std::bad_typeid"; }
+};
+
+inline void __throw_bad_cast() { throw bad_cast(); }
+inline void __throw_bad_typeid() { throw bad_typeid(); }
+
+}
+
+#endif

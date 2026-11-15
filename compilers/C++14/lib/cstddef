@@ -1,0 +1,6 @@
+// <cstddef>: the C library functions in namespace std as well
+#ifndef _CPPC_CSTDDEF
+#define _CPPC_CSTDDEF
+#include <stddef.h>
+namespace std { using ::size_t; using ::ptrdiff_t; typedef decltype(nullptr) nullptr_t; }
+#endif

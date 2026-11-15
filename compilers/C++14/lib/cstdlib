@@ -1,0 +1,11 @@
+// <cstdlib>: the C library functions in namespace std as well
+#ifndef _CPPC_CSTDLIB
+#define _CPPC_CSTDLIB
+#include <stdlib.h>
+namespace std {
+    using ::malloc; using ::calloc; using ::realloc; using ::free; using ::exit; using ::abort;
+    using ::atexit; using ::atoi; using ::atol; using ::atof; using ::strtol; using ::strtoul;
+    using ::strtod; using ::abs; using ::labs; using ::rand; using ::srand; using ::getenv;
+    using ::qsort; using ::bsearch;
+}
+#endif

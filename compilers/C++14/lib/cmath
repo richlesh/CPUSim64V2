@@ -1,0 +1,16 @@
+// <cmath>: the C library functions in namespace std as well
+#ifndef _CPPC_CMATH
+#define _CPPC_CMATH
+#include <math.h>
+namespace std {
+    using ::sin; using ::cos; using ::tan; using ::asin; using ::acos; using ::atan; using ::atan2;
+    using ::sinh; using ::cosh; using ::tanh; using ::asinh; using ::acosh; using ::atanh;
+    using ::exp; using ::log; using ::pow; using ::sqrt; using ::exp2; using ::expm1; using ::log10;
+    using ::log2; using ::log1p; using ::cbrt; using ::hypot; using ::fabs; using ::floor; using ::ceil;
+    using ::round; using ::remainder; using ::trunc; using ::rint; using ::nearbyint; using ::lround;
+    using ::lrint; using ::fmod; using ::modf; using ::frexp; using ::ldexp; using ::scalbn; using ::copysign;
+    using ::fmin; using ::fmax; using ::fdim; using ::fma; using ::isnan; using ::isinf; using ::isfinite;
+    using ::signbit;
+    inline double abs(double x) { return fabs(x); }
+}
+#endif

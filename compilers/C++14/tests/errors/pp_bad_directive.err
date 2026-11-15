@@ -1,0 +1,1 @@
+pp_bad_directive.cpp:2: error: invalid preprocessing directive #frobnicate

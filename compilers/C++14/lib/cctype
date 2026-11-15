@@ -1,0 +1,9 @@
+// <cctype>: the C library functions in namespace std as well
+#ifndef _CPPC_CCTYPE
+#define _CPPC_CCTYPE
+#include <ctype.h>
+namespace std {
+    using ::isalpha; using ::isdigit; using ::isalnum; using ::isspace; using ::isupper; using ::islower;
+    using ::ispunct; using ::isprint; using ::toupper; using ::tolower;
+}
+#endif

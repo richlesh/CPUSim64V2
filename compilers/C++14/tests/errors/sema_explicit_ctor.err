@@ -1,0 +1,1 @@
+sema_explicit_ctor.cpp:6: error: cannot convert argument 1 from 'int' to 'A'

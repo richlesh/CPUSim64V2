@@ -1,0 +1,21 @@
+alloc 4
+4 10
+default
+assign 4
+10 109
+copy 4
+100
+-- conditional temporaries
+T1
+~T1
+both
+T3
+~T3
+3
+-- inner
+42 42
+hello world 
+6 3
+free 4
+free 4
+free 4

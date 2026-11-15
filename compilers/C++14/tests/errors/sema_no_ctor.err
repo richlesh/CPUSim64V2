@@ -1,0 +1,1 @@
+sema_no_ctor.cpp:5: error: no matching constructor for 'A'

@@ -1,0 +1,1 @@
+sema_not_const.cpp:3: error: the expression is not an integral constant expression

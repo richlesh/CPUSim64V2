@@ -1,0 +1,43 @@
+Buf(3)
+move 3
+a.n=0 b.n=3
+Buf(2)
+move= 3
+b.n=0 c.n=3
+Buf(4)
+d.n=4
+Buf(1)
+Buf(5)
+move= 5
+~Buf 0
+e.n=5
+move 4
+move 4
+~Buf 0
+f.n=4
+Buf(7)
+lsink 7
+sink 7
+Buf(8)
+sink 8
+~Buf 8
+Buf(6)
+move 6
+6 6 0
+-1 -1 5
+Buf(9)
+move 9
+move 9
+~Buf 0
+z.n=9
+~Buf 9
+~Buf 0
+~Buf 6
+~Buf 0
+~Buf 7
+~Buf 4
+~Buf 5
+~Buf 0
+~Buf 3
+~Buf 0
+~Buf 0

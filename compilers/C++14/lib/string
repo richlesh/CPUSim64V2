@@ -1,0 +1,277 @@
+// <string> - std::string for the CPUSim64 C++ translator.
+// A string is a heap array of chars (one codepoint per char) that always has a terminating 0.
+#ifndef _CPPC_STRING
+#define _CPPC_STRING
+#include <cstddef>
+#include <cstring>
+#include <cstdlib>
+#include <cstdio>
+
+namespace std {
+
+class string {
+    char *p_;
+    size_t n_;
+    size_t cap_;
+
+    void reserve_exact(size_t cap)
+    {
+        if (cap <= cap_) return;
+        p_ = (char *)realloc(p_, cap);
+        cap_ = cap;
+    }
+    void grow_to(size_t need)           // room for need characters and the 0
+    {
+        if (need + 1 <= cap_) return;
+        size_t nc = cap_ * 2;
+        if (nc < need + 1) nc = need + 1;
+        reserve_exact(nc);
+    }
+    void assign_raw(const char *s, size_t n)
+    {
+        grow_to(n);
+        memmove(p_, s, n);
+        n_ = n;
+        p_[n_] = 0;
+    }
+
+public:
+    typedef char value_type;
+    typedef size_t size_type;
+    typedef char *iterator;
+    typedef const char *const_iterator;
+    static const size_t npos = (size_t)-1;
+
+    string() : p_((char *)malloc(16)), n_(0), cap_(16) { p_[0] = 0; }
+    string(const char *s) : p_((char *)malloc(16)), n_(0), cap_(16) { p_[0] = 0; assign_raw(s, strlen(s)); }
+    string(const char *s, size_t n) : p_((char *)malloc(16)), n_(0), cap_(16) { p_[0] = 0; assign_raw(s, n); }
+    string(size_t n, char c) : p_((char *)malloc(16)), n_(0), cap_(16)
+    {
+        grow_to(n);
+        for (size_t i = 0; i < n; i++) p_[i] = c;
+        n_ = n;
+        p_[n_] = 0;
+    }
+    string(const string &o) : p_((char *)malloc(16)), n_(0), cap_(16) { p_[0] = 0; assign_raw(o.p_, o.n_); }
+    string(string &&o) : p_(o.p_), n_(o.n_), cap_(o.cap_) { o.p_ = (char *)malloc(16); o.p_[0] = 0; o.n_ = 0; o.cap_ = 16; }
+    string(const string &o, size_t pos, size_t len = npos) : p_((char *)malloc(16)), n_(0), cap_(16)
+    {
+        p_[0] = 0;
+        if (pos > o.n_) pos = o.n_;
+        if (len > o.n_ - pos) len = o.n_ - pos;
+        assign_raw(o.p_ + pos, len);
+    }
+    ~string() { free(p_); }
+
+    string &operator=(const string &o) { if (this != &o) assign_raw(o.p_, o.n_); return *this; }
+    string &operator=(string &&o)
+    {
+        if (this != &o) {
+            char *tp = p_;
+            size_t tc = cap_;
+            p_ = o.p_;
+            n_ = o.n_;
+            cap_ = o.cap_;
+            o.p_ = tp;
+            o.cap_ = tc;
+            o.n_ = 0;
+            o.p_[0] = 0;
+        }
+        return *this;
+    }
+    string &operator=(const char *s) { assign_raw(s, strlen(s)); return *this; }
+    string &operator=(char c) { assign_raw(&c, 1); return *this; }
+
+    size_t size() const { return n_; }
+    size_t length() const { return n_; }
+    size_t capacity() const { return cap_ - 1; }
+    bool empty() const { return n_ == 0; }
+    const char *c_str() const { return p_; }
+    const char *data() const { return p_; }
+    char &operator[](size_t i) { return p_[i]; }
+    const char &operator[](size_t i) const { return p_[i]; }
+    char &at(size_t i) { return p_[i]; }
+    const char &at(size_t i) const { return p_[i]; }
+    char &front() { return p_[0]; }
+    char &back() { return p_[n_ - 1]; }
+    const char &front() const { return p_[0]; }
+    const char &back() const { return p_[n_ - 1]; }
+    iterator begin() { return p_; }
+    iterator end() { return p_ + n_; }
+    const_iterator begin() const { return p_; }
+    const_iterator end() const { return p_ + n_; }
+    const_iterator cbegin() const { return p_; }
+    const_iterator cend() const { return p_ + n_; }
+
+    void clear() { n_ = 0; p_[0] = 0; }
+    void reserve(size_t n) { reserve_exact(n + 1); }
+    void resize(size_t n, char c = 0)
+    {
+        if (n > n_) {
+            grow_to(n);
+            for (size_t i = n_; i < n; i++) p_[i] = c;
+        }
+        n_ = n;
+        p_[n_] = 0;
+    }
+    void push_back(char c) { grow_to(n_ + 1); p_[n_++] = c; p_[n_] = 0; }
+    void pop_back() { if (n_ > 0) { n_--; p_[n_] = 0; } }
+
+    string &append(const char *s, size_t n)
+    {
+        grow_to(n_ + n);
+        memmove(p_ + n_, s, n);
+        n_ += n;
+        p_[n_] = 0;
+        return *this;
+    }
+    string &append(const char *s) { return append(s, strlen(s)); }
+    string &append(const string &o) { return append(o.p_, o.n_); }
+    string &append(size_t n, char c) { for (size_t i = 0; i < n; i++) push_back(c); return *this; }
+    string &operator+=(const string &o) { return append(o.p_, o.n_); }
+    string &operator+=(const char *s) { return append(s, strlen(s)); }
+    string &operator+=(char c) { push_back(c); return *this; }
+    string &assign(const string &o) { return *this = o; }
+    string &assign(const char *s) { return *this = s; }
+
+    string substr(size_t pos = 0, size_t len = npos) const
+    {
+        if (pos > n_) pos = n_;
+        if (len > n_ - pos) len = n_ - pos;
+        return string(p_ + pos, len);
+    }
+
+    size_t find(const char *s, size_t pos, size_t n) const
+    {
+        if (n == 0) return pos <= n_ ? pos : npos;
+        if (n > n_) return npos;
+        for (size_t i = pos; i + n <= n_; i++)
+            if (memcmp(p_ + i, s, n) == 0) return i;
+        return npos;
+    }
+    size_t find(const string &s, size_t pos = 0) const { return find(s.p_, pos, s.n_); }
+    size_t find(const char *s, size_t pos = 0) const { return find(s, pos, strlen(s)); }
+    size_t find(char c, size_t pos = 0) const
+    {
+        for (size_t i = pos; i < n_; i++) if (p_[i] == c) return i;
+        return npos;
+    }
+    size_t rfind(char c, size_t pos = npos) const
+    {
+        if (n_ == 0) return npos;
+        size_t i = pos < n_ ? pos : n_ - 1;
+        for (;;) {
+            if (p_[i] == c) return i;
+            if (i == 0) return npos;
+            i--;
+        }
+    }
+    size_t rfind(const string &s) const
+    {
+        if (s.n_ > n_) return npos;
+        size_t i = n_ - s.n_;
+        for (;;) {
+            if (memcmp(p_ + i, s.p_, s.n_) == 0) return i;
+            if (i == 0) return npos;
+            i--;
+        }
+    }
+    size_t find_first_of(const char *set, size_t pos = 0) const
+    {
+        for (size_t i = pos; i < n_; i++) if (strchr(set, p_[i]) != 0 && p_[i] != 0) return i;
+        return npos;
+    }
+    size_t find_first_not_of(const char *set, size_t pos = 0) const
+    {
+        for (size_t i = pos; i < n_; i++) if (strchr(set, p_[i]) == 0 || p_[i] == 0) return i;
+        return npos;
+    }
+    size_t find_last_of(const char *set) const
+    {
+        for (size_t i = n_; i > 0; i--) if (strchr(set, p_[i - 1]) != 0 && p_[i - 1] != 0) return i - 1;
+        return npos;
+    }
+
+    string &erase(size_t pos = 0, size_t len = npos)
+    {
+        if (pos > n_) pos = n_;
+        if (len > n_ - pos) len = n_ - pos;
+        memmove(p_ + pos, p_ + pos + len, n_ - pos - len + 1);
+        n_ -= len;
+        return *this;
+    }
+    string &insert(size_t pos, const char *s, size_t n)
+    {
+        if (pos > n_) pos = n_;
+        grow_to(n_ + n);
+        memmove(p_ + pos + n, p_ + pos, n_ - pos + 1);
+        memcpy(p_ + pos, s, n);
+        n_ += n;
+        return *this;
+    }
+    string &insert(size_t pos, const string &s) { return insert(pos, s.p_, s.n_); }
+    string &insert(size_t pos, const char *s) { return insert(pos, s, strlen(s)); }
+    string &insert(size_t pos, size_t n, char c) { string t(n, c); return insert(pos, t.p_, n); }
+    string &replace(size_t pos, size_t len, const string &s)
+    {
+        if (pos > n_) pos = n_;
+        if (len > n_ - pos) len = n_ - pos;
+        erase(pos, len);
+        return insert(pos, s);
+    }
+    string &replace(size_t pos, size_t len, const char *s) { return replace(pos, len, string(s)); }
+
+    int compare(const string &o) const
+    {
+        int r = strcmp(p_, o.p_);
+        return r < 0 ? -1 : (r > 0 ? 1 : 0);
+    }
+    int compare(const char *s) const
+    {
+        int r = strcmp(p_, s);
+        return r < 0 ? -1 : (r > 0 ? 1 : 0);
+    }
+    void swap(string &o)
+    {
+        char *tp = p_; p_ = o.p_; o.p_ = tp;
+        size_t tn = n_; n_ = o.n_; o.n_ = tn;
+        size_t tc = cap_; cap_ = o.cap_; o.cap_ = tc;
+    }
+};
+
+inline string operator+(const string &a, const string &b) { string r(a); r.append(b); return r; }
+inline string operator+(const string &a, const char *b) { string r(a); r.append(b); return r; }
+inline string operator+(const char *a, const string &b) { string r(a); r.append(b); return r; }
+inline string operator+(const string &a, char b) { string r(a); r.push_back(b); return r; }
+inline string operator+(char a, const string &b) { string r(1, a); r.append(b); return r; }
+
+inline bool operator==(const string &a, const string &b) { return a.compare(b) == 0; }
+inline bool operator==(const string &a, const char *b) { return a.compare(b) == 0; }
+inline bool operator==(const char *a, const string &b) { return b.compare(a) == 0; }
+inline bool operator!=(const string &a, const string &b) { return a.compare(b) != 0; }
+inline bool operator!=(const string &a, const char *b) { return a.compare(b) != 0; }
+inline bool operator!=(const char *a, const string &b) { return b.compare(a) != 0; }
+inline bool operator<(const string &a, const string &b) { return a.compare(b) < 0; }
+inline bool operator<(const string &a, const char *b) { return a.compare(b) < 0; }
+inline bool operator<(const char *a, const string &b) { return b.compare(a) > 0; }
+inline bool operator>(const string &a, const string &b) { return a.compare(b) > 0; }
+inline bool operator>(const string &a, const char *b) { return a.compare(b) > 0; }
+inline bool operator<=(const string &a, const string &b) { return a.compare(b) <= 0; }
+inline bool operator>=(const string &a, const string &b) { return a.compare(b) >= 0; }
+inline void swap(string &a, string &b) { a.swap(b); }
+
+inline string to_string(int v) { char b[32]; snprintf(b, 32, "%d", v); return string(b); }
+inline string to_string(long v) { char b[32]; snprintf(b, 32, "%ld", v); return string(b); }
+inline string to_string(long long v) { char b[32]; snprintf(b, 32, "%lld", v); return string(b); }
+inline string to_string(unsigned v) { char b[32]; snprintf(b, 32, "%u", v); return string(b); }
+inline string to_string(unsigned long v) { char b[32]; snprintf(b, 32, "%lu", v); return string(b); }
+inline string to_string(double v) { char b[64]; snprintf(b, 64, "%f", v); return string(b); }
+
+inline int stoi(const string &s) { return (int)strtol(s.c_str(), 0, 10); }
+inline long stol(const string &s) { return strtol(s.c_str(), 0, 10); }
+inline unsigned long stoul(const string &s) { return strtoul(s.c_str(), 0, 10); }
+inline double stod(const string &s) { return strtod(s.c_str(), 0); }
+
+}  // namespace std
+
+#endif

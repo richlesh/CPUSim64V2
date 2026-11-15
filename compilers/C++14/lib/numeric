@@ -1,0 +1,32 @@
+// <numeric> - accumulate and friends for the CPUSim64 C++ translator.
+#ifndef CPPC_NUMERIC
+#define CPPC_NUMERIC
+
+#include <iterator>
+
+namespace std {
+
+template<class It, class T> inline T accumulate(It first, It last, T init) { for (; first != last; ++first) init = init + *first; return init; }
+template<class It, class T, class F> inline T accumulate(It first, It last, T init, F f) { for (; first != last; ++first) init = f(init, *first); return init; }
+template<class It1, class It2, class T> inline T inner_product(It1 a, It1 e, It2 b, T init) { for (; a != e; ++a, ++b) init = init + (*a) * (*b); return init; }
+template<class It, class T> inline void iota(It first, It last, T v) { for (; first != last; ++first, ++v) *first = v; }
+template<class In, class Out> inline Out partial_sum(In first, In last, Out out) {
+    if (first == last) return out;
+    typename iterator_traits<In>::value_type s = *first;
+    *out = s;
+    while (++first != last) { s = s + *first; *++out = s; }
+    return ++out;
+}
+template<class In, class Out> inline Out adjacent_difference(In first, In last, Out out) {
+    if (first == last) return out;
+    typename iterator_traits<In>::value_type prev = *first;
+    *out = prev;
+    while (++first != last) { typename iterator_traits<In>::value_type v = *first; *++out = v - prev; prev = v; }
+    return ++out;
+}
+template<class T> inline T gcd(T a, T b) { while (b != 0) { T t = a % b; a = b; b = t; } return a; }
+template<class T> inline T lcm(T a, T b) { return a / gcd(a, b) * b; }
+
+}
+
+#endif

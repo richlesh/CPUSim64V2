@@ -1,0 +1,198 @@
+// __hashtable - the chained hash table of the unordered containers for the CPUSim64 C++
+// translator (an internal header).  Iteration order is unspecified (as in the standard).
+#ifndef CPPC_HASHTABLE
+#define CPPC_HASHTABLE
+
+#include <cstddef>
+#include <cstdlib>
+#include <new>
+#include <utility>
+#include <iterator>
+#include <functional>
+
+namespace std {
+
+template<class V> struct __hash_node {
+    __hash_node *next;
+    size_t hash;
+    V value;
+};
+
+template<class V, class Ref, class Ptr> struct __hash_iterator {
+    typedef V value_type;
+    typedef Ref reference;
+    typedef Ptr pointer;
+    typedef ptrdiff_t difference_type;
+    typedef forward_iterator_tag iterator_category;
+    __hash_node<V> *n;
+    __hash_node<V> **b;          // the current bucket
+    __hash_node<V> **e;          // the end of the bucket array
+    __hash_iterator() : n(0), b(0), e(0) {}
+    __hash_iterator(__hash_node<V> *x, __hash_node<V> **bk, __hash_node<V> **end) : n(x), b(bk), e(end) {}
+    __hash_iterator(const __hash_iterator<V, V &, V *> &o) : n(o.n), b(o.b), e(o.e) {}
+    Ref operator*() const { return n->value; }
+    Ptr operator->() const { return &n->value; }
+    __hash_iterator &operator++() {
+        n = n->next;
+        while (!n && b + 1 < e) { ++b; n = *b; }
+        if (!n) b = e;
+        return *this;
+    }
+    __hash_iterator operator++(int) { __hash_iterator t = *this; ++*this; return t; }
+    bool operator==(const __hash_iterator &o) const { return n == o.n; }
+    bool operator!=(const __hash_iterator &o) const { return n != o.n; }
+};
+
+template<class K, class V, class KeyOf, class H, class Eq> class __hashtable {
+public:
+    typedef __hash_node<V> node;
+    typedef __hash_iterator<V, V &, V *> iterator;
+    typedef __hash_iterator<V, const V &, const V *> const_iterator;
+
+    node **b_;
+    size_t nb_, n_;
+    H hf;
+    Eq eq;
+
+    __hashtable() : b_(0), nb_(0), n_(0) {}
+    __hashtable(const __hashtable &o) : b_(0), nb_(0), n_(0) { for (const_iterator i = o.begin(); i != o.end(); ++i) insert_multi(*i); }
+    __hashtable(__hashtable &&o) : b_(o.b_), nb_(o.nb_), n_(o.n_) { o.b_ = 0; o.nb_ = 0; o.n_ = 0; }
+    ~__hashtable() { clear(); free(b_); }
+    __hashtable &operator=(const __hashtable &o) {
+        if (this != &o) { clear(); for (const_iterator i = o.begin(); i != o.end(); ++i) insert_multi(*i); }
+        return *this;
+    }
+    __hashtable &operator=(__hashtable &&o) {
+        if (this != &o) {
+            clear();
+            free(b_);
+            b_ = o.b_; nb_ = o.nb_; n_ = o.n_;
+            o.b_ = 0; o.nb_ = 0; o.n_ = 0;
+        }
+        return *this;
+    }
+
+    iterator make_iter(size_t i) {
+        while (i < nb_ && !b_[i]) ++i;
+        if (i >= nb_) return end();
+        return iterator(b_[i], b_ + i, b_ + nb_);
+    }
+    iterator begin() { return make_iter(0); }
+    const_iterator begin() const { return const_cast<__hashtable *>(this)->make_iter(0); }
+    iterator end() { return iterator(0, b_ + nb_, b_ + nb_); }
+    const_iterator end() const { return const_iterator(0, b_ + nb_, b_ + nb_); }
+    size_t size() const { return n_; }
+    bool empty() const { return n_ == 0; }
+    size_t bucket_count() const { return nb_; }
+
+    void clear() {
+        for (size_t i = 0; i < nb_; i++) {
+            node *x = b_[i];
+            while (x) { node *nx = x->next; x->value.~V(); free(x); x = nx; }
+            b_[i] = 0;
+        }
+        n_ = 0;
+    }
+    void rehash(size_t nb) {
+        if (nb < 8) nb = 8;
+        node **nbk = (node **)calloc(nb, sizeof(node *));
+        for (size_t i = 0; i < nb_; i++) {
+            node *x = b_[i];
+            while (x) {
+                node *nx = x->next;
+                size_t j = x->hash % nb;
+                x->next = nbk[j];
+                nbk[j] = x;
+                x = nx;
+            }
+        }
+        free(b_);
+        b_ = nbk;
+        nb_ = nb;
+    }
+    void grow() { if (n_ + 1 > nb_) rehash(nb_ ? nb_ * 2 : 8); }
+
+    node *find_node(const K &k, size_t h) const {
+        if (!nb_) return 0;
+        for (node *x = b_[h % nb_]; x; x = x->next)
+            if (x->hash == h && eq(KeyOf()(x->value), k)) return x;
+        return 0;
+    }
+    iterator find(const K &k) {
+        size_t h = hf(k);
+        node *x = find_node(k, h);
+        if (!x) return end();
+        return iterator(x, b_ + h % nb_, b_ + nb_);
+    }
+    const_iterator find(const K &k) const { return const_cast<__hashtable *>(this)->find(k); }
+    size_t count(const K &k) const {
+        size_t c = 0, h = hf(k);
+        if (!nb_) return 0;
+        for (node *x = b_[h % nb_]; x; x = x->next)
+            if (x->hash == h && eq(KeyOf()(x->value), k)) ++c;
+        return c;
+    }
+
+    iterator link(node *nd) {
+        grow();
+        size_t i = nd->hash % nb_;
+        nd->next = b_[i];
+        b_[i] = nd;
+        ++n_;
+        return iterator(nd, b_ + i, b_ + nb_);
+    }
+    template<class... A> node *make(A &&... a) {
+        node *nd = (node *)malloc(sizeof(node));
+        new (&nd->value) V(std::forward<A>(a)...);
+        nd->hash = hf(KeyOf()(nd->value));
+        return nd;
+    }
+    template<class... A> pair<iterator, bool> emplace_unique(A &&... a) {
+        node *nd = make(std::forward<A>(a)...);
+        node *old = find_node(KeyOf()(nd->value), nd->hash);
+        if (old) {
+            nd->value.~V();
+            free(nd);
+            return pair<iterator, bool>(find(KeyOf()(old->value)), false);
+        }
+        return pair<iterator, bool>(link(nd), true);
+    }
+    pair<iterator, bool> insert_unique(const V &v) {
+        size_t h = hf(KeyOf()(v));
+        if (find_node(KeyOf()(v), h)) return pair<iterator, bool>(find(KeyOf()(v)), false);
+        return pair<iterator, bool>(link(make(v)), true);
+    }
+    iterator insert_multi(const V &v) { return link(make(v)); }
+
+    iterator erase(const_iterator pos) {
+        iterator nx(pos.n, pos.b, pos.e);
+        ++nx;
+        node **pp = pos.b;
+        while (*pp != pos.n) pp = &(*pp)->next;
+        *pp = pos.n->next;
+        pos.n->value.~V();
+        free(pos.n);
+        --n_;
+        return nx;
+    }
+    size_t erase_key(const K &k) {
+        size_t c = 0, h = hf(k);
+        if (!nb_) return 0;
+        node **pp = &b_[h % nb_];
+        while (*pp) {
+            node *x = *pp;
+            if (x->hash == h && eq(KeyOf()(x->value), k)) {
+                *pp = x->next;
+                x->value.~V();
+                free(x);
+                --n_;
+                ++c;
+            } else pp = &x->next;
+        }
+        return c;
+    }
+};
+
+}
+
+#endif

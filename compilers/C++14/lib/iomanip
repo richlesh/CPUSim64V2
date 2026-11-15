@@ -1,0 +1,5 @@
+// <iomanip> - setw, setprecision, setfill and setbase are defined in <iostream>.
+#ifndef _CPPC_IOMANIP
+#define _CPPC_IOMANIP
+#include <iostream>
+#endif

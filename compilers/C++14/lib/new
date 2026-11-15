@@ -1,0 +1,20 @@
+// <new> - std::bad_alloc and placement new for the CPUSim64 C++ translator
+// (allocation does not fail).  new (p) T(...) is built into the translator.
+#ifndef CPPC_NEW
+#define CPPC_NEW
+
+#include <exception>
+#include <cstddef>
+
+namespace std {
+
+class bad_alloc : public exception {
+public:
+    virtual const char *what() const noexcept { return "std::bad_alloc"; }
+};
+
+}
+
+inline void *operator new(std::size_t, void *p) noexcept { return p; }
+
+#endif

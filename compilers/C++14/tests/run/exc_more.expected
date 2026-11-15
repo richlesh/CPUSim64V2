@@ -1,0 +1,32 @@
+T(1)
+T(101)
+~T(101)
+~T(1)
+T(5)
+~T(5)
+code 5 app error
+T(0)
+~T(0)
+T(1)
+~T(1)
+T(2)
+loop catch
+~T(2)
+20
+T(3)
+~T(3)
+guarded: app error
+-1
+T(1)
+T(101)
+~T(101)
+~T(1)
+1
+by value 5
+final 6
+std::bad_exception
+T(1)
+T(2)
+~T(2)
+~T(1)
+catch all

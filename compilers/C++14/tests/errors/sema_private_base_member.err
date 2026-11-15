@@ -1,0 +1,1 @@
+sema_private_base_member.cpp:2: error: 'x' is private within this context

@@ -1,0 +1,108 @@
+// <set> - std::set and std::multiset (red-black trees) for the CPUSim64 C++ translator.
+#ifndef CPPC_SET
+#define CPPC_SET
+
+#include <__tree>
+#include <functional>
+#include <algorithm>
+
+namespace std {
+
+template<class K> struct __identity_key {
+    const K &operator()(const K &k) const { return k; }
+};
+
+template<class K, class C = less<K>> class set {
+    typedef __tree<K, K, __identity_key<K>, C> tree_type;
+    tree_type t_;
+public:
+    typedef K key_type;
+    typedef K value_type;
+    typedef C key_compare;
+    typedef size_t size_type;
+    typedef typename tree_type::const_iterator iterator;
+    typedef typename tree_type::const_iterator const_iterator;
+    typedef std::reverse_iterator<const_iterator> reverse_iterator;
+    typedef std::reverse_iterator<const_iterator> const_reverse_iterator;
+
+    set() {}
+    explicit set(const C &c) : t_(c) {}
+    set(initializer_list<K> l) { for (const K *p = l.begin(); p != l.end(); ++p) t_.insert_unique(*p); }
+    template<class It> set(It first, It last) { for (; first != last; ++first) t_.insert_unique(*first); }
+    set(const set &o) : t_(o.t_) {}
+    set(set &&o) : t_(std::move(o.t_)) {}
+    set &operator=(const set &o) { t_ = o.t_; return *this; }
+    set &operator=(set &&o) { t_ = std::move(o.t_); return *this; }
+
+    const_iterator begin() const { return t_.begin(); }
+    const_iterator cbegin() const { return t_.begin(); }
+    const_iterator end() const { return t_.end(); }
+    const_iterator cend() const { return t_.end(); }
+    const_reverse_iterator rbegin() const { return const_reverse_iterator(end()); }
+    const_reverse_iterator rend() const { return const_reverse_iterator(begin()); }
+    bool empty() const { return t_.empty(); }
+    size_t size() const { return t_.size(); }
+
+    pair<iterator, bool> insert(const K &k) {
+        pair<typename tree_type::iterator, bool> r = t_.insert_unique(k);
+        return pair<iterator, bool>(iterator(r.first), r.second);
+    }
+    iterator insert(const_iterator, const K &k) { return insert(k).first; }
+    template<class It> void insert(It first, It last) { for (; first != last; ++first) t_.insert_unique(*first); }
+    void insert(initializer_list<K> l) { insert(l.begin(), l.end()); }
+    template<class... A> pair<iterator, bool> emplace(A &&... a) {
+        pair<typename tree_type::iterator, bool> r = t_.emplace_unique(std::forward<A>(a)...);
+        return pair<iterator, bool>(iterator(r.first), r.second);
+    }
+    iterator erase(const_iterator pos) { return t_.erase(pos); }
+    iterator erase(const_iterator first, const_iterator last) { return t_.erase(first, last); }
+    size_t erase(const K &k) { return t_.erase_key(k); }
+    void clear() { t_.clear(); }
+    void swap(set &o) { t_.swap(o.t_); }
+
+    const_iterator find(const K &k) const { return t_.find(k); }
+    size_t count(const K &k) const { return t_.find(k) == t_.end() ? 0 : 1; }
+    const_iterator lower_bound(const K &k) const { return t_.lower_bound(k); }
+    const_iterator upper_bound(const K &k) const { return t_.upper_bound(k); }
+    pair<const_iterator, const_iterator> equal_range(const K &k) const { return pair<const_iterator, const_iterator>(lower_bound(k), upper_bound(k)); }
+    key_compare key_comp() const { return t_.comp; }
+};
+
+template<class K, class C> inline bool operator==(const set<K, C> &a, const set<K, C> &b) {
+    return a.size() == b.size() && equal(a.begin(), a.end(), b.begin());
+}
+template<class K, class C> inline bool operator!=(const set<K, C> &a, const set<K, C> &b) { return !(a == b); }
+template<class K, class C> inline bool operator<(const set<K, C> &a, const set<K, C> &b) {
+    return lexicographical_compare(a.begin(), a.end(), b.begin(), b.end());
+}
+
+template<class K, class C = less<K>> class multiset {
+    typedef __tree<K, K, __identity_key<K>, C> tree_type;
+    tree_type t_;
+public:
+    typedef K key_type;
+    typedef K value_type;
+    typedef size_t size_type;
+    typedef typename tree_type::const_iterator iterator;
+    typedef typename tree_type::const_iterator const_iterator;
+
+    multiset() {}
+    multiset(initializer_list<K> l) { for (const K *p = l.begin(); p != l.end(); ++p) t_.insert_multi(*p); }
+    template<class It> multiset(It first, It last) { for (; first != last; ++first) t_.insert_multi(*first); }
+    const_iterator begin() const { return t_.begin(); }
+    const_iterator end() const { return t_.end(); }
+    bool empty() const { return t_.empty(); }
+    size_t size() const { return t_.size(); }
+    iterator insert(const K &k) { return iterator(t_.insert_multi(k)); }
+    iterator erase(const_iterator pos) { return t_.erase(pos); }
+    size_t erase(const K &k) { return t_.erase_key(k); }
+    void clear() { t_.clear(); }
+    const_iterator find(const K &k) const { return t_.find(k); }
+    size_t count(const K &k) const { return t_.count(k); }
+    const_iterator lower_bound(const K &k) const { return t_.lower_bound(k); }
+    const_iterator upper_bound(const K &k) const { return t_.upper_bound(k); }
+};
+
+}
+
+#endif

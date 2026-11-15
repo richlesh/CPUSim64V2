@@ -1,0 +1,93 @@
+// <unordered_map> - std::unordered_map and unordered_multimap for the CPUSim64 C++ translator.
+#ifndef CPPC_UNORDERED_MAP
+#define CPPC_UNORDERED_MAP
+
+#include <__hashtable>
+#include <stdexcept>
+#include <initializer_list>
+
+namespace std {
+
+template<class P> struct __uselect_first {
+    const typename P::first_type &operator()(const P &p) const { return p.first; }
+};
+
+template<class K, class T, class H = hash<K>, class Eq = equal_to<K>> class unordered_map {
+public:
+    typedef K key_type;
+    typedef T mapped_type;
+    typedef pair<const K, T> value_type;
+    typedef size_t size_type;
+private:
+    typedef __hashtable<K, value_type, __uselect_first<value_type>, H, Eq> table;
+    table t_;
+public:
+    typedef typename table::iterator iterator;
+    typedef typename table::const_iterator const_iterator;
+
+    unordered_map() {}
+    unordered_map(initializer_list<value_type> l) { for (const value_type *p = l.begin(); p != l.end(); ++p) t_.insert_unique(*p); }
+    template<class It> unordered_map(It first, It last) { for (; first != last; ++first) t_.insert_unique(*first); }
+
+    iterator begin() { return t_.begin(); }
+    const_iterator begin() const { return t_.begin(); }
+    iterator end() { return t_.end(); }
+    const_iterator end() const { return t_.end(); }
+    bool empty() const { return t_.empty(); }
+    size_t size() const { return t_.size(); }
+    size_t bucket_count() const { return t_.bucket_count(); }
+
+    T &operator[](const K &k) {
+        iterator i = t_.find(k);
+        if (i == end()) i = t_.emplace_unique(k, T()).first;
+        return i->second;
+    }
+    T &at(const K &k) {
+        iterator i = t_.find(k);
+        if (i == end()) throw out_of_range("unordered_map::at");
+        return i->second;
+    }
+    const T &at(const K &k) const {
+        const_iterator i = t_.find(k);
+        if (i == end()) throw out_of_range("unordered_map::at");
+        return i->second;
+    }
+    pair<iterator, bool> insert(const value_type &v) { return t_.insert_unique(v); }
+    template<class P> pair<iterator, bool> insert(P &&p) { return t_.emplace_unique(std::forward<P>(p)); }
+    template<class It> void insert(It first, It last) { for (; first != last; ++first) t_.insert_unique(*first); }
+    template<class... A> pair<iterator, bool> emplace(A &&... a) { return t_.emplace_unique(std::forward<A>(a)...); }
+    iterator erase(const_iterator pos) { return t_.erase(pos); }
+    iterator erase(iterator pos) { return t_.erase(const_iterator(pos)); }
+    size_t erase(const K &k) { return t_.erase_key(k); }
+    void clear() { t_.clear(); }
+    iterator find(const K &k) { return t_.find(k); }
+    const_iterator find(const K &k) const { return t_.find(k); }
+    size_t count(const K &k) const { return t_.count(k); }
+    void reserve(size_t n) { t_.rehash(n); }
+};
+
+template<class K, class T, class H = hash<K>, class Eq = equal_to<K>> class unordered_multimap {
+public:
+    typedef pair<const K, T> value_type;
+private:
+    typedef __hashtable<K, value_type, __uselect_first<value_type>, H, Eq> table;
+    table t_;
+public:
+    typedef typename table::iterator iterator;
+    typedef typename table::const_iterator const_iterator;
+    iterator begin() { return t_.begin(); }
+    const_iterator begin() const { return t_.begin(); }
+    iterator end() { return t_.end(); }
+    const_iterator end() const { return t_.end(); }
+    bool empty() const { return t_.empty(); }
+    size_t size() const { return t_.size(); }
+    iterator insert(const value_type &v) { return t_.insert_multi(v); }
+    size_t erase(const K &k) { return t_.erase_key(k); }
+    iterator find(const K &k) { return t_.find(k); }
+    size_t count(const K &k) const { return t_.count(k); }
+    void clear() { t_.clear(); }
+};
+
+}
+
+#endif

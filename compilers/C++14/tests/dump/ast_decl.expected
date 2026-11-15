@@ -1,0 +1,120 @@
+DECL
+  a:
+    TYPE val=128
+  b:
+    INITDECL
+      a:
+        D_NAME
+          a:
+            ID
+              a:
+                PART name=a
+      b:
+        NUM text=1
+    INITDECL
+      a:
+        D_PTR
+          a:
+            D_NAME
+              a:
+                ID
+                  a:
+                    PART name=p
+    INITDECL
+      a:
+        D_FUNC
+          a:
+            D_NAME
+              a:
+                ID
+                  a:
+                    PART name=f
+          b:
+            PARAM
+              a:
+                TYPE val=128
+              b:
+                D_NAME
+                  a:
+                    ID
+                      a:
+                        PART name=x
+            PARAM
+              a:
+                TYPE val=4
+              b:
+                D_NAME
+                  a:
+                    ID
+                      a:
+                        PART name=c
+              c:
+                CHARLIT text='a'
+DECL
+  a:
+    TYPE flags=0x800 val=4
+  b:
+    INITDECL
+      a:
+        D_PTR
+          a:
+            D_NAME
+              a:
+                ID
+                  a:
+                    PART name=s
+      b:
+        STRLIT text="hi"
+DECL
+  a:
+    TYPE val=128
+  b:
+    INITDECL
+      a:
+        D_FUNC
+          a:
+            D_PTR
+              a:
+                D_NAME
+                  a:
+                    ID
+                      a:
+                        PART name=fp
+          b:
+            PARAM
+              a:
+                TYPE val=128
+DECL
+  a:
+    TYPE
+      a:
+        CLASS op=struct flags=0x2
+          a:
+            ID
+              a:
+                PART name=S
+          c:
+            DECL
+              a:
+                TYPE val=128
+              b:
+                INITDECL
+                  a:
+                    D_NAME
+                      a:
+                        ID
+                          a:
+                            PART name=m
+            DECL
+              a:
+                TYPE flags=0x10 val=1
+              b:
+                INITDECL
+                  a:
+                    D_FUNC flags=0x40
+                      a:
+                        D_NAME
+                          a:
+                            ID
+                              a:
+                                PART name=v

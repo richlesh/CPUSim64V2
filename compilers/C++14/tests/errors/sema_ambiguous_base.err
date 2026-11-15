@@ -1,0 +1,1 @@
+sema_ambiguous_base.cpp:7: error: cannot convert 'D*' to 'A*'

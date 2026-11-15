@@ -1,0 +1,12 @@
+// <cstdio>: the C library functions in namespace std as well
+#ifndef _CPPC_CSTDIO
+#define _CPPC_CSTDIO
+#include <stdio.h>
+namespace std {
+    using ::FILE; using ::printf; using ::fprintf; using ::sprintf; using ::snprintf; using ::scanf;
+    using ::fscanf; using ::sscanf; using ::puts; using ::putchar; using ::fputs; using ::fputc;
+    using ::putc; using ::getchar; using ::fgetc; using ::getc; using ::fgets; using ::ungetc;
+    using ::fopen; using ::fclose; using ::fflush; using ::fread; using ::fwrite; using ::fseek;
+    using ::ftell; using ::feof; using ::ferror; using ::remove; using ::rename;
+}
+#endif

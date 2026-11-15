@@ -1,0 +1,1 @@
+sema_const_method.cpp:7: error: passing a const object to the non-const member function 'set'

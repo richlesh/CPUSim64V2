@@ -1,0 +1,65 @@
+ctor 77
+start
+ctor 0
+ctor 1
+copy 101 from 1
+copy 201 from 101
+in scope
+dtor 201
+dtor 101
+dtor 1
+dtor 0
+--- holder
+ctor 0
+ctor 2
+Holder body 5
+~Holder
+dtor 2
+dtor 0
+--- calls
+ctor 5
+by_value 5
+dtor 5
+ctor 6
+copy 106 from 6
+by_value 106
+dtor 106
+by_ref 6
+ctor 7
+by_ref 7
+dtor 7
+--- returns
+ctor 8
+ctor 9
+--- assign
+assign 8 = 9
+--- temporaries
+ctor 10
+ctor 11
+21
+dtor 11
+dtor 10
+ctor 12
+dtor 12
+--- loop
+ctor 20
+dtor 20
+ctor 21
+after continue
+dtor 21
+--- new
+ctor 30
+dtor 30
+ctor 0
+ctor 0
+dtor 0
+dtor 0
+ctor 0
+ctor 0
+--- end
+dtor 0
+dtor 0
+dtor 9
+dtor 9
+dtor 6
+dtor 77

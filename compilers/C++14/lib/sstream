@@ -1,0 +1,39 @@
+// <sstream> - string streams for the CPUSim64 C++ translator.
+#ifndef CPPC_SSTREAM
+#define CPPC_SSTREAM
+
+#include <iostream>
+#include <string>
+
+namespace std {
+
+class ostringstream : public ostream {
+    string buf_;
+public:
+    ostringstream() : ostream(&buf_) {}
+    explicit ostringstream(const string &s) : ostream(&buf_), buf_(s) {}
+    string str() const { return buf_; }
+    void str(const string &s) { buf_ = s; }
+};
+
+class istringstream : public istream {
+    string buf_;
+public:
+    istringstream() : istream(&buf_) {}
+    explicit istringstream(const string &s) : istream(&buf_), buf_(s) {}
+    string str() const { return buf_; }
+    void str(const string &s) { buf_ = s; rewind_source(); }
+};
+
+class stringstream : public istream, public ostream {
+    string buf_;
+public:
+    stringstream() : istream(&buf_), ostream(&buf_) {}
+    explicit stringstream(const string &s) : istream(&buf_), ostream(&buf_), buf_(s) {}
+    string str() const { return buf_; }
+    void str(const string &s) { buf_ = s; rewind_source(); }
+};
+
+}
+
+#endif

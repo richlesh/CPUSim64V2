@@ -1,0 +1,347 @@
+// <algorithm> - the usual algorithms for the CPUSim64 C++ translator.
+// sort is an introsort (quicksort, heapsort when too deep, insertion sort for short ranges);
+// stable_sort is a merge sort.
+#ifndef CPPC_ALGORITHM
+#define CPPC_ALGORITHM
+
+#include <cstddef>
+#include <cstdlib>
+#include <utility>
+#include <iterator>
+#include <initializer_list>
+#include <new>
+
+namespace std {
+
+struct __less_op {
+    template<class A, class B> bool operator()(const A &a, const B &b) const { return a < b; }
+};
+
+template<class T> inline const T &min(const T &a, const T &b) { return b < a ? b : a; }
+template<class T, class C> inline const T &min(const T &a, const T &b, C c) { return c(b, a) ? b : a; }
+template<class T> inline const T &max(const T &a, const T &b) { return a < b ? b : a; }
+template<class T, class C> inline const T &max(const T &a, const T &b, C c) { return c(a, b) ? b : a; }
+template<class T> inline T min(initializer_list<T> l) { const T *p = l.begin(); T m = *p; for (++p; p != l.end(); ++p) if (*p < m) m = *p; return m; }
+template<class T> inline T max(initializer_list<T> l) { const T *p = l.begin(); T m = *p; for (++p; p != l.end(); ++p) if (m < *p) m = *p; return m; }
+template<class T> inline pair<const T &, const T &> minmax(const T &a, const T &b) { return b < a ? pair<const T &, const T &>(b, a) : pair<const T &, const T &>(a, b); }
+
+template<class It1, class It2> inline void iter_swap(It1 a, It2 b) { swap(*a, *b); }
+
+template<class It, class F> inline F for_each(It first, It last, F f) { for (; first != last; ++first) f(*first); return f; }
+
+template<class It, class T> inline It find(It first, It last, const T &v) { for (; first != last; ++first) if (*first == v) return first; return last; }
+template<class It, class P> inline It find_if(It first, It last, P p) { for (; first != last; ++first) if (p(*first)) return first; return last; }
+template<class It, class P> inline It find_if_not(It first, It last, P p) { for (; first != last; ++first) if (!p(*first)) return first; return last; }
+
+template<class It, class T> inline typename iterator_traits<It>::difference_type count(It first, It last, const T &v) {
+    typename iterator_traits<It>::difference_type n = 0;
+    for (; first != last; ++first) if (*first == v) ++n;
+    return n;
+}
+template<class It, class P> inline typename iterator_traits<It>::difference_type count_if(It first, It last, P p) {
+    typename iterator_traits<It>::difference_type n = 0;
+    for (; first != last; ++first) if (p(*first)) ++n;
+    return n;
+}
+
+template<class It, class P> inline bool all_of(It first, It last, P p) { for (; first != last; ++first) if (!p(*first)) return false; return true; }
+template<class It, class P> inline bool any_of(It first, It last, P p) { for (; first != last; ++first) if (p(*first)) return true; return false; }
+template<class It, class P> inline bool none_of(It first, It last, P p) { for (; first != last; ++first) if (p(*first)) return false; return true; }
+
+template<class It1, class It2> inline bool equal(It1 a, It1 e, It2 b) { for (; a != e; ++a, ++b) if (!(*a == *b)) return false; return true; }
+template<class It1, class It2, class P> inline bool equal(It1 a, It1 e, It2 b, P p) { for (; a != e; ++a, ++b) if (!p(*a, *b)) return false; return true; }
+template<class It1, class It2> inline pair<It1, It2> mismatch(It1 a, It1 e, It2 b) { while (a != e && *a == *b) { ++a; ++b; } return pair<It1, It2>(a, b); }
+
+template<class In, class Out> inline Out copy(In first, In last, Out out) { for (; first != last; ++first, ++out) *out = *first; return out; }
+template<class In, class Out, class P> inline Out copy_if(In first, In last, Out out, P p) { for (; first != last; ++first) if (p(*first)) { *out = *first; ++out; } return out; }
+template<class In, class N, class Out> inline Out copy_n(In first, N n, Out out) { for (; n > 0; --n, ++first, ++out) *out = *first; return out; }
+template<class B1, class B2> inline B2 copy_backward(B1 first, B1 last, B2 out) { while (first != last) { --last; --out; *out = *last; } return out; }
+template<class In, class Out> inline Out move(In first, In last, Out out) { for (; first != last; ++first, ++out) *out = std::move(*first); return out; }
+template<class B1, class B2> inline B2 move_backward(B1 first, B1 last, B2 out) { while (first != last) { --last; --out; *out = std::move(*last); } return out; }
+
+template<class It, class T> inline void fill(It first, It last, const T &v) { for (; first != last; ++first) *first = v; }
+template<class It, class N, class T> inline It fill_n(It first, N n, const T &v) { for (; n > 0; --n, ++first) *first = v; return first; }
+template<class It, class G> inline void generate(It first, It last, G g) { for (; first != last; ++first) *first = g(); }
+template<class It, class N, class G> inline It generate_n(It first, N n, G g) { for (; n > 0; --n, ++first) *first = g(); return first; }
+
+template<class In, class Out, class F> inline Out transform(In first, In last, Out out, F f) { for (; first != last; ++first, ++out) *out = f(*first); return out; }
+template<class In1, class In2, class Out, class F> inline Out transform(In1 a, In1 e, In2 b, Out out, F f) { for (; a != e; ++a, ++b, ++out) *out = f(*a, *b); return out; }
+
+template<class It, class T> inline void replace(It first, It last, const T &o, const T &n) { for (; first != last; ++first) if (*first == o) *first = n; }
+template<class It, class P, class T> inline void replace_if(It first, It last, P p, const T &n) { for (; first != last; ++first) if (p(*first)) *first = n; }
+
+template<class It, class T> inline It remove(It first, It last, const T &v) {
+    It out = first;
+    for (; first != last; ++first) if (!(*first == v)) { if (out != first) *out = std::move(*first); ++out; }
+    return out;
+}
+template<class It, class P> inline It remove_if(It first, It last, P p) {
+    It out = first;
+    for (; first != last; ++first) if (!p(*first)) { if (out != first) *out = std::move(*first); ++out; }
+    return out;
+}
+template<class It> inline It unique(It first, It last) {
+    if (first == last) return last;
+    It out = first;
+    while (++first != last) if (!(*out == *first)) { ++out; if (out != first) *out = std::move(*first); }
+    return ++out;
+}
+template<class It, class P> inline It unique(It first, It last, P p) {
+    if (first == last) return last;
+    It out = first;
+    while (++first != last) if (!p(*out, *first)) { ++out; if (out != first) *out = std::move(*first); }
+    return ++out;
+}
+
+template<class It> inline void reverse(It first, It last) {
+    while (first != last && first != --last) { iter_swap(first, last); ++first; }
+}
+template<class It> inline It rotate(It first, It mid, It last) {
+    if (first == mid) return last;
+    if (mid == last) return first;
+    reverse(first, mid);
+    reverse(mid, last);
+    reverse(first, last);
+    return first + (last - mid);
+}
+template<class It1, class It2> inline It2 swap_ranges(It1 a, It1 e, It2 b) { for (; a != e; ++a, ++b) iter_swap(a, b); return b; }
+
+template<class It, class P> inline It partition(It first, It last, P p) {
+    first = find_if_not(first, last, p);
+    if (first == last) return first;
+    for (It i = first + 1; i != last; ++i) if (p(*i)) { iter_swap(i, first); ++first; }
+    return first;
+}
+
+// ---- sorting
+
+template<class It, class C> void __insertion_sort(It first, It last, C c) {
+    for (It i = first + 1; i < last; ++i) {
+        typename iterator_traits<It>::value_type v = std::move(*i);
+        It j = i;
+        while (j > first && c(v, *(j - 1))) { *j = std::move(*(j - 1)); --j; }
+        *j = std::move(v);
+    }
+}
+
+template<class It, class C> void __sift_down(It first, ptrdiff_t start, ptrdiff_t n, C c) {
+    typename iterator_traits<It>::value_type v = std::move(*(first + start));
+    ptrdiff_t root = start;
+    for (;;) {
+        ptrdiff_t child = 2 * root + 1;
+        if (child >= n) break;
+        if (child + 1 < n && c(*(first + child), *(first + child + 1))) ++child;
+        if (!c(v, *(first + child))) break;
+        *(first + root) = std::move(*(first + child));
+        root = child;
+    }
+    *(first + root) = std::move(v);
+}
+template<class It, class C> void __make_heap(It first, It last, C c) {
+    ptrdiff_t n = last - first;
+    for (ptrdiff_t i = n / 2 - 1; i >= 0; --i) __sift_down(first, i, n, c);
+}
+template<class It, class C> void __heap_sort(It first, It last, C c) {
+    ptrdiff_t n = last - first;
+    __make_heap(first, last, c);
+    for (ptrdiff_t end = n - 1; end > 0; --end) {
+        iter_swap(first, first + end);
+        __sift_down(first, 0, end, c);
+    }
+}
+
+template<class It, class C> void __introsort(It first, It last, int depth, C c) {
+    while (last - first > 16) {
+        if (depth == 0) { __heap_sort(first, last, c); return; }
+        --depth;
+        It mid = first + (last - first) / 2;
+        It lastm = last - 1;
+        // median of three to *first
+        if (c(*mid, *first)) iter_swap(mid, first);
+        if (c(*lastm, *first)) iter_swap(lastm, first);
+        if (c(*lastm, *mid)) iter_swap(lastm, mid);
+        iter_swap(first, mid);                                   // the median is the pivot at first
+        It i = first + 1, j = last - 1;
+        for (;;) {
+            while (i <= j && c(*i, *first)) ++i;
+            while (i <= j && c(*first, *j)) --j;
+            if (i >= j) break;
+            iter_swap(i, j);
+            ++i;
+            --j;
+        }
+        iter_swap(first, j);
+        if (j - first < last - j - 1) { __introsort(first, j, depth, c); first = j + 1; }
+        else { __introsort(j + 1, last, depth, c); last = j; }
+    }
+}
+
+template<class It, class C> inline void sort(It first, It last, C c) {
+    if (last - first < 2) return;
+    int depth = 0;
+    for (ptrdiff_t n = last - first; n > 1; n >>= 1) depth += 2;
+    __introsort(first, last, depth, c);
+    __insertion_sort(first, last, c);
+}
+template<class It> inline void sort(It first, It last) { sort(first, last, __less_op()); }
+
+template<class It, class C> void __merge_sort(It first, It last, typename iterator_traits<It>::value_type *buf, C c) {
+    ptrdiff_t n = last - first;
+    if (n < 2) return;
+    if (n <= 8) { __insertion_sort(first, last, c); return; }
+    It mid = first + n / 2;
+    __merge_sort(first, mid, buf, c);
+    __merge_sort(mid, last, buf, c);
+    // merge into buf, then move back
+    typedef typename iterator_traits<It>::value_type V;
+    ptrdiff_t k = 0;
+    It a = first, b = mid;
+    while (a != mid && b != last) {
+        if (c(*b, *a)) { new (buf + k) V(std::move(*b)); ++b; }
+        else { new (buf + k) V(std::move(*a)); ++a; }
+        ++k;
+    }
+    while (a != mid) { new (buf + k) V(std::move(*a)); ++a; ++k; }
+    while (b != last) { new (buf + k) V(std::move(*b)); ++b; ++k; }
+    for (ptrdiff_t i = 0; i < n; i++) { *(first + i) = std::move(buf[i]); buf[i].~V(); }
+}
+template<class It, class C> inline void stable_sort(It first, It last, C c) {
+    typedef typename iterator_traits<It>::value_type V;
+    ptrdiff_t n = last - first;
+    if (n < 2) return;
+    V *buf = (V *)malloc(n * sizeof(V));
+    __merge_sort(first, last, buf, c);
+    free(buf);
+}
+template<class It> inline void stable_sort(It first, It last) { stable_sort(first, last, __less_op()); }
+
+template<class It, class C> inline bool is_sorted(It first, It last, C c) {
+    if (first == last) return true;
+    for (It next = first; ++next != last; first = next) if (c(*next, *first)) return false;
+    return true;
+}
+template<class It> inline bool is_sorted(It first, It last) { return is_sorted(first, last, __less_op()); }
+
+template<class It, class C> inline void partial_sort(It first, It mid, It last, C c) { sort(first, last, c); (void)mid; }
+template<class It> inline void partial_sort(It first, It mid, It last) { sort(first, last); (void)mid; }
+template<class It, class C> inline void nth_element(It first, It nth, It last, C c) { sort(first, last, c); (void)nth; }
+template<class It> inline void nth_element(It first, It nth, It last) { sort(first, last); (void)nth; }
+
+// ---- searching in sorted ranges
+
+template<class It, class T, class C> inline It lower_bound(It first, It last, const T &v, C c) {
+    ptrdiff_t n = last - first;
+    while (n > 0) {
+        ptrdiff_t h = n / 2;
+        It m = first + h;
+        if (c(*m, v)) { first = m + 1; n -= h + 1; } else n = h;
+    }
+    return first;
+}
+template<class It, class T> inline It lower_bound(It first, It last, const T &v) { return lower_bound(first, last, v, __less_op()); }
+template<class It, class T, class C> inline It upper_bound(It first, It last, const T &v, C c) {
+    ptrdiff_t n = last - first;
+    while (n > 0) {
+        ptrdiff_t h = n / 2;
+        It m = first + h;
+        if (!c(v, *m)) { first = m + 1; n -= h + 1; } else n = h;
+    }
+    return first;
+}
+template<class It, class T> inline It upper_bound(It first, It last, const T &v) { return upper_bound(first, last, v, __less_op()); }
+template<class It, class T, class C> inline bool binary_search(It first, It last, const T &v, C c) {
+    It i = lower_bound(first, last, v, c);
+    return i != last && !c(v, *i);
+}
+template<class It, class T> inline bool binary_search(It first, It last, const T &v) { return binary_search(first, last, v, __less_op()); }
+template<class It, class T> inline pair<It, It> equal_range(It first, It last, const T &v) { return pair<It, It>(lower_bound(first, last, v), upper_bound(first, last, v)); }
+
+template<class It1, class It2, class Out, class C> inline Out merge(It1 a, It1 ae, It2 b, It2 be, Out out, C c) {
+    while (a != ae && b != be) { if (c(*b, *a)) { *out = *b; ++b; } else { *out = *a; ++a; } ++out; }
+    out = copy(a, ae, out);
+    return copy(b, be, out);
+}
+template<class It1, class It2, class Out> inline Out merge(It1 a, It1 ae, It2 b, It2 be, Out out) { return merge(a, ae, b, be, out, __less_op()); }
+
+// ---- extremes
+
+template<class It, class C> inline It min_element(It first, It last, C c) {
+    if (first == last) return last;
+    It m = first;
+    while (++first != last) if (c(*first, *m)) m = first;
+    return m;
+}
+template<class It> inline It min_element(It first, It last) { return min_element(first, last, __less_op()); }
+template<class It, class C> inline It max_element(It first, It last, C c) {
+    if (first == last) return last;
+    It m = first;
+    while (++first != last) if (c(*m, *first)) m = first;
+    return m;
+}
+template<class It> inline It max_element(It first, It last) { return max_element(first, last, __less_op()); }
+template<class It> inline pair<It, It> minmax_element(It first, It last) { return pair<It, It>(min_element(first, last), max_element(first, last)); }
+
+template<class It1, class It2, class C> inline bool lexicographical_compare(It1 a, It1 ae, It2 b, It2 be, C c) {
+    for (; a != ae && b != be; ++a, ++b) {
+        if (c(*a, *b)) return true;
+        if (c(*b, *a)) return false;
+    }
+    return a == ae && b != be;
+}
+template<class It1, class It2> inline bool lexicographical_compare(It1 a, It1 ae, It2 b, It2 be) { return lexicographical_compare(a, ae, b, be, __less_op()); }
+
+template<class It1, class It2> inline It1 search(It1 first, It1 last, It2 sf, It2 sl) {
+    for (;; ++first) {
+        It1 i = first;
+        for (It2 j = sf;; ++i, ++j) {
+            if (j == sl) return first;
+            if (i == last) return last;
+            if (!(*i == *j)) break;
+        }
+    }
+}
+template<class It> inline It adjacent_find(It first, It last) {
+    if (first == last) return last;
+    It next = first;
+    while (++next != last) { if (*first == *next) return first; first = next; }
+    return last;
+}
+
+template<class It, class C> inline bool next_permutation(It first, It last, C c) {
+    if (first == last) return false;
+    It i = last;
+    if (first == --i) return false;
+    for (;;) {
+        It i1 = i;
+        if (c(*--i, *i1)) {
+            It j = last;
+            while (!c(*i, *--j)) {}
+            iter_swap(i, j);
+            reverse(i1, last);
+            return true;
+        }
+        if (i == first) { reverse(first, last); return false; }
+    }
+}
+template<class It> inline bool next_permutation(It first, It last) { return next_permutation(first, last, __less_op()); }
+template<class It, class C> inline bool prev_permutation(It first, It last, C c) {
+    if (first == last) return false;
+    It i = last;
+    if (first == --i) return false;
+    for (;;) {
+        It i1 = i;
+        if (c(*i1, *--i)) {
+            It j = last;
+            while (!c(*--j, *i)) {}
+            iter_swap(i, j);
+            reverse(i1, last);
+            return true;
+        }
+        if (i == first) { reverse(first, last); return false; }
+    }
+}
+template<class It> inline bool prev_permutation(It first, It last) { return prev_permutation(first, last, __less_op()); }
+
+}
+
+#endif

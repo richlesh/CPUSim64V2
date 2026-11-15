@@ -1,0 +1,1 @@
+sema_default_dup.cpp:2: error: default argument given for parameter 1 of 'f' after a previous declaration

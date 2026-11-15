@@ -1,0 +1,8 @@
+int a = 1 ;
+int b = 100 ;
+const char * f = "other.cpp" ; int c = 200 ;
+int d = 0 + 1 ;
+int e = 300 "third.cpp" ;
+int g = 302 ;
+int h = 303
++ 304 ;

@@ -1,0 +1,68 @@
+// <utility> - move, forward, swap, pair for the CPUSim64 C++ translator.
+#ifndef CPPC_UTILITY
+#define CPPC_UTILITY
+
+#include <type_traits>
+
+namespace std {
+
+template<class T> inline typename remove_reference<T>::type &&move(T &&t) noexcept {
+    return static_cast<typename remove_reference<T>::type &&>(t);
+}
+
+template<class T> inline T &&forward(typename remove_reference<T>::type &t) noexcept {
+    return static_cast<T &&>(t);
+}
+template<class T> inline T &&forward(typename remove_reference<T>::type &&t) noexcept {
+    return static_cast<T &&>(t);
+}
+
+template<class T> inline void swap(T &a, T &b) {
+    T tmp(move(a));
+    a = move(b);
+    b = move(tmp);
+}
+
+template<class T, size_t N> inline void swap(T (&a)[N], T (&b)[N]) {
+    for (size_t i = 0; i < N; i++) swap(a[i], b[i]);
+}
+
+template<class T, class U = T> inline T exchange(T &obj, U &&nv) {
+    T old(move(obj));
+    obj = forward<U>(nv);
+    return old;
+}
+
+template<class T1, class T2> struct pair {
+    typedef T1 first_type;
+    typedef T2 second_type;
+    T1 first;
+    T2 second;
+    pair() : first(), second() {}
+    pair(const T1 &a, const T2 &b) : first(a), second(b) {}
+    template<class U1, class U2> pair(U1 &&a, U2 &&b) : first(forward<U1>(a)), second(forward<U2>(b)) {}
+    pair(const pair &) = default;
+    pair(pair &&) = default;
+    template<class U1, class U2> pair(const pair<U1, U2> &p) : first(p.first), second(p.second) {}
+    template<class U1, class U2> pair(pair<U1, U2> &&p) : first(move(p.first)), second(move(p.second)) {}
+    void swap(pair &o) { std::swap(first, o.first); std::swap(second, o.second); }
+};
+
+template<class T1, class T2> inline pair<typename decay<T1>::type, typename decay<T2>::type> make_pair(T1 &&a, T2 &&b) {
+    return pair<typename decay<T1>::type, typename decay<T2>::type>(forward<T1>(a), forward<T2>(b));
+}
+
+template<class T1, class T2> inline bool operator==(const pair<T1, T2> &a, const pair<T1, T2> &b) { return a.first == b.first && a.second == b.second; }
+template<class T1, class T2> inline bool operator!=(const pair<T1, T2> &a, const pair<T1, T2> &b) { return !(a == b); }
+template<class T1, class T2> inline bool operator<(const pair<T1, T2> &a, const pair<T1, T2> &b) {
+    return a.first < b.first || (!(b.first < a.first) && a.second < b.second);
+}
+template<class T1, class T2> inline bool operator>(const pair<T1, T2> &a, const pair<T1, T2> &b) { return b < a; }
+template<class T1, class T2> inline bool operator<=(const pair<T1, T2> &a, const pair<T1, T2> &b) { return !(b < a); }
+template<class T1, class T2> inline bool operator>=(const pair<T1, T2> &a, const pair<T1, T2> &b) { return !(a < b); }
+
+template<class T1, class T2> inline void swap(pair<T1, T2> &a, pair<T1, T2> &b) { a.swap(b); }
+
+}
+
+#endif

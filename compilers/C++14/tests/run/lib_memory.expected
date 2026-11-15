@@ -1,0 +1,39 @@
+Res(1)
+Res(2)
+1 2
+1 1
+Res(3)
+~Res(2)
+after reset
+Res(4)
+1
+released 1
+~Res(1)
+~Res(4)
+~Res(3)
+--
+Res(10)
+Res(11)
+Res(12)
+size 3
+~Res(10)
+erased
+~Res(12)
+~Res(11)
+--
+Res(20)
+2
+3
+2
+1 1
+0
+~Res(20)
+1
+Res(21)
+1
+1
+~Res(21)
+--
+1 2
+~Node 1
+~Node 2

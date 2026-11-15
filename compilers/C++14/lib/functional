@@ -1,0 +1,108 @@
+// <functional> - std::function, function objects and std::hash for the CPUSim64 C++ translator.
+#ifndef CPPC_FUNCTIONAL
+#define CPPC_FUNCTIONAL
+
+#include <cstddef>
+#include <utility>
+#include <exception>
+#include <string>
+
+namespace std {
+
+class bad_function_call : public exception {
+public:
+    virtual const char *what() const noexcept { return "bad_function_call"; }
+};
+inline void __throw_bad_function_call() { throw bad_function_call(); }
+
+template<class F> class function;
+
+template<class R, class... A> class function<R(A...)> {
+    struct holder_base {
+        virtual ~holder_base() {}
+        virtual R call(A... a) = 0;
+        virtual holder_base *clone() const = 0;
+    };
+    template<class F> struct holder : holder_base {
+        F f;
+        holder(const F &x) : f(x) {}
+        R call(A... a) { return f(std::forward<A>(a)...); }
+        holder_base *clone() const { return new holder<F>(f); }
+    };
+    holder_base *h_;
+public:
+    typedef R result_type;
+    function() : h_(0) {}
+    function(nullptr_t) : h_(0) {}
+    function(const function &o) : h_(o.h_ ? o.h_->clone() : 0) {}
+    function(function &&o) : h_(o.h_) { o.h_ = 0; }
+    template<class F> function(F f) : h_(new holder<F>(f)) {}
+    ~function() { delete h_; }
+    function &operator=(const function &o) { if (this != &o) { holder_base *n = o.h_ ? o.h_->clone() : 0; delete h_; h_ = n; } return *this; }
+    function &operator=(function &&o) { if (this != &o) { delete h_; h_ = o.h_; o.h_ = 0; } return *this; }
+    function &operator=(nullptr_t) { delete h_; h_ = 0; return *this; }
+    template<class F> function &operator=(F f) { delete h_; h_ = new holder<F>(f); return *this; }
+    R operator()(A... a) const {
+        if (!h_) __throw_bad_function_call();
+        return h_->call(std::forward<A>(a)...);
+    }
+    explicit operator bool() const { return h_ != 0; }
+    void swap(function &o) { holder_base *t = h_; h_ = o.h_; o.h_ = t; }
+};
+
+template<class R, class... A> inline bool operator==(const function<R(A...)> &f, nullptr_t) { return !f; }
+template<class R, class... A> inline bool operator!=(const function<R(A...)> &f, nullptr_t) { return (bool)f; }
+
+template<class T = void> struct less { bool operator()(const T &a, const T &b) const { return a < b; } };
+template<class T = void> struct greater { bool operator()(const T &a, const T &b) const { return b < a; } };
+template<class T = void> struct less_equal { bool operator()(const T &a, const T &b) const { return !(b < a); } };
+template<class T = void> struct greater_equal { bool operator()(const T &a, const T &b) const { return !(a < b); } };
+template<class T = void> struct equal_to { bool operator()(const T &a, const T &b) const { return a == b; } };
+template<class T = void> struct not_equal_to { bool operator()(const T &a, const T &b) const { return !(a == b); } };
+template<class T = void> struct plus { T operator()(const T &a, const T &b) const { return a + b; } };
+template<class T = void> struct minus { T operator()(const T &a, const T &b) const { return a - b; } };
+template<class T = void> struct multiplies { T operator()(const T &a, const T &b) const { return a * b; } };
+template<class T = void> struct divides { T operator()(const T &a, const T &b) const { return a / b; } };
+template<class T = void> struct modulus { T operator()(const T &a, const T &b) const { return a % b; } };
+template<class T = void> struct negate { T operator()(const T &a) const { return -a; } };
+template<class T = void> struct logical_and { bool operator()(const T &a, const T &b) const { return a && b; } };
+template<class T = void> struct logical_or { bool operator()(const T &a, const T &b) const { return a || b; } };
+template<class T = void> struct logical_not { bool operator()(const T &a) const { return !a; } };
+
+template<class T> struct reference_wrapper {
+    T *p;
+    reference_wrapper(T &x) : p(&x) {}
+    operator T &() const { return *p; }
+    T &get() const { return *p; }
+};
+template<class T> inline reference_wrapper<T> ref(T &x) { return reference_wrapper<T>(x); }
+template<class T> inline reference_wrapper<const T> cref(const T &x) { return reference_wrapper<const T>(x); }
+
+// ---- hash
+
+inline size_t __hash_bytes(const char *s, size_t n) {
+    size_t h = 14695981039346656037ul;
+    for (size_t i = 0; i < n; i++) { h ^= (size_t)(unsigned)s[i]; h *= 1099511628211ul; }
+    return h;
+}
+
+template<class T> struct hash;
+template<> struct hash<bool> { size_t operator()(bool v) const { return (size_t)v; } };
+template<> struct hash<char> { size_t operator()(char v) const { return (size_t)v; } };
+template<> struct hash<signed char> { size_t operator()(signed char v) const { return (size_t)v; } };
+template<> struct hash<unsigned char> { size_t operator()(unsigned char v) const { return (size_t)v; } };
+template<> struct hash<short> { size_t operator()(short v) const { return (size_t)v; } };
+template<> struct hash<unsigned short> { size_t operator()(unsigned short v) const { return (size_t)v; } };
+template<> struct hash<int> { size_t operator()(int v) const { return (size_t)v; } };
+template<> struct hash<unsigned int> { size_t operator()(unsigned int v) const { return (size_t)v; } };
+template<> struct hash<long> { size_t operator()(long v) const { return (size_t)v; } };
+template<> struct hash<unsigned long> { size_t operator()(unsigned long v) const { return (size_t)v; } };
+template<> struct hash<long long> { size_t operator()(long long v) const { return (size_t)v; } };
+template<> struct hash<unsigned long long> { size_t operator()(unsigned long long v) const { return (size_t)v; } };
+template<> struct hash<double> { size_t operator()(double v) const { return v == 0.0 ? 0 : __hash_bytes((const char *)&v, sizeof(double)); } };
+template<> struct hash<string> { size_t operator()(const string &s) const { return __hash_bytes(s.c_str(), s.size()); } };
+template<class T> struct hash<T *> { size_t operator()(T *p) const { return (size_t)p; } };
+
+}
+
+#endif

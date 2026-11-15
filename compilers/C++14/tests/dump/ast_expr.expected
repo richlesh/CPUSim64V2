@@ -1,0 +1,230 @@
+DECL
+  a:
+    TYPE
+      a:
+        CLASS op=struct flags=0x2
+          a:
+            ID
+              a:
+                PART name=P
+          c:
+            DECL
+              a:
+                TYPE val=128
+              b:
+                INITDECL
+                  a:
+                    D_NAME
+                      a:
+                        ID
+                          a:
+                            PART name=x
+            DECL
+              a:
+                TYPE val=128
+              b:
+                INITDECL
+                  a:
+                    D_FUNC
+                      a:
+                        D_NAME
+                          a:
+                            ID
+                              a:
+                                PART name=f
+                      b:
+                        PARAM
+                          a:
+                            TYPE val=128
+FUNCDEF
+  a:
+    TYPE val=128
+  b:
+    D_FUNC
+      a:
+        D_NAME
+          a:
+            ID
+              a:
+                PART name=g
+      b:
+        PARAM
+          a:
+            TYPE
+              a:
+                ID
+                  a:
+                    PART name=P
+          b:
+            D_PTR
+              a:
+                D_NAME
+                  a:
+                    ID
+                      a:
+                        PART name=p
+        PARAM
+          a:
+            TYPE val=128
+          b:
+            D_NAME
+              a:
+                ID
+                  a:
+                    PART name=a
+        PARAM
+          a:
+            TYPE val=128
+          b:
+            D_NAME
+              a:
+                ID
+                  a:
+                    PART name=b
+  d:
+    BLOCK
+      a:
+        DECL_STMT
+          a:
+            DECL
+              a:
+                TYPE val=128
+              b:
+                INITDECL
+                  a:
+                    D_NAME
+                      a:
+                        ID
+                          a:
+                            PART name=r
+                  b:
+                    COND
+                      a:
+                        BINARY op=>
+                          a:
+                            BINARY op=<<
+                              a:
+                                BINARY op=-
+                                  a:
+                                    BINARY op=*
+                                      a:
+                                        ID
+                                          a:
+                                            PART name=a
+                                      b:
+                                        PAREN
+                                          a:
+                                            BINARY op=+
+                                              a:
+                                                ID
+                                                  a:
+                                                    PART name=b
+                                              b:
+                                                NUM text=1
+                                  b:
+                                    MEMBER op=->
+                                      a:
+                                        ID
+                                          a:
+                                            PART name=p
+                                      b:
+                                        ID
+                                          a:
+                                            PART name=x
+                              b:
+                                NUM text=2
+                          b:
+                            NUM text=3
+                      b:
+                        ID
+                          a:
+                            PART name=a
+                      c:
+                        ID
+                          a:
+                            PART name=b
+        EXPR_STMT
+          a:
+            ASSIGN op=+=
+              a:
+                ID
+                  a:
+                    PART name=r
+              b:
+                BINARY op=+
+                  a:
+                    CAST
+                      a:
+                        ID
+                          a:
+                            PART name=a
+                      b:
+                        TYPEID
+                          a:
+                            TYPE val=128
+                  b:
+                    CALL
+                      a:
+                        MEMBER op=->
+                          a:
+                            ID
+                              a:
+                                PART name=p
+                          b:
+                            ID
+                              a:
+                                PART name=f
+                      b:
+                        ID
+                          a:
+                            PART name=r
+        DECL_STMT
+          a:
+            DECL
+              a:
+                TYPE val=16384
+              b:
+                INITDECL
+                  a:
+                    D_NAME
+                      a:
+                        ID
+                          a:
+                            PART name=l
+                  b:
+                    LAMBDA flags=0x4
+                      a:
+                        CAPTURE op=&
+                      b:
+                        PARAM
+                          a:
+                            TYPE val=128
+                          b:
+                            D_NAME
+                              a:
+                                ID
+                                  a:
+                                    PART name=z
+                      d:
+                        BLOCK
+                          a:
+                            RETURN
+                              a:
+                                BINARY op=+
+                                  a:
+                                    ID
+                                      a:
+                                        PART name=z
+                                  b:
+                                    ID
+                                      a:
+                                        PART name=r
+        RETURN
+          a:
+            CALL
+              a:
+                ID
+                  a:
+                    PART name=l
+              b:
+                NUM text=1

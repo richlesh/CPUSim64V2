@@ -1,0 +1,1 @@
+sema_private.cpp:8: error: 'secret' is private within this context

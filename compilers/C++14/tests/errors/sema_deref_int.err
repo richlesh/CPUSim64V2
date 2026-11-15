@@ -1,0 +1,1 @@
+sema_deref_int.cpp:3: error: the operand of '*' is not a pointer ('int')

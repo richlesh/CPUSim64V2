@@ -1,0 +1,154 @@
+// <map> - std::map and std::multimap (red-black trees) for the CPUSim64 C++ translator.
+#ifndef CPPC_MAP
+#define CPPC_MAP
+
+#include <__tree>
+#include <functional>
+#include <stdexcept>
+#include <algorithm>
+
+namespace std {
+
+template<class P> struct __select_first {
+    const typename P::first_type &operator()(const P &p) const { return p.first; }
+};
+
+template<class K, class T, class C = less<K>> class map {
+public:
+    typedef K key_type;
+    typedef T mapped_type;
+    typedef pair<const K, T> value_type;
+    typedef C key_compare;
+    typedef size_t size_type;
+    typedef ptrdiff_t difference_type;
+    typedef value_type &reference;
+    typedef const value_type &const_reference;
+private:
+    typedef __tree<K, value_type, __select_first<value_type>, C> tree_type;
+    tree_type t_;
+public:
+    typedef typename tree_type::iterator iterator;
+    typedef typename tree_type::const_iterator const_iterator;
+    typedef std::reverse_iterator<iterator> reverse_iterator;
+    typedef std::reverse_iterator<const_iterator> const_reverse_iterator;
+
+    map() {}
+    explicit map(const C &c) : t_(c) {}
+    map(initializer_list<value_type> l) { for (const value_type *p = l.begin(); p != l.end(); ++p) t_.insert_unique(*p); }
+    template<class It> map(It first, It last) { for (; first != last; ++first) t_.insert_unique(*first); }
+    map(const map &o) : t_(o.t_) {}
+    map(map &&o) : t_(std::move(o.t_)) {}
+    map &operator=(const map &o) { t_ = o.t_; return *this; }
+    map &operator=(map &&o) { t_ = std::move(o.t_); return *this; }
+
+    iterator begin() { return t_.begin(); }
+    const_iterator begin() const { return t_.begin(); }
+    const_iterator cbegin() const { return t_.begin(); }
+    iterator end() { return t_.end(); }
+    const_iterator end() const { return t_.end(); }
+    const_iterator cend() const { return t_.end(); }
+    reverse_iterator rbegin() { return reverse_iterator(end()); }
+    const_reverse_iterator rbegin() const { return const_reverse_iterator(end()); }
+    reverse_iterator rend() { return reverse_iterator(begin()); }
+    const_reverse_iterator rend() const { return const_reverse_iterator(begin()); }
+
+    bool empty() const { return t_.empty(); }
+    size_t size() const { return t_.size(); }
+
+    T &operator[](const K &k) {
+        iterator i = t_.lower_bound(k);
+        if (i == end() || t_.comp(k, i->first)) i = t_.emplace_unique(k, T()).first;
+        return i->second;
+    }
+    T &at(const K &k) {
+        iterator i = t_.find(k);
+        if (i == end()) throw out_of_range("map::at");
+        return i->second;
+    }
+    const T &at(const K &k) const {
+        const_iterator i = t_.find(k);
+        if (i == end()) throw out_of_range("map::at");
+        return i->second;
+    }
+
+    pair<iterator, bool> insert(const value_type &v) { return t_.insert_unique(v); }
+    template<class P> pair<iterator, bool> insert(P &&p) { return t_.emplace_unique(std::forward<P>(p)); }
+    iterator insert(const_iterator, const value_type &v) { return t_.insert_unique(v).first; }
+    template<class It> void insert(It first, It last) { for (; first != last; ++first) t_.insert_unique(*first); }
+    void insert(initializer_list<value_type> l) { insert(l.begin(), l.end()); }
+    template<class... A> pair<iterator, bool> emplace(A &&... a) { return t_.emplace_unique(std::forward<A>(a)...); }
+    template<class... A> pair<iterator, bool> try_emplace(const K &k, A &&... a) {
+        iterator i = t_.find(k);
+        if (i != end()) return pair<iterator, bool>(i, false);
+        return t_.emplace_unique(k, T(std::forward<A>(a)...));
+    }
+    template<class M> pair<iterator, bool> insert_or_assign(const K &k, M &&m) {
+        iterator i = t_.find(k);
+        if (i != end()) { i->second = std::forward<M>(m); return pair<iterator, bool>(i, false); }
+        return t_.emplace_unique(k, std::forward<M>(m));
+    }
+
+    iterator erase(const_iterator pos) { return t_.erase(pos); }
+    iterator erase(iterator pos) { return t_.erase(const_iterator(pos)); }
+    iterator erase(const_iterator first, const_iterator last) { return t_.erase(first, last); }
+    size_t erase(const K &k) { return t_.erase_key(k); }
+    void clear() { t_.clear(); }
+    void swap(map &o) { t_.swap(o.t_); }
+
+    iterator find(const K &k) { return t_.find(k); }
+    const_iterator find(const K &k) const { return t_.find(k); }
+    size_t count(const K &k) const { return t_.find(k) == t_.end() ? 0 : 1; }
+    iterator lower_bound(const K &k) { return t_.lower_bound(k); }
+    const_iterator lower_bound(const K &k) const { return t_.lower_bound(k); }
+    iterator upper_bound(const K &k) { return t_.upper_bound(k); }
+    const_iterator upper_bound(const K &k) const { return t_.upper_bound(k); }
+    pair<iterator, iterator> equal_range(const K &k) { return pair<iterator, iterator>(lower_bound(k), upper_bound(k)); }
+    key_compare key_comp() const { return t_.comp; }
+};
+
+template<class K, class T, class C> inline bool operator==(const map<K, T, C> &a, const map<K, T, C> &b) {
+    return a.size() == b.size() && equal(a.begin(), a.end(), b.begin());
+}
+template<class K, class T, class C> inline bool operator!=(const map<K, T, C> &a, const map<K, T, C> &b) { return !(a == b); }
+template<class K, class T, class C> inline bool operator<(const map<K, T, C> &a, const map<K, T, C> &b) {
+    return lexicographical_compare(a.begin(), a.end(), b.begin(), b.end());
+}
+
+template<class K, class T, class C = less<K>> class multimap {
+public:
+    typedef K key_type;
+    typedef T mapped_type;
+    typedef pair<const K, T> value_type;
+    typedef size_t size_type;
+private:
+    typedef __tree<K, value_type, __select_first<value_type>, C> tree_type;
+    tree_type t_;
+public:
+    typedef typename tree_type::iterator iterator;
+    typedef typename tree_type::const_iterator const_iterator;
+
+    multimap() {}
+    multimap(initializer_list<value_type> l) { for (const value_type *p = l.begin(); p != l.end(); ++p) t_.insert_multi(*p); }
+    iterator begin() { return t_.begin(); }
+    const_iterator begin() const { return t_.begin(); }
+    iterator end() { return t_.end(); }
+    const_iterator end() const { return t_.end(); }
+    bool empty() const { return t_.empty(); }
+    size_t size() const { return t_.size(); }
+    iterator insert(const value_type &v) { return t_.insert_multi(v); }
+    template<class... A> iterator emplace(A &&... a) { return t_.insert_multi(value_type(std::forward<A>(a)...)); }
+    iterator erase(const_iterator pos) { return t_.erase(pos); }
+    iterator erase(iterator pos) { return t_.erase(const_iterator(pos)); }
+    size_t erase(const K &k) { return t_.erase_key(k); }
+    void clear() { t_.clear(); }
+    iterator find(const K &k) { return t_.find(k); }
+    const_iterator find(const K &k) const { return t_.find(k); }
+    size_t count(const K &k) const { return t_.count(k); }
+    iterator lower_bound(const K &k) { return t_.lower_bound(k); }
+    iterator upper_bound(const K &k) { return t_.upper_bound(k); }
+    pair<iterator, iterator> equal_range(const K &k) { return pair<iterator, iterator>(lower_bound(k), upper_bound(k)); }
+};
+
+}
+
+#endif

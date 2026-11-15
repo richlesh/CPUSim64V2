@@ -1,0 +1,1 @@
+sema_this_static.cpp:2: error: 'this' is only available in a non-static member function

@@ -1,0 +1,18 @@
+Widget::draw 5
+500 3 3
+3
+~Widget
+~Serializable
+~Drawable
+~Widget
+~Serializable
+~Drawable
+~Widget
+~Serializable
+~Drawable
+Mixed::draw 9
+--
+~Drawable
+~Widget
+~Serializable
+~Drawable

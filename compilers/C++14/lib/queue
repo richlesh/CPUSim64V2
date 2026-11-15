@@ -1,0 +1,74 @@
+// <queue> - std::queue and std::priority_queue for the CPUSim64 C++ translator.
+#ifndef CPPC_QUEUE
+#define CPPC_QUEUE
+
+#include <list>
+#include <vector>
+#include <functional>
+#include <algorithm>
+
+namespace std {
+
+template<class T, class C = list<T>> class queue {
+protected:
+    C c;
+public:
+    typedef T value_type;
+    typedef size_t size_type;
+    queue() {}
+    bool empty() const { return c.empty(); }
+    size_t size() const { return c.size(); }
+    T &front() { return c.front(); }
+    const T &front() const { return c.front(); }
+    T &back() { return c.back(); }
+    const T &back() const { return c.back(); }
+    void push(const T &v) { c.push_back(v); }
+    void push(T &&v) { c.push_back(std::move(v)); }
+    template<class... A> void emplace(A &&... a) { c.emplace_back(std::forward<A>(a)...); }
+    void pop() { c.pop_front(); }
+};
+
+template<class T, class C = vector<T>, class Cmp = less<typename C::value_type>> class priority_queue {
+protected:
+    C c;
+    Cmp comp;
+    void up(size_t i) {
+        while (i > 0) {
+            size_t p = (i - 1) / 2;
+            if (!comp(c[p], c[i])) break;
+            std::swap(c[p], c[i]);
+            i = p;
+        }
+    }
+    void down(size_t i) {
+        size_t n = c.size();
+        for (;;) {
+            size_t l = 2 * i + 1, r = l + 1, m = i;
+            if (l < n && comp(c[m], c[l])) m = l;
+            if (r < n && comp(c[m], c[r])) m = r;
+            if (m == i) break;
+            std::swap(c[i], c[m]);
+            i = m;
+        }
+    }
+public:
+    typedef T value_type;
+    typedef size_t size_type;
+    priority_queue() {}
+    explicit priority_queue(const Cmp &x) : comp(x) {}
+    bool empty() const { return c.empty(); }
+    size_t size() const { return c.size(); }
+    const T &top() const { return c.front(); }
+    void push(const T &v) { c.push_back(v); up(c.size() - 1); }
+    void push(T &&v) { c.push_back(std::move(v)); up(c.size() - 1); }
+    template<class... A> void emplace(A &&... a) { c.emplace_back(std::forward<A>(a)...); up(c.size() - 1); }
+    void pop() {
+        c.front() = std::move(c.back());
+        c.pop_back();
+        if (!c.empty()) down(0);
+    }
+};
+
+}
+
+#endif

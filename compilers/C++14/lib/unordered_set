@@ -1,0 +1,64 @@
+// <unordered_set> - std::unordered_set and unordered_multiset for the CPUSim64 C++ translator.
+#ifndef CPPC_UNORDERED_SET
+#define CPPC_UNORDERED_SET
+
+#include <__hashtable>
+#include <initializer_list>
+
+namespace std {
+
+template<class K> struct __uidentity {
+    const K &operator()(const K &k) const { return k; }
+};
+
+template<class K, class H = hash<K>, class Eq = equal_to<K>> class unordered_set {
+    typedef __hashtable<K, K, __uidentity<K>, H, Eq> table;
+    table t_;
+public:
+    typedef K key_type;
+    typedef K value_type;
+    typedef size_t size_type;
+    typedef typename table::const_iterator iterator;
+    typedef typename table::const_iterator const_iterator;
+
+    unordered_set() {}
+    unordered_set(initializer_list<K> l) { for (const K *p = l.begin(); p != l.end(); ++p) t_.insert_unique(*p); }
+    template<class It> unordered_set(It first, It last) { for (; first != last; ++first) t_.insert_unique(*first); }
+    const_iterator begin() const { return t_.begin(); }
+    const_iterator end() const { return t_.end(); }
+    bool empty() const { return t_.empty(); }
+    size_t size() const { return t_.size(); }
+    pair<iterator, bool> insert(const K &k) {
+        pair<typename table::iterator, bool> r = t_.insert_unique(k);
+        return pair<iterator, bool>(iterator(r.first), r.second);
+    }
+    template<class It> void insert(It first, It last) { for (; first != last; ++first) t_.insert_unique(*first); }
+    template<class... A> pair<iterator, bool> emplace(A &&... a) {
+        pair<typename table::iterator, bool> r = t_.emplace_unique(std::forward<A>(a)...);
+        return pair<iterator, bool>(iterator(r.first), r.second);
+    }
+    iterator erase(const_iterator pos) { return t_.erase(pos); }
+    size_t erase(const K &k) { return t_.erase_key(k); }
+    void clear() { t_.clear(); }
+    const_iterator find(const K &k) const { return t_.find(k); }
+    size_t count(const K &k) const { return t_.count(k); }
+    void reserve(size_t n) { t_.rehash(n); }
+};
+
+template<class K, class H = hash<K>, class Eq = equal_to<K>> class unordered_multiset {
+    typedef __hashtable<K, K, __uidentity<K>, H, Eq> table;
+    table t_;
+public:
+    typedef typename table::const_iterator iterator;
+    typedef typename table::const_iterator const_iterator;
+    const_iterator begin() const { return t_.begin(); }
+    const_iterator end() const { return t_.end(); }
+    size_t size() const { return t_.size(); }
+    iterator insert(const K &k) { return iterator(t_.insert_multi(k)); }
+    size_t erase(const K &k) { return t_.erase_key(k); }
+    size_t count(const K &k) const { return t_.count(k); }
+};
+
+}
+
+#endif

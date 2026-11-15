@@ -1,0 +1,28 @@
+Animal(4)
+Dog
+4 2 dog animal
+11
+4 4
+4
+~Animal
+4 4 animal
+2
+~Dog
+~Animal
+--
+Animal(4)
+Dog(1)
+Puppy
+9
+~Puppy
+~Dog
+~Animal
+--
+6 1 2
+2 3
+Animal(4)
+Dog(9)
+~Dog
+~Animal
+4
+~Animal

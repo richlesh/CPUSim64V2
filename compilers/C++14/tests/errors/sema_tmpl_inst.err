@@ -1,0 +1,1 @@
+sema_tmpl_inst.cpp:4: note: in instantiation of 'A<int>::g' requested here

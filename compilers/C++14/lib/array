@@ -1,0 +1,63 @@
+// <array> - std::array for the CPUSim64 C++ translator.
+#ifndef CPPC_ARRAY
+#define CPPC_ARRAY
+
+#include <cstddef>
+#include <iterator>
+#include <algorithm>
+#include <stdexcept>
+#include <utility>
+
+namespace std {
+
+template<class T, size_t N> struct array {
+    T elems[N ? N : 1];
+
+    typedef T value_type;
+    typedef T &reference;
+    typedef const T &const_reference;
+    typedef T *iterator;
+    typedef const T *const_iterator;
+    typedef std::reverse_iterator<iterator> reverse_iterator;
+    typedef std::reverse_iterator<const_iterator> const_reverse_iterator;
+    typedef size_t size_type;
+    typedef ptrdiff_t difference_type;
+
+    T &operator[](size_t i) { return elems[i]; }
+    const T &operator[](size_t i) const { return elems[i]; }
+    T &at(size_t i) { if (i >= N) throw out_of_range("array::at"); return elems[i]; }
+    const T &at(size_t i) const { if (i >= N) throw out_of_range("array::at"); return elems[i]; }
+    T &front() { return elems[0]; }
+    const T &front() const { return elems[0]; }
+    T &back() { return elems[N - 1]; }
+    const T &back() const { return elems[N - 1]; }
+    T *data() { return elems; }
+    const T *data() const { return elems; }
+    iterator begin() { return elems; }
+    const_iterator begin() const { return elems; }
+    const_iterator cbegin() const { return elems; }
+    iterator end() { return elems + N; }
+    const_iterator end() const { return elems + N; }
+    const_iterator cend() const { return elems + N; }
+    reverse_iterator rbegin() { return reverse_iterator(end()); }
+    const_reverse_iterator rbegin() const { return const_reverse_iterator(end()); }
+    reverse_iterator rend() { return reverse_iterator(begin()); }
+    const_reverse_iterator rend() const { return const_reverse_iterator(begin()); }
+    constexpr size_t size() const { return N; }
+    constexpr size_t max_size() const { return N; }
+    constexpr bool empty() const { return N == 0; }
+    void fill(const T &v) { for (size_t i = 0; i < N; i++) elems[i] = v; }
+    void swap(array &o) { for (size_t i = 0; i < N; i++) std::swap(elems[i], o.elems[i]); }
+};
+
+template<class T, size_t N> inline bool operator==(const array<T, N> &a, const array<T, N> &b) {
+    for (size_t i = 0; i < N; i++) if (!(a.elems[i] == b.elems[i])) return false;
+    return true;
+}
+template<class T, size_t N> inline bool operator!=(const array<T, N> &a, const array<T, N> &b) { return !(a == b); }
+template<class T, size_t N> inline bool operator<(const array<T, N> &a, const array<T, N> &b) { return lexicographical_compare(a.begin(), a.end(), b.begin(), b.end()); }
+template<class T, size_t N> inline void swap(array<T, N> &a, array<T, N> &b) { a.swap(b); }
+
+}
+
+#endif

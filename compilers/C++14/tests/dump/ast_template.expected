@@ -1,0 +1,164 @@
+TEMPLATE
+  a:
+    TPARAM name=T op=class
+    TPARAM name=N
+      a:
+        PARAM
+          a:
+            TYPE val=128
+          b:
+            D_NAME
+              a:
+                ID
+                  a:
+                    PART name=N
+          c:
+            NUM text=3
+  b:
+    DECL
+      a:
+        TYPE
+          a:
+            CLASS op=struct flags=0x2
+              a:
+                ID
+                  a:
+                    PART name=A
+              c:
+                DECL
+                  a:
+                    TYPE
+                      a:
+                        ID
+                          a:
+                            PART name=T
+                  b:
+                    INITDECL
+                      a:
+                        D_ARRAY
+                          a:
+                            D_NAME
+                              a:
+                                ID
+                                  a:
+                                    PART name=v
+                          b:
+                            ID
+                              a:
+                                PART name=N
+                DECL
+                  a:
+                    TYPE flags=0x1
+                      a:
+                        ID
+                          a:
+                            PART name=T
+                  b:
+                    INITDECL
+                      a:
+                        D_NAME
+                          a:
+                            ID
+                              a:
+                                PART name=type
+                FUNCDEF
+                  a:
+                    TYPE
+                      a:
+                        ID
+                          a:
+                            PART name=A flags=0x8
+                              b:
+                                TARG
+                                  a:
+                                    TYPEID
+                                      a:
+                                        TYPE
+                                          a:
+                                            ID
+                                              a:
+                                                PART name=T
+                                TARG
+                                  a:
+                                    ID
+                                      a:
+                                        PART name=N
+                  b:
+                    D_PTR
+                      a:
+                        D_FUNC flags=0x1
+                          a:
+                            D_NAME
+                              a:
+                                ID
+                                  a:
+                                    PART name=self
+                  d:
+                    BLOCK
+                      a:
+                        RETURN
+                          a:
+                            THIS
+DECL
+  a:
+    TYPE
+      a:
+        ID
+          a:
+            PART name=A flags=0x8
+              b:
+                TARG
+                  a:
+                    TYPEID
+                      a:
+                        TYPE val=128
+  b:
+    INITDECL
+      a:
+        D_NAME
+          a:
+            ID
+              a:
+                PART name=x
+DECL
+  a:
+    TYPE val=2
+  b:
+    INITDECL
+      a:
+        D_NAME
+          a:
+            ID
+              a:
+                PART name=lt
+      b:
+        BINARY op=<
+          a:
+            SIZEOF
+              a:
+                PAREN
+                  a:
+                    ID
+                      a:
+                        PART name=x
+          b:
+            NUM text=4
+    INITDECL
+      a:
+        D_NAME
+          a:
+            ID
+              a:
+                PART name=gt
+      b:
+        BINARY op=>
+          a:
+            SIZEOF
+              a:
+                PAREN
+                  a:
+                    ID
+                      a:
+                        PART name=x
+          b:
+            NUM text=4

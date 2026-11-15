@@ -1,0 +1,29 @@
+// <exception> - std::exception and friends for the CPUSim64 C++ translator.
+#ifndef CPPC_EXCEPTION
+#define CPPC_EXCEPTION
+
+#include <cstdlib>
+
+namespace std {
+
+class exception {
+public:
+    exception() noexcept {}
+    exception(const exception &) noexcept {}
+    exception &operator=(const exception &) { return *this; }
+    virtual ~exception() noexcept {}
+    virtual const char *what() const noexcept { return "std::exception"; }
+};
+
+class bad_exception : public exception {
+public:
+    virtual const char *what() const noexcept { return "std::bad_exception"; }
+};
+
+typedef void (*terminate_handler)();
+
+inline void terminate() { abort(); }
+
+}
+
+#endif

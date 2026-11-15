@@ -1,0 +1,13 @@
+B ctor: B
+D ctor: D
+D
+D
+B ctor: B
+D ctor: D
+Final
+--
+2 4
+D dtor: D
+B dtor: B
+D dtor: D
+B dtor: B

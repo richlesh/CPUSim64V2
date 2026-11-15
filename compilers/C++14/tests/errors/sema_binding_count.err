@@ -1,0 +1,1 @@
+sema_binding_count.cpp:4: error: the structured binding has 1 names but 'P' has 2 members

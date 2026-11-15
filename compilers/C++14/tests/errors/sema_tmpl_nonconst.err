@@ -1,0 +1,1 @@
+sema_tmpl_nonconst.cpp:4: error: a template argument is not a constant expression

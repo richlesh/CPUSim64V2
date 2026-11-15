@@ -1,0 +1,1 @@
+sema_const_member_assign.cpp:3: error: the object has type 'int const' and cannot be modified

@@ -1,0 +1,1 @@
+sema_protected_outside.cpp:4: error: 'x' is protected within this context

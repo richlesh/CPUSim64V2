@@ -1,0 +1,2 @@
+grammar/bad/missing_semi   # the grammar accepts any sequence of decl-specifiers, so 'int a int b;' parses
+errors/parse_semi_after_class   # the grammar accepts any sequence of decl-specifiers: "struct S {...} int y;"

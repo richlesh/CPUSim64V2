@@ -1,0 +1,30 @@
+// <stack> - std::stack for the CPUSim64 C++ translator.
+#ifndef CPPC_STACK
+#define CPPC_STACK
+
+#include <vector>
+
+namespace std {
+
+template<class T, class C = vector<T>> class stack {
+protected:
+    C c;
+public:
+    typedef T value_type;
+    typedef size_t size_type;
+    typedef C container_type;
+    stack() {}
+    explicit stack(const C &x) : c(x) {}
+    bool empty() const { return c.empty(); }
+    size_t size() const { return c.size(); }
+    T &top() { return c.back(); }
+    const T &top() const { return c.back(); }
+    void push(const T &v) { c.push_back(v); }
+    void push(T &&v) { c.push_back(std::move(v)); }
+    template<class... A> void emplace(A &&... a) { c.emplace_back(std::forward<A>(a)...); }
+    void pop() { c.pop_back(); }
+};
+
+}
+
+#endif

@@ -1,0 +1,9 @@
+// <ctime>: the C library functions in namespace std as well
+#ifndef _CPPC_CTIME
+#define _CPPC_CTIME
+#include <time.h>
+namespace std {
+    using ::time_t; using ::clock_t; using ::tm; using ::clock; using ::time; using ::difftime;
+    using ::mktime; using ::gmtime; using ::localtime; using ::asctime; using ::ctime; using ::strftime;
+}
+#endif

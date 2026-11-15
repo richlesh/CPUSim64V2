@@ -1,0 +1,1 @@
+sema_lambda_this.cpp:3: error: 'v' cannot be used in the lambda: 'this' was not captured

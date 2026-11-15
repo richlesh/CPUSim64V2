@@ -1,0 +1,50 @@
+Part(99)
+-- composition
+Part(1)
+Part(2)
+Whole(3)
+-- copy
+Part copy 1
+Part copy 2
+-- assign
+Part(5)
+Part(6)
+Whole(11)
+Part assign 1<-5
+Part assign 2<-6
+~Part(6)
+~Part(5)
+-- end scope
+~Part(6)
+~Part(5)
+~Part(2)
+~Part(1)
+-- plain
+1 7 2.5 ab
+-- array member
+Part(0)
+Part(0)
+Arr body
+~Part(0)
+~Part(0)
+-- ref member
+25
+-- union
+65
+-- counter
+5
+0
+-- return
+Part(3)
+Part(6)
+Whole(9)
+9
+-- static local
+Part(7)
+loop 7
+loop 7
+-- end
+~Part(6)
+~Part(3)
+~Part(7)
+~Part(99)
