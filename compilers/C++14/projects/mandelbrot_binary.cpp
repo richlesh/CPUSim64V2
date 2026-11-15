@@ -101,8 +101,7 @@ static void copy_file(std::FILE *in, std::FILE *out)
 // merges the band files into filename.pgm and deletes them
 static int combine_output(const std::string &filename, long size)
 {
-    std::string name = filename + ".pgm";
-    std::FILE *out = std::fopen(name.c_str(), "wb");
+    std::FILE *out = std::fopen((filename + ".pgm").c_str(), "wb");
     if (!out) {
         std::printf("Can't open %s.pgm...\n", filename.c_str());
         return -1;
@@ -110,7 +109,7 @@ static int combine_output(const std::string &filename, long size)
     std::fprintf(out, "P5\n%ld %ld\n%d\n", size, size, 255);
     std::printf("NUM FILES: %ld\n", gNumChildren);
     for (long i = 1; i <= gNumChildren; i++) {
-        name = filename + "_" + std::to_string(i) + ".tmp";
+        std::string name = filename + "_" + std::to_string(i) + ".tmp";
         std::printf("Merging %s\n", name.c_str());
         std::FILE *in = std::fopen(name.c_str(), "rb");
         if (in) {

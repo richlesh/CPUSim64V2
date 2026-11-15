@@ -47,11 +47,3 @@ programs with random numbers, threads and processes.  See the C11
 - The console animations busy-wait on `clock()`; the tests set `NO_DELAY` to
   skip the delays.
 - There is no `Hailstone5bad` (it has no assembly original).
-
-## Translator problem found
-
-`(a + b).c_str()` and other member calls on a parenthesized temporary
-destroy a second temporary that was never constructed
-(`std_string__dtor(&__t1)` after the call in the generated C), which crashes
-in `free`.  The Mandelbrot programs name the string instead
-(`std::string name = filename + ".pgm";`).

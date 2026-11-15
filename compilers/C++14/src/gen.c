@@ -3350,10 +3350,17 @@ auto_done:
         if (t->kind == TY_ARRAY && t->len < 0) t = ty_array(t->base, -1);
         itext = init_text(t, init, form ? form : 1, at, &st);
         static_ok = st;
+        /* the value again, for a constant initializer: only its text is discarded, so the
+           temporaries this probe creates are not constructed and must not be destroyed */
         if (!ty_is_ref(t) && init->kind != N_INITLIST && t->kind != TY_ARRAY) {
-            Node *ie = init;
-            iv = expr(ie);
-        } else if (!ty_is_ref(t) && init->kind == N_INITLIST && init->a && !init->a->next && t->kind != TY_ARRAY) iv = expr(init->a);
+            int m = nftemps;
+            iv = expr(init);
+            nftemps = m;
+        } else if (!ty_is_ref(t) && init->kind == N_INITLIST && init->a && !init->a->next && t->kind != TY_ARRAY) {
+            int m = nftemps;
+            iv = expr(init->a);
+            nftemps = m;
+        }
         e->type = t;
     } else if (t->kind == TY_ARRAY && t->len < 0 && !is_extern) {
         serr(at, "the array '%s' has an unknown size", lp->name->s);

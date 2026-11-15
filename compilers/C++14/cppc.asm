@@ -78861,7 +78861,7 @@ __L7967:
 // declare_variable
 __F564_declare_variable:
 .source "src/gen.c", 3276
-    add     sp, -26
+    add     sp, -27
 .source "src/gen.c", 3277
     load    r0, sf[5]
     push    r0
@@ -79818,7 +79818,7 @@ __L8088:
 .source "src/gen.c", 3352
     load    r0, sf[-22]
     store   r0, sf[-8]
-.source "src/gen.c", 3353
+.source "src/gen.c", 3355
     load    r0, sf[6]
     push    r0
     call    __F276_ty_is_ref
@@ -79855,18 +79855,21 @@ __L8091:
 __L8092:
     test    r0
     jump    z, __L8089
-.source "src/gen.c", 3354
-    load    r0, sf[-6]
+.source "src/gen.c", 3356
+    load    r0, __G358_nftemps+1
     store   r0, sf[-23]
-.source "src/gen.c", 3355
-    load    r0, sf[-23]
+.source "src/gen.c", 3357
+    load    r0, sf[-6]
     push    r0
     call    __F465_expr
     add     sp, 1
     store   r0, sf[-10]
+.source "src/gen.c", 3358
+    load    r0, sf[-23]
+    store   r0, __G358_nftemps+1
     jump    __L8090
 __L8089:
-.source "src/gen.c", 3356
+.source "src/gen.c", 3359
     load    r0, sf[6]
     push    r0
     call    __F276_ty_is_ref
@@ -79931,6 +79934,10 @@ __L8097:
 __L8098:
     test    r0
     jump    z, __L8095
+.source "src/gen.c", 3360
+    load    r0, __G358_nftemps+1
+    store   r0, sf[-24]
+.source "src/gen.c", 3361
     load    r0, sf[-6]
     add     r0, 8
     load    r0, r0[0]
@@ -79938,9 +79945,12 @@ __L8098:
     call    __F465_expr
     add     sp, 1
     store   r0, sf[-10]
+.source "src/gen.c", 3362
+    load    r0, sf[-24]
+    store   r0, __G358_nftemps+1
 __L8095:
 __L8090:
-.source "src/gen.c", 3357
+.source "src/gen.c", 3364
     load    r0, sf[-4]
     add     r0, 2
     push    r0
@@ -79949,7 +79959,7 @@ __L8090:
     store   r0, r1[0]
     jump    __L8078
 __L8077:
-.source "src/gen.c", 3358
+.source "src/gen.c", 3365
     load    r0, sf[6]
     load    r0, r0[0]
     move    r1, 24
@@ -79989,7 +79999,7 @@ __L8107:
 __L8108:
     test    r0
     jump    z, __L8105
-.source "src/gen.c", 3359
+.source "src/gen.c", 3366
     load    r0, sf[0]
     add     r0, 6
     load    r0, r0[0]
@@ -80003,7 +80013,7 @@ __L8108:
     add     sp, 3
 __L8105:
 __L8078:
-.source "src/gen.c", 3361
+.source "src/gen.c", 3368
     load    r0, sf[6]
     push    r0
     call    __F276_ty_is_ref
@@ -80064,7 +80074,7 @@ __L8115:
 __L8116:
     test    r0
     jump    z, __L8113
-.source "src/gen.c", 3362
+.source "src/gen.c", 3369
     load    r0, sf[0]
     add     r0, 6
     load    r0, r0[0]
@@ -80077,7 +80087,7 @@ __L8116:
     call    __F344_serr
     add     sp, 3
 __L8113:
-.source "src/gen.c", 3363
+.source "src/gen.c", 3370
     load    r0, sf[-6]
     test    r0
     move    z, r0, 1, 0
@@ -80136,7 +80146,7 @@ __L8125:
 __L8126:
     test    r0
     jump    z, __L8123
-.source "src/gen.c", 3364
+.source "src/gen.c", 3371
     load    r0, sf[0]
     add     r0, 6
     load    r0, r0[0]
@@ -80149,7 +80159,7 @@ __L8126:
     call    __F344_serr
     add     sp, 3
 __L8123:
-.source "src/gen.c", 3365
+.source "src/gen.c", 3372
     load    r0, sf[-6]
     test    r0
     jump    z, __L8137
@@ -80178,14 +80188,14 @@ __L8135:
 __L8136:
     test    r0
     jump    z, __L8133
-.source "src/gen.c", 3366
+.source "src/gen.c", 3373
     load    r0, sf[-4]
     add     r0, 6
     push    r0
     move    r0, 1
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 3367
+.source "src/gen.c", 3374
     load    r0, sf[-4]
     add     r0, 7
     push    r0
@@ -80195,7 +80205,7 @@ __L8136:
     pop     r1
     store   r0, r1[0]
 __L8133:
-.source "src/gen.c", 3369
+.source "src/gen.c", 3376
     load    r0, sf[-5]
     test    r0
     move    z, r0, 1, 0
@@ -80208,14 +80218,14 @@ __L8133:
     call    __F518_scope_add
     add     sp, 2
 __L8139:
-.source "src/gen.c", 3370
+.source "src/gen.c", 3377
     load    r0, sf[-4]
     add     r0, 2
     push    r0
     load    r0, sf[6]
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 3371
+.source "src/gen.c", 3378
     load    r0, sf[-2]
     test    r0
     jump    z, __L8145
@@ -80300,7 +80310,7 @@ __L8143:
 __L8144:
     test    r0
     jump    z, __L8141
-.source "src/gen.c", 3372
+.source "src/gen.c", 3379
     move    r0, 2
     push    r0
     load    r0, sf[-4]
@@ -80311,17 +80321,17 @@ __L8144:
     store   r2, r0[0]
     move    r0, r2
 __L8141:
-.source "src/gen.c", 3373
+.source "src/gen.c", 3380
     load    r0, sf[-13]
     test    r0
     jump    z, __L8157
     return
 __L8157:
-.source "src/gen.c", 3374
+.source "src/gen.c", 3381
     load    r0, sf[-14]
     test    r0
     jump    z, __L8159
-.source "src/gen.c", 3375
+.source "src/gen.c", 3382
     load    r0, sf[-5]
     push    r0
     load    r0, sf[-12]
@@ -80342,14 +80352,14 @@ __L8157:
     push    r0
     call    __F563_declare_object_tail
     add     sp, 9
-.source "src/gen.c", 3376
+.source "src/gen.c", 3383
     return
 __L8159:
-.source "src/gen.c", 3379
+.source "src/gen.c", 3386
     load    r0, sf[-2]
     test    r0
     jump    z, __L8161
-.source "src/gen.c", 3380
+.source "src/gen.c", 3387
     load    r0, sf[-4]
     add     r0, 3
     load    r0, r0[0]
@@ -80373,40 +80383,40 @@ __L8164:
     push    r0
     call    __F297_c_decl
     add     sp, 2
-    store   r0, sf[-24]
-.source "src/gen.c", 3381
+    store   r0, sf[-25]
+.source "src/gen.c", 3388
     load    r0, sf[-12]
     test    r0
     jump    z, __L8165
-.source "src/gen.c", 3382
+.source "src/gen.c", 3389
     load    r0, sf[-5]
     test    r0
     move    z, r0, 1, 0
     test    r0
     jump    z, __L8167
-    load    r0, sf[-24]
+    load    r0, sf[-25]
     push    r0
     move    r0, __W1002+1
     push    r0
     call    __F346_emitf
     add     sp, 2
 __L8167:
-.source "src/gen.c", 3383
+.source "src/gen.c", 3390
     return
 __L8165:
-.source "src/gen.c", 3385
+.source "src/gen.c", 3392
     load    r0, sf[3]
     push    r0
     call    __F460_emit_line
     add     sp, 1
-.source "src/gen.c", 3386
+.source "src/gen.c", 3393
     load    r0, sf[-6]
     test    r0
     move    z, r0, 1, 0
     test    r0
     jump    z, __L8169
-.source "src/gen.c", 3387
-    load    r0, sf[-24]
+.source "src/gen.c", 3394
+    load    r0, sf[-25]
     push    r0
     load    r0, sf[-4]
     add     r0, 8
@@ -80427,14 +80437,14 @@ __L8172:
     add     sp, 3
     jump    __L8170
 __L8169:
-.source "src/gen.c", 3388
+.source "src/gen.c", 3395
     load    r0, sf[-8]
     test    r0
     jump    z, __L8173
-.source "src/gen.c", 3389
+.source "src/gen.c", 3396
     load    r0, sf[-9]
     push    r0
-    load    r0, sf[-24]
+    load    r0, sf[-25]
     push    r0
     load    r0, sf[-4]
     add     r0, 8
@@ -80455,7 +80465,7 @@ __L8176:
     add     sp, 4
     jump    __L8174
 __L8173:
-.source "src/gen.c", 3391
+.source "src/gen.c", 3398
     load    r0, sf[6]
     load    r0, r0[0]
     move    r1, 24
@@ -80470,8 +80480,8 @@ __L8173:
     call    __F344_serr
     add     sp, 2
 __L8177:
-.source "src/gen.c", 3392
-    load    r0, sf[-24]
+.source "src/gen.c", 3399
+    load    r0, sf[-25]
     push    r0
     load    r0, sf[-4]
     add     r0, 8
@@ -80490,7 +80500,7 @@ __L8180:
     push    r0
     call    __F346_emitf
     add     sp, 3
-.source "src/gen.c", 3393
+.source "src/gen.c", 3400
     load    r0, sf[-9]
     push    r0
     load    r0, sf[-4]
@@ -80503,7 +80513,7 @@ __L8180:
     push    r0
     call    __F14_sb_printf
     add     sp, 4
-.source "src/gen.c", 3394
+.source "src/gen.c", 3401
     load    r0, sf[-15]
     push    r0
     call    __F454_dtor_text_from
@@ -80513,17 +80523,17 @@ __L8180:
     push    r0
     call    __F13_sb_puts
     add     sp, 2
-.source "src/gen.c", 3395
+.source "src/gen.c", 3402
     load    r1, __G341_dyn_init_count+1
     add     r2, r1, 1
     store   r2, __G341_dyn_init_count+1
     move    r0, r1
 __L8174:
 __L8170:
-.source "src/gen.c", 3397
+.source "src/gen.c", 3404
     return
 __L8161:
-.source "src/gen.c", 3400
+.source "src/gen.c", 3407
     load    r0, sf[-4]
     add     r0, 3
     load    r0, r0[0]
@@ -80547,23 +80557,23 @@ __L8182:
     push    r0
     call    __F297_c_decl
     add     sp, 2
-    store   r0, sf[-25]
-.source "src/gen.c", 3401
+    store   r0, sf[-26]
+.source "src/gen.c", 3408
     load    r0, sf[3]
     push    r0
     call    __F460_emit_line
     add     sp, 1
-.source "src/gen.c", 3402
+.source "src/gen.c", 3409
     load    r0, sf[-3]
     test    r0
     jump    z, __L8183
-.source "src/gen.c", 3403
+.source "src/gen.c", 3410
     load    r0, sf[-6]
     test    r0
     move    z, r0, 1, 0
     test    r0
     jump    z, __L8185
-    load    r0, sf[-25]
+    load    r0, sf[-26]
     push    r0
     move    r0, __W1014+1
     push    r0
@@ -80571,13 +80581,13 @@ __L8182:
     add     sp, 2
     jump    __L8186
 __L8185:
-.source "src/gen.c", 3404
+.source "src/gen.c", 3411
     load    r0, sf[-8]
     test    r0
     jump    z, __L8187
     load    r0, sf[-9]
     push    r0
-    load    r0, sf[-25]
+    load    r0, sf[-26]
     push    r0
     move    r0, __W1015+1
     push    r0
@@ -80585,7 +80595,7 @@ __L8185:
     add     sp, 3
     jump    __L8188
 __L8187:
-.source "src/gen.c", 3407
+.source "src/gen.c", 3414
     load    r0, sf[-9]
     push    r0
     load    r0, sf[-4]
@@ -80604,7 +80614,7 @@ __L8187:
     add     r0, 3
     load    r0, r0[0]
     push    r0
-    load    r0, sf[-25]
+    load    r0, sf[-26]
     push    r0
     move    r0, __W1016+1
     push    r0
@@ -80614,13 +80624,13 @@ __L8188:
 __L8186:
     jump    __L8184
 __L8183:
-.source "src/gen.c", 3409
+.source "src/gen.c", 3416
     load    r0, sf[-6]
     test    r0
     jump    z, __L8189
     load    r0, sf[-9]
     push    r0
-    load    r0, sf[-25]
+    load    r0, sf[-26]
     push    r0
     move    r0, __W1017+1
     push    r0
@@ -80628,8 +80638,8 @@ __L8183:
     add     sp, 3
     jump    __L8190
 __L8189:
-.source "src/gen.c", 3410
-    load    r0, sf[-25]
+.source "src/gen.c", 3417
+    load    r0, sf[-26]
     push    r0
     move    r0, __W1018+1
     push    r0
@@ -80637,7 +80647,7 @@ __L8189:
     add     sp, 2
 __L8190:
 __L8184:
-.source "src/gen.c", 3411
+.source "src/gen.c", 3418
     load    r0, sf[-15]
     push    r0
     call    __F431_flush_temps_stmt
@@ -80648,15 +80658,15 @@ __L8184:
 
 // declare_object_tail
 __F563_declare_object_tail:
-.source "src/gen.c", 3418
+.source "src/gen.c", 3425
     add     sp, -22
-.source "src/gen.c", 3419
+.source "src/gen.c", 3426
     load    r0, sf[5]
     push    r0
     call    __F437_strip_arrays
     add     sp, 1
     store   r0, sf[0]
-.source "src/gen.c", 3420
+.source "src/gen.c", 3427
     load    r0, sf[4]
     add     r0, 3
     load    r0, r0[0]
@@ -80666,10 +80676,10 @@ __F563_declare_object_tail:
     call    __F297_c_decl
     add     sp, 2
     store   r0, sf[-1]
-.source "src/gen.c", 3421
+.source "src/gen.c", 3428
     load    r0, __G333_out+1
     store   r0, sf[-2]
-.source "src/gen.c", 3422
+.source "src/gen.c", 3429
     load    r0, sf[6]
     test    r0
     jump    z, __L8191
@@ -80723,17 +80733,17 @@ __L8191:
     move    r0, 3
 __L8192:
     store   r0, sf[-3]
-.source "src/gen.c", 3423
+.source "src/gen.c", 3430
     load    r0, sf[6]
     store   r0, sf[-4]
-.source "src/gen.c", 3424
+.source "src/gen.c", 3431
     load    r0, sf[3]
     push    r0
     load    r0, sf[0]
     push    r0
     call    __F426_require_complete
     add     sp, 2
-.source "src/gen.c", 3425
+.source "src/gen.c", 3432
     load    r0, __G360_in_cond_decl+1
     test    r0
     jump    z, __L8201
@@ -80744,14 +80754,14 @@ __L8192:
     call    __F344_serr
     add     sp, 2
 __L8201:
-.source "src/gen.c", 3426
+.source "src/gen.c", 3433
     load    r0, sf[3]
     push    r0
     load    r0, sf[0]
     push    r0
     call    __F417_require_concrete
     add     sp, 2
-.source "src/gen.c", 3427
+.source "src/gen.c", 3434
     load    r0, sf[6]
     test    r0
     jump    z, __L8209
@@ -80799,11 +80809,11 @@ __L8206:
     move    r0, 3
     store   r0, sf[-3]
 __L8203:
-.source "src/gen.c", 3428
+.source "src/gen.c", 3435
     load    r0, sf[10]
     test    r0
     jump    z, __L8211
-.source "src/gen.c", 3429
+.source "src/gen.c", 3436
     load    r0, sf[11]
     test    r0
     move    z, r0, 1, 0
@@ -80816,10 +80826,10 @@ __L8203:
     call    __F346_emitf
     add     sp, 2
 __L8213:
-.source "src/gen.c", 3430
+.source "src/gen.c", 3437
     return
 __L8211:
-.source "src/gen.c", 3432
+.source "src/gen.c", 3439
     load    r0, sf[5]
     push    r0
     call    __F276_ty_is_ref
@@ -80828,7 +80838,7 @@ __L8211:
     jump    z, __L8215
     return
 __L8215:
-.source "src/gen.c", 3433
+.source "src/gen.c", 3440
     load    r0, sf[8]
     test    r0
     move    z, r0, 1, 0
@@ -80950,7 +80960,7 @@ __L8219:
 __L8220:
     test    r0
     jump    z, __L8217
-.source "src/gen.c", 3436
+.source "src/gen.c", 3443
     move    r0, 2097152
     move    r1, 262144
     or      r0, r1
@@ -80962,18 +80972,18 @@ __L8220:
     or      r2, r1
     store   r2, r0[0]
     move    r0, r2
-.source "src/gen.c", 3437
+.source "src/gen.c", 3444
     load    r0, sf[4]
     add     r0, 3
     push    r0
     move    r0, __W1021+1
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 3438
+.source "src/gen.c", 3445
     move    r0, 0
     store   r0, sf[-1]
 __L8217:
-.source "src/gen.c", 3440
+.source "src/gen.c", 3447
     load    r0, sf[-1]
     move    r1, 0
     cmp     r0, r1
@@ -80982,16 +80992,16 @@ __L8217:
     jump    z, __L8237
     jump    __L8238
 __L8237:
-.source "src/gen.c", 3442
+.source "src/gen.c", 3449
     load    r0, sf[8]
     test    r0
     jump    z, __L8239
-.source "src/gen.c", 3443
+.source "src/gen.c", 3450
     load    r0, sf[3]
     push    r0
     call    __F460_emit_line
     add     sp, 1
-.source "src/gen.c", 3444
+.source "src/gen.c", 3451
     load    r0, sf[-1]
     push    r0
     load    r0, sf[4]
@@ -81013,17 +81023,17 @@ __L8242:
     add     sp, 3
     jump    __L8240
 __L8239:
-.source "src/gen.c", 3445
+.source "src/gen.c", 3452
     load    r0, sf[9]
     test    r0
     jump    z, __L8243
-.source "src/gen.c", 3447
+.source "src/gen.c", 3454
     load    r0, __G333_out+1
     store   r0, sf[-5]
-.source "src/gen.c", 3448
+.source "src/gen.c", 3455
     move    r0, __G362_pending_helpers+1
     store   r0, __G333_out+1
-.source "src/gen.c", 3449
+.source "src/gen.c", 3456
     load    r0, sf[4]
     add     r0, 3
     load    r0, r0[0]
@@ -81034,20 +81044,20 @@ __L8239:
     push    r0
     call    __F346_emitf
     add     sp, 3
-.source "src/gen.c", 3450
+.source "src/gen.c", 3457
     load    r0, sf[0]
     push    r0
     call    __F446_type_needs_dtor
     add     sp, 1
     test    r0
     jump    z, __L8245
-.source "src/gen.c", 3451
+.source "src/gen.c", 3458
     load    r0, sf[5]
     store   r0, sf[-6]
-.source "src/gen.c", 3452
+.source "src/gen.c", 3459
     move    r0, 1
     store   r0, sf[-7]
-.source "src/gen.c", 3453
+.source "src/gen.c", 3460
 __L8247:
     load    r0, sf[-6]
     load    r0, r0[0]
@@ -81073,7 +81083,7 @@ __L8247:
 __L8248:
     jump    __L8247
 __L8249:
-.source "src/gen.c", 3454
+.source "src/gen.c", 3461
     load    r0, sf[5]
     load    r0, r0[0]
     move    r1, 24
@@ -81081,7 +81091,7 @@ __L8249:
     move    eq, r0, 1, 0
     test    r0
     jump    z, __L8250
-.source "src/gen.c", 3455
+.source "src/gen.c", 3462
     load    r0, sf[4]
     add     r0, 3
     load    r0, r0[0]
@@ -81117,7 +81127,7 @@ __L8249:
     add     sp, 6
     jump    __L8251
 __L8250:
-.source "src/gen.c", 3456
+.source "src/gen.c", 3463
     load    r0, sf[4]
     add     r0, 3
     load    r0, r0[0]
@@ -81141,17 +81151,17 @@ __L8250:
     add     sp, 4
 __L8251:
 __L8245:
-.source "src/gen.c", 3458
+.source "src/gen.c", 3465
     load    r0, sf[-5]
     store   r0, __G333_out+1
     jump    __L8244
 __L8243:
-.source "src/gen.c", 3460
+.source "src/gen.c", 3467
     load    r0, sf[3]
     push    r0
     call    __F460_emit_line
     add     sp, 1
-.source "src/gen.c", 3461
+.source "src/gen.c", 3468
     load    r0, sf[-1]
     push    r0
     move    r0, __W1029+1
@@ -81161,7 +81171,7 @@ __L8243:
 __L8244:
 __L8240:
 __L8238:
-.source "src/gen.c", 3466
+.source "src/gen.c", 3473
     load    r0, sf[-3]
     move    r1, 3
     cmp     r0, r1
@@ -81180,12 +81190,12 @@ __L8252:
     move    r0, 1
 __L8253:
     store   r0, sf[-11]
-.source "src/gen.c", 3467
+.source "src/gen.c", 3474
     add     r0, sf, -10
     push    r0
     call    __F10_sb_init
     add     sp, 1
-.source "src/gen.c", 3468
+.source "src/gen.c", 3475
     load    r0, sf[-11]
     test    r0
     move    z, r0, 1, 0
@@ -81215,7 +81225,7 @@ __L8256:
 __L8257:
     test    r0
     jump    z, __L8254
-.source "src/gen.c", 3469
+.source "src/gen.c", 3476
     load    r0, sf[0]
     push    r0
     call    __F446_type_needs_dtor
@@ -81244,7 +81254,7 @@ __L8263:
     add     sp, 1
     jump    __L8261
 __L8260:
-.source "src/gen.c", 3470
+.source "src/gen.c", 3477
     load    r0, sf[0]
     push    r0
     call    __F446_type_needs_dtor
@@ -81259,10 +81269,10 @@ __L8260:
     add     sp, 2
 __L8264:
 __L8261:
-.source "src/gen.c", 3471
+.source "src/gen.c", 3478
     return
 __L8254:
-.source "src/gen.c", 3473
+.source "src/gen.c", 3480
     load    r0, sf[8]
     test    r0
     jump    z, __L8266
@@ -81270,11 +81280,11 @@ __L8254:
     store   r0, __G333_out+1
     jump    __L8267
 __L8266:
-.source "src/gen.c", 3474
+.source "src/gen.c", 3481
     add     r0, sf, -10
     store   r0, __G333_out+1
 __L8267:
-.source "src/gen.c", 3475
+.source "src/gen.c", 3482
     load    r0, sf[5]
     load    r0, r0[0]
     move    r1, 24
@@ -81282,19 +81292,19 @@ __L8267:
     move    eq, r0, 1, 0
     test    r0
     jump    z, __L8268
-.source "src/gen.c", 3477
+.source "src/gen.c", 3484
     load    r0, sf[5]
     push    r0
     call    __F437_strip_arrays
     add     sp, 1
     store   r0, sf[-12]
-.source "src/gen.c", 3478
+.source "src/gen.c", 3485
     move    r0, 1
     store   r0, sf[-13]
-.source "src/gen.c", 3479
+.source "src/gen.c", 3486
     load    r0, sf[5]
     store   r0, sf[-15]
-.source "src/gen.c", 3480
+.source "src/gen.c", 3487
     load    r0, sf[-3]
     move    r1, 1
     cmp     r0, r1
@@ -81309,7 +81319,7 @@ __L8270:
     move    r0, 0
 __L8271:
     store   r0, sf[-16]
-.source "src/gen.c", 3481
+.source "src/gen.c", 3488
     load    r0, sf[-3]
     move    r1, 0
     cmp     r0, r1
@@ -81336,7 +81346,7 @@ __L8275:
     call    __F344_serr
     add     sp, 2
 __L8272:
-.source "src/gen.c", 3482
+.source "src/gen.c", 3489
 __L8276:
     load    r0, sf[-15]
     load    r0, r0[0]
@@ -81362,7 +81372,7 @@ __L8276:
 __L8277:
     jump    __L8276
 __L8278:
-.source "src/gen.c", 3483
+.source "src/gen.c", 3490
     load    r0, sf[5]
     add     r0, 2
     load    r0, r0[0]
@@ -81389,7 +81399,7 @@ __L8282:
     call    __F344_serr
     add     sp, 2
 __L8279:
-.source "src/gen.c", 3484
+.source "src/gen.c", 3491
     move    r0, 0
     store   r0, sf[-14]
 __L8283:
@@ -81414,7 +81424,7 @@ __L8286:
 __L8287:
     test    r0
     jump    z, __L8285
-.source "src/gen.c", 3485
+.source "src/gen.c", 3492
     load    r0, sf[3]
     push    r0
     load    r0, sf[-16]
@@ -81458,7 +81468,7 @@ __L8291:
     call    __F549_object_init_stmts
     add     sp, 5
 __L8284:
-.source "src/gen.c", 3484
+.source "src/gen.c", 3491
     load    r1, sf[-14]
     add     r2, r1, 1
     store   r2, sf[-14]
@@ -81469,7 +81479,7 @@ __L8284:
     store   r0, sf[-16]
     jump    __L8283
 __L8285:
-.source "src/gen.c", 3486
+.source "src/gen.c", 3493
     load    r0, sf[-16]
     test    r0
     jump    z, __L8292
@@ -81485,7 +81495,7 @@ __L8285:
     call    __F344_serr
     add     sp, 3
 __L8292:
-.source "src/gen.c", 3487
+.source "src/gen.c", 3494
     load    r0, sf[-14]
     load    r1, sf[-13]
     cmp     r0, r1
@@ -81510,7 +81520,7 @@ __L8296:
 __L8297:
     test    r0
     jump    z, __L8294
-.source "src/gen.c", 3488
+.source "src/gen.c", 3495
     load    r0, sf[3]
     push    r0
     load    r0, sf[4]
@@ -81537,7 +81547,7 @@ __L8297:
     call    __F458_default_construct_text
     add     sp, 3
     store   r0, sf[-17]
-.source "src/gen.c", 3489
+.source "src/gen.c", 3496
     load    r0, sf[-17]
     test    r0
     jump    z, __L8300
@@ -81558,7 +81568,7 @@ __L8301:
 __L8294:
     jump    __L8269
 __L8268:
-.source "src/gen.c", 3492
+.source "src/gen.c", 3499
     load    r0, sf[3]
     push    r0
     load    r0, sf[-3]
@@ -81590,35 +81600,35 @@ __L8303:
     call    __F549_object_init_stmts
     add     sp, 5
 __L8269:
-.source "src/gen.c", 3494
+.source "src/gen.c", 3501
     load    r0, sf[-2]
     store   r0, __G333_out+1
-.source "src/gen.c", 3495
+.source "src/gen.c", 3502
     load    r0, sf[8]
     test    r0
     jump    z, __L8304
-.source "src/gen.c", 3496
+.source "src/gen.c", 3503
     load    r1, __G341_dyn_init_count+1
     add     r2, r1, 1
     store   r2, __G341_dyn_init_count+1
     move    r0, r1
-.source "src/gen.c", 3497
+.source "src/gen.c", 3504
     load    r0, sf[0]
     push    r0
     call    __F446_type_needs_dtor
     add     sp, 1
     test    r0
     jump    z, __L8306
-.source "src/gen.c", 3498
+.source "src/gen.c", 3505
     load    r1, __G566_dtor_wrapper_count+1
     add     r2, r1, 1
     store   r2, __G566_dtor_wrapper_count+1
     move    r0, r1
     store   r0, sf[-18]
-.source "src/gen.c", 3499
+.source "src/gen.c", 3506
     load    r0, sf[0]
     store   r0, sf[-19]
-.source "src/gen.c", 3500
+.source "src/gen.c", 3507
     load    r0, sf[5]
     load    r0, r0[0]
     move    r1, 24
@@ -81626,13 +81636,13 @@ __L8269:
     move    eq, r0, 1, 0
     test    r0
     jump    z, __L8308
-.source "src/gen.c", 3501
+.source "src/gen.c", 3508
     move    r0, 1
     store   r0, sf[-20]
-.source "src/gen.c", 3502
+.source "src/gen.c", 3509
     load    r0, sf[5]
     store   r0, sf[-21]
-.source "src/gen.c", 3503
+.source "src/gen.c", 3510
 __L8310:
     load    r0, sf[-21]
     load    r0, r0[0]
@@ -81658,7 +81668,7 @@ __L8310:
 __L8311:
     jump    __L8310
 __L8312:
-.source "src/gen.c", 3504
+.source "src/gen.c", 3511
     load    r0, sf[4]
     add     r0, 3
     load    r0, r0[0]
@@ -81692,7 +81702,7 @@ __L8312:
     add     sp, 6
     jump    __L8309
 __L8308:
-.source "src/gen.c", 3506
+.source "src/gen.c", 3513
     load    r0, sf[4]
     add     r0, 3
     load    r0, r0[0]
@@ -81713,7 +81723,7 @@ __L8308:
     call    __F346_emitf
     add     sp, 4
 __L8309:
-.source "src/gen.c", 3507
+.source "src/gen.c", 3514
     load    r0, sf[-18]
     push    r0
     move    r0, __W1045+1
@@ -81725,11 +81735,11 @@ __L8309:
 __L8306:
     jump    __L8305
 __L8304:
-.source "src/gen.c", 3509
+.source "src/gen.c", 3516
     load    r0, sf[9]
     test    r0
     jump    z, __L8313
-.source "src/gen.c", 3510
+.source "src/gen.c", 3517
     load    r0, sf[0]
     push    r0
     call    __F446_type_needs_dtor
@@ -81766,13 +81776,13 @@ __L8316:
     add     sp, 5
     jump    __L8314
 __L8313:
-.source "src/gen.c", 3513
+.source "src/gen.c", 3520
     add     r0, sf, -10
     load    r0, r0[0]
     push    r0
     call    __F345_emit
     add     sp, 1
-.source "src/gen.c", 3514
+.source "src/gen.c", 3521
     load    r0, sf[0]
     push    r0
     call    __F446_type_needs_dtor
@@ -81801,7 +81811,7 @@ __L8320:
     add     sp, 1
     jump    __L8318
 __L8317:
-.source "src/gen.c", 3515
+.source "src/gen.c", 3522
     load    r0, sf[0]
     push    r0
     call    __F446_type_needs_dtor
@@ -81824,14 +81834,14 @@ __L8305:
 
 // declare_one
 __F569_declare_one:
-.source "src/gen.c", 3524
+.source "src/gen.c", 3531
     add     sp, -6
-.source "src/gen.c", 3525
+.source "src/gen.c", 3532
     move    r0, 0
     store   r0, sf[0]
     move    r0, 0
     store   r0, sf[-1]
-.source "src/gen.c", 3528
+.source "src/gen.c", 3535
     add     r0, sf, -1
     push    r0
     add     r0, sf, 0
@@ -81845,13 +81855,13 @@ __F569_declare_one:
     call    __F475_apply_declarator
     add     sp, 4
     store   r0, sf[-2]
-.source "src/gen.c", 3529
+.source "src/gen.c", 3536
     load    r0, sf[0]
     test    r0
     move    z, r0, 1, 0
     test    r0
     jump    z, __L8323
-.source "src/gen.c", 3530
+.source "src/gen.c", 3537
     load    r0, sf[6]
     move    r1, 1
     and     r0, r1
@@ -81864,22 +81874,22 @@ __F569_declare_one:
     call    __F344_serr
     add     sp, 2
 __L8325:
-.source "src/gen.c", 3531
+.source "src/gen.c", 3538
     return
 __L8323:
-.source "src/gen.c", 3533
+.source "src/gen.c", 3540
     load    r0, sf[0]
     push    r0
     call    __F519_id_last
     add     sp, 1
     store   r0, sf[-3]
-.source "src/gen.c", 3534
+.source "src/gen.c", 3541
     load    r0, sf[6]
     move    r1, 1
     and     r0, r1
     test    r0
     jump    z, __L8327
-.source "src/gen.c", 3536
+.source "src/gen.c", 3543
     load    r0, sf[-3]
     add     r0, 4
     load    r0, r0[0]
@@ -81897,7 +81907,7 @@ __L8323:
     call    __F344_serr
     add     sp, 2
 __L8329:
-.source "src/gen.c", 3537
+.source "src/gen.c", 3544
     load    r0, sf[-3]
     add     r0, 6
     load    r0, r0[0]
@@ -81907,7 +81917,7 @@ __L8329:
     call    __F303_sfind
     add     sp, 2
     store   r0, sf[-4]
-.source "src/gen.c", 3538
+.source "src/gen.c", 3545
     load    r0, sf[-4]
     test    r0
     jump    z, __L8333
@@ -81956,13 +81966,13 @@ __L8334:
     call    __F344_serr
     add     sp, 3
 __L8331:
-.source "src/gen.c", 3539
+.source "src/gen.c", 3546
     load    r0, sf[-4]
     test    r0
     move    z, r0, 1, 0
     test    r0
     jump    z, __L8337
-.source "src/gen.c", 3540
+.source "src/gen.c", 3547
     load    r0, __G301_scope2_cur+1
     push    r0
     load    r0, sf[-2]
@@ -81976,7 +81986,7 @@ __L8331:
     call    __F309_ent_new
     add     sp, 4
     store   r0, sf[-4]
-.source "src/gen.c", 3541
+.source "src/gen.c", 3548
     load    r0, sf[-4]
     push    r0
     load    r0, __G301_scope2_cur+1
@@ -81984,10 +81994,10 @@ __L8331:
     call    __F518_scope_add
     add     sp, 2
 __L8337:
-.source "src/gen.c", 3543
+.source "src/gen.c", 3550
     return
 __L8327:
-.source "src/gen.c", 3545
+.source "src/gen.c", 3552
     load    r0, sf[-2]
     load    r0, r0[0]
     move    r1, 25
@@ -81995,7 +82005,7 @@ __L8327:
     move    eq, r0, 1, 0
     test    r0
     jump    z, __L8339
-.source "src/gen.c", 3546
+.source "src/gen.c", 3553
     load    r0, sf[-1]
     push    r0
     load    r0, sf[6]
@@ -82009,7 +82019,7 @@ __L8327:
     call    __F541_declare_function
     add     sp, 5
     store   r0, sf[-5]
-.source "src/gen.c", 3547
+.source "src/gen.c", 3554
     load    r0, sf[6]
     push    r0
     load    r0, sf[-1]
@@ -82018,10 +82028,10 @@ __L8327:
     push    r0
     call    __F542_emit_prototype
     add     sp, 3
-.source "src/gen.c", 3548
+.source "src/gen.c", 3555
     return
 __L8339:
-.source "src/gen.c", 3550
+.source "src/gen.c", 3557
     load    r0, sf[6]
     push    r0
     load    r0, sf[-2]
@@ -82040,9 +82050,9 @@ __L8339:
 
 // process_decl
 __F567_process_decl:
-.source "src/gen.c", 3553
+.source "src/gen.c", 3560
     add     sp, -38
-.source "src/gen.c", 3554
+.source "src/gen.c", 3561
     load    r0, sf[3]
     load    r0, r0[0]
     move    r1, 7
@@ -82050,10 +82060,10 @@ __F567_process_decl:
     move    eq, r0, 1, 0
     test    r0
     jump    z, __L8341
-.source "src/gen.c", 3556
+.source "src/gen.c", 3563
     move    r0, 0
     store   r0, sf[-1]
-.source "src/gen.c", 3558
+.source "src/gen.c", 3565
     load    r0, sf[3]
     add     r0, 8
     load    r0, r0[0]
@@ -82074,13 +82084,13 @@ __L8345:
 __L8346:
     test    r0
     jump    z, __L8343
-.source "src/gen.c", 3559
+.source "src/gen.c", 3566
     move    r0, 1
     push    r0
     call    __F267_ty_builtin
     add     sp, 1
     store   r0, sf[0]
-.source "src/gen.c", 3560
+.source "src/gen.c", 3567
     load    r0, sf[3]
     add     r0, 8
     load    r0, r0[0]
@@ -82089,7 +82099,7 @@ __L8346:
     store   r0, sf[-1]
     jump    __L8344
 __L8343:
-.source "src/gen.c", 3561
+.source "src/gen.c", 3568
     add     r0, sf, -1
     push    r0
     load    r0, sf[3]
@@ -82100,7 +82110,7 @@ __L8343:
     add     sp, 2
     store   r0, sf[0]
 __L8344:
-.source "src/gen.c", 3562
+.source "src/gen.c", 3569
     load    r0, sf[3]
     add     r0, 9
     load    r0, r0[0]
@@ -82130,10 +82140,10 @@ __L8348:
     store   r0, sf[-2]
     jump    __L8347
 __L8349:
-.source "src/gen.c", 3563
+.source "src/gen.c", 3570
     return
 __L8341:
-.source "src/gen.c", 3565
+.source "src/gen.c", 3572
     load    r0, sf[3]
     load    r0, r0[0]
     move    r1, 10
@@ -82141,15 +82151,15 @@ __L8341:
     move    eq, r0, 1, 0
     test    r0
     jump    z, __L8350
-.source "src/gen.c", 3566
+.source "src/gen.c", 3573
     move    r0, 0
     store   r0, sf[-3]
-.source "src/gen.c", 3568
+.source "src/gen.c", 3575
     move    r0, 0
     store   r0, sf[-6]
     move    r0, 0
     store   r0, sf[-7]
-.source "src/gen.c", 3570
+.source "src/gen.c", 3577
     load    r0, sf[3]
     add     r0, 8
     load    r0, r0[0]
@@ -82158,13 +82168,13 @@ __L8341:
     add     sp, 1
     test    r0
     jump    z, __L8352
-.source "src/gen.c", 3571
+.source "src/gen.c", 3578
     move    r0, 1
     push    r0
     call    __F267_ty_builtin
     add     sp, 1
     store   r0, sf[-4]
-.source "src/gen.c", 3572
+.source "src/gen.c", 3579
     load    r0, sf[3]
     add     r0, 8
     load    r0, r0[0]
@@ -82173,7 +82183,7 @@ __L8341:
     store   r0, sf[-3]
     jump    __L8353
 __L8352:
-.source "src/gen.c", 3573
+.source "src/gen.c", 3580
     add     r0, sf, -3
     push    r0
     load    r0, sf[3]
@@ -82184,7 +82194,7 @@ __L8352:
     add     sp, 2
     store   r0, sf[-4]
 __L8353:
-.source "src/gen.c", 3574
+.source "src/gen.c", 3581
     add     r0, sf, -7
     push    r0
     add     r0, sf, -6
@@ -82198,7 +82208,7 @@ __L8353:
     call    __F475_apply_declarator
     add     sp, 4
     store   r0, sf[-5]
-.source "src/gen.c", 3575
+.source "src/gen.c", 3582
     load    r0, sf[-6]
     test    r0
     move    z, r0, 1, 0
@@ -82237,7 +82247,7 @@ __L8357:
     call    __F344_serr
     add     sp, 2
 __L8354:
-.source "src/gen.c", 3578
+.source "src/gen.c", 3585
     load    r0, sf[-6]
     push    r0
     call    __F520_declaration_scope
@@ -82245,10 +82255,10 @@ __L8354:
     store   r0, sf[-9]
     load    r0, __G301_scope2_cur+1
     store   r0, sf[-10]
-.source "src/gen.c", 3579
+.source "src/gen.c", 3586
     load    r0, sf[-9]
     store   r0, __G301_scope2_cur+1
-.source "src/gen.c", 3580
+.source "src/gen.c", 3587
     load    r0, sf[-7]
     push    r0
     load    r0, sf[-3]
@@ -82262,7 +82272,7 @@ __L8354:
     call    __F541_declare_function
     add     sp, 5
     store   r0, sf[-8]
-.source "src/gen.c", 3581
+.source "src/gen.c", 3588
     load    r0, sf[-8]
     add     r0, 8
     load    r0, r0[0]
@@ -82281,7 +82291,7 @@ __L8354:
     call    __F542_emit_prototype
     add     sp, 3
 __L8360:
-.source "src/gen.c", 3582
+.source "src/gen.c", 3589
     load    r0, sf[-8]
     add     r0, 8
     load    r0, r0[0]
@@ -82317,13 +82327,13 @@ __L8365:
     call    __F560_define_function
     add     sp, 4
 __L8362:
-.source "src/gen.c", 3583
+.source "src/gen.c", 3590
     load    r0, sf[-10]
     store   r0, __G301_scope2_cur+1
-.source "src/gen.c", 3585
+.source "src/gen.c", 3592
     return
 __L8350:
-.source "src/gen.c", 3587
+.source "src/gen.c", 3594
     load    r0, sf[3]
     load    r0, r0[0]
     cmp     r0, 37
@@ -82353,35 +82363,35 @@ __L8350:
     cmp     r0, 33
     jump    eq, __L8379
     jump    __L8366
-.source "src/gen.c", 3588
+.source "src/gen.c", 3595
 __L8367:
 __L8368:
-.source "src/gen.c", 3589
+.source "src/gen.c", 3596
     return
-.source "src/gen.c", 3590
+.source "src/gen.c", 3597
 __L8369:
-.source "src/gen.c", 3591
+.source "src/gen.c", 3598
     load    r0, sf[3]
     push    r0
     call    __F545_binding_decl
     add     sp, 1
-.source "src/gen.c", 3592
+.source "src/gen.c", 3599
     return
-.source "src/gen.c", 3593
+.source "src/gen.c", 3600
 __L8370:
-.source "src/gen.c", 3595
+.source "src/gen.c", 3602
     load    r0, __G301_scope2_cur+1
     store   r0, sf[-11]
-.source "src/gen.c", 3596
+.source "src/gen.c", 3603
     move    r0, 0
     store   r0, sf[-13]
-.source "src/gen.c", 3597
+.source "src/gen.c", 3604
     load    r0, sf[3]
     add     r0, 6
     load    r0, r0[0]
     test    r0
     jump    z, __L8380
-.source "src/gen.c", 3598
+.source "src/gen.c", 3605
     load    r0, sf[3]
     add     r0, 6
     load    r0, r0[0]
@@ -82391,7 +82401,7 @@ __L8370:
     call    __F303_sfind
     add     sp, 2
     store   r0, sf[-13]
-.source "src/gen.c", 3599
+.source "src/gen.c", 3606
     load    r0, sf[-13]
     test    r0
     jump    z, __L8384
@@ -82421,13 +82431,13 @@ __L8385:
     call    __F344_serr
     add     sp, 3
 __L8382:
-.source "src/gen.c", 3600
+.source "src/gen.c", 3607
     load    r0, sf[-13]
     test    r0
     move    z, r0, 1, 0
     test    r0
     jump    z, __L8386
-.source "src/gen.c", 3601
+.source "src/gen.c", 3608
     load    r0, __G301_scope2_cur+1
     push    r0
     move    r0, 0
@@ -82441,7 +82451,7 @@ __L8382:
     call    __F309_ent_new
     add     sp, 4
     store   r0, sf[-13]
-.source "src/gen.c", 3602
+.source "src/gen.c", 3609
     load    r0, sf[-13]
     add     r0, 5
     push    r0
@@ -82453,7 +82463,7 @@ __L8382:
     add     sp, 2
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 3603
+.source "src/gen.c", 3610
     load    r0, sf[-13]
     add     r0, 5
     load    r0, r0[0]
@@ -82462,7 +82472,7 @@ __L8382:
     load    r0, sf[-13]
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 3604
+.source "src/gen.c", 3611
     load    r0, sf[-13]
     add     r0, 5
     load    r0, r0[0]
@@ -82483,7 +82493,7 @@ __L8382:
     add     sp, 3
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 3605
+.source "src/gen.c", 3612
     load    r0, sf[-13]
     push    r0
     load    r0, __G301_scope2_cur+1
@@ -82491,12 +82501,12 @@ __L8382:
     call    __F518_scope_add
     add     sp, 2
 __L8386:
-.source "src/gen.c", 3607
+.source "src/gen.c", 3614
     load    r0, sf[-13]
     add     r0, 5
     load    r0, r0[0]
     store   r0, sf[-12]
-.source "src/gen.c", 3608
+.source "src/gen.c", 3615
     load    r0, sf[3]
     add     r0, 4
     load    r0, r0[0]
@@ -82513,7 +82523,7 @@ __L8386:
 __L8388:
     jump    __L8381
 __L8380:
-.source "src/gen.c", 3610
+.source "src/gen.c", 3617
     load    r0, __G301_scope2_cur+1
     push    r0
     move    r0, 2
@@ -82521,7 +82531,7 @@ __L8380:
     call    __F302_scope2_new
     add     sp, 2
     store   r0, sf[-12]
-.source "src/gen.c", 3611
+.source "src/gen.c", 3618
     load    r0, sf[-12]
     add     r0, 7
     push    r0
@@ -82540,7 +82550,7 @@ __L8380:
     add     sp, 3
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 3612
+.source "src/gen.c", 3619
     load    r0, sf[-12]
     push    r0
     load    r0, __G301_scope2_cur+1
@@ -82548,24 +82558,24 @@ __L8380:
     call    __F308_scope_use
     add     sp, 2
 __L8381:
-.source "src/gen.c", 3614
+.source "src/gen.c", 3621
     load    r0, sf[-12]
     store   r0, __G301_scope2_cur+1
-.source "src/gen.c", 3615
+.source "src/gen.c", 3622
     load    r0, sf[3]
     add     r0, 8
     load    r0, r0[0]
     push    r0
     call    __F568_process_toplevel_list
     add     sp, 1
-.source "src/gen.c", 3616
+.source "src/gen.c", 3623
     load    r0, sf[-11]
     store   r0, __G301_scope2_cur+1
-.source "src/gen.c", 3617
+.source "src/gen.c", 3624
     return
-.source "src/gen.c", 3619
+.source "src/gen.c", 3626
 __L8371:
-.source "src/gen.c", 3621
+.source "src/gen.c", 3628
     move    r0, 1
     push    r0
     load    r0, sf[3]
@@ -82575,7 +82585,7 @@ __L8371:
     call    __F470_resolve_id
     add     sp, 2
     store   r0, sf[-14]
-.source "src/gen.c", 3622
+.source "src/gen.c", 3629
     load    r0, sf[-14]
     load    r0, r0[0]
     move    r1, 4
@@ -82595,7 +82605,7 @@ __L8371:
     call    __F344_serr
     add     sp, 3
 __L8390:
-.source "src/gen.c", 3623
+.source "src/gen.c", 3630
     load    r0, __G301_scope2_cur+1
     push    r0
     move    r0, 0
@@ -82609,7 +82619,7 @@ __L8390:
     call    __F309_ent_new
     add     sp, 4
     store   r0, sf[-15]
-.source "src/gen.c", 3624
+.source "src/gen.c", 3631
     load    r0, sf[-15]
     add     r0, 5
     push    r0
@@ -82618,18 +82628,18 @@ __L8390:
     load    r0, r0[0]
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 3625
+.source "src/gen.c", 3632
     load    r0, sf[-15]
     push    r0
     load    r0, __G301_scope2_cur+1
     push    r0
     call    __F518_scope_add
     add     sp, 2
-.source "src/gen.c", 3626
+.source "src/gen.c", 3633
     return
-.source "src/gen.c", 3628
+.source "src/gen.c", 3635
 __L8372:
-.source "src/gen.c", 3630
+.source "src/gen.c", 3637
     move    r0, 1
     push    r0
     load    r0, sf[3]
@@ -82639,7 +82649,7 @@ __L8372:
     call    __F470_resolve_id
     add     sp, 2
     store   r0, sf[-16]
-.source "src/gen.c", 3631
+.source "src/gen.c", 3638
     load    r0, sf[-16]
     load    r0, r0[0]
     move    r1, 4
@@ -82659,7 +82669,7 @@ __L8372:
     call    __F344_serr
     add     sp, 3
 __L8392:
-.source "src/gen.c", 3632
+.source "src/gen.c", 3639
     load    r0, sf[-16]
     add     r0, 5
     load    r0, r0[0]
@@ -82668,11 +82678,11 @@ __L8392:
     push    r0
     call    __F308_scope_use
     add     sp, 2
-.source "src/gen.c", 3633
+.source "src/gen.c", 3640
     return
-.source "src/gen.c", 3635
+.source "src/gen.c", 3642
 __L8373:
-.source "src/gen.c", 3637
+.source "src/gen.c", 3644
     move    r0, 1
     push    r0
     load    r0, sf[3]
@@ -82682,18 +82692,18 @@ __L8373:
     call    __F470_resolve_id
     add     sp, 2
     store   r0, sf[-17]
-.source "src/gen.c", 3638
+.source "src/gen.c", 3645
 __L8394:
     load    r0, sf[-17]
     test    r0
     jump    z, __L8396
-.source "src/gen.c", 3639
+.source "src/gen.c", 3646
     move    r0, 31
     push    r0
     call    __F6_anew
     add     sp, 1
     store   r0, sf[-18]
-.source "src/gen.c", 3640
+.source "src/gen.c", 3647
     load    r0, sf[-18]
     push    r0
     load    r0, sf[-17]
@@ -82706,14 +82716,14 @@ __L8397:
     cmp     r2, 31
     jump    lt, __L8397
     move    r0, r1
-.source "src/gen.c", 3641
+.source "src/gen.c", 3648
     load    r0, sf[-18]
     add     r0, 10
     push    r0
     move    r0, 0
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 3642
+.source "src/gen.c", 3649
     move    r0, 256
     push    r0
     load    r0, sf[-18]
@@ -82723,14 +82733,14 @@ __L8397:
     or      r2, r1
     store   r2, r0[0]
     move    r0, r2
-.source "src/gen.c", 3643
+.source "src/gen.c", 3650
     load    r0, sf[-18]
     push    r0
     load    r0, __G301_scope2_cur+1
     push    r0
     call    __F518_scope_add
     add     sp, 2
-.source "src/gen.c", 3644
+.source "src/gen.c", 3651
     load    r0, sf[-17]
     load    r0, r0[0]
     move    r1, 2
@@ -82741,18 +82751,18 @@ __L8397:
     jump    __L8396
 __L8398:
 __L8395:
-.source "src/gen.c", 3638
+.source "src/gen.c", 3645
     load    r0, sf[-17]
     add     r0, 10
     load    r0, r0[0]
     store   r0, sf[-17]
     jump    __L8394
 __L8396:
-.source "src/gen.c", 3646
+.source "src/gen.c", 3653
     return
-.source "src/gen.c", 3648
+.source "src/gen.c", 3655
 __L8374:
-.source "src/gen.c", 3652
+.source "src/gen.c", 3659
     move    r0, 0
     push    r0
     move    r0, 0
@@ -82777,7 +82787,7 @@ __L8374:
     call    __F475_apply_declarator
     add     sp, 4
     store   r0, sf[-19]
-.source "src/gen.c", 3653
+.source "src/gen.c", 3660
     load    r0, __G301_scope2_cur+1
     push    r0
     load    r0, sf[-19]
@@ -82791,18 +82801,18 @@ __L8374:
     call    __F309_ent_new
     add     sp, 4
     store   r0, sf[-20]
-.source "src/gen.c", 3654
+.source "src/gen.c", 3661
     load    r0, sf[-20]
     push    r0
     load    r0, __G301_scope2_cur+1
     push    r0
     call    __F518_scope_add
     add     sp, 2
-.source "src/gen.c", 3655
+.source "src/gen.c", 3662
     return
-.source "src/gen.c", 3657
+.source "src/gen.c", 3664
 __L8375:
-.source "src/gen.c", 3659
+.source "src/gen.c", 3666
     load    r0, sf[3]
     add     r0, 8
     load    r0, r0[0]
@@ -82810,7 +82820,7 @@ __L8375:
     call    __F465_expr
     add     sp, 1
     store   r0, sf[-21]
-.source "src/gen.c", 3660
+.source "src/gen.c", 3667
     load    r0, sf[-21]
     add     r0, 2
     load    r0, r0[0]
@@ -82825,7 +82835,7 @@ __L8375:
     call    __F344_serr
     add     sp, 2
 __L8400:
-.source "src/gen.c", 3661
+.source "src/gen.c", 3668
     load    r0, sf[-21]
     add     r0, 3
     load    r0, r0[0]
@@ -82833,13 +82843,13 @@ __L8400:
     move    z, r0, 1, 0
     test    r0
     jump    z, __L8402
-.source "src/gen.c", 3662
+.source "src/gen.c", 3669
     load    r0, sf[3]
     add     r0, 9
     load    r0, r0[0]
     test    r0
     jump    z, __L8404
-.source "src/gen.c", 3667
+.source "src/gen.c", 3674
     add     r0, sf, -32
     push    r0
     add     r0, sf, -24
@@ -82855,12 +82865,12 @@ __L8400:
     call    __F461_decode_literal
     add     sp, 4
     store   r0, sf[-23]
-.source "src/gen.c", 3668
+.source "src/gen.c", 3675
     add     r0, sf, -35
     push    r0
     call    __F10_sb_init
     add     sp, 1
-.source "src/gen.c", 3669
+.source "src/gen.c", 3676
     move    r0, 0
     store   r0, sf[-36]
 __L8406:
@@ -82891,7 +82901,7 @@ __L8407:
     move    r0, r1
     jump    __L8406
 __L8408:
-.source "src/gen.c", 3670
+.source "src/gen.c", 3677
     add     r0, sf, -35
     load    r0, r0[0]
     push    r0
@@ -82902,7 +82912,7 @@ __L8408:
     call    __F344_serr
     add     sp, 3
 __L8404:
-.source "src/gen.c", 3672
+.source "src/gen.c", 3679
     move    r0, __W1061+1
     push    r0
     load    r0, sf[3]
@@ -82910,11 +82920,11 @@ __L8404:
     call    __F344_serr
     add     sp, 2
 __L8402:
-.source "src/gen.c", 3674
+.source "src/gen.c", 3681
     return
-.source "src/gen.c", 3676
+.source "src/gen.c", 3683
 __L8376:
-.source "src/gen.c", 3678
+.source "src/gen.c", 3685
     move    r0, __W1062+1
     push    r0
     load    r0, sf[3]
@@ -82927,7 +82937,7 @@ __L8376:
     cmp     r0, r1
     move    eq, r0, 1, 0
     store   r0, sf[-37]
-.source "src/gen.c", 3679
+.source "src/gen.c", 3686
     load    r0, sf[-37]
     test    r0
     move    z, r0, 1, 0
@@ -82964,7 +82974,7 @@ __L8414:
     call    __F344_serr
     add     sp, 3
 __L8411:
-.source "src/gen.c", 3680
+.source "src/gen.c", 3687
     load    r0, sf[-37]
     test    r0
     jump    z, __L8415
@@ -82973,14 +82983,14 @@ __L8411:
     store   r2, __G515_linkage_c+1
     move    r0, r1
 __L8415:
-.source "src/gen.c", 3681
+.source "src/gen.c", 3688
     load    r0, sf[3]
     add     r0, 8
     load    r0, r0[0]
     push    r0
     call    __F568_process_toplevel_list
     add     sp, 1
-.source "src/gen.c", 3682
+.source "src/gen.c", 3689
     load    r0, sf[-37]
     test    r0
     jump    z, __L8417
@@ -82989,33 +82999,33 @@ __L8415:
     store   r2, __G515_linkage_c+1
     move    r0, r1
 __L8417:
-.source "src/gen.c", 3683
+.source "src/gen.c", 3690
     return
-.source "src/gen.c", 3685
+.source "src/gen.c", 3692
 __L8377:
 __L8378:
-.source "src/gen.c", 3686
+.source "src/gen.c", 3693
     move    r0, 0
     push    r0
     load    r0, sf[3]
     push    r0
     call    __F376_process_template
     add     sp, 2
-.source "src/gen.c", 3687
+.source "src/gen.c", 3694
     return
-.source "src/gen.c", 3688
+.source "src/gen.c", 3695
 __L8379:
-.source "src/gen.c", 3689
+.source "src/gen.c", 3696
     move    r0, __W1065+1
     push    r0
     load    r0, sf[3]
     push    r0
     call    __F344_serr
     add     sp, 2
-.source "src/gen.c", 3690
+.source "src/gen.c", 3697
     return
 __L8366:
-.source "src/gen.c", 3692
+.source "src/gen.c", 3699
     load    r0, sf[3]
     load    r0, r0[0]
     push    r0
@@ -83034,8 +83044,8 @@ __L8366:
 
 // specs_empty
 __F422_specs_empty:
-.source "src/gen.c", 3708
-.source "src/gen.c", 3709
+.source "src/gen.c", 3715
+.source "src/gen.c", 3716
     load    r0, sf[3]
     add     r0, 8
     load    r0, r0[0]
@@ -83083,8 +83093,8 @@ __L8420:
 
 // access_of
 __F574_access_of:
-.source "src/gen.c", 3712
-.source "src/gen.c", 3713
+.source "src/gen.c", 3719
+.source "src/gen.c", 3720
     move    r0, 1000
     load    r1, sf[3]
     cmp     r0, r1
@@ -83110,9 +83120,9 @@ __L8424:
 
 // access_allowed
 __F440_access_allowed:
-.source "src/gen.c", 3717
+.source "src/gen.c", 3724
     add     sp, -3
-.source "src/gen.c", 3721
+.source "src/gen.c", 3728
     load    r0, sf[4]
     move    r1, 0
     cmp     r0, r1
@@ -83135,7 +83145,7 @@ __L8430:
     move    r0, 1
     return
 __L8427:
-.source "src/gen.c", 3722
+.source "src/gen.c", 3729
     load    r0, __G350_cur_class+1
     load    r1, sf[3]
     cmp     r0, r1
@@ -83145,7 +83155,7 @@ __L8427:
     move    r0, 1
     return
 __L8431:
-.source "src/gen.c", 3723
+.source "src/gen.c", 3730
     load    r0, sf[4]
     move    r1, 44
     cmp     r0, r1
@@ -83184,14 +83194,14 @@ __L8436:
     move    r0, 1
     return
 __L8433:
-.source "src/gen.c", 3725
+.source "src/gen.c", 3732
     load    r0, __G301_scope2_cur+1
     store   r0, sf[-2]
 __L8439:
     load    r0, sf[-2]
     test    r0
     jump    z, __L8441
-.source "src/gen.c", 3726
+.source "src/gen.c", 3733
     load    r0, sf[-2]
     add     r0, 1
     load    r0, r0[0]
@@ -83219,18 +83229,18 @@ __L8445:
     return
 __L8442:
 __L8440:
-.source "src/gen.c", 3725
+.source "src/gen.c", 3732
     load    r0, sf[-2]
     load    r0, r0[0]
     store   r0, sf[-2]
     jump    __L8439
 __L8441:
-.source "src/gen.c", 3727
+.source "src/gen.c", 3734
     load    r0, sf[3]
     add     r0, 16
     load    r0, r0[0]
     store   r0, sf[0]
-.source "src/gen.c", 3728
+.source "src/gen.c", 3735
     load    r0, sf[0]
     test    r0
     move    z, r0, 1, 0
@@ -83239,7 +83249,7 @@ __L8441:
     move    r0, 0
     return
 __L8446:
-.source "src/gen.c", 3729
+.source "src/gen.c", 3736
     move    r0, 0
     store   r0, sf[-1]
 __L8448:
@@ -83259,7 +83269,7 @@ __L8451:
 __L8452:
     test    r0
     jump    z, __L8450
-.source "src/gen.c", 3730
+.source "src/gen.c", 3737
     load    r0, sf[0]
     add     r0, 30
     load    r0, r0[0]
@@ -83275,14 +83285,14 @@ __L8452:
     return
 __L8453:
 __L8449:
-.source "src/gen.c", 3729
+.source "src/gen.c", 3736
     load    r1, sf[-1]
     add     r2, r1, 1
     store   r2, sf[-1]
     move    r0, r1
     jump    __L8448
 __L8450:
-.source "src/gen.c", 3731
+.source "src/gen.c", 3738
     move    r0, 0
     store   r0, sf[-1]
 __L8455:
@@ -83324,7 +83334,7 @@ __L8458:
 __L8459:
     test    r0
     jump    z, __L8457
-.source "src/gen.c", 3732
+.source "src/gen.c", 3739
     load    r0, sf[0]
     add     r0, 32
     load    r0, r0[0]
@@ -83346,14 +83356,14 @@ __L8459:
     return
 __L8464:
 __L8456:
-.source "src/gen.c", 3731
+.source "src/gen.c", 3738
     load    r1, sf[-1]
     add     r2, r1, 1
     store   r2, sf[-1]
     move    r0, r1
     jump    __L8455
 __L8457:
-.source "src/gen.c", 3733
+.source "src/gen.c", 3740
     move    r0, 0
     store   r0, sf[-1]
 __L8466:
@@ -83395,7 +83405,7 @@ __L8469:
 __L8470:
     test    r0
     jump    z, __L8468
-.source "src/gen.c", 3734
+.source "src/gen.c", 3741
     load    r0, sf[0]
     add     r0, 32
     load    r0, r0[0]
@@ -83417,14 +83427,14 @@ __L8470:
     return
 __L8475:
 __L8467:
-.source "src/gen.c", 3733
+.source "src/gen.c", 3740
     load    r1, sf[-1]
     add     r2, r1, 1
     store   r2, sf[-1]
     move    r0, r1
     jump    __L8466
 __L8468:
-.source "src/gen.c", 3735
+.source "src/gen.c", 3742
     move    r0, 0
     store   r0, sf[-1]
 __L8477:
@@ -83444,7 +83454,7 @@ __L8480:
 __L8481:
     test    r0
     jump    z, __L8479
-.source "src/gen.c", 3736
+.source "src/gen.c", 3743
     load    r0, sf[0]
     add     r0, 28
     load    r0, r0[0]
@@ -83460,14 +83470,14 @@ __L8481:
     return
 __L8482:
 __L8478:
-.source "src/gen.c", 3735
+.source "src/gen.c", 3742
     load    r1, sf[-1]
     add     r2, r1, 1
     store   r2, sf[-1]
     move    r0, r1
     jump    __L8477
 __L8479:
-.source "src/gen.c", 3737
+.source "src/gen.c", 3744
     move    r0, 0
     return
     move    r0, 0
@@ -83476,8 +83486,8 @@ __L8479:
 
 // check_access
 __F439_check_access:
-.source "src/gen.c", 3740
-.source "src/gen.c", 3741
+.source "src/gen.c", 3747
+.source "src/gen.c", 3748
     load    r0, sf[4]
     push    r0
     load    r0, sf[5]
@@ -83488,7 +83498,7 @@ __F439_check_access:
     jump    z, __L8484
     return
 __L8484:
-.source "src/gen.c", 3742
+.source "src/gen.c", 3749
     load    r0, sf[4]
     move    r1, 43
     cmp     r0, r1
@@ -83518,8 +83528,8 @@ __L8487:
 
 // field_type_check
 __F581_field_type_check:
-.source "src/gen.c", 3752
-.source "src/gen.c", 3753
+.source "src/gen.c", 3759
+.source "src/gen.c", 3760
     load    r0, sf[4]
     load    r0, r0[0]
     move    r1, 1
@@ -83537,7 +83547,7 @@ __F581_field_type_check:
     call    __F344_serr
     add     sp, 3
 __L8488:
-.source "src/gen.c", 3754
+.source "src/gen.c", 3761
     load    r0, sf[4]
     load    r0, r0[0]
     move    r1, 25
@@ -83555,7 +83565,7 @@ __L8488:
     call    __F344_serr
     add     sp, 3
 __L8490:
-.source "src/gen.c", 3755
+.source "src/gen.c", 3762
     load    r0, sf[4]
     push    r0
     call    __F526_contains_auto
@@ -83572,14 +83582,14 @@ __L8490:
     call    __F344_serr
     add     sp, 3
 __L8492:
-.source "src/gen.c", 3756
+.source "src/gen.c", 3763
     load    r0, sf[3]
     push    r0
     load    r0, sf[4]
     push    r0
     call    __F426_require_complete
     add     sp, 2
-.source "src/gen.c", 3757
+.source "src/gen.c", 3764
     load    r0, sf[4]
     return
     move    r0, 0
@@ -83588,8 +83598,8 @@ __L8492:
 
 // add_friend_class
 __F582_add_friend_class:
-.source "src/gen.c", 3760
-.source "src/gen.c", 3761
+.source "src/gen.c", 3767
+.source "src/gen.c", 3768
     load    r0, sf[3]
     add     r0, 30
     push    r0
@@ -83612,7 +83622,7 @@ __F582_add_friend_class:
     add     sp, 2
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 3762
+.source "src/gen.c", 3769
     load    r0, sf[3]
     add     r0, 30
     load    r0, r0[0]
@@ -83636,8 +83646,8 @@ __F582_add_friend_class:
 
 // add_friend_func
 __F583_add_friend_func:
-.source "src/gen.c", 3765
-.source "src/gen.c", 3766
+.source "src/gen.c", 3772
+.source "src/gen.c", 3773
     load    r0, sf[3]
     add     r0, 28
     push    r0
@@ -83660,7 +83670,7 @@ __F583_add_friend_func:
     add     sp, 2
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 3767
+.source "src/gen.c", 3774
     load    r0, sf[3]
     add     r0, 28
     load    r0, r0[0]
@@ -83684,14 +83694,14 @@ __F583_add_friend_func:
 
 // add_field
 __F584_add_field:
-.source "src/gen.c", 3770
+.source "src/gen.c", 3777
     add     sp, -3
-.source "src/gen.c", 3771
+.source "src/gen.c", 3778
     load    r0, sf[3]
     add     r0, 16
     load    r0, r0[0]
     store   r0, sf[0]
-.source "src/gen.c", 3774
+.source "src/gen.c", 3781
     load    r0, sf[4]
     push    r0
     load    r0, sf[0]
@@ -83712,47 +83722,47 @@ __F584_add_field:
     call    __F344_serr
     add     sp, 3
 __L8494:
-.source "src/gen.c", 3775
+.source "src/gen.c", 3782
     move    r0, 7
     push    r0
     call    __F6_anew
     add     sp, 1
     store   r0, sf[-1]
-.source "src/gen.c", 3776
+.source "src/gen.c", 3783
     load    r0, sf[-1]
     push    r0
     load    r0, sf[4]
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 3777
+.source "src/gen.c", 3784
     load    r0, sf[-1]
     add     r0, 1
     push    r0
     load    r0, sf[5]
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 3778
+.source "src/gen.c", 3785
     load    r0, sf[-1]
     add     r0, 2
     push    r0
     load    r0, sf[6]
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 3779
+.source "src/gen.c", 3786
     load    r0, sf[-1]
     add     r0, 3
     push    r0
     load    r0, sf[7]
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 3780
+.source "src/gen.c", 3787
     load    r0, sf[-1]
     add     r0, 4
     push    r0
     load    r0, sf[8]
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 3781
+.source "src/gen.c", 3788
     load    r0, sf[0]
     add     r0, 16
     load    r0, r0[0]
@@ -83768,7 +83778,7 @@ __L8494:
     store   r0, r1[0]
     jump    __L8497
 __L8496:
-.source "src/gen.c", 3782
+.source "src/gen.c", 3789
     load    r0, sf[0]
     add     r0, 15
     push    r0
@@ -83776,14 +83786,14 @@ __L8496:
     pop     r1
     store   r0, r1[0]
 __L8497:
-.source "src/gen.c", 3783
+.source "src/gen.c", 3790
     load    r0, sf[0]
     add     r0, 16
     push    r0
     load    r0, sf[-1]
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 3784
+.source "src/gen.c", 3791
     load    r0, sf[0]
     add     r0, 17
     load    r0, r0[0]
@@ -83797,7 +83807,7 @@ __L8497:
     call    __F309_ent_new
     add     sp, 4
     store   r0, sf[-2]
-.source "src/gen.c", 3785
+.source "src/gen.c", 3792
     move    r0, 512
     push    r0
     load    r0, sf[-2]
@@ -83807,35 +83817,35 @@ __L8497:
     or      r2, r1
     store   r2, r0[0]
     move    r0, r2
-.source "src/gen.c", 3786
+.source "src/gen.c", 3793
     load    r0, sf[-2]
     add     r0, 15
     push    r0
     load    r0, sf[3]
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 3787
+.source "src/gen.c", 3794
     load    r0, sf[-2]
     add     r0, 14
     push    r0
     load    r0, sf[8]
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 3788
+.source "src/gen.c", 3795
     load    r0, sf[-2]
     add     r0, 17
     push    r0
     load    r0, sf[-1]
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 3789
+.source "src/gen.c", 3796
     load    r0, sf[-1]
     add     r0, 6
     push    r0
     load    r0, sf[-2]
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 3790
+.source "src/gen.c", 3797
     load    r0, sf[-2]
     push    r0
     load    r0, sf[0]
@@ -83850,17 +83860,17 @@ __L8497:
 
 // process_class_member
 __F585_process_class_member:
-.source "src/gen.c", 3794
+.source "src/gen.c", 3801
     add     sp, -32
-.source "src/gen.c", 3795
+.source "src/gen.c", 3802
     load    r0, sf[3]
     add     r0, 16
     load    r0, r0[0]
     store   r0, sf[0]
-.source "src/gen.c", 3796
+.source "src/gen.c", 3803
     move    r0, 0
     store   r0, sf[-1]
-.source "src/gen.c", 3799
+.source "src/gen.c", 3806
     load    r0, sf[4]
     load    r0, r0[0]
     cmp     r0, 35
@@ -83876,9 +83886,9 @@ __F585_process_class_member:
     cmp     r0, 27
     jump    eq, __L8504
     jump    __L8505
-.source "src/gen.c", 3800
+.source "src/gen.c", 3807
 __L8499:
-.source "src/gen.c", 3801
+.source "src/gen.c", 3808
     load    r0, sf[5]
     push    r0
     load    r0, sf[4]
@@ -83889,33 +83899,33 @@ __L8499:
     add     sp, 1
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 3802
+.source "src/gen.c", 3809
     return
-.source "src/gen.c", 3803
+.source "src/gen.c", 3810
 __L8500:
-.source "src/gen.c", 3804
+.source "src/gen.c", 3811
 __L8501:
-.source "src/gen.c", 3805
+.source "src/gen.c", 3812
     jump    __L8498
-.source "src/gen.c", 3806
+.source "src/gen.c", 3813
 __L8502:
 __L8503:
-.source "src/gen.c", 3807
+.source "src/gen.c", 3814
     load    r0, sf[5]
     load    r0, r0[0]
     store   r0, __G371_tmpl_access+1
-.source "src/gen.c", 3808
+.source "src/gen.c", 3815
     load    r0, sf[3]
     push    r0
     load    r0, sf[4]
     push    r0
     call    __F376_process_template
     add     sp, 2
-.source "src/gen.c", 3809
+.source "src/gen.c", 3816
     return
-.source "src/gen.c", 3810
+.source "src/gen.c", 3817
 __L8504:
-.source "src/gen.c", 3811
+.source "src/gen.c", 3818
     load    r0, sf[5]
     load    r0, r0[0]
     push    r0
@@ -83929,24 +83939,24 @@ __L8504:
     jump    z, __L8506
     return
 __L8506:
-.source "src/gen.c", 3812
+.source "src/gen.c", 3819
     load    r0, sf[4]
     push    r0
     call    __F567_process_decl
     add     sp, 1
-.source "src/gen.c", 3813
+.source "src/gen.c", 3820
     return
-.source "src/gen.c", 3814
+.source "src/gen.c", 3821
 __L8505:
-.source "src/gen.c", 3815
+.source "src/gen.c", 3822
     load    r0, sf[4]
     push    r0
     call    __F567_process_decl
     add     sp, 1
-.source "src/gen.c", 3816
+.source "src/gen.c", 3823
     return
 __L8498:
-.source "src/gen.c", 3818
+.source "src/gen.c", 3825
     load    r0, sf[4]
     load    r0, r0[0]
     move    r1, 10
@@ -83954,12 +83964,12 @@ __L8498:
     move    eq, r0, 1, 0
     test    r0
     jump    z, __L8508
-.source "src/gen.c", 3819
+.source "src/gen.c", 3826
     move    r0, 0
     store   r0, sf[-4]
     move    r0, 0
     store   r0, sf[-5]
-.source "src/gen.c", 3822
+.source "src/gen.c", 3829
     load    r0, sf[4]
     add     r0, 8
     load    r0, r0[0]
@@ -83984,7 +83994,7 @@ __L8510:
     add     sp, 2
 __L8511:
     store   r0, sf[-2]
-.source "src/gen.c", 3823
+.source "src/gen.c", 3830
     load    r0, sf[4]
     add     r0, 8
     load    r0, r0[0]
@@ -84000,7 +84010,7 @@ __L8511:
     load    r0, r0[0]
     store   r0, sf[-1]
 __L8512:
-.source "src/gen.c", 3824
+.source "src/gen.c", 3831
     add     r0, sf, -5
     push    r0
     add     r0, sf, -4
@@ -84014,7 +84024,7 @@ __L8512:
     call    __F475_apply_declarator
     add     sp, 4
     store   r0, sf[-6]
-.source "src/gen.c", 3825
+.source "src/gen.c", 3832
     load    r0, sf[-4]
     test    r0
     move    z, r0, 1, 0
@@ -84053,25 +84063,25 @@ __L8517:
     call    __F344_serr
     add     sp, 2
 __L8514:
-.source "src/gen.c", 3826
+.source "src/gen.c", 3833
     load    r0, sf[-1]
     move    r1, 64
     and     r0, r1
     test    r0
     jump    z, __L8520
-.source "src/gen.c", 3827
+.source "src/gen.c", 3834
     load    r0, __G301_scope2_cur+1
     store   r0, sf[-8]
-.source "src/gen.c", 3828
+.source "src/gen.c", 3835
     load    r0, sf[0]
     add     r0, 17
     load    r0, r0[0]
     load    r0, r0[0]
     store   r0, __G301_scope2_cur+1
-.source "src/gen.c", 3829
+.source "src/gen.c", 3836
     move    r0, 1
     store   r0, __G369_in_class_def+1
-.source "src/gen.c", 3830
+.source "src/gen.c", 3837
     load    r0, sf[-5]
     push    r0
     load    r0, sf[-1]
@@ -84085,10 +84095,10 @@ __L8514:
     call    __F541_declare_function
     add     sp, 5
     store   r0, sf[-7]
-.source "src/gen.c", 3831
+.source "src/gen.c", 3838
     move    r0, 0
     store   r0, __G369_in_class_def+1
-.source "src/gen.c", 3832
+.source "src/gen.c", 3839
     load    r0, sf[-1]
     push    r0
     load    r0, sf[-5]
@@ -84097,17 +84107,17 @@ __L8514:
     push    r0
     call    __F542_emit_prototype
     add     sp, 3
-.source "src/gen.c", 3833
+.source "src/gen.c", 3840
     load    r0, sf[-8]
     store   r0, __G301_scope2_cur+1
-.source "src/gen.c", 3834
+.source "src/gen.c", 3841
     load    r0, sf[-7]
     push    r0
     load    r0, sf[0]
     push    r0
     call    __F583_add_friend_func
     add     sp, 2
-.source "src/gen.c", 3835
+.source "src/gen.c", 3842
     load    r0, sf[-7]
     add     r0, 8
     load    r0, r0[0]
@@ -84129,33 +84139,33 @@ __L8524:
 __L8525:
     test    r0
     jump    z, __L8522
-.source "src/gen.c", 3837
+.source "src/gen.c", 3844
     move    r0, 5
     push    r0
     call    __F6_anew
     add     sp, 1
     store   r0, sf[-9]
-.source "src/gen.c", 3838
+.source "src/gen.c", 3845
     load    r0, sf[-9]
     push    r0
     load    r0, sf[-7]
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 3839
+.source "src/gen.c", 3846
     load    r0, sf[-9]
     add     r0, 1
     push    r0
     load    r0, sf[4]
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 3840
+.source "src/gen.c", 3847
     load    r0, sf[-9]
     add     r0, 2
     push    r0
     load    r0, sf[-5]
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 3841
+.source "src/gen.c", 3848
     load    r0, sf[-9]
     add     r0, 3
     push    r0
@@ -84164,7 +84174,7 @@ __L8525:
     load    r0, r0[0]
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 3842
+.source "src/gen.c", 3849
     load    r0, __G571_def_tail+1
     test    r0
     jump    z, __L8526
@@ -84176,18 +84186,18 @@ __L8525:
     store   r0, r1[0]
     jump    __L8527
 __L8526:
-.source "src/gen.c", 3843
+.source "src/gen.c", 3850
     load    r0, sf[-9]
     store   r0, __G570_def_head+1
 __L8527:
-.source "src/gen.c", 3844
+.source "src/gen.c", 3851
     load    r0, sf[-9]
     store   r0, __G571_def_tail+1
 __L8522:
-.source "src/gen.c", 3846
+.source "src/gen.c", 3853
     return
 __L8520:
-.source "src/gen.c", 3848
+.source "src/gen.c", 3855
     load    r0, sf[4]
     add     r0, 11
     load    r0, r0[0]
@@ -84195,7 +84205,7 @@ __L8520:
     cmp     r0, r1
     move    ne, r0, 1, 0
     store   r0, __G369_in_class_def+1
-.source "src/gen.c", 3849
+.source "src/gen.c", 3856
     load    r0, sf[-5]
     push    r0
     load    r0, sf[-1]
@@ -84209,10 +84219,10 @@ __L8520:
     call    __F541_declare_function
     add     sp, 5
     store   r0, sf[-7]
-.source "src/gen.c", 3850
+.source "src/gen.c", 3857
     move    r0, 0
     store   r0, __G369_in_class_def+1
-.source "src/gen.c", 3851
+.source "src/gen.c", 3858
     load    r0, sf[-7]
     add     r0, 14
     push    r0
@@ -84220,7 +84230,7 @@ __L8520:
     load    r0, r0[0]
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 3852
+.source "src/gen.c", 3859
     load    r0, sf[-1]
     push    r0
     load    r0, sf[-5]
@@ -84229,7 +84239,7 @@ __L8520:
     push    r0
     call    __F542_emit_prototype
     add     sp, 3
-.source "src/gen.c", 3853
+.source "src/gen.c", 3860
     load    r0, sf[4]
     add     r0, 11
     load    r0, r0[0]
@@ -84239,7 +84249,7 @@ __L8520:
     jump    z, __L8528
     return
 __L8528:
-.source "src/gen.c", 3854
+.source "src/gen.c", 3861
     load    r0, sf[3]
     add     r0, 21
     load    r0, r0[0]
@@ -84261,7 +84271,7 @@ __L8532:
 __L8533:
     test    r0
     jump    z, __L8530
-.source "src/gen.c", 3856
+.source "src/gen.c", 3863
     load    r0, sf[0]
     add     r0, 17
     load    r0, r0[0]
@@ -84278,36 +84288,36 @@ __L8533:
     push    r0
     call    __F384_lazy_set
     add     sp, 5
-.source "src/gen.c", 3857
+.source "src/gen.c", 3864
     return
 __L8530:
-.source "src/gen.c", 3860
+.source "src/gen.c", 3867
     move    r0, 5
     push    r0
     call    __F6_anew
     add     sp, 1
     store   r0, sf[-10]
-.source "src/gen.c", 3861
+.source "src/gen.c", 3868
     load    r0, sf[-10]
     push    r0
     load    r0, sf[-7]
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 3862
+.source "src/gen.c", 3869
     load    r0, sf[-10]
     add     r0, 1
     push    r0
     load    r0, sf[4]
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 3863
+.source "src/gen.c", 3870
     load    r0, sf[-10]
     add     r0, 2
     push    r0
     load    r0, sf[-5]
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 3864
+.source "src/gen.c", 3871
     load    r0, sf[-10]
     add     r0, 3
     push    r0
@@ -84316,7 +84326,7 @@ __L8530:
     load    r0, r0[0]
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 3865
+.source "src/gen.c", 3872
     load    r0, __G571_def_tail+1
     test    r0
     jump    z, __L8534
@@ -84328,17 +84338,17 @@ __L8530:
     store   r0, r1[0]
     jump    __L8535
 __L8534:
-.source "src/gen.c", 3866
+.source "src/gen.c", 3873
     load    r0, sf[-10]
     store   r0, __G570_def_head+1
 __L8535:
-.source "src/gen.c", 3867
+.source "src/gen.c", 3874
     load    r0, sf[-10]
     store   r0, __G571_def_tail+1
-.source "src/gen.c", 3869
+.source "src/gen.c", 3876
     return
 __L8508:
-.source "src/gen.c", 3872
+.source "src/gen.c", 3879
     load    r0, sf[4]
     add     r0, 8
     load    r0, r0[0]
@@ -84347,13 +84357,13 @@ __L8508:
     add     sp, 1
     test    r0
     jump    z, __L8536
-.source "src/gen.c", 3873
+.source "src/gen.c", 3880
     move    r0, 1
     push    r0
     call    __F267_ty_builtin
     add     sp, 1
     store   r0, sf[-2]
-.source "src/gen.c", 3874
+.source "src/gen.c", 3881
     load    r0, sf[4]
     add     r0, 8
     load    r0, r0[0]
@@ -84362,7 +84372,7 @@ __L8508:
     store   r0, sf[-1]
     jump    __L8537
 __L8536:
-.source "src/gen.c", 3875
+.source "src/gen.c", 3882
     load    r0, sf[4]
     add     r0, 8
     load    r0, r0[0]
@@ -84372,16 +84382,16 @@ __L8536:
     and     r0, r1
     test    r0
     jump    z, __L8538
-.source "src/gen.c", 3877
+.source "src/gen.c", 3884
     load    r0, __G301_scope2_cur+1
     store   r0, sf[-11]
-.source "src/gen.c", 3878
+.source "src/gen.c", 3885
     load    r0, sf[0]
     add     r0, 17
     load    r0, r0[0]
     load    r0, r0[0]
     store   r0, __G301_scope2_cur+1
-.source "src/gen.c", 3879
+.source "src/gen.c", 3886
     add     r0, sf, -1
     push    r0
     load    r0, sf[4]
@@ -84391,12 +84401,12 @@ __L8536:
     call    __F468_decl_specs_type
     add     sp, 2
     store   r0, sf[-2]
-.source "src/gen.c", 3880
+.source "src/gen.c", 3887
     load    r0, sf[-11]
     store   r0, __G301_scope2_cur+1
     jump    __L8539
 __L8538:
-.source "src/gen.c", 3881
+.source "src/gen.c", 3888
     add     r0, sf, -1
     push    r0
     load    r0, sf[4]
@@ -84408,13 +84418,13 @@ __L8538:
     store   r0, sf[-2]
 __L8539:
 __L8537:
-.source "src/gen.c", 3882
+.source "src/gen.c", 3889
     load    r0, sf[-1]
     move    r1, 64
     and     r0, r1
     test    r0
     jump    z, __L8540
-.source "src/gen.c", 3883
+.source "src/gen.c", 3890
     load    r0, sf[4]
     add     r0, 9
     load    r0, r0[0]
@@ -84422,7 +84432,7 @@ __L8537:
     move    z, r0, 1, 0
     test    r0
     jump    z, __L8542
-.source "src/gen.c", 3885
+.source "src/gen.c", 3892
     load    r0, sf[4]
     add     r0, 8
     load    r0, r0[0]
@@ -84448,7 +84458,7 @@ __L8546:
 __L8547:
     test    r0
     jump    z, __L8544
-.source "src/gen.c", 3886
+.source "src/gen.c", 3893
     load    r0, sf[4]
     add     r0, 8
     load    r0, r0[0]
@@ -84458,7 +84468,7 @@ __L8547:
     call    __F472_declare_class_node
     add     sp, 1
     store   r0, sf[-12]
-.source "src/gen.c", 3887
+.source "src/gen.c", 3894
     load    r0, sf[-12]
     push    r0
     load    r0, sf[0]
@@ -84467,7 +84477,7 @@ __L8547:
     add     sp, 2
     jump    __L8545
 __L8544:
-.source "src/gen.c", 3888
+.source "src/gen.c", 3895
     load    r0, sf[-2]
     load    r0, r0[0]
     move    r1, 27
@@ -84485,10 +84495,10 @@ __L8544:
     add     sp, 2
 __L8548:
 __L8545:
-.source "src/gen.c", 3889
+.source "src/gen.c", 3896
     return
 __L8542:
-.source "src/gen.c", 3891
+.source "src/gen.c", 3898
     load    r0, sf[4]
     add     r0, 9
     load    r0, r0[0]
@@ -84497,12 +84507,12 @@ __L8550:
     load    r0, sf[-3]
     test    r0
     jump    z, __L8552
-.source "src/gen.c", 3892
+.source "src/gen.c", 3899
     move    r0, 0
     store   r0, sf[-13]
     move    r0, 0
     store   r0, sf[-14]
-.source "src/gen.c", 3893
+.source "src/gen.c", 3900
     add     r0, sf, -14
     push    r0
     add     r0, sf, -13
@@ -84516,10 +84526,10 @@ __L8550:
     call    __F475_apply_declarator
     add     sp, 4
     store   r0, sf[-15]
-.source "src/gen.c", 3894
+.source "src/gen.c", 3901
     load    r0, __G301_scope2_cur+1
     store   r0, sf[-16]
-.source "src/gen.c", 3896
+.source "src/gen.c", 3903
     load    r0, sf[-13]
     test    r0
     move    z, r0, 1, 0
@@ -84546,13 +84556,13 @@ __L8556:
     call    __F344_serr
     add     sp, 2
 __L8553:
-.source "src/gen.c", 3897
+.source "src/gen.c", 3904
     load    r0, sf[0]
     add     r0, 17
     load    r0, r0[0]
     load    r0, r0[0]
     store   r0, __G301_scope2_cur+1
-.source "src/gen.c", 3898
+.source "src/gen.c", 3905
     load    r0, sf[-14]
     push    r0
     load    r0, sf[-1]
@@ -84566,7 +84576,7 @@ __L8553:
     call    __F541_declare_function
     add     sp, 5
     store   r0, sf[-17]
-.source "src/gen.c", 3899
+.source "src/gen.c", 3906
     load    r0, sf[-1]
     push    r0
     load    r0, sf[-14]
@@ -84575,10 +84585,10 @@ __L8553:
     push    r0
     call    __F542_emit_prototype
     add     sp, 3
-.source "src/gen.c", 3900
+.source "src/gen.c", 3907
     load    r0, sf[-16]
     store   r0, __G301_scope2_cur+1
-.source "src/gen.c", 3901
+.source "src/gen.c", 3908
     load    r0, sf[-17]
     push    r0
     load    r0, sf[0]
@@ -84586,17 +84596,17 @@ __L8553:
     call    __F583_add_friend_func
     add     sp, 2
 __L8551:
-.source "src/gen.c", 3891
+.source "src/gen.c", 3898
     load    r0, sf[-3]
     add     r0, 12
     load    r0, r0[0]
     store   r0, sf[-3]
     jump    __L8550
 __L8552:
-.source "src/gen.c", 3903
+.source "src/gen.c", 3910
     return
 __L8540:
-.source "src/gen.c", 3905
+.source "src/gen.c", 3912
     load    r0, sf[4]
     add     r0, 9
     load    r0, r0[0]
@@ -84606,7 +84616,7 @@ __L8540:
     jump    z, __L8557
     return
 __L8557:
-.source "src/gen.c", 3906
+.source "src/gen.c", 3913
     load    r0, sf[4]
     add     r0, 9
     load    r0, r0[0]
@@ -84615,12 +84625,12 @@ __L8559:
     load    r0, sf[-3]
     test    r0
     jump    z, __L8561
-.source "src/gen.c", 3907
+.source "src/gen.c", 3914
     move    r0, 0
     store   r0, sf[-18]
     move    r0, 0
     store   r0, sf[-19]
-.source "src/gen.c", 3910
+.source "src/gen.c", 3917
     add     r0, sf, -19
     push    r0
     add     r0, sf, -18
@@ -84634,7 +84644,7 @@ __L8559:
     call    __F475_apply_declarator
     add     sp, 4
     store   r0, sf[-20]
-.source "src/gen.c", 3911
+.source "src/gen.c", 3918
     load    r0, sf[-18]
     test    r0
     move    z, r0, 1, 0
@@ -84642,19 +84652,19 @@ __L8559:
     jump    z, __L8562
     jump    __L8560
 __L8562:
-.source "src/gen.c", 3912
+.source "src/gen.c", 3919
     load    r0, sf[-18]
     push    r0
     call    __F519_id_last
     add     sp, 1
     store   r0, sf[-21]
-.source "src/gen.c", 3913
+.source "src/gen.c", 3920
     load    r0, sf[-1]
     move    r1, 1
     and     r0, r1
     test    r0
     jump    z, __L8564
-.source "src/gen.c", 3914
+.source "src/gen.c", 3921
     load    r0, sf[-3]
     push    r0
     load    r0, sf[-1]
@@ -84669,10 +84679,10 @@ __L8562:
     push    r0
     call    __F569_declare_one
     add     sp, 5
-.source "src/gen.c", 3915
+.source "src/gen.c", 3922
     jump    __L8560
 __L8564:
-.source "src/gen.c", 3917
+.source "src/gen.c", 3924
     load    r0, sf[-20]
     load    r0, r0[0]
     move    r1, 25
@@ -84680,7 +84690,7 @@ __L8564:
     move    eq, r0, 1, 0
     test    r0
     jump    z, __L8566
-.source "src/gen.c", 3918
+.source "src/gen.c", 3925
     load    r0, sf[-19]
     push    r0
     load    r0, sf[-1]
@@ -84694,7 +84704,7 @@ __L8564:
     call    __F541_declare_function
     add     sp, 5
     store   r0, sf[-22]
-.source "src/gen.c", 3919
+.source "src/gen.c", 3926
     load    r0, sf[-22]
     add     r0, 14
     push    r0
@@ -84702,7 +84712,7 @@ __L8564:
     load    r0, r0[0]
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 3920
+.source "src/gen.c", 3927
     load    r0, sf[-1]
     push    r0
     load    r0, sf[-19]
@@ -84711,10 +84721,10 @@ __L8564:
     push    r0
     call    __F542_emit_prototype
     add     sp, 3
-.source "src/gen.c", 3921
+.source "src/gen.c", 3928
     jump    __L8560
 __L8566:
-.source "src/gen.c", 3923
+.source "src/gen.c", 3930
     load    r0, sf[-21]
     add     r0, 4
     load    r0, r0[0]
@@ -84732,7 +84742,7 @@ __L8566:
     call    __F344_serr
     add     sp, 2
 __L8568:
-.source "src/gen.c", 3924
+.source "src/gen.c", 3931
     load    r0, sf[-3]
     add     r0, 10
     load    r0, r0[0]
@@ -84745,21 +84755,21 @@ __L8568:
     call    __F344_serr
     add     sp, 2
 __L8570:
-.source "src/gen.c", 3925
+.source "src/gen.c", 3932
     load    r0, sf[-1]
     move    r1, 2
     and     r0, r1
     test    r0
     jump    z, __L8572
-.source "src/gen.c", 3928
+.source "src/gen.c", 3935
     load    r0, sf[-3]
     add     r0, 9
     load    r0, r0[0]
     store   r0, sf[-25]
-.source "src/gen.c", 3929
+.source "src/gen.c", 3936
     move    r0, 0
     store   r0, sf[-26]
-.source "src/gen.c", 3930
+.source "src/gen.c", 3937
     load    r0, sf[0]
     add     r0, 17
     load    r0, r0[0]
@@ -84770,7 +84780,7 @@ __L8570:
     jump    z, __L8574
     jump    __L8561
 __L8574:
-.source "src/gen.c", 3931
+.source "src/gen.c", 3938
     load    r0, sf[-21]
     add     r0, 6
     load    r0, r0[0]
@@ -84795,7 +84805,7 @@ __L8574:
     call    __F344_serr
     add     sp, 3
 __L8576:
-.source "src/gen.c", 3932
+.source "src/gen.c", 3939
     load    r0, sf[-1]
     move    r1, 128
     and     r0, r1
@@ -84824,7 +84834,7 @@ __L8581:
     add     sp, 2
     store   r0, sf[-20]
 __L8578:
-.source "src/gen.c", 3933
+.source "src/gen.c", 3940
     load    r0, sf[-21]
     add     r0, 6
     load    r0, r0[0]
@@ -84841,7 +84851,7 @@ __L8578:
     call    __F347_fmt_str
     add     sp, 3
     store   r0, sf[-24]
-.source "src/gen.c", 3934
+.source "src/gen.c", 3941
     load    r0, sf[0]
     add     r0, 17
     load    r0, r0[0]
@@ -84857,14 +84867,14 @@ __L8578:
     call    __F309_ent_new
     add     sp, 4
     store   r0, sf[-23]
-.source "src/gen.c", 3935
+.source "src/gen.c", 3942
     load    r0, sf[-23]
     add     r0, 3
     push    r0
     load    r0, sf[-24]
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 3936
+.source "src/gen.c", 3943
     move    r0, 512
     move    r1, 2
     or      r0, r1
@@ -84876,14 +84886,14 @@ __L8578:
     or      r2, r1
     store   r2, r0[0]
     move    r0, r2
-.source "src/gen.c", 3937
+.source "src/gen.c", 3944
     load    r0, sf[-23]
     add     r0, 15
     push    r0
     load    r0, sf[3]
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 3938
+.source "src/gen.c", 3945
     load    r0, sf[-23]
     add     r0, 14
     push    r0
@@ -84891,7 +84901,7 @@ __L8578:
     load    r0, r0[0]
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 3939
+.source "src/gen.c", 3946
     load    r0, sf[-23]
     push    r0
     load    r0, sf[0]
@@ -84900,14 +84910,14 @@ __L8578:
     push    r0
     call    __F518_scope_add
     add     sp, 2
-.source "src/gen.c", 3940
+.source "src/gen.c", 3947
     load    r0, sf[-25]
     test    r0
     jump    z, __L8582
-.source "src/gen.c", 3941
+.source "src/gen.c", 3948
     move    r0, 1
     store   r0, sf[-27]
-.source "src/gen.c", 3943
+.source "src/gen.c", 3950
     load    r0, sf[-25]
     load    r0, r0[0]
     move    r1, 88
@@ -84951,7 +84961,7 @@ __L8584:
     load    r0, sf[-25]
 __L8585:
     store   r0, sf[-29]
-.source "src/gen.c", 3944
+.source "src/gen.c", 3951
     load    r0, sf[-20]
     load    r0, r0[0]
     move    r1, 27
@@ -84966,7 +84976,7 @@ __L8585:
     call    __F344_serr
     add     sp, 2
 __L8590:
-.source "src/gen.c", 3945
+.source "src/gen.c", 3952
     add     r0, sf, -27
     push    r0
     load    r0, sf[4]
@@ -84980,7 +84990,7 @@ __L8590:
     call    __F528_init_text
     add     sp, 5
     store   r0, sf[-28]
-.source "src/gen.c", 3946
+.source "src/gen.c", 3953
     load    r0, sf[-29]
     load    r0, r0[0]
     move    r1, 88
@@ -85008,7 +85018,7 @@ __L8595:
     add     sp, 1
     store   r0, sf[-26]
 __L8592:
-.source "src/gen.c", 3947
+.source "src/gen.c", 3954
     load    r0, sf[-26]
     test    r0
     jump    z, __L8598
@@ -85027,14 +85037,14 @@ __L8598:
 __L8599:
     test    r0
     jump    z, __L8596
-.source "src/gen.c", 3948
+.source "src/gen.c", 3955
     load    r0, sf[-23]
     add     r0, 6
     push    r0
     move    r0, 1
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 3949
+.source "src/gen.c", 3956
     load    r0, sf[-23]
     add     r0, 7
     push    r0
@@ -85044,7 +85054,7 @@ __L8599:
     pop     r1
     store   r0, r1[0]
 __L8596:
-.source "src/gen.c", 3951
+.source "src/gen.c", 3958
     load    r0, sf[-27]
     test    r0
     move    z, r0, 1, 0
@@ -85062,7 +85072,7 @@ __L8596:
     call    __F344_serr
     add     sp, 3
 __L8600:
-.source "src/gen.c", 3952
+.source "src/gen.c", 3959
     move    r0, 1
     push    r0
     load    r0, sf[-23]
@@ -85072,12 +85082,12 @@ __L8600:
     or      r2, r1
     store   r2, r0[0]
     move    r0, r2
-.source "src/gen.c", 3953
+.source "src/gen.c", 3960
     load    r0, sf[4]
     push    r0
     call    __F460_emit_line
     add     sp, 1
-.source "src/gen.c", 3954
+.source "src/gen.c", 3961
     load    r0, sf[-28]
     push    r0
     load    r0, sf[-24]
@@ -85093,13 +85103,13 @@ __L8600:
     add     sp, 3
     jump    __L8583
 __L8582:
-.source "src/gen.c", 3955
+.source "src/gen.c", 3962
     load    r0, sf[3]
     add     r0, 21
     load    r0, r0[0]
     test    r0
     jump    z, __L8602
-.source "src/gen.c", 3956
+.source "src/gen.c", 3963
     load    r0, sf[-24]
     push    r0
     load    r0, sf[-20]
@@ -85128,7 +85138,7 @@ __L8605:
     add     sp, 2
     jump    __L8603
 __L8602:
-.source "src/gen.c", 3958
+.source "src/gen.c", 3965
     load    r0, sf[-24]
     push    r0
     load    r0, sf[-20]
@@ -85157,22 +85167,22 @@ __L8607:
     add     sp, 2
 __L8603:
 __L8583:
-.source "src/gen.c", 3960
+.source "src/gen.c", 3967
     jump    __L8560
 __L8572:
-.source "src/gen.c", 3963
+.source "src/gen.c", 3970
     load    r0, sf[-3]
     add     r0, 9
     load    r0, r0[0]
     store   r0, sf[-30]
-.source "src/gen.c", 3964
+.source "src/gen.c", 3971
     load    r0, sf[-3]
     add     r0, 4
     load    r0, r0[0]
     move    r1, 3
     and     r0, r1
     store   r0, sf[-31]
-.source "src/gen.c", 3965
+.source "src/gen.c", 3972
     load    r0, sf[-21]
     add     r0, 6
     load    r0, r0[0]
@@ -85184,7 +85194,7 @@ __L8572:
     call    __F581_field_type_check
     add     sp, 3
     store   r0, sf[-20]
-.source "src/gen.c", 3966
+.source "src/gen.c", 3973
     load    r0, sf[-30]
     test    r0
     jump    z, __L8612
@@ -85218,7 +85228,7 @@ __L8611:
     move    r0, 1
     store   r0, sf[-31]
 __L8608:
-.source "src/gen.c", 3967
+.source "src/gen.c", 3974
     load    r0, sf[4]
     push    r0
     load    r0, sf[5]
@@ -85239,7 +85249,7 @@ __L8608:
     call    __F584_add_field
     add     sp, 7
 __L8560:
-.source "src/gen.c", 3906
+.source "src/gen.c", 3913
     load    r0, sf[-3]
     add     r0, 12
     load    r0, r0[0]
@@ -85252,8 +85262,8 @@ __L8561:
 
 // is_copy_param
 __F586_is_copy_param:
-.source "src/gen.c", 3974
-.source "src/gen.c", 3975
+.source "src/gen.c", 3981
+.source "src/gen.c", 3982
     load    r0, sf[4]
     load    r0, r0[0]
     move    r1, 22
@@ -85264,7 +85274,7 @@ __F586_is_copy_param:
     move    r0, 0
     return
 __L8614:
-.source "src/gen.c", 3976
+.source "src/gen.c", 3983
     load    r0, sf[4]
     add     r0, 2
     load    r0, r0[0]
@@ -85296,8 +85306,8 @@ __L8617:
 
 // is_move_param
 __F587_is_move_param:
-.source "src/gen.c", 3979
-.source "src/gen.c", 3980
+.source "src/gen.c", 3986
+.source "src/gen.c", 3987
     load    r0, sf[4]
     load    r0, r0[0]
     move    r1, 23
@@ -85308,7 +85318,7 @@ __F587_is_move_param:
     move    r0, 0
     return
 __L8618:
-.source "src/gen.c", 3981
+.source "src/gen.c", 3988
     load    r0, sf[4]
     add     r0, 2
     load    r0, r0[0]
@@ -85340,14 +85350,14 @@ __L8621:
 
 // class_copy_deleted
 __F588_class_copy_deleted:
-.source "src/gen.c", 3985
+.source "src/gen.c", 3992
     add     sp, -3
-.source "src/gen.c", 3986
+.source "src/gen.c", 3993
     load    r0, sf[3]
     add     r0, 16
     load    r0, r0[0]
     store   r0, sf[0]
-.source "src/gen.c", 3988
+.source "src/gen.c", 3995
     load    r0, sf[0]
     test    r0
     move    z, r0, 1, 0
@@ -85356,7 +85366,7 @@ __F588_class_copy_deleted:
     move    r0, 0
     return
 __L8622:
-.source "src/gen.c", 3989
+.source "src/gen.c", 3996
     load    r0, sf[4]
     test    r0
     jump    z, __L8626
@@ -85374,7 +85384,7 @@ __L8627:
     move    r0, 1
     return
 __L8624:
-.source "src/gen.c", 3990
+.source "src/gen.c", 3997
     load    r0, sf[4]
     test    r0
     jump    z, __L8628
@@ -85394,14 +85404,14 @@ __L8629:
     call    __F303_sfind
     add     sp, 2
     store   r0, sf[-2]
-.source "src/gen.c", 3991
+.source "src/gen.c", 3998
     load    r0, sf[-2]
     store   r0, sf[-1]
 __L8630:
     load    r0, sf[-1]
     test    r0
     jump    z, __L8632
-.source "src/gen.c", 3992
+.source "src/gen.c", 3999
     load    r0, sf[-1]
     add     r0, 8
     load    r0, r0[0]
@@ -85452,14 +85462,14 @@ __L8636:
     return
 __L8633:
 __L8631:
-.source "src/gen.c", 3991
+.source "src/gen.c", 3998
     load    r0, sf[-1]
     add     r0, 10
     load    r0, r0[0]
     store   r0, sf[-1]
     jump    __L8630
 __L8632:
-.source "src/gen.c", 3993
+.source "src/gen.c", 4000
     move    r0, 0
     return
     move    r0, 0
@@ -85468,14 +85478,14 @@ __L8632:
 
 // compute_traits
 __F589_compute_traits:
-.source "src/gen.c", 3996
+.source "src/gen.c", 4003
     add     sp, -14
-.source "src/gen.c", 3997
+.source "src/gen.c", 4004
     load    r0, sf[3]
     add     r0, 16
     load    r0, r0[0]
     store   r0, sf[0]
-.source "src/gen.c", 4000
+.source "src/gen.c", 4007
     move    r0, 0
     store   r0, sf[-4]
     move    r0, 0
@@ -85486,14 +85496,14 @@ __F589_compute_traits:
     store   r0, sf[-7]
     move    r0, 1
     store   r0, sf[-8]
-.source "src/gen.c", 4001
+.source "src/gen.c", 4008
     load    r0, sf[0]
     add     r0, 20
     push    r0
     move    r0, 0
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 4002
+.source "src/gen.c", 4009
     load    r0, __G348_nm_ctor+1
     push    r0
     load    r0, sf[0]
@@ -85503,21 +85513,21 @@ __F589_compute_traits:
     call    __F303_sfind
     add     sp, 2
     store   r0, sf[-2]
-.source "src/gen.c", 4003
+.source "src/gen.c", 4010
     load    r0, sf[-2]
     store   r0, sf[-1]
 __L8639:
     load    r0, sf[-1]
     test    r0
     jump    z, __L8641
-.source "src/gen.c", 4004
+.source "src/gen.c", 4011
     load    r0, sf[0]
     add     r0, 20
     push    r0
     move    r0, 1
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 4005
+.source "src/gen.c", 4012
     move    r0, 1
     push    r0
     load    r0, sf[-1]
@@ -85586,7 +85596,7 @@ __L8645:
     pop     r1
     store   r0, r1[0]
 __L8642:
-.source "src/gen.c", 4006
+.source "src/gen.c", 4013
     move    r0, 1
     push    r0
     load    r0, sf[-1]
@@ -85664,7 +85674,7 @@ __L8654:
 __L8655:
     test    r0
     jump    z, __L8652
-.source "src/gen.c", 4007
+.source "src/gen.c", 4014
     load    r0, sf[0]
     add     r0, 22
     push    r0
@@ -85672,7 +85682,7 @@ __L8655:
     pop     r1
     store   r0, r1[0]
 __L8652:
-.source "src/gen.c", 4008
+.source "src/gen.c", 4015
     move    r0, 1
     push    r0
     load    r0, sf[-1]
@@ -85750,7 +85760,7 @@ __L8666:
 __L8667:
     test    r0
     jump    z, __L8664
-.source "src/gen.c", 4009
+.source "src/gen.c", 4016
     load    r0, sf[0]
     add     r0, 38
     push    r0
@@ -85759,14 +85769,14 @@ __L8667:
     store   r0, r1[0]
 __L8664:
 __L8640:
-.source "src/gen.c", 4003
+.source "src/gen.c", 4010
     load    r0, sf[-1]
     add     r0, 10
     load    r0, r0[0]
     store   r0, sf[-1]
     jump    __L8639
 __L8641:
-.source "src/gen.c", 4011
+.source "src/gen.c", 4018
     move    r0, __W1086+1
     push    r0
     call    __F29_intern_str
@@ -85779,14 +85789,14 @@ __L8641:
     call    __F303_sfind
     add     sp, 2
     store   r0, sf[-2]
-.source "src/gen.c", 4012
+.source "src/gen.c", 4019
     load    r0, sf[-2]
     store   r0, sf[-1]
 __L8676:
     load    r0, sf[-1]
     test    r0
     jump    z, __L8678
-.source "src/gen.c", 4013
+.source "src/gen.c", 4020
     load    r0, sf[-1]
     add     r0, 2
     load    r0, r0[0]
@@ -85878,7 +85888,7 @@ __L8681:
 __L8682:
     test    r0
     jump    z, __L8679
-.source "src/gen.c", 4015
+.source "src/gen.c", 4022
     load    r0, sf[0]
     add     r0, 23
     push    r0
@@ -85886,7 +85896,7 @@ __L8682:
     pop     r1
     store   r0, r1[0]
 __L8679:
-.source "src/gen.c", 4016
+.source "src/gen.c", 4023
     load    r0, sf[-1]
     add     r0, 2
     load    r0, r0[0]
@@ -85969,7 +85979,7 @@ __L8692:
     pop     r1
     store   r0, r1[0]
 __L8689:
-.source "src/gen.c", 4017
+.source "src/gen.c", 4024
     load    r0, sf[-1]
     add     r0, 2
     load    r0, r0[0]
@@ -86026,14 +86036,14 @@ __L8700:
     store   r0, r1[0]
 __L8697:
 __L8677:
-.source "src/gen.c", 4012
+.source "src/gen.c", 4019
     load    r0, sf[-1]
     add     r0, 10
     load    r0, r0[0]
     store   r0, sf[-1]
     jump    __L8676
 __L8678:
-.source "src/gen.c", 4019
+.source "src/gen.c", 4026
     load    r0, sf[0]
     add     r0, 19
     push    r0
@@ -86047,7 +86057,7 @@ __L8678:
     add     sp, 2
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 4020
+.source "src/gen.c", 4027
     load    r0, sf[0]
     add     r0, 19
     load    r0, r0[0]
@@ -86078,7 +86088,7 @@ __L8706:
     pop     r1
     store   r0, r1[0]
 __L8703:
-.source "src/gen.c", 4021
+.source "src/gen.c", 4028
     load    r0, sf[0]
     add     r0, 15
     load    r0, r0[0]
@@ -86087,7 +86097,7 @@ __L8707:
     load    r0, sf[-3]
     test    r0
     jump    z, __L8709
-.source "src/gen.c", 4022
+.source "src/gen.c", 4029
     load    r0, sf[-3]
     add     r0, 1
     load    r0, r0[0]
@@ -86095,7 +86105,7 @@ __L8707:
     call    __F437_strip_arrays
     add     sp, 1
     store   r0, sf[-9]
-.source "src/gen.c", 4023
+.source "src/gen.c", 4030
     load    r0, sf[-9]
     push    r0
     call    __F446_type_needs_dtor
@@ -86105,7 +86115,7 @@ __L8707:
     move    r0, 1
     store   r0, sf[-4]
 __L8710:
-.source "src/gen.c", 4024
+.source "src/gen.c", 4031
     load    r0, sf[-9]
     push    r0
     call    __F447_type_nontrivial_copy
@@ -86115,7 +86125,7 @@ __L8710:
     move    r0, 1
     store   r0, sf[-5]
 __L8712:
-.source "src/gen.c", 4025
+.source "src/gen.c", 4032
     load    r0, sf[-9]
     push    r0
     call    __F425_type_needs_ctor
@@ -86125,7 +86135,7 @@ __L8712:
     move    r0, 1
     store   r0, sf[-6]
 __L8714:
-.source "src/gen.c", 4026
+.source "src/gen.c", 4033
     load    r0, sf[-3]
     add     r0, 2
     load    r0, r0[0]
@@ -86134,7 +86144,7 @@ __L8714:
     move    r0, 1
     store   r0, sf[-7]
 __L8716:
-.source "src/gen.c", 4027
+.source "src/gen.c", 4034
     load    r0, sf[-3]
     add     r0, 4
     load    r0, r0[0]
@@ -86162,14 +86172,14 @@ __L8721:
     store   r0, sf[-8]
 __L8718:
 __L8708:
-.source "src/gen.c", 4021
+.source "src/gen.c", 4028
     load    r0, sf[-3]
     add     r0, 5
     load    r0, r0[0]
     store   r0, sf[-3]
     jump    __L8707
 __L8709:
-.source "src/gen.c", 4031
+.source "src/gen.c", 4038
     move    r0, 0
     store   r0, sf[-10]
 __L8722:
@@ -86189,7 +86199,7 @@ __L8725:
 __L8726:
     test    r0
     jump    z, __L8724
-.source "src/gen.c", 4032
+.source "src/gen.c", 4039
     load    r0, sf[0]
     load    r0, r0[0]
     push    r0
@@ -86203,7 +86213,7 @@ __L8726:
     add     r0, 16
     load    r0, r0[0]
     store   r0, sf[-11]
-.source "src/gen.c", 4033
+.source "src/gen.c", 4040
     load    r0, sf[-11]
     add     r0, 25
     load    r0, r0[0]
@@ -86212,7 +86222,7 @@ __L8726:
     move    r0, 1
     store   r0, sf[-4]
 __L8727:
-.source "src/gen.c", 4034
+.source "src/gen.c", 4041
     load    r0, sf[-11]
     add     r0, 26
     load    r0, r0[0]
@@ -86221,7 +86231,7 @@ __L8727:
     move    r0, 1
     store   r0, sf[-5]
 __L8729:
-.source "src/gen.c", 4035
+.source "src/gen.c", 4042
     load    r0, sf[-11]
     add     r0, 24
     load    r0, r0[0]
@@ -86231,14 +86241,14 @@ __L8729:
     store   r0, sf[-6]
 __L8731:
 __L8723:
-.source "src/gen.c", 4031
+.source "src/gen.c", 4038
     load    r1, sf[-10]
     add     r2, r1, 1
     store   r2, sf[-10]
     move    r0, r1
     jump    __L8722
 __L8724:
-.source "src/gen.c", 4038
+.source "src/gen.c", 4045
     load    r0, sf[0]
     add     r0, 2
     load    r0, r0[0]
@@ -86248,7 +86258,7 @@ __L8724:
     store   r0, sf[-5]
     store   r0, sf[-6]
 __L8733:
-.source "src/gen.c", 4040
+.source "src/gen.c", 4047
     load    r0, sf[0]
     add     r0, 38
     load    r0, r0[0]
@@ -86287,7 +86297,7 @@ __L8738:
     pop     r1
     store   r0, r1[0]
 __L8735:
-.source "src/gen.c", 4041
+.source "src/gen.c", 4048
     load    r0, sf[0]
     add     r0, 38
     load    r0, r0[0]
@@ -86326,7 +86336,7 @@ __L8744:
     pop     r1
     store   r0, r1[0]
 __L8741:
-.source "src/gen.c", 4042
+.source "src/gen.c", 4049
     load    r0, sf[0]
     add     r0, 15
     load    r0, r0[0]
@@ -86335,7 +86345,7 @@ __L8747:
     load    r0, sf[-3]
     test    r0
     jump    z, __L8749
-.source "src/gen.c", 4043
+.source "src/gen.c", 4050
     load    r0, sf[-3]
     add     r0, 1
     load    r0, r0[0]
@@ -86343,7 +86353,7 @@ __L8747:
     call    __F437_strip_arrays
     add     sp, 1
     store   r0, sf[-12]
-.source "src/gen.c", 4044
+.source "src/gen.c", 4051
     load    r0, sf[-12]
     load    r0, r0[0]
     move    r1, 27
@@ -86389,7 +86399,7 @@ __L8753:
     pop     r1
     store   r0, r1[0]
 __L8750:
-.source "src/gen.c", 4045
+.source "src/gen.c", 4052
     load    r0, sf[-12]
     load    r0, r0[0]
     move    r1, 27
@@ -86436,14 +86446,14 @@ __L8759:
     store   r0, r1[0]
 __L8756:
 __L8748:
-.source "src/gen.c", 4042
+.source "src/gen.c", 4049
     load    r0, sf[-3]
     add     r0, 5
     load    r0, r0[0]
     store   r0, sf[-3]
     jump    __L8747
 __L8749:
-.source "src/gen.c", 4049
+.source "src/gen.c", 4056
     move    r0, 0
     store   r0, sf[-13]
 __L8762:
@@ -86463,7 +86473,7 @@ __L8765:
 __L8766:
     test    r0
     jump    z, __L8764
-.source "src/gen.c", 4050
+.source "src/gen.c", 4057
     move    r0, 0
     push    r0
     load    r0, sf[0]
@@ -86502,7 +86512,7 @@ __L8770:
     pop     r1
     store   r0, r1[0]
 __L8767:
-.source "src/gen.c", 4051
+.source "src/gen.c", 4058
     move    r0, 1
     push    r0
     load    r0, sf[0]
@@ -86542,14 +86552,14 @@ __L8774:
     store   r0, r1[0]
 __L8771:
 __L8763:
-.source "src/gen.c", 4049
+.source "src/gen.c", 4056
     load    r1, sf[-13]
     add     r2, r1, 1
     store   r2, sf[-13]
     move    r0, r1
     jump    __L8762
 __L8764:
-.source "src/gen.c", 4054
+.source "src/gen.c", 4061
     load    r0, sf[0]
     add     r0, 15
     load    r0, r0[0]
@@ -86558,7 +86568,7 @@ __L8775:
     load    r0, sf[-3]
     test    r0
     jump    z, __L8777
-.source "src/gen.c", 4055
+.source "src/gen.c", 4062
     load    r0, sf[-3]
     add     r0, 1
     load    r0, r0[0]
@@ -86608,14 +86618,14 @@ __L8781:
     store   r0, r1[0]
 __L8778:
 __L8776:
-.source "src/gen.c", 4054
+.source "src/gen.c", 4061
     load    r0, sf[-3]
     add     r0, 5
     load    r0, r0[0]
     store   r0, sf[-3]
     jump    __L8775
 __L8777:
-.source "src/gen.c", 4056
+.source "src/gen.c", 4063
     load    r0, sf[0]
     add     r0, 25
     push    r0
@@ -86649,7 +86659,7 @@ __L8784:
 __L8785:
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 4057
+.source "src/gen.c", 4064
     load    r0, sf[0]
     add     r0, 26
     push    r0
@@ -86704,7 +86714,7 @@ __L8788:
 __L8789:
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 4058
+.source "src/gen.c", 4065
     load    r0, sf[0]
     add     r0, 24
     push    r0
@@ -86733,7 +86743,7 @@ __L8796:
 __L8797:
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 4059
+.source "src/gen.c", 4066
     load    r0, sf[0]
     add     r0, 27
     push    r0
@@ -86789,9 +86799,9 @@ __L8801:
 
 // implicit_ent
 __F590_implicit_ent:
-.source "src/gen.c", 4063
+.source "src/gen.c", 4070
     add     sp, -1
-.source "src/gen.c", 4064
+.source "src/gen.c", 4071
     load    r0, sf[3]
     add     r0, 16
     load    r0, r0[0]
@@ -86807,7 +86817,7 @@ __F590_implicit_ent:
     call    __F309_ent_new
     add     sp, 4
     store   r0, sf[0]
-.source "src/gen.c", 4065
+.source "src/gen.c", 4072
     move    r0, 512
     move    r1, 524288
     or      r0, r1
@@ -86823,28 +86833,28 @@ __F590_implicit_ent:
     or      r2, r1
     store   r2, r0[0]
     move    r0, r2
-.source "src/gen.c", 4066
+.source "src/gen.c", 4073
     load    r0, sf[0]
     add     r0, 15
     push    r0
     load    r0, sf[3]
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 4067
+.source "src/gen.c", 4074
     load    r0, sf[0]
     add     r0, 3
     push    r0
     load    r0, sf[6]
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 4068
+.source "src/gen.c", 4075
     load    r0, sf[0]
     add     r0, 14
     push    r0
     move    r0, 45
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 4069
+.source "src/gen.c", 4076
     load    r0, sf[0]
     add     r0, 9
     push    r0
@@ -86863,7 +86873,7 @@ __F590_implicit_ent:
     add     sp, 1
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 4070
+.source "src/gen.c", 4077
     load    r0, sf[0]
     return
     move    r0, 0
@@ -86872,19 +86882,19 @@ __F590_implicit_ent:
 
 // make_implicit_members
 __F591_make_implicit_members:
-.source "src/gen.c", 4074
+.source "src/gen.c", 4081
     add     sp, -16
-.source "src/gen.c", 4075
+.source "src/gen.c", 4082
     load    r0, sf[3]
     add     r0, 16
     load    r0, r0[0]
     store   r0, sf[0]
-.source "src/gen.c", 4076
+.source "src/gen.c", 4083
     load    r0, sf[3]
     add     r0, 2
     load    r0, r0[0]
     store   r0, sf[-1]
-.source "src/gen.c", 4077
+.source "src/gen.c", 4084
     move    r0, 1
     push    r0
     load    r0, sf[-1]
@@ -86895,10 +86905,10 @@ __F591_make_implicit_members:
     call    __F270_ty_ref
     add     sp, 1
     store   r0, sf[-2]
-.source "src/gen.c", 4080
+.source "src/gen.c", 4087
     move    r0, 0
     store   r0, sf[-5]
-.source "src/gen.c", 4083
+.source "src/gen.c", 4090
     load    r0, __G348_nm_ctor+1
     push    r0
     load    r0, sf[0]
@@ -86908,12 +86918,12 @@ __F591_make_implicit_members:
     call    __F303_sfind
     add     sp, 2
     store   r0, sf[-6]
-.source "src/gen.c", 4084
+.source "src/gen.c", 4091
 __L8806:
     load    r0, sf[-6]
     test    r0
     jump    z, __L8808
-.source "src/gen.c", 4085
+.source "src/gen.c", 4092
     load    r0, sf[-6]
     add     r0, 8
     load    r0, r0[0]
@@ -86925,7 +86935,7 @@ __L8806:
     jump    z, __L8809
     jump    __L8807
 __L8809:
-.source "src/gen.c", 4086
+.source "src/gen.c", 4093
     load    r0, sf[-6]
     add     r0, 2
     load    r0, r0[0]
@@ -86944,7 +86954,7 @@ __L8809:
     store   r0, r1[0]
     jump    __L8812
 __L8811:
-.source "src/gen.c", 4087
+.source "src/gen.c", 4094
     load    r0, sf[-6]
     add     r0, 2
     load    r0, r0[0]
@@ -86985,7 +86995,7 @@ __L8816:
     store   r0, r1[0]
     jump    __L8814
 __L8813:
-.source "src/gen.c", 4088
+.source "src/gen.c", 4095
     load    r0, sf[-6]
     add     r0, 2
     load    r0, r0[0]
@@ -87028,14 +87038,14 @@ __L8817:
 __L8814:
 __L8812:
 __L8807:
-.source "src/gen.c", 4084
+.source "src/gen.c", 4091
     load    r0, sf[-6]
     add     r0, 10
     load    r0, r0[0]
     store   r0, sf[-6]
     jump    __L8806
 __L8808:
-.source "src/gen.c", 4090
+.source "src/gen.c", 4097
     load    r0, sf[0]
     add     r0, 20
     load    r0, r0[0]
@@ -87069,7 +87079,7 @@ __L8823:
 __L8824:
     test    r0
     jump    z, __L8821
-.source "src/gen.c", 4091
+.source "src/gen.c", 4098
     load    r0, sf[0]
     add     r0, 34
     push    r0
@@ -87107,7 +87117,7 @@ __L8824:
     pop     r1
     store   r0, r1[0]
 __L8821:
-.source "src/gen.c", 4093
+.source "src/gen.c", 4100
     load    r0, sf[0]
     add     r0, 26
     load    r0, r0[0]
@@ -87155,7 +87165,7 @@ __L8829:
 __L8830:
     test    r0
     jump    z, __L8827
-.source "src/gen.c", 4094
+.source "src/gen.c", 4101
     move    r0, 1
     push    r0
     move    r0, 2
@@ -87166,7 +87176,7 @@ __L8830:
     call    __F6_anew
     add     sp, 1
     store   r0, sf[-3]
-.source "src/gen.c", 4095
+.source "src/gen.c", 4102
     load    r0, sf[-3]
     move    r1, 0
     add     r0, r1
@@ -87174,7 +87184,7 @@ __L8830:
     load    r0, sf[-2]
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 4096
+.source "src/gen.c", 4103
     load    r0, sf[0]
     add     r0, 35
     push    r0
@@ -87212,12 +87222,12 @@ __L8830:
     pop     r1
     store   r0, r1[0]
 __L8827:
-.source "src/gen.c", 4100
+.source "src/gen.c", 4107
     move    r0, 0
     store   r0, sf[-7]
     move    r0, 0
     store   r0, sf[-8]
-.source "src/gen.c", 4101
+.source "src/gen.c", 4108
     load    r0, sf[0]
     add     r0, 22
     load    r0, r0[0]
@@ -87270,7 +87280,7 @@ __L8835:
     move    r0, 1
 __L8836:
     store   r0, sf[-10]
-.source "src/gen.c", 4102
+.source "src/gen.c", 4109
     load    r0, sf[0]
     add     r0, 15
     load    r0, r0[0]
@@ -87279,7 +87289,7 @@ __L8843:
     load    r0, sf[-4]
     test    r0
     jump    z, __L8845
-.source "src/gen.c", 4103
+.source "src/gen.c", 4110
     load    r0, sf[-4]
     add     r0, 1
     load    r0, r0[0]
@@ -87287,7 +87297,7 @@ __L8843:
     call    __F437_strip_arrays
     add     sp, 1
     store   r0, sf[-11]
-.source "src/gen.c", 4104
+.source "src/gen.c", 4111
     load    r0, sf[-11]
     load    r0, r0[0]
     move    r1, 27
@@ -87309,7 +87319,7 @@ __L8848:
 __L8849:
     test    r0
     jump    z, __L8846
-.source "src/gen.c", 4105
+.source "src/gen.c", 4112
     load    r0, sf[-11]
     add     r0, 7
     load    r0, r0[0]
@@ -87338,7 +87348,7 @@ __L8853:
     move    r0, 1
     store   r0, sf[-7]
 __L8850:
-.source "src/gen.c", 4106
+.source "src/gen.c", 4113
     load    r0, sf[-11]
     add     r0, 7
     load    r0, r0[0]
@@ -87369,14 +87379,14 @@ __L8857:
 __L8854:
 __L8846:
 __L8844:
-.source "src/gen.c", 4102
+.source "src/gen.c", 4109
     load    r0, sf[-4]
     add     r0, 5
     load    r0, r0[0]
     store   r0, sf[-4]
     jump    __L8843
 __L8845:
-.source "src/gen.c", 4109
+.source "src/gen.c", 4116
     move    r0, 0
     store   r0, sf[-9]
 __L8858:
@@ -87396,7 +87406,7 @@ __L8861:
 __L8862:
     test    r0
     jump    z, __L8860
-.source "src/gen.c", 4110
+.source "src/gen.c", 4117
     load    r0, sf[0]
     load    r0, r0[0]
     push    r0
@@ -87410,7 +87420,7 @@ __L8862:
     add     r0, 16
     load    r0, r0[0]
     store   r0, sf[-12]
-.source "src/gen.c", 4111
+.source "src/gen.c", 4118
     load    r0, sf[-12]
     add     r0, 38
     load    r0, r0[0]
@@ -87431,7 +87441,7 @@ __L8866:
     move    r0, 1
     store   r0, sf[-7]
 __L8863:
-.source "src/gen.c", 4112
+.source "src/gen.c", 4119
     load    r0, sf[-12]
     add     r0, 39
     load    r0, r0[0]
@@ -87453,14 +87463,14 @@ __L8870:
     store   r0, sf[-8]
 __L8867:
 __L8859:
-.source "src/gen.c", 4109
+.source "src/gen.c", 4116
     load    r1, sf[-9]
     add     r2, r1, 1
     store   r2, sf[-9]
     move    r0, r1
     jump    __L8858
 __L8860:
-.source "src/gen.c", 4114
+.source "src/gen.c", 4121
     load    r0, sf[-7]
     test    r0
     jump    z, __L8875
@@ -87490,7 +87500,7 @@ __L8873:
 __L8874:
     test    r0
     jump    z, __L8871
-.source "src/gen.c", 4115
+.source "src/gen.c", 4122
     move    r0, 1
     push    r0
     move    r0, 2
@@ -87501,7 +87511,7 @@ __L8874:
     call    __F6_anew
     add     sp, 1
     store   r0, sf[-3]
-.source "src/gen.c", 4116
+.source "src/gen.c", 4123
     load    r0, sf[-3]
     move    r1, 0
     add     r0, r1
@@ -87512,7 +87522,7 @@ __L8874:
     add     sp, 1
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 4117
+.source "src/gen.c", 4124
     load    r0, sf[0]
     add     r0, 44
     push    r0
@@ -87550,7 +87560,7 @@ __L8874:
     pop     r1
     store   r0, r1[0]
 __L8871:
-.source "src/gen.c", 4119
+.source "src/gen.c", 4126
     load    r0, sf[-8]
     test    r0
     jump    z, __L8883
@@ -87594,7 +87604,7 @@ __L8879:
 __L8880:
     test    r0
     jump    z, __L8877
-.source "src/gen.c", 4120
+.source "src/gen.c", 4127
     move    r0, 1
     push    r0
     move    r0, 2
@@ -87605,7 +87615,7 @@ __L8880:
     call    __F6_anew
     add     sp, 1
     store   r0, sf[-3]
-.source "src/gen.c", 4121
+.source "src/gen.c", 4128
     load    r0, sf[-3]
     move    r1, 0
     add     r0, r1
@@ -87616,7 +87626,7 @@ __L8880:
     add     sp, 1
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 4122
+.source "src/gen.c", 4129
     load    r0, sf[0]
     add     r0, 45
     push    r0
@@ -87657,7 +87667,7 @@ __L8880:
     pop     r1
     store   r0, r1[0]
 __L8877:
-.source "src/gen.c", 4125
+.source "src/gen.c", 4132
     load    r0, sf[0]
     add     r0, 15
     load    r0, r0[0]
@@ -87666,7 +87676,7 @@ __L8885:
     load    r0, sf[-4]
     test    r0
     jump    z, __L8887
-.source "src/gen.c", 4126
+.source "src/gen.c", 4133
     load    r0, sf[-4]
     add     r0, 1
     load    r0, r0[0]
@@ -87674,7 +87684,7 @@ __L8885:
     call    __F437_strip_arrays
     add     sp, 1
     store   r0, sf[-13]
-.source "src/gen.c", 4127
+.source "src/gen.c", 4134
     load    r0, sf[-13]
     load    r0, r0[0]
     move    r1, 27
@@ -87732,14 +87742,14 @@ __L8891:
     store   r0, sf[-5]
 __L8888:
 __L8886:
-.source "src/gen.c", 4125
+.source "src/gen.c", 4132
     load    r0, sf[-4]
     add     r0, 5
     load    r0, r0[0]
     store   r0, sf[-4]
     jump    __L8885
 __L8887:
-.source "src/gen.c", 4131
+.source "src/gen.c", 4138
     move    r0, 0
     store   r0, sf[-14]
 __L8896:
@@ -87759,7 +87769,7 @@ __L8899:
 __L8900:
     test    r0
     jump    z, __L8898
-.source "src/gen.c", 4132
+.source "src/gen.c", 4139
     load    r0, sf[0]
     load    r0, r0[0]
     push    r0
@@ -87773,7 +87783,7 @@ __L8900:
     add     r0, 16
     load    r0, r0[0]
     store   r0, sf[-15]
-.source "src/gen.c", 4133
+.source "src/gen.c", 4140
     load    r0, sf[-15]
     add     r0, 23
     load    r0, r0[0]
@@ -87795,14 +87805,14 @@ __L8904:
     store   r0, sf[-5]
 __L8901:
 __L8897:
-.source "src/gen.c", 4131
+.source "src/gen.c", 4138
     load    r1, sf[-14]
     add     r2, r1, 1
     store   r2, sf[-14]
     move    r0, r1
     jump    __L8896
 __L8898:
-.source "src/gen.c", 4135
+.source "src/gen.c", 4142
     load    r0, sf[0]
     add     r0, 2
     load    r0, r0[0]
@@ -87811,7 +87821,7 @@ __L8898:
     move    r0, 1
     store   r0, sf[-5]
 __L8905:
-.source "src/gen.c", 4137
+.source "src/gen.c", 4144
     load    r0, sf[0]
     add     r0, 23
     load    r0, r0[0]
@@ -87843,7 +87853,7 @@ __L8909:
 __L8910:
     test    r0
     jump    z, __L8907
-.source "src/gen.c", 4138
+.source "src/gen.c", 4145
     move    r0, 1
     push    r0
     move    r0, 2
@@ -87854,7 +87864,7 @@ __L8910:
     call    __F6_anew
     add     sp, 1
     store   r0, sf[-3]
-.source "src/gen.c", 4139
+.source "src/gen.c", 4146
     load    r0, sf[-3]
     move    r1, 0
     add     r0, r1
@@ -87862,7 +87872,7 @@ __L8910:
     load    r0, sf[-2]
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 4140
+.source "src/gen.c", 4147
     load    r0, sf[0]
     add     r0, 36
     push    r0
@@ -87903,7 +87913,7 @@ __L8910:
     pop     r1
     store   r0, r1[0]
 __L8907:
-.source "src/gen.c", 4142
+.source "src/gen.c", 4149
     load    r0, sf[0]
     add     r0, 25
     load    r0, r0[0]
@@ -87923,7 +87933,7 @@ __L8915:
 __L8916:
     test    r0
     jump    z, __L8913
-.source "src/gen.c", 4143
+.source "src/gen.c", 4150
     load    r0, sf[0]
     add     r0, 19
     push    r0
@@ -87962,7 +87972,7 @@ __L8916:
     store   r0, r1[0]
     jump    __L8914
 __L8913:
-.source "src/gen.c", 4144
+.source "src/gen.c", 4151
     load    r0, sf[0]
     add     r0, 19
     load    r0, r0[0]
@@ -87984,7 +87994,7 @@ __L8919:
 __L8920:
     test    r0
     jump    z, __L8917
-.source "src/gen.c", 4145
+.source "src/gen.c", 4152
     move    r0, 524288
     push    r0
     load    r0, sf[0]
@@ -88004,15 +88014,15 @@ __L8914:
 
 // define_class
 __F522_define_class:
-.source "src/gen.c", 4149
+.source "src/gen.c", 4156
     add     sp, -21
-.source "src/gen.c", 4153
+.source "src/gen.c", 4160
     load    r0, __G301_scope2_cur+1
     store   r0, sf[-3]
-.source "src/gen.c", 4154
+.source "src/gen.c", 4161
     load    r0, __G350_cur_class+1
     store   r0, sf[-4]
-.source "src/gen.c", 4155
+.source "src/gen.c", 4162
     load    r0, sf[3]
     add     r0, 16
     load    r0, r0[0]
@@ -88044,20 +88054,20 @@ __L8924:
     call    __F344_serr
     add     sp, 3
 __L8921:
-.source "src/gen.c", 4156
+.source "src/gen.c", 4163
     move    r0, 49
     push    r0
     call    __F6_anew
     add     sp, 1
     store   r0, sf[0]
-.source "src/gen.c", 4157
+.source "src/gen.c", 4164
     load    r0, sf[3]
     add     r0, 16
     push    r0
     load    r0, sf[0]
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 4158
+.source "src/gen.c", 4165
     load    r0, sf[0]
     add     r0, 13
     push    r0
@@ -88068,7 +88078,7 @@ __L8921:
     sub     r0, r1
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 4159
+.source "src/gen.c", 4166
     load    r0, sf[3]
     add     r0, 1
     load    r0, r0[0]
@@ -88097,32 +88107,32 @@ __L8927:
 __L8928:
     test    r0
     jump    z, __L8925
-.source "src/gen.c", 4160
+.source "src/gen.c", 4167
     load    r0, sf[0]
     add     r0, 46
     push    r0
     move    r0, 1
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 4161
+.source "src/gen.c", 4168
     load    r0, sf[0]
     add     r0, 47
     push    r0
     load    r0, __G406_lambda_outer_next+1
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 4162
+.source "src/gen.c", 4169
     move    r0, 0
     store   r0, __G406_lambda_outer_next+1
 __L8925:
-.source "src/gen.c", 4164
+.source "src/gen.c", 4171
     load    r0, sf[0]
     add     r0, 18
     push    r0
     load    r0, sf[3]
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 4165
+.source "src/gen.c", 4172
     load    r0, sf[0]
     add     r0, 17
     push    r0
@@ -88134,7 +88144,7 @@ __L8925:
     add     sp, 2
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 4166
+.source "src/gen.c", 4173
     load    r0, sf[0]
     add     r0, 17
     load    r0, r0[0]
@@ -88143,7 +88153,7 @@ __L8925:
     load    r0, sf[3]
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 4167
+.source "src/gen.c", 4174
     load    r0, sf[0]
     add     r0, 17
     load    r0, r0[0]
@@ -88159,7 +88169,7 @@ __L8925:
     add     sp, 2
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 4168
+.source "src/gen.c", 4175
     load    r0, sf[0]
     add     r0, 13
     load    r0, r0[0]
@@ -88174,7 +88184,7 @@ __L8929:
     move    r0, 45
 __L8930:
     store   r0, sf[-2]
-.source "src/gen.c", 4169
+.source "src/gen.c", 4176
     load    r0, sf[0]
     add     r0, 8
     push    r0
@@ -88188,10 +88198,10 @@ __L8930:
     move    ne, r0, 1, 0
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 4172
+.source "src/gen.c", 4179
     move    r0, 0
     store   r0, sf[-6]
-.source "src/gen.c", 4173
+.source "src/gen.c", 4180
     load    r0, sf[4]
     add     r0, 9
     load    r0, r0[0]
@@ -88200,7 +88210,7 @@ __L8931:
     load    r0, sf[-5]
     test    r0
     jump    z, __L8933
-.source "src/gen.c", 4174
+.source "src/gen.c", 4181
     move    r0, 1
     push    r0
     load    r0, sf[-5]
@@ -88210,7 +88220,7 @@ __L8931:
     call    __F470_resolve_id
     add     sp, 2
     store   r0, sf[-8]
-.source "src/gen.c", 4176
+.source "src/gen.c", 4183
     load    r0, sf[-8]
     load    r0, r0[0]
     move    r1, 3
@@ -88241,7 +88251,7 @@ __L8937:
     load    r0, r0[0]
     store   r0, sf[-8]
 __L8934:
-.source "src/gen.c", 4177
+.source "src/gen.c", 4184
     load    r0, sf[-8]
     load    r0, r0[0]
     move    r1, 7
@@ -88261,7 +88271,7 @@ __L8934:
     call    __F344_serr
     add     sp, 3
 __L8938:
-.source "src/gen.c", 4178
+.source "src/gen.c", 4185
     load    r0, sf[-8]
     add     r0, 16
     load    r0, r0[0]
@@ -88297,7 +88307,7 @@ __L8943:
     call    __F344_serr
     add     sp, 3
 __L8940:
-.source "src/gen.c", 4179
+.source "src/gen.c", 4186
     load    r0, sf[-5]
     add     r0, 4
     load    r0, r0[0]
@@ -88312,7 +88322,7 @@ __L8940:
     call    __F344_serr
     add     sp, 2
 __L8944:
-.source "src/gen.c", 4180
+.source "src/gen.c", 4187
     load    r0, sf[-5]
     add     r0, 4
     load    r0, r0[0]
@@ -88327,7 +88337,7 @@ __L8944:
     call    __F344_serr
     add     sp, 2
 __L8946:
-.source "src/gen.c", 4181
+.source "src/gen.c", 4188
     load    r0, sf[-8]
     add     r0, 16
     load    r0, r0[0]
@@ -88347,7 +88357,7 @@ __L8946:
     call    __F344_serr
     add     sp, 3
 __L8948:
-.source "src/gen.c", 4182
+.source "src/gen.c", 4189
     load    r0, sf[0]
     add     r0, 13
     load    r0, r0[0]
@@ -88363,7 +88373,7 @@ __L8948:
     call    __F344_serr
     add     sp, 2
 __L8950:
-.source "src/gen.c", 4183
+.source "src/gen.c", 4190
     move    r0, 0
     store   r0, sf[-7]
 __L8952:
@@ -88383,7 +88393,7 @@ __L8955:
 __L8956:
     test    r0
     jump    z, __L8954
-.source "src/gen.c", 4184
+.source "src/gen.c", 4191
     load    r0, sf[0]
     load    r0, r0[0]
     push    r0
@@ -88412,14 +88422,14 @@ __L8956:
     add     sp, 3
 __L8957:
 __L8953:
-.source "src/gen.c", 4183
+.source "src/gen.c", 4190
     load    r1, sf[-7]
     add     r2, r1, 1
     store   r2, sf[-7]
     move    r0, r1
     jump    __L8952
 __L8954:
-.source "src/gen.c", 4185
+.source "src/gen.c", 4192
     load    r0, sf[0]
     push    r0
     move    r0, 4
@@ -88440,7 +88450,7 @@ __L8954:
     add     sp, 2
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 4186
+.source "src/gen.c", 4193
     load    r0, sf[0]
     load    r0, r0[0]
     push    r0
@@ -88456,13 +88466,13 @@ __L8954:
     pop     r0
     add     r0, r1
     store   r0, sf[-9]
-.source "src/gen.c", 4187
+.source "src/gen.c", 4194
     load    r0, sf[-9]
     push    r0
     load    r0, sf[-8]
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 4188
+.source "src/gen.c", 4195
     load    r0, sf[-9]
     add     r0, 1
     push    r0
@@ -88495,7 +88505,7 @@ __L8962:
 __L8960:
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 4189
+.source "src/gen.c", 4196
     load    r0, sf[-9]
     add     r0, 2
     push    r0
@@ -88507,7 +88517,7 @@ __L8960:
     add     sp, 2
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 4190
+.source "src/gen.c", 4197
     load    r0, sf[0]
     add     r0, 17
     load    r0, r0[0]
@@ -88536,7 +88546,7 @@ __L8960:
     add     sp, 2
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 4191
+.source "src/gen.c", 4198
     load    r0, sf[0]
     add     r0, 17
     load    r0, r0[0]
@@ -88563,7 +88573,7 @@ __L8960:
     pop     r1
     store   r0, r1[0]
 __L8932:
-.source "src/gen.c", 4173
+.source "src/gen.c", 4180
     load    r0, sf[-5]
     add     r0, 12
     load    r0, r0[0]
@@ -88574,7 +88584,7 @@ __L8932:
     move    r0, r1
     jump    __L8931
 __L8933:
-.source "src/gen.c", 4194
+.source "src/gen.c", 4201
     load    r0, sf[3]
     add     r0, 2
     load    r0, r0[0]
@@ -88583,20 +88593,20 @@ __L8933:
     move    r0, -1
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 4195
+.source "src/gen.c", 4202
     load    r0, sf[0]
     add     r0, 17
     load    r0, r0[0]
     store   r0, __G301_scope2_cur+1
-.source "src/gen.c", 4196
+.source "src/gen.c", 4203
     load    r0, sf[3]
     store   r0, __G350_cur_class+1
-.source "src/gen.c", 4197
+.source "src/gen.c", 4204
     load    r1, __G572_class_nest+1
     add     r2, r1, 1
     store   r2, __G572_class_nest+1
     move    r0, r1
-.source "src/gen.c", 4198
+.source "src/gen.c", 4205
     load    r0, sf[4]
     add     r0, 10
     load    r0, r0[0]
@@ -88620,14 +88630,14 @@ __L8964:
     store   r0, sf[-1]
     jump    __L8963
 __L8965:
-.source "src/gen.c", 4199
+.source "src/gen.c", 4206
     load    r0, sf[0]
     add     r0, 14
     push    r0
     move    r0, 1
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 4202
+.source "src/gen.c", 4209
     move    r0, 0
     store   r0, sf[-10]
 __L8966:
@@ -88677,7 +88687,7 @@ __L8967:
     move    r0, r1
     jump    __L8966
 __L8968:
-.source "src/gen.c", 4203
+.source "src/gen.c", 4210
     move    r0, 0
     store   r0, sf[-10]
 __L8973:
@@ -88723,35 +88733,35 @@ __L8974:
     move    r0, r1
     jump    __L8973
 __L8975:
-.source "src/gen.c", 4205
+.source "src/gen.c", 4212
     load    r0, sf[3]
     push    r0
     call    __F589_compute_traits
     add     sp, 1
-.source "src/gen.c", 4206
+.source "src/gen.c", 4213
     load    r0, sf[3]
     push    r0
     call    __F591_make_implicit_members
     add     sp, 1
-.source "src/gen.c", 4207
+.source "src/gen.c", 4214
     load    r0, sf[3]
     push    r0
     call    __F579_analyze_virtuals
     add     sp, 1
-.source "src/gen.c", 4208
+.source "src/gen.c", 4215
     load    r0, sf[-3]
     store   r0, __G301_scope2_cur+1
-.source "src/gen.c", 4209
+.source "src/gen.c", 4216
     load    r0, sf[3]
     push    r0
     call    __F578_emit_struct
     add     sp, 1
-.source "src/gen.c", 4210
+.source "src/gen.c", 4217
     load    r0, sf[0]
     add     r0, 17
     load    r0, r0[0]
     store   r0, __G301_scope2_cur+1
-.source "src/gen.c", 4215
+.source "src/gen.c", 4222
     add     r0, sf, -16
     move    r1, 0
     add     r0, r1
@@ -88761,7 +88771,7 @@ __L8975:
     load    r0, r0[0]
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 4216
+.source "src/gen.c", 4223
     add     r0, sf, -16
     move    r1, 1
     add     r0, r1
@@ -88771,7 +88781,7 @@ __L8975:
     load    r0, r0[0]
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 4217
+.source "src/gen.c", 4224
     add     r0, sf, -16
     move    r1, 2
     add     r0, r1
@@ -88781,7 +88791,7 @@ __L8975:
     load    r0, r0[0]
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 4218
+.source "src/gen.c", 4225
     add     r0, sf, -16
     move    r1, 3
     add     r0, r1
@@ -88816,7 +88826,7 @@ __L8980:
 __L8981:
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 4219
+.source "src/gen.c", 4226
     add     r0, sf, -16
     move    r1, 4
     add     r0, r1
@@ -88826,7 +88836,7 @@ __L8981:
     load    r0, r0[0]
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 4220
+.source "src/gen.c", 4227
     add     r0, sf, -16
     move    r1, 5
     add     r0, r1
@@ -88836,7 +88846,7 @@ __L8981:
     load    r0, r0[0]
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 4221
+.source "src/gen.c", 4228
     move    r0, 0
     store   r0, sf[-17]
 __L8984:
@@ -88851,7 +88861,7 @@ __L8987:
 __L8988:
     test    r0
     jump    z, __L8986
-.source "src/gen.c", 4222
+.source "src/gen.c", 4229
     add     r0, sf, -16
     load    r1, sf[-17]
     add     r0, r1
@@ -88919,63 +88929,63 @@ __L8992:
     add     sp, 2
 __L8989:
 __L8985:
-.source "src/gen.c", 4221
+.source "src/gen.c", 4228
     load    r1, sf[-17]
     add     r2, r1, 1
     store   r2, sf[-17]
     move    r0, r1
     jump    __L8984
 __L8986:
-.source "src/gen.c", 4224
+.source "src/gen.c", 4231
     load    r0, sf[3]
     push    r0
     call    __F580_emit_vtables
     add     sp, 1
-.source "src/gen.c", 4225
+.source "src/gen.c", 4232
     load    r0, sf[3]
     push    r0
     call    __F577_emit_implicit_members
     add     sp, 1
-.source "src/gen.c", 4226
+.source "src/gen.c", 4233
     load    r0, sf[-3]
     store   r0, __G301_scope2_cur+1
-.source "src/gen.c", 4227
+.source "src/gen.c", 4234
     load    r1, __G572_class_nest+1
     add     r2, r1, -1
     store   r2, __G572_class_nest+1
     move    r0, r1
-.source "src/gen.c", 4228
+.source "src/gen.c", 4235
     load    r0, sf[-4]
     store   r0, __G350_cur_class+1
-.source "src/gen.c", 4229
+.source "src/gen.c", 4236
     load    r0, __G572_class_nest+1
     move    r1, 0
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
     jump    z, __L8995
-.source "src/gen.c", 4230
+.source "src/gen.c", 4237
     load    r0, __G570_def_head+1
     store   r0, sf[-18]
-.source "src/gen.c", 4231
+.source "src/gen.c", 4238
     move    r0, 0
     store   r0, __G571_def_tail+1
     store   r0, __G570_def_head+1
-.source "src/gen.c", 4232
+.source "src/gen.c", 4239
     call    __F385_run_eager_list
-.source "src/gen.c", 4233
+.source "src/gen.c", 4240
 __L8997:
     load    r0, sf[-18]
     test    r0
     jump    z, __L8999
-.source "src/gen.c", 4234
+.source "src/gen.c", 4241
     load    r0, __G301_scope2_cur+1
     store   r0, sf[-19]
-.source "src/gen.c", 4235
+.source "src/gen.c", 4242
     load    r0, sf[-18]
     load    r0, r0[0]
     store   r0, sf[-20]
-.source "src/gen.c", 4236
+.source "src/gen.c", 4243
     load    r0, sf[-20]
     add     r0, 15
     load    r0, r0[0]
@@ -89030,7 +89040,7 @@ __L9002:
 __L9003:
     test    r0
     jump    z, __L9000
-.source "src/gen.c", 4238
+.source "src/gen.c", 4245
     load    r0, sf[-20]
     add     r0, 4
     load    r0, r0[0]
@@ -89051,16 +89061,16 @@ __L9003:
     push    r0
     call    __F384_lazy_set
     add     sp, 5
-.source "src/gen.c", 4239
+.source "src/gen.c", 4246
     jump    __L8998
 __L9000:
-.source "src/gen.c", 4241
+.source "src/gen.c", 4248
     load    r0, sf[-18]
     load    r0, r0[0]
     add     r0, 4
     load    r0, r0[0]
     store   r0, __G301_scope2_cur+1
-.source "src/gen.c", 4242
+.source "src/gen.c", 4249
     load    r0, sf[-18]
     add     r0, 3
     load    r0, r0[0]
@@ -89078,11 +89088,11 @@ __L9000:
     push    r0
     call    __F560_define_function
     add     sp, 4
-.source "src/gen.c", 4243
+.source "src/gen.c", 4250
     load    r0, sf[-19]
     store   r0, __G301_scope2_cur+1
 __L8998:
-.source "src/gen.c", 4233
+.source "src/gen.c", 4240
     load    r0, sf[-18]
     add     r0, 4
     load    r0, r0[0]
@@ -89096,14 +89106,14 @@ __L8995:
 
 // emit_struct
 __F578_emit_struct:
-.source "src/gen.c", 4249
+.source "src/gen.c", 4256
     add     sp, -3
-.source "src/gen.c", 4250
+.source "src/gen.c", 4257
     load    r0, sf[3]
     add     r0, 16
     load    r0, r0[0]
     store   r0, sf[0]
-.source "src/gen.c", 4253
+.source "src/gen.c", 4260
     load    r0, sf[3]
     add     r0, 8
     load    r0, r0[0]
@@ -89113,7 +89123,7 @@ __F578_emit_struct:
     jump    z, __L9008
     return
 __L9008:
-.source "src/gen.c", 4254
+.source "src/gen.c", 4261
     move    r0, 0
     push    r0
     call    __F364_inst_active_count
@@ -89152,21 +89162,21 @@ __L9012:
 __L9013:
     test    r0
     jump    z, __L9010
-.source "src/gen.c", 4256
+.source "src/gen.c", 4263
     move    r0, __G362_pending_helpers+1
     load    r0, r0[0]
     push    r0
     call    __F345_emit
     add     sp, 1
-.source "src/gen.c", 4257
+.source "src/gen.c", 4264
     move    r0, __G362_pending_helpers+1
     push    r0
     call    __F10_sb_init
     add     sp, 1
 __L9010:
-.source "src/gen.c", 4259
+.source "src/gen.c", 4266
     call    __F524_emit_line_none
-.source "src/gen.c", 4260
+.source "src/gen.c", 4267
     load    r0, sf[3]
     push    r0
     call    __F296_class_tag
@@ -89176,7 +89186,7 @@ __L9010:
     push    r0
     call    __F346_emitf
     add     sp, 2
-.source "src/gen.c", 4261
+.source "src/gen.c", 4268
     load    r0, sf[0]
     add     r0, 3
     load    r0, r0[0]
@@ -89187,7 +89197,7 @@ __L9010:
     call    __F345_emit
     add     sp, 1
 __L9018:
-.source "src/gen.c", 4262
+.source "src/gen.c", 4269
     move    r0, 0
     store   r0, sf[-2]
 __L9020:
@@ -89244,7 +89254,7 @@ __L9021:
     move    r0, r1
     jump    __L9020
 __L9022:
-.source "src/gen.c", 4263
+.source "src/gen.c", 4270
     load    r0, sf[0]
     add     r0, 15
     load    r0, r0[0]
@@ -89286,7 +89296,7 @@ __L9028:
     call    __F345_emit
     add     sp, 1
 __L9025:
-.source "src/gen.c", 4264
+.source "src/gen.c", 4271
     load    r0, sf[0]
     add     r0, 15
     load    r0, r0[0]
@@ -89295,7 +89305,7 @@ __L9031:
     load    r0, sf[-1]
     test    r0
     jump    z, __L9033
-.source "src/gen.c", 4265
+.source "src/gen.c", 4272
     load    r0, sf[-1]
     load    r0, r0[0]
     load    r0, r0[0]
@@ -89331,14 +89341,14 @@ __L9035:
     call    __F346_emitf
     add     sp, 2
 __L9032:
-.source "src/gen.c", 4264
+.source "src/gen.c", 4271
     load    r0, sf[-1]
     add     r0, 5
     load    r0, r0[0]
     store   r0, sf[-1]
     jump    __L9031
 __L9033:
-.source "src/gen.c", 4266
+.source "src/gen.c", 4273
     move    r0, __W1112+1
     push    r0
     call    __F345_emit
@@ -89349,9 +89359,9 @@ __L9033:
 
 // same_signature
 __F592_same_signature:
-.source "src/gen.c", 4271
+.source "src/gen.c", 4278
     add     sp, -1
-.source "src/gen.c", 4273
+.source "src/gen.c", 4280
     load    r0, sf[3]
     add     r0, 1
     load    r0, r0[0]
@@ -89407,7 +89417,7 @@ __L9039:
     move    r0, 0
     return
 __L9036:
-.source "src/gen.c", 4274
+.source "src/gen.c", 4281
     load    r0, sf[3]
     add     r0, 8
     load    r0, r0[0]
@@ -89438,7 +89448,7 @@ __L9045:
     move    r0, 0
     return
 __L9042:
-.source "src/gen.c", 4275
+.source "src/gen.c", 4282
     move    r0, 0
     store   r0, sf[0]
 __L9046:
@@ -89458,7 +89468,7 @@ __L9049:
 __L9050:
     test    r0
     jump    z, __L9048
-.source "src/gen.c", 4276
+.source "src/gen.c", 4283
     load    r0, sf[5]
     add     r0, 4
     load    r0, r0[0]
@@ -89491,14 +89501,14 @@ __L9050:
     return
 __L9051:
 __L9047:
-.source "src/gen.c", 4275
+.source "src/gen.c", 4282
     load    r1, sf[0]
     add     r2, r1, 1
     store   r2, sf[0]
     move    r0, r1
     jump    __L9046
 __L9048:
-.source "src/gen.c", 4277
+.source "src/gen.c", 4284
     move    r0, 1
     return
     move    r0, 0
@@ -89507,9 +89517,9 @@ __L9048:
 
 // find_virtual_in_bases
 __F593_find_virtual_in_bases:
-.source "src/gen.c", 4281
+.source "src/gen.c", 4288
     add     sp, -5
-.source "src/gen.c", 4283
+.source "src/gen.c", 4290
     move    r0, 0
     store   r0, sf[0]
 __L9053:
@@ -89529,7 +89539,7 @@ __L9056:
 __L9057:
     test    r0
     jump    z, __L9055
-.source "src/gen.c", 4284
+.source "src/gen.c", 4291
     load    r0, sf[3]
     load    r0, r0[0]
     push    r0
@@ -89543,14 +89553,14 @@ __L9057:
     add     r0, 16
     load    r0, r0[0]
     store   r0, sf[-2]
-.source "src/gen.c", 4285
+.source "src/gen.c", 4292
     load    r0, sf[4]
     load    r1, __G349_nm_dtor+1
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
     jump    z, __L9058
-.source "src/gen.c", 4286
+.source "src/gen.c", 4293
     load    r0, sf[-2]
     add     r0, 19
     load    r0, r0[0]
@@ -89577,7 +89587,7 @@ __L9063:
 __L9060:
     jump    __L9059
 __L9058:
-.source "src/gen.c", 4288
+.source "src/gen.c", 4295
     move    r0, 0
     store   r0, sf[-1]
 __L9064:
@@ -89597,7 +89607,7 @@ __L9067:
 __L9068:
     test    r0
     jump    z, __L9066
-.source "src/gen.c", 4289
+.source "src/gen.c", 4296
     load    r0, sf[-2]
     add     r0, 9
     load    r0, r0[0]
@@ -89605,7 +89615,7 @@ __L9068:
     add     r0, r1
     load    r0, r0[0]
     store   r0, sf[-3]
-.source "src/gen.c", 4290
+.source "src/gen.c", 4297
     load    r0, sf[-3]
     add     r0, 19
     load    r0, r0[0]
@@ -89634,7 +89644,7 @@ __L9072:
     return
 __L9069:
 __L9065:
-.source "src/gen.c", 4288
+.source "src/gen.c", 4295
     load    r1, sf[-1]
     add     r2, r1, 1
     store   r2, sf[-1]
@@ -89642,7 +89652,7 @@ __L9065:
     jump    __L9064
 __L9066:
 __L9059:
-.source "src/gen.c", 4294
+.source "src/gen.c", 4301
     load    r0, sf[6]
     push    r0
     load    r0, sf[5]
@@ -89654,7 +89664,7 @@ __L9059:
     call    __F593_find_virtual_in_bases
     add     sp, 4
     store   r0, sf[-4]
-.source "src/gen.c", 4295
+.source "src/gen.c", 4302
     load    r0, sf[-4]
     test    r0
     jump    z, __L9073
@@ -89662,14 +89672,14 @@ __L9059:
     return
 __L9073:
 __L9054:
-.source "src/gen.c", 4283
+.source "src/gen.c", 4290
     load    r1, sf[0]
     add     r2, r1, 1
     store   r2, sf[0]
     move    r0, r1
     jump    __L9053
 __L9055:
-.source "src/gen.c", 4298
+.source "src/gen.c", 4305
     move    r0, 0
     return
     move    r0, 0
@@ -89678,16 +89688,16 @@ __L9055:
 
 // vptr_path
 __F594_vptr_path:
-.source "src/gen.c", 4302
+.source "src/gen.c", 4309
     add     sp, -1
-.source "src/gen.c", 4303
+.source "src/gen.c", 4310
     load    r0, sf[3]
     add     r0, 7
     load    r0, r0[0]
     add     r0, 16
     load    r0, r0[0]
     store   r0, sf[0]
-.source "src/gen.c", 4304
+.source "src/gen.c", 4311
     load    r0, sf[0]
     add     r0, 3
     load    r0, r0[0]
@@ -89696,7 +89706,7 @@ __F594_vptr_path:
     move    r0, __W1113+1
     return
 __L9075:
-.source "src/gen.c", 4305
+.source "src/gen.c", 4312
     move    r0, 0
     push    r0
     load    r0, sf[0]
@@ -89755,7 +89765,7 @@ __L9080:
     add     sp, 3
     return
 __L9077:
-.source "src/gen.c", 4306
+.source "src/gen.c", 4313
     move    r0, 0
     return
     move    r0, 0
@@ -89764,8 +89774,8 @@ __L9077:
 
 // add_vslot
 __F595_add_vslot:
-.source "src/gen.c", 4309
-.source "src/gen.c", 4310
+.source "src/gen.c", 4316
+.source "src/gen.c", 4317
     load    r0, sf[3]
     add     r0, 5
     push    r0
@@ -89788,7 +89798,7 @@ __F595_add_vslot:
     add     sp, 2
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 4311
+.source "src/gen.c", 4318
     load    r0, sf[3]
     add     r0, 5
     load    r0, r0[0]
@@ -89805,7 +89815,7 @@ __F595_add_vslot:
     load    r0, sf[4]
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 4312
+.source "src/gen.c", 4319
     load    r0, sf[3]
     add     r0, 5
     load    r0, r0[0]
@@ -89823,7 +89833,7 @@ __F595_add_vslot:
     load    r0, sf[5]
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 4313
+.source "src/gen.c", 4320
     load    r0, sf[3]
     add     r0, 5
     load    r0, r0[0]
@@ -89841,7 +89851,7 @@ __F595_add_vslot:
     load    r0, sf[6]
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 4314
+.source "src/gen.c", 4321
     load    r0, sf[3]
     add     r0, 5
     load    r0, r0[0]
@@ -89859,7 +89869,7 @@ __F595_add_vslot:
     load    r0, sf[7]
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 4315
+.source "src/gen.c", 4322
     load    r0, sf[3]
     add     r0, 6
     load    r1, r0[0]
@@ -89872,17 +89882,17 @@ __F595_add_vslot:
 
 // analyze_virtuals
 __F579_analyze_virtuals:
-.source "src/gen.c", 4318
+.source "src/gen.c", 4325
     add     sp, -264
-.source "src/gen.c", 4319
+.source "src/gen.c", 4326
     load    r0, sf[3]
     add     r0, 16
     load    r0, r0[0]
     store   r0, sf[0]
-.source "src/gen.c", 4322
+.source "src/gen.c", 4329
     move    r0, 0
     store   r0, sf[-258]
-.source "src/gen.c", 4323
+.source "src/gen.c", 4330
     load    r0, sf[0]
     add     r0, 3
     push    r0
@@ -89934,7 +89944,7 @@ __L9083:
 __L9084:
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 4324
+.source "src/gen.c", 4331
     load    r0, sf[0]
     add     r0, 2
     load    r0, r0[0]
@@ -89981,7 +89991,7 @@ __L9091:
 __L9092:
     test    r0
     jump    z, __L9089
-.source "src/gen.c", 4325
+.source "src/gen.c", 4332
     load    r0, sf[0]
     load    r0, r0[0]
     move    r1, 0
@@ -89990,7 +90000,7 @@ __L9092:
     add     r0, 16
     load    r0, r0[0]
     store   r0, sf[-259]
-.source "src/gen.c", 4326
+.source "src/gen.c", 4333
     move    r0, 0
     store   r0, sf[-1]
 __L9097:
@@ -90073,7 +90083,7 @@ __L9098:
     jump    __L9097
 __L9099:
 __L9089:
-.source "src/gen.c", 4328
+.source "src/gen.c", 4335
     move    r0, 0
     store   r0, sf[-1]
 __L9102:
@@ -90136,7 +90146,7 @@ __L9103:
     move    r0, r1
     jump    __L9102
 __L9104:
-.source "src/gen.c", 4329
+.source "src/gen.c", 4336
     load    r0, sf[0]
     add     r0, 19
     load    r0, r0[0]
@@ -90159,10 +90169,10 @@ __L9113:
 __L9114:
     test    r0
     jump    z, __L9111
-.source "src/gen.c", 4330
+.source "src/gen.c", 4337
     move    r0, 0
     store   r0, sf[-260]
-.source "src/gen.c", 4331
+.source "src/gen.c", 4338
     move    r0, 0
     store   r0, sf[-1]
 __L9115:
@@ -90201,7 +90211,7 @@ __L9116:
     move    r0, r1
     jump    __L9115
 __L9117:
-.source "src/gen.c", 4332
+.source "src/gen.c", 4339
     load    r0, sf[-260]
     test    r0
     move    z, r0, 1, 0
@@ -90224,7 +90234,7 @@ __L9117:
     store   r0, r1[0]
 __L9122:
 __L9111:
-.source "src/gen.c", 4334
+.source "src/gen.c", 4341
     move    r0, 0
     store   r0, sf[-1]
 __L9124:
@@ -90239,13 +90249,13 @@ __L9127:
 __L9128:
     test    r0
     jump    z, __L9126
-.source "src/gen.c", 4335
+.source "src/gen.c", 4342
     add     r0, sf, -257
     load    r1, sf[-1]
     add     r0, r1
     load    r0, r0[0]
     store   r0, sf[-261]
-.source "src/gen.c", 4336
+.source "src/gen.c", 4343
     load    r0, sf[-261]
     add     r0, 8
     load    r0, r0[0]
@@ -90255,7 +90265,7 @@ __L9128:
     cmp     r0, r1
     move    ne, r0, 1, 0
     store   r0, sf[-263]
-.source "src/gen.c", 4337
+.source "src/gen.c", 4344
     load    r0, sf[-261]
     add     r0, 8
     load    r0, r0[0]
@@ -90268,7 +90278,7 @@ __L9128:
     and     r0, r1
     test    r0
     jump    z, __L9129
-.source "src/gen.c", 4338
+.source "src/gen.c", 4345
     load    r0, sf[-261]
     add     r0, 8
     load    r0, r0[0]
@@ -90295,10 +90305,10 @@ __L9128:
     call    __F344_serr
     add     sp, 3
 __L9131:
-.source "src/gen.c", 4339
+.source "src/gen.c", 4346
     jump    __L9125
 __L9129:
-.source "src/gen.c", 4341
+.source "src/gen.c", 4348
     load    r0, sf[-261]
     add     r0, 8
     load    r0, r0[0]
@@ -90306,7 +90316,7 @@ __L9129:
     and     r0, r1
     test    r0
     jump    z, __L9133
-.source "src/gen.c", 4342
+.source "src/gen.c", 4349
     load    r0, sf[-261]
     add     r0, 8
     load    r0, r0[0]
@@ -90326,10 +90336,10 @@ __L9129:
     call    __F344_serr
     add     sp, 2
 __L9135:
-.source "src/gen.c", 4343
+.source "src/gen.c", 4350
     jump    __L9125
 __L9133:
-.source "src/gen.c", 4345
+.source "src/gen.c", 4352
     load    r0, sf[-263]
     push    r0
     load    r0, sf[-261]
@@ -90345,11 +90355,11 @@ __L9133:
     call    __F593_find_virtual_in_bases
     add     sp, 4
     store   r0, sf[-262]
-.source "src/gen.c", 4346
+.source "src/gen.c", 4353
     load    r0, sf[-262]
     test    r0
     jump    z, __L9137
-.source "src/gen.c", 4347
+.source "src/gen.c", 4354
     load    r0, sf[-262]
     add     r0, 8
     load    r0, r0[0]
@@ -90375,7 +90385,7 @@ __L9133:
     call    __F26_error_at
     add     sp, 4
 __L9139:
-.source "src/gen.c", 4348
+.source "src/gen.c", 4355
     move    r0, 131072
     push    r0
     load    r0, sf[-261]
@@ -90385,7 +90395,7 @@ __L9139:
     or      r2, r1
     store   r2, r0[0]
     move    r0, r2
-.source "src/gen.c", 4349
+.source "src/gen.c", 4356
     load    r0, sf[-261]
     add     r0, 19
     push    r0
@@ -90394,7 +90404,7 @@ __L9139:
     load    r0, r0[0]
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 4350
+.source "src/gen.c", 4357
     load    r0, sf[-261]
     add     r0, 18
     push    r0
@@ -90405,7 +90415,7 @@ __L9139:
     store   r0, r1[0]
     jump    __L9138
 __L9137:
-.source "src/gen.c", 4351
+.source "src/gen.c", 4358
     load    r0, sf[-261]
     add     r0, 8
     load    r0, r0[0]
@@ -90413,14 +90423,14 @@ __L9137:
     and     r0, r1
     test    r0
     jump    z, __L9141
-.source "src/gen.c", 4352
+.source "src/gen.c", 4359
     load    r0, sf[-261]
     add     r0, 19
     push    r0
     load    r0, sf[3]
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 4353
+.source "src/gen.c", 4360
     load    r0, sf[-261]
     add     r0, 18
     push    r0
@@ -90429,7 +90439,7 @@ __L9137:
     load    r0, r0[0]
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 4354
+.source "src/gen.c", 4361
     load    r0, sf[-261]
     push    r0
     load    r0, sf[-263]
@@ -90448,7 +90458,7 @@ __L9137:
     add     sp, 5
     jump    __L9142
 __L9141:
-.source "src/gen.c", 4355
+.source "src/gen.c", 4362
     load    r0, sf[-261]
     add     r0, 8
     load    r0, r0[0]
@@ -90456,7 +90466,7 @@ __L9141:
     and     r0, r1
     test    r0
     jump    z, __L9143
-.source "src/gen.c", 4356
+.source "src/gen.c", 4363
     load    r0, sf[-261]
     push    r0
     call    __F291_ent_qualified_name
@@ -90477,7 +90487,7 @@ __L9141:
 __L9143:
 __L9142:
 __L9138:
-.source "src/gen.c", 4358
+.source "src/gen.c", 4365
     load    r0, sf[-261]
     add     r0, 8
     load    r0, r0[0]
@@ -90518,14 +90528,14 @@ __L9148:
     add     sp, 4
 __L9145:
 __L9125:
-.source "src/gen.c", 4334
+.source "src/gen.c", 4341
     load    r1, sf[-1]
     add     r2, r1, 1
     store   r2, sf[-1]
     move    r0, r1
     jump    __L9124
 __L9126:
-.source "src/gen.c", 4360
+.source "src/gen.c", 4367
     load    r0, sf[0]
     add     r0, 19
     load    r0, r0[0]
@@ -90558,16 +90568,16 @@ __L9149:
 
 // final_overrider
 __F596_final_overrider:
-.source "src/gen.c", 4365
+.source "src/gen.c", 4372
     add     sp, -4
-.source "src/gen.c", 4367
+.source "src/gen.c", 4374
     load    r0, sf[5]
     load    r1, __G349_nm_dtor+1
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
     jump    z, __L9153
-.source "src/gen.c", 4368
+.source "src/gen.c", 4375
     load    r0, sf[4]
     add     r0, 19
     load    r0, r0[0]
@@ -90587,13 +90597,13 @@ __L9157:
 __L9158:
     test    r0
     jump    z, __L9155
-.source "src/gen.c", 4369
+.source "src/gen.c", 4376
     load    r0, sf[9]
     push    r0
     load    r0, sf[8]
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 4370
+.source "src/gen.c", 4377
     load    r0, sf[4]
     add     r0, 19
     load    r0, r0[0]
@@ -90601,7 +90611,7 @@ __L9158:
 __L9155:
     jump    __L9154
 __L9153:
-.source "src/gen.c", 4373
+.source "src/gen.c", 4380
     move    r0, 0
     store   r0, sf[0]
 __L9159:
@@ -90621,7 +90631,7 @@ __L9162:
 __L9163:
     test    r0
     jump    z, __L9161
-.source "src/gen.c", 4374
+.source "src/gen.c", 4381
     load    r0, sf[4]
     add     r0, 9
     load    r0, r0[0]
@@ -90629,7 +90639,7 @@ __L9163:
     add     r0, r1
     load    r0, r0[0]
     store   r0, sf[-2]
-.source "src/gen.c", 4375
+.source "src/gen.c", 4382
     load    r0, sf[-2]
     add     r0, 19
     load    r0, r0[0]
@@ -90654,18 +90664,18 @@ __L9166:
 __L9167:
     test    r0
     jump    z, __L9164
-.source "src/gen.c", 4376
+.source "src/gen.c", 4383
     load    r0, sf[9]
     push    r0
     load    r0, sf[8]
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 4377
+.source "src/gen.c", 4384
     load    r0, sf[-2]
     return
 __L9164:
 __L9160:
-.source "src/gen.c", 4373
+.source "src/gen.c", 4380
     load    r1, sf[0]
     add     r2, r1, 1
     store   r2, sf[0]
@@ -90673,7 +90683,7 @@ __L9160:
     jump    __L9159
 __L9161:
 __L9154:
-.source "src/gen.c", 4381
+.source "src/gen.c", 4388
     move    r0, 0
     store   r0, sf[-1]
 __L9168:
@@ -90693,7 +90703,7 @@ __L9171:
 __L9172:
     test    r0
     jump    z, __L9170
-.source "src/gen.c", 4382
+.source "src/gen.c", 4389
     load    r0, sf[9]
     push    r0
     load    r0, sf[4]
@@ -90739,7 +90749,7 @@ __L9172:
     call    __F596_final_overrider
     add     sp, 7
     store   r0, sf[-3]
-.source "src/gen.c", 4383
+.source "src/gen.c", 4390
     load    r0, sf[-3]
     test    r0
     jump    z, __L9173
@@ -90747,14 +90757,14 @@ __L9172:
     return
 __L9173:
 __L9169:
-.source "src/gen.c", 4381
+.source "src/gen.c", 4388
     load    r1, sf[-1]
     add     r2, r1, 1
     store   r2, sf[-1]
     move    r0, r1
     jump    __L9168
 __L9170:
-.source "src/gen.c", 4385
+.source "src/gen.c", 4392
     move    r0, 0
     return
     move    r0, 0
@@ -90763,9 +90773,9 @@ __L9170:
 
 // zero_chain
 __F597_zero_chain:
-.source "src/gen.c", 4390
+.source "src/gen.c", 4397
     add     sp, -12
-.source "src/gen.c", 4393
+.source "src/gen.c", 4400
     load    r0, sf[4]
     push    r0
     call    __crt_strlen
@@ -90776,10 +90786,10 @@ __F597_zero_chain:
     call    __crt_strlen
     add     sp, 1
     store   r0, sf[-3]
-.source "src/gen.c", 4394
+.source "src/gen.c", 4401
     load    r0, sf[3]
     store   r0, sf[-5]
-.source "src/gen.c", 4396
+.source "src/gen.c", 4403
     load    r0, sf[5]
     push    r0
     load    r0, sf[4]
@@ -90794,7 +90804,7 @@ __F597_zero_chain:
     move    r0, 1
     return
 __L9175:
-.source "src/gen.c", 4397
+.source "src/gen.c", 4404
     load    r0, sf[-3]
     load    r1, sf[-2]
     move    r2, 1
@@ -90821,13 +90831,13 @@ __L9177:
     load    r0, sf[4]
     store   r0, sf[-1]
 __L9178:
-.source "src/gen.c", 4398
+.source "src/gen.c", 4405
     load    r0, sf[-1]
     push    r0
     call    __crt_strlen
     add     sp, 1
     store   r0, sf[-4]
-.source "src/gen.c", 4399
+.source "src/gen.c", 4406
     load    r0, sf[-4]
     push    r0
     load    r0, sf[-1]
@@ -90844,23 +90854,23 @@ __L9178:
     move    r0, 0
     return
 __L9181:
-.source "src/gen.c", 4401
+.source "src/gen.c", 4408
     load    r0, sf[-1]
     store   r0, sf[-6]
-.source "src/gen.c", 4402
+.source "src/gen.c", 4409
 __L9183:
     load    r0, sf[-6]
     load    r0, r0[0]
     test    r0
     jump    z, __L9185
-.source "src/gen.c", 4405
+.source "src/gen.c", 4412
     load    r0, sf[-5]
     add     r0, 7
     load    r0, r0[0]
     add     r0, 16
     load    r0, r0[0]
     store   r0, sf[-9]
-.source "src/gen.c", 4406
+.source "src/gen.c", 4413
     move    r0, 4
     push    r0
     add     r0, sf, -6
@@ -90869,10 +90879,10 @@ __L9183:
     add     r2, r1
     store   r2, r0[0]
     move    r0, r2
-.source "src/gen.c", 4407
+.source "src/gen.c", 4414
     move    r0, 0
     store   r0, sf[-7]
-.source "src/gen.c", 4408
+.source "src/gen.c", 4415
 __L9186:
     move    r0, 48
     push    r0
@@ -90926,9 +90936,9 @@ __L9190:
 __L9187:
     jump    __L9186
 __L9188:
-.source "src/gen.c", 4409
+.source "src/gen.c", 4416
     load    r0, sf[-8]
-.source "src/gen.c", 4410
+.source "src/gen.c", 4417
     load    r0, sf[-9]
     load    r0, r0[0]
     push    r0
@@ -90945,7 +90955,7 @@ __L9188:
 __L9184:
     jump    __L9183
 __L9185:
-.source "src/gen.c", 4412
+.source "src/gen.c", 4419
     load    r0, sf[0]
     push    r0
     load    r0, sf[-4]
@@ -90953,23 +90963,23 @@ __L9185:
     pop     r0
     add     r0, r1
     store   r0, sf[-6]
-.source "src/gen.c", 4413
+.source "src/gen.c", 4420
 __L9195:
     load    r0, sf[-6]
     load    r0, r0[0]
     test    r0
     jump    z, __L9197
-.source "src/gen.c", 4414
+.source "src/gen.c", 4421
     move    r0, 0
     store   r0, sf[-10]
-.source "src/gen.c", 4415
+.source "src/gen.c", 4422
     load    r0, sf[-5]
     add     r0, 7
     load    r0, r0[0]
     add     r0, 16
     load    r0, r0[0]
     store   r0, sf[-11]
-.source "src/gen.c", 4416
+.source "src/gen.c", 4423
     move    r0, 4
     push    r0
     add     r0, sf, -6
@@ -90978,7 +90988,7 @@ __L9195:
     add     r2, r1
     store   r2, r0[0]
     move    r0, r2
-.source "src/gen.c", 4417
+.source "src/gen.c", 4424
 __L9198:
     move    r0, 48
     push    r0
@@ -91032,7 +91042,7 @@ __L9202:
 __L9199:
     jump    __L9198
 __L9200:
-.source "src/gen.c", 4418
+.source "src/gen.c", 4425
     load    r0, sf[-10]
     move    r1, 0
     cmp     r0, r1
@@ -91054,7 +91064,7 @@ __L9210:
     move    r0, 0
     return
 __L9207:
-.source "src/gen.c", 4419
+.source "src/gen.c", 4426
     load    r0, sf[-11]
     load    r0, r0[0]
     push    r0
@@ -91071,7 +91081,7 @@ __L9207:
 __L9196:
     jump    __L9195
 __L9197:
-.source "src/gen.c", 4421
+.source "src/gen.c", 4428
     move    r0, 1
     return
     move    r0, 0
@@ -91080,14 +91090,14 @@ __L9197:
 
 // vtable_fn_type
 __F415_vtable_fn_type:
-.source "src/gen.c", 4427
+.source "src/gen.c", 4434
     add     sp, -5
-.source "src/gen.c", 4428
+.source "src/gen.c", 4435
     load    r0, sf[3]
     add     r0, 2
     load    r0, r0[0]
     store   r0, sf[0]
-.source "src/gen.c", 4429
+.source "src/gen.c", 4436
     move    r0, 1
     push    r0
     load    r0, sf[0]
@@ -91102,10 +91112,10 @@ __F415_vtable_fn_type:
     call    __F6_anew
     add     sp, 1
     store   r0, sf[-1]
-.source "src/gen.c", 4430
+.source "src/gen.c", 4437
     move    r0, 0
     store   r0, sf[-2]
-.source "src/gen.c", 4431
+.source "src/gen.c", 4438
     load    r0, sf[0]
     add     r0, 2
     load    r0, r0[0]
@@ -91137,7 +91147,7 @@ __F415_vtable_fn_type:
     pop     r1
     store   r0, r1[0]
 __L9211:
-.source "src/gen.c", 4432
+.source "src/gen.c", 4439
     load    r0, sf[-1]
     push    r0
     load    r1, sf[-2]
@@ -91154,7 +91164,7 @@ __L9211:
     add     sp, 1
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 4433
+.source "src/gen.c", 4440
     move    r0, 0
     store   r0, sf[-3]
 __L9213:
@@ -91174,7 +91184,7 @@ __L9216:
 __L9217:
     test    r0
     jump    z, __L9215
-.source "src/gen.c", 4434
+.source "src/gen.c", 4441
     load    r0, sf[0]
     add     r0, 4
     load    r0, r0[0]
@@ -91182,7 +91192,7 @@ __L9217:
     add     r0, r1
     load    r0, r0[0]
     store   r0, sf[-4]
-.source "src/gen.c", 4435
+.source "src/gen.c", 4442
     load    r0, sf[-4]
     push    r0
     call    __F276_ty_is_ref
@@ -91198,7 +91208,7 @@ __L9217:
     store   r0, sf[-4]
     jump    __L9219
 __L9218:
-.source "src/gen.c", 4436
+.source "src/gen.c", 4443
     load    r0, sf[-4]
     load    r0, r0[0]
     move    r1, 27
@@ -91213,7 +91223,7 @@ __L9218:
     store   r0, sf[-4]
 __L9220:
 __L9219:
-.source "src/gen.c", 4437
+.source "src/gen.c", 4444
     load    r0, sf[-1]
     push    r0
     load    r1, sf[-2]
@@ -91228,14 +91238,14 @@ __L9219:
     pop     r1
     store   r0, r1[0]
 __L9214:
-.source "src/gen.c", 4433
+.source "src/gen.c", 4440
     load    r1, sf[-3]
     add     r2, r1, 1
     store   r2, sf[-3]
     move    r0, r1
     jump    __L9213
 __L9215:
-.source "src/gen.c", 4439
+.source "src/gen.c", 4446
     load    r0, sf[0]
     add     r0, 6
     load    r0, r0[0]
@@ -91260,9 +91270,9 @@ __L9215:
 
 // emit_thunk
 __F599_emit_thunk:
-.source "src/gen.c", 4445
+.source "src/gen.c", 4452
     add     sp, -14
-.source "src/gen.c", 4446
+.source "src/gen.c", 4453
     load    r1, __G598_thunk_count+1
     add     r2, r1, 1
     store   r2, __G598_thunk_count+1
@@ -91279,15 +91289,15 @@ __F599_emit_thunk:
     call    __F347_fmt_str
     add     sp, 3
     store   r0, sf[0]
-.source "src/gen.c", 4447
+.source "src/gen.c", 4454
     load    r0, sf[9]
     add     r0, 2
     load    r0, r0[0]
     store   r0, sf[-1]
-.source "src/gen.c", 4449
+.source "src/gen.c", 4456
     load    r0, __G333_out+1
     store   r0, sf[-8]
-.source "src/gen.c", 4450
+.source "src/gen.c", 4457
     load    r0, sf[3]
     add     r0, 7
     load    r0, r0[0]
@@ -91295,7 +91305,7 @@ __F599_emit_thunk:
     call    __F296_class_tag
     add     sp, 1
     store   r0, sf[-11]
-.source "src/gen.c", 4451
+.source "src/gen.c", 4458
     load    r0, sf[10]
     test    r0
     jump    z, __L9222
@@ -91313,17 +91323,17 @@ __L9222:
     add     sp, 2
 __L9223:
     store   r0, sf[-12]
-.source "src/gen.c", 4453
+.source "src/gen.c", 4460
     add     r0, sf, -4
     push    r0
     call    __F10_sb_init
     add     sp, 1
-.source "src/gen.c", 4454
+.source "src/gen.c", 4461
     add     r0, sf, -7
     push    r0
     call    __F10_sb_init
     add     sp, 1
-.source "src/gen.c", 4455
+.source "src/gen.c", 4462
     load    r0, sf[10]
     test    r0
     move    z, r0, 1, 0
@@ -91345,7 +91355,7 @@ __L9226:
 __L9227:
     test    r0
     jump    z, __L9224
-.source "src/gen.c", 4456
+.source "src/gen.c", 4463
     move    r0, __W1122+1
     push    r0
     load    r0, sf[-1]
@@ -91365,14 +91375,14 @@ __L9227:
     push    r0
     call    __F13_sb_puts
     add     sp, 2
-.source "src/gen.c", 4457
+.source "src/gen.c", 4464
     move    r0, __W1123+1
     push    r0
     add     r0, sf, -7
     push    r0
     call    __F13_sb_puts
     add     sp, 2
-.source "src/gen.c", 4458
+.source "src/gen.c", 4465
     move    r0, __W1124+1
     push    r0
     add     r0, sf, -4
@@ -91380,7 +91390,7 @@ __L9227:
     call    __F13_sb_puts
     add     sp, 2
 __L9224:
-.source "src/gen.c", 4460
+.source "src/gen.c", 4467
     move    r0, __W1125+1
     push    r0
     load    r0, sf[5]
@@ -91395,14 +91405,14 @@ __L9224:
     push    r0
     call    __F13_sb_puts
     add     sp, 2
-.source "src/gen.c", 4461
+.source "src/gen.c", 4468
     load    r0, sf[4]
     move    r1, 0
     add     r0, r1
     load    r0, r0[0]
     test    r0
     jump    z, __L9228
-.source "src/gen.c", 4462
+.source "src/gen.c", 4469
     load    r0, sf[4]
     move    r1, 1
     add     r0, r1
@@ -91418,7 +91428,7 @@ __L9224:
     store   r0, sf[-9]
     jump    __L9229
 __L9228:
-.source "src/gen.c", 4463
+.source "src/gen.c", 4470
     load    r0, sf[-11]
     push    r0
     move    r0, __W1127+1
@@ -91427,7 +91437,7 @@ __L9228:
     add     sp, 2
     store   r0, sf[-9]
 __L9229:
-.source "src/gen.c", 4464
+.source "src/gen.c", 4471
     load    r0, sf[8]
     move    r1, 0
     add     r0, r1
@@ -91449,20 +91459,20 @@ __L9230:
     load    r0, sf[-9]
 __L9231:
     store   r0, sf[-10]
-.source "src/gen.c", 4465
+.source "src/gen.c", 4472
     load    r0, sf[-10]
     push    r0
     add     r0, sf, -4
     push    r0
     call    __F13_sb_puts
     add     sp, 2
-.source "src/gen.c", 4466
+.source "src/gen.c", 4473
     load    r0, sf[10]
     test    r0
     move    z, r0, 1, 0
     test    r0
     jump    z, __L9232
-.source "src/gen.c", 4467
+.source "src/gen.c", 4474
     move    r0, 0
     store   r0, sf[-13]
 __L9234:
@@ -91482,7 +91492,7 @@ __L9237:
 __L9238:
     test    r0
     jump    z, __L9236
-.source "src/gen.c", 4468
+.source "src/gen.c", 4475
     load    r0, sf[-13]
     push    r0
     move    r0, __W1130+1
@@ -91506,7 +91516,7 @@ __L9238:
     push    r0
     call    __F14_sb_printf
     add     sp, 3
-.source "src/gen.c", 4469
+.source "src/gen.c", 4476
     load    r0, sf[-13]
     push    r0
     move    r0, __W1131+1
@@ -91516,14 +91526,14 @@ __L9238:
     call    __F14_sb_printf
     add     sp, 3
 __L9235:
-.source "src/gen.c", 4467
+.source "src/gen.c", 4474
     load    r1, sf[-13]
     add     r2, r1, 1
     store   r2, sf[-13]
     move    r0, r1
     jump    __L9234
 __L9236:
-.source "src/gen.c", 4471
+.source "src/gen.c", 4478
     load    r0, sf[-1]
     add     r0, 6
     load    r0, r0[0]
@@ -91537,12 +91547,12 @@ __L9236:
     add     sp, 2
 __L9239:
 __L9232:
-.source "src/gen.c", 4473
+.source "src/gen.c", 4480
     load    r0, sf[6]
-.source "src/gen.c", 4474
+.source "src/gen.c", 4481
     move    r0, __G362_pending_helpers+1
     store   r0, __G333_out+1
-.source "src/gen.c", 4475
+.source "src/gen.c", 4482
     add     r0, sf, -7
     load    r0, r0[0]
     push    r0
@@ -91562,7 +91572,7 @@ __L9232:
     push    r0
     call    __F346_emitf
     add     sp, 2
-.source "src/gen.c", 4476
+.source "src/gen.c", 4483
     load    r0, sf[-12]
     load    r0, r0[0]
     move    r1, 1
@@ -91581,7 +91591,7 @@ __L9232:
     add     sp, 3
     jump    __L9242
 __L9241:
-.source "src/gen.c", 4477
+.source "src/gen.c", 4484
     add     r0, sf, -4
     load    r0, r0[0]
     push    r0
@@ -91592,10 +91602,10 @@ __L9241:
     call    __F346_emitf
     add     sp, 3
 __L9242:
-.source "src/gen.c", 4478
+.source "src/gen.c", 4485
     load    r0, sf[-8]
     store   r0, __G333_out+1
-.source "src/gen.c", 4479
+.source "src/gen.c", 4486
     load    r0, sf[0]
     return
     move    r0, 0
@@ -91604,16 +91614,16 @@ __L9242:
 
 // collect_groups
 __F600_collect_groups:
-.source "src/gen.c", 4482
+.source "src/gen.c", 4489
     add     sp, -3
-.source "src/gen.c", 4483
+.source "src/gen.c", 4490
     load    r0, sf[4]
     add     r0, 7
     load    r0, r0[0]
     add     r0, 16
     load    r0, r0[0]
     store   r0, sf[0]
-.source "src/gen.c", 4485
+.source "src/gen.c", 4492
     load    r0, sf[0]
     add     r0, 2
     load    r0, r0[0]
@@ -91631,7 +91641,7 @@ __L9245:
 __L9246:
     test    r0
     jump    z, __L9243
-.source "src/gen.c", 4486
+.source "src/gen.c", 4493
     load    r0, sf[7]
     add     r0, 11
     push    r0
@@ -91654,7 +91664,7 @@ __L9246:
     add     sp, 2
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 4487
+.source "src/gen.c", 4494
     load    r0, sf[7]
     add     r0, 11
     load    r0, r0[0]
@@ -91671,7 +91681,7 @@ __L9246:
     load    r0, sf[5]
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 4488
+.source "src/gen.c", 4495
     load    r0, sf[7]
     add     r0, 11
     load    r0, r0[0]
@@ -91689,7 +91699,7 @@ __L9246:
     load    r0, sf[4]
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 4489
+.source "src/gen.c", 4496
     load    r0, sf[7]
     add     r0, 11
     load    r0, r0[0]
@@ -91735,21 +91745,21 @@ __L9247:
 __L9248:
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 4490
+.source "src/gen.c", 4497
     load    r0, sf[7]
     add     r0, 12
     load    r1, r0[0]
     add     r2, r1, 1
     store   r2, r0[0]
     move    r0, r1
-.source "src/gen.c", 4491
+.source "src/gen.c", 4498
     load    r0, sf[8]
     load    r1, r0[0]
     add     r2, r1, 1
     store   r2, r0[0]
     move    r0, r1
 __L9243:
-.source "src/gen.c", 4493
+.source "src/gen.c", 4500
     move    r0, 0
     store   r0, sf[-1]
 __L9249:
@@ -91769,7 +91779,7 @@ __L9252:
 __L9253:
     test    r0
     jump    z, __L9251
-.source "src/gen.c", 4494
+.source "src/gen.c", 4501
     load    r0, sf[0]
     load    r0, r0[0]
     push    r0
@@ -91783,7 +91793,7 @@ __L9253:
     add     r0, 16
     load    r0, r0[0]
     store   r0, sf[-2]
-.source "src/gen.c", 4495
+.source "src/gen.c", 4502
     load    r0, sf[8]
     push    r0
     load    r0, sf[7]
@@ -91854,7 +91864,7 @@ __L9255:
     call    __F600_collect_groups
     add     sp, 6
 __L9250:
-.source "src/gen.c", 4493
+.source "src/gen.c", 4500
     load    r1, sf[-1]
     add     r2, r1, 1
     store   r2, sf[-1]
@@ -91867,20 +91877,20 @@ __L9251:
 
 // emit_vtables
 __F580_emit_vtables:
-.source "src/gen.c", 4500
+.source "src/gen.c", 4507
     add     sp, -17
-.source "src/gen.c", 4501
+.source "src/gen.c", 4508
     load    r0, sf[3]
     add     r0, 16
     load    r0, r0[0]
     store   r0, sf[0]
-.source "src/gen.c", 4502
+.source "src/gen.c", 4509
     move    r0, 0
     store   r0, sf[-2]
-.source "src/gen.c", 4503
+.source "src/gen.c", 4510
     load    r0, __G333_out+1
     store   r0, sf[-4]
-.source "src/gen.c", 4504
+.source "src/gen.c", 4511
     load    r0, sf[0]
     add     r0, 2
     load    r0, r0[0]
@@ -91890,7 +91900,7 @@ __F580_emit_vtables:
     jump    z, __L9258
     return
 __L9258:
-.source "src/gen.c", 4505
+.source "src/gen.c", 4512
     add     r0, sf, -2
     push    r0
     load    r0, sf[0]
@@ -91907,7 +91917,7 @@ __L9258:
     push    r0
     call    __F600_collect_groups
     add     sp, 6
-.source "src/gen.c", 4506
+.source "src/gen.c", 4513
     load    r0, sf[3]
     add     r0, 8
     load    r0, r0[0]
@@ -91917,16 +91927,16 @@ __L9258:
     jump    z, __L9260
     return
 __L9260:
-.source "src/gen.c", 4508
+.source "src/gen.c", 4515
     load    r0, sf[0]
     add     r0, 7
     load    r0, r0[0]
     test    r0
     jump    z, __L9262
-.source "src/gen.c", 4509
+.source "src/gen.c", 4516
     move    r0, __G362_pending_helpers+1
     store   r0, __G333_out+1
-.source "src/gen.c", 4510
+.source "src/gen.c", 4517
     load    r0, sf[0]
     add     r0, 19
     load    r0, r0[0]
@@ -91953,11 +91963,11 @@ __L9260:
     push    r0
     call    __F346_emitf
     add     sp, 4
-.source "src/gen.c", 4511
+.source "src/gen.c", 4518
     load    r0, sf[-4]
     store   r0, __G333_out+1
 __L9262:
-.source "src/gen.c", 4513
+.source "src/gen.c", 4520
     move    r0, 0
     store   r0, sf[-1]
 __L9264:
@@ -91977,7 +91987,7 @@ __L9267:
 __L9268:
     test    r0
     jump    z, __L9266
-.source "src/gen.c", 4514
+.source "src/gen.c", 4521
     load    r0, sf[0]
     add     r0, 11
     load    r0, r0[0]
@@ -91989,7 +91999,7 @@ __L9268:
     pop     r0
     add     r0, r1
     store   r0, sf[-5]
-.source "src/gen.c", 4515
+.source "src/gen.c", 4522
     load    r0, sf[-5]
     add     r0, 1
     load    r0, r0[0]
@@ -91998,12 +92008,12 @@ __L9268:
     add     r0, 16
     load    r0, r0[0]
     store   r0, sf[-6]
-.source "src/gen.c", 4517
+.source "src/gen.c", 4524
     add     r0, sf, -9
     push    r0
     call    __F10_sb_init
     add     sp, 1
-.source "src/gen.c", 4520
+.source "src/gen.c", 4527
     load    r0, sf[-5]
     add     r0, 2
     load    r0, r0[0]
@@ -92013,10 +92023,10 @@ __L9268:
     call    __F347_fmt_str
     add     sp, 2
     store   r0, sf[-10]
-.source "src/gen.c", 4521
+.source "src/gen.c", 4528
     move    r0, __G362_pending_helpers+1
     store   r0, __G333_out+1
-.source "src/gen.c", 4522
+.source "src/gen.c", 4529
     load    r0, sf[3]
     add     r0, 2
     load    r0, r0[0]
@@ -92030,10 +92040,10 @@ __L9268:
     push    r0
     call    __F346_emitf
     add     sp, 3
-.source "src/gen.c", 4523
+.source "src/gen.c", 4530
     load    r0, sf[-4]
     store   r0, __G333_out+1
-.source "src/gen.c", 4524
+.source "src/gen.c", 4531
     load    r0, sf[-5]
     load    r0, r0[0]
     move    r1, 0
@@ -92041,7 +92051,7 @@ __L9268:
     load    r0, r0[0]
     test    r0
     jump    z, __L9269
-.source "src/gen.c", 4525
+.source "src/gen.c", 4532
     load    r0, sf[-5]
     load    r0, r0[0]
     move    r1, 1
@@ -92060,13 +92070,13 @@ __L9268:
     push    r0
     call    __F14_sb_printf
     add     sp, 5
-.source "src/gen.c", 4526
+.source "src/gen.c", 4533
     load    r1, __G341_dyn_init_count+1
     add     r2, r1, 1
     store   r2, __G341_dyn_init_count+1
     move    r0, r1
 __L9269:
-.source "src/gen.c", 4528
+.source "src/gen.c", 4535
     load    r0, sf[-10]
     push    r0
     move    r0, __W1146+1
@@ -92075,7 +92085,7 @@ __L9269:
     push    r0
     call    __F14_sb_printf
     add     sp, 3
-.source "src/gen.c", 4530
+.source "src/gen.c", 4537
     move    r0, 0
     store   r0, sf[-3]
 __L9271:
@@ -92095,7 +92105,7 @@ __L9274:
 __L9275:
     test    r0
     jump    z, __L9273
-.source "src/gen.c", 4531
+.source "src/gen.c", 4538
     load    r0, sf[-6]
     add     r0, 5
     load    r0, r0[0]
@@ -92107,10 +92117,10 @@ __L9275:
     pop     r0
     add     r0, r1
     store   r0, sf[-11]
-.source "src/gen.c", 4532
+.source "src/gen.c", 4539
     move    r0, 0
     store   r0, sf[-12]
-.source "src/gen.c", 4533
+.source "src/gen.c", 4540
     add     r0, sf, -12
     push    r0
     move    r0, __W1147+1
@@ -92135,12 +92145,12 @@ __L9275:
     call    __F596_final_overrider
     add     sp, 7
     store   r0, sf[-15]
-.source "src/gen.c", 4534
+.source "src/gen.c", 4541
     load    r0, sf[-11]
     add     r0, 3
     load    r0, r0[0]
     store   r0, sf[-16]
-.source "src/gen.c", 4535
+.source "src/gen.c", 4542
     load    r0, sf[-15]
     test    r0
     move    z, r0, 1, 0
@@ -92160,24 +92170,24 @@ __L9278:
 __L9279:
     test    r0
     jump    z, __L9276
-.source "src/gen.c", 4536
+.source "src/gen.c", 4543
     load    r0, sf[0]
     add     r0, 4
     push    r0
     move    r0, 1
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 4537
+.source "src/gen.c", 4544
     move    r0, __W1148+1
     push    r0
     add     r0, sf, -9
     push    r0
     call    __F13_sb_puts
     add     sp, 2
-.source "src/gen.c", 4538
+.source "src/gen.c", 4545
     jump    __L9272
 __L9276:
-.source "src/gen.c", 4540
+.source "src/gen.c", 4547
     load    r0, sf[-11]
     load    r0, r0[0]
     load    r1, __G349_nm_dtor+1
@@ -92202,7 +92212,7 @@ __L9280:
     load    r0, r0[0]
 __L9281:
     store   r0, sf[-13]
-.source "src/gen.c", 4541
+.source "src/gen.c", 4548
     load    r0, sf[-12]
     push    r0
     load    r0, sf[-5]
@@ -92220,7 +92230,7 @@ __L9281:
     store   r0, sf[-14]
     jump    __L9283
 __L9282:
-.source "src/gen.c", 4543
+.source "src/gen.c", 4550
     load    r0, sf[-11]
     load    r0, r0[0]
     load    r1, __G349_nm_dtor+1
@@ -92250,7 +92260,7 @@ __L9282:
     add     sp, 8
     store   r0, sf[-14]
 __L9283:
-.source "src/gen.c", 4545
+.source "src/gen.c", 4552
     load    r0, sf[-14]
     push    r0
     move    r0, __W1150+1
@@ -92260,17 +92270,17 @@ __L9283:
     call    __F14_sb_printf
     add     sp, 3
 __L9272:
-.source "src/gen.c", 4530
+.source "src/gen.c", 4537
     load    r1, sf[-3]
     add     r2, r1, 1
     store   r2, sf[-3]
     move    r0, r1
     jump    __L9271
 __L9273:
-.source "src/gen.c", 4547
+.source "src/gen.c", 4554
     move    r0, __G362_pending_helpers+1
     store   r0, __G333_out+1
-.source "src/gen.c", 4548
+.source "src/gen.c", 4555
     add     r0, sf, -9
     load    r0, r0[0]
     push    r0
@@ -92282,18 +92292,18 @@ __L9273:
     push    r0
     call    __F346_emitf
     add     sp, 3
-.source "src/gen.c", 4549
+.source "src/gen.c", 4556
     load    r0, sf[-4]
     store   r0, __G333_out+1
 __L9265:
-.source "src/gen.c", 4513
+.source "src/gen.c", 4520
     load    r1, sf[-1]
     add     r2, r1, 1
     store   r2, sf[-1]
     move    r0, r1
     jump    __L9264
 __L9266:
-.source "src/gen.c", 4552
+.source "src/gen.c", 4559
     move    r0, 0
     store   r0, sf[-1]
 __L9284:
@@ -92327,14 +92337,14 @@ __L9286:
 
 // emit_set_vptrs
 __F414_emit_set_vptrs:
-.source "src/gen.c", 4556
+.source "src/gen.c", 4563
     add     sp, -3
-.source "src/gen.c", 4557
+.source "src/gen.c", 4564
     load    r0, sf[3]
     add     r0, 16
     load    r0, r0[0]
     store   r0, sf[0]
-.source "src/gen.c", 4559
+.source "src/gen.c", 4566
     move    r0, 0
     store   r0, sf[-1]
 __L9289:
@@ -92354,7 +92364,7 @@ __L9292:
 __L9293:
     test    r0
     jump    z, __L9291
-.source "src/gen.c", 4560
+.source "src/gen.c", 4567
     load    r0, sf[0]
     add     r0, 11
     load    r0, r0[0]
@@ -92366,7 +92376,7 @@ __L9293:
     pop     r0
     add     r0, r1
     store   r0, sf[-2]
-.source "src/gen.c", 4561
+.source "src/gen.c", 4568
     load    r0, sf[-2]
     add     r0, 2
     load    r0, r0[0]
@@ -92386,7 +92396,7 @@ __L9293:
     call    __F346_emitf
     add     sp, 4
 __L9290:
-.source "src/gen.c", 4559
+.source "src/gen.c", 4566
     load    r1, sf[-1]
     add     r2, r1, 1
     store   r2, sf[-1]
@@ -92399,118 +92409,118 @@ __L9291:
 
 // gen_begin
 __F601_gen_begin:
-.source "src/gen.c", 4576
-.source "src/gen.c", 4577
+.source "src/gen.c", 4583
+.source "src/gen.c", 4584
     load    r0, sf[3]
     add     r0, 6
     push    r0
     load    r0, __G333_out+1
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 4578
+.source "src/gen.c", 4585
     load    r0, sf[3]
     add     r0, 7
     push    r0
     load    r0, __G338_temps+1
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 4579
+.source "src/gen.c", 4586
     load    r0, sf[3]
     add     r0, 8
     push    r0
     load    r0, __G336_cur_fn+1
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 4580
+.source "src/gen.c", 4587
     load    r0, sf[3]
     add     r0, 9
     push    r0
     load    r0, __G350_cur_class+1
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 4581
+.source "src/gen.c", 4588
     load    r0, sf[3]
     add     r0, 10
     push    r0
     load    r0, __G337_cur_ret+1
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 4582
+.source "src/gen.c", 4589
     load    r0, sf[3]
     add     r0, 11
     push    r0
     load    r0, __G301_scope2_cur+1
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 4583
+.source "src/gen.c", 4590
     load    r0, sf[3]
     add     r0, 12
     push    r0
     load    r0, __G339_temp_count+1
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 4584
+.source "src/gen.c", 4591
     load    r0, sf[3]
     add     r0, 13
     push    r0
     load    r0, __G351_cur_is_ctor+1
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 4585
+.source "src/gen.c", 4592
     load    r0, sf[3]
     add     r0, 14
     push    r0
     load    r0, __G352_cur_is_dtor+1
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 4586
+.source "src/gen.c", 4593
     load    r0, sf[3]
     add     r0, 15
     push    r0
     load    r0, __G353_cur_method_const+1
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 4587
+.source "src/gen.c", 4594
     load    r0, sf[3]
     add     r0, 16
     push    r0
     load    r0, __G358_nftemps+1
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 4588
+.source "src/gen.c", 4595
     load    r0, sf[3]
     push    r0
     call    __F10_sb_init
     add     sp, 1
-.source "src/gen.c", 4589
+.source "src/gen.c", 4596
     load    r0, sf[3]
     add     r0, 3
     push    r0
     call    __F10_sb_init
     add     sp, 1
-.source "src/gen.c", 4590
+.source "src/gen.c", 4597
     load    r0, sf[3]
     store   r0, __G333_out+1
-.source "src/gen.c", 4591
+.source "src/gen.c", 4598
     load    r0, sf[3]
     add     r0, 3
     store   r0, __G338_temps+1
-.source "src/gen.c", 4592
+.source "src/gen.c", 4599
     load    r0, sf[4]
     store   r0, __G336_cur_fn+1
-.source "src/gen.c", 4593
+.source "src/gen.c", 4600
     load    r0, sf[4]
     add     r0, 2
     load    r0, r0[0]
     add     r0, 2
     load    r0, r0[0]
     store   r0, __G337_cur_ret+1
-.source "src/gen.c", 4594
+.source "src/gen.c", 4601
     load    r0, sf[4]
     add     r0, 15
     load    r0, r0[0]
     store   r0, __G350_cur_class+1
-.source "src/gen.c", 4595
+.source "src/gen.c", 4602
     load    r0, sf[4]
     add     r0, 8
     load    r0, r0[0]
@@ -92520,7 +92530,7 @@ __F601_gen_begin:
     cmp     r0, r1
     move    ne, r0, 1, 0
     store   r0, __G351_cur_is_ctor+1
-.source "src/gen.c", 4596
+.source "src/gen.c", 4603
     load    r0, sf[4]
     add     r0, 8
     load    r0, r0[0]
@@ -92530,19 +92540,19 @@ __F601_gen_begin:
     cmp     r0, r1
     move    ne, r0, 1, 0
     store   r0, __G352_cur_is_dtor+1
-.source "src/gen.c", 4597
+.source "src/gen.c", 4604
     move    r0, 0
     store   r0, __G353_cur_method_const+1
-.source "src/gen.c", 4598
+.source "src/gen.c", 4605
     move    r0, 0
     store   r0, __G339_temp_count+1
-.source "src/gen.c", 4599
+.source "src/gen.c", 4606
     move    r0, 0
     store   r0, __G358_nftemps+1
-.source "src/gen.c", 4600
+.source "src/gen.c", 4607
     move    r0, 0
     store   r0, __G361_nrvo_name+1
-.source "src/gen.c", 4601
+.source "src/gen.c", 4608
     load    r0, sf[4]
     add     r0, 4
     load    r0, r0[0]
@@ -92552,7 +92562,7 @@ __F601_gen_begin:
     call    __F302_scope2_new
     add     sp, 2
     store   r0, __G301_scope2_cur+1
-.source "src/gen.c", 4602
+.source "src/gen.c", 4609
     load    r0, __G301_scope2_cur+1
     add     r0, 15
     push    r0
@@ -92565,39 +92575,39 @@ __F601_gen_begin:
 
 // gen_end
 __F602_gen_end:
-.source "src/gen.c", 4605
-.source "src/gen.c", 4606
+.source "src/gen.c", 4612
+.source "src/gen.c", 4613
     load    r0, sf[3]
     add     r0, 6
     load    r0, r0[0]
     store   r0, __G333_out+1
-.source "src/gen.c", 4607
+.source "src/gen.c", 4614
     load    r0, sf[3]
     add     r0, 7
     load    r0, r0[0]
     store   r0, __G338_temps+1
-.source "src/gen.c", 4608
+.source "src/gen.c", 4615
     move    r0, -1
     store   r0, __G334_cur_line_file+1
-.source "src/gen.c", 4609
+.source "src/gen.c", 4616
     move    r0, __G362_pending_helpers+1
     add     r0, 1
     load    r0, r0[0]
     test    r0
     jump    z, __L9294
-.source "src/gen.c", 4610
+.source "src/gen.c", 4617
     move    r0, __G362_pending_helpers+1
     load    r0, r0[0]
     push    r0
     call    __F345_emit
     add     sp, 1
-.source "src/gen.c", 4611
+.source "src/gen.c", 4618
     move    r0, __G362_pending_helpers+1
     push    r0
     call    __F10_sb_init
     add     sp, 1
 __L9294:
-.source "src/gen.c", 4613
+.source "src/gen.c", 4620
     load    r0, sf[4]
     add     r0, 2
     load    r0, r0[0]
@@ -92613,65 +92623,65 @@ __L9294:
     push    r0
     call    __F346_emitf
     add     sp, 2
-.source "src/gen.c", 4614
+.source "src/gen.c", 4621
     load    r0, sf[3]
     add     r0, 3
     load    r0, r0[0]
     push    r0
     call    __F345_emit
     add     sp, 1
-.source "src/gen.c", 4615
+.source "src/gen.c", 4622
     load    r0, sf[3]
     load    r0, r0[0]
     push    r0
     call    __F345_emit
     add     sp, 1
-.source "src/gen.c", 4616
+.source "src/gen.c", 4623
     move    r0, __W1154+1
     push    r0
     call    __F345_emit
     add     sp, 1
-.source "src/gen.c", 4617
+.source "src/gen.c", 4624
     load    r0, sf[3]
     add     r0, 8
     load    r0, r0[0]
     store   r0, __G336_cur_fn+1
-.source "src/gen.c", 4618
+.source "src/gen.c", 4625
     load    r0, sf[3]
     add     r0, 9
     load    r0, r0[0]
     store   r0, __G350_cur_class+1
-.source "src/gen.c", 4619
+.source "src/gen.c", 4626
     load    r0, sf[3]
     add     r0, 10
     load    r0, r0[0]
     store   r0, __G337_cur_ret+1
-.source "src/gen.c", 4620
+.source "src/gen.c", 4627
     load    r0, sf[3]
     add     r0, 11
     load    r0, r0[0]
     store   r0, __G301_scope2_cur+1
-.source "src/gen.c", 4621
+.source "src/gen.c", 4628
     load    r0, sf[3]
     add     r0, 12
     load    r0, r0[0]
     store   r0, __G339_temp_count+1
-.source "src/gen.c", 4622
+.source "src/gen.c", 4629
     load    r0, sf[3]
     add     r0, 13
     load    r0, r0[0]
     store   r0, __G351_cur_is_ctor+1
-.source "src/gen.c", 4623
+.source "src/gen.c", 4630
     load    r0, sf[3]
     add     r0, 14
     load    r0, r0[0]
     store   r0, __G352_cur_is_dtor+1
-.source "src/gen.c", 4624
+.source "src/gen.c", 4631
     load    r0, sf[3]
     add     r0, 15
     load    r0, r0[0]
     store   r0, __G353_cur_method_const+1
-.source "src/gen.c", 4625
+.source "src/gen.c", 4632
     load    r0, sf[3]
     add     r0, 16
     load    r0, r0[0]
@@ -92682,15 +92692,15 @@ __L9294:
 
 // class_assign_text
 __F603_class_assign_text:
-.source "src/gen.c", 4629
+.source "src/gen.c", 4636
     add     sp, -6
-.source "src/gen.c", 4630
+.source "src/gen.c", 4637
     load    r0, sf[3]
     push    r0
     call    __F413_cinfo
     add     sp, 1
     store   r0, sf[0]
-.source "src/gen.c", 4631
+.source "src/gen.c", 4638
     move    r0, __W1155+1
     push    r0
     call    __F29_intern_str
@@ -92703,7 +92713,7 @@ __F603_class_assign_text:
     call    __F303_sfind
     add     sp, 2
     store   r0, sf[-1]
-.source "src/gen.c", 4635
+.source "src/gen.c", 4642
     add     r0, sf, -2
     move    r1, 0
     add     r0, r1
@@ -92711,11 +92721,11 @@ __F603_class_assign_text:
     load    r0, sf[5]
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 4636
+.source "src/gen.c", 4643
     load    r0, sf[-1]
     test    r0
     jump    z, __L9296
-.source "src/gen.c", 4637
+.source "src/gen.c", 4644
     add     r0, sf, -4
     push    r0
     load    r0, sf[3]
@@ -92729,11 +92739,11 @@ __F603_class_assign_text:
     call    __F327_resolve_overload_obj
     add     sp, 5
     store   r0, sf[-3]
-.source "src/gen.c", 4638
+.source "src/gen.c", 4645
     load    r0, sf[-3]
     test    r0
     jump    z, __L9298
-.source "src/gen.c", 4639
+.source "src/gen.c", 4646
     move    r0, 0
     push    r0
     load    r0, sf[6]
@@ -92754,14 +92764,14 @@ __F603_class_assign_text:
     call    __F452_call_function
     add     sp, 6
     store   r0, sf[-5]
-.source "src/gen.c", 4640
+.source "src/gen.c", 4647
     load    r0, sf[-5]
     add     r0, 6
     load    r0, r0[0]
     return
 __L9298:
 __L9296:
-.source "src/gen.c", 4643
+.source "src/gen.c", 4650
     load    r0, sf[5]
     add     r0, 1
     load    r0, r0[0]
@@ -92813,7 +92823,7 @@ __L9303:
     add     sp, 4
     return
 __L9300:
-.source "src/gen.c", 4644
+.source "src/gen.c", 4651
     load    r0, sf[0]
     add     r0, 43
     load    r0, r0[0]
@@ -92847,7 +92857,7 @@ __L9308:
 __L9309:
     test    r0
     jump    z, __L9306
-.source "src/gen.c", 4645
+.source "src/gen.c", 4652
     load    r0, sf[3]
     add     r0, 7
     load    r0, r0[0]
@@ -92869,7 +92879,7 @@ __L9309:
     call    __F344_serr
     add     sp, 4
 __L9306:
-.source "src/gen.c", 4646
+.source "src/gen.c", 4653
     load    r0, sf[0]
     add     r0, 36
     load    r0, r0[0]
@@ -92893,7 +92903,7 @@ __L9306:
     add     sp, 4
     return
 __L9312:
-.source "src/gen.c", 4647
+.source "src/gen.c", 4654
     load    r0, sf[5]
     add     r0, 6
     load    r0, r0[0]
@@ -92911,8 +92921,8 @@ __L9312:
 
 // class_assign_text_fwd
 __F442_class_assign_text_fwd:
-.source "src/gen.c", 4650
-.source "src/gen.c", 4651
+.source "src/gen.c", 4657
+.source "src/gen.c", 4658
     load    r0, sf[6]
     push    r0
     load    r0, sf[5]
@@ -92930,35 +92940,35 @@ __F442_class_assign_text_fwd:
 
 // gen_implicit_ctor
 __F604_gen_implicit_ctor:
-.source "src/gen.c", 4654
+.source "src/gen.c", 4661
     add     sp, -18
-.source "src/gen.c", 4656
+.source "src/gen.c", 4663
     load    r0, __G393_cur_ctor_pushed+1
     store   r0, sf[-17]
-.source "src/gen.c", 4657
+.source "src/gen.c", 4664
     load    r0, sf[4]
     push    r0
     add     r0, sf, -16
     push    r0
     call    __F601_gen_begin
     add     sp, 2
-.source "src/gen.c", 4658
+.source "src/gen.c", 4665
     move    r0, 0
     push    r0
     load    r0, sf[4]
     push    r0
     call    __F553_emit_ctor_prologue
     add     sp, 2
-.source "src/gen.c", 4659
+.source "src/gen.c", 4666
     call    __F402_emit_ctor_return
-.source "src/gen.c", 4660
+.source "src/gen.c", 4667
     load    r0, sf[4]
     push    r0
     add     r0, sf, -16
     push    r0
     call    __F602_gen_end
     add     sp, 2
-.source "src/gen.c", 4661
+.source "src/gen.c", 4668
     load    r0, sf[-17]
     store   r0, __G393_cur_ctor_pushed+1
     move    r0, 0
@@ -92967,16 +92977,16 @@ __F604_gen_implicit_ctor:
 
 // gen_implicit_dtor
 __F605_gen_implicit_dtor:
-.source "src/gen.c", 4664
+.source "src/gen.c", 4671
     add     sp, -17
-.source "src/gen.c", 4666
+.source "src/gen.c", 4673
     load    r0, sf[4]
     push    r0
     add     r0, sf, -16
     push    r0
     call    __F601_gen_begin
     add     sp, 2
-.source "src/gen.c", 4667
+.source "src/gen.c", 4674
     load    r0, sf[3]
     add     r0, 16
     load    r0, r0[0]
@@ -92989,17 +92999,17 @@ __F605_gen_implicit_dtor:
     call    __F414_emit_set_vptrs
     add     sp, 1
 __L9314:
-.source "src/gen.c", 4668
+.source "src/gen.c", 4675
     load    r0, sf[4]
     push    r0
     call    __F554_emit_member_dtors
     add     sp, 1
-.source "src/gen.c", 4669
+.source "src/gen.c", 4676
     load    r0, sf[4]
     push    r0
     call    __F555_emit_base_dtors
     add     sp, 1
-.source "src/gen.c", 4670
+.source "src/gen.c", 4677
     load    r0, sf[4]
     push    r0
     add     r0, sf, -16
@@ -93012,21 +93022,21 @@ __L9314:
 
 // gen_implicit_copy_move
 __F606_gen_implicit_copy_move:
-.source "src/gen.c", 4673
+.source "src/gen.c", 4680
     add     sp, -33
-.source "src/gen.c", 4675
+.source "src/gen.c", 4682
     load    r0, sf[3]
     add     r0, 16
     load    r0, r0[0]
     store   r0, sf[-17]
-.source "src/gen.c", 4677
+.source "src/gen.c", 4684
     load    r0, sf[4]
     push    r0
     add     r0, sf, -16
     push    r0
     call    __F601_gen_begin
     add     sp, 2
-.source "src/gen.c", 4680
+.source "src/gen.c", 4687
     move    r0, 0
     store   r0, sf[-19]
 __L9316:
@@ -93046,7 +93056,7 @@ __L9319:
 __L9320:
     test    r0
     jump    z, __L9318
-.source "src/gen.c", 4681
+.source "src/gen.c", 4688
     load    r0, sf[-17]
     load    r0, r0[0]
     push    r0
@@ -93057,7 +93067,7 @@ __L9320:
     pop     r0
     add     r0, r1
     store   r0, sf[-20]
-.source "src/gen.c", 4682
+.source "src/gen.c", 4689
     load    r0, sf[-20]
     add     r0, 2
     load    r0, r0[0]
@@ -93075,7 +93085,7 @@ __L9320:
     call    __F311_val_new
     add     sp, 2
     store   r0, sf[-21]
-.source "src/gen.c", 4684
+.source "src/gen.c", 4691
     load    r0, sf[-21]
     add     r0, 1
     push    r0
@@ -93084,14 +93094,14 @@ __L9320:
     move    z, r0, 1, 0
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 4685
+.source "src/gen.c", 4692
     load    r0, sf[-21]
     add     r0, 16
     push    r0
     load    r0, sf[5]
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 4686
+.source "src/gen.c", 4693
     move    r0, 0
     push    r0
     load    r0, sf[-21]
@@ -93113,7 +93123,7 @@ __L9320:
     call    __F457_copy_into
     add     sp, 4
     store   r0, sf[-22]
-.source "src/gen.c", 4687
+.source "src/gen.c", 4694
     load    r0, sf[-22]
     test    r0
     jump    z, __L9321
@@ -93125,14 +93135,14 @@ __L9320:
     add     sp, 2
 __L9321:
 __L9317:
-.source "src/gen.c", 4680
+.source "src/gen.c", 4687
     load    r1, sf[-19]
     add     r2, r1, 1
     store   r2, sf[-19]
     move    r0, r1
     jump    __L9316
 __L9318:
-.source "src/gen.c", 4689
+.source "src/gen.c", 4696
     load    r0, sf[-17]
     add     r0, 2
     load    r0, r0[0]
@@ -93143,7 +93153,7 @@ __L9318:
     call    __F414_emit_set_vptrs
     add     sp, 1
 __L9323:
-.source "src/gen.c", 4691
+.source "src/gen.c", 4698
     load    r0, sf[-17]
     add     r0, 15
     load    r0, r0[0]
@@ -93152,12 +93162,12 @@ __L9325:
     load    r0, sf[-18]
     test    r0
     jump    z, __L9327
-.source "src/gen.c", 4692
+.source "src/gen.c", 4699
     load    r0, sf[-18]
     add     r0, 1
     load    r0, r0[0]
     store   r0, sf[-23]
-.source "src/gen.c", 4693
+.source "src/gen.c", 4700
     load    r0, sf[-18]
     load    r0, r0[0]
     load    r0, r0[0]
@@ -93167,7 +93177,7 @@ __L9325:
     call    __F347_fmt_str
     add     sp, 2
     store   r0, sf[-24]
-.source "src/gen.c", 4694
+.source "src/gen.c", 4701
     load    r0, sf[-18]
     load    r0, r0[0]
     load    r0, r0[0]
@@ -93177,7 +93187,7 @@ __L9325:
     call    __F347_fmt_str
     add     sp, 2
     store   r0, sf[-25]
-.source "src/gen.c", 4695
+.source "src/gen.c", 4702
     load    r0, sf[-17]
     add     r0, 13
     load    r0, r0[0]
@@ -93188,7 +93198,7 @@ __L9325:
     jump    z, __L9328
     jump    __L9327
 __L9328:
-.source "src/gen.c", 4696
+.source "src/gen.c", 4703
     load    r0, sf[-23]
     load    r0, r0[0]
     move    r1, 24
@@ -93196,19 +93206,19 @@ __L9328:
     move    eq, r0, 1, 0
     test    r0
     jump    z, __L9330
-.source "src/gen.c", 4697
+.source "src/gen.c", 4704
     load    r0, sf[-23]
     push    r0
     call    __F437_strip_arrays
     add     sp, 1
     store   r0, sf[-26]
-.source "src/gen.c", 4698
+.source "src/gen.c", 4705
     move    r0, 1
     store   r0, sf[-27]
-.source "src/gen.c", 4699
+.source "src/gen.c", 4706
     load    r0, sf[-23]
     store   r0, sf[-28]
-.source "src/gen.c", 4700
+.source "src/gen.c", 4707
 __L9332:
     load    r0, sf[-28]
     load    r0, r0[0]
@@ -93234,7 +93244,7 @@ __L9332:
 __L9333:
     jump    __L9332
 __L9334:
-.source "src/gen.c", 4701
+.source "src/gen.c", 4708
     load    r0, sf[-26]
     load    r0, r0[0]
     move    r1, 27
@@ -93255,7 +93265,7 @@ __L9337:
 __L9338:
     test    r0
     jump    z, __L9335
-.source "src/gen.c", 4702
+.source "src/gen.c", 4709
     load    r0, sf[-18]
     load    r0, r0[0]
     load    r0, r0[0]
@@ -93280,7 +93290,7 @@ __L9338:
     call    __F311_val_new
     add     sp, 2
     store   r0, sf[-29]
-.source "src/gen.c", 4704
+.source "src/gen.c", 4711
     load    r0, sf[-29]
     add     r0, 1
     push    r0
@@ -93289,14 +93299,14 @@ __L9338:
     move    z, r0, 1, 0
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 4705
+.source "src/gen.c", 4712
     load    r0, sf[-29]
     add     r0, 16
     push    r0
     load    r0, sf[5]
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 4706
+.source "src/gen.c", 4713
     move    r0, 0
     push    r0
     load    r0, sf[-29]
@@ -93325,7 +93335,7 @@ __L9338:
     call    __F457_copy_into
     add     sp, 4
     store   r0, sf[-30]
-.source "src/gen.c", 4707
+.source "src/gen.c", 4714
     load    r0, sf[-30]
     test    r0
     jump    z, __L9339
@@ -93343,7 +93353,7 @@ __L9340:
     add     sp, 3
     jump    __L9336
 __L9335:
-.source "src/gen.c", 4709
+.source "src/gen.c", 4716
     load    r0, sf[-18]
     load    r0, r0[0]
     load    r0, r0[0]
@@ -93363,7 +93373,7 @@ __L9335:
 __L9336:
     jump    __L9331
 __L9330:
-.source "src/gen.c", 4711
+.source "src/gen.c", 4718
     load    r0, sf[-23]
     load    r0, r0[0]
     move    r1, 27
@@ -93371,7 +93381,7 @@ __L9330:
     move    eq, r0, 1, 0
     test    r0
     jump    z, __L9341
-.source "src/gen.c", 4712
+.source "src/gen.c", 4719
     load    r0, sf[-24]
     push    r0
     load    r0, sf[-23]
@@ -93379,7 +93389,7 @@ __L9330:
     call    __F311_val_new
     add     sp, 2
     store   r0, sf[-31]
-.source "src/gen.c", 4714
+.source "src/gen.c", 4721
     load    r0, sf[-31]
     add     r0, 1
     push    r0
@@ -93388,14 +93398,14 @@ __L9330:
     move    z, r0, 1, 0
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 4715
+.source "src/gen.c", 4722
     load    r0, sf[-31]
     add     r0, 16
     push    r0
     load    r0, sf[5]
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 4716
+.source "src/gen.c", 4723
     move    r0, 0
     push    r0
     load    r0, sf[-31]
@@ -93412,7 +93422,7 @@ __L9330:
     call    __F457_copy_into
     add     sp, 4
     store   r0, sf[-32]
-.source "src/gen.c", 4717
+.source "src/gen.c", 4724
     load    r0, sf[-32]
     test    r0
     jump    z, __L9343
@@ -93425,7 +93435,7 @@ __L9330:
 __L9343:
     jump    __L9342
 __L9341:
-.source "src/gen.c", 4718
+.source "src/gen.c", 4725
     load    r0, sf[-24]
     push    r0
     load    r0, sf[-25]
@@ -93437,14 +93447,14 @@ __L9341:
 __L9342:
 __L9331:
 __L9326:
-.source "src/gen.c", 4691
+.source "src/gen.c", 4698
     load    r0, sf[-18]
     add     r0, 5
     load    r0, r0[0]
     store   r0, sf[-18]
     jump    __L9325
 __L9327:
-.source "src/gen.c", 4720
+.source "src/gen.c", 4727
     load    r0, sf[-17]
     add     r0, 13
     load    r0, r0[0]
@@ -93458,12 +93468,12 @@ __L9327:
     call    __F345_emit
     add     sp, 1
 __L9345:
-.source "src/gen.c", 4721
+.source "src/gen.c", 4728
     move    r0, __W1177+1
     push    r0
     call    __F345_emit
     add     sp, 1
-.source "src/gen.c", 4722
+.source "src/gen.c", 4729
     load    r0, sf[4]
     push    r0
     add     r0, sf, -16
@@ -93476,21 +93486,21 @@ __L9345:
 
 // gen_implicit_assign_move
 __F607_gen_implicit_assign_move:
-.source "src/gen.c", 4725
+.source "src/gen.c", 4732
     add     sp, -30
-.source "src/gen.c", 4727
+.source "src/gen.c", 4734
     load    r0, sf[3]
     add     r0, 16
     load    r0, r0[0]
     store   r0, sf[-17]
-.source "src/gen.c", 4729
+.source "src/gen.c", 4736
     load    r0, sf[4]
     push    r0
     add     r0, sf, -16
     push    r0
     call    __F601_gen_begin
     add     sp, 2
-.source "src/gen.c", 4732
+.source "src/gen.c", 4739
     move    r0, 0
     store   r0, sf[-19]
 __L9347:
@@ -93510,7 +93520,7 @@ __L9350:
 __L9351:
     test    r0
     jump    z, __L9349
-.source "src/gen.c", 4733
+.source "src/gen.c", 4740
     load    r0, sf[-17]
     load    r0, r0[0]
     push    r0
@@ -93521,7 +93531,7 @@ __L9351:
     pop     r0
     add     r0, r1
     store   r0, sf[-20]
-.source "src/gen.c", 4734
+.source "src/gen.c", 4741
     load    r0, sf[-20]
     add     r0, 2
     load    r0, r0[0]
@@ -93539,7 +93549,7 @@ __L9351:
     call    __F311_val_new
     add     sp, 2
     store   r0, sf[-21]
-.source "src/gen.c", 4735
+.source "src/gen.c", 4742
     load    r0, sf[-21]
     add     r0, 1
     push    r0
@@ -93548,14 +93558,14 @@ __L9351:
     move    z, r0, 1, 0
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 4736
+.source "src/gen.c", 4743
     load    r0, sf[-21]
     add     r0, 16
     push    r0
     load    r0, sf[5]
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 4737
+.source "src/gen.c", 4744
     move    r0, 0
     push    r0
     load    r0, sf[-21]
@@ -93582,14 +93592,14 @@ __L9351:
     call    __F346_emitf
     add     sp, 2
 __L9348:
-.source "src/gen.c", 4732
+.source "src/gen.c", 4739
     load    r1, sf[-19]
     add     r2, r1, 1
     store   r2, sf[-19]
     move    r0, r1
     jump    __L9347
 __L9349:
-.source "src/gen.c", 4740
+.source "src/gen.c", 4747
     load    r0, sf[-17]
     add     r0, 15
     load    r0, r0[0]
@@ -93598,12 +93608,12 @@ __L9352:
     load    r0, sf[-18]
     test    r0
     jump    z, __L9354
-.source "src/gen.c", 4741
+.source "src/gen.c", 4748
     load    r0, sf[-18]
     add     r0, 1
     load    r0, r0[0]
     store   r0, sf[-22]
-.source "src/gen.c", 4742
+.source "src/gen.c", 4749
     load    r0, sf[-18]
     load    r0, r0[0]
     load    r0, r0[0]
@@ -93613,7 +93623,7 @@ __L9352:
     call    __F347_fmt_str
     add     sp, 2
     store   r0, sf[-23]
-.source "src/gen.c", 4743
+.source "src/gen.c", 4750
     load    r0, sf[-18]
     load    r0, r0[0]
     load    r0, r0[0]
@@ -93623,7 +93633,7 @@ __L9352:
     call    __F347_fmt_str
     add     sp, 2
     store   r0, sf[-24]
-.source "src/gen.c", 4744
+.source "src/gen.c", 4751
     load    r0, sf[-22]
     push    r0
     call    __F276_ty_is_ref
@@ -93660,7 +93670,7 @@ __L9358:
     call    __F344_serr
     add     sp, 4
 __L9355:
-.source "src/gen.c", 4745
+.source "src/gen.c", 4752
     load    r0, sf[-22]
     load    r0, r0[0]
     move    r1, 24
@@ -93668,19 +93678,19 @@ __L9355:
     move    eq, r0, 1, 0
     test    r0
     jump    z, __L9359
-.source "src/gen.c", 4746
+.source "src/gen.c", 4753
     load    r0, sf[-22]
     push    r0
     call    __F437_strip_arrays
     add     sp, 1
     store   r0, sf[-25]
-.source "src/gen.c", 4747
+.source "src/gen.c", 4754
     move    r0, 1
     store   r0, sf[-26]
-.source "src/gen.c", 4748
+.source "src/gen.c", 4755
     load    r0, sf[-22]
     store   r0, sf[-27]
-.source "src/gen.c", 4749
+.source "src/gen.c", 4756
 __L9361:
     load    r0, sf[-27]
     load    r0, r0[0]
@@ -93706,7 +93716,7 @@ __L9361:
 __L9362:
     jump    __L9361
 __L9363:
-.source "src/gen.c", 4750
+.source "src/gen.c", 4757
     load    r0, sf[-25]
     load    r0, r0[0]
     move    r1, 27
@@ -93714,7 +93724,7 @@ __L9363:
     move    eq, r0, 1, 0
     test    r0
     jump    z, __L9364
-.source "src/gen.c", 4751
+.source "src/gen.c", 4758
     load    r0, sf[-18]
     load    r0, r0[0]
     load    r0, r0[0]
@@ -93739,7 +93749,7 @@ __L9363:
     call    __F311_val_new
     add     sp, 2
     store   r0, sf[-28]
-.source "src/gen.c", 4752
+.source "src/gen.c", 4759
     load    r0, sf[-28]
     add     r0, 1
     push    r0
@@ -93748,14 +93758,14 @@ __L9363:
     move    z, r0, 1, 0
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 4753
+.source "src/gen.c", 4760
     load    r0, sf[-28]
     add     r0, 16
     push    r0
     load    r0, sf[5]
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 4754
+.source "src/gen.c", 4761
     move    r0, 0
     push    r0
     load    r0, sf[-28]
@@ -93792,7 +93802,7 @@ __L9363:
     add     sp, 3
     jump    __L9365
 __L9364:
-.source "src/gen.c", 4756
+.source "src/gen.c", 4763
     load    r0, sf[-18]
     load    r0, r0[0]
     load    r0, r0[0]
@@ -93812,7 +93822,7 @@ __L9364:
 __L9365:
     jump    __L9360
 __L9359:
-.source "src/gen.c", 4757
+.source "src/gen.c", 4764
     load    r0, sf[-22]
     load    r0, r0[0]
     move    r1, 27
@@ -93820,7 +93830,7 @@ __L9359:
     move    eq, r0, 1, 0
     test    r0
     jump    z, __L9366
-.source "src/gen.c", 4758
+.source "src/gen.c", 4765
     load    r0, sf[-23]
     push    r0
     load    r0, sf[-22]
@@ -93828,7 +93838,7 @@ __L9359:
     call    __F311_val_new
     add     sp, 2
     store   r0, sf[-29]
-.source "src/gen.c", 4759
+.source "src/gen.c", 4766
     load    r0, sf[-29]
     add     r0, 1
     push    r0
@@ -93837,14 +93847,14 @@ __L9359:
     move    z, r0, 1, 0
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 4760
+.source "src/gen.c", 4767
     load    r0, sf[-29]
     add     r0, 16
     push    r0
     load    r0, sf[5]
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 4761
+.source "src/gen.c", 4768
     move    r0, 0
     push    r0
     load    r0, sf[-29]
@@ -93862,7 +93872,7 @@ __L9359:
     add     sp, 2
     jump    __L9367
 __L9366:
-.source "src/gen.c", 4762
+.source "src/gen.c", 4769
     load    r0, sf[-23]
     push    r0
     load    r0, sf[-24]
@@ -93874,14 +93884,14 @@ __L9366:
 __L9367:
 __L9360:
 __L9353:
-.source "src/gen.c", 4740
+.source "src/gen.c", 4747
     load    r0, sf[-18]
     add     r0, 5
     load    r0, r0[0]
     store   r0, sf[-18]
     jump    __L9352
 __L9354:
-.source "src/gen.c", 4764
+.source "src/gen.c", 4771
     load    r0, sf[-17]
     add     r0, 13
     load    r0, r0[0]
@@ -93895,12 +93905,12 @@ __L9354:
     call    __F345_emit
     add     sp, 1
 __L9368:
-.source "src/gen.c", 4765
+.source "src/gen.c", 4772
     move    r0, __W1193+1
     push    r0
     call    __F345_emit
     add     sp, 1
-.source "src/gen.c", 4766
+.source "src/gen.c", 4773
     load    r0, sf[4]
     push    r0
     add     r0, sf, -16
@@ -93913,7 +93923,7 @@ __L9368:
 
 // gen_implicit_copy
 __F608_gen_implicit_copy:
-.source "src/gen.c", 4768
+.source "src/gen.c", 4775
     move    r0, 0
     push    r0
     load    r0, sf[4]
@@ -93928,7 +93938,7 @@ __F608_gen_implicit_copy:
 
 // gen_implicit_move
 __F575_gen_implicit_move:
-.source "src/gen.c", 4769
+.source "src/gen.c", 4776
     move    r0, 1
     push    r0
     load    r0, sf[4]
@@ -93943,7 +93953,7 @@ __F575_gen_implicit_move:
 
 // gen_implicit_assign
 __F609_gen_implicit_assign:
-.source "src/gen.c", 4770
+.source "src/gen.c", 4777
     move    r0, 0
     push    r0
     load    r0, sf[4]
@@ -93958,7 +93968,7 @@ __F609_gen_implicit_assign:
 
 // gen_implicit_massign
 __F576_gen_implicit_massign:
-.source "src/gen.c", 4771
+.source "src/gen.c", 4778
     move    r0, 1
     push    r0
     load    r0, sf[4]
@@ -93973,14 +93983,14 @@ __F576_gen_implicit_massign:
 
 // emit_implicit_members
 __F577_emit_implicit_members:
-.source "src/gen.c", 4773
+.source "src/gen.c", 4780
     add     sp, -2
-.source "src/gen.c", 4774
+.source "src/gen.c", 4781
     load    r0, sf[3]
     add     r0, 16
     load    r0, r0[0]
     store   r0, sf[0]
-.source "src/gen.c", 4776
+.source "src/gen.c", 4783
     load    r0, sf[0]
     add     r0, 34
     load    r0, r0[0]
@@ -94004,7 +94014,7 @@ __L9372:
 __L9373:
     test    r0
     jump    z, __L9370
-.source "src/gen.c", 4777
+.source "src/gen.c", 4784
     load    r0, sf[0]
     add     r0, 34
     load    r0, r0[0]
@@ -94013,7 +94023,7 @@ __L9373:
     push    r0
     call    __F604_gen_implicit_ctor
     add     sp, 2
-.source "src/gen.c", 4778
+.source "src/gen.c", 4785
     move    r0, 1
     push    r0
     load    r0, sf[0]
@@ -94026,13 +94036,13 @@ __L9373:
     store   r2, r0[0]
     move    r0, r2
 __L9370:
-.source "src/gen.c", 4780
+.source "src/gen.c", 4787
     load    r0, sf[0]
     add     r0, 35
     load    r0, r0[0]
     test    r0
     jump    z, __L9374
-.source "src/gen.c", 4781
+.source "src/gen.c", 4788
     load    r0, sf[0]
     add     r0, 35
     load    r0, r0[0]
@@ -94041,7 +94051,7 @@ __L9370:
     push    r0
     call    __F608_gen_implicit_copy
     add     sp, 2
-.source "src/gen.c", 4782
+.source "src/gen.c", 4789
     move    r0, 1
     push    r0
     load    r0, sf[0]
@@ -94054,13 +94064,13 @@ __L9370:
     store   r2, r0[0]
     move    r0, r2
 __L9374:
-.source "src/gen.c", 4784
+.source "src/gen.c", 4791
     load    r0, sf[0]
     add     r0, 36
     load    r0, r0[0]
     test    r0
     jump    z, __L9376
-.source "src/gen.c", 4785
+.source "src/gen.c", 4792
     load    r0, sf[0]
     add     r0, 36
     load    r0, r0[0]
@@ -94069,7 +94079,7 @@ __L9374:
     push    r0
     call    __F609_gen_implicit_assign
     add     sp, 2
-.source "src/gen.c", 4786
+.source "src/gen.c", 4793
     move    r0, 1
     push    r0
     load    r0, sf[0]
@@ -94082,13 +94092,13 @@ __L9374:
     store   r2, r0[0]
     move    r0, r2
 __L9376:
-.source "src/gen.c", 4788
+.source "src/gen.c", 4795
     load    r0, sf[0]
     add     r0, 44
     load    r0, r0[0]
     test    r0
     jump    z, __L9378
-.source "src/gen.c", 4789
+.source "src/gen.c", 4796
     load    r0, sf[0]
     add     r0, 44
     load    r0, r0[0]
@@ -94097,7 +94107,7 @@ __L9376:
     push    r0
     call    __F575_gen_implicit_move
     add     sp, 2
-.source "src/gen.c", 4790
+.source "src/gen.c", 4797
     move    r0, 1
     push    r0
     load    r0, sf[0]
@@ -94110,13 +94120,13 @@ __L9376:
     store   r2, r0[0]
     move    r0, r2
 __L9378:
-.source "src/gen.c", 4792
+.source "src/gen.c", 4799
     load    r0, sf[0]
     add     r0, 45
     load    r0, r0[0]
     test    r0
     jump    z, __L9380
-.source "src/gen.c", 4793
+.source "src/gen.c", 4800
     load    r0, sf[0]
     add     r0, 45
     load    r0, r0[0]
@@ -94125,7 +94135,7 @@ __L9378:
     push    r0
     call    __F576_gen_implicit_massign
     add     sp, 2
-.source "src/gen.c", 4794
+.source "src/gen.c", 4801
     move    r0, 1
     push    r0
     load    r0, sf[0]
@@ -94138,12 +94148,12 @@ __L9378:
     store   r2, r0[0]
     move    r0, r2
 __L9380:
-.source "src/gen.c", 4796
+.source "src/gen.c", 4803
     load    r0, sf[0]
     add     r0, 19
     load    r0, r0[0]
     store   r0, sf[-1]
-.source "src/gen.c", 4797
+.source "src/gen.c", 4804
     load    r0, sf[-1]
     test    r0
     jump    z, __L9386
@@ -94177,14 +94187,14 @@ __L9384:
 __L9385:
     test    r0
     jump    z, __L9382
-.source "src/gen.c", 4798
+.source "src/gen.c", 4805
     load    r0, sf[-1]
     push    r0
     load    r0, sf[3]
     push    r0
     call    __F605_gen_implicit_dtor
     add     sp, 2
-.source "src/gen.c", 4799
+.source "src/gen.c", 4806
     move    r0, 1
     push    r0
     load    r0, sf[-1]
@@ -94201,26 +94211,26 @@ __L9382:
 
 // process_toplevel_list
 __F568_process_toplevel_list:
-.source "src/gen.c", 4804
+.source "src/gen.c", 4811
     add     sp, -1
-.source "src/gen.c", 4805
+.source "src/gen.c", 4812
 __L9388:
     load    r0, sf[3]
     test    r0
     jump    z, __L9390
-.source "src/gen.c", 4806
+.source "src/gen.c", 4813
     load    r0, __G338_temps+1
     store   r0, sf[0]
-.source "src/gen.c", 4807
+.source "src/gen.c", 4814
     load    r0, sf[3]
     push    r0
     call    __F567_process_decl
     add     sp, 1
-.source "src/gen.c", 4808
+.source "src/gen.c", 4815
     load    r0, sf[0]
     store   r0, __G338_temps+1
 __L9389:
-.source "src/gen.c", 4805
+.source "src/gen.c", 4812
     load    r0, sf[3]
     add     r0, 12
     load    r0, r0[0]
@@ -94233,8 +94243,8 @@ __L9390:
 
 // cond_text
 __F610_cond_text:
-.source "src/gen.c", 4814
-.source "src/gen.c", 4815
+.source "src/gen.c", 4821
+.source "src/gen.c", 4822
     load    r0, sf[3]
     push    r0
     call    __F445_is_class_operand
@@ -94254,13 +94264,13 @@ __F610_cond_text:
     add     sp, 3
     store   r0, sf[3]
 __L9391:
-.source "src/gen.c", 4816
+.source "src/gen.c", 4823
     load    r0, sf[3]
     push    r0
     call    __F466_rvalue
     add     sp, 1
     store   r0, sf[3]
-.source "src/gen.c", 4817
+.source "src/gen.c", 4824
     load    r0, sf[3]
     load    r0, r0[0]
     push    r0
@@ -94283,7 +94293,7 @@ __L9391:
     call    __F344_serr
     add     sp, 3
 __L9393:
-.source "src/gen.c", 4818
+.source "src/gen.c", 4825
     load    r0, sf[3]
     load    r0, r0[0]
     load    r0, r0[0]
@@ -94299,7 +94309,7 @@ __L9393:
     call    __F344_serr
     add     sp, 2
 __L9395:
-.source "src/gen.c", 4819
+.source "src/gen.c", 4826
     load    r0, sf[3]
     add     r0, 6
     load    r0, r0[0]
@@ -94310,8 +94320,8 @@ __L9395:
 
 // block_stmts
 __F611_block_stmts:
-.source "src/gen.c", 4822
-.source "src/gen.c", 4823
+.source "src/gen.c", 4829
+.source "src/gen.c", 4830
 __L9397:
     load    r0, sf[3]
     test    r0
@@ -94333,8 +94343,8 @@ __L9399:
 
 // push_scope
 __F612_push_scope:
-.source "src/gen.c", 4826
-.source "src/gen.c", 4827
+.source "src/gen.c", 4833
+.source "src/gen.c", 4834
     load    r0, __G301_scope2_cur+1
     push    r0
     move    r0, 3
@@ -94348,13 +94358,13 @@ __F612_push_scope:
 
 // pop_scope
 __F613_pop_scope:
-.source "src/gen.c", 4830
-.source "src/gen.c", 4831
+.source "src/gen.c", 4837
+.source "src/gen.c", 4838
     load    r0, __G301_scope2_cur+1
     push    r0
     call    __F548_emit_scope_dtors_text
     add     sp, 1
-.source "src/gen.c", 4832
+.source "src/gen.c", 4839
     load    r0, __G301_scope2_cur+1
     load    r0, r0[0]
     store   r0, __G301_scope2_cur+1
@@ -94364,12 +94374,12 @@ __F613_pop_scope:
 
 // cond_full
 __F614_cond_full:
-.source "src/gen.c", 4837
+.source "src/gen.c", 4844
     add     sp, -3
-.source "src/gen.c", 4838
+.source "src/gen.c", 4845
     load    r0, __G358_nftemps+1
     store   r0, sf[0]
-.source "src/gen.c", 4839
+.source "src/gen.c", 4846
     load    r0, sf[4]
     push    r0
     load    r0, sf[3]
@@ -94380,7 +94390,7 @@ __F614_cond_full:
     call    __F610_cond_text
     add     sp, 2
     store   r0, sf[-1]
-.source "src/gen.c", 4840
+.source "src/gen.c", 4847
     load    r0, sf[0]
     load    r1, __G358_nftemps+1
     cmp     r0, r1
@@ -94392,7 +94402,7 @@ __L9402:
 __L9403:
     test    r0
     jump    z, __L9400
-.source "src/gen.c", 4841
+.source "src/gen.c", 4848
     move    r0, 11
     push    r0
     call    __F267_ty_builtin
@@ -94401,7 +94411,7 @@ __L9403:
     call    __F432_new_temp
     add     sp, 1
     store   r0, sf[-2]
-.source "src/gen.c", 4842
+.source "src/gen.c", 4849
     load    r0, sf[-2]
     push    r0
     load    r0, sf[0]
@@ -94419,7 +94429,7 @@ __L9403:
     add     sp, 5
     return
 __L9400:
-.source "src/gen.c", 4844
+.source "src/gen.c", 4851
     load    r0, sf[-1]
     return
     move    r0, 0
@@ -94428,15 +94438,15 @@ __L9400:
 
 // mark_loop_scope
 __F615_mark_loop_scope:
-.source "src/gen.c", 4847
-.source "src/gen.c", 4848
+.source "src/gen.c", 4854
+.source "src/gen.c", 4855
     load    r0, __G301_scope2_cur+1
     add     r0, 13
     push    r0
     move    r0, 1
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 4849
+.source "src/gen.c", 4856
     load    r0, sf[3]
     test    r0
     jump    z, __L9404
@@ -94453,9 +94463,9 @@ __L9404:
 
 // pending_local_dtors
 __F616_pending_local_dtors:
-.source "src/gen.c", 4853
+.source "src/gen.c", 4860
     add     sp, -1
-.source "src/gen.c", 4855
+.source "src/gen.c", 4862
     load    r0, __G301_scope2_cur+1
     store   r0, sf[0]
 __L9406:
@@ -94477,7 +94487,7 @@ __L9409:
 __L9410:
     test    r0
     jump    z, __L9408
-.source "src/gen.c", 4856
+.source "src/gen.c", 4863
     move    r0, 0
     push    r0
     load    r0, sf[0]
@@ -94497,7 +94507,7 @@ __L9414:
     move    r0, 1
     return
 __L9411:
-.source "src/gen.c", 4857
+.source "src/gen.c", 4864
     load    r0, sf[0]
     add     r0, 15
     load    r0, r0[0]
@@ -94506,13 +94516,13 @@ __L9411:
     jump    __L9408
 __L9415:
 __L9407:
-.source "src/gen.c", 4855
+.source "src/gen.c", 4862
     load    r0, sf[0]
     load    r0, r0[0]
     store   r0, sf[0]
     jump    __L9406
 __L9408:
-.source "src/gen.c", 4859
+.source "src/gen.c", 4866
     move    r0, 0
     return
     move    r0, 0
@@ -94521,8 +94531,8 @@ __L9408:
 
 // local_decl
 __F617_local_decl:
-.source "src/gen.c", 4863
-.source "src/gen.c", 4864
+.source "src/gen.c", 4870
+.source "src/gen.c", 4871
     load    r0, sf[3]
     push    r0
     call    __F567_process_decl
@@ -94533,20 +94543,20 @@ __F617_local_decl:
 
 // cond_decl
 __F618_cond_decl:
-.source "src/gen.c", 4867
+.source "src/gen.c", 4874
     add     sp, -1
-.source "src/gen.c", 4868
+.source "src/gen.c", 4875
     load    r0, __G360_in_cond_decl+1
     store   r0, sf[0]
-.source "src/gen.c", 4869
+.source "src/gen.c", 4876
     move    r0, 1
     store   r0, __G360_in_cond_decl+1
-.source "src/gen.c", 4870
+.source "src/gen.c", 4877
     load    r0, sf[3]
     push    r0
     call    __F617_local_decl
     add     sp, 1
-.source "src/gen.c", 4871
+.source "src/gen.c", 4878
     load    r0, sf[0]
     store   r0, __G360_in_cond_decl+1
     move    r0, 0
@@ -94555,9 +94565,9 @@ __F618_cond_decl:
 
 // stmt
 __F543_stmt:
-.source "src/gen.c", 4874
+.source "src/gen.c", 4881
     add     sp, -60
-.source "src/gen.c", 4877
+.source "src/gen.c", 4884
     load    r0, sf[3]
     load    r0, r0[0]
     cmp     r0, 39
@@ -94597,47 +94607,47 @@ __F543_stmt:
     cmp     r0, 56
     jump    eq, __L9435
     jump    __L9417
-.source "src/gen.c", 4878
+.source "src/gen.c", 4885
 __L9418:
-.source "src/gen.c", 4879
+.source "src/gen.c", 4886
     load    r0, sf[3]
     push    r0
     call    __F460_emit_line
     add     sp, 1
-.source "src/gen.c", 4880
+.source "src/gen.c", 4887
     move    r0, __W1197+1
     push    r0
     call    __F345_emit
     add     sp, 1
-.source "src/gen.c", 4881
+.source "src/gen.c", 4888
     call    __F612_push_scope
-.source "src/gen.c", 4882
+.source "src/gen.c", 4889
     load    r0, sf[3]
     add     r0, 8
     load    r0, r0[0]
     push    r0
     call    __F611_block_stmts
     add     sp, 1
-.source "src/gen.c", 4883
+.source "src/gen.c", 4890
     call    __F613_pop_scope
-.source "src/gen.c", 4884
+.source "src/gen.c", 4891
     move    r0, __W1198+1
     push    r0
     call    __F345_emit
     add     sp, 1
-.source "src/gen.c", 4885
+.source "src/gen.c", 4892
     return
-.source "src/gen.c", 4886
+.source "src/gen.c", 4893
 __L9419:
-.source "src/gen.c", 4888
+.source "src/gen.c", 4895
     load    r0, __G358_nftemps+1
     store   r0, sf[-2]
-.source "src/gen.c", 4889
+.source "src/gen.c", 4896
     load    r0, sf[3]
     push    r0
     call    __F460_emit_line
     add     sp, 1
-.source "src/gen.c", 4890
+.source "src/gen.c", 4897
     load    r0, sf[3]
     add     r0, 8
     load    r0, r0[0]
@@ -94645,7 +94655,7 @@ __L9419:
     call    __F465_expr
     add     sp, 1
     store   r0, sf[0]
-.source "src/gen.c", 4891
+.source "src/gen.c", 4898
     load    r0, sf[0]
     add     r0, 6
     load    r0, r0[0]
@@ -94654,53 +94664,53 @@ __L9419:
     push    r0
     call    __F346_emitf
     add     sp, 2
-.source "src/gen.c", 4892
+.source "src/gen.c", 4899
     load    r0, sf[-2]
     push    r0
     call    __F431_flush_temps_stmt
     add     sp, 1
-.source "src/gen.c", 4894
+.source "src/gen.c", 4901
     return
-.source "src/gen.c", 4895
+.source "src/gen.c", 4902
 __L9420:
-.source "src/gen.c", 4896
+.source "src/gen.c", 4903
     move    r0, __W1200+1
     push    r0
     call    __F345_emit
     add     sp, 1
-.source "src/gen.c", 4897
+.source "src/gen.c", 4904
     return
-.source "src/gen.c", 4898
+.source "src/gen.c", 4905
 __L9421:
-.source "src/gen.c", 4899
+.source "src/gen.c", 4906
     load    r0, sf[3]
     push    r0
     call    __F460_emit_line
     add     sp, 1
-.source "src/gen.c", 4900
+.source "src/gen.c", 4907
     load    r0, sf[3]
     add     r0, 8
     load    r0, r0[0]
     push    r0
     call    __F617_local_decl
     add     sp, 1
-.source "src/gen.c", 4901
+.source "src/gen.c", 4908
     return
-.source "src/gen.c", 4902
+.source "src/gen.c", 4909
 __L9422:
-.source "src/gen.c", 4903
+.source "src/gen.c", 4910
     load    r0, sf[3]
     push    r0
     call    __F460_emit_line
     add     sp, 1
-.source "src/gen.c", 4904
+.source "src/gen.c", 4911
     call    __F612_push_scope
-.source "src/gen.c", 4905
+.source "src/gen.c", 4912
     move    r0, __W1201+1
     push    r0
     call    __F345_emit
     add     sp, 1
-.source "src/gen.c", 4906
+.source "src/gen.c", 4913
     load    r0, sf[3]
     add     r0, 11
     load    r0, r0[0]
@@ -94713,7 +94723,7 @@ __L9422:
     call    __F543_stmt
     add     sp, 1
 __L9436:
-.source "src/gen.c", 4907
+.source "src/gen.c", 4914
     load    r0, sf[3]
     add     r0, 4
     load    r0, r0[0]
@@ -94721,7 +94731,7 @@ __L9436:
     and     r0, r1
     test    r0
     jump    z, __L9438
-.source "src/gen.c", 4909
+.source "src/gen.c", 4916
     load    r0, sf[3]
     add     r0, 8
     load    r0, r0[0]
@@ -94729,7 +94739,7 @@ __L9436:
     call    __F465_expr
     add     sp, 1
     store   r0, sf[-3]
-.source "src/gen.c", 4910
+.source "src/gen.c", 4917
     load    r0, sf[-3]
     push    r0
     call    __F445_is_class_operand
@@ -94749,7 +94759,7 @@ __L9436:
     add     sp, 3
     store   r0, sf[-3]
 __L9440:
-.source "src/gen.c", 4911
+.source "src/gen.c", 4918
     load    r0, sf[-3]
     add     r0, 2
     load    r0, r0[0]
@@ -94764,55 +94774,55 @@ __L9440:
     call    __F344_serr
     add     sp, 2
 __L9442:
-.source "src/gen.c", 4912
+.source "src/gen.c", 4919
     load    r0, sf[-3]
     add     r0, 3
     load    r0, r0[0]
     test    r0
     jump    z, __L9444
-.source "src/gen.c", 4913
+.source "src/gen.c", 4920
     call    __F612_push_scope
-.source "src/gen.c", 4914
+.source "src/gen.c", 4921
     load    r0, sf[3]
     add     r0, 9
     load    r0, r0[0]
     push    r0
     call    __F543_stmt
     add     sp, 1
-.source "src/gen.c", 4915
+.source "src/gen.c", 4922
     call    __F613_pop_scope
     jump    __L9445
 __L9444:
-.source "src/gen.c", 4916
+.source "src/gen.c", 4923
     load    r0, sf[3]
     add     r0, 10
     load    r0, r0[0]
     test    r0
     jump    z, __L9446
-.source "src/gen.c", 4917
+.source "src/gen.c", 4924
     call    __F612_push_scope
-.source "src/gen.c", 4918
+.source "src/gen.c", 4925
     load    r0, sf[3]
     add     r0, 10
     load    r0, r0[0]
     push    r0
     call    __F543_stmt
     add     sp, 1
-.source "src/gen.c", 4919
+.source "src/gen.c", 4926
     call    __F613_pop_scope
 __L9446:
 __L9445:
-.source "src/gen.c", 4921
+.source "src/gen.c", 4928
     move    r0, __W1203+1
     push    r0
     call    __F345_emit
     add     sp, 1
-.source "src/gen.c", 4922
+.source "src/gen.c", 4929
     call    __F613_pop_scope
-.source "src/gen.c", 4923
+.source "src/gen.c", 4930
     return
 __L9438:
-.source "src/gen.c", 4925
+.source "src/gen.c", 4932
     load    r0, sf[3]
     add     r0, 8
     load    r0, r0[0]
@@ -94822,21 +94832,21 @@ __L9438:
     move    eq, r0, 1, 0
     test    r0
     jump    z, __L9448
-.source "src/gen.c", 4926
+.source "src/gen.c", 4933
     load    r0, sf[3]
     add     r0, 8
     load    r0, r0[0]
     add     r0, 9
     load    r0, r0[0]
     store   r0, sf[-4]
-.source "src/gen.c", 4928
+.source "src/gen.c", 4935
     load    r0, sf[3]
     add     r0, 8
     load    r0, r0[0]
     push    r0
     call    __F618_cond_decl
     add     sp, 1
-.source "src/gen.c", 4929
+.source "src/gen.c", 4936
     load    r0, sf[-4]
     add     r0, 8
     load    r0, r0[0]
@@ -94854,7 +94864,7 @@ __L9438:
     call    __F303_sfind
     add     sp, 2
     store   r0, sf[-5]
-.source "src/gen.c", 4930
+.source "src/gen.c", 4937
     load    r0, sf[-5]
     add     r0, 3
     load    r0, r0[0]
@@ -94865,7 +94875,7 @@ __L9438:
     add     sp, 2
     jump    __L9449
 __L9448:
-.source "src/gen.c", 4932
+.source "src/gen.c", 4939
     load    r0, sf[3]
     push    r0
     load    r0, sf[3]
@@ -94880,74 +94890,74 @@ __L9448:
     call    __F346_emitf
     add     sp, 2
 __L9449:
-.source "src/gen.c", 4934
+.source "src/gen.c", 4941
     move    r0, __W1206+1
     push    r0
     call    __F345_emit
     add     sp, 1
-.source "src/gen.c", 4935
+.source "src/gen.c", 4942
     call    __F612_push_scope
-.source "src/gen.c", 4936
+.source "src/gen.c", 4943
     load    r0, sf[3]
     add     r0, 9
     load    r0, r0[0]
     push    r0
     call    __F543_stmt
     add     sp, 1
-.source "src/gen.c", 4937
+.source "src/gen.c", 4944
     call    __F613_pop_scope
-.source "src/gen.c", 4938
+.source "src/gen.c", 4945
     move    r0, __W1207+1
     push    r0
     call    __F345_emit
     add     sp, 1
-.source "src/gen.c", 4939
+.source "src/gen.c", 4946
     load    r0, sf[3]
     add     r0, 10
     load    r0, r0[0]
     test    r0
     jump    z, __L9450
-.source "src/gen.c", 4940
+.source "src/gen.c", 4947
     move    r0, __W1208+1
     push    r0
     call    __F345_emit
     add     sp, 1
-.source "src/gen.c", 4941
+.source "src/gen.c", 4948
     call    __F612_push_scope
-.source "src/gen.c", 4942
+.source "src/gen.c", 4949
     load    r0, sf[3]
     add     r0, 10
     load    r0, r0[0]
     push    r0
     call    __F543_stmt
     add     sp, 1
-.source "src/gen.c", 4943
+.source "src/gen.c", 4950
     call    __F613_pop_scope
-.source "src/gen.c", 4944
+.source "src/gen.c", 4951
     move    r0, __W1209+1
     push    r0
     call    __F345_emit
     add     sp, 1
 __L9450:
-.source "src/gen.c", 4946
+.source "src/gen.c", 4953
     move    r0, __W1210+1
     push    r0
     call    __F345_emit
     add     sp, 1
-.source "src/gen.c", 4947
+.source "src/gen.c", 4954
     call    __F613_pop_scope
-.source "src/gen.c", 4948
+.source "src/gen.c", 4955
     return
-.source "src/gen.c", 4949
+.source "src/gen.c", 4956
 __L9423:
-.source "src/gen.c", 4950
+.source "src/gen.c", 4957
     load    r0, sf[3]
     push    r0
     call    __F460_emit_line
     add     sp, 1
-.source "src/gen.c", 4951
+.source "src/gen.c", 4958
     call    __F612_push_scope
-.source "src/gen.c", 4952
+.source "src/gen.c", 4959
     load    r0, sf[3]
     add     r0, 8
     load    r0, r0[0]
@@ -94957,26 +94967,26 @@ __L9423:
     move    eq, r0, 1, 0
     test    r0
     jump    z, __L9452
-.source "src/gen.c", 4953
+.source "src/gen.c", 4960
     load    r0, sf[3]
     add     r0, 8
     load    r0, r0[0]
     add     r0, 9
     load    r0, r0[0]
     store   r0, sf[-6]
-.source "src/gen.c", 4955
+.source "src/gen.c", 4962
     move    r0, __W1211+1
     push    r0
     call    __F345_emit
     add     sp, 1
-.source "src/gen.c", 4956
+.source "src/gen.c", 4963
     load    r0, sf[3]
     add     r0, 8
     load    r0, r0[0]
     push    r0
     call    __F618_cond_decl
     add     sp, 1
-.source "src/gen.c", 4957
+.source "src/gen.c", 4964
     load    r0, sf[-6]
     add     r0, 8
     load    r0, r0[0]
@@ -94994,7 +95004,7 @@ __L9423:
     call    __F303_sfind
     add     sp, 2
     store   r0, sf[-7]
-.source "src/gen.c", 4958
+.source "src/gen.c", 4965
     load    r0, sf[-7]
     add     r0, 3
     load    r0, r0[0]
@@ -95005,7 +95015,7 @@ __L9423:
     add     sp, 2
     jump    __L9453
 __L9452:
-.source "src/gen.c", 4959
+.source "src/gen.c", 4966
     load    r0, sf[3]
     push    r0
     load    r0, sf[3]
@@ -95020,80 +95030,80 @@ __L9452:
     call    __F346_emitf
     add     sp, 2
 __L9453:
-.source "src/gen.c", 4960
+.source "src/gen.c", 4967
     load    r1, __G343_loop_depth+1
     add     r2, r1, 1
     store   r2, __G343_loop_depth+1
     move    r0, r1
-.source "src/gen.c", 4961
+.source "src/gen.c", 4968
     call    __F612_push_scope
-.source "src/gen.c", 4962
+.source "src/gen.c", 4969
     move    r0, 1
     push    r0
     call    __F615_mark_loop_scope
     add     sp, 1
-.source "src/gen.c", 4963
+.source "src/gen.c", 4970
     load    r0, sf[3]
     add     r0, 9
     load    r0, r0[0]
     push    r0
     call    __F543_stmt
     add     sp, 1
-.source "src/gen.c", 4964
+.source "src/gen.c", 4971
     call    __F613_pop_scope
-.source "src/gen.c", 4965
+.source "src/gen.c", 4972
     load    r1, __G343_loop_depth+1
     add     r2, r1, -1
     store   r2, __G343_loop_depth+1
     move    r0, r1
-.source "src/gen.c", 4966
+.source "src/gen.c", 4973
     move    r0, __W1214+1
     push    r0
     call    __F345_emit
     add     sp, 1
-.source "src/gen.c", 4967
+.source "src/gen.c", 4974
     call    __F613_pop_scope
-.source "src/gen.c", 4968
+.source "src/gen.c", 4975
     return
-.source "src/gen.c", 4969
+.source "src/gen.c", 4976
 __L9424:
-.source "src/gen.c", 4970
+.source "src/gen.c", 4977
     load    r0, sf[3]
     push    r0
     call    __F460_emit_line
     add     sp, 1
-.source "src/gen.c", 4971
+.source "src/gen.c", 4978
     move    r0, __W1215+1
     push    r0
     call    __F345_emit
     add     sp, 1
-.source "src/gen.c", 4972
+.source "src/gen.c", 4979
     load    r1, __G343_loop_depth+1
     add     r2, r1, 1
     store   r2, __G343_loop_depth+1
     move    r0, r1
-.source "src/gen.c", 4973
+.source "src/gen.c", 4980
     call    __F612_push_scope
-.source "src/gen.c", 4974
+.source "src/gen.c", 4981
     move    r0, 1
     push    r0
     call    __F615_mark_loop_scope
     add     sp, 1
-.source "src/gen.c", 4975
+.source "src/gen.c", 4982
     load    r0, sf[3]
     add     r0, 8
     load    r0, r0[0]
     push    r0
     call    __F543_stmt
     add     sp, 1
-.source "src/gen.c", 4976
+.source "src/gen.c", 4983
     call    __F613_pop_scope
-.source "src/gen.c", 4977
+.source "src/gen.c", 4984
     load    r1, __G343_loop_depth+1
     add     r2, r1, -1
     store   r2, __G343_loop_depth+1
     move    r0, r1
-.source "src/gen.c", 4978
+.source "src/gen.c", 4985
     load    r0, sf[3]
     push    r0
     load    r0, sf[3]
@@ -95107,29 +95117,29 @@ __L9424:
     push    r0
     call    __F346_emitf
     add     sp, 2
-.source "src/gen.c", 4979
+.source "src/gen.c", 4986
     return
-.source "src/gen.c", 4980
+.source "src/gen.c", 4987
 __L9425:
-.source "src/gen.c", 4981
+.source "src/gen.c", 4988
     load    r0, sf[3]
     push    r0
     call    __F460_emit_line
     add     sp, 1
-.source "src/gen.c", 4982
+.source "src/gen.c", 4989
     call    __F612_push_scope
-.source "src/gen.c", 4983
+.source "src/gen.c", 4990
     move    r0, __W1217+1
     push    r0
     call    __F345_emit
     add     sp, 1
-.source "src/gen.c", 4984
+.source "src/gen.c", 4991
     load    r0, sf[3]
     add     r0, 8
     load    r0, r0[0]
     test    r0
     jump    z, __L9454
-.source "src/gen.c", 4985
+.source "src/gen.c", 4992
     load    r0, sf[3]
     add     r0, 8
     load    r0, r0[0]
@@ -95147,7 +95157,7 @@ __L9425:
     add     sp, 1
     jump    __L9457
 __L9456:
-.source "src/gen.c", 4986
+.source "src/gen.c", 4993
     load    r0, sf[3]
     add     r0, 8
     load    r0, r0[0]
@@ -95156,18 +95166,18 @@ __L9456:
     add     sp, 1
 __L9457:
 __L9454:
-.source "src/gen.c", 4988
+.source "src/gen.c", 4995
     move    r0, __W1218+1
     push    r0
     call    __F345_emit
     add     sp, 1
-.source "src/gen.c", 4989
+.source "src/gen.c", 4996
     load    r0, sf[3]
     add     r0, 9
     load    r0, r0[0]
     test    r0
     jump    z, __L9458
-.source "src/gen.c", 4990
+.source "src/gen.c", 4997
     load    r0, sf[3]
     add     r0, 9
     load    r0, r0[0]
@@ -95184,7 +95194,7 @@ __L9454:
     call    __F344_serr
     add     sp, 2
 __L9460:
-.source "src/gen.c", 4991
+.source "src/gen.c", 4998
     load    r0, sf[3]
     push    r0
     load    r0, sf[3]
@@ -95199,21 +95209,21 @@ __L9460:
     call    __F346_emitf
     add     sp, 2
 __L9458:
-.source "src/gen.c", 4993
+.source "src/gen.c", 5000
     move    r0, __W1221+1
     push    r0
     call    __F345_emit
     add     sp, 1
-.source "src/gen.c", 4994
+.source "src/gen.c", 5001
     load    r0, sf[3]
     add     r0, 10
     load    r0, r0[0]
     test    r0
     jump    z, __L9462
-.source "src/gen.c", 4995
+.source "src/gen.c", 5002
     load    r0, __G358_nftemps+1
     store   r0, sf[-8]
-.source "src/gen.c", 4996
+.source "src/gen.c", 5003
     load    r0, sf[3]
     add     r0, 10
     load    r0, r0[0]
@@ -95223,7 +95233,7 @@ __L9458:
     add     r0, 6
     load    r0, r0[0]
     store   r0, sf[-9]
-.source "src/gen.c", 4997
+.source "src/gen.c", 5004
     load    r0, sf[-8]
     load    r1, __G358_nftemps+1
     cmp     r0, r1
@@ -95256,49 +95266,49 @@ __L9465:
     call    __F346_emitf
     add     sp, 2
 __L9462:
-.source "src/gen.c", 4999
+.source "src/gen.c", 5006
     move    r0, __W1224+1
     push    r0
     call    __F345_emit
     add     sp, 1
-.source "src/gen.c", 5000
+.source "src/gen.c", 5007
     load    r1, __G343_loop_depth+1
     add     r2, r1, 1
     store   r2, __G343_loop_depth+1
     move    r0, r1
-.source "src/gen.c", 5001
+.source "src/gen.c", 5008
     call    __F612_push_scope
-.source "src/gen.c", 5002
+.source "src/gen.c", 5009
     move    r0, 1
     push    r0
     call    __F615_mark_loop_scope
     add     sp, 1
-.source "src/gen.c", 5003
+.source "src/gen.c", 5010
     load    r0, sf[3]
     add     r0, 11
     load    r0, r0[0]
     push    r0
     call    __F543_stmt
     add     sp, 1
-.source "src/gen.c", 5004
+.source "src/gen.c", 5011
     call    __F613_pop_scope
-.source "src/gen.c", 5005
+.source "src/gen.c", 5012
     load    r1, __G343_loop_depth+1
     add     r2, r1, -1
     store   r2, __G343_loop_depth+1
     move    r0, r1
-.source "src/gen.c", 5006
+.source "src/gen.c", 5013
     move    r0, __W1225+1
     push    r0
     call    __F345_emit
     add     sp, 1
-.source "src/gen.c", 5007
+.source "src/gen.c", 5014
     call    __F613_pop_scope
-.source "src/gen.c", 5008
+.source "src/gen.c", 5015
     return
-.source "src/gen.c", 5009
+.source "src/gen.c", 5016
 __L9426:
-.source "src/gen.c", 5010
+.source "src/gen.c", 5017
     load    r0, sf[3]
     add     r0, 8
     load    r0, r0[0]
@@ -95308,7 +95318,7 @@ __L9426:
     move    eq, r0, 1, 0
     test    r0
     jump    z, __L9468
-.source "src/gen.c", 5012
+.source "src/gen.c", 5019
     load    r0, sf[3]
     add     r0, 8
     load    r0, r0[0]
@@ -95333,7 +95343,7 @@ __L9426:
     call    __F6_anew
     add     sp, 1
     store   r0, sf[-14]
-.source "src/gen.c", 5013
+.source "src/gen.c", 5020
     load    r0, sf[-14]
     store   r0, sf[-15]
     move    r0, 15
@@ -95351,7 +95361,7 @@ __L9426:
     call    __F6_anew
     add     sp, 1
     store   r0, sf[-18]
-.source "src/gen.c", 5014
+.source "src/gen.c", 5021
     load    r1, __G340_label_count+1
     add     r2, r1, 1
     store   r2, __G340_label_count+1
@@ -95365,7 +95375,7 @@ __L9426:
     call    __F29_intern_str
     add     sp, 1
     store   r0, sf[-21]
-.source "src/gen.c", 5015
+.source "src/gen.c", 5022
     load    r0, sf[-11]
     push    r0
     load    r0, sf[3]
@@ -95378,20 +95388,20 @@ __L9470:
     cmp     r2, 15
     jump    lt, __L9470
     move    r0, r1
-.source "src/gen.c", 5016
+.source "src/gen.c", 5023
     load    r0, sf[-11]
     add     r0, 12
     push    r0
     move    r0, 0
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 5017
+.source "src/gen.c", 5024
     load    r0, sf[-12]
     push    r0
     move    r0, 7
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 5018
+.source "src/gen.c", 5025
     load    r0, sf[-12]
     add     r0, 1
     push    r0
@@ -95400,7 +95410,7 @@ __L9470:
     load    r0, r0[0]
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 5019
+.source "src/gen.c", 5026
     load    r0, sf[-12]
     add     r0, 2
     push    r0
@@ -95409,7 +95419,7 @@ __L9470:
     load    r0, r0[0]
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 5020
+.source "src/gen.c", 5027
     load    r0, sf[-12]
     add     r0, 8
     push    r0
@@ -95418,64 +95428,64 @@ __L9470:
     load    r0, r0[0]
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 5021
+.source "src/gen.c", 5028
     load    r0, sf[-13]
     push    r0
     move    r0, 8
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 5022
+.source "src/gen.c", 5029
     load    r0, sf[-14]
     push    r0
     move    r0, 12
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 5023
+.source "src/gen.c", 5030
     move    r0, 15
     push    r0
     call    __F6_anew
     add     sp, 1
     store   r0, sf[-19]
-.source "src/gen.c", 5024
+.source "src/gen.c", 5031
     move    r0, 15
     push    r0
     call    __F6_anew
     add     sp, 1
     store   r0, sf[-20]
-.source "src/gen.c", 5025
+.source "src/gen.c", 5032
     load    r0, sf[-19]
     push    r0
     move    r0, 1
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 5026
+.source "src/gen.c", 5033
     load    r0, sf[-20]
     push    r0
     move    r0, 2
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 5027
+.source "src/gen.c", 5034
     load    r0, sf[-20]
     add     r0, 6
     push    r0
     load    r0, sf[-21]
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 5028
+.source "src/gen.c", 5035
     load    r0, sf[-19]
     add     r0, 8
     push    r0
     load    r0, sf[-20]
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 5029
+.source "src/gen.c", 5036
     load    r0, sf[-14]
     add     r0, 8
     push    r0
     load    r0, sf[-19]
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 5030
+.source "src/gen.c", 5037
     load    r0, sf[-10]
     add     r0, 3
     load    r0, r0[0]
@@ -95499,13 +95509,13 @@ __L9473:
 __L9474:
     test    r0
     jump    z, __L9471
-.source "src/gen.c", 5031
+.source "src/gen.c", 5038
     move    r0, 15
     push    r0
     call    __F6_anew
     add     sp, 1
     store   r0, sf[-22]
-.source "src/gen.c", 5032
+.source "src/gen.c", 5039
     load    r0, sf[-22]
     push    r0
     load    r0, sf[-10]
@@ -95523,39 +95533,39 @@ __L9475:
 __L9476:
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 5033
+.source "src/gen.c", 5040
     load    r0, sf[-22]
     add     r0, 8
     push    r0
     load    r0, sf[-14]
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 5034
+.source "src/gen.c", 5041
     load    r0, sf[-22]
     store   r0, sf[-15]
 __L9471:
-.source "src/gen.c", 5036
+.source "src/gen.c", 5043
     load    r0, sf[-13]
     add     r0, 8
     push    r0
     load    r0, sf[-15]
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 5037
+.source "src/gen.c", 5044
     load    r0, sf[-12]
     add     r0, 9
     push    r0
     load    r0, sf[-13]
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 5038
+.source "src/gen.c", 5045
     load    r0, sf[-11]
     add     r0, 8
     push    r0
     load    r0, sf[-12]
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 5039
+.source "src/gen.c", 5046
     load    r0, sf[-16]
     push    r0
     load    r0, sf[-10]
@@ -95568,21 +95578,21 @@ __L9477:
     cmp     r2, 15
     jump    lt, __L9477
     move    r0, r1
-.source "src/gen.c", 5040
+.source "src/gen.c", 5047
     load    r0, sf[-16]
     add     r0, 12
     push    r0
     move    r0, 0
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 5041
+.source "src/gen.c", 5048
     load    r0, sf[-16]
     add     r0, 3
     push    r0
     move    r0, 43
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 5042
+.source "src/gen.c", 5049
     load    r0, sf[-16]
     add     r0, 9
     push    r0
@@ -95592,7 +95602,7 @@ __L9477:
     add     sp, 1
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 5043
+.source "src/gen.c", 5050
     load    r0, sf[-16]
     add     r0, 9
     load    r0, r0[0]
@@ -95607,19 +95617,19 @@ __L9478:
     cmp     r2, 15
     jump    lt, __L9478
     move    r0, r1
-.source "src/gen.c", 5045
+.source "src/gen.c", 5052
     move    r0, 15
     push    r0
     call    __F6_anew
     add     sp, 1
     store   r0, sf[-23]
-.source "src/gen.c", 5046
+.source "src/gen.c", 5053
     move    r0, 15
     push    r0
     call    __F6_anew
     add     sp, 1
     store   r0, sf[-24]
-.source "src/gen.c", 5047
+.source "src/gen.c", 5054
     load    r0, sf[-24]
     push    r0
     load    r0, sf[-10]
@@ -95634,14 +95644,14 @@ __L9479:
     cmp     r2, 15
     jump    lt, __L9479
     move    r0, r1
-.source "src/gen.c", 5048
+.source "src/gen.c", 5055
     load    r0, sf[-24]
     add     r0, 5
     push    r0
     move    r0, 16384
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 5049
+.source "src/gen.c", 5056
     move    r0, 2048
     move    r1, 4096
     or      r0, r1
@@ -95654,27 +95664,27 @@ __L9479:
     and     r2, r1
     store   r2, r0[0]
     move    r0, r2
-.source "src/gen.c", 5050
+.source "src/gen.c", 5057
     load    r0, sf[-24]
     add     r0, 8
     push    r0
     move    r0, 0
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 5051
+.source "src/gen.c", 5058
     load    r0, sf[-16]
     add     r0, 8
     push    r0
     load    r0, sf[-24]
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 5052
+.source "src/gen.c", 5059
     load    r0, sf[-23]
     push    r0
     move    r0, 42
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 5053
+.source "src/gen.c", 5060
     load    r0, sf[-23]
     add     r0, 1
     push    r0
@@ -95683,7 +95693,7 @@ __L9479:
     load    r0, r0[0]
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 5054
+.source "src/gen.c", 5061
     load    r0, sf[-23]
     add     r0, 2
     push    r0
@@ -95692,14 +95702,14 @@ __L9479:
     load    r0, r0[0]
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 5055
+.source "src/gen.c", 5062
     load    r0, sf[-23]
     add     r0, 8
     push    r0
     load    r0, sf[-16]
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 5056
+.source "src/gen.c", 5063
     load    r0, sf[-18]
     push    r0
     load    r0, sf[3]
@@ -95714,27 +95724,27 @@ __L9480:
     cmp     r2, 15
     jump    lt, __L9480
     move    r0, r1
-.source "src/gen.c", 5057
+.source "src/gen.c", 5064
     load    r0, sf[-18]
     add     r0, 12
     push    r0
     move    r0, 0
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 5058
+.source "src/gen.c", 5065
     load    r0, sf[-23]
     add     r0, 12
     push    r0
     load    r0, sf[-18]
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 5059
+.source "src/gen.c", 5066
     load    r0, sf[-17]
     push    r0
     move    r0, 39
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 5060
+.source "src/gen.c", 5067
     load    r0, sf[-17]
     add     r0, 1
     push    r0
@@ -95743,7 +95753,7 @@ __L9480:
     load    r0, r0[0]
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 5061
+.source "src/gen.c", 5068
     load    r0, sf[-17]
     add     r0, 2
     push    r0
@@ -95752,32 +95762,32 @@ __L9480:
     load    r0, r0[0]
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 5062
+.source "src/gen.c", 5069
     load    r0, sf[-17]
     add     r0, 8
     push    r0
     load    r0, sf[-23]
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 5064
+.source "src/gen.c", 5071
     load    r0, sf[-11]
     add     r0, 11
     push    r0
     load    r0, sf[-17]
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 5065
+.source "src/gen.c", 5072
     load    r0, sf[-11]
     push    r0
     call    __F543_stmt
     add     sp, 1
-.source "src/gen.c", 5066
+.source "src/gen.c", 5073
     return
 __L9468:
-.source "src/gen.c", 5069
+.source "src/gen.c", 5076
     load    r0, __G358_nftemps+1
     store   r0, sf[-25]
-.source "src/gen.c", 5070
+.source "src/gen.c", 5077
     load    r0, sf[3]
     add     r0, 9
     load    r0, r0[0]
@@ -95785,7 +95795,7 @@ __L9468:
     call    __F465_expr
     add     sp, 1
     store   r0, sf[-26]
-.source "src/gen.c", 5071
+.source "src/gen.c", 5078
     load    r0, sf[-26]
     add     r0, 17
     load    r0, r0[0]
@@ -95806,7 +95816,7 @@ __L9468:
     add     sp, 3
     store   r0, sf[-26]
 __L9481:
-.source "src/gen.c", 5073
+.source "src/gen.c", 5080
     load    r0, sf[3]
     add     r0, 8
     load    r0, r0[0]
@@ -95817,18 +95827,18 @@ __L9481:
     store   r0, sf[-30]
     move    r0, 0
     store   r0, sf[-31]
-.source "src/gen.c", 5079
+.source "src/gen.c", 5086
     load    r1, __G340_label_count+1
     add     r2, r1, 1
     store   r2, __G340_label_count+1
     move    r0, r1
     store   r0, sf[-38]
-.source "src/gen.c", 5080
+.source "src/gen.c", 5087
     load    r0, sf[3]
     push    r0
     call    __F460_emit_line
     add     sp, 1
-.source "src/gen.c", 5081
+.source "src/gen.c", 5088
     load    r0, sf[-26]
     load    r0, r0[0]
     load    r0, r0[0]
@@ -95837,22 +95847,22 @@ __L9481:
     move    eq, r0, 1, 0
     test    r0
     jump    z, __L9483
-.source "src/gen.c", 5082
+.source "src/gen.c", 5089
     load    r0, sf[-26]
     push    r0
     load    r0, sf[3]
     push    r0
     call    __F544_range_for_class
     add     sp, 2
-.source "src/gen.c", 5083
+.source "src/gen.c", 5090
     load    r0, sf[-25]
     push    r0
     call    __F431_flush_temps_stmt
     add     sp, 1
-.source "src/gen.c", 5084
+.source "src/gen.c", 5091
     return
 __L9483:
-.source "src/gen.c", 5086
+.source "src/gen.c", 5093
     load    r0, sf[-26]
     load    r0, r0[0]
     load    r0, r0[0]
@@ -95889,13 +95899,13 @@ __L9488:
     call    __F344_serr
     add     sp, 2
 __L9485:
-.source "src/gen.c", 5087
+.source "src/gen.c", 5094
     load    r0, sf[-26]
     load    r0, r0[0]
     add     r0, 2
     load    r0, r0[0]
     store   r0, sf[-27]
-.source "src/gen.c", 5088
+.source "src/gen.c", 5095
     add     r0, sf, -32
     push    r0
     load    r0, sf[3]
@@ -95907,7 +95917,7 @@ __L9485:
     call    __F468_decl_specs_type
     add     sp, 2
     store   r0, sf[-34]
-.source "src/gen.c", 5089
+.source "src/gen.c", 5096
     add     r0, sf, -31
     push    r0
     add     r0, sf, -30
@@ -95921,7 +95931,7 @@ __L9485:
     call    __F475_apply_declarator
     add     sp, 4
     store   r0, sf[-28]
-.source "src/gen.c", 5090
+.source "src/gen.c", 5097
     load    r0, sf[-28]
     push    r0
     call    __F276_ty_is_ref
@@ -95954,7 +95964,7 @@ __L9491:
     move    r0, 1
 __L9492:
     store   r0, sf[-37]
-.source "src/gen.c", 5091
+.source "src/gen.c", 5098
     load    r0, sf[-30]
     push    r0
     call    __F519_id_last
@@ -95962,14 +95972,14 @@ __L9492:
     add     r0, 6
     load    r0, r0[0]
     store   r0, sf[-33]
-.source "src/gen.c", 5092
+.source "src/gen.c", 5099
     load    r0, sf[-28]
     push    r0
     call    __F526_contains_auto
     add     sp, 1
     test    r0
     jump    z, __L9495
-.source "src/gen.c", 5093
+.source "src/gen.c", 5100
     move    r0, __W1228+1
     push    r0
     load    r0, sf[-27]
@@ -95977,14 +95987,14 @@ __L9492:
     call    __F311_val_new
     add     sp, 2
     store   r0, sf[-39]
-.source "src/gen.c", 5094
+.source "src/gen.c", 5101
     load    r0, sf[-39]
     add     r0, 1
     push    r0
     move    r0, 1
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 5095
+.source "src/gen.c", 5102
     load    r0, sf[3]
     push    r0
     load    r0, sf[-39]
@@ -95994,14 +96004,14 @@ __L9492:
     call    __F527_deduce_auto
     add     sp, 3
     store   r0, sf[-28]
-.source "src/gen.c", 5096
+.source "src/gen.c", 5103
     load    r0, sf[-28]
     push    r0
     call    __F276_ty_is_ref
     add     sp, 1
     store   r0, sf[-37]
 __L9495:
-.source "src/gen.c", 5098
+.source "src/gen.c", 5105
     load    r0, sf[-38]
     push    r0
     move    r0, __W1229+1
@@ -96009,7 +96019,7 @@ __L9495:
     call    __F347_fmt_str
     add     sp, 2
     store   r0, sf[-35]
-.source "src/gen.c", 5099
+.source "src/gen.c", 5106
     load    r0, sf[-38]
     push    r0
     move    r0, __W1230+1
@@ -96017,7 +96027,7 @@ __L9495:
     call    __F347_fmt_str
     add     sp, 2
     store   r0, sf[-36]
-.source "src/gen.c", 5100
+.source "src/gen.c", 5107
     load    r0, sf[-26]
     load    r0, r0[0]
     add     r0, 3
@@ -96055,7 +96065,7 @@ __L9495:
     push    r0
     call    __F346_emitf
     add     sp, 6
-.source "src/gen.c", 5101
+.source "src/gen.c", 5108
     load    r0, sf[-35]
     push    r0
     load    r0, sf[-36]
@@ -96066,9 +96076,9 @@ __L9495:
     push    r0
     call    __F346_emitf
     add     sp, 4
-.source "src/gen.c", 5102
+.source "src/gen.c", 5109
     call    __F612_push_scope
-.source "src/gen.c", 5104
+.source "src/gen.c", 5111
     load    r0, __G301_scope2_cur+1
     push    r0
     load    r0, sf[-28]
@@ -96080,7 +96090,7 @@ __L9495:
     call    __F309_ent_new
     add     sp, 4
     store   r0, sf[-40]
-.source "src/gen.c", 5105
+.source "src/gen.c", 5112
     load    r0, sf[-40]
     add     r0, 3
     push    r0
@@ -96088,11 +96098,11 @@ __L9495:
     load    r0, r0[0]
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 5106
+.source "src/gen.c", 5113
     load    r0, sf[-37]
     test    r0
     jump    z, __L9497
-.source "src/gen.c", 5107
+.source "src/gen.c", 5114
     load    r0, sf[-27]
     push    r0
     load    r0, sf[-28]
@@ -96122,7 +96132,7 @@ __L9495:
     call    __F344_serr
     add     sp, 4
 __L9499:
-.source "src/gen.c", 5108
+.source "src/gen.c", 5115
     load    r0, sf[-35]
     push    r0
     load    r0, sf[-33]
@@ -96144,7 +96154,7 @@ __L9499:
     add     sp, 3
     jump    __L9498
 __L9497:
-.source "src/gen.c", 5110
+.source "src/gen.c", 5117
     load    r0, sf[-35]
     push    r0
     move    r0, __W1235+1
@@ -96157,14 +96167,14 @@ __L9497:
     call    __F311_val_new
     add     sp, 2
     store   r0, sf[-41]
-.source "src/gen.c", 5111
+.source "src/gen.c", 5118
     load    r0, sf[-41]
     add     r0, 1
     push    r0
     move    r0, 1
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 5112
+.source "src/gen.c", 5119
     load    r0, sf[3]
     push    r0
     load    r0, sf[-28]
@@ -96189,59 +96199,59 @@ __L9497:
     call    __F346_emitf
     add     sp, 3
 __L9498:
-.source "src/gen.c", 5114
+.source "src/gen.c", 5121
     load    r0, sf[-40]
     push    r0
     load    r0, __G301_scope2_cur+1
     push    r0
     call    __F518_scope_add
     add     sp, 2
-.source "src/gen.c", 5116
+.source "src/gen.c", 5123
     load    r1, __G343_loop_depth+1
     add     r2, r1, 1
     store   r2, __G343_loop_depth+1
     move    r0, r1
-.source "src/gen.c", 5117
+.source "src/gen.c", 5124
     move    r0, 1
     push    r0
     call    __F615_mark_loop_scope
     add     sp, 1
-.source "src/gen.c", 5118
+.source "src/gen.c", 5125
     load    r0, sf[3]
     add     r0, 11
     load    r0, r0[0]
     push    r0
     call    __F543_stmt
     add     sp, 1
-.source "src/gen.c", 5119
+.source "src/gen.c", 5126
     load    r1, __G343_loop_depth+1
     add     r2, r1, -1
     store   r2, __G343_loop_depth+1
     move    r0, r1
-.source "src/gen.c", 5120
+.source "src/gen.c", 5127
     call    __F613_pop_scope
-.source "src/gen.c", 5121
+.source "src/gen.c", 5128
     move    r0, __W1237+1
     push    r0
     call    __F345_emit
     add     sp, 1
-.source "src/gen.c", 5122
+.source "src/gen.c", 5129
     return
-.source "src/gen.c", 5124
+.source "src/gen.c", 5131
 __L9427:
-.source "src/gen.c", 5125
+.source "src/gen.c", 5132
     load    r0, sf[3]
     push    r0
     call    __F460_emit_line
     add     sp, 1
-.source "src/gen.c", 5126
+.source "src/gen.c", 5133
     call    __F612_push_scope
-.source "src/gen.c", 5127
+.source "src/gen.c", 5134
     move    r0, __W1238+1
     push    r0
     call    __F345_emit
     add     sp, 1
-.source "src/gen.c", 5128
+.source "src/gen.c", 5135
     load    r0, sf[3]
     add     r0, 11
     load    r0, r0[0]
@@ -96254,7 +96264,7 @@ __L9427:
     call    __F543_stmt
     add     sp, 1
 __L9501:
-.source "src/gen.c", 5129
+.source "src/gen.c", 5136
     load    r0, sf[3]
     add     r0, 8
     load    r0, r0[0]
@@ -96264,21 +96274,21 @@ __L9501:
     move    eq, r0, 1, 0
     test    r0
     jump    z, __L9503
-.source "src/gen.c", 5130
+.source "src/gen.c", 5137
     load    r0, sf[3]
     add     r0, 8
     load    r0, r0[0]
     add     r0, 9
     load    r0, r0[0]
     store   r0, sf[-42]
-.source "src/gen.c", 5132
+.source "src/gen.c", 5139
     load    r0, sf[3]
     add     r0, 8
     load    r0, r0[0]
     push    r0
     call    __F618_cond_decl
     add     sp, 1
-.source "src/gen.c", 5133
+.source "src/gen.c", 5140
     load    r0, sf[-42]
     add     r0, 8
     load    r0, r0[0]
@@ -96296,7 +96306,7 @@ __L9501:
     call    __F303_sfind
     add     sp, 2
     store   r0, sf[-43]
-.source "src/gen.c", 5134
+.source "src/gen.c", 5141
     load    r0, sf[-43]
     add     r0, 3
     load    r0, r0[0]
@@ -96307,10 +96317,10 @@ __L9501:
     add     sp, 2
     jump    __L9504
 __L9503:
-.source "src/gen.c", 5137
+.source "src/gen.c", 5144
     load    r0, __G358_nftemps+1
     store   r0, sf[-44]
-.source "src/gen.c", 5138
+.source "src/gen.c", 5145
     load    r0, sf[3]
     add     r0, 8
     load    r0, r0[0]
@@ -96318,7 +96328,7 @@ __L9503:
     call    __F465_expr
     add     sp, 1
     store   r0, sf[-45]
-.source "src/gen.c", 5139
+.source "src/gen.c", 5146
     load    r0, sf[-45]
     push    r0
     call    __F445_is_class_operand
@@ -96338,13 +96348,13 @@ __L9503:
     add     sp, 3
     store   r0, sf[-45]
 __L9505:
-.source "src/gen.c", 5140
+.source "src/gen.c", 5147
     load    r0, sf[-45]
     push    r0
     call    __F466_rvalue
     add     sp, 1
     store   r0, sf[0]
-.source "src/gen.c", 5141
+.source "src/gen.c", 5148
     load    r0, sf[0]
     load    r0, r0[0]
     push    r0
@@ -96382,7 +96392,7 @@ __L9510:
     call    __F344_serr
     add     sp, 3
 __L9507:
-.source "src/gen.c", 5142
+.source "src/gen.c", 5149
     load    r0, sf[-44]
     load    r1, __G358_nftemps+1
     cmp     r0, r1
@@ -96394,7 +96404,7 @@ __L9513:
 __L9514:
     test    r0
     jump    z, __L9511
-.source "src/gen.c", 5143
+.source "src/gen.c", 5150
     move    r0, 13
     push    r0
     call    __F267_ty_builtin
@@ -96403,7 +96413,7 @@ __L9514:
     call    __F432_new_temp
     add     sp, 1
     store   r0, sf[-46]
-.source "src/gen.c", 5144
+.source "src/gen.c", 5151
     load    r0, sf[-46]
     push    r0
     load    r0, sf[-44]
@@ -96423,7 +96433,7 @@ __L9514:
     add     sp, 5
     jump    __L9512
 __L9511:
-.source "src/gen.c", 5145
+.source "src/gen.c", 5152
     load    r0, sf[0]
     add     r0, 6
     load    r0, r0[0]
@@ -96434,51 +96444,51 @@ __L9511:
     add     sp, 2
 __L9512:
 __L9504:
-.source "src/gen.c", 5148
+.source "src/gen.c", 5155
     load    r1, __G343_loop_depth+1
     add     r2, r1, 1
     store   r2, __G343_loop_depth+1
     move    r0, r1
-.source "src/gen.c", 5149
+.source "src/gen.c", 5156
     call    __F612_push_scope
-.source "src/gen.c", 5150
+.source "src/gen.c", 5157
     load    r0, __G301_scope2_cur+1
     add     r0, 13
     push    r0
     move    r0, 1
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 5151
+.source "src/gen.c", 5158
     load    r0, sf[3]
     add     r0, 9
     load    r0, r0[0]
     push    r0
     call    __F543_stmt
     add     sp, 1
-.source "src/gen.c", 5152
+.source "src/gen.c", 5159
     call    __F613_pop_scope
-.source "src/gen.c", 5153
+.source "src/gen.c", 5160
     load    r1, __G343_loop_depth+1
     add     r2, r1, -1
     store   r2, __G343_loop_depth+1
     move    r0, r1
-.source "src/gen.c", 5154
+.source "src/gen.c", 5161
     move    r0, __W1243+1
     push    r0
     call    __F345_emit
     add     sp, 1
-.source "src/gen.c", 5155
+.source "src/gen.c", 5162
     call    __F613_pop_scope
-.source "src/gen.c", 5156
+.source "src/gen.c", 5163
     return
-.source "src/gen.c", 5157
+.source "src/gen.c", 5164
 __L9428:
-.source "src/gen.c", 5158
+.source "src/gen.c", 5165
     load    r0, sf[3]
     push    r0
     call    __F460_emit_line
     add     sp, 1
-.source "src/gen.c", 5159
+.source "src/gen.c", 5166
     load    r0, sf[3]
     add     r0, 8
     load    r0, r0[0]
@@ -96486,7 +96496,7 @@ __L9428:
     call    __F465_expr
     add     sp, 1
     store   r0, sf[0]
-.source "src/gen.c", 5160
+.source "src/gen.c", 5167
     load    r0, sf[0]
     add     r0, 2
     load    r0, r0[0]
@@ -96501,7 +96511,7 @@ __L9428:
     call    __F344_serr
     add     sp, 2
 __L9515:
-.source "src/gen.c", 5161
+.source "src/gen.c", 5168
     load    r0, sf[0]
     add     r0, 3
     load    r0, r0[0]
@@ -96510,7 +96520,7 @@ __L9515:
     push    r0
     call    __F346_emitf
     add     sp, 2
-.source "src/gen.c", 5162
+.source "src/gen.c", 5169
     load    r0, sf[3]
     add     r0, 9
     load    r0, r0[0]
@@ -96523,21 +96533,21 @@ __L9515:
     call    __F543_stmt
     add     sp, 1
 __L9517:
-.source "src/gen.c", 5163
+.source "src/gen.c", 5170
     return
-.source "src/gen.c", 5164
+.source "src/gen.c", 5171
 __L9429:
-.source "src/gen.c", 5165
+.source "src/gen.c", 5172
     load    r0, sf[3]
     push    r0
     call    __F460_emit_line
     add     sp, 1
-.source "src/gen.c", 5166
+.source "src/gen.c", 5173
     move    r0, __W1246+1
     push    r0
     call    __F345_emit
     add     sp, 1
-.source "src/gen.c", 5167
+.source "src/gen.c", 5174
     load    r0, sf[3]
     add     r0, 8
     load    r0, r0[0]
@@ -96550,57 +96560,57 @@ __L9429:
     call    __F543_stmt
     add     sp, 1
 __L9519:
-.source "src/gen.c", 5168
+.source "src/gen.c", 5175
     return
-.source "src/gen.c", 5169
+.source "src/gen.c", 5176
 __L9430:
-.source "src/gen.c", 5170
+.source "src/gen.c", 5177
     load    r0, sf[3]
     push    r0
     call    __F460_emit_line
     add     sp, 1
-.source "src/gen.c", 5171
+.source "src/gen.c", 5178
     move    r0, 0
     push    r0
     call    __F558_emit_dtors_to_loop
     add     sp, 1
-.source "src/gen.c", 5172
+.source "src/gen.c", 5179
     move    r0, __W1247+1
     push    r0
     call    __F345_emit
     add     sp, 1
-.source "src/gen.c", 5173
+.source "src/gen.c", 5180
     return
-.source "src/gen.c", 5174
-__L9431:
-.source "src/gen.c", 5175
-    load    r0, sf[3]
-    push    r0
-    call    __F460_emit_line
-    add     sp, 1
-.source "src/gen.c", 5176
-    move    r0, 1
-    push    r0
-    call    __F558_emit_dtors_to_loop
-    add     sp, 1
-.source "src/gen.c", 5177
-    move    r0, __W1248+1
-    push    r0
-    call    __F345_emit
-    add     sp, 1
-.source "src/gen.c", 5178
-    return
-.source "src/gen.c", 5179
-__L9432:
 .source "src/gen.c", 5181
-    load    r0, __G358_nftemps+1
-    store   r0, sf[-47]
+__L9431:
 .source "src/gen.c", 5182
     load    r0, sf[3]
     push    r0
     call    __F460_emit_line
     add     sp, 1
 .source "src/gen.c", 5183
+    move    r0, 1
+    push    r0
+    call    __F558_emit_dtors_to_loop
+    add     sp, 1
+.source "src/gen.c", 5184
+    move    r0, __W1248+1
+    push    r0
+    call    __F345_emit
+    add     sp, 1
+.source "src/gen.c", 5185
+    return
+.source "src/gen.c", 5186
+__L9432:
+.source "src/gen.c", 5188
+    load    r0, __G358_nftemps+1
+    store   r0, sf[-47]
+.source "src/gen.c", 5189
+    load    r0, sf[3]
+    push    r0
+    call    __F460_emit_line
+    add     sp, 1
+.source "src/gen.c", 5190
     load    r0, __G337_cur_ret+1
     test    r0
     move    z, r0, 1, 0
@@ -96613,14 +96623,14 @@ __L9432:
     call    __F344_serr
     add     sp, 2
 __L9521:
-.source "src/gen.c", 5184
+.source "src/gen.c", 5191
     load    r0, __G337_cur_ret+1
     push    r0
     call    __F526_contains_auto
     add     sp, 1
     test    r0
     jump    z, __L9523
-.source "src/gen.c", 5186
+.source "src/gen.c", 5193
     load    r0, sf[3]
     add     r0, 8
     load    r0, r0[0]
@@ -96640,10 +96650,10 @@ __L9521:
     store   r0, __G337_cur_ret+1
     jump    __L9526
 __L9525:
-.source "src/gen.c", 5188
+.source "src/gen.c", 5195
     load    r0, __G358_nftemps+1
     store   r0, sf[-48]
-.source "src/gen.c", 5190
+.source "src/gen.c", 5197
     load    r0, sf[3]
     add     r0, 8
     load    r0, r0[0]
@@ -96660,7 +96670,7 @@ __L9525:
     call    __F344_serr
     add     sp, 2
 __L9527:
-.source "src/gen.c", 5191
+.source "src/gen.c", 5198
     load    r0, sf[3]
     add     r0, 8
     load    r0, r0[0]
@@ -96668,10 +96678,10 @@ __L9527:
     call    __F465_expr
     add     sp, 1
     store   r0, sf[-49]
-.source "src/gen.c", 5192
+.source "src/gen.c", 5199
     load    r0, sf[-48]
     store   r0, __G358_nftemps+1
-.source "src/gen.c", 5193
+.source "src/gen.c", 5200
     load    r0, sf[3]
     push    r0
     load    r0, sf[-49]
@@ -96683,7 +96693,7 @@ __L9527:
     store   r0, __G337_cur_ret+1
 __L9526:
 __L9523:
-.source "src/gen.c", 5196
+.source "src/gen.c", 5203
     load    r0, sf[3]
     add     r0, 8
     load    r0, r0[0]
@@ -96691,7 +96701,7 @@ __L9523:
     move    z, r0, 1, 0
     test    r0
     jump    z, __L9529
-.source "src/gen.c", 5197
+.source "src/gen.c", 5204
     load    r0, __G337_cur_ret+1
     load    r0, r0[0]
     move    r1, 1
@@ -96723,9 +96733,9 @@ __L9534:
     call    __F344_serr
     add     sp, 3
 __L9531:
-.source "src/gen.c", 5198
+.source "src/gen.c", 5205
     call    __F557_emit_dtors_to_function
-.source "src/gen.c", 5199
+.source "src/gen.c", 5206
     load    r0, __G352_cur_is_dtor+1
     test    r0
     jump    z, __L9535
@@ -96735,24 +96745,24 @@ __L9531:
     add     sp, 1
     jump    __L9536
 __L9535:
-.source "src/gen.c", 5200
+.source "src/gen.c", 5207
     load    r0, __G351_cur_is_ctor+1
     test    r0
     jump    z, __L9537
     call    __F402_emit_ctor_return
     jump    __L9538
 __L9537:
-.source "src/gen.c", 5201
+.source "src/gen.c", 5208
     move    r0, __W1253+1
     push    r0
     call    __F345_emit
     add     sp, 1
 __L9538:
 __L9536:
-.source "src/gen.c", 5202
+.source "src/gen.c", 5209
     return
 __L9529:
-.source "src/gen.c", 5204
+.source "src/gen.c", 5211
     load    r0, sf[3]
     add     r0, 8
     load    r0, r0[0]
@@ -96776,7 +96786,7 @@ __L9541:
 __L9542:
     test    r0
     jump    z, __L9539
-.source "src/gen.c", 5205
+.source "src/gen.c", 5212
     load    r0, sf[3]
     add     r0, 8
     load    r0, r0[0]
@@ -96784,7 +96794,7 @@ __L9542:
     call    __F388_braced_val
     add     sp, 1
     store   r0, sf[-50]
-.source "src/gen.c", 5206
+.source "src/gen.c", 5213
     load    r0, sf[3]
     push    r0
     load    r0, sf[-50]
@@ -96799,29 +96809,29 @@ __L9542:
     call    __F409_list_init_text
     add     sp, 4
     store   r0, sf[-51]
-.source "src/gen.c", 5207
+.source "src/gen.c", 5214
     load    r0, sf[-51]
     push    r0
     move    r0, __W1255+1
     push    r0
     call    __F346_emitf
     add     sp, 2
-.source "src/gen.c", 5208
+.source "src/gen.c", 5215
     load    r0, sf[-47]
     push    r0
     call    __F431_flush_temps_stmt
     add     sp, 1
-.source "src/gen.c", 5209
+.source "src/gen.c", 5216
     call    __F557_emit_dtors_to_function
-.source "src/gen.c", 5210
+.source "src/gen.c", 5217
     move    r0, __W1256+1
     push    r0
     call    __F345_emit
     add     sp, 1
-.source "src/gen.c", 5211
+.source "src/gen.c", 5218
     return
 __L9539:
-.source "src/gen.c", 5213
+.source "src/gen.c", 5220
     load    r0, __G337_cur_ret+1
     load    r0, r0[0]
     move    r1, 27
@@ -96829,7 +96839,7 @@ __L9539:
     move    eq, r0, 1, 0
     test    r0
     jump    z, __L9543
-.source "src/gen.c", 5215
+.source "src/gen.c", 5222
     load    r0, sf[3]
     add     r0, 8
     load    r0, r0[0]
@@ -96839,7 +96849,7 @@ __L9539:
     move    eq, r0, 1, 0
     test    r0
     jump    z, __L9545
-.source "src/gen.c", 5216
+.source "src/gen.c", 5223
     move    r0, 0
     push    r0
     load    r0, sf[3]
@@ -96849,7 +96859,7 @@ __L9539:
     call    __F470_resolve_id
     add     sp, 2
     store   r0, sf[-53]
-.source "src/gen.c", 5217
+.source "src/gen.c", 5224
     load    r0, sf[-53]
     test    r0
     jump    z, __L9549
@@ -96867,9 +96877,9 @@ __L9549:
 __L9550:
     test    r0
     jump    z, __L9547
-.source "src/gen.c", 5218
+.source "src/gen.c", 5225
     call    __F557_emit_dtors_to_function
-.source "src/gen.c", 5219
+.source "src/gen.c", 5226
     load    r0, __G337_cur_ret+1
     push    r0
     call    __F446_type_needs_dtor
@@ -96881,16 +96891,16 @@ __L9550:
     call    __F345_emit
     add     sp, 1
 __L9551:
-.source "src/gen.c", 5220
+.source "src/gen.c", 5227
     move    r0, __W1258+1
     push    r0
     call    __F345_emit
     add     sp, 1
-.source "src/gen.c", 5221
+.source "src/gen.c", 5228
     return
 __L9547:
 __L9545:
-.source "src/gen.c", 5224
+.source "src/gen.c", 5231
     load    r0, __G337_cur_ret+1
     push    r0
     move    r0, __W1259+1
@@ -96902,7 +96912,7 @@ __L9545:
     call    __F547_expr_hinted
     add     sp, 3
     store   r0, sf[-52]
-.source "src/gen.c", 5225
+.source "src/gen.c", 5232
     load    r0, __G357_dest_used+1
     test    r0
     jump    z, __L9553
@@ -96916,10 +96926,10 @@ __L9545:
     add     sp, 2
     jump    __L9554
 __L9553:
-.source "src/gen.c", 5228
+.source "src/gen.c", 5235
     load    r0, sf[-52]
     store   r0, sf[-55]
-.source "src/gen.c", 5229
+.source "src/gen.c", 5236
     load    r0, sf[3]
     add     r0, 8
     load    r0, r0[0]
@@ -97070,13 +97080,13 @@ __L9557:
 __L9558:
     test    r0
     jump    z, __L9555
-.source "src/gen.c", 5232
+.source "src/gen.c", 5239
     move    r0, 20
     push    r0
     call    __F6_anew
     add     sp, 1
     store   r0, sf[-55]
-.source "src/gen.c", 5233
+.source "src/gen.c", 5240
     load    r0, sf[-55]
     push    r0
     load    r0, sf[-52]
@@ -97089,14 +97099,14 @@ __L9575:
     cmp     r2, 20
     jump    lt, __L9575
     move    r0, r1
-.source "src/gen.c", 5234
+.source "src/gen.c", 5241
     load    r0, sf[-55]
     add     r0, 1
     push    r0
     move    r0, 0
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 5235
+.source "src/gen.c", 5242
     load    r0, sf[-55]
     add     r0, 16
     push    r0
@@ -97104,7 +97114,7 @@ __L9575:
     pop     r1
     store   r0, r1[0]
 __L9555:
-.source "src/gen.c", 5237
+.source "src/gen.c", 5244
     load    r0, sf[-55]
     load    r0, r0[0]
     load    r0, r0[0]
@@ -97144,7 +97154,7 @@ __L9579:
     add     sp, 3
     store   r0, sf[-55]
 __L9576:
-.source "src/gen.c", 5238
+.source "src/gen.c", 5245
     load    r0, sf[3]
     push    r0
     load    r0, sf[-55]
@@ -97159,7 +97169,7 @@ __L9576:
     call    __F457_copy_into
     add     sp, 4
     store   r0, sf[-54]
-.source "src/gen.c", 5239
+.source "src/gen.c", 5246
     load    r0, sf[-54]
     test    r0
     jump    z, __L9580
@@ -97171,25 +97181,25 @@ __L9576:
     add     sp, 2
 __L9580:
 __L9554:
-.source "src/gen.c", 5241
+.source "src/gen.c", 5248
     move    r0, 0
     store   r0, __G357_dest_used+1
-.source "src/gen.c", 5242
+.source "src/gen.c", 5249
     load    r0, sf[-47]
     push    r0
     call    __F431_flush_temps_stmt
     add     sp, 1
-.source "src/gen.c", 5243
+.source "src/gen.c", 5250
     call    __F557_emit_dtors_to_function
-.source "src/gen.c", 5244
+.source "src/gen.c", 5251
     move    r0, __W1263+1
     push    r0
     call    __F345_emit
     add     sp, 1
-.source "src/gen.c", 5245
+.source "src/gen.c", 5252
     return
 __L9543:
-.source "src/gen.c", 5247
+.source "src/gen.c", 5254
     load    r0, sf[3]
     add     r0, 8
     load    r0, r0[0]
@@ -97222,7 +97232,7 @@ __L9582:
     add     sp, 1
 __L9583:
     store   r0, sf[0]
-.source "src/gen.c", 5248
+.source "src/gen.c", 5255
     load    r0, __G337_cur_ret+1
     load    r0, r0[0]
     move    r1, 1
@@ -97230,7 +97240,7 @@ __L9583:
     move    eq, r0, 1, 0
     test    r0
     jump    z, __L9584
-.source "src/gen.c", 5249
+.source "src/gen.c", 5256
     load    r0, sf[0]
     load    r0, r0[0]
     load    r0, r0[0]
@@ -97246,7 +97256,7 @@ __L9583:
     call    __F344_serr
     add     sp, 2
 __L9586:
-.source "src/gen.c", 5250
+.source "src/gen.c", 5257
     load    r0, sf[0]
     add     r0, 6
     load    r0, r0[0]
@@ -97255,29 +97265,29 @@ __L9586:
     push    r0
     call    __F346_emitf
     add     sp, 2
-.source "src/gen.c", 5251
+.source "src/gen.c", 5258
     load    r0, sf[-47]
     push    r0
     call    __F431_flush_temps_stmt
     add     sp, 1
-.source "src/gen.c", 5252
+.source "src/gen.c", 5259
     call    __F557_emit_dtors_to_function
-.source "src/gen.c", 5253
+.source "src/gen.c", 5260
     move    r0, __W1266+1
     push    r0
     call    __F345_emit
     add     sp, 1
-.source "src/gen.c", 5254
+.source "src/gen.c", 5261
     return
 __L9584:
-.source "src/gen.c", 5259
+.source "src/gen.c", 5266
     load    r0, __G337_cur_ret+1
     push    r0
     call    __F276_ty_is_ref
     add     sp, 1
     test    r0
     jump    z, __L9588
-.source "src/gen.c", 5260
+.source "src/gen.c", 5267
     load    r0, sf[0]
     add     r0, 1
     load    r0, r0[0]
@@ -97338,7 +97348,7 @@ __L9593:
     call    __F344_serr
     add     sp, 2
 __L9590:
-.source "src/gen.c", 5261
+.source "src/gen.c", 5268
     load    r0, sf[0]
     add     r0, 6
     load    r0, r0[0]
@@ -97350,7 +97360,7 @@ __L9590:
     store   r0, sf[-56]
     jump    __L9589
 __L9588:
-.source "src/gen.c", 5262
+.source "src/gen.c", 5269
     load    r0, sf[3]
     push    r0
     load    r0, __G337_cur_ret+1
@@ -97363,7 +97373,7 @@ __L9588:
     load    r0, r0[0]
     store   r0, sf[-56]
 __L9589:
-.source "src/gen.c", 5263
+.source "src/gen.c", 5270
     load    r0, sf[-47]
     load    r1, __G358_nftemps+1
     cmp     r0, r1
@@ -97384,23 +97394,23 @@ __L9598:
     move    r0, 1
 __L9599:
     store   r0, sf[-57]
-.source "src/gen.c", 5264
+.source "src/gen.c", 5271
     load    r0, sf[-57]
     test    r0
     move    z, r0, 1, 0
     test    r0
     jump    z, __L9602
-.source "src/gen.c", 5265
+.source "src/gen.c", 5272
     load    r0, sf[-56]
     push    r0
     move    r0, __W1269+1
     push    r0
     call    __F346_emitf
     add     sp, 2
-.source "src/gen.c", 5266
+.source "src/gen.c", 5273
     return
 __L9602:
-.source "src/gen.c", 5269
+.source "src/gen.c", 5276
     load    r0, __G337_cur_ret+1
     push    r0
     call    __F276_ty_is_ref
@@ -97421,13 +97431,13 @@ __L9604:
     add     sp, 1
 __L9605:
     store   r0, sf[-58]
-.source "src/gen.c", 5270
+.source "src/gen.c", 5277
     load    r0, sf[-58]
     push    r0
     call    __F432_new_temp
     add     sp, 1
     store   r0, sf[-59]
-.source "src/gen.c", 5271
+.source "src/gen.c", 5278
     load    r0, sf[-56]
     push    r0
     load    r0, sf[-59]
@@ -97436,30 +97446,30 @@ __L9605:
     push    r0
     call    __F346_emitf
     add     sp, 3
-.source "src/gen.c", 5272
+.source "src/gen.c", 5279
     load    r0, sf[-47]
     push    r0
     call    __F431_flush_temps_stmt
     add     sp, 1
-.source "src/gen.c", 5273
+.source "src/gen.c", 5280
     call    __F557_emit_dtors_to_function
-.source "src/gen.c", 5274
+.source "src/gen.c", 5281
     load    r0, sf[-59]
     push    r0
     move    r0, __W1271+1
     push    r0
     call    __F346_emitf
     add     sp, 2
-.source "src/gen.c", 5278
+.source "src/gen.c", 5285
     return
-.source "src/gen.c", 5279
+.source "src/gen.c", 5286
 __L9433:
-.source "src/gen.c", 5280
+.source "src/gen.c", 5287
     load    r0, sf[3]
     push    r0
     call    __F460_emit_line
     add     sp, 1
-.source "src/gen.c", 5281
+.source "src/gen.c", 5288
     load    r0, sf[3]
     add     r0, 6
     load    r0, r0[0]
@@ -97469,11 +97479,11 @@ __L9433:
     push    r0
     call    __F346_emitf
     add     sp, 2
-.source "src/gen.c", 5282
+.source "src/gen.c", 5289
     return
-.source "src/gen.c", 5283
+.source "src/gen.c", 5290
 __L9434:
-.source "src/gen.c", 5284
+.source "src/gen.c", 5291
     load    r0, sf[3]
     add     r0, 6
     load    r0, r0[0]
@@ -97483,7 +97493,7 @@ __L9434:
     push    r0
     call    __F346_emitf
     add     sp, 2
-.source "src/gen.c", 5285
+.source "src/gen.c", 5292
     load    r0, sf[3]
     add     r0, 8
     load    r0, r0[0]
@@ -97496,19 +97506,19 @@ __L9434:
     call    __F543_stmt
     add     sp, 1
 __L9606:
-.source "src/gen.c", 5286
+.source "src/gen.c", 5293
     return
-.source "src/gen.c", 5287
+.source "src/gen.c", 5294
 __L9435:
-.source "src/gen.c", 5288
+.source "src/gen.c", 5295
     load    r0, sf[3]
     push    r0
     call    __F400_try_stmt
     add     sp, 1
-.source "src/gen.c", 5289
+.source "src/gen.c", 5296
     return
 __L9417:
-.source "src/gen.c", 5291
+.source "src/gen.c", 5298
     load    r0, sf[3]
     load    r0, r0[0]
     push    r0
@@ -97521,7 +97531,7 @@ __L9417:
     push    r0
     call    __F344_serr
     add     sp, 3
-.source "src/gen.c", 5292
+.source "src/gen.c", 5299
     load    r0, sf[-1]
     move    r0, 0
     return
@@ -97529,8 +97539,8 @@ __L9417:
 
 // cinfo
 __F413_cinfo:
-.source "src/gen.c", 5297
-.source "src/gen.c", 5298
+.source "src/gen.c", 5304
+.source "src/gen.c", 5305
     load    r0, sf[3]
     add     r0, 7
     load    r0, r0[0]
@@ -97543,8 +97553,8 @@ __F413_cinfo:
 
 // strip_arrays
 __F437_strip_arrays:
-.source "src/gen.c", 5301
-.source "src/gen.c", 5302
+.source "src/gen.c", 5308
+.source "src/gen.c", 5309
 __L9608:
     load    r0, sf[3]
     load    r0, r0[0]
@@ -97560,7 +97570,7 @@ __L9608:
 __L9609:
     jump    __L9608
 __L9610:
-.source "src/gen.c", 5303
+.source "src/gen.c", 5310
     load    r0, sf[3]
     return
     move    r0, 0
@@ -97569,14 +97579,14 @@ __L9610:
 
 // type_needs_dtor
 __F446_type_needs_dtor:
-.source "src/gen.c", 5306
-.source "src/gen.c", 5307
+.source "src/gen.c", 5313
+.source "src/gen.c", 5314
     load    r0, sf[3]
     push    r0
     call    __F437_strip_arrays
     add     sp, 1
     store   r0, sf[3]
-.source "src/gen.c", 5308
+.source "src/gen.c", 5315
     load    r0, sf[3]
     load    r0, r0[0]
     move    r1, 27
@@ -97619,14 +97629,14 @@ __L9612:
 
 // type_nontrivial_copy
 __F447_type_nontrivial_copy:
-.source "src/gen.c", 5311
-.source "src/gen.c", 5312
+.source "src/gen.c", 5318
+.source "src/gen.c", 5319
     load    r0, sf[3]
     push    r0
     call    __F437_strip_arrays
     add     sp, 1
     store   r0, sf[3]
-.source "src/gen.c", 5313
+.source "src/gen.c", 5320
     load    r0, sf[3]
     load    r0, r0[0]
     move    r1, 27
@@ -97669,14 +97679,14 @@ __L9616:
 
 // type_needs_ctor
 __F425_type_needs_ctor:
-.source "src/gen.c", 5316
-.source "src/gen.c", 5317
+.source "src/gen.c", 5323
+.source "src/gen.c", 5324
     load    r0, sf[3]
     push    r0
     call    __F437_strip_arrays
     add     sp, 1
     store   r0, sf[3]
-.source "src/gen.c", 5318
+.source "src/gen.c", 5325
     load    r0, sf[3]
     load    r0, r0[0]
     move    r1, 27
@@ -97719,8 +97729,8 @@ __L9620:
 
 // is_class_type
 __F438_is_class_type:
-.source "src/gen.c", 5321
-.source "src/gen.c", 5322
+.source "src/gen.c", 5328
+.source "src/gen.c", 5329
     load    r0, sf[3]
     load    r0, r0[0]
     move    r1, 27
@@ -97733,15 +97743,15 @@ __F438_is_class_type:
 
 // require_complete
 __F426_require_complete:
-.source "src/gen.c", 5325
+.source "src/gen.c", 5332
     add     sp, -1
-.source "src/gen.c", 5326
+.source "src/gen.c", 5333
     load    r0, sf[3]
     push    r0
     call    __F437_strip_arrays
     add     sp, 1
     store   r0, sf[0]
-.source "src/gen.c", 5327
+.source "src/gen.c", 5334
     load    r0, sf[0]
     load    r0, r0[0]
     move    r1, 27
@@ -97783,7 +97793,7 @@ __L9625:
 __L9626:
     test    r0
     jump    z, __L9623
-.source "src/gen.c", 5328
+.source "src/gen.c", 5335
     load    r0, sf[0]
     push    r0
     call    __F293_ty_str
@@ -97802,16 +97812,16 @@ __L9623:
 
 // base_paths_dfs
 __F621_base_paths_dfs:
-.source "src/gen.c", 5337
+.source "src/gen.c", 5344
     add     sp, -4
-.source "src/gen.c", 5338
+.source "src/gen.c", 5345
     load    r0, sf[3]
     add     r0, 7
     load    r0, r0[0]
     add     r0, 16
     load    r0, r0[0]
     store   r0, sf[0]
-.source "src/gen.c", 5340
+.source "src/gen.c", 5347
     load    r0, sf[0]
     test    r0
     move    z, r0, 1, 0
@@ -97819,7 +97829,7 @@ __F621_base_paths_dfs:
     jump    z, __L9629
     return
 __L9629:
-.source "src/gen.c", 5341
+.source "src/gen.c", 5348
     move    r0, 0
     store   r0, sf[-1]
 __L9631:
@@ -97839,7 +97849,7 @@ __L9634:
 __L9635:
     test    r0
     jump    z, __L9633
-.source "src/gen.c", 5342
+.source "src/gen.c", 5349
     load    r0, sf[0]
     load    r0, r0[0]
     push    r0
@@ -97850,7 +97860,7 @@ __L9635:
     pop     r0
     add     r0, r1
     store   r0, sf[-2]
-.source "src/gen.c", 5343
+.source "src/gen.c", 5350
     load    r0, sf[-2]
     add     r0, 2
     load    r0, r0[0]
@@ -97862,7 +97872,7 @@ __L9635:
     call    __F347_fmt_str
     add     sp, 3
     store   r0, sf[-3]
-.source "src/gen.c", 5344
+.source "src/gen.c", 5351
     load    r0, sf[-2]
     load    r0, r0[0]
     load    r1, sf[4]
@@ -97870,7 +97880,7 @@ __L9635:
     move    eq, r0, 1, 0
     test    r0
     jump    z, __L9636
-.source "src/gen.c", 5345
+.source "src/gen.c", 5352
     load    r0, __G620_base_path_count+1
     move    r1, 0
     cmp     r0, r1
@@ -97880,14 +97890,14 @@ __L9635:
     load    r0, sf[-3]
     store   r0, __G619_base_path_found+1
 __L9638:
-.source "src/gen.c", 5346
+.source "src/gen.c", 5353
     load    r1, __G620_base_path_count+1
     add     r2, r1, 1
     store   r2, __G620_base_path_count+1
     move    r0, r1
     jump    __L9637
 __L9636:
-.source "src/gen.c", 5347
+.source "src/gen.c", 5354
     load    r0, sf[-3]
     push    r0
     load    r0, sf[4]
@@ -97901,7 +97911,7 @@ __L9636:
     add     sp, 3
 __L9637:
 __L9632:
-.source "src/gen.c", 5341
+.source "src/gen.c", 5348
     load    r1, sf[-1]
     add     r2, r1, 1
     store   r2, sf[-1]
@@ -97914,8 +97924,8 @@ __L9633:
 
 // base_path
 __F420_base_path:
-.source "src/gen.c", 5353
-.source "src/gen.c", 5354
+.source "src/gen.c", 5360
+.source "src/gen.c", 5361
     load    r0, sf[3]
     add     r0, 7
     load    r0, r0[0]
@@ -97924,7 +97934,7 @@ __F420_base_path:
     move    eq, r0, 1, 0
     test    r0
     jump    z, __L9640
-.source "src/gen.c", 5355
+.source "src/gen.c", 5362
     load    r0, sf[5]
     test    r0
     jump    z, __L9642
@@ -97934,17 +97944,17 @@ __F420_base_path:
     pop     r1
     store   r0, r1[0]
 __L9642:
-.source "src/gen.c", 5356
+.source "src/gen.c", 5363
     move    r0, __W1277+1
     return
 __L9640:
-.source "src/gen.c", 5358
+.source "src/gen.c", 5365
     move    r0, 0
     store   r0, __G619_base_path_found+1
-.source "src/gen.c", 5359
+.source "src/gen.c", 5366
     move    r0, 0
     store   r0, __G620_base_path_count+1
-.source "src/gen.c", 5360
+.source "src/gen.c", 5367
     move    r0, __W1278+1
     push    r0
     load    r0, sf[4]
@@ -97953,7 +97963,7 @@ __L9640:
     push    r0
     call    __F621_base_paths_dfs
     add     sp, 3
-.source "src/gen.c", 5361
+.source "src/gen.c", 5368
     load    r0, sf[5]
     test    r0
     jump    z, __L9644
@@ -97963,7 +97973,7 @@ __L9640:
     pop     r1
     store   r0, r1[0]
 __L9644:
-.source "src/gen.c", 5362
+.source "src/gen.c", 5369
     load    r0, __G619_base_path_found+1
     return
     move    r0, 0
@@ -97972,9 +97982,9 @@ __L9644:
 
 // derived_to_base
 __F313_derived_to_base:
-.source "src/gen.c", 5365
+.source "src/gen.c", 5372
     add     sp, -2
-.source "src/gen.c", 5368
+.source "src/gen.c", 5375
     load    r0, sf[3]
     load    r0, r0[0]
     move    r1, 27
@@ -98019,7 +98029,7 @@ __L9649:
     move    r0, 0
     return
 __L9646:
-.source "src/gen.c", 5369
+.source "src/gen.c", 5376
     add     r0, sf, 0
     push    r0
     load    r0, sf[4]
@@ -98031,7 +98041,7 @@ __L9646:
     call    __F420_base_path
     add     sp, 3
     store   r0, sf[-1]
-.source "src/gen.c", 5370
+.source "src/gen.c", 5377
     load    r0, sf[-1]
     move    r1, 0
     cmp     r0, r1
@@ -98056,9 +98066,9 @@ __L9653:
 
 // base_subobject
 __F421_base_subobject:
-.source "src/gen.c", 5374
+.source "src/gen.c", 5381
     add     sp, -2
-.source "src/gen.c", 5376
+.source "src/gen.c", 5383
     add     r0, sf, 0
     push    r0
     load    r0, sf[5]
@@ -98070,7 +98080,7 @@ __F421_base_subobject:
     call    __F420_base_path
     add     sp, 3
     store   r0, sf[-1]
-.source "src/gen.c", 5377
+.source "src/gen.c", 5384
     load    r0, sf[-1]
     test    r0
     move    z, r0, 1, 0
@@ -98093,7 +98103,7 @@ __F421_base_subobject:
     call    __F344_serr
     add     sp, 4
 __L9654:
-.source "src/gen.c", 5378
+.source "src/gen.c", 5385
     move    r0, 1
     load    r1, sf[0]
     cmp     r0, r1
@@ -98122,7 +98132,7 @@ __L9659:
     call    __F344_serr
     add     sp, 4
 __L9656:
-.source "src/gen.c", 5379
+.source "src/gen.c", 5386
     load    r0, sf[-1]
     push    r0
     load    r0, sf[3]
@@ -98138,9 +98148,9 @@ __L9656:
 
 // upcast_pointer
 __F418_upcast_pointer:
-.source "src/gen.c", 5383
+.source "src/gen.c", 5390
     add     sp, -3
-.source "src/gen.c", 5385
+.source "src/gen.c", 5392
     add     r0, sf, 0
     push    r0
     load    r0, sf[5]
@@ -98152,7 +98162,7 @@ __F418_upcast_pointer:
     call    __F420_base_path
     add     sp, 3
     store   r0, sf[-1]
-.source "src/gen.c", 5387
+.source "src/gen.c", 5394
     load    r0, sf[-1]
     test    r0
     move    z, r0, 1, 0
@@ -98175,7 +98185,7 @@ __F418_upcast_pointer:
     call    __F344_serr
     add     sp, 4
 __L9660:
-.source "src/gen.c", 5388
+.source "src/gen.c", 5395
     move    r0, 1
     load    r1, sf[0]
     cmp     r0, r1
@@ -98204,7 +98214,7 @@ __L9665:
     call    __F344_serr
     add     sp, 4
 __L9662:
-.source "src/gen.c", 5389
+.source "src/gen.c", 5396
     load    r0, sf[-1]
     move    r1, 0
     add     r0, r1
@@ -98217,7 +98227,7 @@ __L9662:
     load    r0, sf[3]
     return
 __L9666:
-.source "src/gen.c", 5390
+.source "src/gen.c", 5397
     load    r0, sf[4]
     push    r0
     call    __F269_ty_ptr
@@ -98226,7 +98236,7 @@ __L9666:
     call    __F432_new_temp
     add     sp, 1
     store   r0, sf[-2]
-.source "src/gen.c", 5391
+.source "src/gen.c", 5398
     load    r0, sf[-1]
     move    r1, 1
     add     r0, r1
@@ -98250,9 +98260,9 @@ __L9666:
 
 // upcast_value
 __F419_upcast_value:
-.source "src/gen.c", 5395
+.source "src/gen.c", 5402
     add     sp, -1
-.source "src/gen.c", 5396
+.source "src/gen.c", 5403
     load    r0, sf[5]
     push    r0
     load    r0, sf[4]
@@ -98283,7 +98293,7 @@ __F419_upcast_value:
     call    __F311_val_new
     add     sp, 2
     store   r0, sf[0]
-.source "src/gen.c", 5397
+.source "src/gen.c", 5404
     load    r0, sf[0]
     add     r0, 1
     push    r0
@@ -98292,7 +98302,7 @@ __F419_upcast_value:
     load    r0, r0[0]
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 5398
+.source "src/gen.c", 5405
     load    r0, sf[0]
     add     r0, 13
     push    r0
@@ -98301,7 +98311,7 @@ __F419_upcast_value:
     load    r0, r0[0]
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 5399
+.source "src/gen.c", 5406
     load    r0, sf[0]
     return
     move    r0, 0
@@ -98310,15 +98320,15 @@ __F419_upcast_value:
 
 // require_concrete
 __F417_require_concrete:
-.source "src/gen.c", 5402
+.source "src/gen.c", 5409
     add     sp, -1
-.source "src/gen.c", 5403
+.source "src/gen.c", 5410
     load    r0, sf[3]
     push    r0
     call    __F437_strip_arrays
     add     sp, 1
     store   r0, sf[0]
-.source "src/gen.c", 5404
+.source "src/gen.c", 5411
     load    r0, sf[0]
     load    r0, r0[0]
     move    r1, 27
@@ -98356,7 +98366,7 @@ __L9670:
 __L9671:
     test    r0
     jump    z, __L9668
-.source "src/gen.c", 5405
+.source "src/gen.c", 5412
     load    r0, sf[0]
     push    r0
     call    __F293_ty_str
@@ -98375,9 +98385,9 @@ __L9668:
 
 // new_class_temp
 __F455_new_class_temp:
-.source "src/gen.c", 5414
+.source "src/gen.c", 5421
     add     sp, -2
-.source "src/gen.c", 5415
+.source "src/gen.c", 5422
     load    r0, sf[3]
     push    r0
     call    __F275_ty_unqual
@@ -98386,7 +98396,7 @@ __F455_new_class_temp:
     call    __F432_new_temp
     add     sp, 1
     store   r0, sf[0]
-.source "src/gen.c", 5416
+.source "src/gen.c", 5423
     load    r0, sf[3]
     push    r0
     call    __F413_cinfo
@@ -98395,7 +98405,7 @@ __F455_new_class_temp:
     load    r0, r0[0]
     test    r0
     jump    z, __L9674
-.source "src/gen.c", 5417
+.source "src/gen.c", 5424
     move    r0, 512
     load    r1, __G358_nftemps+1
     cmp     r0, r1
@@ -98414,7 +98424,7 @@ __L9679:
     call    __F344_serr
     add     sp, 2
 __L9676:
-.source "src/gen.c", 5418
+.source "src/gen.c", 5425
     move    r0, __G622_ftemps+1
     push    r0
     load    r0, __G358_nftemps+1
@@ -98427,7 +98437,7 @@ __L9676:
     load    r0, sf[0]
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 5419
+.source "src/gen.c", 5426
     move    r0, __G622_ftemps+1
     push    r0
     load    r0, __G358_nftemps+1
@@ -98441,7 +98451,7 @@ __L9676:
     load    r0, sf[3]
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 5420
+.source "src/gen.c", 5427
     move    r0, __G622_ftemps+1
     push    r0
     load    r0, __G358_nftemps+1
@@ -98455,7 +98465,7 @@ __L9676:
     move    r0, 0
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 5421
+.source "src/gen.c", 5428
     move    r0, 0
     load    r1, __G359_cond_depth+1
     cmp     r0, r1
@@ -98467,7 +98477,7 @@ __L9682:
 __L9683:
     test    r0
     jump    z, __L9680
-.source "src/gen.c", 5423
+.source "src/gen.c", 5430
     load    r1, __G339_temp_count+1
     add     r2, r1, 1
     store   r2, __G339_temp_count+1
@@ -98478,7 +98488,7 @@ __L9683:
     call    __F347_fmt_str
     add     sp, 2
     store   r0, sf[-1]
-.source "src/gen.c", 5424
+.source "src/gen.c", 5431
     load    r0, sf[-1]
     push    r0
     move    r0, __W1288+1
@@ -98487,7 +98497,7 @@ __L9683:
     push    r0
     call    __F14_sb_printf
     add     sp, 3
-.source "src/gen.c", 5425
+.source "src/gen.c", 5432
     move    r0, __G622_ftemps+1
     push    r0
     load    r0, __G358_nftemps+1
@@ -98502,13 +98512,13 @@ __L9683:
     pop     r1
     store   r0, r1[0]
 __L9680:
-.source "src/gen.c", 5427
+.source "src/gen.c", 5434
     load    r1, __G358_nftemps+1
     add     r2, r1, 1
     store   r2, __G358_nftemps+1
     move    r0, r1
 __L9674:
-.source "src/gen.c", 5429
+.source "src/gen.c", 5436
     load    r0, sf[0]
     return
     move    r0, 0
@@ -98517,14 +98527,14 @@ __L9674:
 
 // dtor_text_from
 __F454_dtor_text_from:
-.source "src/gen.c", 5433
+.source "src/gen.c", 5440
     add     sp, -4
-.source "src/gen.c", 5436
+.source "src/gen.c", 5443
     add     r0, sf, -2
     push    r0
     call    __F10_sb_init
     add     sp, 1
-.source "src/gen.c", 5437
+.source "src/gen.c", 5444
     load    r0, __G358_nftemps+1
     move    r1, 1
     sub     r0, r1
@@ -98541,7 +98551,7 @@ __L9687:
 __L9688:
     test    r0
     jump    z, __L9686
-.source "src/gen.c", 5438
+.source "src/gen.c", 5445
     move    r0, __G622_ftemps+1
     push    r0
     load    r0, sf[-3]
@@ -98554,7 +98564,7 @@ __L9688:
     load    r0, r0[0]
     test    r0
     jump    z, __L9689
-.source "src/gen.c", 5439
+.source "src/gen.c", 5446
     move    r0, __G622_ftemps+1
     push    r0
     load    r0, sf[-3]
@@ -98613,7 +98623,7 @@ __L9688:
     add     sp, 6
     jump    __L9690
 __L9689:
-.source "src/gen.c", 5440
+.source "src/gen.c", 5447
     move    r0, __G622_ftemps+1
     push    r0
     load    r0, sf[-3]
@@ -98650,17 +98660,17 @@ __L9689:
     add     sp, 4
 __L9690:
 __L9685:
-.source "src/gen.c", 5437
+.source "src/gen.c", 5444
     load    r1, sf[-3]
     add     r2, r1, -1
     store   r2, sf[-3]
     move    r0, r1
     jump    __L9684
 __L9686:
-.source "src/gen.c", 5442
+.source "src/gen.c", 5449
     load    r0, sf[3]
     store   r0, __G358_nftemps+1
-.source "src/gen.c", 5443
+.source "src/gen.c", 5450
     add     r0, sf, -2
     load    r0, r0[0]
     return
@@ -98670,14 +98680,14 @@ __L9686:
 
 // dtor_expr_from
 __F423_dtor_expr_from:
-.source "src/gen.c", 5447
+.source "src/gen.c", 5454
     add     sp, -4
-.source "src/gen.c", 5450
+.source "src/gen.c", 5457
     add     r0, sf, -2
     push    r0
     call    __F10_sb_init
     add     sp, 1
-.source "src/gen.c", 5451
+.source "src/gen.c", 5458
     load    r0, __G358_nftemps+1
     move    r1, 1
     sub     r0, r1
@@ -98694,7 +98704,7 @@ __L9694:
 __L9695:
     test    r0
     jump    z, __L9693
-.source "src/gen.c", 5452
+.source "src/gen.c", 5459
     move    r0, __G622_ftemps+1
     push    r0
     load    r0, sf[-3]
@@ -98707,7 +98717,7 @@ __L9695:
     load    r0, r0[0]
     test    r0
     jump    z, __L9696
-.source "src/gen.c", 5453
+.source "src/gen.c", 5460
     move    r0, __G622_ftemps+1
     push    r0
     load    r0, sf[-3]
@@ -98766,7 +98776,7 @@ __L9695:
     add     sp, 6
     jump    __L9697
 __L9696:
-.source "src/gen.c", 5454
+.source "src/gen.c", 5461
     move    r0, __G622_ftemps+1
     push    r0
     load    r0, sf[-3]
@@ -98803,17 +98813,17 @@ __L9696:
     add     sp, 4
 __L9697:
 __L9692:
-.source "src/gen.c", 5451
+.source "src/gen.c", 5458
     load    r1, sf[-3]
     add     r2, r1, -1
     store   r2, sf[-3]
     move    r0, r1
     jump    __L9691
 __L9693:
-.source "src/gen.c", 5456
+.source "src/gen.c", 5463
     load    r0, sf[3]
     store   r0, __G358_nftemps+1
-.source "src/gen.c", 5457
+.source "src/gen.c", 5464
     add     r0, sf, -2
     load    r0, r0[0]
     return
@@ -98823,9 +98833,9 @@ __L9693:
 
 // prvalue_dest
 __F428_prvalue_dest:
-.source "src/gen.c", 5461
+.source "src/gen.c", 5468
     add     sp, -2
-.source "src/gen.c", 5462
+.source "src/gen.c", 5469
     load    r0, __G354_dest_hint+1
     test    r0
     jump    z, __L9704
@@ -98867,26 +98877,26 @@ __L9700:
 __L9701:
     test    r0
     jump    z, __L9698
-.source "src/gen.c", 5463
+.source "src/gen.c", 5470
     load    r0, __G354_dest_hint+1
     store   r0, sf[0]
-.source "src/gen.c", 5464
+.source "src/gen.c", 5471
     move    r0, 0
     store   r0, __G354_dest_hint+1
-.source "src/gen.c", 5465
+.source "src/gen.c", 5472
     move    r0, 1
     store   r0, __G357_dest_used+1
-.source "src/gen.c", 5466
+.source "src/gen.c", 5473
     load    r0, sf[0]
     return
 __L9698:
-.source "src/gen.c", 5469
+.source "src/gen.c", 5476
     load    r0, sf[3]
     push    r0
     call    __F455_new_class_temp
     add     sp, 1
     store   r0, sf[-1]
-.source "src/gen.c", 5470
+.source "src/gen.c", 5477
     move    r0, 0
     load    r1, __G358_nftemps+1
     cmp     r0, r1
@@ -98942,7 +98952,7 @@ __L9708:
 __L9709:
     test    r0
     jump    z, __L9706
-.source "src/gen.c", 5471
+.source "src/gen.c", 5478
     load    r0, sf[-1]
     push    r0
     move    r0, __G622_ftemps+1
@@ -98964,7 +98974,7 @@ __L9709:
     add     sp, 3
     return
 __L9706:
-.source "src/gen.c", 5472
+.source "src/gen.c", 5479
     load    r0, sf[-1]
     push    r0
     move    r0, __W1294+1
@@ -98978,8 +98988,8 @@ __L9706:
 
 // class_ctors
 __F427_class_ctors:
-.source "src/gen.c", 5478
-.source "src/gen.c", 5479
+.source "src/gen.c", 5485
+.source "src/gen.c", 5486
     load    r0, __G348_nm_ctor+1
     push    r0
     load    r0, sf[3]
@@ -98998,28 +99008,28 @@ __F427_class_ctors:
 
 // ctor_call
 __F456_ctor_call:
-.source "src/gen.c", 5486
+.source "src/gen.c", 5493
     add     sp, -11
-.source "src/gen.c", 5487
+.source "src/gen.c", 5494
     load    r0, sf[3]
     push    r0
     call    __F413_cinfo
     add     sp, 1
     store   r0, sf[0]
-.source "src/gen.c", 5490
+.source "src/gen.c", 5497
     load    r0, __G387_brace_init+1
     store   r0, sf[-4]
-.source "src/gen.c", 5491
+.source "src/gen.c", 5498
     move    r0, 0
     store   r0, __G387_brace_init+1
-.source "src/gen.c", 5492
+.source "src/gen.c", 5499
     load    r0, sf[7]
     push    r0
     load    r0, sf[3]
     push    r0
     call    __F426_require_complete
     add     sp, 2
-.source "src/gen.c", 5493
+.source "src/gen.c", 5500
     load    r0, sf[-4]
     test    r0
     jump    z, __L9716
@@ -99041,10 +99051,10 @@ __L9716:
 __L9717:
     test    r0
     jump    z, __L9714
-.source "src/gen.c", 5495
+.source "src/gen.c", 5502
     move    r0, 0
     store   r0, sf[-5]
-.source "src/gen.c", 5496
+.source "src/gen.c", 5503
     add     r0, sf, -5
     push    r0
     load    r0, sf[3]
@@ -99052,7 +99062,7 @@ __L9717:
     call    __F410_find_il_ctor
     add     sp, 2
     store   r0, sf[-6]
-.source "src/gen.c", 5497
+.source "src/gen.c", 5504
     load    r0, sf[-6]
     test    r0
     jump    z, __L9722
@@ -99073,7 +99083,7 @@ __L9722:
 __L9723:
     test    r0
     jump    z, __L9720
-.source "src/gen.c", 5498
+.source "src/gen.c", 5505
     move    r0, 0
     push    r0
     load    r0, sf[-5]
@@ -99081,7 +99091,7 @@ __L9723:
     call    __F428_prvalue_dest
     add     sp, 2
     store   r0, sf[-7]
-.source "src/gen.c", 5499
+.source "src/gen.c", 5506
     load    r0, sf[7]
     push    r0
     load    r0, sf[-7]
@@ -99095,7 +99105,7 @@ __L9723:
     call    __F412_il_dest_text
     add     sp, 5
     store   r0, sf[-8]
-.source "src/gen.c", 5501
+.source "src/gen.c", 5508
     add     r0, sf, -9
     move    r1, 0
     add     r0, r1
@@ -99113,7 +99123,7 @@ __L9723:
     add     sp, 2
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 5502
+.source "src/gen.c", 5509
     add     r0, sf, -9
     move    r1, 0
     add     r0, r1
@@ -99123,7 +99133,7 @@ __L9723:
     move    r0, 1
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 5503
+.source "src/gen.c", 5510
     load    r0, sf[7]
     push    r0
     move    r0, 1
@@ -99139,7 +99149,7 @@ __L9723:
     return
 __L9720:
 __L9714:
-.source "src/gen.c", 5506
+.source "src/gen.c", 5513
     load    r0, sf[6]
     move    r1, 1
     cmp     r0, r1
@@ -99199,7 +99209,7 @@ __L9726:
 __L9727:
     test    r0
     jump    z, __L9724
-.source "src/gen.c", 5507
+.source "src/gen.c", 5514
     load    r0, sf[5]
     move    r1, 0
     add     r0, r1
@@ -99209,7 +99219,7 @@ __L9727:
     test    r0
     move    z, r0, 1, 0
     store   r0, sf[-10]
-.source "src/gen.c", 5508
+.source "src/gen.c", 5515
     load    r0, sf[-10]
     test    r0
     jump    z, __L9736
@@ -99260,7 +99270,7 @@ __L9735:
     add     sp, 4
     return
 __L9732:
-.source "src/gen.c", 5509
+.source "src/gen.c", 5516
     load    r0, sf[-10]
     test    r0
     jump    z, __L9740
@@ -99278,7 +99288,7 @@ __L9741:
     move    z, r0, 1, 0
     test    r0
     jump    z, __L9738
-.source "src/gen.c", 5510
+.source "src/gen.c", 5517
     load    r0, sf[0]
     add     r0, 42
     load    r0, r0[0]
@@ -99322,7 +99332,7 @@ __L9744:
 __L9745:
     test    r0
     jump    z, __L9742
-.source "src/gen.c", 5511
+.source "src/gen.c", 5518
     load    r0, sf[3]
     add     r0, 7
     load    r0, r0[0]
@@ -99351,7 +99361,7 @@ __L9745:
     call    __F344_serr
     add     sp, 5
 __L9742:
-.source "src/gen.c", 5512
+.source "src/gen.c", 5519
     load    r0, sf[0]
     add     r0, 35
     load    r0, r0[0]
@@ -99394,26 +99404,26 @@ __L9753:
 __L9750:
 __L9738:
 __L9724:
-.source "src/gen.c", 5515
+.source "src/gen.c", 5522
     load    r0, sf[3]
     push    r0
     call    __F427_class_ctors
     add     sp, 1
     store   r0, sf[-1]
-.source "src/gen.c", 5516
+.source "src/gen.c", 5523
     load    r0, sf[-1]
     test    r0
     move    z, r0, 1, 0
     test    r0
     jump    z, __L9754
-.source "src/gen.c", 5517
+.source "src/gen.c", 5524
     load    r0, sf[6]
     move    r1, 0
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
     jump    z, __L9756
-.source "src/gen.c", 5518
+.source "src/gen.c", 5525
     load    r0, sf[0]
     add     r0, 34
     load    r0, r0[0]
@@ -99433,11 +99443,11 @@ __L9724:
     add     sp, 3
     return
 __L9758:
-.source "src/gen.c", 5519
+.source "src/gen.c", 5526
     move    r0, 0
     return
 __L9756:
-.source "src/gen.c", 5521
+.source "src/gen.c", 5528
     load    r0, sf[6]
     move    r1, 1
     cmp     r0, r1
@@ -99480,7 +99490,7 @@ __L9762:
 __L9763:
     test    r0
     jump    z, __L9760
-.source "src/gen.c", 5523
+.source "src/gen.c", 5530
     load    r0, sf[4]
     push    r0
     load    r0, sf[5]
@@ -99498,7 +99508,7 @@ __L9763:
     add     sp, 4
     return
 __L9760:
-.source "src/gen.c", 5525
+.source "src/gen.c", 5532
     load    r0, sf[0]
     add     r0, 27
     load    r0, r0[0]
@@ -99516,7 +99526,7 @@ __L9760:
     call    __F344_serr
     add     sp, 3
 __L9766:
-.source "src/gen.c", 5526
+.source "src/gen.c", 5533
     load    r0, sf[3]
     push    r0
     call    __F293_ty_str
@@ -99529,7 +99539,7 @@ __L9766:
     call    __F344_serr
     add     sp, 3
 __L9754:
-.source "src/gen.c", 5528
+.source "src/gen.c", 5535
     add     r0, sf, -3
     push    r0
     load    r0, sf[6]
@@ -99541,13 +99551,13 @@ __L9754:
     call    __F328_resolve_overload
     add     sp, 4
     store   r0, sf[-2]
-.source "src/gen.c", 5529
+.source "src/gen.c", 5536
     load    r0, sf[-2]
     test    r0
     move    z, r0, 1, 0
     test    r0
     jump    z, __L9768
-.source "src/gen.c", 5530
+.source "src/gen.c", 5537
     load    r0, sf[6]
     move    r1, 1
     cmp     r0, r1
@@ -99604,7 +99614,7 @@ __L9772:
 __L9773:
     test    r0
     jump    z, __L9770
-.source "src/gen.c", 5531
+.source "src/gen.c", 5538
     load    r0, sf[0]
     add     r0, 35
     load    r0, r0[0]
@@ -99631,7 +99641,7 @@ __L9773:
     add     sp, 4
     return
 __L9778:
-.source "src/gen.c", 5532
+.source "src/gen.c", 5539
     load    r0, sf[4]
     push    r0
     load    r0, sf[5]
@@ -99649,7 +99659,7 @@ __L9778:
     add     sp, 4
     return
 __L9770:
-.source "src/gen.c", 5534
+.source "src/gen.c", 5541
     load    r0, sf[6]
     move    r1, 0
     cmp     r0, r1
@@ -99696,7 +99706,7 @@ __L9783:
     add     sp, 3
     return
 __L9780:
-.source "src/gen.c", 5535
+.source "src/gen.c", 5542
     load    r0, sf[-3]
     test    r0
     jump    z, __L9786
@@ -99712,7 +99722,7 @@ __L9780:
     call    __F344_serr
     add     sp, 3
 __L9786:
-.source "src/gen.c", 5536
+.source "src/gen.c", 5543
     load    r0, sf[3]
     push    r0
     call    __F293_ty_str
@@ -99725,7 +99735,7 @@ __L9786:
     call    __F344_serr
     add     sp, 3
 __L9768:
-.source "src/gen.c", 5538
+.source "src/gen.c", 5545
     load    r0, sf[-2]
     add     r0, 8
     load    r0, r0[0]
@@ -99745,7 +99755,7 @@ __L9768:
     call    __F344_serr
     add     sp, 3
 __L9788:
-.source "src/gen.c", 5539
+.source "src/gen.c", 5546
     load    r0, sf[7]
     push    r0
     load    r0, sf[6]
@@ -99765,8 +99775,8 @@ __L9788:
 
 // default_construct_text
 __F458_default_construct_text:
-.source "src/gen.c", 5542
-.source "src/gen.c", 5543
+.source "src/gen.c", 5549
+.source "src/gen.c", 5550
     load    r0, sf[5]
     push    r0
     move    r0, 0
@@ -99786,9 +99796,9 @@ __F458_default_construct_text:
 
 // copy_into
 __F457_copy_into:
-.source "src/gen.c", 5547
+.source "src/gen.c", 5554
     add     sp, -1
-.source "src/gen.c", 5549
+.source "src/gen.c", 5556
     add     r0, sf, 0
     move    r1, 0
     add     r0, r1
@@ -99796,7 +99806,7 @@ __F457_copy_into:
     load    r0, sf[5]
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 5550
+.source "src/gen.c", 5557
     load    r0, sf[6]
     push    r0
     move    r0, 1
@@ -99816,24 +99826,24 @@ __F457_copy_into:
 
 // find_conversion
 __F450_find_conversion:
-.source "src/gen.c", 5558
+.source "src/gen.c", 5565
     add     sp, -27
-.source "src/gen.c", 5559
+.source "src/gen.c", 5566
     load    r0, sf[3]
     push    r0
     call    __F413_cinfo
     add     sp, 1
     store   r0, sf[0]
-.source "src/gen.c", 5561
+.source "src/gen.c", 5568
     move    r0, -1
     store   r0, sf[-2]
-.source "src/gen.c", 5562
+.source "src/gen.c", 5569
     move    r0, __W1309+1
     push    r0
     call    __F29_intern_str
     add     sp, 1
     store   r0, sf[-3]
-.source "src/gen.c", 5563
+.source "src/gen.c", 5570
     load    r0, sf[0]
     add     r0, 17
     load    r0, r0[0]
@@ -99852,20 +99862,20 @@ __L9790:
     move    r0, 0
 __L9791:
     store   r0, sf[-4]
-.source "src/gen.c", 5564
+.source "src/gen.c", 5571
     load    r0, sf[5]
     push    r0
     move    r0, 0
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 5565
+.source "src/gen.c", 5572
     load    r0, sf[-4]
     store   r0, sf[-1]
 __L9792:
     load    r0, sf[-1]
     test    r0
     jump    z, __L9794
-.source "src/gen.c", 5568
+.source "src/gen.c", 5575
     load    r0, sf[-1]
     add     r0, 2
     load    r0, r0[0]
@@ -99878,7 +99888,7 @@ __L9792:
     call    __F275_ty_unqual
     add     sp, 1
     store   r0, sf[-26]
-.source "src/gen.c", 5569
+.source "src/gen.c", 5576
     move    r0, 20
     push    r0
     move    r0, 0
@@ -99887,13 +99897,13 @@ __L9792:
     push    r0
     call    __crt_memset
     add     sp, 3
-.source "src/gen.c", 5570
+.source "src/gen.c", 5577
     add     r0, sf, -24
     push    r0
     load    r0, sf[-26]
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 5571
+.source "src/gen.c", 5578
     add     r0, sf, -24
     add     r0, 1
     push    r0
@@ -99907,12 +99917,12 @@ __L9792:
     add     sp, 1
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 5572
+.source "src/gen.c", 5579
     load    r1, __G624_in_class_conv+1
     add     r2, r1, 1
     store   r2, __G624_in_class_conv+1
     move    r0, r1
-.source "src/gen.c", 5573
+.source "src/gen.c", 5580
     load    r0, sf[4]
     push    r0
     add     r0, sf, -24
@@ -99920,12 +99930,12 @@ __L9792:
     call    __F318_value_conversion
     add     sp, 2
     store   r0, sf[-25]
-.source "src/gen.c", 5574
+.source "src/gen.c", 5581
     load    r1, __G624_in_class_conv+1
     add     r2, r1, -1
     store   r2, __G624_in_class_conv+1
     move    r0, r1
-.source "src/gen.c", 5575
+.source "src/gen.c", 5582
     load    r0, sf[-25]
     move    r1, -1
     cmp     r0, r1
@@ -99963,10 +99973,10 @@ __L9797:
 __L9798:
     test    r0
     jump    z, __L9795
-.source "src/gen.c", 5576
+.source "src/gen.c", 5583
     load    r0, sf[-25]
     store   r0, sf[-2]
-.source "src/gen.c", 5577
+.source "src/gen.c", 5584
     load    r0, sf[5]
     push    r0
     load    r0, sf[-1]
@@ -99974,14 +99984,14 @@ __L9798:
     store   r0, r1[0]
 __L9795:
 __L9793:
-.source "src/gen.c", 5565
+.source "src/gen.c", 5572
     load    r0, sf[-1]
     add     r0, 10
     load    r0, r0[0]
     store   r0, sf[-1]
     jump    __L9792
 __L9794:
-.source "src/gen.c", 5580
+.source "src/gen.c", 5587
     load    r0, sf[-2]
     return
     move    r0, 0
@@ -99990,13 +100000,13 @@ __L9794:
 
 // class_conversion
 __F312_class_conversion:
-.source "src/gen.c", 5584
+.source "src/gen.c", 5591
     add     sp, -10
-.source "src/gen.c", 5585
+.source "src/gen.c", 5592
     load    r0, sf[3]
     load    r0, r0[0]
     store   r0, sf[0]
-.source "src/gen.c", 5586
+.source "src/gen.c", 5593
     load    r0, sf[4]
     load    r0, r0[0]
     move    r1, 27
@@ -100053,14 +100063,14 @@ __L9806:
     move    r0, 2
     return
 __L9803:
-.source "src/gen.c", 5587
+.source "src/gen.c", 5594
     load    r0, __G624_in_class_conv+1
     test    r0
     jump    z, __L9811
     move    r0, -1
     return
 __L9811:
-.source "src/gen.c", 5588
+.source "src/gen.c", 5595
     load    r0, sf[4]
     push    r0
     load    r0, sf[0]
@@ -100072,7 +100082,7 @@ __L9811:
     move    r0, 3
     return
 __L9813:
-.source "src/gen.c", 5589
+.source "src/gen.c", 5596
     load    r0, sf[4]
     load    r0, r0[0]
     move    r1, 27
@@ -100080,7 +100090,7 @@ __L9813:
     move    eq, r0, 1, 0
     test    r0
     jump    z, __L9815
-.source "src/gen.c", 5592
+.source "src/gen.c", 5599
     load    r0, sf[4]
     add     r0, 7
     load    r0, r0[0]
@@ -100111,34 +100121,34 @@ __L9820:
     move    r0, -1
     return
 __L9817:
-.source "src/gen.c", 5593
+.source "src/gen.c", 5600
     load    r0, sf[4]
     push    r0
     call    __F413_cinfo
     add     sp, 1
     store   r0, sf[-3]
-.source "src/gen.c", 5594
+.source "src/gen.c", 5601
     load    r0, sf[4]
     push    r0
     call    __F427_class_ctors
     add     sp, 1
     store   r0, sf[-1]
-.source "src/gen.c", 5595
+.source "src/gen.c", 5602
     load    r1, __G624_in_class_conv+1
     add     r2, r1, 1
     store   r2, __G624_in_class_conv+1
     move    r0, r1
-.source "src/gen.c", 5596
+.source "src/gen.c", 5603
     load    r0, sf[-1]
     store   r0, sf[-2]
 __L9821:
     load    r0, sf[-2]
     test    r0
     jump    z, __L9823
-.source "src/gen.c", 5598
+.source "src/gen.c", 5605
     load    r0, sf[-2]
     store   r0, sf[-5]
-.source "src/gen.c", 5599
+.source "src/gen.c", 5606
     load    r0, sf[-2]
     load    r0, r0[0]
     move    r1, 10
@@ -100146,7 +100156,7 @@ __L9821:
     move    eq, r0, 1, 0
     test    r0
     jump    z, __L9824
-.source "src/gen.c", 5601
+.source "src/gen.c", 5608
     load    r0, sf[-2]
     add     r0, 8
     load    r0, r0[0]
@@ -100156,7 +100166,7 @@ __L9821:
     jump    z, __L9826
     jump    __L9822
 __L9826:
-.source "src/gen.c", 5602
+.source "src/gen.c", 5609
     add     r0, sf, -6
     move    r1, 0
     add     r0, r1
@@ -100164,7 +100174,7 @@ __L9826:
     load    r0, sf[3]
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 5603
+.source "src/gen.c", 5610
     move    r0, 0
     push    r0
     move    r0, 1
@@ -100176,7 +100186,7 @@ __L9826:
     call    __F324_deduce_function
     add     sp, 4
     store   r0, sf[-5]
-.source "src/gen.c", 5604
+.source "src/gen.c", 5611
     load    r0, sf[-5]
     test    r0
     move    z, r0, 1, 0
@@ -100185,7 +100195,7 @@ __L9826:
     jump    __L9822
 __L9828:
 __L9824:
-.source "src/gen.c", 5606
+.source "src/gen.c", 5613
     load    r0, sf[-5]
     add     r0, 8
     load    r0, r0[0]
@@ -100241,7 +100251,7 @@ __L9833:
     jump    z, __L9830
     jump    __L9822
 __L9830:
-.source "src/gen.c", 5607
+.source "src/gen.c", 5614
     load    r0, sf[-5]
     add     r0, 2
     load    r0, r0[0]
@@ -100256,7 +100266,7 @@ __L9830:
     call    __F320_arg_conversion
     add     sp, 2
     store   r0, sf[-4]
-.source "src/gen.c", 5608
+.source "src/gen.c", 5615
     load    r0, sf[-4]
     move    r1, -1
     cmp     r0, r1
@@ -100281,29 +100291,29 @@ __L9842:
 __L9843:
     test    r0
     jump    z, __L9840
-.source "src/gen.c", 5609
+.source "src/gen.c", 5616
     load    r1, __G624_in_class_conv+1
     add     r2, r1, -1
     store   r2, __G624_in_class_conv+1
     move    r0, r1
-.source "src/gen.c", 5610
+.source "src/gen.c", 5617
     move    r0, 3
     return
 __L9840:
 __L9822:
-.source "src/gen.c", 5596
+.source "src/gen.c", 5603
     load    r0, sf[-2]
     add     r0, 10
     load    r0, r0[0]
     store   r0, sf[-2]
     jump    __L9821
 __L9823:
-.source "src/gen.c", 5613
+.source "src/gen.c", 5620
     load    r1, __G624_in_class_conv+1
     add     r2, r1, -1
     store   r2, __G624_in_class_conv+1
     move    r0, r1
-.source "src/gen.c", 5614
+.source "src/gen.c", 5621
     load    r0, sf[0]
     load    r0, r0[0]
     move    r1, 27
@@ -100311,7 +100321,7 @@ __L9823:
     move    eq, r0, 1, 0
     test    r0
     jump    z, __L9846
-.source "src/gen.c", 5616
+.source "src/gen.c", 5623
     add     r0, sf, -7
     push    r0
     load    r0, sf[4]
@@ -100339,13 +100349,13 @@ __L9851:
     return
 __L9848:
 __L9846:
-.source "src/gen.c", 5618
+.source "src/gen.c", 5625
     load    r0, sf[-3]
-.source "src/gen.c", 5619
+.source "src/gen.c", 5626
     move    r0, -1
     return
 __L9815:
-.source "src/gen.c", 5621
+.source "src/gen.c", 5628
     load    r0, sf[0]
     load    r0, r0[0]
     move    r1, 27
@@ -100383,7 +100393,7 @@ __L9854:
 __L9855:
     test    r0
     jump    z, __L9852
-.source "src/gen.c", 5623
+.source "src/gen.c", 5630
     add     r0, sf, -8
     push    r0
     load    r0, sf[4]
@@ -100393,7 +100403,7 @@ __L9855:
     call    __F450_find_conversion
     add     sp, 3
     store   r0, sf[-9]
-.source "src/gen.c", 5624
+.source "src/gen.c", 5631
     load    r0, sf[-9]
     move    r1, -1
     cmp     r0, r1
@@ -100422,7 +100432,7 @@ __L9861:
     return
 __L9858:
 __L9852:
-.source "src/gen.c", 5626
+.source "src/gen.c", 5633
     move    r0, -1
     return
     move    r0, 0
@@ -100431,15 +100441,15 @@ __L9852:
 
 // class_prvalue
 __F448_class_prvalue:
-.source "src/gen.c", 5630
+.source "src/gen.c", 5637
     add     sp, -7
-.source "src/gen.c", 5633
+.source "src/gen.c", 5640
     load    r0, sf[4]
     push    r0
     call    __F275_ty_unqual
     add     sp, 1
     store   r0, sf[-3]
-.source "src/gen.c", 5634
+.source "src/gen.c", 5641
     load    r0, sf[3]
     load    r0, r0[0]
     load    r0, r0[0]
@@ -100482,7 +100492,7 @@ __L9866:
 __L9867:
     test    r0
     jump    z, __L9864
-.source "src/gen.c", 5636
+.source "src/gen.c", 5643
     load    r0, sf[5]
     push    r0
     load    r0, sf[-3]
@@ -100492,14 +100502,14 @@ __L9867:
     call    __F419_upcast_value
     add     sp, 3
     store   r0, sf[3]
-.source "src/gen.c", 5637
+.source "src/gen.c", 5644
     load    r0, sf[3]
     add     r0, 13
     push    r0
     move    r0, 0
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 5638
+.source "src/gen.c", 5645
     load    r0, sf[3]
     add     r0, 1
     push    r0
@@ -100507,7 +100517,7 @@ __L9867:
     pop     r1
     store   r0, r1[0]
 __L9864:
-.source "src/gen.c", 5640
+.source "src/gen.c", 5647
     load    r0, sf[3]
     load    r0, r0[0]
     load    r0, r0[0]
@@ -100532,7 +100542,7 @@ __L9872:
 __L9873:
     test    r0
     jump    z, __L9870
-.source "src/gen.c", 5641
+.source "src/gen.c", 5648
     load    r0, sf[3]
     add     r0, 13
     load    r0, r0[0]
@@ -100555,7 +100565,7 @@ __L9877:
     load    r0, sf[3]
     return
 __L9874:
-.source "src/gen.c", 5642
+.source "src/gen.c", 5649
     move    r0, 0
     push    r0
     load    r0, sf[-3]
@@ -100563,7 +100573,7 @@ __L9874:
     call    __F428_prvalue_dest
     add     sp, 2
     store   r0, sf[-1]
-.source "src/gen.c", 5643
+.source "src/gen.c", 5650
     load    r0, sf[5]
     push    r0
     load    r0, sf[3]
@@ -100575,7 +100585,7 @@ __L9874:
     call    __F457_copy_into
     add     sp, 4
     store   r0, sf[-2]
-.source "src/gen.c", 5644
+.source "src/gen.c", 5651
     load    r0, sf[-2]
     test    r0
     jump    z, __L9878
@@ -100595,21 +100605,21 @@ __L9879:
     call    __F311_val_new
     add     sp, 2
     store   r0, sf[0]
-.source "src/gen.c", 5645
+.source "src/gen.c", 5652
     load    r0, sf[0]
     add     r0, 13
     push    r0
     move    r0, 1
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 5646
+.source "src/gen.c", 5653
     load    r0, sf[0]
     return
 __L9870:
-.source "src/gen.c", 5651
+.source "src/gen.c", 5658
     move    r0, 0
     store   r0, sf[-5]
-.source "src/gen.c", 5652
+.source "src/gen.c", 5659
     add     r0, sf, -4
     move    r1, 0
     add     r0, r1
@@ -100617,7 +100627,7 @@ __L9870:
     load    r0, sf[3]
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 5653
+.source "src/gen.c", 5660
     load    r0, sf[3]
     load    r0, r0[0]
     load    r0, r0[0]
@@ -100657,7 +100667,7 @@ __L9882:
 __L9883:
     test    r0
     jump    z, __L9880
-.source "src/gen.c", 5654
+.source "src/gen.c", 5661
     move    r0, 0
     push    r0
     load    r0, sf[5]
@@ -100680,7 +100690,7 @@ __L9883:
     call    __F452_call_function
     add     sp, 6
     store   r0, sf[-6]
-.source "src/gen.c", 5655
+.source "src/gen.c", 5662
     load    r0, sf[5]
     push    r0
     load    r0, sf[-3]
@@ -100691,7 +100701,7 @@ __L9883:
     add     sp, 3
     return
 __L9880:
-.source "src/gen.c", 5657
+.source "src/gen.c", 5664
     move    r0, 0
     push    r0
     load    r0, sf[-3]
@@ -100699,7 +100709,7 @@ __L9880:
     call    __F428_prvalue_dest
     add     sp, 2
     store   r0, sf[-1]
-.source "src/gen.c", 5658
+.source "src/gen.c", 5665
     load    r0, sf[5]
     push    r0
     move    r0, 1
@@ -100713,7 +100723,7 @@ __L9880:
     call    __F456_ctor_call
     add     sp, 5
     store   r0, sf[-2]
-.source "src/gen.c", 5659
+.source "src/gen.c", 5666
     load    r0, sf[-2]
     test    r0
     jump    z, __L9886
@@ -100733,14 +100743,14 @@ __L9887:
     call    __F311_val_new
     add     sp, 2
     store   r0, sf[0]
-.source "src/gen.c", 5660
+.source "src/gen.c", 5667
     load    r0, sf[0]
     add     r0, 13
     push    r0
     move    r0, 1
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 5661
+.source "src/gen.c", 5668
     load    r0, sf[0]
     return
     move    r0, 0
@@ -100749,18 +100759,18 @@ __L9887:
 
 // convert_class_any
 __F449_convert_class_any:
-.source "src/gen.c", 5666
+.source "src/gen.c", 5673
     add     sp, -5
-.source "src/gen.c", 5667
+.source "src/gen.c", 5674
     load    r0, sf[4]
     push    r0
     call    __F275_ty_unqual
     add     sp, 1
     store   r0, sf[0]
-.source "src/gen.c", 5668
+.source "src/gen.c", 5675
     move    r0, 0
     store   r0, sf[-1]
-.source "src/gen.c", 5669
+.source "src/gen.c", 5676
     load    r0, sf[0]
     load    r0, r0[0]
     move    r1, 27
@@ -100778,7 +100788,7 @@ __F449_convert_class_any:
     add     sp, 3
     return
 __L9888:
-.source "src/gen.c", 5671
+.source "src/gen.c", 5678
     load    r0, sf[0]
     push    r0
     load    r0, sf[3]
@@ -100787,11 +100797,11 @@ __L9888:
     call    __F405_lambda_invoker
     add     sp, 2
     store   r0, sf[-2]
-.source "src/gen.c", 5672
+.source "src/gen.c", 5679
     load    r0, sf[-2]
     test    r0
     jump    z, __L9890
-.source "src/gen.c", 5673
+.source "src/gen.c", 5680
     load    r0, sf[-2]
     add     r0, 3
     load    r0, r0[0]
@@ -100801,18 +100811,18 @@ __L9888:
     call    __F311_val_new
     add     sp, 2
     store   r0, sf[-3]
-.source "src/gen.c", 5674
+.source "src/gen.c", 5681
     load    r0, sf[-3]
     add     r0, 5
     push    r0
     move    r0, 1
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 5675
+.source "src/gen.c", 5682
     load    r0, sf[-3]
     return
 __L9890:
-.source "src/gen.c", 5679
+.source "src/gen.c", 5686
     load    r0, sf[3]
     load    r0, r0[0]
     load    r0, r0[0]
@@ -100852,7 +100862,7 @@ __L9894:
 __L9895:
     test    r0
     jump    z, __L9892
-.source "src/gen.c", 5680
+.source "src/gen.c", 5687
     move    r0, 0
     push    r0
     load    r0, sf[5]
@@ -100875,7 +100885,7 @@ __L9895:
     call    __F452_call_function
     add     sp, 6
     store   r0, sf[-4]
-.source "src/gen.c", 5681
+.source "src/gen.c", 5688
     load    r0, sf[5]
     push    r0
     load    r0, sf[0]
@@ -100886,7 +100896,7 @@ __L9895:
     add     sp, 3
     return
 __L9892:
-.source "src/gen.c", 5683
+.source "src/gen.c", 5690
     load    r0, sf[4]
     push    r0
     call    __F293_ty_str
@@ -100904,7 +100914,7 @@ __L9892:
     push    r0
     call    __F344_serr
     add     sp, 4
-.source "src/gen.c", 5684
+.source "src/gen.c", 5691
     move    r0, 0
     return
     move    r0, 0
@@ -100913,8 +100923,8 @@ __L9892:
 
 // c_param_type_text
 __F436_c_param_type_text:
-.source "src/gen.c", 5690
-.source "src/gen.c", 5691
+.source "src/gen.c", 5697
+.source "src/gen.c", 5698
     load    r0, sf[3]
     push    r0
     call    __F276_ty_is_ref
@@ -100934,7 +100944,7 @@ __F436_c_param_type_text:
     add     sp, 2
     return
 __L9898:
-.source "src/gen.c", 5692
+.source "src/gen.c", 5699
     load    r0, sf[3]
     load    r0, r0[0]
     move    r1, 27
@@ -100953,7 +100963,7 @@ __L9898:
     add     sp, 2
     return
 __L9900:
-.source "src/gen.c", 5693
+.source "src/gen.c", 5700
     load    r0, sf[4]
     push    r0
     load    r0, sf[3]
@@ -100967,8 +100977,8 @@ __L9900:
 
 // is_nonstatic_member
 __F434_is_nonstatic_member:
-.source "src/gen.c", 5696
-.source "src/gen.c", 5697
+.source "src/gen.c", 5703
+.source "src/gen.c", 5704
     load    r0, sf[3]
     add     r0, 8
     load    r0, r0[0]
@@ -100997,14 +101007,14 @@ __L9903:
 
 // c_return_type
 __F435_c_return_type:
-.source "src/gen.c", 5701
+.source "src/gen.c", 5708
     add     sp, -1
-.source "src/gen.c", 5702
+.source "src/gen.c", 5709
     load    r0, sf[4]
     add     r0, 2
     load    r0, r0[0]
     store   r0, sf[0]
-.source "src/gen.c", 5703
+.source "src/gen.c", 5710
     load    r0, sf[3]
     test    r0
     jump    z, __L9906
@@ -101035,7 +101045,7 @@ __L9907:
     add     sp, 1
     return
 __L9904:
-.source "src/gen.c", 5704
+.source "src/gen.c", 5711
     load    r0, sf[0]
     push    r0
     call    __F276_ty_is_ref
@@ -101050,7 +101060,7 @@ __L9904:
     add     sp, 1
     return
 __L9908:
-.source "src/gen.c", 5705
+.source "src/gen.c", 5712
     load    r0, sf[0]
     load    r0, r0[0]
     move    r1, 27
@@ -101064,7 +101074,7 @@ __L9908:
     add     sp, 1
     return
 __L9910:
-.source "src/gen.c", 5706
+.source "src/gen.c", 5713
     load    r0, sf[0]
     return
     move    r0, 0
@@ -101073,25 +101083,25 @@ __L9910:
 
 // call_function
 __F452_call_function:
-.source "src/gen.c", 5710
+.source "src/gen.c", 5717
     add     sp, -13
-.source "src/gen.c", 5713
+.source "src/gen.c", 5720
     move    r0, 0
     store   r0, sf[-5]
-.source "src/gen.c", 5715
+.source "src/gen.c", 5722
     load    r0, sf[7]
     store   r0, __G375_use_at+1
-.source "src/gen.c", 5716
+.source "src/gen.c", 5723
     load    r0, sf[3]
     push    r0
     call    __F373_use_function
     add     sp, 1
-.source "src/gen.c", 5717
+.source "src/gen.c", 5724
     load    r0, sf[3]
     add     r0, 2
     load    r0, r0[0]
     store   r0, sf[0]
-.source "src/gen.c", 5718
+.source "src/gen.c", 5725
     load    r0, sf[0]
     add     r0, 2
     load    r0, r0[0]
@@ -101112,12 +101122,12 @@ __F452_call_function:
     call    __F344_serr
     add     sp, 3
 __L9912:
-.source "src/gen.c", 5719
+.source "src/gen.c", 5726
     load    r0, sf[0]
     add     r0, 2
     load    r0, r0[0]
     store   r0, sf[-7]
-.source "src/gen.c", 5720
+.source "src/gen.c", 5727
     load    r0, sf[3]
     add     r0, 19
     load    r0, r0[0]
@@ -101173,15 +101183,15 @@ __L9914:
     move    r0, 0
 __L9915:
     store   r0, sf[-8]
-.source "src/gen.c", 5721
+.source "src/gen.c", 5728
     move    r0, 0
     store   r0, sf[-9]
-.source "src/gen.c", 5722
+.source "src/gen.c", 5729
     add     r0, sf, -3
     push    r0
     call    __F10_sb_init
     add     sp, 1
-.source "src/gen.c", 5723
+.source "src/gen.c", 5730
     load    r0, sf[3]
     add     r0, 8
     load    r0, r0[0]
@@ -101201,7 +101211,7 @@ __L9915:
     call    __F344_serr
     add     sp, 3
 __L9922:
-.source "src/gen.c", 5724
+.source "src/gen.c", 5731
     load    r0, sf[-7]
     load    r0, r0[0]
     move    r1, 27
@@ -101209,14 +101219,14 @@ __L9922:
     move    eq, r0, 1, 0
     test    r0
     jump    z, __L9924
-.source "src/gen.c", 5725
+.source "src/gen.c", 5732
     load    r0, sf[7]
     push    r0
     load    r0, sf[-7]
     push    r0
     call    __F426_require_complete
     add     sp, 2
-.source "src/gen.c", 5726
+.source "src/gen.c", 5733
     load    r0, sf[8]
     push    r0
     load    r0, sf[-7]
@@ -101224,7 +101234,7 @@ __L9922:
     call    __F428_prvalue_dest
     add     sp, 2
     store   r0, sf[-5]
-.source "src/gen.c", 5727
+.source "src/gen.c", 5734
     load    r0, sf[-5]
     push    r0
     add     r0, sf, -3
@@ -101232,14 +101242,14 @@ __L9922:
     call    __F13_sb_puts
     add     sp, 2
 __L9924:
-.source "src/gen.c", 5729
+.source "src/gen.c", 5736
     load    r0, sf[3]
     push    r0
     call    __F434_is_nonstatic_member
     add     sp, 1
     test    r0
     jump    z, __L9926
-.source "src/gen.c", 5730
+.source "src/gen.c", 5737
     load    r0, sf[4]
     test    r0
     move    z, r0, 1, 0
@@ -101257,7 +101267,7 @@ __L9924:
     call    __F344_serr
     add     sp, 3
 __L9928:
-.source "src/gen.c", 5731
+.source "src/gen.c", 5738
     add     r0, sf, -3
     add     r0, 1
     load    r0, r0[0]
@@ -101270,11 +101280,11 @@ __L9928:
     call    __F13_sb_puts
     add     sp, 2
 __L9930:
-.source "src/gen.c", 5732
+.source "src/gen.c", 5739
     load    r0, sf[-8]
     test    r0
     jump    z, __L9932
-.source "src/gen.c", 5733
+.source "src/gen.c", 5740
     load    r0, sf[3]
     add     r0, 19
     load    r0, r0[0]
@@ -101287,7 +101297,7 @@ __L9930:
     call    __F432_new_temp
     add     sp, 1
     store   r0, sf[-9]
-.source "src/gen.c", 5734
+.source "src/gen.c", 5741
     load    r0, sf[-9]
     push    r0
     add     r0, sf, -3
@@ -101296,7 +101306,7 @@ __L9930:
     add     sp, 2
     jump    __L9933
 __L9932:
-.source "src/gen.c", 5735
+.source "src/gen.c", 5742
     load    r0, sf[4]
     push    r0
     add     r0, sf, -3
@@ -101305,7 +101315,7 @@ __L9932:
     add     sp, 2
 __L9933:
 __L9926:
-.source "src/gen.c", 5737
+.source "src/gen.c", 5744
     load    r0, sf[7]
     push    r0
     load    r0, sf[6]
@@ -101319,14 +101329,14 @@ __L9926:
     call    __F502_arg_list_text
     add     sp, 5
     store   r0, sf[-4]
-.source "src/gen.c", 5738
+.source "src/gen.c", 5745
     load    r0, sf[-4]
     move    r1, 0
     add     r0, r1
     load    r0, r0[0]
     test    r0
     jump    z, __L9934
-.source "src/gen.c", 5739
+.source "src/gen.c", 5746
     add     r0, sf, -3
     add     r0, 1
     load    r0, r0[0]
@@ -101339,7 +101349,7 @@ __L9926:
     call    __F13_sb_puts
     add     sp, 2
 __L9936:
-.source "src/gen.c", 5740
+.source "src/gen.c", 5747
     load    r0, sf[-4]
     push    r0
     add     r0, sf, -3
@@ -101347,14 +101357,14 @@ __L9936:
     call    __F13_sb_puts
     add     sp, 2
 __L9934:
-.source "src/gen.c", 5742
+.source "src/gen.c", 5749
     load    r0, sf[-8]
     test    r0
     jump    z, __L9938
-.source "src/gen.c", 5743
+.source "src/gen.c", 5750
     load    r0, sf[4]
     store   r0, sf[-10]
-.source "src/gen.c", 5744
+.source "src/gen.c", 5751
     load    r0, sf[3]
     add     r0, 19
     load    r0, r0[0]
@@ -101366,7 +101376,7 @@ __L9934:
     call    __F415_vtable_fn_type
     add     sp, 2
     store   r0, sf[-11]
-.source "src/gen.c", 5745
+.source "src/gen.c", 5752
     load    r0, sf[3]
     add     r0, 15
     load    r0, r0[0]
@@ -101400,7 +101410,7 @@ __L9934:
     add     sp, 4
     store   r0, sf[-10]
 __L9940:
-.source "src/gen.c", 5746
+.source "src/gen.c", 5753
     add     r0, sf, -3
     load    r0, r0[0]
     push    r0
@@ -101433,7 +101443,7 @@ __L9940:
     store   r0, sf[-6]
     jump    __L9939
 __L9938:
-.source "src/gen.c", 5747
+.source "src/gen.c", 5754
     add     r0, sf, -3
     load    r0, r0[0]
     push    r0
@@ -101447,7 +101457,7 @@ __L9938:
     add     sp, 3
     store   r0, sf[-6]
 __L9939:
-.source "src/gen.c", 5748
+.source "src/gen.c", 5755
     load    r0, sf[-7]
     load    r0, r0[0]
     move    r1, 27
@@ -101455,7 +101465,7 @@ __L9939:
     move    eq, r0, 1, 0
     test    r0
     jump    z, __L9942
-.source "src/gen.c", 5749
+.source "src/gen.c", 5756
     load    r0, sf[-6]
     push    r0
     move    r0, __W1323+1
@@ -101471,18 +101481,18 @@ __L9939:
     call    __F311_val_new
     add     sp, 2
     store   r0, sf[-12]
-.source "src/gen.c", 5750
+.source "src/gen.c", 5757
     load    r0, sf[-12]
     add     r0, 13
     push    r0
     move    r0, 1
     pop     r1
     store   r0, r1[0]
-.source "src/gen.c", 5751
+.source "src/gen.c", 5758
     load    r0, sf[-12]
     return
 __L9942:
-.source "src/gen.c", 5753
+.source "src/gen.c", 5760
     load    r0, sf[-6]
     push    r0
     load    r0, sf[-7]
@@ -101496,17 +101506,17 @@ __L9942:
 
 // ctor_text
 __F623_ctor_text:
-.source "src/gen.c", 5756
+.source "src/gen.c", 5763
     add     sp, -1
-.source "src/gen.c", 5758
+.source "src/gen.c", 5765
     load    r0, sf[7]
     store   r0, __G375_use_at+1
-.source "src/gen.c", 5759
+.source "src/gen.c", 5766
     load    r0, sf[3]
     push    r0
     call    __F373_use_function
     add     sp, 1
-.source "src/gen.c", 5760
+.source "src/gen.c", 5767
     load    r0, sf[7]
     push    r0
     load    r0, sf[6]
@@ -101522,7 +101532,7 @@ __F623_ctor_text:
     call    __F502_arg_list_text
     add     sp, 5
     store   r0, sf[0]
-.source "src/gen.c", 5761
+.source "src/gen.c", 5768
     load    r0, sf[0]
     push    r0
     load    r0, sf[0]
@@ -101554,15 +101564,15 @@ __L9945:
 
 // line_file_name
 __F459_line_file_name:
-.source "src/gen.c", 5768
+.source "src/gen.c", 5775
     add     sp, -2
-.source "src/gen.c", 5770
+.source "src/gen.c", 5777
     load    r0, __G625_out_dir+1
     push    r0
     call    __crt_strlen
     add     sp, 1
     store   r0, sf[-1]
-.source "src/gen.c", 5771
+.source "src/gen.c", 5778
     load    r0, sf[3]
     move    r1, 0
     cmp     r0, r1
@@ -101595,7 +101605,7 @@ __L9949:
     move    r0, __W1328+1
     return
 __L9946:
-.source "src/gen.c", 5772
+.source "src/gen.c", 5779
     load    r0, __G17_files+1
     push    r0
     load    r0, sf[3]
@@ -101606,7 +101616,7 @@ __L9946:
     add     r0, r1
     load    r0, r0[0]
     store   r0, sf[0]
-.source "src/gen.c", 5773
+.source "src/gen.c", 5780
     move    r0, 0
     load    r1, sf[-1]
     move    r2, 1
@@ -101650,7 +101660,7 @@ __L9957:
     add     r0, r1
     return
 __L9954:
-.source "src/gen.c", 5774
+.source "src/gen.c", 5781
     load    r0, sf[0]
     return
     move    r0, 0
