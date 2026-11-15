@@ -400,6 +400,22 @@ static int pending_conv(Node *e, Type *t) {
         }
         if ((e->list2 ? e->list2->n : 0) != inv->params.n) return CV_NONE;
         if (inv->type && e->op == K_Sub) return CV_NONE;
+        if (inv->type && e->op == K_Function && !(e->flags & F_MULTILINE) && !e->a) {
+            /* the lambda's own result type against the delegate's (so that
+               Sum(Function(p) p.Age) takes the Func(Of T, Integer) overload) */
+            Type *pt[16];
+            Sym *l;
+            int i, k;
+            if (inv->params.n > 16) return CV_WIDEN;
+            for (i = 0; i < inv->params.n; i++) pt[i] = inv->params.v[i]->type;
+            tentative++;
+            l = bind_lambda(copy_tree(e), 0, pt, 0);
+            tentative--;
+            if (!l->type || is_delegate(l->type)) return CV_WIDEN;
+            if (l->type == inv->type) return CV_IDENT;
+            k = conv_class(l->type, inv->type);
+            return k == CV_IDENT ? CV_IDENT : k;
+        }
         return CV_WIDEN;
     }
 }
@@ -438,4 +454,128 @@ static int lambda_shape(Node *tn, Node **pnodes, int *np, Node **rnode) {
         return 1;
     }
     return 0;
+}
+
+/* ------------------------------------------------------------ anonymous types */
+
+/* New With {.A = x, Key .B = y}: an instance of a generic class made for
+   the field names (and Key flags), with the field types as its type
+   arguments.  The class has a field per member, ToString "{ A = x, B = y }"
+   and, with Key fields, Equals and GetHashCode of them. */
+
+typedef struct {
+    const char *key;        /* "A|*B" : names, * for Key */
+    Sym *tmpl;
+} AnonShape;
+
+static AnonShape *anon_shapes;
+static int nanon, cap_anon;
+
+static Sym *anon_template(Node *init, Node *at) {
+    StrBuf key, src;
+    int i, nkey = 0, file;
+    NodeVec *fis = init->list;
+    TokVec *tv;
+    Node *f;
+    Ctx ctx;
+    sb_init(&key);
+    for (i = 0; i < fis->n; i++) {
+        if (i) sb_putc(&key, '|');
+        if (fis->v[i]->flags & F_KEY) {
+            sb_putc(&key, '*');
+            nkey++;
+        }
+        sb_puts(&key, fis->v[i]->name->key);
+    }
+    for (i = 0; i < nanon; i++)
+        if (strcmp(anon_shapes[i].key, key.s) == 0) return anon_shapes[i].tmpl;
+    /* the source of the class */
+    sb_init(&src);
+    sb_printf(&src, "Friend NotInheritable Class VB_AnonymousType_%d(Of ", nanon);
+    for (i = 0; i < fis->n; i++) sb_printf(&src, "%sT%d", i ? ", " : "", i);
+    sb_puts(&src, ")\n");
+    for (i = 0; i < fis->n; i++) sb_printf(&src, "    Public %s As T%d\n", fis->v[i]->text, i);
+    sb_puts(&src, "    Public Overrides Function ToString() As String\n        Dim s = \"{ \"\n");
+    for (i = 0; i < fis->n; i++) {
+        sb_printf(&src, "        s &= \"%s%s = \"\n", i ? ", " : "", fis->v[i]->text);
+        sb_printf(&src, "        If CObj(%s) IsNot Nothing Then s &= CObj(%s).ToString()\n", fis->v[i]->text, fis->v[i]->text);
+    }
+    sb_puts(&src, "        Return s & \" }\"\n    End Function\n");
+    if (nkey) {
+        sb_puts(&src, "    Public Overrides Function Equals(obj As Object) As Boolean\n");
+        sb_puts(&src, "        Dim o = TryCast(obj, VB_AnonymousType_");
+        sb_printf(&src, "%d(Of ", nanon);
+        for (i = 0; i < fis->n; i++) sb_printf(&src, "%sT%d", i ? ", " : "", i);
+        sb_puts(&src, "))\n        If o Is Nothing Then Return False\n");
+        for (i = 0; i < fis->n; i++)
+            if (fis->v[i]->flags & F_KEY)
+                sb_printf(&src, "        If Not System.Collections.Generic.CollectionHelpers.AreEqual(%s, o.%s) Then Return False\n",
+                          fis->v[i]->text, fis->v[i]->text);
+        sb_puts(&src, "        Return True\n    End Function\n");
+        sb_puts(&src, "    Public Overrides Function GetHashCode() As Integer\n        Dim h As Long = 17\n");
+        for (i = 0; i < fis->n; i++)
+            if (fis->v[i]->flags & F_KEY)
+                sb_printf(&src, "        h = (h * 31 + System.Collections.Generic.CollectionHelpers.HashOf(%s)) And &H7FFFFFFF\n",
+                          fis->v[i]->text);
+        sb_puts(&src, "        Return CInt(h)\n    End Function\n");
+    }
+    sb_puts(&src, "End Class\n");
+    {
+        save_ctx(&ctx);     /* before file_opts moves (opts as an index) */
+        file = load_text("<anonymous type>", src.s);
+        file_opts = xrealloc(file_opts, sizeof(Opts) * (nfiles + 1));
+        memset(&file_opts[file], 0, sizeof(Opts));
+        tv = lex_file(file);
+        f = parse_file(tv);
+        bind_options(f, file);
+        declare_members(f->list2, ns_global);
+        restore_ctx(&ctx);
+    }
+    if (nanon == cap_anon) {
+        cap_anon = cap_anon ? 2 * cap_anon : 8;
+        anon_shapes = xrealloc(anon_shapes, sizeof(AnonShape) * cap_anon);
+    }
+    anon_shapes[nanon].key = key.s;
+    anon_shapes[nanon].tmpl = f->list2->v[0]->sym;
+    (void)at;
+    return anon_shapes[nanon++].tmpl;
+}
+
+/* the members are named by .Name = x, or by a name or member access x.Name */
+static void anon_names(Node *init) {
+    int i, j;
+    for (i = 0; i < init->list->n; i++) {
+        Node *fi = init->list->v[i], *x = fi->a;
+        if (!fi->name) {
+            if (x->kind == N_NAME || x->kind == N_MEMBER) {
+                fi->name = x->name;
+                fi->text = x->text;
+            } else serr(x, "Anonymous type member name can be inferred only from a simple or qualified name with no arguments.");
+        }
+        for (j = 0; j < i; j++)
+            if (init->list->v[j]->name == fi->name) serr(fi, "Anonymous type member or property '%s' is already declared.", fi->text);
+    }
+}
+
+static Node *bind_anonnew(Node *e) {
+    Node *init = e->b, *nw;
+    Type **args;
+    Sym *inst;
+    int i, n;
+    anon_names(init);
+    n = init->list->n;
+    args = xalloc(sizeof(Type *) * (n + 1));
+    for (i = 0; i < n; i++) {
+        Node *fi = init->list->v[i];
+        fi->a = rvalue(fi->a);
+        if (fi->a->type->kind == TY_NOTHING) fi->a = coerce(fi->a, ty[TY_OBJECT]);
+        args[i] = fi->a->type;
+    }
+    inst = instantiate_type(anon_template(init, e), args, n, e);
+    nw = lit_node(N_NEW, inst->type, e);
+    nw->list = nv_new();
+    nw->sym = inst->ctors;
+    nw->b = init;
+    for (i = 0; i < n; i++) init->list->v[i]->sym = scope_find(inst->members, init->list->v[i]->name);
+    return nw;
 }

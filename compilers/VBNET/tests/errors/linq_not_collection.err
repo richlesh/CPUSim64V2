@@ -1,0 +1,1 @@
+linq_not_collection.vb:4: error: Expression of type 'Integer' is not queryable. Make sure you are not missing an assembly reference and/or namespace import for the LINQ provider.

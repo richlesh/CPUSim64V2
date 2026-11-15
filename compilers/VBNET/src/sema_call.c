@@ -39,6 +39,7 @@ typedef struct {
     Node *fail_arg;
     int narrowing;
     int cnarrow;            /* narrowing conversions of constants that fit (ranked below widening) */
+    int nexact;             /* lambdas whose result type is the delegate's */
     int expanded;           /* ParamArray in the expanded form */
     int ndefault;           /* parameters without an argument (defaults, empty ParamArray) */
     Node **slots;           /* the argument of each parameter (NULL: default or ParamArray) */
@@ -85,7 +86,8 @@ static void match(Match *mt, Sym *m, NodeVec *args, int expanded) {
             Type *pt = (expanded && i >= nfixed && !a->name) ? p->type->elem : p->type;
             int c = conv_class_of(a->a, pt);
             mt->argparam[i] = pt;
-            if (c == CV_WIDEN && conv_class(a->a->type, pt) == CV_NARROW) mt->cnarrow++;
+            if (c == CV_WIDEN && a->a->type && conv_class(a->a->type, pt) == CV_NARROW) mt->cnarrow++;
+            if (c == CV_IDENT && a->a->kind == N_LAMBDA && !a->a->type) mt->nexact++;
             if (c == CV_NONE) { mt->fail = MF_TYPE; mt->fail_arg = a; mt->fail_param = p; return; }
             if (c == CV_NARROW) {
                 if (opts->strict) { mt->fail = MF_STRICT; mt->fail_arg = a; mt->fail_param = p; return; }
@@ -143,6 +145,7 @@ static int better(Match *x, Match *y, int nargs) {
     if (some) return 1;
     /* the normal form of a ParamArray beats the expanded one; fewer
        parameters filled in by default values is better */
+    if (x->nexact != y->nexact) return x->nexact > y->nexact;
     if (x->expanded != y->expanded) return !x->expanded;
     if (x->ndefault != y->ndefault) return x->ndefault < y->ndefault;
     return 0;
@@ -450,4 +453,86 @@ static Node *user_conversion(Node *e, Type *t, int expl) {
         nv_push(args, arg_of(e));
         return resolve_call(found, 0, args, e);
     }
+}
+
+/* ------------------------------------------------------------ extension methods */
+
+/* the extension methods named n in the modules in scope: of the current
+   namespace and its parents, and of the imported namespaces */
+static void add_ext_from(SymVec *v, Sym *ns, Name *n) {
+    Sym *m;
+    if (!ns || ns->kind != S_NAMESPACE) return;
+    for (m = ns->members->syms; m; m = m->next) {
+        Sym *s;
+        if (m->kind != S_MODULE) continue;
+        for (s = scope_find(m->members, n); s; s = s->overload) {
+            int k, dup = 0;
+            if (s->kind != S_METHOD || !(s->mods & M_EXTENSION) || !accessible(s)) continue;
+            for (k = 0; k < v->n; k++) if (v->v[k] == s) dup = 1;
+            if (!dup) sv_push(v, s);
+        }
+    }
+}
+
+static void extension_cands(Name *n, SymVec *v) {
+    Sym *ns;
+    int i;
+    for (ns = cur_ns; ns; ns = ns->owner) add_ext_from(v, ns, n);
+    for (i = 0; i < opts->imports.n; i++) add_ext_from(v, opts->imports.v[i], n);
+}
+
+static int has_extensions(Name *n) {
+    SymVec v;
+    memset(&v, 0, sizeof v);
+    extension_cands(n, &v);
+    free(v.v);
+    return v.n > 0;
+}
+
+/* a call of a method group: e (EC_METHOD) with the bound arguments; an
+   extension group tries the instance methods, then the extension methods
+   with the receiver as their first argument */
+static Node *call_group(Node *e, NodeVec *args, Node *at) {
+    NodeVec *targs = call_targs;
+    if (e->flags & F_EXTCALL) {
+        SymVec v;
+        NodeVec *xargs;
+        Node *recv = e->d, *a0;
+        int i;
+        if (e->sym) {
+            /* the instance methods first, if one applies */
+            SymVec all;
+            int k, ok = 0;
+            memset(&all, 0, sizeof all);
+            collect_cands(e->sym, &all);
+            for (k = 0; k < all.n && !ok; k++) {
+                Match mt;
+                if (all.v[k]->sflags & SF_GENERIC) continue;
+                match(&mt, all.v[k], args, 0);
+                if (mt.fail == MF_OK) ok = 1;
+                else if (all.v[k]->params.n && (all.v[k]->params.v[all.v[k]->params.n - 1]->mods & M_PARAMARRAY)) {
+                    match(&mt, all.v[k], args, 1);
+                    if (mt.fail == MF_OK) ok = 1;
+                }
+            }
+            if (ok || (all.n && (all.v[0]->sflags & SF_GENERIC))) {
+                call_targs = targs;
+                return resolve_vec(&all, e->sym, e->a, args, at);
+            }
+        }
+        memset(&v, 0, sizeof v);
+        extension_cands(e->name, &v);
+        if (!v.n) {
+            call_targs = targs;
+            return resolve_call(e->sym, e->a, args, at);
+        }
+        xargs = nv_new();
+        a0 = lit_node(N_ARG, recv->type, at);
+        a0->a = recv;
+        nv_push(xargs, a0);
+        for (i = 0; i < args->n; i++) nv_push(xargs, args->v[i]);
+        call_targs = targs;
+        return resolve_vec(&v, v.v[0], 0, xargs, at);
+    }
+    return resolve_call(e->sym, e->a, args, at);
 }

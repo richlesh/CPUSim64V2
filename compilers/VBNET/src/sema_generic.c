@@ -47,7 +47,7 @@ static Node *copy_tree(Node *n) {
 typedef struct {
     Sym *ns, *module, *method, *type;
     Scope *scope, *tpscope;
-    Opts *opts;
+    long opts;              /* an index: file_opts can move (anonymous types) */
     int nctl, catch_depth, nwith;
     Node *ctor_first;
 } Ctx;
@@ -59,7 +59,7 @@ static void save_ctx(Ctx *c) {
     c->type = cur_type;
     c->scope = cur_scope;
     c->tpscope = cur_tpscope;
-    c->opts = opts;
+    c->opts = opts ? opts - file_opts : -1;
     c->nctl = nctl;
     c->catch_depth = catch_depth;
     c->nwith = nwith;
@@ -73,7 +73,7 @@ static void restore_ctx(Ctx *c) {
     cur_type = c->type;
     cur_scope = c->scope;
     cur_tpscope = c->tpscope;
-    opts = c->opts;
+    opts = c->opts >= 0 ? &file_opts[c->opts] : 0;
     nctl = c->nctl;
     catch_depth = c->catch_depth;
     nwith = c->nwith;
@@ -367,6 +367,34 @@ static int mentions_tparam(Infer *in, Node *tn) {
     return 0;
 }
 
+/* the instance of the generic type named n with k type arguments that s
+   is, derives from or implements */
+static Sym *find_instance(Sym *s, Name *n, int k, int depth) {
+    int i;
+    if (!s || depth > 32) return 0;
+    if (s->tmpl && s->tmpl->name == n && s->ntargs == k) return s;
+    for (i = 0; i < s->ifaces.n; i++) {
+        Sym *f = find_instance(s->ifaces.v[i], n, k, depth + 1);
+        if (f) return f;
+    }
+    return find_instance(s->base, n, k, depth + 1);
+}
+
+/* does tn mention type parameter k? */
+static int mentions_tparam_k(Infer *in, Node *tn, int k) {
+    int i;
+    if (!tn) return 0;
+    if (tparam_index(in, tn) == k) return 1;
+    if (tn->kind == N_TARRAY || tn->kind == N_TNULLABLE) return mentions_tparam_k(in, tn->a, k);
+    if (tn->kind == N_TNAME)
+        for (i = 0; i < tn->list->n; i++) {
+            NodeVec *ta = tn->list->v[i]->list;
+            int j;
+            if (ta) for (j = 0; j < ta->n; j++) if (mentions_tparam_k(in, ta->v[j], k)) return 1;
+        }
+    return 0;
+}
+
 static Sym *bind_lambda(Node *e, Sym *inv, Type **ptypes, Type *dtype);     /* sema_lambda.c */
 static int lambda_shape(Node *tn, Node **pnodes, int *np, Node **rnode);
 static int tentative;
@@ -394,20 +422,11 @@ static void unify(Infer *in, Node *tn, Type *at) {
             return;
         }
         if (!last->list || !s) return;
-        /* an instance of the generic type named here (or of its base classes and interfaces) */
-        for (; s; s = s->base) {
-            if (s->tmpl && s->tmpl->name == last->name && s->ntargs == last->list->n) {
-                for (i = 0; i < s->ntargs; i++) unify(in, last->list->v[i], s->targs[i]);
-                return;
-            }
-            for (i = 0; i < s->ifaces.n; i++) {
-                Sym *it = s->ifaces.v[i];
-                if (it->tmpl && it->tmpl->name == last->name && it->ntargs == last->list->n) {
-                    int j;
-                    for (j = 0; j < it->ntargs; j++) unify(in, last->list->v[j], it->targs[j]);
-                    return;
-                }
-            }
+        /* an instance of the generic type named here (or of its base classes
+           and their interfaces, with the interfaces those inherit) */
+        {
+            Sym *m = find_instance(s, last->name, last->list->n, 0);
+            if (m) for (i = 0; i < m->ntargs; i++) unify(in, last->list->v[i], m->targs[i]);
         }
     }
 }
@@ -481,8 +500,27 @@ static int infer_targs(Sym *tm, NodeVec *args, Type **out) {
                     if (k2 >= 0) {
                         if (!in.ncand[k2]) ok = 0;
                         else pt[j] = in.cand[k2][0];
-                    } else if (mentions_tparam(&in, pnodes[j])) ok = 0;
-                    else {
+                    } else if (mentions_tparam(&in, pnodes[j])) {
+                        /* a type built from type parameters: when they are all known */
+                        int q, known = 1;
+                        Type *args2[16];
+                        for (q = 0; q < in.tps->n; q++) {
+                            if (in.ncand[q]) args2[q] = in.cand[q][0];
+                            else {
+                                if (mentions_tparam_k(&in, pnodes[j], q)) known = 0;
+                                args2[q] = ty[TY_OBJECT];
+                            }
+                        }
+                        if (!known) ok = 0;
+                        else {
+                            Ctx c;
+                            save_ctx(&c);
+                            enter(tm);
+                            cur_tpscope = tparam_scope(tm, in.tps, args2, 0);
+                            pt[j] = bind_type(copy_tree(pnodes[j]));
+                            restore_ctx(&c);
+                        }
+                    } else {
                         /* a type of the method's declaration: in its context */
                         Ctx c;
                         save_ctx(&c);
@@ -491,7 +529,7 @@ static int infer_targs(Sym *tm, NodeVec *args, Type **out) {
                         restore_ctx(&c);
                     }
                 }
-                if (!ok || !rnode) continue;
+                if (!ok || !rnode || !mentions_tparam(&in, rnode)) continue;
                 if (tparam_index(&in, rnode) >= 0 && in.ncand[tparam_index(&in, rnode)]) continue;
                 {
                     Node *copy = copy_tree(a->a);

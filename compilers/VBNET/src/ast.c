@@ -21,14 +21,14 @@ static const char *mod_names[M_NBITS] = {
     "NotOverridable", "MustOverride", "Overrides", "Overloads", "Partial", "MustInherit",
     "NotInheritable", "ReadOnly", "WriteOnly", "WithEvents", "Dim", "Const", "Static",
     "Default", "Widening", "Narrowing", "Async", "Iterator", "ByVal", "ByRef", "Optional",
-    "ParamArray"
+    "ParamArray", "Extension"
 };
 
 static const char *flag_names[F_NBITS] = {
     "Nullable", "HasArgs", "NullConditional", "CallKeyword", "SingleLine", "HasElse",
     "Preserve", "AsNew", "MultiLine", "Global", "Key", "Descending", "Ascending", "Else",
     "Auto", "Custom", "HasFinally", "IsNot", "In", "Out", "Top", "Bottom", "Until", "While",
-    "Parens", "Escaped", "Explicit", "CopyBack", "Direct", "TryCast", "Enumerator"
+    "Parens", "Escaped", "Explicit", "CopyBack", "Direct", "TryCast", "Enumerator", "Extension"
 };
 
 static const char *lit_suffix[] = { "", "S", "US", "I", "UI", "L", "UL", "F", "R", "D" };
@@ -152,7 +152,7 @@ static void dump_node(FILE *f, Node *n, int ind) {
     for (i = 0; i < M_NBITS; i++)
         if (n->mods & (1 << i)) fprintf(f, " %s", mod_names[i]);
     for (i = 0; i < F_NBITS; i++)
-        if (n->flags & (1 << i)) fprintf(f, " +%s", flag_names[i]);
+        if ((unsigned)n->flags & (1u << i)) fprintf(f, " +%s", flag_names[i]);
     if (n->type) fprintf(f, " : %s", type_name(n->type));
     if (n->sym && (n->kind == N_NAME || n->kind == N_INVOKE))
         fprintf(f, " -> %s %s", sym_kind_name(n->sym), n->sym->spelling);

@@ -284,7 +284,7 @@ static Type *bind_signature_params(Sym *m, NodeVec *params) {
         }
         if (pn->list2)
             for (j = pn->list2->n - 1; j >= 0; j--) t = ty_array(t, (int)pn->list2->v[j]->ival);
-        if (pn->flags & F_NULLABLE) not_yet(pn, "Nullable types are");
+        if (pn->flags & F_NULLABLE) t = nullable_of(t, pn);
         p->type = t;
         p->index = m->params.n;
         for (j = 0; j < m->params.n; j++)
@@ -317,6 +317,12 @@ static void bind_signature(Sym *m) {
     if (d->list && d->kind == N_METHOD) not_yet(d, "Generic methods are");
 
     bind_signature_params(m, d->list2);
+    if (m->mods & M_EXTENSION) {
+        if (!m->owner || m->owner->kind != S_MODULE)
+            serr(d, "'Extension' attribute can be applied only to 'Module', 'Sub', or 'Function' declarations.");
+        if (!m->params.n || (m->params.v[0]->mods & (M_OPTIONAL | M_PARAMARRAY)))
+            serr(d, "Extension method '%s' has no parameters or its first parameter is 'Optional' or 'ParamArray'.", m->spelling);
+    }
     if (d->op == K_Function || d->kind == N_OPERATOR) {
         Type *t = d->a ? bind_type(d->a) : 0;
         if (d->tchar) {

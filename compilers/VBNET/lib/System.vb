@@ -452,3 +452,9 @@ Namespace System.IO
         End Sub
     End Class
 End Namespace
+
+Namespace System.Runtime.CompilerServices
+    ' <Extension()> marks extension methods (the compiler recognizes the name)
+    Public NotInheritable Class ExtensionAttribute
+    End Class
+End Namespace

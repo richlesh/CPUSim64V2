@@ -109,6 +109,7 @@ void out_cp(FILE *f, int cp) {
 
 SrcFile *files = 0;
 int nfiles = 0;
+int nuser_files = 0;
 static int files_cap = 0;
 
 /* decodes UTF-8 bytes into codepoints; bad sequences become U+FFFD */
@@ -134,6 +135,30 @@ static int *decode_utf8(const unsigned char *b, int n, int *outlen) {
     t[k] = 0;
     *outlen = k;
     return t;
+}
+
+/* a source text made by the compiler (a native string), as a file */
+int load_text(const char *name, const char *text) {
+    SrcFile *sf;
+    if (nfiles == files_cap) {
+        files_cap = files_cap ? files_cap * 2 : 8;
+        files = xrealloc(files, sizeof(SrcFile) * files_cap);
+    }
+    sf = &files[nfiles];
+    sf->path = xstrdup(name);
+    sf->disp = sf->path;
+#ifdef __CPUSIM64__
+    {
+        /* a char is a codepoint */
+        int n = (int)strlen(text), i;
+        sf->text = xalloc(sizeof(int) * (n + 1));
+        for (i = 0; i < n; i++) sf->text[i] = text[i];
+        sf->len = n;
+    }
+#else
+    sf->text = decode_utf8((const unsigned char *)text, (int)strlen(text), &sf->len);
+#endif
+    return nfiles++;
 }
 
 int load_file(const char *path) {

@@ -1,0 +1,1 @@
+inf_ext_class.vb:4: error: 'Extension' attribute can be applied only to 'Module', 'Sub', or 'Function' declarations.

@@ -137,7 +137,7 @@ Phase 1: core language
   copy-back), Optional, ParamArray and named arguments, recursion, Static
   locals, all loops, Select Case, Exit/Continue/GoTo, 1-D, multi-dimensional
   and jagged arrays, array literals, ReDim [Preserve], Erase.
-- [ ] Task 6: procedures, arrays and flow control.
+- [x] Task 6: procedures, arrays and flow control (done with Task 5, see above; tests run/control, run/arrays).
 - [x] Task 7: strings and the library functions: the String methods
   (Substring, IndexOf, Split, Replace, PadLeft, Trim, ...), String.Join/
   Format/Compare/IsNullOrEmpty, the Microsoft.VisualBasic functions (Len,
@@ -250,7 +250,55 @@ Phase 3: GC, generics and library
   takes 0.6 s on the native simulator).
 
 Phase 4: functional features
-- [ ] Task 15: delegates, lambdas and closures.
-- [ ] Task 16: inference and initializers.
-- [ ] Task 17: LINQ.
-- [ ] Task 18: release polish.
+- [x] Task 15: delegates, lambdas, closures and events (src/sema_lambda.c).
+  Delegate types are classes derived from System.MulticastDelegate (fields
+  target, method address, next) with a built-in Invoke that calls the whole
+  invocation list; Delegate.Combine/Remove; Action, Func, Predicate,
+  Comparison, Converter, EventHandler in lib/System.vb.  AddressOf (instance,
+  Shared through thunks, virtual and interface targets, built-in members
+  through a generated lambda), New D(AddressOf M), single- and multi-line
+  Function/Sub lambdas, typed by the target delegate or as Func/Action, also
+  in generic type inference (parameter types from what is known, result
+  types from a tentative binding).  Closures: captured variables live in
+  environment objects made per block or loop body (a fresh one per
+  iteration), linked to the enclosing ones; Me is captured too.  Events:
+  Event E(params) / Event E As D (field EEvent), AddHandler, RemoveHandler,
+  RaiseEvent, Shared events, Handles Me.E, WithEvents fields with Handles
+  (handlers moved when the field is assigned).  List and Array gained Find,
+  FindAll, FindIndex, Exists, TrueForAll, RemoveAll, ForEach, ConvertAll and
+  Sort(Comparison).
+- [x] Task 16: inference and initializers.  Dim inference, object and
+  collection initializers, NameOf and If(...) came with earlier tasks.  New:
+  extension methods (<Extension()> on module methods, also generic and
+  ByRef; the instance methods win, then the extension methods of the modules
+  in scope and imports), Nullable(Of T) / T? in lib/Collections.vb (T -> T?,
+  Nothing -> T?, T? -> T through Value, boxing to Object or Nothing,
+  Is Nothing, If(n, default), & of T?; lifted arithmetic is not supported),
+  ?. and ?( (the whole rest of the chain is skipped; a value type result
+  becomes T?; also as a statement), anonymous types (New With {.A = x,
+  Key .B = y, name}: a generic class per shape, made from generated source,
+  with ToString "{ A = x, B = y }" and Equals/GetHashCode of the Key
+  fields).
+- [x] Task 17: LINQ.  lib/Linq.vb: System.Linq.Enumerable (Where, Select,
+  SelectMany, Take, Skip, TakeWhile, SkipWhile, Distinct, Concat, Union,
+  Intersect, Except, Reverse, OfType, Cast, OrderBy/ThenBy(Descending),
+  GroupBy, Join, GroupJoin, ToList, ToArray, ToDictionary, ToHashSet, First,
+  Last, Single, ElementAt (OrDefault), Any, All, Contains, Count,
+  SequenceEqual, Sum, Average, Min, Max, Aggregate, Range, Repeat, Empty)
+  with lazy iterators (Iterator(Of T): a fresh state per enumeration).
+  Query expressions (src/sema_query.c) are lowered to these calls: From
+  (several: SelectMany), Where, Select, Let, Order By, Distinct, Take/Skip
+  [While], Join, Group Join ... Into, Group [items] By keys Into aggregates,
+  Aggregate ... Into; several range variables travel as anonymous types.
+  Overload resolution prefers the delegate whose return type is the
+  lambda's own; inference follows interface bases and builds parameter
+  types such as IEnumerable(Of TInner); imported extension methods are not
+  promoted as plain names.
+- [x] Task 18: release polish.  README.md for the plug-in, the full
+  system_prompt.md for the AI chat, samples/ (Hello, Bank, Shapes, Linq,
+  Guess; tests/run_tests.sh checks that they compile and assemble), the
+  VB.NET section of the main README, the debugger's source lines for every
+  file of a program (library code keeps its assembly lines), Random exactly
+  as .NET for all seeds (32-bit wraparound of the seeding), version 1.0.
+  The compiler needs no more than the default 16M/256K of the IDE (the
+  largest test compiles with 0.7M words of heap in 0.7 s).

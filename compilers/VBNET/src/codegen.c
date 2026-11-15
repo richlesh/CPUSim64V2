@@ -422,6 +422,30 @@ static void load_target(Type *t) {
 /* Select Case: the slot of the selector value */
 static int sel_slot = -1;
 
+/* ?. : the slot of the receiver of the innermost null-conditional access */
+static int q_slot = -1;
+
+static void cg_qcond(Node *e) {
+    int slot = alloc_temp(), sv = q_slot, l_null = new_label(), l_end = new_label();
+    cg_expr(e->a);
+    emit("store   r0, sf[%d]", -slot);
+    if (e->a->type->kind == TY_STRUCT) {
+        /* a nullable: its HasValue (field 0 of the box) */
+        emit("load    r0, r0[0]");
+    }
+    emit("test    r0");
+    emit("jump    z, __vbL%d", l_null);
+    q_slot = slot;
+    cg_expr(e->b);
+    q_slot = sv;
+    emit("jump    __vbL%d", l_end);
+    emit_label(l_null);
+    if (e->type && e->type->kind == TY_STRUCT) struct_new(e->type);     /* an empty T? */
+    else emit("move    r0, 0");
+    emit_label(l_end);
+    free_temp();
+}
+
 /* ------------------------------------------------------------ range checks */
 
 /* checks that r0 is in the range of the integral type t (after 64-bit
@@ -1499,6 +1523,12 @@ static void cg_expr(Node *e) {
         return;
     case N_TARGET:
         load_target(e->type);
+        return;
+    case N_QREF:
+        emit("load    r0, sf[%d]", -q_slot);
+        return;
+    case N_QCOND:
+        cg_qcond(e);
         return;
     case N_SELREF:
         emit(is_f(e->type) ? "load    f0, sf[%d]" : "load    r0, sf[%d]", -sel_slot);

@@ -1185,20 +1185,21 @@ Namespace System
         End Sub
 
         Public Sub New(seed As Integer)
-            Dim subtraction = If(seed = Integer.MinValue, Integer.MaxValue, Math.Abs(seed))
-            Dim mj = MSEED - subtraction
-            _seedArray(55) = mj
-            Dim mk = 1
+            ' (in .NET this arithmetic is unchecked Integer arithmetic: Long here)
+            Dim subtraction As Long = If(seed = Integer.MinValue, Integer.MaxValue, Math.Abs(seed))
+            Dim mj As Long = MSEED - subtraction
+            _seedArray(55) = CInt(mj)
+            Dim mk As Long = 1
             For i = 1 To 54
                 Dim ii = (21 * i) Mod 55
-                _seedArray(ii) = mk
-                mk = mj - mk
+                _seedArray(ii) = CInt(mk)
+                mk = Wrap32(mj - mk)
                 If mk < 0 Then mk += MBIG
                 mj = _seedArray(ii)
             Next
             For k = 1 To 4
                 For i = 1 To 55
-                    Dim v = CLng(_seedArray(i)) - _seedArray(1 + (i + 30) Mod 55)
+                    Dim v = Wrap32(CLng(_seedArray(i)) - _seedArray(1 + (i + 30) Mod 55))
                     If v < 0 Then v += MBIG
                     _seedArray(i) = CInt(v)
                 Next
@@ -1206,6 +1207,13 @@ Namespace System
             _inext = 0
             _inextp = 21
         End Sub
+
+        ' the value of a 32-bit two's complement result (unchecked arithmetic)
+        Private Shared Function Wrap32(v As Long) As Long
+            v = v And &HFFFFFFFFL
+            If v > Integer.MaxValue Then v -= &H100000000L
+            Return v
+        End Function
 
         Private Function InternalSample() As Integer
             Dim locINext = _inext + 1
@@ -1529,4 +1537,61 @@ Namespace System.IO
             Close()
         End Sub
     End Class
+End Namespace
+
+Namespace System
+    ' ---------------------------------------------------------------- Nullable
+
+    ' T? : a value of T or no value.  The compiler converts T to T? (and
+    ' Nothing to an empty T?), T? to T (through Value), and compares T? with
+    ' Nothing (Is / IsNot).
+    Public Structure Nullable(Of T As Structure)
+        Private ReadOnly _hasValue As Boolean
+        Private ReadOnly _value As T
+
+        Public Sub New(value As T)
+            _value = value
+            _hasValue = True
+        End Sub
+
+        Public ReadOnly Property HasValue As Boolean
+            Get
+                Return _hasValue
+            End Get
+        End Property
+
+        Public ReadOnly Property Value As T
+            Get
+                If Not _hasValue Then Throw New InvalidOperationException("Nullable object must have a value.")
+                Return _value
+            End Get
+        End Property
+
+        Public Function GetValueOrDefault() As T
+            Return _value
+        End Function
+
+        Public Function GetValueOrDefault(defaultValue As T) As T
+            Return If(_hasValue, _value, defaultValue)
+        End Function
+
+        Public Overrides Function ToString() As String
+            If Not _hasValue Then Return ""
+            Dim o As Object = _value
+            Return o.ToString()
+        End Function
+
+        Public Overrides Function Equals(other As Object) As Boolean
+            If Not _hasValue Then Return other Is Nothing
+            If other Is Nothing Then Return False
+            Dim o As Object = _value
+            Return o.Equals(other)
+        End Function
+
+        Public Overrides Function GetHashCode() As Integer
+            If Not _hasValue Then Return 0
+            Dim o As Object = _value
+            Return o.GetHashCode()
+        End Function
+    End Structure
 End Namespace

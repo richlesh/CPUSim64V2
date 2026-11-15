@@ -1,0 +1,1 @@
+inf_qdot_value.vb:4: error: '?' cannot be applied to an operand of type 'Integer'; it requires a reference or nullable type.

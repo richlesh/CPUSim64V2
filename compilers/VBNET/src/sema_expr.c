@@ -10,6 +10,8 @@
 #define BF_INVOKE 1         /* the target of an argument list */
 
 static Node *bind_new(Node *e);
+static Node *bind_anonnew(Node *e);
+static Node *bind_query(Node *e, int flags);
 static Node *make_me(Node *at);
 static Node *with_object(Node *at);
 static void note_capture(Sym *s, Node *at);        /* sema_lambda.c */
@@ -168,7 +170,7 @@ static Node *value(Node *e) {
     case EC_METHOD:
         none = nv_new();
         call_targs = e->list2;
-        c = resolve_call(e->sym, e->a, none, e);
+        c = call_group(e, none, e);
         if (c->cls == EC_VOID) serr(e, "Expression does not produce a value.");
         return c;
     case EC_TYPE:
@@ -194,6 +196,24 @@ static Node *rvalue(Node *e) {
 
 static Sym *array_length;
 
+static Node *call_group(Node *e, NodeVec *args, Node *at);     /* sema_call.c */
+static Type *nullable_elem(Type *t);
+static Type *nullable_of(Type *t, Node *at);
+static int has_extensions(Name *n);
+
+/* x.Name as a group of extension methods (and the instance methods s) */
+static Node *ext_group(Sym *s, Node *v, Node *e) {
+    Node *n = lit_node(N_NAME, 0, e);
+    n->name = e->name;
+    n->text = e->text;
+    n->sym = s;
+    n->a = s && (s->sflags & SF_INSTANCE) ? v : 0;
+    n->d = v;
+    n->cls = EC_METHOD;
+    n->flags |= F_EXTCALL;
+    return n;
+}
+
 static Node *instance_member(Node *v, Node *e) {
     Type *t = v->type;
     Sym *s = 0;
@@ -214,6 +234,7 @@ static Node *instance_member(Node *v, Node *e) {
         Sym *o = ty[TY_OBJECT]->sym;
         s = scope_find(o->members, e->name);
     }
+    if ((!s || (s->kind == S_METHOD && !(s->mods & M_READONLY))) && has_extensions(e->name)) return ext_group(s, v, e);
     if (!s) serr(e, "'%s' is not a member of '%s'.", e->text, type_name(t));
     check_access(s, e);
     if (s->kind == S_CONST) return copy_const((eval_const(s, e), s->cval), e);
@@ -283,7 +304,6 @@ static Node *bind_member1(Node *e, int flags) {
         return bind_mybase(&tmp);
     }
     if (!e->a) e->a = with_object(e);
-    if (e->flags & F_QDOT) not_yet(e, "The '?.' operator is");
     b = bind(e->a, 0);
     if (b->cls == EC_NS || b->cls == EC_TYPE) {
         Sym *c = b->sym;
@@ -349,13 +369,13 @@ static Sym *default_prop(Sym *t) {
 
 static Node *bind_invoke(Node *e) {
     Node *t;
-    if (e->flags & F_QDOT) not_yet(e, "The '?(' operator is");
     t = bind(e->a, BF_INVOKE);
     if (t->cls == EC_METHOD) {
         NodeVec *args = bind_args(e->list);
         call_targs = t->list2;
-        return resolve_call(t->sym, t->a, args, e);
+        return call_group(t, args, e);
     }
+    if (t->cls == EC_PROP && t->list->n == 0 && e->list->n == 0) return value(t);   /* list.Count() */
     if (t->cls == EC_PROP && t->list->n == 0 && t->sym->decl->list2 && t->sym->decl->list2->n) {
         t->list = bind_args(e->list);
         return t;
@@ -416,16 +436,44 @@ static Node *bind_unary(Node *e) {
     return e;
 }
 
+static Node *nullable_text(Node *x, Node *at) {
+    Sym *ts = scope_find(x->type->sym->members, intern_word("tostring"));
+    return resolve_call(ts, x, nv_new(), at);
+}
+
 static Node *bind_binary(Node *e) {
     Node *l = rvalue(e->a), *r = rvalue(e->b);
     Type *t, *res;
     int op = e->op;
     if (l->kind == N_COLLINIT && !l->type) l = bind_collinit(l, 0);
     if (r->kind == N_COLLINIT && !r->type) r = bind_collinit(r, 0);
+    if ((op == K_Is || op == K_IsNot) && (nullable_elem(l->type) || nullable_elem(r->type))) {
+        /* x Is Nothing of a nullable x: Not x.HasValue */
+        Node *x = nullable_elem(l->type) ? l : r, *o = x == l ? r : l, *hv;
+        if (o->type->kind != TY_NOTHING)
+            serr(e, "'%s' operator does not accept operands of type '%s'. Operands must be reference or nullable types.",
+                 tok_spelling_of(op), type_name(nullable_elem(o->type) ? o->type : o->type));
+        hv = resolve_call(scope_find(x->type->sym->members, intern_word("hasvalue"))->getter, x, nv_new(), e);
+        if (op == K_IsNot) return hv;
+        e->kind = N_UNARY;
+        e->op = K_Not;
+        e->a = hv;
+        e->b = 0;
+        e->type = ty[TY_BOOLEAN];
+        e->cls = EC_VALUE;
+        return e;
+    }
     if (op != K_Is && op != K_IsNot && op != K_AndAlso && op != K_OrElse) {
         Node *u = user_operator(op, l, r, e);
         if (u) return u;
     }
+    if (op == P_AMP) {
+        /* & of a nullable value: its text ("" if it has no value) */
+        if (nullable_elem(l->type)) l = nullable_text(l, e);
+        if (nullable_elem(r->type)) r = nullable_text(r, e);
+    }
+    if (nullable_elem(l->type) || nullable_elem(r->type))
+        not_yet(e, "Operators on nullable values ('lifted' operators) are");
     if (l->type->kind == TY_ENUM || r->type->kind == TY_ENUM) {
         if ((op == K_And || op == K_Or || op == K_Xor) && l->type == r->type) {
             /* flags: the bitwise operators on one enum type keep it */
@@ -535,6 +583,23 @@ static Node *bind_iif(Node *e) {
     } else {
         v[0] = rvalue(e->a);
         v[1] = rvalue(e->b);
+        if (nullable_elem(v[0]->type)) {
+            /* If(n, d): n.GetValueOrDefault(d) with T, or n itself if d is T? */
+            Type *nt = v[0]->type, *el = nullable_elem(nt);
+            if (nullable_elem(v[1]->type) || v[1]->type->kind == TY_NOTHING) {
+                Node *hv = resolve_call(scope_find(nt->sym->members, intern_word("hasvalue"))->getter, v[0], nv_new(), e);
+                (void)hv;
+                not_yet(e, "'If(nullable, nullable)' is");
+            }
+            {
+                NodeVec *args = nv_new();
+                Node *a = lit_node(N_ARG, el, e);
+                Sym *gv = scope_find(nt->sym->members, intern_word("getvalueordefault"));
+                a->a = v[1];
+                nv_push(args, a);
+                return resolve_call(gv, v[0], args, e);
+            }
+        }
         if (!ty_ref(v[0]->type))
             serr(e, "First operand in a binary 'If' expression must be a nullable value type, a reference type, "
                     "or an unconstrained generic type.");
@@ -774,8 +839,65 @@ static Node *bind_new(Node *e) {
 
 /* ------------------------------------------------------------ the binder */
 
+/* ------------------------------------------------------------ ?. and ?( */
+
+static int is_chain(Node *e) { return e && (e->kind == N_MEMBER || e->kind == N_INVOKE || e->kind == N_DICT); }
+
+/* the innermost link of a postfix chain that is ?. or ?(, or NULL */
+static Node *qdot_link(Node *e) {
+    Node *found = 0;
+    for (; is_chain(e); e = e->a)
+        if (e->flags & F_QDOT) found = e;
+    return found;
+}
+
+/* x?.rest: x evaluated once; Nothing if it is Nothing, else rest (a value of
+   a value type T becomes T?) */
+static Node *bind_qcond(Node *e, Node *link, int flags) {
+    Node *recv = rvalue(link->a), *ph, *access, *q;
+    Type *rt;
+    link->flags &= ~F_QDOT;
+    if (nullable_elem(recv->type)) {
+        /* n?.M: the Value of a nullable */
+        Sym *vp = scope_find(recv->type->sym->members, intern_word("value"));
+        ph = lit_node(N_QREF, recv->type, link);
+        link->a = resolve_call(vp->getter, ph, nv_new(), link);
+    } else {
+        if (!ty_ref(recv->type))
+            serr(link, "'?' cannot be applied to an operand of type '%s'; it requires a reference or nullable type.",
+                 type_name(recv->type));
+        ph = lit_node(N_QREF, recv->type, link);
+        link->a = ph;
+    }
+    access = bind(e, flags);
+    if (access->cls == EC_METHOD) {
+        /* a method without an argument list: called */
+        Node *c = call_group(access, nv_new(), e);
+        access = c;
+    }
+    if (access->cls == EC_VOID) {
+        rt = 0;
+    } else {
+        access = value(access);
+        rt = access->type;
+        if (!ty_ref(rt) && !nullable_elem(rt) && rt->kind != TY_NOTHING) {
+            rt = nullable_of(rt, e);
+            access = coerce(access, rt);
+        }
+    }
+    q = lit_node(N_QCOND, rt, e);
+    q->a = recv;
+    q->b = access;
+    q->cls = rt ? EC_VALUE : EC_VOID;
+    return q;
+}
+
 static Node *bind(Node *e, int flags) {
     if (e->cls != EC_NONE && e->kind != N_COLLINIT) return e;     /* already bound */
+    if (is_chain(e)) {
+        Node *link = qdot_link(e);
+        if (link) return bind_qcond(e, link, flags);
+    }
     switch (e->kind) {
     case N_INT:
         if (!e->type) type_int_literal(e);
@@ -850,11 +972,11 @@ static Node *bind(Node *e, int flags) {
     }
     case N_BOUND: serr(e, "Array bounds cannot appear here.");
     case N_NEW: return bind_new(e);
-    case N_ANONNEW: not_yet(e, "Anonymous types are");
+    case N_ANONNEW: return bind_anonnew(e);
     case N_LAMBDA:
         e->cls = EC_VALUE;      /* pending: typed by a conversion */
         return e;
-    case N_QUERY: not_yet(e, "Query expressions are");
+    case N_QUERY: return bind_query(e, flags);
     case N_ADDRESSOF: {
         Node *g = bind(e->a, BF_INVOKE);
         if (g->cls != EC_METHOD) serr(e->a, "'AddressOf' operand must be the name of a method (without parentheses).");

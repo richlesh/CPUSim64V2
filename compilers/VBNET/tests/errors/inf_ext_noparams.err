@@ -1,0 +1,1 @@
+inf_ext_noparams.vb:4: error: Extension method 'F' has no parameters or its first parameter is 'Optional' or 'ParamArray'.

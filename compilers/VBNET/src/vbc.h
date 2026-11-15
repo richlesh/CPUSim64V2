@@ -64,7 +64,9 @@ typedef struct {
 
 extern SrcFile *files;
 extern int nfiles;
+extern int nuser_files;         /* the program's files (then lib/ and generated sources) */
 int load_file(const char *path);         /* returns the file index, -1 if unreadable */
+int load_text(const char *name, const char *text);   /* compiler-made source */
 
 /* errors: "file:line: error: message" on stderr, then exit(1) */
 void error_at(int file, int line, const char *fmt, ...);
@@ -187,7 +189,8 @@ enum {
 #define M_BYREF           (1 << 26)
 #define M_OPTIONAL        (1 << 27)
 #define M_PARAMARRAY      (1 << 28)
-#define M_NBITS           29
+#define M_EXTENSION       (1 << 29)   /* the <Extension()> attribute */
+#define M_NBITS           30
 
 /* node flags (Node.flags) */
 #define F_NULLABLE    (1 << 0)    /* x? */
@@ -221,7 +224,8 @@ enum {
 #define F_DIRECT      (1 << 28)   /* Me of MyBase / MyClass: calls are not virtual */
 #define F_TRYCAST     (1 << 29)   /* Convert: TryCast (Nothing if the object is not of the type) */
 #define F_ENUM        (1 << 30)   /* ForEach: with an enumerator (d MoveNext, b Current) */
-#define F_NBITS       31
+#define F_EXTCALL     (1u << 31)  /* a method group with extension methods (Node.d: their receiver) */
+#define F_NBITS       32
 
 typedef struct Node Node;
 typedef struct Type Type;

@@ -53,6 +53,7 @@ static const char *source_name(int f) {
 }
 
 static void cg_source(Node *s) {
+    if (s->file >= nuser_files) return;     /* library code keeps its assembly lines */
     if (s->file == cg_src_file && s->line == cg_src_line) return;
     cg_src_file = s->file;
     cg_src_line = s->line;
@@ -784,6 +785,7 @@ static void begin_method(Sym *m) {
 static void end_method(const char *label, const char *comment, Node *decl) {
     int frame = cg_method->locals.n + cg_maxtemps;
     fprintf(cg_out, "\n// %s\n%s:\n", comment, label);
+    if (decl && decl->file >= nuser_files) decl = 0;
     if (decl && frame) fprintf(cg_out, ".source \"%s\", %d\n", source_name(decl->file), decl->line);
     /* the locals and temporaries, zeroed (iMEMCLEAR only clears the heap) */
     if (frame > 0 && frame <= 8) {
@@ -949,6 +951,7 @@ static void live_tree(Node *n) {
     if ((n->kind == N_INVOKE || n->kind == N_NEW || n->kind == N_DLGNEW) && n->sym && n->sym->kind == S_METHOD)
         live_method(n->sym);
     if (n->type && n->type->kind == TY_STRUCT) live_type(n->type->sym);
+    if (n->kind == N_DLGNEW) live_type(n->type->sym);     /* delegates are created without a constructor */
     live_tree(n->a);
     live_tree(n->b);
     live_tree(n->c);

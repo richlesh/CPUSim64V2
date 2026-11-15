@@ -293,6 +293,7 @@ static NodeVec *parse_params(void);
 static NodeVec *parse_var_declarators(void);
 static Node *parse_member(int ctx);
 static void parse_attributes(void);
+static Node *parse_member_rest(int ctx, int mods, int top);
 
 /* ------------------------------------------------------------ types */
 
@@ -1295,7 +1296,10 @@ static Node *parse_interp(Token *t) {
 
 /* ------------------------------------------------------------ parameters, attributes */
 
-/* Attributes: parsed and ignored */
+/* Attributes: parsed and ignored, except that <Extension()> is noted (on
+   the declaration that follows: parse_member) */
+static int attr_extension = 0;
+
 static void parse_attributes(void) {
     while (tk() == P_LT) {
         adv();
@@ -1304,7 +1308,14 @@ static void parse_attributes(void) {
                 adv();
                 adv();
             }
-            parse_nonarray_type();
+            {
+                Node *an = parse_nonarray_type();
+                if (an->kind == N_TNAME) {
+                    Node *last = an->list->v[an->list->n - 1];
+                    if (last->name == intern_word("extension") || last->name == intern_word("extensionattribute"))
+                        attr_extension = 1;
+                }
+            }
             if (tk() == P_LPAREN) {
                 adv();
                 parse_args();
@@ -2425,11 +2436,24 @@ static Node *parse_namespace(void) {
 /* a member declaration (NamespaceMemberDeclaration, ClassMemberDeclaration,
    ...); NULL for an attribute statement */
 static Node *parse_member(int ctx) {
-    Token *t;
-    int mods, top = ctx == CTX_FILE || ctx == CTX_NAMESPACE;
+    int mods, top = ctx == CTX_FILE || ctx == CTX_NAMESPACE, ext;
+    Node *r;
+    attr_extension = 0;
     parse_attributes();
     if (end_of_stmt()) return 0;
+    ext = attr_extension;
+    attr_extension = 0;
     mods = parse_mods();
+    if (ext) {
+        r = parse_member_rest(ctx, mods, top);
+        if (r && r->kind == N_METHOD) r->mods |= M_EXTENSION;
+        return r;
+    }
+    return parse_member_rest(ctx, mods, top);
+}
+
+static Node *parse_member_rest(int ctx, int mods, int top) {
+    Token *t;
     t = T(0);
     switch (t->kind) {
     case K_Namespace:

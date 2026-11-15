@@ -1,0 +1,1 @@
+linq_select_name.vb:3: error: Range variable name can be inferred only from a simple or qualified name with no arguments.

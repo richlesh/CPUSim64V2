@@ -54,6 +54,8 @@ static Sym *type_lookup(Sym *t, Name *n);
 
 /* a member of the modules of a namespace (module members are promoted to
    their namespace, spec 7.7) */
+static int promote_ext = 1;     /* 0: extension methods are not promoted (imported namespaces) */
+
 static Sym *promoted(Sym *ns, Name *n, Node *at) {
     Sym *m, *found = 0, *where = 0;
     for (m = ns->members->syms; m; m = m->next) {
@@ -61,6 +63,7 @@ static Sym *promoted(Sym *ns, Name *n, Node *at) {
         if (m->kind != S_MODULE) continue;
         s = scope_find(m->members, n);
         if (!s || !accessible(s)) continue;
+        if (!promote_ext && s->kind == S_METHOD && (s->mods & M_EXTENSION)) continue;
         if (found)
             serr(at, "'%s' is ambiguous between declarations in Modules '%s' and '%s'.", s->spelling,
                  qual_name(where), qual_name(m));
@@ -90,7 +93,13 @@ static Sym *import_lookup(Name *n, Node *at) {
         if (im->kind == S_NAMESPACE) {
             s = scope_find(im->members, n);
             if (s && s->kind == S_NAMESPACE) s = 0;     /* imports do not import namespaces */
-            if (!s) s = promoted(im, n, at);
+            if (!s) {
+                /* the extension methods of an imported namespace are used as extensions only
+                   (System.Linq.Enumerable.Join is not the Join of Microsoft.VisualBasic) */
+                promote_ext = 0;
+                s = promoted(im, n, at);
+                promote_ext = 1;
+            }
         } else s = scope_find(im->members, n);
         if (s && lookup_arity >= 0 && !has_arity(s, lookup_arity)) s = 0;
         if (s && found && s != found && s->kind != S_NAMESPACE)
@@ -188,6 +197,26 @@ static Sym *bind_type_name(Node *tn) {
     return s;
 }
 
+static Sym *instantiate_type(Sym *tmpl, Type **args, int n, Node *at);
+
+/* T? : System.Nullable(Of T) */
+static Type *nullable_of(Type *t, Node *at) {
+    Sym *tm = scope_find(ns_path("System")->members, intern_word("nullable"));
+    if (!tm || tm->kind != S_TYPE) serr(at, "lib/Collections.vb has no System.Nullable(Of T).");
+    while (tm && !(tm->sflags & SF_GENERIC)) tm = tm->overload;
+    if (!tm) serr(at, "lib/Collections.vb has no System.Nullable(Of T).");
+    if (ty_ref(t) || t->kind == TY_NOTHING)
+        serr(at, "'?' cannot be used on a type that is not a value type ('%s').", type_name(t));
+    return instantiate_type(tm, &t, 1, at)->type;
+}
+
+/* the T of T?, or NULL */
+static Type *nullable_elem(Type *t) {
+    Sym *s = t && t->kind == TY_STRUCT ? t->sym : 0;
+    if (!s || !s->tmpl || s->tmpl->name != intern_word("nullable") || s->tmpl->owner != ns_path("System")) return 0;
+    return s->targs[0];
+}
+
 static Type *bind_type(Node *tn) {
     Type *t;
     Sym *s;
@@ -216,8 +245,8 @@ static Type *bind_type(Node *tn) {
         t = ty_array(bind_type(tn->a), (int)tn->ival);
         break;
     case N_TNULLABLE:
-        not_yet(tn, "Nullable types are");
-        return 0;
+        t = nullable_of(bind_type(tn->a), tn);
+        break;
     default:
         s = bind_type_name(tn);
         if (s->kind == S_NAMESPACE) serr(tn, "'%s' is a namespace and cannot be used as a type.", qual_name(s));
@@ -281,10 +310,74 @@ static Node *pending_to(Node *e, Type *t) {
 /* the conversion class of a value to t, counting constant conversions */
 static int conv_class_of(Node *e, Type *t) {
     int k;
+    Type *ne = nullable_elem(t), *nf = nullable_elem(e->type);
     if (is_pending(e)) return pending_conv(e, t);
+    if (ne && e->type != t) {
+        /* to T?: Nothing, or a value that converts to T */
+        if (e->type->kind == TY_NOTHING) return CV_WIDEN;
+        if (nf) {
+            k = conv_class(nf, ne);
+            return k == CV_IDENT ? CV_IDENT : k;
+        }
+        k = conv_class_of(e, ne);
+        return k == CV_IDENT ? CV_WIDEN : k;
+    }
+    if (nf && e->type != t) {
+        /* from T?: to Object (boxed), or through T (narrowing) */
+        if (t->kind == TY_OBJECT) return CV_WIDEN;
+        k = conv_class(nf, t);
+        return k == CV_NONE ? CV_NONE : CV_NARROW;
+    }
     k = conv_class(e->type, t);
     if (k == CV_NARROW && const_widens(e, t)) return CV_WIDEN;
     return k;
+}
+
+static Node *resolve_call(Sym *group, Node *recv, NodeVec *args, Node *at);
+static Node *coerce(Node *e, Type *t);
+static Node *explicit_conv(Node *e, Type *t, Node *at);
+
+/* the conversions of nullable values: T -> T? (New Nullable(Of T)(v)),
+   Nothing -> T? (the empty value), T? -> T (.Value), T? -> Object (the
+   value boxed, or Nothing); NULL if neither type is nullable */
+static Node *nullable_conv(Node *e, Type *t, int expl) {
+    Type *ne = nullable_elem(t), *nf = nullable_elem(e->type);
+    if (e->type == t || (!ne && !nf)) return 0;
+    if (ne) {
+        Node *nw, *call, *arg;
+        NodeVec *args;
+        if (e->type->kind == TY_NOTHING) {
+            nw = lit_node(N_NEW, t, e);
+            nw->list = nv_new();
+            return nw;
+        }
+        if (nf) e = nullable_conv(e, nf, expl);       /* S? -> S -> T? */
+        e = expl ? explicit_conv(e, ne, e) : coerce(e, ne);
+        args = nv_new();
+        arg = lit_node(N_ARG, ne, e);
+        arg->a = e;
+        nv_push(args, arg);
+        call = resolve_call(t->sym->ctors, 0, args, e);
+        nw = lit_node(N_NEW, t, e);
+        nw->sym = call->sym;
+        nw->list = call->list;
+        return nw;
+    }
+    {
+        /* from T?: its Value (an exception if it has none) */
+        Sym *vp = scope_find(e->type->sym->members, intern_word("value"));
+        Node *v = resolve_call(vp->getter, e, nv_new(), e);
+        if (t->kind == TY_OBJECT) {
+            /* boxing: Nothing for an empty value */
+            Sym *hv = scope_find(e->type->sym->members, intern_word("hasvalue"));
+            Node *iif = lit_node(N_IIF, t, e);
+            iif->a = resolve_call(hv->getter, e, nv_new(), e);
+            iif->b = make_conv(v, t, 0);
+            iif->c = lit_node(N_NOTHING, t, e);
+            return iif;
+        }
+        return expl ? explicit_conv(v, t, e) : coerce(v, t);
+    }
 }
 
 static void no_conversion(Node *at, Type *f, Type *t) {
@@ -294,7 +387,6 @@ static void no_conversion(Node *at, Type *f, Type *t) {
     serr(at, "Value of type '%s' cannot be converted to '%s'.", type_name(f), type_name(t));
 }
 
-static Sym *instantiate_type(Sym *tmpl, Type **args, int n, Node *at);
 static Node *resolve_call(Sym *group, Node *recv, NodeVec *args, Node *at);
 
 /* an array as an IEnumerable(Of T): New ArrayWrapper(Of T)(a) */
@@ -331,6 +423,10 @@ static Node *coerce(Node *e, Type *t) {
     if (k == CV_NARROW && opts->strict)
         serr(e, "Option Strict On disallows implicit conversions from '%s' to '%s'.", type_name(e->type), type_name(t));
     if (e->type->kind == TY_ARRAY && t->kind == TY_INTERFACE) return array_wrap(e, t);
+    {
+        Node *nc = nullable_conv(e, t, 0);
+        if (nc) return nc;
+    }
     return make_conv(e, t, 0);
 }
 
@@ -338,6 +434,15 @@ static Node *coerce(Node *e, Type *t) {
 static Node *explicit_conv(Node *e, Type *t, Node *at) {
     if (e->kind == N_COLLINIT && !e->type) return bind_collinit(e, t);
     if (is_pending(e)) return pending_to(e, t);
+    if (nullable_elem(t) || nullable_elem(e->type)) {
+        Node *nc;
+        if (conv_class_of(e, t) == CV_NONE) {
+            Type *ne = nullable_elem(t) ? nullable_elem(t) : t, *nf = nullable_elem(e->type) ? nullable_elem(e->type) : e->type;
+            if (conv_class(nf, ne) == CV_NONE) no_conversion(at, e->type, t);
+        }
+        nc = nullable_conv(e, t, 1);
+        if (nc) return nc;
+    }
     if (conv_class(e->type, t) == CV_NONE && (ty_user(e->type) || ty_user(t))) {
         Node *u = user_conversion(e, t, 1);
         if (u) return u;

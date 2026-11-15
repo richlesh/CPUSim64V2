@@ -15,7 +15,7 @@ It includes:
 - A cycle-accurate simulation engine  
 - A native Rust reimplementation of the simulator (`cpusim64_native`) for faster, standalone execution  
 - A simple IDE with code editor, console, and integrated run/debug  
-- A pluggable compiler framework in the IDE, with a **C11 compiler written in CPUSim64 assembly** and its own C standard library (`compilers/C11`).  The C11 compiler is then used to bootstrap a **VB.Net compiler**, an **MMIX translator** that runs Knuth's [MMIXAL](http://mmix.cs.hm.edu/) programs (`compilers/MMIX`), and a **C++ translator** (`compilers/C++14`) that runs C++14 (with some C++17 additions) programs through the C11 compiler.  
+- A pluggable compiler framework in the IDE, with a **C11 compiler written in CPUSim64 assembly** and its own C standard library (`compilers/C11`).  The C11 compiler is then used to bootstrap a **VB.NET compiler** (`compilers/VBNET`), an **MMIX translator** that runs Knuth's [MMIXAL](http://mmix.cs.hm.edu/) programs (`compilers/MMIX`), and a **C++ translator** (`compilers/C++14`) that runs C++14 (with some C++17 additions) programs through the C11 compiler.  
 - A native CLI tool for command-line workflows  
 - An agentic AI assistant with RAG-based context retrieval for writing and debugging assembly code  
 - Native installers for macOS, Windows, and Linux (x64 and ARM64)  
@@ -107,6 +107,16 @@ Runs C++ programs (File → New Compiler → C++14) by translating them to C for
 - Programs of several `.cpp` files: the other files go in the Options field  
 - Not supported: virtual base classes, pointers to members, user-defined literals, fold expressions  
 - Regression tests compared with g++: `compilers/C++14/tests/run_tests.sh` (`HOST=1`)  
+
+
+### **VB.NET Compiler (`compilers/VBNET`)**
+Compiles Visual Basic .NET programs (File → New Compiler → VBNET) to CPUSim64 assembly; the debugger shows the `.vb` lines.
+- The compiler `vbc` is written in portable C (`src/`) and compiled by the C11 compiler; its hand-written parser follows the VB language specification's grammar (dotnet/vblang `vb.g4`), checked against ANTLR with `tests/antlr_check.sh`  
+- VB 11 with classes, structures, interfaces, inheritance, generics, properties, events, operator overloading, exceptions, `Using`/`With`, lambdas and closures, extension methods, nullable values, anonymous types, `?.`, interpolated strings and LINQ (methods and query expressions)  
+- Its own .NET library: `Console`, `Math`, `String`, the `Microsoft.VisualBasic` functions, .NET format strings, the exception classes, `List`, `Dictionary`, `HashSet`, `Stack`, `Queue`, `StringBuilder`, `Random`, `File`/`StreamReader`/`StreamWriter` and `System.Linq` (in VB, `lib/`), on a run-time library in C (`rt/`) with a mark-and-sweep garbage collector  
+- Checked integer arithmetic and run-time errors as catchable .NET exceptions; only the library code a program uses is compiled into it  
+- Not supported: `Async`/`Await`, `Iterator`/`Yield`, late binding, `On Error`, `Decimal`, `Date`, XML literals, reflection  
+- Sample programs in `compilers/VBNET/samples`; regression tests: `compilers/VBNET/tests/run_tests.sh`  
 
 ### **Virtual CPU**
 - Custom 64-bit RISC-style architecture  

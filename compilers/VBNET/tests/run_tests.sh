@@ -8,6 +8,7 @@
 #   dump/NAME.vb + NAME.args    the compiler is run with the options in
 #              + NAME.expected  NAME.args (e.g. --tokens); its stdout, without
 #                               the banner, must equal NAME.expected
+#   ../samples/NAME.vb          must compile and assemble
 #   errors/NAME.vb + NAME.err   compilation must fail and stderr must contain
 #                               the line in NAME.err
 #   run/NAME.vb                 compiled, assembled and run on CPUSim64;
@@ -19,6 +20,8 @@
 #                               relative to run/, or options)
 #              [+ NAME.stderr]  a line that the program's stderr must contain
 #              [+ NAME.mem]     the simulator's memory size (default 16M)
+#              [+ NAME.nostress] skipped with GC_STRESS=1 (too slow when every
+#                               allocation collects)
 #
 # Environment:
 #   VBC=native   use the native development build of the compiler
@@ -167,6 +170,7 @@ for t in "$HERE"/run/*.vb; do
     want "$name" || continue
     base="${t%.vb}"
     [[ -e "$base.expected" ]] || continue          # an extra file of a multi-file test
+    [[ -n "$GC_STRESS" && -e "$base.nostress" ]] && continue
     rm -f "$base.asm" "$HERE/run/obj/$(basename "$base").o64"
     vbcargs=""
     [[ -e "$base.vbcargs" ]] && read -r vbcargs < "$base.vbcargs"
@@ -204,6 +208,27 @@ for t in "$HERE"/run/*.vb; do
         bad "$name" "exit code $res, expected $expexit; $(head -3 "$TMP/err")"
     elif [[ -e "$base.stderr" ]] && ! grep -qF -- "$(cat "$base.stderr")" "$TMP/err"; then
         bad "$name" "stderr does not contain '$(cat "$base.stderr")': $(head -3 "$TMP/err")"
+    else
+        ok "$name"
+    fi
+done
+
+# ---------------------------------------------------------------- samples
+# the programs in samples/ must compile and assemble
+for t in "$VB_DIR"/samples/*.vb; do
+    [[ -e "$t" ]] || continue
+    name="samples/$(basename "$t" .vb)"
+    want "$name" || continue
+    [[ -n "$GC_STRESS" ]] && continue
+    base="${t%.vb}"
+    rm -f "$base.asm"
+    if ! ( cd "$VB_DIR/samples" && vbc "$t" ) || [[ ! -f "$base.asm" ]]; then
+        bad "$name" "compilation failed: $(head -3 "$TMP/cerr")"
+        continue
+    fi
+    "$ROOT/assemble.sh" "$base" > "$TMP/asmlog" 2>&1
+    if [[ ! -f "$VB_DIR/samples/obj/$(basename "$base").o64" ]]; then
+        bad "$name" "generated assembly failed: $(grep -i error "$TMP/asmlog" | head -3)"
     else
         ok "$name"
     fi

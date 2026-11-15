@@ -1,0 +1,1 @@
+inf_nullable_ref.vb:3: error: '?' cannot be used on a type that is not a value type ('String').

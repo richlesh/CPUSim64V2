@@ -44,6 +44,7 @@
 #include "sema_type.c"
 #include "sema_generic.c"
 #include "sema_lambda.c"
+#include "sema_query.c"
 #include "sema_main.c"
 #include "codegen.c"
 #include "codegen_stmt.c"
@@ -144,6 +145,7 @@ int main(int argc, char **argv) {
             return 2;
         }
     }
+    nuser_files = nfiles;
     /* the library sources (the exception classes) */
     if (!rt_dir) rt_dir = find_rt(argc > 0 ? argv[0] : "");
     if (!lib_dir) {
@@ -157,7 +159,7 @@ int main(int argc, char **argv) {
         lib_dir = p;
     }
     {
-        static const char *lib_files[] = { "System.vb", "Collections.vb", 0 };
+        static const char *lib_files[] = { "System.vb", "Collections.vb", "Linq.vb", 0 };
         int k;
         for (k = 0; lib_files[k]; k++) {
             char *p = xalloc(strlen(lib_dir) + 32);

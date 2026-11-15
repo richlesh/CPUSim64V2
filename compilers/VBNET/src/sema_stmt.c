@@ -132,6 +132,7 @@ static Type *var_type(Node *vi, Type *as, Node *at) {
         t = tc;
     }
     if (!t) return 0;
+    if (vi->flags & F_NULLABLE) t = nullable_of(t, vi);
     if (vi->list2)
         for (i = vi->list2->n - 1; i >= 0; i--) t = ty_array(t, (int)vi->list2->v[i]->ival);
     (void)at;
@@ -361,6 +362,10 @@ static void bind_call_stmt(Node *st) {
         st->a = x;
         return;
     }
+    if (x->kind == N_QCOND) {
+        st->a = x;
+        return;
+    }
     if (x->kind != N_INVOKE || !x->sym) serr(st, "Expression is not a method.");
     if ((x->sym->sflags & SF_CTOR) && st != ctor_first_stmt)
         serr(st, "Constructor call is valid only as the first statement in an instance constructor.");
@@ -417,7 +422,7 @@ static Node *loop_var(Node *lv, Type *infer_t) {
     if (lv->kind == N_LOOPVAR) {
         Type *t = bind_type(lv->a);
         Sym *s;
-        if (lv->flags & F_NULLABLE) not_yet(lv, "Nullable types are");
+        if (lv->flags & F_NULLABLE) t = nullable_of(t, lv);
         s = declare_local(lv->name, lv->text, t, lv, S_LOCAL);
         return sym_ref(s, lv, 0);
     }

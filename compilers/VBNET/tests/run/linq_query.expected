@@ -1,0 +1,15 @@
+16,12,4
+Bob,Di,Ann
+{ Name = Ann, decade = 3 } { Name = Bob, decade = 2 } { Name = Cy, decade = 4 } { Name = Di, decade = 2 } 
+Oslo 2 71 40
+Rome 2 50 25
+25: Bob/Di
+31: Ann
+40: Cy
+Ann=10.5 Ann=2 Cy=7 
+Ann:12.5/2 Bob:0/0 Cy:7/1 Di:0/0 
+20,40,30,60
+28 1 9 4.857
+1,2 31,25,40
+False
+a=2 b=1 c=1 
