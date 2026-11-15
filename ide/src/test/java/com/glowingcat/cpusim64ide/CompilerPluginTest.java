@@ -40,6 +40,7 @@ class CompilerPluginTest {
         assertNull(alpha.getSystemPrompt());
         assertEquals("16M", alpha.getCompilerMem());
         assertNull(alpha.getEntryLabel());
+        assertNull(alpha.getEntryPattern());
         assertEquals("256K", alpha.getCompilerStack());
 
         CompilerPlugin cc = found.get(1);
@@ -51,6 +52,47 @@ class CompilerPluginTest {
         assertEquals("You help with C11.", cc.getSystemPrompt());
         assertEquals(c11.resolve("cc.asm"), cc.compilerAsm(c11));
         assertEquals(c11.resolve("obj").resolve("cc.o64"), cc.compilerObj(c11));
+    }
+
+    /** The VB.NET entry pattern, written exactly as in compilers/VBNET/config.properties. */
+    static final String VB_CONFIG =
+            "compiler_source: vbc\n"
+            + "file_extensions: vb\n"
+            + "entry_pattern: (?im)^[ \\\\t]*((Public|Private|Friend|Shared|Overloads)[ \\\\t]+)*(Sub|Function)[ \\\\t]+Main\\\\b\n";
+
+    @Test
+    void entryPatternIsReadFromConfig(@TempDir Path tmp) throws Exception {
+        Path compilers = Files.createDirectories(tmp.resolve("compilers"));
+        plugin(compilers, "VBNET", VB_CONFIG);
+        plugin(compilers, "Bad", "compiler_source: bad\nentry_pattern: (unclosed\n");
+        List<CompilerPlugin> found = CompilerPlugin.discover(compilers);
+        assertNull(found.get(0).getEntryPattern(), "invalid pattern is ignored");
+        var p = found.get(1).getEntryPattern();
+        assertNotNull(p);
+        assertTrue(p.matcher("Module M\n    Sub Main()\n    End Sub\nEnd Module\n").find(), "indented");
+        assertTrue(p.matcher("Class P\n  Public Shared Sub Main(args As String())\n").find(), "modifiers");
+        assertTrue(p.matcher("module m\n\tsub main\n").find(), "case-insensitive, tab");
+        assertTrue(p.matcher("Function Main() As Integer\n").find(), "Function Main");
+        assertFalse(p.matcher("' Sub Main()\n").find(), "comment line");
+        assertFalse(p.matcher("Sub MainLoop()\n").find());
+        assertFalse(p.matcher("    Call Main()\n").find(), "a call");
+        assertFalse(p.matcher("Dim s = \"x\" : Sub Main\n").find(), "not at line start");
+    }
+
+    @Test
+    void translateToNamesTheNextCompiler(@TempDir Path tmp) throws Exception {
+        Path compilers = Files.createDirectories(tmp.resolve("compilers"));
+        plugin(compilers, "C11", "compiler_source: cc\nfile_extensions: c,h\n");
+        plugin(compilers, "cpp", "compiler_source: cppc\nfile_extensions: cpp,cc\ntranslate_to: c11\n");
+        List<CompilerPlugin> found = CompilerPlugin.discover(compilers);
+        CompilerPlugin c11 = CompilerPlugin.find(found, "C11");
+        CompilerPlugin cpp = CompilerPlugin.find(found, "cpp");
+        assertNull(c11.getTranslateTo());
+        assertEquals("c11", cpp.getTranslateTo());
+        assertSame(c11, CompilerPlugin.find(found, cpp.getTranslateTo()), "the name is matched ignoring case");
+        assertNull(CompilerPlugin.find(found, "Fortran"));
+        assertEquals("c", c11.getDefaultExtension());
+        assertEquals("cpp", cpp.getDefaultExtension());
     }
 
     @Test

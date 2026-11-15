@@ -15,7 +15,7 @@ It includes:
 - A cycle-accurate simulation engine  
 - A native Rust reimplementation of the simulator (`cpusim64_native`) for faster, standalone execution  
 - A simple IDE with code editor, console, and integrated run/debug  
-- A pluggable compiler framework in the IDE, with a **C11 compiler written in CPUSim64 assembly** and its own C standard library (`compilers/C11`), and an **MMIX translator** that runs Knuth's MMIXAL programs (`compilers/MMIX`)  
+- A pluggable compiler framework in the IDE, with a **C11 compiler written in CPUSim64 assembly** and its own C standard library (`compilers/C11`), an **MMIX translator** that runs Knuth's MMIXAL programs (`compilers/MMIX`), and a **C++ translator** (`compilers/C++14`) that runs C++14/17 programs through the C11 compiler  
 - A native CLI tool for command-line workflows  
 - An agentic AI assistant with RAG-based context retrieval for writing and debugging assembly code  
 - Native installers for macOS, Windows, and Linux (x64 and ARM64)  
@@ -66,7 +66,7 @@ Every sub-folder with a `config.properties` is a plug-in; the folder name is the
 
 | Plug-in file | Purpose |
 |---|---|
-| `config.properties` | `compiler_source` – the compiler's main `.asm` file (required, `.asm` optional)<br>`syntax_language` – RSyntaxTextArea style for highlighting, e.g. `text/c`<br>`file_extensions` – optional, e.g. `c,h` (first is the Save As default)<br>`compiler_mem`, `compiler_stack` – optional run sizes (default `16M`, `256K`)<br>`main_function` – name of the entry function (default `main`): Run and Debug are enabled for a source that defines it<br>`entry_label` – instead of `main_function`: Run and Debug are enabled for a source with a line that starts with this label (MMIX: `Main`) |
+| `config.properties` | `compiler_source` – the compiler's main `.asm` file (required, `.asm` optional)<br>`syntax_language` – RSyntaxTextArea style for highlighting, e.g. `text/c`<br>`file_extensions` – optional, e.g. `c,h` (first is the Save As default)<br>`compiler_mem`, `compiler_stack` – optional run sizes (default `16M`, `256K`)<br>`main_function` – name of the entry function (default `main`): Run and Debug are enabled for a source that defines it<br>`entry_label` – instead of `main_function`: Run and Debug are enabled for a source with a line that starts with this label (MMIX: `Main`)<br>`entry_pattern` – instead of both: a Java regular expression that a runnable source must match (VB.NET)<br>`translate_to` – the name of another plug-in whose compiler runs on this compiler's output (C++14: `C11`): the compiler writes `<source>.gen.<ext>` (`ext` is the first file extension of the target), the target compiles it, and the result is used as `<source>.asm` |
 | `system_prompt.md` | system prompt for the AI chat of that window |
 | `obj/` | the assembled compiler; rebuilt when missing or older than any `.asm`/`.def` file of the plug-in (kept in `~/.cpusim64/compilers/<name>` if the plug-in folder is read-only) |
 
@@ -87,7 +87,8 @@ A C compiler written entirely in CPUSim64 assembly.  It compiles a core subset o
 - `time()` returns the real wall-clock time (UTC) so `srand(time(NULL))` works; `getenv()` reads the host environment  
 - A header `#include <name.h>` is found in `lib/` (plus any `--lib=DIR`), and `lib/name.c` is appended once, compiling only the functions the program uses  
 - Separate compilation: `cc main.c util.c` compiles each file into its own linker module (external symbols exported, `static` ones private); `-lstd` links the C library as shared library modules instead of appending it  
-- 97 regression tests: `compilers/C11/tests/run_tests.sh`  
+- `#line N "file"` renumbers the following lines (and names the file in `.source` directives and error messages), so a translator that emits C can be debugged on its own source  
+- 100 regression tests: `compilers/C11/tests/run_tests.sh`  
 
 ### **MMIX Translator (`compilers/MMIX`)**
 Runs programs written in MMIXAL, the assembly language of Knuth's 64-bit MMIX computer, by translating them to CPUSim64 assembly (File → New Compiler → MMIX, or `compilers/MMIX/obj/mmixc.o64 prog.mms` on a simulator).
@@ -96,6 +97,15 @@ Runs programs written in MMIXAL, the assembly language of Knuth's 64-bit MMIX co
 - The arithmetic run-time library (`rt/mmix_rt.c`) is a port of Knuth's `mmix-arith`, so results, rounding and flags are those of the real `mmix`  
 - Kernel features (virtual memory, interrupts, the timer registers) are not supported  
 - Tests compare with the real `mmixal` and `mmix`: `compilers/MMIX/tests/run_tests.sh` and the randomised `tests/random_diff.sh`  
+
+### **C++ Translator (`compilers/C++14`)**
+Runs C++ programs (File → New Compiler → C++14) by translating them to C for the C11 compiler (`translate_to: C11`); `#line` directives make the debugger show the `.cpp` lines.
+- The translator `cppc` is written in portable C (`src/`) and compiled by the C11 compiler; its hand-written parser follows the ANTLR grammars-v4 CPP14 grammar  
+- C++14 with classes, multiple inheritance, virtual functions, templates (partial specialization, variadic templates, SFINAE), lambdas, move semantics, exceptions, RTTI, `constexpr` functions, and C++17 `if constexpr`, structured bindings and `if (init; cond)`  
+- Its own standard library in `lib/`: iostreams and string streams, `string`, `vector`, `array`, `list`, `map`, `set`, the unordered containers, `stack`, `queue`, `algorithm`, `numeric`, `memory` (`unique_ptr`, `shared_ptr`), `functional`, `type_traits`, the exception classes, and the C headers  
+- Programs of several `.cpp` files: the other files go in the Options field  
+- Not supported: virtual base classes, pointers to members, user-defined literals, fold expressions  
+- Regression tests compared with g++: `compilers/C++14/tests/run_tests.sh` (`HOST=1`)  
 
 ### **Virtual CPU**
 - Custom 64-bit RISC-style architecture  
@@ -244,7 +254,7 @@ CPUSim64V2/
 │       ├── ports/                   (stdio / file / raw port handlers)
 │       └── javacompat/              (Java Formatter + Schubfach Double.toString)
 │
-├── compilers/                       (IDE compiler plug-ins: C11/, MMIX/)
+├── compilers/                       (IDE compiler plug-ins: C11/, MMIX/, C++14/, VBNET/)
 │
 ├── ide/                             (IDE Module)
 │   ├── pom.xml

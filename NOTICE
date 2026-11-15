@@ -5,3 +5,15 @@ This product is licensed under the Apache License, Version 2.0.
 You may obtain a copy of the License at:
 
     http://www.apache.org/licenses/LICENSE-2.0
+
+------------------------------------------------------------------------------
+compilers/VBNET/grammar/vb.g4
+
+The Visual Basic language grammar (Visual Basic Language Specification,
+version 11), in ANTLR format, from the dotnet/vblang repository
+(https://github.com/dotnet/vblang/blob/main/spec/README.md, which links to
+http://ljw1004.github.io/vbspec/vb.g4).
+Copyright (c) Microsoft. All Rights Reserved.
+Licensed under the Apache License, Version 2.0.
+The grammars VBLexer.g4 and VBParser.g4 in the same folder are derived
+from it.

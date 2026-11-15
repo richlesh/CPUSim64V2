@@ -36,7 +36,19 @@ import java.util.stream.Stream;
  *       <li>{@code entry_label} - for assembly-like languages: the program's entry
  *           label (e.g. {@code Main} for MMIX); when set, Run and Debug are enabled
  *           for a source with a line that starts with this label, instead of
- *           looking for a C function {@code main_function}.</li>
+ *           looking for a C function {@code main_function};</li>
+ *       <li>{@code entry_pattern} - a Java regular expression (for example
+ *           {@code (?im)^\s*(Public\s+|Shared\s+)*Sub\s+Main\b} for VB.NET); when
+ *           set, Run and Debug are enabled for a source that contains a match.
+ *           It takes precedence over {@code entry_label} and {@code main_function}.
+ *           An invalid expression is ignored;</li>
+ *       <li>{@code translate_to} - the name of another plugin (for example
+ *           {@code C11}) whose compiler runs on this compiler's output: the
+ *           compiler is a source-to-source translator. It writes
+ *           {@code <source without extension>.gen.<ext>}, where {@code ext} is the
+ *           first file extension of the target plugin, instead of {@code .asm};
+ *           the target compiler translates that file and the IDE then uses its
+ *           result as {@code <source without extension>.asm}.</li>
  *     </ul></li>
  *   <li>{@code system_prompt.md} - optional AI Chat system prompt;</li>
  *   <li>{@code obj/} - the assembled compiler is kept here (created on demand).</li>
@@ -59,6 +71,8 @@ public final class CompilerPlugin {
     private final String compilerStack;
     private final String mainFunction;
     private final String entryLabel;
+    private final java.util.regex.Pattern entryPattern;
+    private final String translateTo;
     private final String systemPrompt;
 
     private CompilerPlugin(String name, Path dir, Properties props) {
@@ -81,6 +95,15 @@ public final class CompilerPlugin {
         this.mainFunction = mf.isEmpty() ? "main" : mf;
         String el = props.getProperty("entry_label", "").trim();
         this.entryLabel = el.isEmpty() ? null : el;
+        String ep = props.getProperty("entry_pattern", "").trim();
+        java.util.regex.Pattern pat = null;
+        if (!ep.isEmpty()) {
+            try { pat = java.util.regex.Pattern.compile(ep); }
+            catch (java.util.regex.PatternSyntaxException ignored) {}
+        }
+        this.entryPattern = pat;
+        String tt = props.getProperty("translate_to", "").trim();
+        this.translateTo = tt.isEmpty() ? null : tt;
         String prompt = null;
         Path p = dir.resolve("system_prompt.md");
         if (Files.isRegularFile(p)) {
@@ -107,6 +130,17 @@ public final class CompilerPlugin {
     public String getMainFunction() { return mainFunction; }
     /** Entry label of an assembly-like language (config {@code entry_label}), or null. */
     public String getEntryLabel() { return entryLabel; }
+    /** Entry regular expression (config {@code entry_pattern}), or null if unset or invalid. */
+    public java.util.regex.Pattern getEntryPattern() { return entryPattern; }
+    /** Name of the plugin that compiles this compiler's output (config {@code translate_to}), or null. */
+    public String getTranslateTo() { return translateTo; }
+    /** The first source file extension (without the dot), or "" if the plugin names none. */
+    public String getDefaultExtension() { return fileExtensions.isEmpty() ? "" : fileExtensions.get(0); }
+    /** The plugin called {@code name} (ignoring case) in {@code plugins}, or null. */
+    public static CompilerPlugin find(List<CompilerPlugin> plugins, String name) {
+        for (CompilerPlugin p : plugins) if (p.name.equalsIgnoreCase(name)) return p;
+        return null;
+    }
     /** Contents of {@code system_prompt.md}, or null if the plugin has none. */
     public String getSystemPrompt() { return systemPrompt; }
 

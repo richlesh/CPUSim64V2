@@ -1340,6 +1340,7 @@ public class IDEApp {
             return !EXPORT_DIRECTIVE.matcher(code).find();
         }
         if (n.endsWith(".h")) return false;
+        if (plugin.getEntryPattern() != null) return plugin.getEntryPattern().matcher(text).find();
         if (plugin.getEntryLabel() != null) return definesLabel(text, plugin.getEntryLabel());
         return definesFunction(text, plugin.getMainFunction());
     }
@@ -2040,11 +2041,88 @@ public class IDEApp {
     /**
      * Compiler windows: (re)assembles the compiler when its object file is missing or older
      * than its source, then compiles the current source file to {@code <source>.asm}.
+     * A plugin with {@code translate_to} is a translator: its output ({@code <base>.gen.<ext>})
+     * is compiled by the named plugin's compiler, and that result becomes {@code <base>.asm}.
      * Runs on a worker thread with System.out/err pointing at the console. Returns the
      * generated assembly file, or null after reporting the problem in the console.
      */
     private Path compileSource() throws Exception {
         final CompilerPlugin pl = plugin;
+        Path source = buildFile.toAbsolutePath();
+        Path asm = Path.of(generatedBase() + ".asm");
+        String target = pl.getTranslateTo();
+        if (target == null) return compileWith(pl, source, asm, true);
+
+        CompilerPlugin next = CompilerPlugin.find(CompilerPlugin.discover(), target);
+        if (next == null) {
+            System.out.println("The " + pl.getName() + " compiler needs the " + target
+                    + " plug-in, which was not found.");
+            return null;
+        }
+        if (next.getTranslateTo() != null) {
+            System.out.println("The " + target + " plug-in must not itself use translate_to.");
+            return null;
+        }
+        String ext = next.getDefaultExtension().isEmpty() ? "src" : next.getDefaultExtension();
+        Path gen = Path.of(generatedBase() + ".gen." + ext);
+        Path genAsm = Path.of(generatedBase() + ".gen.asm");     // the target compiler's output for gen
+        Files.deleteIfExists(gen);
+        Files.deleteIfExists(genAsm);
+        if (compileWith(pl, source, gen, true) == null) return null;
+
+        // the other source files in Options (with this plug-in's extensions) are units of the program:
+        // each is translated with --unit, and the target compiler compiles all the results as modules
+        java.util.List<String> nextArgs = new java.util.ArrayList<>();
+        java.util.List<Path> unitAsms = new java.util.ArrayList<>();
+        for (String opt : compilerOptions(source)) {
+            if (opt.startsWith("-") || !pl.acceptsFile(opt) || opt.toLowerCase().matches(".*\\.(h|hh|hpp|hxx)$")) continue;
+            Path unit = Path.of(opt);
+            String ubase = stripExtension(unit.toString());
+            Path ugen = Path.of(ubase + ".gen." + ext);
+            Files.deleteIfExists(ugen);
+            java.util.List<String> uargs = new java.util.ArrayList<>();
+            uargs.add("--unit");
+            for (String o : compilerOptions(source)) if (o.startsWith("-")) uargs.add(o);
+            if (compileWith(pl, unit, ugen, uargs) == null) return null;
+            nextArgs.add(ugen.toString());
+            unitAsms.add(Path.of(ubase + ".gen.asm"));
+        }
+        if (!nextArgs.isEmpty()) nextArgs.add("-lstd");           // the modules share the C library
+        if (compileWith(next, gen, genAsm, nextArgs) == null) return null;
+        Files.deleteIfExists(asm);
+        Files.move(genAsm, asm);
+        if (!unitAsms.isEmpty()) {
+            // the modules are renamed as the main one is (the simulator does not accept extra dots);
+            // the main module includes them by name
+            String text = Files.readString(asm);
+            for (Path ua : unitAsms) {
+                String uname = ua.getFileName().toString();
+                Path renamed = ua.resolveSibling(uname.replace(".gen.asm", ".asm"));
+                Files.deleteIfExists(renamed);
+                if (Files.exists(ua)) Files.move(ua, renamed);
+                text = text.replace(uname + "\"", renamed.getFileName() + "\"");
+            }
+            Files.writeString(asm, text);
+        }
+        return asm;
+    }
+
+    private static String stripExtension(String p) {
+        int slash = Math.max(p.lastIndexOf('/'), p.lastIndexOf('\\'));
+        int dot = p.lastIndexOf('.');
+        return dot > slash ? p.substring(0, dot) : p;
+    }
+
+    /**
+     * Builds {@code pl}'s compiler if needed and runs it on {@code source}; the compiler must
+     * write {@code output}. {@code withOptions}: pass the Options field to the compiler.
+     */
+    private Path compileWith(CompilerPlugin pl, Path source, Path output, boolean withOptions) throws Exception {
+        return compileWith(pl, source, output, withOptions ? compilerOptions(source) : java.util.List.of());
+    }
+
+    /** As above, with {@code extraArgs} after the source file. */
+    private Path compileWith(CompilerPlugin pl, Path source, Path output, java.util.List<String> extraArgs) throws Exception {
         Path root = pl.workingRoot();
         Path compilerAsm = pl.compilerAsm(root);
         if (!Files.isRegularFile(compilerAsm)) {
@@ -2063,20 +2141,19 @@ public class IDEApp {
             }
         }
 
-        Path source = buildFile.toAbsolutePath();
-        Path asm = Path.of(generatedBase() + ".asm");
-        Files.deleteIfExists(asm);           // never run a stale result of an earlier compile
-        System.out.println("> Compiling " + source.getFileName() + "...");
-        int result = runCompiler(pl, compilerObj, source);
+        Files.deleteIfExists(output);        // never run a stale result of an earlier compile
+        System.out.println("> Compiling " + source.getFileName()
+                + (pl != plugin || pl.getTranslateTo() != null ? " (" + pl.getName() + ")" : "") + "...");
+        int result = runCompiler(pl, compilerObj, source, extraArgs);
         if (result != 0) {
             System.out.println("\nCompilation failed" + (result > 0 ? " (exit code " + result + ")" : "") + ".");
             return null;
         }
-        if (!Files.isRegularFile(asm)) {
-            System.out.println("\nThe compiler did not produce " + asm.getFileName() + ".");
+        if (!Files.isRegularFile(output)) {
+            System.out.println("\nThe compiler did not produce " + output.getFileName() + ".");
             return null;
         }
-        return asm;
+        return output;
     }
 
     /** Runs the compiler program on {@code source}; returns its exit code, or -1 if it did not finish. */
@@ -2093,13 +2170,13 @@ public class IDEApp {
         return out;
     }
 
-    private int runCompiler(CompilerPlugin pl, Path compilerObj, Path source) throws Exception {
+    private int runCompiler(CompilerPlugin pl, Path compilerObj, Path source, java.util.List<String> extraArgs) throws Exception {
         java.util.List<String> simArgs = new java.util.ArrayList<>();
         simArgs.add(compilerObj.toString());
         simArgs.add("--mem=" + pl.getCompilerMem());
         simArgs.add("--stack=" + pl.getCompilerStack());
         simArgs.add(source.toString());                  // the compiler's argument
-        for (String opt : compilerOptions(source)) simArgs.add(opt);
+        simArgs.addAll(extraArgs);
         if (settings.useNativeSimulator) {
             return runCompilerNative(simArgs, source.getParent());
         }
