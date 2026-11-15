@@ -66,6 +66,8 @@ public class IDEApp {
     private JSplitPane mainSplit;
     private JMenuBar menuBar;
     private JToolBar consoleToolBar;
+    /** Rows below the toolbar holding the full-width Args (and compiler Options) fields. */
+    private JPanel argsOptionsPanel;
     private JMenuItem runItem, debugItem;
     private JMenuItem killAllItem;
     private JCheckBoxMenuItem aiMenuItem;
@@ -343,7 +345,7 @@ public class IDEApp {
         console.setFont(settings.fontName, settings.fontSize);
         console.setColors(settings.consoleFg, settings.consoleBg);
         if (consoleToolBar != null) {
-            for (Component c : consoleToolBar.getComponents()) c.setFont(font);
+            setControlsFont(font);
         }
         for (SourceTab t : tabs) applyEditorSettings(t);
         // Update AI chat panel font
@@ -848,22 +850,32 @@ public class IDEApp {
         debugBtn.addActionListener(e -> launchDebugger());
         consoleToolBar.add(runBtn);
         consoleToolBar.add(debugBtn);
-        consoleToolBar.addSeparator();
-        consoleToolBar.add(new JLabel("Args: "));
+
+        // Rows 2 and 3 (below the toolbar): Args, and for compilers Options, each the
+        // full width of the panel. A shared grid keeps their labels aligned.
+        argsOptionsPanel = new JPanel(new GridBagLayout());
+        argsOptionsPanel.setBorder(BorderFactory.createEmptyBorder(0, 4, 3, 4));
+        GridBagConstraints lc = new GridBagConstraints();
+        lc.gridx = 0; lc.anchor = GridBagConstraints.LINE_START; lc.insets = new Insets(1, 0, 1, 0);
+        GridBagConstraints fc = new GridBagConstraints();
+        fc.gridx = 1; fc.weightx = 1.0; fc.fill = GridBagConstraints.HORIZONTAL; fc.insets = new Insets(1, 0, 1, 0);
+
+        lc.gridy = fc.gridy = 0;
+        argsOptionsPanel.add(new JLabel("Args: "), lc);
         // editable, with a pick list of the last values used (saved in the settings file)
         argsCombo = historyCombo(() -> settings.argsHistory, 300);
         argsField = (JTextField) argsCombo.getEditor().getEditorComponent();
         argsField.setToolTipText("Command line arguments of the program; pick a recent value from the list");
-        consoleToolBar.add(argsCombo);
+        argsOptionsPanel.add(argsCombo, fc);
         if (plugin != null) {
             // extra compiler arguments, e.g. more source files and -lstd for the C11 compiler
-            consoleToolBar.addSeparator();
-            consoleToolBar.add(new JLabel("Options: "));
+            lc.gridy = fc.gridy = 1;
+            argsOptionsPanel.add(new JLabel("Options: "), lc);
             optionsCombo = historyCombo(() -> settings.optionsHistoryFor(plugin.getName()), 260);
             optionsField = (JTextField) optionsCombo.getEditor().getEditorComponent();
             optionsField.setToolTipText("Extra compiler arguments (e.g. other source files, -lstd); "
                     + "relative file names are relative to the source file");
-            consoleToolBar.add(optionsCombo);
+            argsOptionsPanel.add(optionsCombo, fc);
         }
         consoleToolBar.addSeparator();
         useLinkerBox = new JCheckBox("Use Linker");
@@ -893,10 +905,14 @@ public class IDEApp {
         consoleToolBar.add(stackField);
         consoleToolBar.add(new JLabel("kiB"));
         Font toolbarFont = new Font(settings.fontName, Font.PLAIN, settings.fontSize);
-        for (Component c : consoleToolBar.getComponents()) c.setFont(toolbarFont);
+        setControlsFont(toolbarFont);
+
+        JPanel controlsPanel = new JPanel(new BorderLayout());
+        controlsPanel.add(consoleToolBar, BorderLayout.NORTH);
+        controlsPanel.add(argsOptionsPanel, BorderLayout.CENTER);
 
         JPanel consolePanel = new JPanel(new BorderLayout());
-        consolePanel.add(consoleToolBar, BorderLayout.NORTH);
+        consolePanel.add(controlsPanel, BorderLayout.NORTH);
         consolePanel.add(consoleScrollPanel, BorderLayout.CENTER);
 
         JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, editorTabs, consolePanel);
@@ -1683,6 +1699,14 @@ public class IDEApp {
      * An editable combo box whose drop-down list shows {@code history}; the list is
      * refreshed each time it opens, so values used in other windows appear too.
      */
+    /** Applies the editor font to the run controls: the toolbar row and the Args/Options rows. */
+    private void setControlsFont(Font font) {
+        for (Component c : consoleToolBar.getComponents()) c.setFont(font);
+        if (argsOptionsPanel != null) {
+            for (Component c : argsOptionsPanel.getComponents()) c.setFont(font);
+        }
+    }
+
     private JComboBox<String> historyCombo(java.util.function.Supplier<java.util.List<String>> history, int width) {
         JComboBox<String> combo = new JComboBox<>(new DefaultComboBoxModel<>(history.get().toArray(new String[0])));
         combo.setEditable(true);

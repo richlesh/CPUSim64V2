@@ -1,7 +1,7 @@
   #include <system/io.asm>
   #include "util.asm"            // each module this program uses
   #include "data.asm"
-  #extern add3, gCalls           // labels defined in those modules (optional: not needed here because of prior #include)
+ // #extern add3, gCalls           // labels defined in those modules (optional: not needed here because of prior #include)
 
   __MAIN__:
       #call   add3(10)

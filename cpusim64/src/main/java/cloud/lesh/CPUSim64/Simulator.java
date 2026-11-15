@@ -548,24 +548,32 @@ public class Simulator {
 			return buffer.toString();
 		}
 
-		static long maxLabel = -1;
+		/** Sorted view of the last unsorted map passed in (several programs share one JVM in the IDE). */
+		private record SortedLabels(Map<Long, String> source, int size, NavigableMap<Long, String> sorted) {}
+		private static volatile SortedLabels sortedLabels;
+
+		/**
+		 * Returns "LABEL+offset" for the closest label at or below {@code loc} in
+		 * {@code reverseSymbolMap}, or null if there is none.
+		 */
 		public static String findNearestLabel(Map<Long, String> reverseSymbolMap, long loc) {
-			if (reverseSymbolMap == null || reverseSymbolMap.size() == 0)
+			if (reverseSymbolMap == null || reverseSymbolMap.isEmpty())
 				return null;
-			if (maxLabel < 0) {
-				for (var i : reverseSymbolMap.keySet()) {
-					if (i > maxLabel)
-						maxLabel = i;
+			NavigableMap<Long, String> sorted;
+			if (reverseSymbolMap instanceof NavigableMap<Long, String> nm) {
+				sorted = nm;
+			} else {
+				SortedLabels cache = sortedLabels;
+				if (cache == null || cache.source() != reverseSymbolMap || cache.size() != reverseSymbolMap.size()) {
+					cache = new SortedLabels(reverseSymbolMap, reverseSymbolMap.size(), new TreeMap<>(reverseSymbolMap));
+					sortedLabels = cache;
 				}
+				sorted = cache.sorted();
 			}
-			long j = loc > maxLabel ? maxLabel : loc;
-			String label = reverseSymbolMap.get(j);
-			while (label == null && j > 0) {
-				--j;
-				label = reverseSymbolMap.get(j);
-			}
-			label += "+" + (loc - j);
-			return label;
+			Map.Entry<Long, String> e = sorted.floorEntry(loc);
+			if (e == null)
+				return null;
+			return e.getValue() + "+" + (loc - e.getKey());
 		}
 	}
 
@@ -2898,7 +2906,7 @@ public class Simulator {
 	}
 
 	public static Map<Long, String> readReverseLabelMapFromFile(File filename) {
-		Map<Long, String> labelMap = new HashMap<>();
+		Map<Long, String> labelMap = new TreeMap<>();	// sorted, for findNearestLabel
 
 //		System.out.println("Reading label map file: " + filename.getAbsolutePath());
 		try (BufferedReader reader = new BufferedReader(new FileReader(filename))) {
