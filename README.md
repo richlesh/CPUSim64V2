@@ -113,10 +113,10 @@ Runs C++ programs (File → New Compiler → C++14) by translating them to C for
 Compiles Visual Basic .NET programs (File → New Compiler → VBNET) to CPUSim64 assembly; the debugger shows the `.vb` lines.
 - The compiler `vbc` is written in portable C (`src/`) and compiled by the C11 compiler; its hand-written parser follows the VB language specification's grammar (dotnet/vblang `vb.g4`), checked against ANTLR with `tests/antlr_check.sh`  
 - VB 11 with classes, structures, interfaces, inheritance, generics, properties, events, operator overloading, exceptions, `Using`/`With`, lambdas and closures, extension methods, nullable values, anonymous types, `?.`, interpolated strings and LINQ (methods and query expressions)  
-- Its own .NET library: `Console`, `Math`, `String`, the `Microsoft.VisualBasic` functions, .NET format strings, the exception classes, `List`, `Dictionary`, `HashSet`, `Stack`, `Queue`, `StringBuilder`, `Random`, `File`/`StreamReader`/`StreamWriter` and `System.Linq` (in VB, `lib/`), on a run-time library in C (`rt/`) with a mark-and-sweep garbage collector  
+- Its own .NET library: `Console`, `Math`, `String`, the `Microsoft.VisualBasic` functions, .NET format strings, the exception classes, `List`, `Dictionary`, `HashSet`, `Stack`, `Queue`, `StringBuilder`, `Random`, `File`/`StreamReader`/`StreamWriter`, `System.Linq` and `System.Threading` (threads, `Interlocked`, `SyncLock`) (in VB, `lib/`), on a run-time library in C (`rt/`) with a mark-and-sweep garbage collector  
 - Checked integer arithmetic and run-time errors as catchable .NET exceptions; only the library code a program uses is compiled into it  
 - Not supported: `Async`/`Await`, `Iterator`/`Yield`, late binding, `On Error`, `Decimal`, `Date`, XML literals, reflection  
-- Sample programs in `compilers/VBNET/samples`; regression tests: `compilers/VBNET/tests/run_tests.sh`  
+- Sample programs in `compilers/VBNET/samples`, VB.NET versions of the documentation projects in `compilers/VBNET/projects`; regression tests: `compilers/VBNET/tests/run_tests.sh`  
 
 ### **Virtual CPU**
 - Custom 64-bit RISC-style architecture  
