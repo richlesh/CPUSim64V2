@@ -367,9 +367,55 @@ static void gen_inst(Tetra *t) {
         else ldr(1, yy);
         if ((op >= 0x08 && op <= 0x0f) || op >= 0x18) op_z(2);
         else ldr(2, zz);
+        if (op >= 0x18 && op <= 0x1f) {
+            /* MUL MULU DIV DIVU: inline when the operands are small or non-negative,
+               and the result needs no exception; the run-time library does the rest */
+            snprintf(lab, sizeof lab, "MX_%llx", cur_loc);
+            switch (op & ~1) {
+            case 0x18:                                      /* both in -2^31 ... 2^31-1 */
+                emit("\tarshift\tr3, r1, 31");
+                emit("\tadd\tr3, 1");
+                emit("\trshift\tr3, 1");
+                emit("\tarshift\tr4, r2, 31");
+                emit("\tadd\tr4, 1");
+                emit("\trshift\tr4, 1");
+                emit("\tor\tr3, r4");
+                emit("\ttest\tr3");
+                emit("\tjump\tnz, %s_slow", lab);
+                emit("\tmult\tr0, r1, r2");
+                break;
+            case 0x1a:                                      /* both below 2^32: rH = 0 */
+                emit("\trshift\tr3, r1, 32");
+                emit("\trshift\tr4, r2, 32");
+                emit("\tor\tr3, r4");
+                emit("\ttest\tr3");
+                emit("\tjump\tnz, %s_slow", lab);
+                emit("\tmult\tr0, r1, r2");
+                emit("\tstore\t0, r22[3]");
+                break;
+            case 0x1c:                                      /* y >= 0, z > 0: rR = y mod z */
+            case 0x1e:                                      /* the same, and rD = 0 */
+                if (op >= 0x1e) {
+                    emit("\tload\tr3, r22[1]");
+                    emit("\ttest\tr3");
+                    emit("\tjump\tnz, %s_slow", lab);
+                }
+                emit("\ttest\tr2");
+                emit("\tjump\tnp, %s_slow", lab);
+                emit("\ttest\tr1");
+                emit("\tjump\tn, %s_slow", lab);
+                emit("\tdiv\tr0, r3, r1, r2");
+                emit("\tstore\tr3, r22[6]");
+                break;
+            }
+            str_(0, xx);
+            emit("\tjump\t%s_end", lab);
+            emit("%s_slow:", lab);
+        }
         call_op();
         str_(0, xx);
         if (op <= 0x17 || op == 0x18 || op == 0x19 || op == 0x1c || op == 0x1d) check_trip();
+        if (op >= 0x18 && op <= 0x1f) emit("MX_%llx_end:", cur_loc);
         break;
 
     case 0x20: case 0x21: case 0x24: case 0x25:             /* ADD SUB */
@@ -995,16 +1041,66 @@ static void segment_sizes(void) {
     if (seg_words[3] < 4096) seg_words[3] = 4096;
 }
 
-/* The source file for .source directives: its name as a string literal.
-   The .asm is written next to the .mms, so the name is relative to it. */
-static char *source_lit;
+/* The source files for .source directives: each name as a string literal.
+   The .asm is written next to the first .mms, so the names are relative to
+   its directory (a library in another directory is "../lib/std.mms"). */
+static char *source_lits[MAX_SRC];
+static int source_file;
 static int source_line;
 
-static char *source_literal(void) {
-    const char *b = src_name, *p;
+/* the file name as an absolute path (relative names start at $PWD) */
+static char *abs_copy(const char *p) {
+    const char *cwd = getenv("PWD");
+    char *r;
+    if (p[0] == '/' || !cwd) return xstrdup(p);
+    r = xalloc(strlen(cwd) + strlen(p) + 2);
+    strcpy(r, cwd);
+    strcat(r, "/");
+    strcat(r, p);
+    return r;
+}
+
+/* splits a path in place into its components, leaving out empty ones and "."
+   and resolving "x/.." */
+static int split_path(char *s, char **comp, int max) {
+    int n = 0;
+    char *p = s, *q;
+    while (*p) {
+        while (*p == '/') *p++ = 0;
+        if (!*p) break;
+        q = p;
+        while (*p && *p != '/') p++;
+        if (*p) *p++ = 0;
+        if (q[0] == '.' && q[1] == 0) continue;
+        if (q[0] == '.' && q[1] == '.' && q[2] == 0 && n > 0 && strcmp(comp[n - 1], "..") != 0) {
+            n--;
+            continue;
+        }
+        if (n < max) comp[n++] = q;
+    }
+    return n;
+}
+
+/* the path of source file f relative to the directory of the first file */
+static char *source_path(int f) {
+    char *a = abs_copy(src_names[0]), *b = abs_copy(src_names[f]);
+    char *ca[200], *cb[200], *out;
+    int na = split_path(a, ca, 200) - 1, nb = split_path(b, cb, 200), i = 0, j;
+    if (na < 0) na = 0;
+    while (i < na && i < nb - 1 && strcmp(ca[i], cb[i]) == 0) i++;
+    out = xalloc(strlen(src_names[f]) + strlen(a) + 3 * na + 16);
+    out[0] = 0;
+    for (j = i; j < na; j++) strcat(out, "../");
+    for (j = i; j < nb; j++) {
+        strcat(out, cb[j]);
+        if (j < nb - 1) strcat(out, "/");
+    }
+    return out;
+}
+
+static char *source_literal(int f) {
+    const char *b = source_path(f), *p;
     char *lit, *q;
-    for (p = src_name; *p; p++)
-        if (*p == '/') b = p + 1;
     lit = xalloc(2 * strlen(b) + 3);
     q = lit;
     *q++ = '"';
@@ -1084,13 +1180,14 @@ int generate(const char *out_path, const char *rt_path) {
 
     emit("");
     emit("// ---- the program");
-    source_lit = source_literal();
+    for (i = 0; i < nsrc; i++) source_lits[i] = source_literal(i);
     for (i = 0; i < ncode; i++) {
         Tetra *t = code[i];
         /* the debugger shows the .mms line of each instruction */
-        if (t->line > 0 && t->line != source_line) {
-            emit(".source %s, %d", source_lit, t->line);
+        if (t->line > 0 && (t->line != source_line || t->file != source_file)) {
+            emit(".source %s, %d", source_lits[t->file], t->line);
             source_line = t->line;
+            source_file = t->file;
         }
         emit("M_%llx:\t\t\t\t// #%08llx  line %d", t->addr, t->val, t->line);
         gen_inst(t);

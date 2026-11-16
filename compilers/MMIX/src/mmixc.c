@@ -1,10 +1,14 @@
 /*
  * mmixc.c - MMIXAL -> CPUSim64 translator (main program).
  *
- * Usage:  mmixc [options] prog.mms
+ * Usage:  mmixc [options] prog.mms [more.mms ...]
  *
  * Reads an MMIXAL program, assembles it exactly as mmixal does, and writes
  * prog.asm next to it: a CPUSim64 program that runs the MMIX program.
+ * With several source files the program is the files in order, as if they
+ * were concatenated, except that every file starts with PREFIX ":" and
+ * its own line numbers; prog.asm is named after the first file.  A library
+ * file is therefore written with its own PREFIX (see projects/lib).
  *   --dump    print the assembled MMIX image (rG, global registers and every
  *             nonzero tetrabyte) instead of translating; used by the tests
  *   --rt=DIR  directory of the runtime library mmix_rt.asm (default: rt/ in
@@ -21,6 +25,9 @@
 
 int opt_dump = 0;
 const char *src_name = "";
+const char *src_names[MAX_SRC];
+int nsrc = 0;
+int cur_file = 0;
 const char *rt_dir = 0;
 const char *out_name = 0;
 
@@ -28,7 +35,7 @@ int err_count = 0;
 int line_no = 0;
 
 void err(const char *msg) {
-    fprintf(stderr, "\"%s\", line %d: %s!\n", src_name, line_no, msg);
+    fprintf(stderr, "\"%s\", line %d: %s!\n", src_names[cur_file], line_no, msg);
     err_count++;
 }
 
@@ -39,11 +46,11 @@ void errs(const char *fmt, const char *s) {
 }
 
 void warn(const char *msg) {
-    fprintf(stderr, "\"%s\", line %d warning: %s\n", src_name, line_no, msg);
+    fprintf(stderr, "\"%s\", line %d warning: %s\n", src_names[cur_file], line_no, msg);
 }
 
 void fatal(const char *msg) {
-    fprintf(stderr, "\"%s\", line %d fatal error: %s!\n", src_name, line_no, msg);
+    fprintf(stderr, "\"%s\", line %d fatal error: %s!\n", src_names[cur_file], line_no, msg);
     exit(2);
 }
 
@@ -144,20 +151,31 @@ int main(int argc, char **argv) {
         else if (argv[i][0] == '-') {
             fprintf(stderr, "mmixc: unknown option %s\n", argv[i]);
             return 2;
-        } else src_name = argv[i];
+        } else if (nsrc < MAX_SRC) {
+            src_names[nsrc++] = argv[i];
+        } else {
+            fprintf(stderr, "mmixc: too many source files\n");
+            return 2;
+        }
     }
     if (!opt_dump) banner(argc, argv);
-    if (!src_name[0]) {
-        fprintf(stderr, "usage: mmixc [--dump] [--rt=DIR] prog.mms\n");
+    if (nsrc == 0) {
+        fprintf(stderr, "usage: mmixc [--dump] [--rt=DIR] prog.mms [more.mms ...]\n");
         return 2;
     }
-    f = fopen(src_name, "rb");
-    if (!f) {
-        fprintf(stderr, "mmixc: can't open %s\n", src_name);
-        return 2;
+    src_name = src_names[0];
+    assemble_init();
+    for (i = 0; i < nsrc; i++) {
+        f = fopen(src_names[i], "rb");
+        if (!f) {
+            fprintf(stderr, "mmixc: can't open %s\n", src_names[i]);
+            return 2;
+        }
+        cur_file = i;
+        assemble_file(f);
+        fclose(f);
     }
-    assemble_file(f);
-    fclose(f);
+    assemble_finish();
     if (err_count) {
         fprintf(stderr, "(%d error%s found)\n", err_count, err_count == 1 ? " was" : "s were");
         return 1;

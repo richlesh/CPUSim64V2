@@ -22,7 +22,14 @@ typedef long long soct;
 
 /* ---- options */
 extern int opt_dump;            /* --dump: print the assembled image and stop */
-extern const char *src_name;    /* source file as given on the command line */
+extern const char *src_name;    /* the first source file (the .asm is written next to it) */
+
+/* ---- source files: the program is the files in order, as if concatenated
+   (each file starts with PREFIX ":") */
+#define MAX_SRC 64
+extern const char *src_names[MAX_SRC];
+extern int nsrc;                /* number of source files */
+extern int cur_file;            /* index of the file being assembled */
 
 /* ---- errors (mmixal style: "file", line N: message!) */
 extern int err_count;
@@ -41,6 +48,7 @@ typedef struct {
     octa addr;          /* tetra address (multiple of 4) */
     octa val;           /* 32-bit value */
     int line;           /* source line that assembled it (0 if unknown) */
+    int file;           /* index in src_names of that line's file */
     int is_inst;        /* 1 if assembled by an MMIX instruction */
 } Tetra;
 
@@ -55,7 +63,9 @@ extern int lreg;                    /* highest register declared LOCAL */
 extern octa main_addr;              /* address of :Main */
 extern int main_defined;
 
-int assemble_file(FILE *f);         /* returns err_count */
+void assemble_init(void);           /* once, before the first file */
+void assemble_file(FILE *f);        /* the lines of src_names[cur_file] */
+int assemble_finish(void);          /* after the last file; returns err_count */
 void dump_image(FILE *out);
 
 #endif

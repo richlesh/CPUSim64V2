@@ -28,6 +28,35 @@ Options:
 | `--rt=DIR` | directory of the run-time library (default: `rt/` of the plug-in) |
 | `--dump` | print the assembled image instead of translating (for the tests) |
 
+### Programs of several files
+
+    obj/mmixc.o64 prog.mms lib/std.mms lib/args.mms
+
+The program is the files in order, as if they were concatenated (MMIXAL has
+no `include` or linker; sharing code by concatenation with `PREFIX` is how
+Knuth meant it).  The location counter, the symbols and the local labels
+(`1H`/`1B`/`1F`) carry over from one file to the next, but each file starts
+with the prefix `:` and its own line numbers, so a library's `PREFIX` does
+not leak into the next file, and an error message names the file and the line
+in it.  `prog.asm` is named after the first file.  In the IDE, the Options
+field takes the other files (relative to the first one): `lib/std.mms
+lib/args.mms`.  The debugger shows the lines of every file.
+
+Rules for a library file:
+
+- Start with `PREFIX Name:`.  Inside a prefix, a symbol is `Name:symbol`; the
+  predefined names (`Fputs`, `StdOut`, `Halt`, `Data_Segment`, `rJ` ...) and
+  the symbols of the program need a leading colon (`:Fputs`, `:Main`).  A
+  program refers to the library's symbols as `Name:symbol`.
+- A label may be used before it is defined only where `mmixal` allows it
+  (branches, `GETA`, `JMP`, `PUSHJ`), so a library that is listed after the
+  program cannot give it constants.
+- The location carries over, so code starts where the previous file stopped.
+  A library should begin with `LOC (@+3)&-4` if the previous file ended with
+  data that is not a multiple of 4 bytes.
+- MMIXAL evaluates `&`, `*`, `/`, `<<`, `>>` before `+`, `-`, `|`, `^`: write
+  `(@+3)&-4`, not `@+3&-4`.
+
 The default sizes need about 2 MiB (260K words) of CPUSim64 memory, which
 fits the IDE's default 1M-word heap.  Larger `--data` values need a larger
 Heap setting.
@@ -95,5 +124,19 @@ real `mmix` stops and reports it on standard output).
 `asm/` tests compare the assembled image with the real `mmixal`; `errors/`
 tests check diagnostics; `run/` tests translate, assemble and run programs
 (Knuth's samples and tests of the register stack, trips and `SAVE`/`UNSAVE`)
-and compare their output and exit code with the real `mmix`.  The oracle
+and compare their output and exit code with the real `mmix`; `multi/` tests
+are programs of several files (the image of the files equals `mmixal`'s image
+of the concatenation, an error names the right file and line, and the
+program runs).  The oracle
 needs Knuth's `mmixal` and `mmix` (for example `brew install mmix`).
+
+## Projects
+
+`projects/` has MMIX versions of the documentation projects (33 of them;
+the ones with threads or processes are left out), with a small library of
+MMIXAL routines in `projects/lib/` that the programs share as extra source
+files: text and number output, command-line arguments, files, random
+numbers, doubles as text, math functions and ANSI console output.
+`projects/run_projects.sh` compares their output with the assembly
+versions (`REAL=1`: on the real `mmixal` and `mmix`); see
+`projects/README.md`.

@@ -1,0 +1,6 @@
+# build and test output of run_projects.sh
+*.asm
+obj/
+output/
+# the reference logs (the root .gitignore ignores *.out)
+!reference/*.out

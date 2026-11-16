@@ -183,6 +183,7 @@ Tetra *tetra_at(octa addr, int create) {
     tetras[ntetras].addr = addr;
     tetras[ntetras].val = 0;
     tetras[ntetras].line = 0;
+    tetras[ntetras].file = 0;
     tetras[ntetras].is_inst = 0;
     tetra_index[h] = ntetras;
     ntetras++;
@@ -211,7 +212,7 @@ static void assemble(int k, octa v, int is_inst) {
             Tetra *t = tetra_at(cur_loc, 1);
             int shift = (int)(3 - (cur_loc & 3)) * 8;
             t->val ^= b << shift;
-            if (!t->line) t->line = line_no;
+            if (!t->line) { t->line = line_no; t->file = cur_file; }
             if (is_inst) t->is_inst = 1;
         }
         cur_loc++;
@@ -823,11 +824,9 @@ static void process_line(char *buffer) {
     }
 }
 
-int assemble_file(FILE *f) {
-    char buffer[BUF_SIZE + 2];
-    int i, truncated, warned = 0;
+void assemble_init(void) {
+    int i;
     int n = (int)(sizeof predefs / sizeof predefs[0]);
-    cur_prefix = xstrdup("");
     sym_find("Main", 1);                    /* serial number 1 */
     for (i = 0; i < 32; i++) predefine(special_name[i], (octa)i);
     for (i = 0; i < n; i++) predefine(predefs[i].name, predefs[i].v);
@@ -836,6 +835,17 @@ int assemble_file(FILE *f) {
         backward_local[i].equiv = 0;
         forward_local[i].state = S_UNDEF;
     }
+}
+
+/* One source file.  The files of a program are assembled in order as one
+   sequence of lines: the location, the symbols and the local labels carry
+   over, but each file starts with the prefix ":" (so a library's PREFIX
+   does not leak into the next file) and its own line numbers. */
+void assemble_file(FILE *f) {
+    char buffer[BUF_SIZE + 2];
+    int truncated, warned = 0;
+    cur_prefix = xstrdup("");
+    line_no = 0;
     while (read_line(f, buffer, &truncated)) {
         line_no++;
         if (truncated) {
@@ -852,6 +862,10 @@ int assemble_file(FILE *f) {
         }
         process_line(buffer);
     }
+}
+
+int assemble_finish(void) {
+    int i;
     if (lreg >= greg) {
         char m[100];
         snprintf(m, sizeof m, "Danger: Must reduce the number of GREGs by %d", lreg - greg + 1);

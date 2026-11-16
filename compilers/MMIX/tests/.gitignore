@@ -1,2 +1,4 @@
 run/*.asm
 run/obj/
+multi/*/*.asm
+multi/*/obj/

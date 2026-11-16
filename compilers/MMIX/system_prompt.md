@@ -23,6 +23,24 @@ Program conventions:
 - Arithmetic exceptions set event bits in `rA`; enabling a trip bit in `rA`
   sends the exception to the handler at #10 (D), #20 (V), #30 (W), #40 (I),
   #50 (O), #60 (U), #70 (Z) or #80 (X), which returns with `RESUME`.
+- Several source files go in the Options field (relative to the main file).
+  The program is the files in order, as if concatenated, but each file
+  starts with `PREFIX :`. A library file starts with `PREFIX Name:`; inside
+  it, predefined names and the program's symbols need a leading colon
+  (`:Fputs`, `:StdOut`), and the program calls `Name:symbol`. Expressions
+  evaluate `&`, `*`, `/`, `<<`, `>>` before `+`, `-`, `|`, `^`.
+- `projects/lib` in the plug-in folder has library files that the sample
+  programs of `projects/` use: `std.mms` (`Std:Puts`, `PutNl`, `PutChar`
+  writes a code point as UTF-8, `PutDec`, `PutDecW`, `PutDecZ`, `PutHex`),
+  `args.mms` (`Args:ParseInt`), `string.mms`, `file.mms` (byte files),
+  `rand.mms`, `fmt.mms` (`Fmt:PutFixed` prints a double with N digits,
+  `Fmt:Parse`), `math.mms` (`Math:Cos`, `Acos`, `Root`, `Cbrt`, `PowI`)
+  and `console.mms` (ANSI colors, bars, `Con:Sleep`). Their data is at
+  `Data_Segment+#10000` and above.
+- Immediate operands (the Z field) are 0..255; larger constants need a
+  `GREG` (`K GREG 300` then `CMP $1,$2,K`). Lines of 72 or more
+  characters are cut off by mmixal. The callee of `PUSHJ $X` overwrites
+  `$X` and above, so keep values that must survive the call below `$X`.
 
 Not supported by the translator: kernel features (virtual memory, interrupts,
 timer registers), changing `rG` with `PUT`, `RESUME` of an instruction placed

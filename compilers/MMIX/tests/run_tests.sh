@@ -16,6 +16,8 @@
 #                              as the real mmix returns; default 0)
 #              [+ NAME.argv]   command line arguments for the program
 #              [+ NAME.stdin]  standard input for the program
+#   multi/NAME/files           a program of several source files (see the multi-file
+#                              tests below): image, errors and run, as above
 #
 # Environment:
 #   MMIXC=native   use the native development build of the translator
@@ -171,6 +173,96 @@ for t in "$HERE"/run/*.mms; do
     else
         ok "$name"
     fi
+done
+
+# ---------------------------------------------------------------- multi-file tests
+# multi/NAME/files   the source files (one per line, in order; the first names the .asm)
+#           all.mms + all.dump   [optional] the files as one file (with PREFIX ":" after each
+#                                library) and mmixal's image of it: mmixc --dump of the files must equal it
+#           expected [+ exit]    [optional] the program is translated, assembled and run
+#           err                  [optional] translation must fail and stderr must contain this line
+# The .source directives of the generated assembly must name every file, with line numbers that exist.
+srcfiles_ok() {
+    perl -e '
+        use File::Basename;
+        my ($asm, @files) = @ARGV;
+        my $dir = dirname($asm);
+        my %seen;
+        open(my $f, "<", $asm) or die "no $asm\n";
+        while (<$f>) {
+            next unless /^\.source\s+"([^"]*)",\s*(\d+)/;
+            my ($p, $l) = ($1, $2);
+            my $path = "$dir/$p";
+            -f $path or die "missing source file $p\n";
+            open(my $s, "<", $path) or die; my $n = 0; $n++ while <$s>; close $s;
+            $l <= $n or die "$p has $n lines, not $l\n";
+            $seen{basename($p)} = 1;
+        }
+        for (@files) { $seen{basename($_)} or die "no .source for $_\n"; }
+    ' "$@" > "$TMP/srcmap_err" 2>&1
+}
+
+for d in "$HERE"/multi/*/; do
+    [[ -d "$d" ]] || continue
+    d="${d%/}"
+    name="multi/$(basename "$d")"
+    want "$name" || continue
+    files=()
+    while read -r f; do [[ -n "$f" ]] && files+=("$d/$f"); done < "$d/files"
+    first="${files[0]}"
+    base="${first%.mms}"
+    if [[ -e "$d/err" ]]; then
+        expect="$(cat "$d/err")"
+        if mmixc "${files[@]}"; then
+            bad "$name" "translator succeeded but should fail"
+        elif ! grep -qF -- "$expect" "$TMP/cerr" "$TMP/cout"; then
+            bad "$name" "missing '$expect', got: $(head -2 "$TMP/cerr")"
+        else
+            ok "$name"
+        fi
+        continue
+    fi
+    if [[ -e "$d/all.dump" ]]; then
+        if ! mmixc --dump "${files[@]}"; then
+            bad "$name" "translator failed: $(head -2 "$TMP/cerr")"
+            continue
+        elif ! diff -q "$TMP/cout" "$d/all.dump" > /dev/null; then
+            bad "$name" "image differs from mmixal's image of all.mms"
+            diff "$d/all.dump" "$TMP/cout" | head -10
+            continue
+        fi
+    fi
+    if [[ -e "$d/expected" ]]; then
+        rm -f "$base.asm" "$d/obj/$(basename "$base").o64"
+        if ! mmixc "${files[@]}" || [[ ! -f "$base.asm" ]]; then
+            bad "$name" "translation failed: $(head -3 "$TMP/cerr")"
+            continue
+        fi
+        "$ROOT/assemble.sh" "$base" > "$TMP/asmlog" 2>&1
+        if [[ ! -f "$d/obj/$(basename "$base").o64" ]]; then
+            bad "$name" "generated assembly failed: $(grep -i error "$TMP/asmlog" | head -3)"
+            continue
+        fi
+        if ! srcfiles_ok "$base.asm" "${files[@]}"; then
+            bad "$name" "source directives: $(cat "$TMP/srcmap_err")"
+            continue
+        fi
+        ( cd "$d" && SIM_STDIN="" sim "$d/obj/$(basename "$base").o64" )
+        expexit=0
+        [[ -e "$d/exit" ]] && read -r expexit < "$d/exit"
+        res="$(cat "$TMP/result")"
+        [[ "$res" =~ ^-?[0-9]+$ ]] && res=$(( res & 255 ))
+        if ! diff -q "$TMP/out" "$d/expected" > /dev/null; then
+            bad "$name" "output differs"
+            diff "$d/expected" "$TMP/out" | head -20
+            head -5 "$TMP/err"
+            continue
+        elif [[ "$res" != "$expexit" ]]; then
+            bad "$name" "exit code $res, expected $expexit; $(head -3 "$TMP/err")"
+            continue
+        fi
+    fi
+    ok "$name"
 done
 
 echo "----------------------------------------"

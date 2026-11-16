@@ -97,7 +97,8 @@ Runs programs written in MMIXAL, the assembly language of Knuth's 64-bit MMIX co
 - Full user-mode MMIX: integer, logic, branch and memory instructions, the register stack (`PUSHJ`, `POP`, `SAVE`, `UNSAVE`), all floating-point operations with the four rounding modes, the exception flags and trip handlers in `rA` (`TRIP`, `RESUME`), and the `TRAP` I/O system calls of the MMIXware simulator (`Fopen` … `Ftell`, `Halt`)  
 - The arithmetic run-time library (`rt/mmix_rt.c`) is a port of Knuth's `mmix-arith`, so results, rounding and flags are those of the real `mmix`  
 - Kernel features (virtual memory, interrupts, the timer registers) are not supported  
-- Tests compare with the real `mmixal` and `mmix`: `compilers/MMIX/tests/run_tests.sh` and the randomised `tests/random_diff.sh`  
+- Programs of several source files (the others in the Options field), each with its own `PREFIX`, as if the files were concatenated  
+- Tests compare with the real `mmixal` and `mmix`: `compilers/MMIX/tests/run_tests.sh` and the randomised `tests/random_diff.sh`; MMIX versions of the documentation projects in `compilers/MMIX/projects`, with a shared library of MMIXAL routines in `projects/lib`  
 
 ### **C++ Translator (`compilers/C++14`)**
 Runs C++ programs (File → New Compiler → C++14) by translating them to C for the C11 compiler (`translate_to: C11`); `#line` directives make the debugger show the `.cpp` lines.
