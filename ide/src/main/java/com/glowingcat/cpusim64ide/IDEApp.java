@@ -73,6 +73,7 @@ public class IDEApp {
     private JCheckBoxMenuItem aiMenuItem;
     private JMenu windowMenu;
     private JButton runBtn, debugBtn;
+    private JButton workingDirBtn;
     private volatile Thread runThread;
     private volatile Process nativeProcess;
     private int runDebugCount = 0;
@@ -904,6 +905,11 @@ public class IDEApp {
         });
         consoleToolBar.add(stackField);
         consoleToolBar.add(new JLabel("kiB"));
+        consoleToolBar.addSeparator();
+        workingDirBtn = new JButton("Set Working Directory");
+        workingDirBtn.addActionListener(e -> chooseWorkingDirectory());
+        consoleToolBar.add(workingDirBtn);
+        updateWorkingDirTip();
         Font toolbarFont = new Font(settings.fontName, Font.PLAIN, settings.fontSize);
         setControlsFont(toolbarFont);
 
@@ -982,6 +988,7 @@ public class IDEApp {
         Path file;                  // null for an untitled tab (or a library resource)
         String resource;            // classpath resource of a read-only library tab
         boolean modified;
+        Path workingDir;            // working directory chosen for the program, null = its obj folder
         String lastSavedText = "";     // text before the last change (undo bookkeeping)
         String savedContent = "";      // text as last loaded from or saved to the file
         final java.util.Deque<String> undoStack = new java.util.ArrayDeque<>();
@@ -1056,7 +1063,10 @@ public class IDEApp {
             Component header = editorTabs.getTabComponentAt(idx);
             if (header instanceof JComponent jc) jc.setToolTipText(tip);
         }
-        if (t == cur) updateTitle();
+        if (t == cur) {
+            updateTitle();
+            updateWorkingDirTip();
+        }
     }
 
     private void updateTitle() {
@@ -1079,6 +1089,7 @@ public class IDEApp {
         if (saveItem != null) saveItem.setEnabled(cur.modified && !cur.readOnly());
         if (undoItem != null) updateUndoRedo();
         updateRunnable();
+        updateWorkingDirTip();
     }
 
     /** Key bindings, change tracking, include links and syntax style of a tab's editor. */
@@ -1786,6 +1797,7 @@ public class IDEApp {
             return;
         }
         buildFile = cur.file;
+        final Path workDir = workingDirFor(cur);
 
         // Show splash screen every 10 Run/Debug actions when not licensed
         runDebugCount++;
@@ -1880,6 +1892,12 @@ public class IDEApp {
                     return;
                 }
 
+                if (!Files.isDirectory(workDir)) {
+                    System.out.println("\nThe working directory " + workDir + " does not exist. "
+                            + "Choose another with Set Working Directory.");
+                    return;
+                }
+
                 System.out.println("> Running...");
                 // Provide terminal dimensions to running programs
                 StdInterruptHandler.setGlobalTerminalSizeProvider(new StdInterruptHandler.TerminalSizeProvider() {
@@ -1898,14 +1916,16 @@ public class IDEApp {
                 }
 
                 if (settings.useNativeSimulator) {
-                    runNative(simArgs, pis, consoleStream);
+                    runNative(simArgs, pis, consoleStream, workDir);
                 } else {
+                    setJavaSimulatorWorkingDir(workDir);
                     Simulation.run(simArgs.toArray(new String[0]));
                 }
 
             } catch (Exception e) {
                 System.out.println("Error: " + e.getMessage());
             } finally {
+                setJavaSimulatorWorkingDir(null);
                 consoleFlushTimer.stop();
                 // Final flush
                 synchronized (consoleBufLock) {
@@ -1940,7 +1960,7 @@ public class IDEApp {
      * console stream and the console input pipe ({@code pis}) to the subprocess
      * stdin. Honors Stop/Kill via {@link #nativeProcess} destruction.
      */
-    private void runNative(java.util.List<String> simArgs, InputStream consoleIn, PrintStream consoleStream)
+    private void runNative(java.util.List<String> simArgs, InputStream consoleIn, PrintStream consoleStream, Path workDir)
             throws IOException, InterruptedException {
         Path exe = NativeSimulator.resolveExecutable();
         if (exe == null) {
@@ -1956,9 +1976,13 @@ public class IDEApp {
 
         ProcessBuilder pb = new ProcessBuilder(cmd);
         pb.redirectErrorStream(true); // merge stderr into stdout → single console stream
-        // Run in the object file's directory so relative file I/O resolves as expected.
-        Path objPath = Path.of(simArgs.get(0)).toAbsolutePath();
-        if (objPath.getParent() != null) pb.directory(objPath.getParent().toFile());
+        // Run in the program's working directory (by default the object file's folder)
+        // so relative file I/O and iSYSTEM commands resolve there; $PWD names it.
+        Path dir = workDir != null ? workDir : Path.of(simArgs.get(0)).toAbsolutePath().getParent();
+        if (dir != null) {
+            pb.directory(dir.toFile());
+            pb.environment().put("PWD", dir.toAbsolutePath().toString());
+        }
 
         Process proc = pb.start();
         nativeProcess = proc;
@@ -2019,6 +2043,68 @@ public class IDEApp {
 
     /** {@code #export} / {@code #extern} lines mark a relocatable module that must be linked. */
     private static final Pattern MODULE_DIRECTIVE = Pattern.compile("(?im)^\\s*#(export|extern)\\b");
+
+    /**
+     * The folder of the program's .o64 file, {@code obj/} next to the source (an
+     * .asm file, or the .asm a compiler writes next to its source); null for a
+     * tab without a file.
+     */
+    static Path defaultWorkingDir(SourceTab t) {
+        if (t == null || t.file == null) return null;
+        Path parent = t.file.toAbsolutePath().normalize().getParent();
+        return parent == null ? null : parent.resolve("obj");
+    }
+
+    /** The working directory the tab's program runs in: the one set by the user, else {@link #defaultWorkingDir}. */
+    static Path workingDirFor(SourceTab t) {
+        if (t != null && t.workingDir != null) return t.workingDir;
+        return defaultWorkingDir(t);
+    }
+
+    /** Toolbar button tool tip: the focused tab's working directory. */
+    private void updateWorkingDirTip() {
+        if (workingDirBtn == null) return;
+        Path wd = workingDirFor(cur);
+        workingDirBtn.setToolTipText(wd == null ? "Working directory of the program (save the file first)"
+                : "Working directory of the program: " + wd
+                    + (cur.workingDir == null ? " (the folder of the .o64 file)" : ""));
+    }
+
+    /**
+     * Set Working Directory: chooses the folder that the focused tab's program
+     * runs in (relative file names, iSYSTEM commands and $PWD). It opens at the
+     * current working directory; choosing the .o64 file's folder restores the default.
+     */
+    private void chooseWorkingDirectory() {
+        if (cur == null || cur.file == null) {
+            appendConsole("Save the file first: the working directory is set for a program file.\n");
+            return;
+        }
+        SourceTab t = cur;
+        Path current = workingDirFor(t);
+        Path open = current;
+        // before the first run the obj folder may not exist yet
+        while (open != null && !Files.isDirectory(open)) open = open.getParent();
+        JFileChooser fc = new JFileChooser(open == null ? null : open.toFile());
+        fc.setDialogTitle("Set Working Directory for " + t.name());
+        fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        fc.setAcceptAllFileFilterUsed(false);
+        if (current != null) fc.setSelectedFile(current.toFile());
+        if (fc.showDialog(frame, "Set") != JFileChooser.APPROVE_OPTION || fc.getSelectedFile() == null) return;
+        Path chosen = fc.getSelectedFile().toPath().toAbsolutePath().normalize();
+        t.workingDir = chosen.equals(defaultWorkingDir(t)) ? null : chosen;
+        updateWorkingDirTip();
+        appendConsole("Working directory: " + workingDirFor(t) + "\n");
+    }
+
+    /**
+     * Makes the in-process Java simulator resolve relative file names against
+     * {@code dir} (null: the IDE's own working directory again). The JVM's
+     * current directory cannot be changed, so the simulator holds it.
+     */
+    static void setJavaSimulatorWorkingDir(Path dir) {
+        StdInterruptHandler.setGlobalWorkingDirectory(dir == null ? null : dir.toFile());
+    }
 
     /** True if {@code asm} is a module (it has #export or #extern) and is built with -r and linked. */
     static boolean needsLink(Path asm) {
@@ -2314,6 +2400,7 @@ public class IDEApp {
         final String userArgs = argsField.getText().trim();
         final SourceTab sourceTab = cur;
         final Path source = cur.file;
+        final Path workDir = workingDirFor(cur);
         new Thread(() -> {
             PrintStream origOut = System.out;
             PrintStream origErr = System.err;
@@ -2351,10 +2438,16 @@ public class IDEApp {
             if (obj != null) {
                 final String objFile = obj;
                 SwingUtilities.invokeLater(() -> {
+                    if (!Files.isDirectory(workDir)) {
+                        appendConsole("\nThe working directory " + workDir + " does not exist. "
+                                + "Choose another with Set Working Directory.\n");
+                        return;
+                    }
                     appendConsole("> Opening the debugger...\n");
                     debuggerOpen = true;
                     updateRunnable();
-                    Runnable onClose = () -> { debuggerOpen = false; updateRunnable(); };
+                    setJavaSimulatorWorkingDir(workDir);
+                    Runnable onClose = () -> { setJavaSimulatorWorkingDir(null); debuggerOpen = false; updateRunnable(); };
                     editorTabs.setSelectedComponent(sourceTab.panel);
                     new DebuggerWindow(frame, objFile, asm.toString(), sourceTab.panel, sourceProvider(source),
                             userArgs, settings, console, onClose);
@@ -2367,6 +2460,9 @@ public class IDEApp {
                 app.createAndShowGUI();
                 app.loadFile(asm);
                 app.argsField.setText(userArgs);
+                // the generated .asm is next to the source, so its default is the same obj folder
+                app.cur.workingDir = sourceTab.workingDir;
+                app.updateWorkingDirTip();
                 app.launchDebugger();
             });
         }, "compile-for-debug").start();
@@ -2438,6 +2534,7 @@ public class IDEApp {
         buildFile = cur.file;
         final SourceTab debugTab = cur;
         final Path debugFile = cur.file;
+        final Path workDir = workingDirFor(cur);
         String base = cur.file.toString();
         if (base.endsWith(".asm")) base = base.substring(0, base.length() - 4);
         final String asmFile = base + ".asm";
@@ -2478,10 +2575,16 @@ public class IDEApp {
                 }
 
                 SwingUtilities.invokeLater(() -> {
+                    if (!Files.isDirectory(workDir)) {
+                        appendConsole("\nThe working directory " + workDir + " does not exist. "
+                                + "Choose another with Set Working Directory.\n");
+                        return;
+                    }
                     appendConsole("> Opening debugger...\n");
                     debuggerOpen = true;
                     updateRunnable();
-                    Runnable onClose = () -> { debuggerOpen = false; updateRunnable(); };
+                    setJavaSimulatorWorkingDir(workDir);
+                    Runnable onClose = () -> { setJavaSimulatorWorkingDir(null); debuggerOpen = false; updateRunnable(); };
                     editorTabs.setSelectedComponent(debugTab.panel);
                     new DebuggerWindow(frame, objFile, asmFile, debugTab.panel, sourceProvider(debugFile),
                             argsField.getText().trim(), settings, console, onClose);

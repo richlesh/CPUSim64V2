@@ -54,6 +54,40 @@ public class StdInterruptHandler extends InterruptHandler
 		return globalTerminalSizeProvider;
 	}
 
+	/**
+	 * Working directory of the program, set by a host such as the IDE that runs
+	 * programs inside its own JVM, whose current directory cannot be changed.
+	 * Relative file names and iSYSTEM commands resolve against it; null means
+	 * the JVM's current directory.
+	 */
+	private static volatile File globalWorkingDirectory = null;
+
+	public static void setGlobalWorkingDirectory(File dir) {
+		globalWorkingDirectory = dir;
+	}
+
+	public static File getGlobalWorkingDirectory() {
+		return globalWorkingDirectory;
+	}
+
+	/** The host's environment with PWD set to {@code wd}, for a command run by iSYSTEM. */
+	static String[] environmentWithPwd(File wd) {
+		java.util.Map<String, String> env = new java.util.TreeMap<>(System.getenv());
+		env.put("PWD", wd.getAbsolutePath());
+		String[] envp = new String[env.size()];
+		int i = 0;
+		for (var e : env.entrySet()) envp[i++] = e.getKey() + "=" + e.getValue();
+		return envp;
+	}
+
+	/** {@code filespec} as a File, a relative name resolved against the working directory. */
+	public static File resolveFile(String filespec) {
+		File f = new File(filespec);
+		File wd = globalWorkingDirectory;
+		if (wd == null || filespec.isEmpty() || f.isAbsolute()) return f;
+		return new File(wd, filespec);
+	}
+
 	private int getTerminalColumns() {
 		if (terminalSizeProvider != null) return terminalSizeProvider.getColumns();
 		if (globalTerminalSizeProvider != null) return globalTerminalSizeProvider.getColumns();
@@ -390,6 +424,9 @@ public class StdInterruptHandler extends InterruptHandler
 				Long cached = envCache.get(name);
 				if (cached == null) {
 					String val = System.getenv(name);
+					// a working directory set by the host is the program's $PWD
+					File wd = globalWorkingDirectory;
+					if (wd != null && name.equals("PWD")) val = wd.getAbsolutePath();
 					cached = (val == null) ? 0L : cpu.allocString(val);
 					envCache.put(name, cached);
 				}
@@ -403,7 +440,8 @@ public class StdInterruptHandler extends InterruptHandler
 				s = cpu.convertString(cpu.getR(1));
 				try {
 					Runtime run = Runtime.getRuntime();
-					Process pr = run.exec(s);
+					File wd = globalWorkingDirectory;
+					Process pr = run.exec(s, wd == null ? null : environmentWithPwd(wd), wd);
 					pr.waitFor();
 					BufferedReader buf = new BufferedReader(new InputStreamReader(pr.getInputStream()));
 					while ((s = buf.readLine()) != null) {
@@ -935,7 +973,7 @@ public class StdInterruptHandler extends InterruptHandler
 				break;
 			case  iDELETE_FILE:
 				s = cpu.convertString(cpu.getR(1));
-				filespec = new File(s);
+				filespec = resolveFile(s);
 				b = false;
 				if (filespec.isFile()) {
 					b = filespec.delete();
@@ -944,13 +982,13 @@ public class StdInterruptHandler extends InterruptHandler
 				break;
 			case  iMAKE_DIR:
 				s = cpu.convertString(cpu.getR(1));
-				filespec = new File(s);
+				filespec = resolveFile(s);
 				b = filespec.mkdir();
 				cpu.setR(0, b ? -1 : 0);
 				break;
 			case  iDELETE_DIR:
 				s = cpu.convertString(cpu.getR(1));
-				filespec = new File(s);
+				filespec = resolveFile(s);
 				b = false;
 				if (filespec.isDirectory()) {
 					b = filespec.delete();
@@ -959,23 +997,23 @@ public class StdInterruptHandler extends InterruptHandler
 				break;
 			case  iIS_DIR:
 				s = cpu.convertString(cpu.getR(1));
-				filespec = new File(s);
+				filespec = resolveFile(s);
 				cpu.setR(0, filespec.isDirectory() ? -1 : 0);
 				break;
 			case  iIS_FILE:
 				s = cpu.convertString(cpu.getR(1));
-				filespec = new File(s);
+				filespec = resolveFile(s);
 				cpu.setR(0, filespec.isFile() ? -1 : 0);
 				break;
 			case  iFILE_EXISTS:
 				s = cpu.convertString(cpu.getR(1));
-				filespec = new File(s);
+				filespec = resolveFile(s);
 				cpu.setR(0, filespec.exists() ? -1 : 0);
 				break;
 			case  iFILES:
 				s = cpu.convertString(cpu.getR(1));
 				if (!s.endsWith("/")) s += "/";
-				filespec = new File(s);
+				filespec = resolveFile(s);
 				{
 					String[] filelist = filespec.list();
 					long resultArray = cpu.alloc(filelist.length + 1);

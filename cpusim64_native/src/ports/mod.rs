@@ -21,7 +21,7 @@ pub const REG_SIZE_BYTES: usize = 8;
 /// Java serializes on the shared `System.out`/`System.err` `PrintStream`
 /// monitors; we take one lock covering both streams so their relative ordering
 /// is also preserved (mirroring the flush-on-port-switch behavior).
-fn console_lock() -> &'static Mutex<()> {
+pub(crate) fn console_lock() -> &'static Mutex<()> {
     static LOCK: OnceLock<Mutex<()>> = OnceLock::new();
     LOCK.get_or_init(|| Mutex::new(()))
 }

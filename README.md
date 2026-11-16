@@ -45,6 +45,7 @@ The project is designed for educational use, computer architecture instruction, 
 - Run/Stop toggle button — Stop terminates the running program and all child processes  
 - Ctrl+C to interrupt running program, Ctrl+D to signal EOF  
 - Configurable Heap Size (MiB) and Stack Size (kiB) in the toolbar  
+- **Set Working Directory** button in the toolbar: the folder a tab's program runs in (relative file names, `iSYSTEM` commands and `$PWD`), by default the folder of its `.o64` file (`obj/` next to the source); the same for Run, Trace and Debug with the Java or native simulator  
 - Find and Replace with regex/grep support and capture groups  
 - Shift Selection Left/Right (Cmd+[/]) for block indent/dedent  
 - Configurable fonts, sizes, and syntax highlighting colors  
@@ -159,7 +160,7 @@ Compiles Visual Basic .NET programs (File → New Compiler → VBNET) to CPUSim6
 - Reads the same gzip-compressed `.o64` object files and `.sym1` symbol maps; accepts the same CLI flags (`--debug`, `--trace`, `--verbose`, `--mem=`, `--stack=`)  
 - Cycle-timing table built in by default, overridable at runtime by dropping an `instructions.data` file next to the executable  
 - Validation harness compares output against the committed reference `.out` files  
-- Implements the same interrupts as the Java simulator, including random-access files, `iTIME` and `iENV`; the validation tests require exact output and cycle parity for all 35 programs  
+- Implements the same interrupts as the Java simulator, including random-access files, `iTIME`, `iENV` and `iSYSTEM`; the validation tests require exact output and cycle parity for all 35 programs  
 - **"Use Native CPUSim64 Simulator"** setting in the IDE — when enabled, Run/Debug/Trace launch `cpusim64_native` instead of the in-process Java simulator  
 - Bundled into the IDE JAR and all native installers, and installable via the IDE's CLI Tools menu  
 

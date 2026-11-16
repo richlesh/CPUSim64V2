@@ -152,7 +152,8 @@ These are documented, intentional differences surfaced during reconciliation:
 4. **Nondeterministic/host interrupts.** `iRANDOM`/`iRAND`/`iCLOCK` are
    deterministic placeholders (wall-clock is stripped by the harness anyway);
    `iENV` is real (values cached and freed at exit); `iTIME` is real (nanoseconds since the Unix epoch, from `SystemTime`);
-   `iSYSTEM` and temp-file/dir interrupts are unsupported in the native port.
+   `iSYSTEM` is real (as Java's `Runtime.exec(String)`: no shell, words split at whitespace, the command's
+   standard output printed once it exits, its exit code returned); the temp-file/dir interrupts are real.
 
 ## License
 

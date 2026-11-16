@@ -305,7 +305,7 @@ impl Simulator {
                 let code = self.get_r(1) as i32;
                 self.exit(code);
             }
-            I_SYSTEM => return Err(self.err("iSYSTEM not supported in native port")),
+            I_SYSTEM => self.int_system()?,
             I_GET_PID => self.set_r(0, self.pid),
             I_NEXT_PID => {
                 let p = self.next_pid();
@@ -929,6 +929,56 @@ impl Simulator {
         Ok(message_format(&fmt, &args))
     }
 
+    /// iSYSTEM: r1 = command line; r0 = its exit code (ports the Java
+    /// `Runtime.exec(String)` call). The command runs without a shell, its words
+    /// split at whitespace, in the simulator's working directory. Its standard
+    /// output is printed line by line once it exits; its standard input is empty
+    /// and its standard error is discarded.
+    fn int_system(&mut self) -> CpuResult<()> {
+        use std::io::Write;
+        use std::process::{Command, Stdio};
+        let cmd = self.convert_string(self.get_r(1))?;
+        let words = util::split_command_words(&cmd);
+        if words.is_empty() {
+            return Err(self.err("Empty command"));
+        }
+        let output = Command::new(words[0])
+            .args(&words[1..])
+            .stdin(Stdio::null())
+            .stderr(Stdio::null())
+            .output()
+            .map_err(|e| {
+                // the message of Java's IOException (JDK 21), e.g. Cannot run
+                // program "x": Exec failed, error: 2 (No such file or directory)
+                let text = e.to_string();
+                let text = match text.find(" (os error ") {
+                    Some(i) => text[..i].to_string(),
+                    None => text,
+                };
+                self.err(format!(
+                    "Cannot run program \"{}\": Exec failed, error: {} ({}) ",
+                    words[0],
+                    e.raw_os_error().unwrap_or(0),
+                    text
+                ))
+            })?;
+        let text = String::from_utf8_lossy(&output.stdout);
+        let eol = if cfg!(windows) { "\r\n" } else { "\n" };
+        let mut out = String::with_capacity(text.len() + 16);
+        for line in util::java_read_lines(&text) {
+            out.push_str(line);
+            out.push_str(eol);
+        }
+        if !out.is_empty() {
+            let _guard = crate::ports::console_lock().lock().unwrap();
+            let mut so = std::io::stdout().lock();
+            let _ = so.write_all(out.as_bytes());
+            let _ = so.flush();
+        }
+        self.set_r(0, exit_value(&output.status));
+        Ok(())
+    }
+
     /// iENV: r1 = variable name; r0 = cached value string (0 if not set).
     fn int_env(&mut self) -> CpuResult<()> {
         let name_addr = self.get_r(1);
@@ -1158,6 +1208,22 @@ fn temp_token() -> String {
         s.push(CHARS[idx.min(CHARS.len() - 1)] as char);
     }
     s
+}
+
+/// A finished process's exit code as Java's `Process.exitValue()` reports it:
+/// the exit status, or 128 + the signal number for a process killed by a signal.
+fn exit_value(status: &std::process::ExitStatus) -> i64 {
+    if let Some(code) = status.code() {
+        return code as i64;
+    }
+    #[cfg(unix)]
+    {
+        use std::os::unix::process::ExitStatusExt;
+        if let Some(sig) = status.signal() {
+            return 128 + sig as i64;
+        }
+    }
+    -1
 }
 
 /// Create a unique temporary directory in the system temp dir (ports
