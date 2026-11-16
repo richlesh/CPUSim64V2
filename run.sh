@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-USE_NATIVE=false
+USE_NATIVE=true
 
 MEMSIZE=16M
 STACKSIZE=256K

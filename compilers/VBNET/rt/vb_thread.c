@@ -1,6 +1,6 @@
 /*
  * vb_thread.c - threads, processes and locks (included by vb_rt.c), on the
- * C11 compiler's <thread.h>.
+ * C11 compiler's <_Thread.h>.
  *
  * - System.Threading.Thread: a thread runs the delegate of the Thread object
  *   (thr_entry calls each delegate of its invocation list).

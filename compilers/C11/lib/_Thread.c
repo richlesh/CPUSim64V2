@@ -1,8 +1,8 @@
 /*
- * thread.c - the C part of thread.h: atomic arithmetic, spin locks and mutexes,
+ * _Thread.c - the C part of _Thread.h: atomic arithmetic, spin locks and mutexes,
  * built on atomic_cas.
  */
-#include <thread.h>
+#include <_Thread.h>
 
 long atomic_add(volatile long *__thr_a, long __thr_n) {
     long __thr_old;

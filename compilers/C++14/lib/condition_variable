@@ -1,0 +1,72 @@
+// <condition_variable>: std::condition_variable and std::cv_status on the C11 library's
+// cnd_t (three words, kept in the object) of <threads.h>.  It works with
+// std::unique_lock<std::mutex> (the lock's mutex is the C library's mtx_t).
+// As in C, a waiter may be woken spuriously: use the predicate forms.
+#ifndef _CPPC_CONDITION_VARIABLE
+#define _CPPC_CONDITION_VARIABLE
+#include <threads.h>
+#include <mutex>
+#include <chrono>
+namespace std {
+
+enum class cv_status { no_timeout, timeout };
+
+class condition_variable {
+public:
+    condition_variable() { ::cnd_init(c_); }
+    ~condition_variable() { ::cnd_destroy(c_); }
+    condition_variable(const condition_variable &) = delete;
+    condition_variable &operator=(const condition_variable &) = delete;
+
+    void notify_one() noexcept { ::cnd_signal(c_); }
+    void notify_all() noexcept { ::cnd_broadcast(c_); }
+
+    void wait(unique_lock<mutex> &lk) { ::cnd_wait(c_, lk.mutex()->native_handle()); }
+    template<class Pred> void wait(unique_lock<mutex> &lk, Pred pred)
+    {
+        while (!pred()) wait(lk);
+    }
+
+    template<class Rep, class Period> cv_status wait_for(unique_lock<mutex> &lk, const chrono::duration<Rep, Period> &d)
+    {
+        struct timespec ts;
+        __abs_timeout(&ts, d);
+        return wait_ts(lk, &ts);
+    }
+    template<class Rep, class Period, class Pred> bool wait_for(unique_lock<mutex> &lk, const chrono::duration<Rep, Period> &d, Pred pred)
+    {
+        struct timespec ts;
+        __abs_timeout(&ts, d);
+        while (!pred()) {
+            if (wait_ts(lk, &ts) == cv_status::timeout) return pred();
+        }
+        return true;
+    }
+    template<class Clock, class Dur> cv_status wait_until(unique_lock<mutex> &lk, const chrono::time_point<Clock, Dur> &tp)
+    {
+        struct timespec ts;
+        __abs_timeout_until(&ts, tp);
+        return wait_ts(lk, &ts);
+    }
+    template<class Clock, class Dur, class Pred> bool wait_until(unique_lock<mutex> &lk, const chrono::time_point<Clock, Dur> &tp, Pred pred)
+    {
+        struct timespec ts;
+        __abs_timeout_until(&ts, tp);
+        while (!pred()) {
+            if (wait_ts(lk, &ts) == cv_status::timeout) return pred();
+        }
+        return true;
+    }
+    typedef void *native_handle_type;
+    native_handle_type native_handle() { return (void *)c_; }
+private:
+    cv_status wait_ts(unique_lock<mutex> &lk, const struct timespec *ts)
+    {
+        int r = ::cnd_timedwait(c_, lk.mutex()->native_handle(), ts);
+        return r == thrd_timedout ? cv_status::timeout : cv_status::no_timeout;
+    }
+    long c_[3];
+};
+
+}   // namespace std
+#endif

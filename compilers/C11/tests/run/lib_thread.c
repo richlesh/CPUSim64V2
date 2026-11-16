@@ -1,7 +1,7 @@
-/* lib/thread.h: threads, atomics, spin locks, mutexes, fork and shared memory */
+/* lib/_Thread.h: threads, atomics, spin locks, mutexes, fork and shared memory */
 #include <stdio.h>
 #include <stdlib.h>
-#include <thread.h>
+#include <_Thread.h>
 
 #define THREADS 4
 #define STEPS 300

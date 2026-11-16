@@ -1,0 +1,36 @@
+g=7 lf=2 2 2
+load 5
+store 42
+exchange old=42 now=100
+add old=100 now=105
+sub old=105 now=90
+and old=12 now=8
+or old=8 now=13
+xor old=13 now=14
+add neg old=14 now=-6
+cas1=1 expected=50 now=60
+cas2=0 expected=60 now=60
+cas3=1 now=70
+cas4=0 expected=70
+explicit 89121 now=12 load=12 exch=12
+orders 0 1 2 3 4 5
+uint 4000000005
+bool was 0 now 1
+int -3 7
+types 1 -1 3 a w 32 8 16 33 -2 2 -5 5 -6 6
+is_lock_free 1 1
+kill_dependency 4
+ptr start 10
+ptr add old=10 now=30
+ptr sub old=30 now=20
+ptr exch old=20 now=50
+ptr cas=1 now=10
+ptr cas=0 cur=10 now=10
+ptr load 20
+struct ptr old=1 now=4
+struct ptr old=4 now=2
+same 1
+flag 0 1 0 0
+gflag 0 1
+fences ok
+once n=2 idx=2 5 8 0

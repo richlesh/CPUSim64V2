@@ -131,7 +131,7 @@ are reported as errors ("... not supported yet").
   the captured variables.
 - Exceptions use a chain of handler records; `Finally` runs on every exit.
   The head of the chain is a stack word, so every thread has its own.
-- Threads run on the simulator's threads (the C11 library's `<thread.h>`);
+- Threads run on the simulator's threads (the C11 library's `<_Thread.h>`);
   while they run, allocation is locked and the collector does not run.
   `SyncLock` is `Monitor.Enter`, then a `Try` with `Monitor.Exit` in its
   `Finally`.

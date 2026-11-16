@@ -1,0 +1,21 @@
+init plain=0 rec=0 timed=0 bad=2
+total plain=800 rec=800
+trylock busy=1 timedlock timedout=1 unlock by other=1
+owner trylock on non-recursive: 1
+trylock free: 0
+recursive trylock: 0 0
+timedlock free: 0
+consumed 20 items, sum 210
+passed before broadcast: 0
+passed after broadcast: 4
+timedwait: 1, waited >= 100ms: 1, mutex held again: 1
+tss_create: 0
+main get: 1
+tss worker 1 res=0
+tss worker 2 res=0
+tss worker 3 res=9
+destructors: 3 calls, sum 600
+redtor calls: 4 (limit 4)
+set after delete: 1
+main set: 0
+main get back: 1

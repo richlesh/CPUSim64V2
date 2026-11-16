@@ -37,13 +37,13 @@ public class RawFilePortHandler extends PortHandler
 		switch (mode)
 		{
 			case 0:
-				is=new BufferedInputStream(new FileInputStream(filespec));
+				is=new BufferedInputStream(new FileInputStream(StdInterruptHandler.resolveFile(filespec)));
 				break;
 			case 1:
-				os=new BufferedOutputStream(new FileOutputStream(filespec));
+				os=new BufferedOutputStream(new FileOutputStream(StdInterruptHandler.resolveFile(filespec)));
 				break;
 			case 2:
-				os=new BufferedOutputStream(new FileOutputStream(filespec,true));
+				os=new BufferedOutputStream(new FileOutputStream(StdInterruptHandler.resolveFile(filespec),true));
 				break;
 			default:
 					throw new Exception();

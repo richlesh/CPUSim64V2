@@ -10,7 +10,7 @@
  * with an iteration count up to its own), which spreads the gray levels
  * evenly over the image.  Pixels in the set (count 0) stay black.
  * C11 version of documentation/projects/mandelbrot_histogram.asm; it uses
- * <thread.h>.
+ * <threads.h>.
  *
  * Usage:
  *     mandelbrot_histogram x y radius escape_limit image_size filename
@@ -28,7 +28,8 @@
  */
 #include <stdio.h>
 #include <stdlib.h>
-#include <thread.h>
+#include <threads.h>
+#include <unistd.h>
 
 #define MAX_THREADS 100
 
@@ -73,21 +74,22 @@ static void compute_mandelbrot(long first, long last, long w)
 typedef struct { long first, last, width; } band_t;
 
 /* the thread function: computes one band */
-static void run(void *arg)
+static int run(void *arg)
 {
     band_t *b = arg;
-    long pid = get_pid();
+    long pid = thrd_current();
     printf("Thread %ld executing...%ld %ld %ld\n", pid, b->first, b->last, b->width);
     compute_mandelbrot(b->first, b->last, b->width);
     printf("Thread %ld done!\n", pid);
     free(b);
+    return 0;
 }
 
 /* starts a thread for the rows first .. last-1; returns its id, or -1 */
 static long spawn_thread(long first, long last, long width)
 {
     band_t *b = malloc(sizeof(band_t));
-    long tid;
+    thrd_t tid;
     if (!b) {
         puts("Error: thread data allocation failed!");
         return -1;
@@ -95,8 +97,10 @@ static long spawn_thread(long first, long last, long width)
     b->first = first;
     b->last = last;
     b->width = width;
-    tid = thread_create(run, b);
-    if (tid <= 0) free(b);
+    if (thrd_create(&tid, run, b) != thrd_success) {
+        free(b);
+        return -1;
+    }
     return tid;
 }
 
@@ -140,7 +144,7 @@ static int combine_output(const char *filename, long size)
 int main(int argc, char **argv)
 {
     long imageSize, i, firstRow = 0, cores;
-    long tids[MAX_THREADS + 1];
+    thrd_t tids[MAX_THREADS + 1];
     double x, y, radius;
     const char *filename;
     if (argc != 7) {
@@ -164,7 +168,7 @@ int main(int argc, char **argv)
         puts("Error: image allocation failed!");
         return 1;
     }
-    cores = get_num_cores();
+    cores = sysconf(_SC_NPROCESSORS_ONLN);
     if (cores < gNumThreads) gNumThreads = cores;
     if (imageSize < gNumThreads) gNumThreads = imageSize;
     printf("Number of threads: %ld\n", gNumThreads);
@@ -183,7 +187,7 @@ int main(int argc, char **argv)
     for (i = 1; i <= gNumThreads; i++) {
         if (tids[i] > 0) {
             printf("Waiting for %ld...\n", tids[i]);
-            thread_join(tids[i]);
+            thrd_join(tids[i], NULL);
         }
     }
     combine_output(filename, imageSize);

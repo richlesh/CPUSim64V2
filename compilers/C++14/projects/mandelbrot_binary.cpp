@@ -7,7 +7,8 @@
  * MAX_CHILDREN); each band is computed by a child process made with fork()
  * that writes its rows to a temporary file filename_<n>.tmp.  The parent
  * waits for the children and merges the files into filename.pgm.
- * C++ version of documentation/projects/mandelbrot_binary.asm; it uses <thread.h>.
+ * C++ version of documentation/projects/mandelbrot_binary.asm; it uses the POSIX
+ * functions fork(), sysconf() and waitpid().
  *
  * Usage:
  *     mandelbrot_binary x y radius escape_limit image_size filename
@@ -26,7 +27,8 @@
 #include <cstdio>
 #include <cstdlib>
 #include <string>
-#include <thread.h>
+#include <unistd.h>
+#include <sys/wait.h>
 
 static const long MAX_CHILDREN = 100;
 
@@ -140,7 +142,8 @@ int main(int argc, char **argv)
     gYMin = y - radius;
     gYMax = y + radius;
     std::printf("Image Bounds: %f, %f, %f, %f\n", gXMin, gXMax, gYMin, gYMax);
-    long cores = get_num_cores();
+    long cores = sysconf(_SC_NPROCESSORS_ONLN);
+    if (cores < 1) cores = 4;
     if (cores < gNumChildren) gNumChildren = cores;
     if (imageSize < gNumChildren) gNumChildren = imageSize;
     std::printf("Number of children: %ld\n", gNumChildren);
@@ -161,7 +164,8 @@ int main(int argc, char **argv)
     for (long i = 1; i <= gNumChildren; i++) {
         if (gPids[i] > 0) {
             std::printf("Waiting for %ld...\n", gPids[i]);
-            wait_pid(gPids[i]);
+            int status = 0;
+            waitpid(gPids[i], &status, 0);
         }
     }
     combine_output(filename, imageSize);

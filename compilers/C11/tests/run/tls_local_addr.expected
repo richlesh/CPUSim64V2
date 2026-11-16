@@ -1,0 +1,7 @@
+main: ext=1 ext2=20 id=101
+thread 1: first=104 second=102 calls=3 ext2=26 ptr-ok=1 via-main-ptr=11
+thread 2: first=107 second=102 calls=3 ext2=26 ptr-ok=1 via-main-ptr=21
+thread 3: first=110 second=102 calls=3 ext2=26 ptr-ok=1 via-main-ptr=31
+same address in every thread: 1
+main: ext=1 ext2=20 id=102 grid=0,0
+main: &ext==mine 1 sizeof(grid)=9

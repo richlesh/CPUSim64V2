@@ -1,0 +1,9 @@
+consumed 200 items, sum 20100
+released 4 waiters
+ping-pong reached 40
+wait_for timed out: 1
+lock held after wait_for: 1
+wait_for with false predicate: 0
+wait_for with true predicate: 1
+wait_until timed out: 1
+notified before the timeout: 1

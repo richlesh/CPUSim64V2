@@ -1,0 +1,5 @@
+thread 1: before=0 after=110 total=1010 scale=512 hidden=117 tag=b
+thread 2: before=0 after=220 total=1040 scale=524288 hidden=227 tag=c
+thread 3: before=0 after=330 total=1090 scale=5.36871e+08 hidden=337 tag=d
+thread 4: before=0 after=440 total=1160 scale=5.49756e+11 hidden=447 tag=e
+main: counter=5 total=2000 scale=0.5 hidden=7 tag=0

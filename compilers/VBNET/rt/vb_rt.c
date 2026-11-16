@@ -38,7 +38,7 @@
 #include <math.h>
 #include <stdarg.h>
 #include <time.h>
-#include <thread.h>
+#include <_Thread.h>
 
 /* must match the TY_* kinds of src/vbc.h */
 #define K_BOOLEAN 1

@@ -282,6 +282,7 @@
 #define SF_TENTATIVE 64
 #define SF_LAZY     128     // prelude function whose body is parsed on demand
 #define SF_PRELUDE  256     // declared by the prelude
+#define SF_TLS      512     // _Thread_local object (S_LABEL names its address cell)
 
 // struct/union/enum tags
 #define G_NAME      0

@@ -31,6 +31,52 @@
 #global CG_SRC_LINE: .dci 0         // its line
 #global CG_SRC_LIT:  .dci 0         // its file name as a string literal (packed)
 #global CG_LIT_FILE: .dci 0         // file entry that CG_SRC_LIT was made for
+#global CG_TLS_DEFS: .dci 0         // words of _Thread_local objects defined in this module
+#global CG_NEEDHEAD: .dci 0         // 1: this module uses __crt_tls_head
+#global CG_HEADMODE: .dci 0         // 1: this module defines __crt_tls_head, 2: imports it
+#global CC_TLS_HEADDEF: .dci 0      // 1 once a module of this compiler run defined __crt_tls_head
+
+///////////////////////////////////////////////////////////////////////////////
+// _Thread_local (C11 6.7.1) - how thread-local storage works
+//
+//   A CPUSim64 thread gets a stack of its own that covers the same address
+//   range as the stacks of all other threads (a new thread starts with zeroed
+//   memory), so a stack address names a different word in every thread.  That
+//   is thread-local storage.  The compiler and runtime need nothing from the
+//   simulator:
+//
+//   * Start-up.  A module that defines _Thread_local objects gets a start-up
+//     function (__INIT__, or __crt_ginit without modules) that runs before
+//     main.  It makes a frame with one word per TLS word and, instead of
+//     returning with `return`, returns with the frame kept: SP stays below
+//     the area, so main and every thread created later (a thread starts with
+//     the SP of its creator) have their stacks below it.  Every module does
+//     this in turn, so the areas of the modules lie one below the other and
+//     never overlap, with no counter shared between modules.  The area of
+//     this thread (the initial one) is zeroed, then the images are copied in.
+//   * Address.  Each object has an address cell (its label: __G<n>_x, or
+//     __c_x for external linkage, so another module reaches it through
+//     "extern _Thread_local int x;").  The start-up function stores the
+//     object's absolute stack address in it.  Because all threads use the same
+//     addresses, an access is "load r0, cell+1" and then an ordinary access
+//     through r0.  &x, arrays, structs, x++ and x += 1 all work from that
+//     address.
+//   * Initial values.  An object with an initializer has an image <label>_I
+//     (constant data, address initializers are filled in by the same start-up
+//     function) and a registry record <label>_R = {next, area address, image
+//     address, words}.  The start-up function links the records into the list
+//     __crt_tls_head.  This word is shared by all modules: the first module of
+//     the compiler run that needs it defines and exports it, the others
+//     import it.
+//   * New threads.  A program that has TLS objects (always, when it is made of
+//     modules) creates threads with a different __crt_thread_create (see
+//     runtime_emit.asm): the new thread starts at __crt_thread_start, which
+//     copies every image in the list to its own area (__crt_tls_copy), frees
+//     the {function, argument} block of thread_create and calls the function.
+//     Without TLS objects the plain thread_create is used.
+//   * fork copies the memory, so the child keeps the values of the parent.
+//   * A program without _Thread_local objects gets none of this code.
+///////////////////////////////////////////////////////////////////////////////
 
 // value classes
 #define VC_INT      0
@@ -193,6 +239,11 @@ CODEGEN_ASM_START:
         jump    ISV_SCALAR
     #end_cond
     #if_cond r0 == SK_GVAR
+        load    r0, s[S_FLAGS]
+        and     r0, SF_TLS
+        #if_cond r0 != 0
+            #return 0                       // thread-local: no fixed memory operand
+        #end_cond
         jump    ISV_SCALAR
     #end_cond
     #return 0
@@ -294,6 +345,13 @@ ISV_SCALAR:
         #end_cond
         #if_cond sk == SK_GVAR
             load    r1, s[S_LABEL]
+            load    r0, s[S_FLAGS]
+            and     r0, SF_TLS
+            #if_cond r0 != 0
+                // thread-local: the address cell holds the address of the object
+                #call   emit("    load    r0, %s+1\n", r1)
+                #return 0
+            #end_cond
             #call   emit("    move    r0, %s+1\n", r1)
             #return 0
         #end_cond
@@ -1098,6 +1156,14 @@ ISV_SCALAR:
             #call   gen_addr(nd)
             #return 0
         #end_cond
+        load    r1, nd[N_VAL]
+        load    r1, r1[S_FLAGS]
+        and     r1, SF_TLS
+        #if_cond r1 != 0
+            #call   gen_addr(nd)
+            #call   gen_load(t)
+            #return 0
+        #end_cond
         #call   node_mem(nd)
         #if_cond vc == VC_DBL
             #call   emit("    load    f0, %s\n", r0)
@@ -1735,6 +1801,9 @@ RP_DONE:
     store   r0, CG_SRC_FILE
     store   r0, CG_SRC_LINE
     store   r0, CG_LIT_FILE
+    store   r0, CG_TLS_DEFS
+    store   r0, CG_NEEDHEAD
+    store   r0, CG_HEADMODE
     #call   crt_init()
     load    r1, path
     #call   module_out_path(r1)
@@ -1845,6 +1914,11 @@ AC_ADDSUB:
         load    s, nd[N_VAL]
         load    r0, s[S_KIND]
         #if_cond r0 == SK_GVAR
+            load    r0, s[S_FLAGS]
+            and     r0, SF_TLS
+            #if_cond r0 != 0
+                #return 0                   // thread-local: not an address constant
+            #end_cond
             move    r0, 1
             store   r0, CG_ADDEND
             load    r0, s[S_LABEL]
@@ -1955,6 +2029,19 @@ AC_ADDSUB:
     #if_cond sz < 1
         move    sz, 1
     #end_cond
+    load    r0, s[S_FLAGS]
+    and     r0, SF_TLS
+    #if_cond r0 != 0
+        // thread-local: an address cell; an initializer is an image + a record
+        #call   emit("#global %s: .dca 1\n", lab)
+        load    lv, s[S_INIT]
+        #if_cond lv == 0
+            #return 0
+        #end_cond
+        #call   emit("#global %s_R: .dca 4\n", lab)
+        #call   sprintf("%s_I", lab)
+        move    lab, r0
+    #end_cond
     load    lv, s[S_INIT]
     #if_cond lv == 0
         #call   emit("#global %s: .dca %d\n", lab, sz)
@@ -2018,6 +2105,124 @@ AC_ADDSUB:
     int     iFREE
 #end_func
 
+// tls_def(sym) -> 1 if sym is a _Thread_local object defined (emitted) here
+#def_func tls_def(sp_)
+    #var    s, f
+    load    s, sp_
+    load    f, s[S_FLAGS]
+    and     r0, f, SF_TLS
+    #if_cond r0 == 0
+        #return 0
+    #end_cond
+    and     r0, f, SF_EXTERN
+    #if_cond r0 != 0
+        #return 0
+    #end_cond
+    and     r0, f, SF_PRELUDE
+    #if_cond r0 != 0
+        #return 0
+    #end_cond
+    #return 1
+#end_func
+
+// tls_words(sym) -> words of the object (at least 1, as emit_global)
+#def_func tls_words(sp_)
+    load    r0, sp_
+    load    r0, r0[S_TYPE]
+    load    r0, r0[T_SIZE]
+    #if_cond r0 < 1
+        move    r0, 1
+    #end_cond
+#end_func
+
+// tls_total() -> words of all _Thread_local objects defined in this module
+#def_func tls_total()
+    #var    v, cnt, i, s, n
+    move    n, 0
+    load    v, GLOBALS
+    #macro  VLEN(cnt, v)
+    #for    1, i <= cnt, 1
+        #macro  VGET(s, v, i)
+        #call   tls_def(s)
+        #if_cond r0 != 0
+            #call   tls_words(s)
+            add     n, r0
+        #end_cond
+    #end_for
+    #return n
+#end_func
+
+// emit_tls_start(total): the end of the start-up function of a module with
+// _Thread_local objects.  The frame (total words) is the TLS area of the
+// module: sf[0] is its highest word.  Zero it, store the address of every
+// object in its address cell, register and copy the images, then return
+// without freeing the frame (see the description at the top of this file).
+#def_func emit_tls_start(totp)
+    #var    tot, v, cnt, i, s, off, sz, lab, l, nreg
+    load    tot, totp
+    #call   new_lbl()
+    move    l, r0
+    sub     off, tot, 1
+    #call   emit("    load    r7, __crt_tls_head+1\n    add     r1, sf, -%d\n    move    r2, %d\n", off, tot)
+    #call   emit("__L%d:\n    sub     r2, 1\n    store   0, r1[r2]\n    cmp     r2, 0\n    jump    gt, __L%d\n", l, l)
+    move    off, 0
+    move    nreg, 0
+    load    v, GLOBALS
+    #macro  VLEN(cnt, v)
+    #for    1, i <= cnt, 1
+        #macro  VGET(s, v, i)
+        #call   tls_def(s)
+        #if_cond r0 == 0
+            #continue
+        #end_cond
+        #call   tls_words(s)
+        move    sz, r0
+        load    lab, s[S_LABEL]
+        // the object occupies sf[-off] (its last word) down to sf[-(off+sz-1)]
+        add     r1, off, sz
+        sub     r1, 1
+        #call   emit("    add     r0, sf, -%d\n    store   r0, %s+1\n", r1, lab)
+        add     off, sz
+        load    r1, s[S_INIT]
+        #if_cond r1 == 0
+            #continue
+        #end_cond
+        add     nreg, 1
+        #call   emit("    move    r1, %s_R+1\n    store   r0, r1[1]\n    move    r0, %s_I+1\n    store   r0, r1[2]\n", lab, lab)
+        #call   emit("    move    r0, %d\n    store   r0, r1[3]\n    load    r0, __crt_tls_head+1\n    store   r0, r1[0]\n    store   r1, __crt_tls_head+1\n", sz)
+    #end_for
+    #if_cond nreg != 0
+        #call   crt_use_p("__tls_copy")
+        #call   emit("    load    r1, __crt_tls_head+1\n    move    r2, r7\n    call    __crt_tls_copy\n")
+    #end_cond
+    #call   emit("    load    r5, sf[2]\n    add     r6, sf, -%d\n    load    sf, sf[1]\n    move    sp, r6\n    jump    r5\n", tot)
+    move    r0, 1
+    store   r0, CG_NEEDHEAD
+#end_func
+
+// emit_tls_head(): the list head of the images of thread-local objects.  One
+// word shared by the modules: the first module that needs it defines (and
+// exports) it, the others import it.
+#def_func emit_tls_head()
+    load    r0, CG_NEEDHEAD
+    #if_cond r0 == 0
+        #return 0
+    #end_cond
+    load    r0, CC_MODULE
+    #if_cond r0 != MOD_NONE
+        load    r0, CC_TLS_HEADDEF
+        #if_cond r0 != 0
+            move    r0, 2
+            store   r0, CG_HEADMODE
+            #return 0
+        #end_cond
+        move    r0, 1
+        store   r0, CC_TLS_HEADDEF
+        store   r0, CG_HEADMODE
+    #end_cond
+    #call   emit("\n#global __crt_tls_head: .dca 1\n")
+#end_func
+
 // escape_asm(wstr) -> packed string usable inside an assembler "..." literal
 #def_func escape_asm(wp)
     #var    w, cnt, i, c, sb
@@ -2051,7 +2256,7 @@ AC_ADDSUB:
 #end_func
 
 #def_func cg_end()
-    #var    s, e, cnt, i, v, g, f, np, use, w
+    #var    s, e, cnt, i, v, g, f, np, use, w, tn
     // ---- every used function must be defined somewhere
     load    v, FUNCS
     #macro  VLEN(cnt, v)
@@ -2137,11 +2342,17 @@ CG_END_NO_STARTUP:
         #call   emit_global(r1)
     #end_for
     // ---- runtime address initialization of globals (a module's start-up function)
+    #call   tls_total()
+    move    tn, r0
+    store   tn, CG_TLS_DEFS
     load    r0, CC_MODULE
     #if_cond r0 == MOD_NONE
         #call   emit("\n__crt_ginit:\n")
     #else_cond
         #call   emit("\n__INIT__:\n")
+    #end_cond
+    #if_cond tn != 0
+        #call   emit("    add     sp, -%d\n", tn)          // the TLS area of this module
     #end_cond
     load    v, CG_GINIT
     #macro  VLEN(cnt, v)
@@ -2159,9 +2370,14 @@ CG_END_NO_STARTUP:
             #call   emit("    move    r1, %s+%d\n    store   r0, r1[0]\n", r1, r2)
         #end_cond
     #end_for
-    #call   emit("    return\n")
+    #if_cond tn != 0
+        #call   emit_tls_start(tn)
+    #else_cond
+        #call   emit("    return\n")
+    #end_cond
     // ---- runtime library chunks
     #call   crt_emit()
+    #call   emit_tls_head()
     // ---- string literals
     load    v, CG_STRUSE
     #macro  VLEN(cnt, v)
@@ -2341,6 +2557,14 @@ CG_END_NO_STARTUP:
 #def_func emit_link_directives()
     #var    v, cnt, i, s, f, lab, p, q, n, j
     #call   emit("\n// ---- linkage\n")
+    load    r0, CG_HEADMODE
+    #if_cond r0 == 1
+        #call   emit("#export __crt_tls_head\n")
+    #end_cond
+    load    r0, CG_HEADMODE
+    #if_cond r0 == 2
+        #call   emit("#extern __crt_tls_head\n")
+    #end_cond
     // functions
     load    v, FUNCS
     #macro  VLEN(cnt, v)

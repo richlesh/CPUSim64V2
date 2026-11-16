@@ -4,6 +4,7 @@
 #pragma cppc c_include <time.h>
 #include <stddef.h>
 #define CLOCKS_PER_SEC 1000000
+#define TIME_UTC 1
 extern "C" {
 typedef long time_t;
 typedef long clock_t;
@@ -18,6 +19,11 @@ struct tm {
     int tm_yday;
     int tm_isdst;
 };
+struct timespec {
+    time_t tv_sec;
+    long tv_nsec;
+};
+int timespec_get(struct timespec *ts, int base);
 clock_t clock(void);
 time_t time(time_t *t);
 double difftime(time_t t1, time_t t0);

@@ -93,6 +93,44 @@ pub fn atanh(x: f64) -> f64 {
     0.5 * ((1.0 + x) / (1.0 - x)).ln()
 }
 
+/// The words of a command line as Java's `Runtime.exec(String)` splits it: at
+/// runs of space, tab, newline, carriage return and form feed, with no quoting.
+pub fn split_command_words(cmd: &str) -> Vec<&str> {
+    cmd.split([' ', '\t', '\n', '\r', '\u{c}'])
+        .filter(|w| !w.is_empty())
+        .collect()
+}
+
+/// The lines of `text` as Java's `BufferedReader.readLine` returns them: ended
+/// by `\n`, `\r` or `\r\n`; a last line without a terminator is still a line.
+pub fn java_read_lines(text: &str) -> Vec<&str> {
+    let mut lines = Vec::new();
+    let bytes = text.as_bytes();
+    let mut start = 0;
+    let mut i = 0;
+    while i < bytes.len() {
+        match bytes[i] {
+            b'\n' => {
+                lines.push(&text[start..i]);
+                start = i + 1;
+            }
+            b'\r' => {
+                lines.push(&text[start..i]);
+                if i + 1 < bytes.len() && bytes[i + 1] == b'\n' {
+                    i += 1;
+                }
+                start = i + 1;
+            }
+            _ => {}
+        }
+        i += 1;
+    }
+    if start < bytes.len() {
+        lines.push(&text[start..]);
+    }
+    lines
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -103,5 +141,22 @@ mod tests {
         assert_eq!(decode_si("2.5M").unwrap(), 2_500_000);
         assert_eq!(decode_si("42").unwrap(), 42);
         assert_eq!(decode_si("1M").unwrap(), 1_000_000);
+    }
+
+    #[test]
+    fn split_command_words_like_runtime_exec() {
+        assert_eq!(split_command_words("sum.sh 4 5"), vec!["sum.sh", "4", "5"]);
+        assert_eq!(split_command_words("  ls\t-l \n"), vec!["ls", "-l"]);
+        assert!(split_command_words(" \t ").is_empty());
+        // no quoting, as in Java
+        assert_eq!(split_command_words("echo \"a b\""), vec!["echo", "\"a", "b\""]);
+    }
+
+    #[test]
+    fn java_read_lines_cases() {
+        assert_eq!(java_read_lines("a\nb\n"), vec!["a", "b"]);
+        assert_eq!(java_read_lines("a\r\nb\rc"), vec!["a", "b", "c"]);
+        assert_eq!(java_read_lines("\n\nx"), vec!["", "", "x"]);
+        assert!(java_read_lines("").is_empty());
     }
 }

@@ -45,6 +45,7 @@ The project is designed for educational use, computer architecture instruction, 
 - Run/Stop toggle button — Stop terminates the running program and all child processes  
 - Ctrl+C to interrupt running program, Ctrl+D to signal EOF  
 - Configurable Heap Size (MiB) and Stack Size (kiB) in the toolbar  
+- **Set Working Directory** button in the toolbar: the folder a tab's program runs in (relative file names, `iSYSTEM` commands and `$PWD`), by default the folder of its `.o64` file (`obj/` next to the source); the same for Run, Trace and Debug with the Java or native simulator  
 - Find and Replace with regex/grep support and capture groups  
 - Shift Selection Left/Right (Cmd+[/]) for block indent/dedent  
 - Configurable fonts, sizes, and syntax highlighting colors  
@@ -82,16 +83,17 @@ In any window, a source file that contains `#export` or `#extern` is a relocatab
 ### **C11 Compiler (`compilers/C11`)**
 A C compiler written entirely in CPUSim64 assembly.  It compiles a core subset of C11 to CPUSim64 `.asm` (run it with `run.sh cc prog.c`, or from the IDE through File → New Compiler → C11).
 - Hand-written recursive-descent parser following the ANTLR grammars-v4 C grammar, a built-in preprocessor, type checking, and stack-machine code generation; it stops at the first error with `file:line: error: message`  
-- Types: `int`, `long`, `char`, `double`, pointers, arrays, structs, unions, enums, typedefs, function pointers, `_Bool`; compound literals, designated initializers, variadic functions, `_Static_assert`, unsigned arithmetic and conversions  
+- Types: `int`, `long`, `char`, `double`, pointers, arrays, structs, unions, enums, typedefs, function pointers, `_Bool`; compound literals, designated initializers, variadic functions, `_Static_assert`, unsigned arithmetic and conversions, `_Thread_local`  
 - Not supported (reported as errors): `float`, `long double`, `_Complex`, `_Atomic`, `_Generic`, bit-fields, variable length arrays, K&R parameter lists and GNU extensions  
 - Every scalar is one 64-bit word; `char` holds a Unicode codepoint  
-- Standard library written in C in `lib/` and compiled only when used: `stdio` (exact C `printf`/`scanf` families, files with `fseek`/`ftell`, `snprintf`, `getline`), `stdlib` (`malloc`, `qsort`, `strto*`, `rand`/`srand`, `atexit`, `getenv`), `string`, `math` (C99), `ctype`, `time`, `setjmp`, `assert`, `stdarg`, `stddef`, `stdint`, `stdbool`, `limits`, `float`  
+- Standard library written in C in `lib/` and compiled only when used: `stdio` (exact C `printf`/`scanf` families, files with `fseek`/`ftell`, `snprintf`, `getline`), `stdlib` (`malloc`, `qsort`, `strto*`, `rand`/`srand`, `atexit`, `getenv`), `string`, `math` (C99), `ctype`, `time`, `setjmp`, `assert`, `stdarg`, `stddef`, `stdint`, `stdbool`, `limits`, `float`, `threads` (C11 threads, mutexes, condition variables, `call_once`, thread-specific storage, `thread_local`) and `stdatomic` (C11 atomic types and operations; `__STDC_NO_ATOMICS__` is defined because `_Atomic` itself is not supported)  
 - `time()` returns the real wall-clock time (UTC) so `srand(time(NULL))` works; `getenv()` reads the host environment  
 - A header `#include <name.h>` is found in `lib/` (plus any `--lib=DIR`), and `lib/name.c` is appended once, compiling only the functions the program uses  
 - Separate compilation: `cc main.c util.c` compiles each file into its own linker module (external symbols exported, `static` ones private); `-lstd` links the C library as shared library modules instead of appending it  
 - `#line N "file"` renumbers the following lines (and names the file in `.source` directives and error messages), so a translator that emits C can be debugged on its own source  
-- `<thread.h>`: threads, `fork`, shared memory, atomics, spin locks and mutexes  
-- 102 regression tests: `compilers/C11/tests/run_tests.sh`; C versions of the documentation projects in `compilers/C11/projects`  
+- POSIX subset `<unistd.h>` (`fork`, `getpid`, `sysconf(_SC_NPROCESSORS_ONLN)`, `sleep`, `usleep`) and `<sys/wait.h>` (`waitpid`, `wait`)  
+- CPUSim64's own `<_Thread.h>`: threads, `fork`, shared memory, atomics, spin locks and mutexes  
+- 137 regression tests: `compilers/C11/tests/run_tests.sh`; C versions of the documentation projects in `compilers/C11/projects`  
 
 ### **MMIX Translator (`compilers/MMIX`)**
 Runs programs written in MMIXAL, the assembly language of Knuth's 64-bit MMIX computer, by translating them to CPUSim64 assembly (File → New Compiler → MMIX, or `compilers/MMIX/obj/mmixc.o64 prog.mms` on a simulator).
@@ -106,7 +108,7 @@ Runs programs written in MMIXAL, the assembly language of Knuth's 64-bit MMIX co
 Runs C++ programs (File → New Compiler → C++14) by translating them to C for the C11 compiler (`translate_to: C11`); `#line` directives make the debugger show the `.cpp` lines.
 - The translator `cppc` is written in portable C (`src/`) and compiled by the C11 compiler; its hand-written parser follows the ANTLR grammars-v4 CPP14 grammar  
 - C++14 with classes, multiple inheritance, virtual functions, templates (partial specialization, variadic templates, SFINAE), lambdas, move semantics, exceptions, RTTI, `constexpr` functions, and C++17 `if constexpr`, structured bindings and `if (init; cond)`  
-- Its own standard library in `lib/`: iostreams and string streams, `string`, `vector`, `array`, `list`, `map`, `set`, the unordered containers, `stack`, `queue`, `algorithm`, `numeric`, `memory` (`unique_ptr`, `shared_ptr`), `functional`, `type_traits`, the exception classes, and the C headers  
+- Its own standard library in `lib/`: iostreams and string streams, `string`, `vector`, `array`, `list`, `map`, `set`, the unordered containers, `stack`, `queue`, `algorithm`, `numeric`, `memory` (`unique_ptr`, `shared_ptr`), `functional`, `type_traits`, the exception classes, `thread`, `mutex`, `condition_variable`, `atomic`, `chrono`, and the C headers (also `<unistd.h>` and `<sys/wait.h>`)  
 - Programs of several `.cpp` files: the other files go in the Options field  
 - Not supported: virtual base classes, pointers to members, user-defined literals, fold expressions  
 - Regression tests compared with g++: `compilers/C++14/tests/run_tests.sh` (`HOST=1`)  
@@ -159,7 +161,7 @@ Compiles Visual Basic .NET programs (File → New Compiler → VBNET) to CPUSim6
 - Reads the same gzip-compressed `.o64` object files and `.sym1` symbol maps; accepts the same CLI flags (`--debug`, `--trace`, `--verbose`, `--mem=`, `--stack=`)  
 - Cycle-timing table built in by default, overridable at runtime by dropping an `instructions.data` file next to the executable  
 - Validation harness compares output against the committed reference `.out` files  
-- Implements the same interrupts as the Java simulator, including random-access files, `iTIME` and `iENV`; the validation tests require exact output and cycle parity for all 35 programs  
+- Implements the same interrupts as the Java simulator, including random-access files, `iTIME`, `iENV` and `iSYSTEM`; the validation tests require exact output and cycle parity for all 35 programs  
 - **"Use Native CPUSim64 Simulator"** setting in the IDE — when enabled, Run/Debug/Trace launch `cpusim64_native` instead of the in-process Java simulator  
 - Bundled into the IDE JAR and all native installers, and installable via the IDE's CLI Tools menu  
 

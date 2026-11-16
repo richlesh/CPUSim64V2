@@ -39,16 +39,16 @@ Only provide code in a subset of the C11 language.  String literals can contain 
   Supported:
   - Types: int, long, char, double, pointers, arrays, structs, unions, enums, typedefs and function pointers.
   - C99 features: compound literals, designated initializers, // comments, mixed declarations and code, for (int i…), _Bool, and variadic functions.
-  - C11 features: _Static_assert.
+  - C11 features: _Static_assert and _Thread_local (thread_local).
   - Statements: all of them, including switch and goto.
   - Preprocessor: built in.
-  - Library: stdio, stdlib, string, math, ctype, time, setjmp, stdarg, stddef, stdint, stdbool, limits, float and assert. The stdio formatted-input and
+  - Library: stdio, stdlib, string, math, ctype, time, setjmp, stdarg, stddef, stdint, stdbool, limits, float, assert, threads and stdatomic, plus the POSIX subset unistd.h and sys/wait.h. The stdio formatted-input and
   output follow the C99 conversions.
-  - CPUSim64's own `<thread.h>`: threads, `fork`, shared memory, atomic operations, spin locks, mutexes and `sleep_ms`.
+  - CPUSim64's own `<_Thread.h>`: threads, `fork`, shared memory, atomic operations, spin locks, mutexes and `sleep_ms`.
   
   Not supported (reported as errors):
   - float, long double and _Complex
-  - _Atomic and _Generic
+  - _Atomic and _Generic (__STDC_NO_ATOMICS__ is defined; <stdatomic.h> provides the atomic_* types and functions, but plain ++ or += on an atomic_int is not atomic)
   - bit-fields
   - variable-length arrays
   - K&R-style parameter lists

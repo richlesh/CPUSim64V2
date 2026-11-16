@@ -9,16 +9,16 @@ The compiler targets a core subset of C11, roughly C99 plus a few C11 features. 
   Supported:
   - Types: int, long, char, double, pointers, arrays, structs, unions, enums, typedefs and function pointers.
   - C99 features: compound literals, designated initializers, // comments, mixed declarations and code, for (int i…), _Bool, and variadic functions.
-  - C11 features: _Static_assert.
+  - C11 features: _Static_assert and _Thread_local (thread_local).
   - Statements: all of them, including switch and goto.
   - Preprocessor: built in.
-  - Library: stdio, stdlib, string, math, ctype, time, setjmp, stdarg, stddef, stdint, stdbool, limits, float and assert. The stdio formatted-input and
+  - Library: stdio, stdlib, string, math, ctype, time, setjmp, stdarg, stddef, stdint, stdbool, limits, float, assert, threads and stdatomic, plus the POSIX subset unistd.h and sys/wait.h. The stdio formatted-input and
   output follow the C99 conversions.
-  - CPUSim64's own `<thread.h>`: threads, `fork`, shared memory, atomic operations, spin locks, mutexes and `sleep_ms`.
+  - CPUSim64's own `<_Thread.h>`: threads, `fork`, shared memory, atomic operations, spin locks, mutexes and `sleep_ms`.
   
   Not supported (reported as errors):
   - float, long double and _Complex
-  - _Atomic and _Generic
+  - _Atomic and _Generic (__STDC_NO_ATOMICS__ is defined; <stdatomic.h> provides the atomic_* types and functions, but plain ++ or += on an atomic_int is not atomic)
   - bit-fields
   - variable-length arrays
   - K&R-style parameter lists
@@ -171,6 +171,20 @@ Not supported (reported as errors): `float`, `long double`, `_Complex`,
 `_Atomic`, bit-fields, variable length arrays, K&R parameter lists,
 `_Generic` and GNU extensions.
 
+`_Thread_local` (or `thread_local` from `<threads.h>`) gives every thread its
+own copy of a file-scope or `static` object, initialized with the object's
+initial value (C11 6.7.1: at block scope it needs `static` or `extern`; not
+with `typedef`, `auto` or `register`, or on functions, parameters or members;
+the initializer must be constant).  The copies are in an area that the
+start-up code reserves at the top of the stack: every thread has its own stack
+at the same addresses, so an object has the same address in every thread, and
+the address cell the start-up code fills is all an access costs (one load).
+A thread made with `thread_create` or `thrd_create` gets the initial values;
+a `fork`ed child inherits the parent's values.  Deviations from C11: `&x`
+handed to another thread reaches that thread's own copy, threads created
+before `main` (in another module's start-up) get no copy, and the area takes
+stack space (a large thread-local array may need a bigger `--stack`).
+
 ## Library headers
 
 `#include <name>` or `#include <name.h>` looks for `lib/name.h`.  If it
@@ -292,7 +306,7 @@ before it returns (one write per `printf`), so nothing is lost at exit and
 `if`/`switch`/loop, an operand of `!` or of a comparison with a constant, an
 expression statement, or the right side of a simple assignment); in other
 expressions values computed before the call can be lost.
-`<thread.h>` (`lib/thread.h`, `lib/thread.c`; CPUSim64's own header, like
+`<_Thread.h>` (`lib/_Thread.h`, `lib/_Thread.c`; CPUSim64's own header, like
 `system/thread.asm`): `thread_create(fn, arg)` (`void fn(void *)`; returns
 the thread id), `thread_join`, `thread_wake`, `fork` (0 in the child),
 `wait_pid`, `wait_all`, `alloc_shared(words)` (memory shared with child
@@ -305,11 +319,45 @@ heap and the globals, but each has its own stack: give a thread global or
 `malloc`ed data, not the address of a local variable.  A `fork`ed child gets a
 copy of the memory; only `alloc_shared` memory (where the locks for several
 processes must be) is shared.
+`<threads.h>` (`lib/threads.h`, `lib/threads.c`): the C11 threads of section
+7.26, built on `<_Thread.h>` (whose names it does not expose): `thrd_create`,
+`thrd_join` (with the thread's `int` result), `thrd_exit`, `thrd_detach`,
+`thrd_current`, `thrd_equal`, `thrd_sleep`, `thrd_yield`; `mtx_t` with
+`mtx_init` (`mtx_plain`, `mtx_recursive`, `mtx_timed`), `mtx_lock`,
+`mtx_trylock`, `mtx_timedlock`, `mtx_unlock`, `mtx_destroy`; `cnd_t` with
+`cnd_init`, `cnd_wait`, `cnd_timedwait`, `cnd_signal`, `cnd_broadcast`,
+`cnd_destroy`; `call_once`/`ONCE_FLAG_INIT`; `tss_t` with `tss_create`,
+`tss_get`, `tss_set`, `tss_delete` (destructors run when a `thrd_create`d
+thread ends, at most `TSS_DTOR_ITERATIONS` 4 rounds); and `thread_local`.
+`thrd_t` is the thread id.  Timeouts are absolute `TIME_UTC` times from
+`timespec_get`.  Every mutex is recursive (relocking a plain mutex is
+undefined in C11).
+`<stdatomic.h>` (`lib/stdatomic.h`, `lib/stdatomic.c`): the C11 atomics of
+section 7.17: the `atomic_*` typedefs (`volatile` plain types, as there is no
+`_Atomic`), `memory_order`, `atomic_flag` with `atomic_flag_test_and_set`/
+`atomic_flag_clear`, and the generic `atomic_init`, `atomic_load`,
+`atomic_store`, `atomic_exchange`, `atomic_compare_exchange_strong`/`weak`,
+`atomic_fetch_add`/`sub`/`or`/`xor`/`and` (returning the old value; a pointer
+adds n elements), each also `_explicit`, `atomic_is_lock_free`, the
+`ATOMIC_*_LOCK_FREE` macros (2), `kill_dependency` and the fences.  They are
+macros over compare-and-swap loops; word loads and stores are already atomic
+and memory orders are accepted and ignored (the simulators are sequentially
+consistent).  The results of `atomic_load`, `atomic_exchange` and
+`atomic_fetch_*` are `long` (cast them for a pointer).  Only these functions
+are atomic: `x++` or `x += n` on an `atomic_int` is not, and
+`__STDC_NO_ATOMICS__` is defined because `_Atomic` is not supported.
+`<unistd.h>` (`lib/unistd.h`, `lib/unistd.c`; a POSIX subset, not C11): `fork`
+(0 in the child), `getpid`, `sysconf` (`_SC_NPROCESSORS_ONLN` and
+`_SC_NPROCESSORS_CONF`: the host's cores; -1 for other names), `sleep`,
+`usleep`, `pid_t`.  `<sys/wait.h>` (`lib/sys/wait.h`, `lib/sys/wait.c`):
+`waitpid(pid, &status, 0)` and `wait(&status)`; the simulator does not report
+the child's exit status, so `status` is 0 (`WIFEXITED`, `WEXITSTATUS` 0).
 `<time.h>` (`lib/time.h`, `lib/time.c`): `clock` (run time in microseconds,
 `CLOCKS_PER_SEC` 1000000), `time`, `difftime`, `mktime`, `timegm`,
 `gmtime`, `gmtime_r`, `localtime`, `localtime_r`, `asctime`, `ctime`,
 `strftime` (`%a %A %b %B %c %C %d %D %e %F %h %H %I %j %m %M %n %p %r %R %S
-%t %T %u %U %w %W %x %X %y %Y %z %Z %%`), `struct tm`, `time_t`, `clock_t`.
+%t %T %u %U %w %W %x %X %y %Y %z %Z %%`), `struct tm`, `time_t`, `clock_t`,
+`struct timespec` and `timespec_get` (`TIME_UTC`, nanoseconds from `iTIME`).
 `time()` reads the wall clock (the `iTIME` interrupt, seconds since the Unix
 epoch); all conversions are in UTC, so `localtime` equals `gmtime` and
 `mktime` equals `timegm`.

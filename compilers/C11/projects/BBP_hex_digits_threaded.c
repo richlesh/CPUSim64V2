@@ -7,7 +7,7 @@
  * next block with an atomic counter until all 100 are done; the results are
  * written to a shared array and printed in order by the main thread.
  * C11 version of documentation/projects/BBP_hex_digits_threaded.asm; it uses
- * <thread.h>.
+ * <threads.h> and <stdatomic.h>.
  *
  * Usage:
  *     BBP_hex_digits_threaded <n>      (n = 1 is the first hex digit after the point)
@@ -25,7 +25,9 @@
  */
 #include <stdio.h>
 #include <stdlib.h>
-#include <thread.h>
+#include <threads.h>
+#include <stdatomic.h>
+#include <unistd.h>
 
 #define MAX_POSITION 10000000
 #define NUM_SLOTS 100               /* the positions n, n+32, ..., n+32*99 */
@@ -130,16 +132,16 @@ static U192 series(u64 j, u64 d)
 }
 
 
-static long gSlot = -1;             /* the last block taken */
+static atomic_long gSlot = -1;            /* the last block taken */
 static long gN;                     /* the first position */
 static u64 *gResults;               /* 2 words (the 32 digits) for each block */
 
 /* a thread: computes blocks until there are none left */
-static void worker(void *unused)
+static int worker(void *unused)
 {
     (void)unused;
     for (;;) {
-        long slot = atomic_increment(&gSlot);       /* the next block */
+        long slot = atomic_fetch_add(&gSlot, 1) + 1;      /* the next block */
         long pos, guard;
         U192 acc, t;
         if (slot >= NUM_SLOTS) break;
@@ -158,14 +160,15 @@ static void worker(void *unused)
         if (guard == 0) printf("Warning: position %ld guard bits are all 0s; the last digit(s) may be 1 too high.\n", pos);
         else if (guard == 0xFFFFFFFF) printf("Warning: position %ld guard bits are all 1s; the last digit(s) may be 1 too low.\n", pos);
     }
+    return 0;
 }
 
 int main(int argc, char **argv)
 {
     long i, cores;
-    long *pids;
+    thrd_t *pids;
     if (argc != 2) {
-        puts("Usage: BBP_hex_digits <n>   (n = 1 is the first hex digit after the point)");
+        puts("Usage: BBP_hex_digits_threaded <n>   (n = 1 is the first hex digit after the point)");
         return 1;
     }
     gN = atol(argv[1]);
@@ -182,22 +185,21 @@ int main(int argc, char **argv)
         puts("Error: results allocation failed!");
         return 1;
     }
-    cores = get_num_cores();
+    cores = sysconf(_SC_NPROCESSORS_ONLN);
     printf("Number of threads: %ld\n", cores);
-    pids = malloc(cores * sizeof(long));
+    pids = malloc(cores * sizeof(thrd_t));
     if (!pids) {
         puts("Error: PID array allocation failed!");
         return 1;
     }
     for (i = 0; i < cores; i++) {
-        pids[i] = thread_create(worker, NULL);
-        if (pids[i] <= 0) {
+        if (thrd_create(&pids[i], worker, NULL) != thrd_success) {
             printf("Error: thread %ld failed to start!\n", i);
             pids[i] = 0;
         }
     }
     for (i = 0; i < cores; i++)
-        if (pids[i] > 0) thread_join(pids[i]);
+        if (pids[i] > 0) thrd_join(pids[i], NULL);
     for (i = 0; i < NUM_SLOTS; i++)
         printf("Position %ld: %016lX%016lX\n", gN + i * SLOT_STRIDE, gResults[2 * i], gResults[2 * i + 1]);
     free(pids);

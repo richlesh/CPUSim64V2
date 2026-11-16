@@ -41,15 +41,15 @@ public class FilePortHandler extends PortHandler
 			switch (mode)
 			{
 				case 0:
-					fis = new FileInputStream(filespec);
+					fis = new FileInputStream(StdInterruptHandler.resolveFile(filespec));
 					bis = new BufferedInputStream(fis);
 					is = new InputStreamReader(bis, StandardCharsets.UTF_8);
 					break;
 				case 1:
-					os = new BufferedOutputStream(new FileOutputStream(filespec));
+					os = new BufferedOutputStream(new FileOutputStream(StdInterruptHandler.resolveFile(filespec)));
 					break;
 				case 2:
-					os = new BufferedOutputStream(new FileOutputStream(filespec, true));
+					os = new BufferedOutputStream(new FileOutputStream(StdInterruptHandler.resolveFile(filespec), true));
 					break;
 				default:
 					throw cpu.new CPUException("Illegal file open mode!");

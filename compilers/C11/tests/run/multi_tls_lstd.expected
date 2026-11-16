@@ -1,0 +1,3 @@
+worker 1: counter=101 table0=1 label=module a
+worker 2: counter=102 table0=2 label=module a
+main: counter=100 table0=1

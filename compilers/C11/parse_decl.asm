@@ -24,6 +24,9 @@
 #define SC_STATIC   2
 #define SC_EXTERN   4
 #define SC_INLINE   8
+#define SC_TLS      16          // _Thread_local
+#define SC_AUTO     32          // auto / register: only remembered to diagnose
+#define SC_REGISTER 64          //   them together with _Thread_local
 
 // type specifier counters (chibicc-style)
 #define DS_VOID     1
@@ -241,9 +244,11 @@ LINK_LABEL_PRIVATE:
 // declspec() -> type;  DS_STORAGE = storage class bits
 ///////////////////////////////////////////////////////////////////////////////
 #def_func declspec()
-    #var    t, k, cnt, ty, st, s, depth, ints, start
+    #var    t, k, cnt, ty, st, s, depth, ints, start, xs, tls
     move    cnt, 0
     move    st, 0
+    move    xs, 0                   // SC_TLS / SC_AUTO / SC_REGISTER (see below)
+    move    tls, 0                  // the _Thread_local token
     load    ty, TY_INT_T
     #call   cur()
     move    start, r0
@@ -273,10 +278,12 @@ LINK_LABEL_PRIVATE:
             #continue
         #end_cond
         #if_cond k == KW_AUTO
+            or      xs, SC_AUTO
             #call   advance()
             #continue
         #end_cond
         #if_cond k == KW_REGISTER
+            or      xs, SC_REGISTER
             #call   advance()
             #continue
         #end_cond
@@ -285,6 +292,15 @@ LINK_LABEL_PRIVATE:
             #continue
         #end_cond
         #if_cond k == KW_THREADL
+            // C11 6.7.1p3: _Thread_local may appear alone or with static or
+            // extern; the other rules are checked where the declaration is
+            // known (block scope, functions, parameters, members)
+            and     r0, xs, SC_TLS
+            #if_cond r0 != 0
+                #call   error_tok(t, "duplicate '_Thread_local'")
+            #end_cond
+            or      xs, SC_TLS
+            move    tls, t
             #call   advance()
             #continue
         #end_cond
@@ -425,7 +441,23 @@ LINK_LABEL_PRIVATE:
         add     cnt, s
         #call   advance()
     #end_while
-    store   st, DS_STORAGE
+    and     r0, xs, SC_TLS
+    #if_cond r0 != 0
+        and     r0, st, SC_TYPEDEF
+        #if_cond r0 != 0
+            #call   error_tok(tls, "'_Thread_local' used with 'typedef'")
+        #end_cond
+        and     r0, xs, SC_AUTO
+        #if_cond r0 != 0
+            #call   error_tok(tls, "'_Thread_local' used with 'auto'")
+        #end_cond
+        and     r0, xs, SC_REGISTER
+        #if_cond r0 != 0
+            #call   error_tok(tls, "'_Thread_local' used with 'register'")
+        #end_cond
+    #end_cond
+    or      xs, st
+    store   xs, DS_STORAGE
     and     r0, cnt, DS_OTHER
     #if_cond r0 != 0
         #return ty
@@ -733,6 +765,11 @@ LINK_LABEL_PRIVATE:
             #call   error_tok(t, "expected declaration specifiers (old-style parameter lists are not supported)")
         #end_cond
         #call   declspec()
+        load    r1, DS_STORAGE
+        and     r1, SC_TLS
+        #if_cond r1 != 0
+            #call   error_tok(t, "'_Thread_local' is not allowed on a parameter")
+        #end_cond
         #call   declarator(r0)
         move    pt, r0
         load    nm, DECL_TOK
@@ -770,8 +807,15 @@ LINK_LABEL_PRIVATE:
 
 // parse_typename() -> type of an abstract declarator
 #def_func parse_typename()
-    #var    ty
+    #var    ty, t
+    #call   cur()
+    move    t, r0
     #call   declspec()
+    load    r1, DS_STORAGE
+    and     r1, SC_TLS
+    #if_cond r1 != 0
+        #call   error_tok(t, "'_Thread_local' is not allowed in a type name")
+    #end_cond
     #call   declarator(r0)
     move    ty, r0
     load    r0, DECL_NAME
@@ -914,6 +958,11 @@ LINK_LABEL_PRIVATE:
         #end_cond
         #call   declspec()
         move    bt, r0
+        load    r1, DS_STORAGE
+        and     r1, SC_TLS
+        #if_cond r1 != 0
+            #call   error_tok(t, "'_Thread_local' is not allowed on a struct or union member")
+        #end_cond
         // anonymous struct / union member
         #call   ck()
         #if_cond r0 == TK_SEMI

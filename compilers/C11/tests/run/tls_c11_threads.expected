@@ -1,0 +1,5 @@
+thread 0: res=101 result=1012
+thread 1: res=102 result=1023
+thread 2: res=103 result=1034
+thread 3: res=104 result=1045
+main: counter=100 seen=1 2 3

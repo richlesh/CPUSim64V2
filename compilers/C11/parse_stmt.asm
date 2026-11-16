@@ -232,6 +232,12 @@ PARSE_STMT_ASM_START:
     #var    e, ty, g, s, lab
     load    e, ep
     load    ty, tp
+    load    r0, stp
+    and     r0, SC_TLS
+    #if_cond r0 != 0
+        load    r1, tk
+        #call   error_tok2(r1, "'_Thread_local' is not allowed on function", e)
+    #end_cond
     load    g, e[E_GLOBAL]
     #if_cond g != 0
         load    r0, g[S_KIND]
@@ -353,6 +359,17 @@ PARSE_STMT_ASM_START:
             load    r1, tk
             #call   error_tok2(r1, "conflicting types for", e)
         #end_cond
+        // every declaration of an object is thread-local or none is
+        load    r0, g[S_FLAGS]
+        and     r0, SF_TLS
+        #if_cond r0 != 0
+            move    r0, SC_TLS
+        #end_cond
+        and     r1, st, SC_TLS
+        #if_cond r0 != r1
+            load    r1, tk
+            #call   error_tok2(r1, "conflicting thread-local storage for", e)
+        #end_cond
         // complete an incomplete array
         #call   ty_kind(gty)
         #if_cond r0 == TY_ARRAY
@@ -387,6 +404,12 @@ PARSE_STMT_ASM_START:
     #if_cond r0 != 0
         load    r0, g[S_FLAGS]
         or      r0, SF_EXTERN
+        store   r0, g[S_FLAGS]
+    #end_cond
+    and     r0, st, SC_TLS
+    #if_cond r0 != 0
+        load    r0, g[S_FLAGS]
+        or      r0, SF_TLS
         store   r0, g[S_FLAGS]
     #end_cond
     load    r1, GLOBALS
@@ -489,6 +512,13 @@ PARSE_STMT_ASM_START:
             #call   declare_function(e, ty, sc, nt)
             jump    PLD_NEXT
         #end_cond
+        and     r0, sc, SC_TLS
+        #if_cond r0 != 0
+            and     r0, sc, 6                  // SC_STATIC | SC_EXTERN
+            #if_cond r0 == 0
+                #call   error_tok2(nt, "block-scope _Thread_local needs static or extern for", e)
+            #end_cond
+        #end_cond
         and     r0, sc, SC_EXTERN
         #if_cond r0 != 0
             #call   declare_global(e, ty, sc, nt)
@@ -506,6 +536,12 @@ PARSE_STMT_ASM_START:
             move    s, r0
             #call   new_label("S", e)
             store   r0, s[S_LABEL]
+            and     r0, sc, SC_TLS
+            #if_cond r0 != 0
+                load    r0, s[S_FLAGS]
+                or      r0, SF_TLS
+                store   r0, s[S_FLAGS]
+            #end_cond
             load    r1, GLOBALS
             #call   vec_push(r1, s)
             #call   global_init(s, nt)

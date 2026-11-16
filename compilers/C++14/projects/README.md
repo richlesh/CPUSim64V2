@@ -36,10 +36,16 @@ programs with random numbers, threads and processes.  See the C11
 - `expected/Pi.txt` is the C11 one: `printf("%.16f")` prints the exact decimal
   value of the double (`3.1415926535897931`), the assembly version Java's
   shorter form.
-- The thread and process programs include `<thread.h>`, the C library's
-  threads, `fork`, atomics and mutexes, declared for C++ in
-  `compilers/C++14/lib/thread.h`.  `thread_create` takes a plain function
-  pointer, so the thread functions are `static` functions, not lambdas.
+- The thread programs use the standard C++ threading: `std::thread`,
+  `std::mutex` / `std::lock_guard`, `std::atomic` (`<thread>`, `<mutex>`,
+  `<atomic>`), with `std::thread::hardware_concurrency()` for the number of
+  cores (4 if it returns 0).  The fork programs (`mandelbrot`,
+  `mandelbrot_binary`) use POSIX `fork()`, `waitpid()` and
+  `sysconf(_SC_NPROCESSORS_ONLN)` from `<unistd.h>` and `<sys/wait.h>`.
+  The library headers are built on the C library's `<threads.h>`,
+  `<stdatomic.h>` and `<unistd.h>`; no project uses the CPUSim64-specific
+  `<thread.h>` any more.  `std::thread` takes its callable and arguments by
+  value (use `std::ref` for a reference parameter).
   Data the threads share is global or on the heap: the main thread's stack
   is not shared (Hailstone4 and Hailstone5 allocate their cache with `new`).
 - `CAS_printf_stress` serializes the printing with a mutex (a small RAII

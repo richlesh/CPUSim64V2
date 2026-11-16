@@ -1,0 +1,254 @@
+// <mutex>: std::mutex, recursive_mutex, timed_mutex, recursive_timed_mutex, lock_guard,
+// unique_lock, scoped_lock, std::lock, try_lock, once_flag and call_once, on the C11
+// library's <threads.h> (mtx_t: three words, kept in the object; mtx_plain, mtx_recursive,
+// mtx_timed).  std::once_flag is a state word driven with <stdatomic.h> word operations.
+//
+// Differences from C++: locking a plain std::mutex that the thread already holds is not
+// an error, the C library's mutex counts the locks like a recursive one (the program
+// is still wrong in C++); a failing lock does not throw std::system_error.
+#ifndef _CPPC_MUTEX
+#define _CPPC_MUTEX
+#include <threads.h>
+#include <stdatomic.h>
+#include <chrono>
+#include <utility>
+#include <exception>
+#include <type_traits>
+namespace std {
+
+struct defer_lock_t {};
+struct try_to_lock_t {};
+struct adopt_lock_t {};
+static const defer_lock_t defer_lock = defer_lock_t();
+static const try_to_lock_t try_to_lock = try_to_lock_t();
+static const adopt_lock_t adopt_lock = adopt_lock_t();
+
+// the base of the mutex types: an mtx_t of the given kind
+class __mutex_base {
+public:
+    __mutex_base(const __mutex_base &) = delete;
+    __mutex_base &operator=(const __mutex_base &) = delete;
+    void lock() { ::mtx_lock(m_); }
+    bool try_lock() { return ::mtx_trylock(m_) == 0; }
+    void unlock() { ::mtx_unlock(m_); }
+    typedef void *native_handle_type;
+    native_handle_type native_handle() { return (void *)m_; }
+protected:
+    explicit __mutex_base(int type) { ::mtx_init(m_, type); }
+    ~__mutex_base() { ::mtx_destroy(m_); }
+    // lock, giving up at the absolute time ts (UTC)
+    bool __lock_until_ts(const struct timespec *ts) { return ::mtx_timedlock(m_, ts) == 0; }
+private:
+    long m_[3];
+};
+
+class mutex : public __mutex_base {
+public:
+    mutex() : __mutex_base(0) {}
+};
+
+class recursive_mutex : public __mutex_base {
+public:
+    recursive_mutex() : __mutex_base(1) {}
+};
+
+// a timespec for the absolute time now + d (the time base of mtx_timedlock)
+template<class Rep, class Period> inline void __abs_timeout(struct timespec *ts, const chrono::duration<Rep, Period> &d)
+{
+    long long ns = chrono::duration_cast<chrono::nanoseconds>(d).count();
+    if (ns < 0) ns = 0;
+    ::timespec_get(ts, TIME_UTC);
+    long long t = ts->tv_nsec + ns % 1000000000LL;
+    ts->tv_sec += ns / 1000000000LL + t / 1000000000LL;
+    ts->tv_nsec = t % 1000000000LL;
+}
+
+template<class Clock, class Dur> inline void __abs_timeout_until(struct timespec *ts, const chrono::time_point<Clock, Dur> &tp)
+{
+    __abs_timeout(ts, tp - Clock::now());
+}
+
+class timed_mutex : public __mutex_base {
+public:
+    timed_mutex() : __mutex_base(2) {}
+    template<class Rep, class Period> bool try_lock_for(const chrono::duration<Rep, Period> &d)
+    {
+        struct timespec ts;
+        __abs_timeout(&ts, d);
+        return __lock_until_ts(&ts);
+    }
+    template<class Clock, class Dur> bool try_lock_until(const chrono::time_point<Clock, Dur> &tp)
+    {
+        struct timespec ts;
+        __abs_timeout_until(&ts, tp);
+        return __lock_until_ts(&ts);
+    }
+};
+
+class recursive_timed_mutex : public __mutex_base {
+public:
+    recursive_timed_mutex() : __mutex_base(3) {}
+    template<class Rep, class Period> bool try_lock_for(const chrono::duration<Rep, Period> &d)
+    {
+        struct timespec ts;
+        __abs_timeout(&ts, d);
+        return __lock_until_ts(&ts);
+    }
+    template<class Clock, class Dur> bool try_lock_until(const chrono::time_point<Clock, Dur> &tp)
+    {
+        struct timespec ts;
+        __abs_timeout_until(&ts, tp);
+        return __lock_until_ts(&ts);
+    }
+};
+
+template<class M> class lock_guard {
+public:
+    typedef M mutex_type;
+    explicit lock_guard(M &m) : m_(m) { m_.lock(); }
+    lock_guard(M &m, adopt_lock_t) : m_(m) {}
+    lock_guard(const lock_guard &) = delete;
+    lock_guard &operator=(const lock_guard &) = delete;
+    ~lock_guard() { m_.unlock(); }
+private:
+    M &m_;
+};
+
+template<class M> class unique_lock {
+public:
+    typedef M mutex_type;
+    unique_lock() noexcept : m_(0), owns_(false) {}
+    explicit unique_lock(M &m) : m_(&m), owns_(false) { m.lock(); owns_ = true; }
+    unique_lock(M &m, defer_lock_t) noexcept : m_(&m), owns_(false) {}
+    unique_lock(M &m, try_to_lock_t) : m_(&m), owns_(m.try_lock()) {}
+    unique_lock(M &m, adopt_lock_t) : m_(&m), owns_(true) {}
+    template<class Rep, class Period> unique_lock(M &m, const chrono::duration<Rep, Period> &d) : m_(&m), owns_(m.try_lock_for(d)) {}
+    template<class Clock, class Dur> unique_lock(M &m, const chrono::time_point<Clock, Dur> &t) : m_(&m), owns_(m.try_lock_until(t)) {}
+    unique_lock(unique_lock &&u) noexcept : m_(u.m_), owns_(u.owns_) { u.m_ = 0; u.owns_ = false; }
+    unique_lock(const unique_lock &) = delete;
+    unique_lock &operator=(const unique_lock &) = delete;
+    unique_lock &operator=(unique_lock &&u) noexcept
+    {
+        if (owns_) m_->unlock();
+        m_ = u.m_; owns_ = u.owns_;
+        u.m_ = 0; u.owns_ = false;
+        return *this;
+    }
+    ~unique_lock() { if (owns_) m_->unlock(); }
+
+    void lock()
+    {
+        if (!m_ || owns_) std::terminate();     // (std::system_error in C++)
+        m_->lock();
+        owns_ = true;
+    }
+    bool try_lock()
+    {
+        if (!m_ || owns_) std::terminate();
+        owns_ = m_->try_lock();
+        return owns_;
+    }
+    template<class Rep, class Period> bool try_lock_for(const chrono::duration<Rep, Period> &d)
+    {
+        if (!m_ || owns_) std::terminate();
+        owns_ = m_->try_lock_for(d);
+        return owns_;
+    }
+    template<class Clock, class Dur> bool try_lock_until(const chrono::time_point<Clock, Dur> &t)
+    {
+        if (!m_ || owns_) std::terminate();
+        owns_ = m_->try_lock_until(t);
+        return owns_;
+    }
+    void unlock()
+    {
+        if (!owns_) std::terminate();
+        m_->unlock();
+        owns_ = false;
+    }
+    void swap(unique_lock &u) noexcept { std::swap(m_, u.m_); std::swap(owns_, u.owns_); }
+    M *release() noexcept { M *r = m_; m_ = 0; owns_ = false; return r; }
+    bool owns_lock() const noexcept { return owns_; }
+    explicit operator bool() const noexcept { return owns_; }
+    M *mutex() const noexcept { return m_; }
+private:
+    M *m_;
+    bool owns_;
+};
+
+template<class M> inline void swap(unique_lock<M> &a, unique_lock<M> &b) noexcept { a.swap(b); }
+
+// ---- locking several mutexes without deadlock: lock one, try the others, back off when one is busy
+template<class L1, class L2> inline int try_lock(L1 &a, L2 &b)
+{
+    if (!a.try_lock()) return 0;
+    if (!b.try_lock()) { a.unlock(); return 1; }
+    return -1;
+}
+template<class L1, class L2, class L3> inline int try_lock(L1 &a, L2 &b, L3 &c)
+{
+    if (!a.try_lock()) return 0;
+    if (!b.try_lock()) { a.unlock(); return 1; }
+    if (!c.try_lock()) { a.unlock(); b.unlock(); return 2; }
+    return -1;
+}
+template<class L1, class L2> inline void lock(L1 &a, L2 &b)
+{
+    for (;;) {
+        a.lock();
+        if (b.try_lock()) return;
+        a.unlock();
+        ::thrd_yield();
+        b.lock();
+        if (a.try_lock()) return;
+        b.unlock();
+        ::thrd_yield();
+    }
+}
+template<class L1, class L2, class L3> inline void lock(L1 &a, L2 &b, L3 &c)
+{
+    for (;;) {
+        a.lock();
+        if (b.try_lock()) {
+            if (c.try_lock()) return;
+            b.unlock();
+        }
+        a.unlock();
+        ::thrd_yield();
+        c.lock();
+        if (b.try_lock()) {
+            if (a.try_lock()) return;
+            b.unlock();
+        }
+        c.unlock();
+        ::thrd_yield();
+    }
+}
+
+// ---- call_once: state 0 = not called, 1 = running, 2 = done
+struct once_flag {
+    once_flag() : state_(0) {}
+    once_flag(const once_flag &) = delete;
+    once_flag &operator=(const once_flag &) = delete;
+    volatile long state_;
+};
+
+template<class F, class... A> inline void call_once(once_flag &flag, F f, A... args)
+{
+    if (::__atomic_load_w(&flag.state_) == 2) return;
+    long expected = 0;
+    if (::__atomic_cmpxchg_w(&flag.state_, &expected, 1)) {
+        f(std::move(args)...);
+        ::__atomic_store_w(&flag.state_, 2);
+        return;
+    }
+    while (::__atomic_load_w(&flag.state_) != 2) {
+        struct timespec ts;
+        ts.tv_sec = 0;
+        ts.tv_nsec = 1000000;
+        ::thrd_sleep(&ts, 0);
+    }
+}
+
+}   // namespace std
+#endif

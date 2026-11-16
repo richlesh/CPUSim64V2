@@ -1,0 +1,19 @@
+join 0: r=0 res=101 out=10
+join 1: r=0 res=102 out=20
+join 2: r=0 res=103 out=30
+join 3: r=0 res=104 out=40
+rejoin: 1
+thrd_exit: res=77 flag=1
+deep thrd_exit: res=42
+current in child equals created: 1
+main != child: 1
+main equal itself: 1
+join self: 1
+detach: 0
+detach again: 1
+join detached: 1
+sleep: 0 rem=0
+detached done: 1
+slept at least 120ms: 1, less than 2s: 1
+once_count=1
+exit code next

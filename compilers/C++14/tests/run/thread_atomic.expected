@@ -1,0 +1,34 @@
+g_count = 4000, g_sub = 992000
+post++ 10, now 11
+pre++ 12
+post-- 12, pre-- 10
++= 15, -= 12
+&= 48, |= 51, ^= 204
+implicit conversion 204
+exchange 204, now 7
+fetch_add 7, fetch_sub 10, now 9
+fetch_and 9, fetch_or 0, fetch_xor 8, now 9
+is_lock_free 1
+cas fail: 0, expected now 5, value 5
+cas ok: 1, value 9
+max = 4099
+doubled 20 times: 1048576
+bits = 255
+spin-guarded total = 1200
+flag test_and_set 0 then 1
+started before the signal: 0
+started after the signal: 3
+bool exchange 0, now 1
+load 0
+fetch_add old 0, now 33
++= 2 -> 55
+++ -> 66
+-- -> 55
+pointer cas: 1 -> 88
+pointer cas fail: 0, expected now 88
+exchange old 88
+difference 9
+slots taken once: all
+atomic_long 15, unsigned long 7, atomic_bool 1
+store/load 42
+exchange relaxed 43

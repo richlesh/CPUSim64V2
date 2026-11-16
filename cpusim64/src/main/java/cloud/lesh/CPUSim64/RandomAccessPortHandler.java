@@ -61,7 +61,7 @@ public class RandomAccessPortHandler extends PortHandler
 		RandomAccessFile f = null;
 		boolean w = true;
 		try {
-			File file = new File(filespec);
+			File file = StdInterruptHandler.resolveFile(filespec);
 			if (file.isDirectory()) throw new Exception();
 			try {
 				f = new RandomAccessFile(file, "rw");

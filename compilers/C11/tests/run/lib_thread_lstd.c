@@ -1,7 +1,7 @@
-/* lib/thread.h linked as a library module (-lstd) */
+/* lib/_Thread.h linked as a library module (-lstd) */
 #include <stdio.h>
 #include <stdlib.h>
-#include <thread.h>
+#include <_Thread.h>
 
 #define THREADS 4
 #define STEPS 300

@@ -1,0 +1,5 @@
+main: counter=100 table=1,2,3,4 label=module a own=77 hidden=-1
+thread 1: counter=102 table[2]=4 own=78 other=78 hidden_bump=1061 hidden=-2 label-ok=1
+thread 2: counter=104 table[2]=5 own=79 other=79 hidden_bump=1063 hidden=-3 label-ok=1
+thread 3: counter=106 table[2]=6 own=80 other=80 hidden_bump=1065 hidden=-4 label-ok=1
+main: counter=101 table[2]=3 own=77 hidden=-1 hb=1058

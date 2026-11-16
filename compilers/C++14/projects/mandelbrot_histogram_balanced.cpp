@@ -12,7 +12,7 @@
  * its own), which spreads the gray levels evenly over the image.  Pixels in
  * the set (count 0) stay black.
  * C++ version of documentation/projects/mandelbrot_histogram_balanced.asm; it uses
- * <thread.h>.
+ * std::thread and std::atomic.
  *
  * Usage:
  *     mandelbrot_histogram_balanced x y radius escape_limit image_size filename
@@ -32,7 +32,8 @@
 #include <cstdlib>
 #include <string>
 #include <vector>
-#include <thread.h>
+#include <thread>
+#include <atomic>
 
 static const long MAX_THREADS = 100;
 
@@ -40,7 +41,7 @@ static double gXMin = -2.5, gXMax = 0.5, gYMin = -1.5, gYMax = 1.5;
 static long gMaxIteration = 50;
 static long *gImage;                // the iteration count of every pixel, row by row (on the shared heap)
 static long gNumThreads = MAX_THREADS;
-static long gCounter = -1;          // the last row taken
+static std::atomic<long> gCounter(-1);      // the last row taken
 
 // the number of iterations of the point (x0, y0) before it escapes, 0 if it never does
 static long compute_escape(double x0, double y0)
@@ -75,22 +76,15 @@ static void compute_mandelbrot(long first, long last, long w)
 }
 
 // the thread function: computes rows until there are none left
-static void run(void *arg)
+static void run(long w, long index)
 {
-    long w = (long)arg, pid = get_pid();
-    std::printf("Thread %ld executing...%ld\n", pid, w);
+    std::printf("Thread %ld executing...%ld\n", index, w);
     for (;;) {
-        long first = atomic_increment(&gCounter);
+        long first = ++gCounter;
         if (first >= w) break;
         compute_mandelbrot(first, first + 1, w);
     }
-    std::printf("Thread %ld done!\n", pid);
-}
-
-// starts a thread that computes rows of a width x width image; returns its id, or -1
-static long spawn_thread(long width)
-{
-    return thread_create(run, (void *)width);
+    std::printf("Thread %ld done!\n", index);
 }
 
 // writes the image as filename.pgm with the gray levels from the histogram
@@ -123,7 +117,6 @@ static int combine_output(const std::string &filename, long size)
 
 int main(int argc, char **argv)
 {
-    long tids[MAX_THREADS + 1];
     if (argc != 7) {
         std::puts("Syntax: mandelbrot_histogram_balanced x y radius escape_limit image_size filename");
         return 1;
@@ -141,25 +134,19 @@ int main(int argc, char **argv)
     gYMax = y + radius;
     std::printf("Image Bounds: %f, %f, %f, %f\n", gXMin, gXMax, gYMin, gYMax);
     gImage = new long[imageSize * imageSize];
-    long cores = get_num_cores();
+    long cores = (long)std::thread::hardware_concurrency();
+    if (cores < 1) cores = 4;
     if (cores < gNumThreads) gNumThreads = cores;
     if (imageSize < gNumThreads) gNumThreads = imageSize;
     std::printf("Number of threads: %ld\n", gNumThreads);
+    std::vector<std::thread> threads;
     for (long i = 1; i <= gNumThreads; i++) {
-        long tid = spawn_thread(imageSize);
-        if (tid > 0) {
-            std::printf("Spawn thread for %ld\n", tid);
-            tids[i] = tid;
-        } else {
-            std::printf("Spawn thread for %ld failed!\n", tid);
-            tids[i] = 0;
-        }
+        std::printf("Spawn thread for %ld\n", i);
+        threads.push_back(std::thread(run, imageSize, i));
     }
-    for (long i = 1; i <= gNumThreads; i++) {
-        if (tids[i] > 0) {
-            std::printf("Waiting for %ld...\n", tids[i]);
-            thread_join(tids[i]);
-        }
+    for (long i = 0; i < gNumThreads; i++) {
+        std::printf("Waiting for thread %ld...\n", i + 1);
+        threads[i].join();
     }
     combine_output(filename, imageSize);
     delete[] gImage;
