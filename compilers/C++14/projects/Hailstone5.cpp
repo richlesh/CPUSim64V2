@@ -8,7 +8,7 @@
  * until none are left, so the threads stay busy to the end.  The memo cache
  * (CACHE_SIZE entries) is filled in by the main thread before the threads
  * start and is shared by all of them.
- * C++ version of documentation/projects/Hailstone5.asm; it uses <thread.h>.
+ * C++ version of documentation/projects/Hailstone5.asm; it uses std::thread, std::mutex and std::atomic.
  *
  * Usage:
  *     Hailstone5 <limit>
@@ -23,7 +23,9 @@
 #include <cstdlib>
 #include <iostream>
 #include <vector>
-#include <thread.h>
+#include <thread>
+#include <mutex>
+#include <atomic>
 
 static const long CACHE_SIZE = 8000000;     // number of memoized entries
 
@@ -56,20 +58,19 @@ private:
 
 static long gMax, gImax;            // the best length so far, and its starting value
 static long gWorksize = 100000;     // starting values per work unit
-static long gNextUnit = -1;         // the last work unit taken
+static std::atomic<long> gNextUnit(-1);     // the last work unit taken
 static long gLimit;
-static mutex_t gMutex;
+static std::mutex gMutex;
 static HailstoneCache *gCache;
 
-static void worker(void *)
+static void worker(long index)
 {
-    long pid = get_pid();
     for (;;) {
-        long d = atomic_increment(&gNextUnit) * gWorksize;      // the next work unit
+        long d = ++gNextUnit * gWorksize;      // the next work unit
         if (d >= gLimit) break;
         long limit = d + gWorksize, wmax = 0, wimax = 0;
         if (limit > gLimit) limit = gLimit;
-        std::printf("Thread work unit %ld executing with PID %ld...\n", d, pid);
+        std::printf("Thread work unit %ld executing in thread %ld...\n", d, index);
         for (long i = d; i < limit; i++) {
             long hs = gCache->length(i);
             if (hs > wmax) {
@@ -77,15 +78,16 @@ static void worker(void *)
                 wimax = i;
             }
         }
-        mutex_lock(&gMutex);
-        if (wmax > gMax || (wmax == gMax && wimax < gImax)) {
-            std::printf("New high: %ld:%ld (%ld)\n", wimax, wmax, pid);
-            gMax = wmax;
-            gImax = wimax;
+        {
+            std::lock_guard<std::mutex> lock(gMutex);
+            if (wmax > gMax || (wmax == gMax && wimax < gImax)) {
+                std::printf("New high: %ld:%ld (thread %ld)\n", wimax, wmax, index);
+                gMax = wmax;
+                gImax = wimax;
+            }
         }
-        mutex_unlock(&gMutex);
     }
-    std::printf("Thread %ld finishing...\n", pid);
+    std::printf("Thread %ld finishing...\n", index);
 }
 
 int main(int argc, char **argv)
@@ -99,16 +101,16 @@ int main(int argc, char **argv)
         std::cout << "Argument must be >= 2!" << std::endl;
         return 1;
     }
-    mutex_init(&gMutex);
     // on the heap, which the threads share (the main thread's stack is not shared); built before they start
     gCache = new HailstoneCache;
-    long cores = get_num_cores();
+    long cores = (long)std::thread::hardware_concurrency();
+    if (cores < 1) cores = 4;
     std::printf("Number of cores: %ld\n", cores);
-    std::vector<long> pids(cores, 0);
-    for (long i = 0; i < cores; i++) pids[i] = thread_create(worker, nullptr);
+    std::vector<std::thread> threads;
+    for (long i = 0; i < cores; i++) threads.push_back(std::thread(worker, i));
     for (long i = 0; i < cores; i++) {
-        std::printf("Main is joining %ld...\n", pids[i]);
-        thread_join(pids[i]);
+        std::printf("Main is joining thread %ld...\n", i);
+        threads[i].join();
     }
     std::printf("Max %ld found at %ld\n", gMax, gImax);
     delete gCache;

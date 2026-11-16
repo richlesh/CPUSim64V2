@@ -1,0 +1,7 @@
+cores > 0: 1, same as _CONF: 1, unknown: -1
+getpid > 0: 1
+child
+fork > 0: 1
+waitpid: 1, status exited: 1 code 0
+parent copy unchanged: 0
+sleep: 0 usleep: 0

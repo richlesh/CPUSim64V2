@@ -1,0 +1,20 @@
+joinable before join: 1
+joinable after join: 0, g_sum = 42
+default joinable: 0
+default id equals id(): 1
+lambda result = 123
+lambda with args = 35
+functor = 1007
+ref = 42
+moved-from joinable: 0, new joinable: 1
+moved = 77
+assigned = 88
+swapped joinable: 0 0
+pool total = 10
+thread id differs from main: 1
+thread id equals id seen inside: 1
+main id is not the empty id: 1
+ids printable: yes
+detached joinable: 0
+detached thread ran
+hardware_concurrency > 0: 1

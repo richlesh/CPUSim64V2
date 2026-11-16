@@ -1,0 +1,17 @@
+lock_guard counter = 2000
+unique_lock counter = 1800
+defer_lock owns: 0
+after lock owns: 1
+after unlock owns: 0
+try_lock: 1
+released owns: 0, mutex kept: 1
+moved owns: 1, source owns: 0
+try_lock from another thread while held: 0
+try_lock from another thread when free: 1
+adopt_lock released: 1
+recursive depth total = 10
+timed_mutex try_lock_for free: 1
+timed_mutex try_lock_for while held: 0
+std::lock total = 400
+call_once ran 1 time(s)
+call_once with arguments: 5

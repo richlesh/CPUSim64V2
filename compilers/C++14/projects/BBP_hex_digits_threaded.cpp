@@ -7,7 +7,7 @@
  * next block with an atomic counter until all 100 are done; the results are
  * written to a shared array and printed in order by the main thread.
  * C++ version of documentation/projects/BBP_hex_digits_threaded.asm; it uses
- * <thread.h>.
+ * std::thread and std::atomic.
  *
  * Usage:
  *     BBP_hex_digits_threaded <n>      (n = 1 is the first hex digit after the point)
@@ -27,7 +27,8 @@
 #include <cstdlib>
 #include <iostream>
 #include <vector>
-#include <thread.h>
+#include <thread>
+#include <atomic>
 
 static const long MAX_POSITION = 10000000;
 static const long NUM_SLOTS = 100;          // the positions n, n+32, ..., n+32*99
@@ -150,15 +151,15 @@ static U192 pi_hex(u64 d)
     return acc;
 }
 
-static long gSlot = -1;             // the last block taken
+static std::atomic<long> gSlot(-1);     // the last block taken
 static long gN;                     // the first position
 static std::vector<u64> gResults;   // 2 words (the 32 digits) for each block
 
 // a thread: computes blocks until there are none left
-static void worker(void *)
+static void worker()
 {
     for (;;) {
-        long slot = atomic_increment(&gSlot);       // the next block
+        long slot = ++gSlot;                        // the next block
         if (slot >= NUM_SLOTS) break;
         std::printf("Starting %ld\n", slot);
         long pos = gN + slot * SLOT_STRIDE;
@@ -187,18 +188,12 @@ int main(int argc, char **argv)
         return 1;
     }
     gResults.assign(2 * NUM_SLOTS, 0);
-    long cores = get_num_cores();
+    long cores = (long)std::thread::hardware_concurrency();
+    if (cores < 1) cores = 4;
     std::printf("Number of threads: %ld\n", cores);
-    std::vector<long> pids(cores, 0);
-    for (long i = 0; i < cores; i++) {
-        pids[i] = thread_create(worker, nullptr);
-        if (pids[i] <= 0) {
-            std::printf("Error: thread %ld failed to start!\n", i);
-            pids[i] = 0;
-        }
-    }
-    for (long i = 0; i < cores; i++)
-        if (pids[i] > 0) thread_join(pids[i]);
+    std::vector<std::thread> threads;
+    for (long i = 0; i < cores; i++) threads.push_back(std::thread(worker));
+    for (long i = 0; i < cores; i++) threads[i].join();
     for (long i = 0; i < NUM_SLOTS; i++)
         std::printf("Position %ld: %016lX%016lX\n", gN + i * SLOT_STRIDE, gResults[2 * i], gResults[2 * i + 1]);
     return 0;

@@ -12,7 +12,7 @@
  * its own), which spreads the gray levels evenly over the image.  Pixels in
  * the set (count 0) stay black.
  * C11 version of documentation/projects/mandelbrot_histogram_balanced.asm; it uses
- * <_Thread.h>.
+ * <threads.h> and <stdatomic.h>.
  *
  * Usage:
  *     mandelbrot_histogram_balanced x y radius escape_limit image_size filename
@@ -30,7 +30,9 @@
  */
 #include <stdio.h>
 #include <stdlib.h>
-#include <_Thread.h>
+#include <threads.h>
+#include <stdatomic.h>
+#include <unistd.h>
 
 #define MAX_THREADS 100
 
@@ -38,7 +40,7 @@ static double gXMin = -2.5, gXMax = 0.5, gYMin = -1.5, gYMax = 1.5;
 static long gMaxIteration = 50;
 static long *gImage;                /* the iteration count of every pixel, row by row */
 static long gNumThreads = MAX_THREADS;
-static long gCounter = -1;          /* the last row taken */
+static atomic_long gCounter = -1;         /* the last row taken */
 
 /* the number of iterations of the point (x0, y0) before it escapes, 0 if it never does */
 static long compute_escape(double x0, double y0)
@@ -74,22 +76,25 @@ static void compute_mandelbrot(long first, long last, long w)
 }
 
 /* the thread function: computes rows until there are none left */
-static void run(void *arg)
+static int run(void *arg)
 {
-    long w = (long)arg, pid = get_pid();
+    long w = (long)arg, pid = thrd_current();
     printf("Thread %ld executing...%ld\n", pid, w);
     for (;;) {
-        long first = atomic_increment(&gCounter);
+        long first = atomic_fetch_add(&gCounter, 1) + 1;
         if (first >= w) break;
         compute_mandelbrot(first, first + 1, w);
     }
     printf("Thread %ld done!\n", pid);
+    return 0;
 }
 
 /* starts a thread that computes rows of a width x width image; returns its id, or -1 */
 static long spawn_thread(long width)
 {
-    return thread_create(run, (void *)width);
+    thrd_t tid;
+    if (thrd_create(&tid, run, (void *)width) != thrd_success) return -1;
+    return tid;
 }
 
 /* writes the image as filename.pgm with the gray levels from the histogram */
@@ -132,7 +137,7 @@ static int combine_output(const char *filename, long size)
 int main(int argc, char **argv)
 {
     long imageSize, i, cores;
-    long tids[MAX_THREADS + 1];
+    thrd_t tids[MAX_THREADS + 1];
     double x, y, radius;
     const char *filename;
     if (argc != 7) {
@@ -156,7 +161,7 @@ int main(int argc, char **argv)
         puts("Error: image allocation failed!");
         return 1;
     }
-    cores = get_num_cores();
+    cores = sysconf(_SC_NPROCESSORS_ONLN);
     if (cores < gNumThreads) gNumThreads = cores;
     if (imageSize < gNumThreads) gNumThreads = imageSize;
     printf("Number of threads: %ld\n", gNumThreads);
@@ -173,7 +178,7 @@ int main(int argc, char **argv)
     for (i = 1; i <= gNumThreads; i++) {
         if (tids[i] > 0) {
             printf("Waiting for %ld...\n", tids[i]);
-            thread_join(tids[i]);
+            thrd_join(tids[i], NULL);
         }
     }
     combine_output(filename, imageSize);

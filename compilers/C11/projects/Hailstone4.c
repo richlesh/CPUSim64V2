@@ -8,7 +8,7 @@
  * CACHE_SIZE are memoized in a heap array that all the threads share (two
  * threads may compute the same entry, but they store the same value).  Each
  * thread reports its best value under a mutex.
- * C11 version of documentation/projects/Hailstone4.asm; it uses <_Thread.h>.
+ * C11 version of documentation/projects/Hailstone4.asm; it uses <threads.h>.
  *
  * Usage:
  *     Hailstone4 <limit>
@@ -21,14 +21,15 @@
  */
 #include <stdio.h>
 #include <stdlib.h>
-#include <_Thread.h>
+#include <threads.h>
+#include <unistd.h>
 
 #define CACHE_SIZE 3000000          /* number of memoized entries */
 
 static long gMax, gImax;            /* the best length so far, and its starting value */
 static long gWorksize = 10000;      /* starting values per thread */
 static long gLimit;
-static mutex_t gMutex;
+static mtx_t gMutex;
 static long *cache;
 
 static long compute_hailstone(long n)
@@ -55,11 +56,11 @@ static long compute_hailstone(long n)
 }
 
 /* handles the starting values first .. first + gWorksize - 1 */
-static void worker(void *data)
+static int worker(void *data)
 {
     long first = (long)data, limit = first + gWorksize, i, pid, wmax = 0, wimax = 0;
     if (limit > gLimit) limit = gLimit;
-    pid = get_pid();
+    pid = thrd_current();
     printf("Thread work unit %ld executing with PID %ld...\n", first, pid);
     for (i = first; i < limit; i++) {
         long hs = compute_hailstone(i);
@@ -68,22 +69,23 @@ static void worker(void *data)
             wimax = i;
         }
     }
-    mutex_lock(&gMutex);
+    mtx_lock(&gMutex);
     /* a longer sequence wins; of two equal ones the smaller starting value */
     if (wmax > gMax || (wmax == gMax && wimax < gImax)) {
         printf("New high: %ld:%ld (%ld)\n", wimax, wmax, pid);
         gMax = wmax;
         gImax = wimax;
     }
-    mutex_unlock(&gMutex);
+    mtx_unlock(&gMutex);
     printf("Thread %ld finishing...\n", pid);
+    return 0;
 }
 
 int main(int argc, char **argv)
 {
     long i, j, cores, ws;
-    long *pids;
-    cores = get_num_cores();
+    thrd_t *pids;
+    cores = sysconf(_SC_NPROCESSORS_ONLN);
     printf("Number of cores: %ld\n", cores);
     if (argc < 2) {
         puts("You must supply a positive integer argument.");
@@ -97,21 +99,21 @@ int main(int argc, char **argv)
     ws = (gLimit + cores - 1) / cores;      /* ceil(limit / cores) */
     printf("Worksize: %ld\n", ws);
     gWorksize = ws;
-    mutex_init(&gMutex);
+    mtx_init(&gMutex, mtx_plain);
     worker((void *)0);                      /* the main thread does the first unit */
     j = ws;
-    pids = malloc(cores * sizeof(long));
+    pids = malloc(cores * sizeof(thrd_t));
     if (!pids) {
         printf("Can't allocate pids array!\n");
         exit(1);
     }
     for (i = 1; i < cores; i++) {
-        pids[i] = thread_create(worker, (void *)j);
+        thrd_create(&pids[i], worker, (void *)j);
         j += ws;
     }
     for (i = 1; i < cores; i++) {
         printf("Main is joining %ld...\n", pids[i]);
-        thread_join(pids[i]);
+        thrd_join(pids[i], NULL);
     }
     printf("Max %ld found at %ld\n", gMax, gImax);
     free(pids);

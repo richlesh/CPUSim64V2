@@ -44,8 +44,27 @@ The library (`lib/`): `<iostream>`, `<iomanip>`, `<sstream>`, `<string>`,
 `<functional>` (`std::function`, function objects, `std::hash`), `<type_traits>`,
 `<initializer_list>`, `<exception>`, `<stdexcept>`, `<new>`, `<typeinfo>`, and
 the C headers `<cstdio>`, `<cstdlib>`, `<cstring>`, `<cmath>`, `<cctype>`,
-`<climits>`, `<cstddef>`, `<cstdint>`, `<cassert>`, `<ctime>`, `<cfloat>`,
-and `<thread.h>` (the C11 library's `<_Thread.h>` threads, `fork`, atomics and mutexes).
+`<climits>`, `<cstddef>`, `<cstdint>`, `<cassert>`, `<ctime>`, `<cfloat>`.
+
+Threading (`<thread>`, `<mutex>`, `<condition_variable>`, `<atomic>`, `<chrono>`)
+is built on the C library's `<threads.h>`, `<stdatomic.h>` and `<time.h>`;
+`<unistd.h>` and `<sys/wait.h>` declare the POSIX `fork`, `waitpid`, `sysconf`
+and friends.  `<thread.h>` (the CPUSim64 `<_Thread.h>` wrapper) still works but is
+deprecated.  Differences from C++14:
+
+- `std::thread` and `std::call_once` take the callable and the arguments **by
+  value** (the translator cannot bind a reference to a function), so a reference
+  parameter needs `std::ref`, and a move-only argument is moved into the thread.
+  Member function pointers are not supported.
+- A thread must not use the address of a local of a function that may return
+  first; the main thread's stack is not shared.  Use globals or the heap.
+- Locking a `std::mutex` twice in one thread does not deadlock (the C mutex
+  counts the locks); `std::system_error` is never thrown (a misuse calls
+  `std::terminate`).
+- `std::atomic<T>` is for integers, `bool` and pointers; every `memory_order` is
+  accepted and ignored (the memory is sequentially consistent).  No
+  `condition_variable_any`, `std::future`/`std::async`, `shared_mutex` or
+  user-defined literals such as `100ms`.
 
 Not supported (reported as an error): virtual base classes, pointers to
 members, user-defined literals, fold expressions, `decltype(auto)`,

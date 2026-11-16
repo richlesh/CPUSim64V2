@@ -12,7 +12,7 @@ The compiler targets a core subset of C11, roughly C99 plus a few C11 features. 
   - C11 features: _Static_assert and _Thread_local (thread_local).
   - Statements: all of them, including switch and goto.
   - Preprocessor: built in.
-  - Library: stdio, stdlib, string, math, ctype, time, setjmp, stdarg, stddef, stdint, stdbool, limits, float, assert, threads and stdatomic. The stdio formatted-input and
+  - Library: stdio, stdlib, string, math, ctype, time, setjmp, stdarg, stddef, stdint, stdbool, limits, float, assert, threads and stdatomic, plus the POSIX subset unistd.h and sys/wait.h. The stdio formatted-input and
   output follow the C99 conversions.
   - CPUSim64's own `<_Thread.h>`: threads, `fork`, shared memory, atomic operations, spin locks, mutexes and `sleep_ms`.
   
@@ -346,6 +346,12 @@ consistent).  The results of `atomic_load`, `atomic_exchange` and
 `atomic_fetch_*` are `long` (cast them for a pointer).  Only these functions
 are atomic: `x++` or `x += n` on an `atomic_int` is not, and
 `__STDC_NO_ATOMICS__` is defined because `_Atomic` is not supported.
+`<unistd.h>` (`lib/unistd.h`, `lib/unistd.c`; a POSIX subset, not C11): `fork`
+(0 in the child), `getpid`, `sysconf` (`_SC_NPROCESSORS_ONLN` and
+`_SC_NPROCESSORS_CONF`: the host's cores; -1 for other names), `sleep`,
+`usleep`, `pid_t`.  `<sys/wait.h>` (`lib/sys/wait.h`, `lib/sys/wait.c`):
+`waitpid(pid, &status, 0)` and `wait(&status)`; the simulator does not report
+the child's exit status, so `status` is 0 (`WIFEXITED`, `WEXITSTATUS` 0).
 `<time.h>` (`lib/time.h`, `lib/time.c`): `clock` (run time in microseconds,
 `CLOCKS_PER_SEC` 1000000), `time`, `difftime`, `mktime`, `timegm`,
 `gmtime`, `gmtime_r`, `localtime`, `localtime_r`, `asctime`, `ctime`,

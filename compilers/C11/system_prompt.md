@@ -42,7 +42,7 @@ Only provide code in a subset of the C11 language.  String literals can contain 
   - C11 features: _Static_assert and _Thread_local (thread_local).
   - Statements: all of them, including switch and goto.
   - Preprocessor: built in.
-  - Library: stdio, stdlib, string, math, ctype, time, setjmp, stdarg, stddef, stdint, stdbool, limits, float, assert, threads and stdatomic. The stdio formatted-input and
+  - Library: stdio, stdlib, string, math, ctype, time, setjmp, stdarg, stddef, stdint, stdbool, limits, float, assert, threads and stdatomic, plus the POSIX subset unistd.h and sys/wait.h. The stdio formatted-input and
   output follow the C99 conversions.
   - CPUSim64's own `<_Thread.h>`: threads, `fork`, shared memory, atomic operations, spin locks, mutexes and `sleep_ms`.
   

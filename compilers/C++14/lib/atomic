@@ -1,0 +1,136 @@
+// <atomic>: std::atomic<T> for integral types, bool and pointers, std::atomic_flag,
+// std::memory_order and the usual typedefs, on the word operations of the C11
+// library's <stdatomic.h> (__atomic_*_w, built on the simulator's compare-and-swap).
+//
+// Every scalar is one 64-bit word and memory is sequentially consistent, so the object
+// is a volatile word and every memory_order argument is accepted and ignored.  The
+// operators (++, --, +=, -=, &=, |=, ^=) are atomic.  Differences from C++: no
+// atomic<float/double/struct>, no wait/notify (C++20).
+#ifndef _CPPC_ATOMIC
+#define _CPPC_ATOMIC
+#include <stdatomic.h>
+#include <stddef.h>
+#include <stdint.h>
+#include <type_traits>
+namespace std {
+
+enum memory_order {
+    memory_order_relaxed,
+    memory_order_consume,
+    memory_order_acquire,
+    memory_order_release,
+    memory_order_acq_rel,
+    memory_order_seq_cst
+};
+
+inline void atomic_thread_fence(memory_order) noexcept {}
+inline void atomic_signal_fence(memory_order) noexcept {}
+
+template<class T> class atomic {
+public:
+    typedef T value_type;
+    // fetch_add and friends take a count of elements for a pointer, the value otherwise
+    typedef typename conditional<is_pointer<T>::value, long, T>::type difference_type;
+
+    atomic() noexcept : v_(0) {}
+    atomic(T x) noexcept : v_((long)x) {}
+    atomic(const atomic &) = delete;
+    atomic &operator=(const atomic &) = delete;
+    atomic &operator=(const atomic &) volatile = delete;
+
+    bool is_lock_free() const noexcept { return true; }
+    bool is_lock_free() const volatile noexcept { return true; }
+
+    T load(memory_order = memory_order_seq_cst) const noexcept { return (T)::__atomic_load_w((volatile long *)&v_); }
+    void store(T x, memory_order = memory_order_seq_cst) noexcept { ::__atomic_store_w(&v_, (long)x); }
+    T exchange(T x, memory_order = memory_order_seq_cst) noexcept { return (T)::__atomic_exchange_w(&v_, (long)x); }
+    bool compare_exchange_strong(T &expected, T desired, memory_order = memory_order_seq_cst, memory_order = memory_order_seq_cst) noexcept
+    {
+        long e = (long)expected;
+        bool ok = ::__atomic_cmpxchg_w(&v_, &e, (long)desired);
+        if (!ok) expected = (T)e;
+        return ok;
+    }
+    bool compare_exchange_weak(T &expected, T desired, memory_order = memory_order_seq_cst, memory_order = memory_order_seq_cst) noexcept
+    {
+        return compare_exchange_strong(expected, desired);
+    }
+    // returns the old value
+    T fetch_add(difference_type n, memory_order = memory_order_seq_cst) noexcept { return (T)::__atomic_fetch_add_w(&v_, (long)((T)0 + n)); }
+    T fetch_sub(difference_type n, memory_order = memory_order_seq_cst) noexcept { return (T)::__atomic_fetch_add_w(&v_, (long)((T)0 - n)); }
+    T fetch_and(T x, memory_order = memory_order_seq_cst) noexcept { return (T)::__atomic_fetch_and_w(&v_, (long)x); }
+    T fetch_or(T x, memory_order = memory_order_seq_cst) noexcept { return (T)::__atomic_fetch_or_w(&v_, (long)x); }
+    T fetch_xor(T x, memory_order = memory_order_seq_cst) noexcept { return (T)::__atomic_fetch_xor_w(&v_, (long)x); }
+
+    operator T() const noexcept { return load(); }
+    T operator=(T x) noexcept { store(x); return x; }
+    T operator++() noexcept { return fetch_add(1) + 1; }
+    T operator++(int) noexcept { return fetch_add(1); }
+    T operator--() noexcept { return fetch_sub(1) - 1; }
+    T operator--(int) noexcept { return fetch_sub(1); }
+    T operator+=(difference_type n) noexcept { return fetch_add(n) + n; }
+    T operator-=(difference_type n) noexcept { return fetch_sub(n) - n; }
+    T operator&=(T x) noexcept { return fetch_and(x) & x; }
+    T operator|=(T x) noexcept { return fetch_or(x) | x; }
+    T operator^=(T x) noexcept { return fetch_xor(x) ^ x; }
+private:
+    mutable volatile long v_;
+};
+
+class atomic_flag {
+public:
+    atomic_flag() noexcept : f_(0) {}
+    atomic_flag(int x) noexcept : f_(x) {}
+    atomic_flag(const atomic_flag &) = delete;
+    atomic_flag &operator=(const atomic_flag &) = delete;
+    bool test_and_set(memory_order = memory_order_seq_cst) noexcept { return ::__atomic_exchange_w(&f_, 1) != 0; }
+    void clear(memory_order = memory_order_seq_cst) noexcept { ::__atomic_store_w(&f_, 0); }
+private:
+    volatile long f_;
+};
+#define ATOMIC_FLAG_INIT {0}
+
+// ---- the free functions
+template<class T> inline T atomic_load(const atomic<T> *a) noexcept { return a->load(); }
+template<class T> inline void atomic_store(atomic<T> *a, T x) noexcept { a->store(x); }
+template<class T> inline T atomic_exchange(atomic<T> *a, T x) noexcept { return a->exchange(x); }
+template<class T> inline bool atomic_compare_exchange_strong(atomic<T> *a, T *e, T x) noexcept { return a->compare_exchange_strong(*e, x); }
+template<class T> inline bool atomic_compare_exchange_weak(atomic<T> *a, T *e, T x) noexcept { return a->compare_exchange_strong(*e, x); }
+template<class T> inline T atomic_fetch_add(atomic<T> *a, typename atomic<T>::difference_type n) noexcept { return a->fetch_add(n); }
+template<class T> inline T atomic_fetch_sub(atomic<T> *a, typename atomic<T>::difference_type n) noexcept { return a->fetch_sub(n); }
+template<class T> inline T atomic_fetch_and(atomic<T> *a, T x) noexcept { return a->fetch_and(x); }
+template<class T> inline T atomic_fetch_or(atomic<T> *a, T x) noexcept { return a->fetch_or(x); }
+template<class T> inline T atomic_fetch_xor(atomic<T> *a, T x) noexcept { return a->fetch_xor(x); }
+inline bool atomic_flag_test_and_set(atomic_flag *f) noexcept { return f->test_and_set(); }
+inline void atomic_flag_clear(atomic_flag *f) noexcept { f->clear(); }
+
+// ---- typedefs
+typedef atomic<bool> atomic_bool;
+typedef atomic<char> atomic_char;
+typedef atomic<signed char> atomic_schar;
+typedef atomic<unsigned char> atomic_uchar;
+typedef atomic<short> atomic_short;
+typedef atomic<unsigned short> atomic_ushort;
+typedef atomic<int> atomic_int;
+typedef atomic<unsigned int> atomic_uint;
+typedef atomic<long> atomic_long;
+typedef atomic<unsigned long> atomic_ulong;
+typedef atomic<long long> atomic_llong;
+typedef atomic<unsigned long long> atomic_ullong;
+typedef atomic<size_t> atomic_size_t;
+typedef atomic<ptrdiff_t> atomic_ptrdiff_t;
+typedef atomic<intptr_t> atomic_intptr_t;
+typedef atomic<uintptr_t> atomic_uintptr_t;
+typedef atomic<intmax_t> atomic_intmax_t;
+typedef atomic<uintmax_t> atomic_uintmax_t;
+typedef atomic<int8_t> atomic_int8_t;
+typedef atomic<uint8_t> atomic_uint8_t;
+typedef atomic<int16_t> atomic_int16_t;
+typedef atomic<uint16_t> atomic_uint16_t;
+typedef atomic<int32_t> atomic_int32_t;
+typedef atomic<uint32_t> atomic_uint32_t;
+typedef atomic<int64_t> atomic_int64_t;
+typedef atomic<uint64_t> atomic_uint64_t;
+
+}   // namespace std
+#endif

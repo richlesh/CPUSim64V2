@@ -1,0 +1,161 @@
+// <thread>: std::thread, std::thread::id and std::this_thread on the C11 library's
+// <threads.h> (thrd_create, thrd_join, thrd_detach, thrd_sleep, thrd_yield, thrd_current)
+// and <unistd.h> (sysconf).
+//
+// std::thread copies the callable and its arguments into a heap block that the new
+// thread owns and deletes when the callable returns.  The arguments are passed by value
+// (they are moved into the block and moved again into the call), so a reference argument
+// needs std::ref() as in C++.  Member function pointers are not supported by the
+// translator.  A thread must not use a pointer or reference to a local of a function that
+// may return before the thread ends: the main thread's stack is not shared.
+#ifndef _CPPC_THREAD
+#define _CPPC_THREAD
+#include <threads.h>
+#include <unistd.h>
+#include <chrono>
+#include <iostream>
+#include <functional>
+#include <utility>
+#include <exception>
+#include <type_traits>
+namespace std {
+
+// the bound arguments of a thread: a list of values, built recursively
+template<class... T> struct __tup;
+template<> struct __tup<> {};
+template<class H, class... T> struct __tup<H, T...> : __tup<T...> {
+    H head;
+    __tup(H h, T... t) : __tup<T...>(std::move(t)...), head(std::move(h)) {}
+};
+
+// a bound value as the argument of the call: moved, a std::ref() as the reference
+template<class T> inline T &&__thread_arg(T &x) { return static_cast<T &&>(x); }
+template<class T> inline T &__thread_arg(reference_wrapper<T> &x) { return x.get(); }
+
+// calls f with the values of the list t (each moved), d... collects the ones already visited
+template<class F, class... D> inline void __tup_apply(F &f, __tup<> &, D &... d) { f(__thread_arg(d)...); }
+template<class F, class H, class... T, class... D>
+inline void __tup_apply(F &f, __tup<H, T...> &t, D &... d)
+{
+    __tup_apply(f, static_cast<__tup<T...> &>(t), d..., t.head);
+}
+
+struct __thread_state_base {
+    virtual ~__thread_state_base() {}
+    virtual void run() = 0;
+};
+
+template<class F, class... A> struct __thread_state : __thread_state_base {
+    F fn;
+    __tup<A...> args;
+    template<class F2, class... A2> __thread_state(F2 &&f, A2 &&... a) : fn(std::forward<F2>(f)), args(std::forward<A2>(a)...) {}
+    void run() { __tup_apply(fn, args); }
+};
+
+inline int __thread_entry(void *p)
+{
+    __thread_state_base *s = static_cast<__thread_state_base *>(p);
+    s->run();
+    delete s;
+    return 0;
+}
+
+class thread {
+public:
+    class id {
+    public:
+        id() : v_(0) {}
+        explicit id(long v) : v_(v) {}
+        long __value() const { return v_; }
+    private:
+        long v_;
+    };
+    typedef long native_handle_type;
+
+    thread() noexcept : id_(), h_(0) {}
+    thread(thread &&t) noexcept : id_(t.id_), h_(t.h_) { t.id_ = id(); t.h_ = 0; }
+    template<class F, class... A> explicit thread(F f, A... args) : id_(), h_(0)
+    {
+        typedef __thread_state<F, A...> State;
+        State *s = new State(std::move(f), std::move(args)...);
+        long h = 0;
+        if (::thrd_create(&h, __thread_entry, static_cast<void *>(static_cast<__thread_state_base *>(s))) != 0) {
+            delete s;
+            std::terminate();           // (std::system_error in C++)
+        }
+        h_ = h;
+        id_ = id(h);
+    }
+    thread(const thread &) = delete;
+    thread &operator=(const thread &) = delete;
+    thread &operator=(thread &&t) noexcept
+    {
+        if (joinable()) std::terminate();
+        id_ = t.id_; h_ = t.h_;
+        t.id_ = id(); t.h_ = 0;
+        return *this;
+    }
+    ~thread() { if (joinable()) std::terminate(); }
+
+    bool joinable() const noexcept { return id_.__value() != 0; }
+    void join()
+    {
+        if (!joinable()) std::terminate();      // (std::system_error in C++)
+        ::thrd_join(h_, 0);
+        id_ = id(); h_ = 0;
+    }
+    void detach()
+    {
+        if (!joinable()) std::terminate();
+        ::thrd_detach(h_);
+        id_ = id(); h_ = 0;
+    }
+    id get_id() const noexcept { return id_; }
+    native_handle_type native_handle() { return h_; }
+    void swap(thread &t) noexcept { std::swap(id_, t.id_); std::swap(h_, t.h_); }
+    static unsigned hardware_concurrency() noexcept
+    {
+        long n = ::sysconf(_SC_NPROCESSORS_ONLN);
+        return n > 0 ? (unsigned)n : 1u;
+    }
+private:
+    id id_;
+    long h_;
+};
+
+inline void swap(thread &a, thread &b) noexcept { a.swap(b); }
+
+inline bool operator==(thread::id a, thread::id b) noexcept { return a.__value() == b.__value(); }
+inline bool operator!=(thread::id a, thread::id b) noexcept { return a.__value() != b.__value(); }
+inline bool operator<(thread::id a, thread::id b) noexcept { return a.__value() < b.__value(); }
+inline bool operator<=(thread::id a, thread::id b) noexcept { return a.__value() <= b.__value(); }
+inline bool operator>(thread::id a, thread::id b) noexcept { return a.__value() > b.__value(); }
+inline bool operator>=(thread::id a, thread::id b) noexcept { return a.__value() >= b.__value(); }
+inline ostream &operator<<(ostream &os, thread::id i) { return os << i.__value(); }
+template<> struct hash<thread::id> {
+    size_t operator()(thread::id i) const { return (size_t)i.__value(); }
+};
+
+namespace this_thread {
+
+inline thread::id get_id() noexcept { return thread::id(::thrd_current()); }
+inline void yield() noexcept { ::thrd_yield(); }
+
+template<class Rep, class Period> inline void sleep_for(const chrono::duration<Rep, Period> &d)
+{
+    long long ns = chrono::duration_cast<chrono::nanoseconds>(d).count();
+    if (ns <= 0) return;
+    struct timespec ts;
+    ts.tv_sec = ns / 1000000000LL;
+    ts.tv_nsec = ns % 1000000000LL;
+    ::thrd_sleep(&ts, 0);
+}
+
+template<class Clock, class Dur> inline void sleep_until(const chrono::time_point<Clock, Dur> &t)
+{
+    sleep_for(t - Clock::now());
+}
+
+}   // namespace this_thread
+}   // namespace std
+#endif

@@ -91,8 +91,9 @@ A C compiler written entirely in CPUSim64 assembly.  It compiles a core subset o
 - A header `#include <name.h>` is found in `lib/` (plus any `--lib=DIR`), and `lib/name.c` is appended once, compiling only the functions the program uses  
 - Separate compilation: `cc main.c util.c` compiles each file into its own linker module (external symbols exported, `static` ones private); `-lstd` links the C library as shared library modules instead of appending it  
 - `#line N "file"` renumbers the following lines (and names the file in `.source` directives and error messages), so a translator that emits C can be debugged on its own source  
+- POSIX subset `<unistd.h>` (`fork`, `getpid`, `sysconf(_SC_NPROCESSORS_ONLN)`, `sleep`, `usleep`) and `<sys/wait.h>` (`waitpid`, `wait`)  
 - CPUSim64's own `<_Thread.h>`: threads, `fork`, shared memory, atomics, spin locks and mutexes  
-- 135 regression tests: `compilers/C11/tests/run_tests.sh`; C versions of the documentation projects in `compilers/C11/projects`  
+- 137 regression tests: `compilers/C11/tests/run_tests.sh`; C versions of the documentation projects in `compilers/C11/projects`  
 
 ### **MMIX Translator (`compilers/MMIX`)**
 Runs programs written in MMIXAL, the assembly language of Knuth's 64-bit MMIX computer, by translating them to CPUSim64 assembly (File → New Compiler → MMIX, or `compilers/MMIX/obj/mmixc.o64 prog.mms` on a simulator).
@@ -107,7 +108,7 @@ Runs programs written in MMIXAL, the assembly language of Knuth's 64-bit MMIX co
 Runs C++ programs (File → New Compiler → C++14) by translating them to C for the C11 compiler (`translate_to: C11`); `#line` directives make the debugger show the `.cpp` lines.
 - The translator `cppc` is written in portable C (`src/`) and compiled by the C11 compiler; its hand-written parser follows the ANTLR grammars-v4 CPP14 grammar  
 - C++14 with classes, multiple inheritance, virtual functions, templates (partial specialization, variadic templates, SFINAE), lambdas, move semantics, exceptions, RTTI, `constexpr` functions, and C++17 `if constexpr`, structured bindings and `if (init; cond)`  
-- Its own standard library in `lib/`: iostreams and string streams, `string`, `vector`, `array`, `list`, `map`, `set`, the unordered containers, `stack`, `queue`, `algorithm`, `numeric`, `memory` (`unique_ptr`, `shared_ptr`), `functional`, `type_traits`, the exception classes, and the C headers  
+- Its own standard library in `lib/`: iostreams and string streams, `string`, `vector`, `array`, `list`, `map`, `set`, the unordered containers, `stack`, `queue`, `algorithm`, `numeric`, `memory` (`unique_ptr`, `shared_ptr`), `functional`, `type_traits`, the exception classes, `thread`, `mutex`, `condition_variable`, `atomic`, `chrono`, and the C headers (also `<unistd.h>` and `<sys/wait.h>`)  
 - Programs of several `.cpp` files: the other files go in the Options field  
 - Not supported: virtual base classes, pointers to members, user-defined literals, fold expressions  
 - Regression tests compared with g++: `compilers/C++14/tests/run_tests.sh` (`HOST=1`)  

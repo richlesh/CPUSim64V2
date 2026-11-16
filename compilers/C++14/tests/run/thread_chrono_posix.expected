@@ -1,0 +1,13 @@
+1500 ms = 1500000 us = 1 s (truncated) = 1500000000 ns
+sum 2250 ms
+difference 2500 us
+equal: 1, less: 1
+double seconds 0.5 -> 500 ms
+2 minutes = 120 s, 3 hours
+slept at least 60 ms: 1, less than 5 s: 1
+time_point ordering: 1
+sleep_until reached the deadline: 1
+system_clock after 2020: 1
+cores > 0: 1
+getpid > 0: 1
+waitpid returned the child: 1, exited: 1

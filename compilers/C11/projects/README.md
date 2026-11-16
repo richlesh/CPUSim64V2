@@ -32,7 +32,9 @@ version), and the files the program writes with the reference files.
   decimal value of the double, while the assembly version prints Java's
   shorter form (`...930`).  `expected/Pi.txt` holds the C output.
 - The programs with threads or processes (BBP_hex_digits_threaded,
-  CAS_printf_stress, Hailstone4/5/5bad, mandelbrot*) use `<_Thread.h>`.  Their
+  CAS_printf_stress, Hailstone4/5) use C11 `<threads.h>` and `<stdatomic.h>`;
+  mandelbrot and mandelbrot_binary use POSIX `fork`, `waitpid` and `sysconf`
+  from `<unistd.h>` and `<sys/wait.h>`.  None uses CPUSim64's `<_Thread.h>`.  Their
   output order and the number of threads depend on the scheduler and the
   host, so the tests check only what cannot vary: the `Max ... found at ...`
   line, the `Position` lines, the counters and the complete set of printed

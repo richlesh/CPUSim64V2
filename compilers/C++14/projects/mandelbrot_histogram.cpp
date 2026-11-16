@@ -10,7 +10,7 @@
  * with an iteration count up to its own), which spreads the gray levels
  * evenly over the image.  Pixels in the set (count 0) stay black.
  * C++ version of documentation/projects/mandelbrot_histogram.asm; it uses
- * <thread.h>.
+ * std::thread.
  *
  * Usage:
  *     mandelbrot_histogram x y radius escape_limit image_size filename
@@ -30,7 +30,7 @@
 #include <cstdlib>
 #include <string>
 #include <vector>
-#include <thread.h>
+#include <thread>
 
 static const long MAX_THREADS = 100;
 
@@ -76,24 +76,13 @@ struct Band {
     long first, last, width;
 };
 
-// the thread function: computes one band
-static void run(void *arg)
+// the thread function: computes one band (b is owned by the thread)
+static void run(Band *b)
 {
-    Band *b = static_cast<Band *>(arg);
-    long pid = get_pid();
-    std::printf("Thread %ld executing...%ld %ld %ld\n", pid, b->first, b->last, b->width);
+    std::printf("Thread %ld executing...%ld %ld %ld\n", b->first, b->first, b->last, b->width);
     compute_mandelbrot(b->first, b->last, b->width);
-    std::printf("Thread %ld done!\n", pid);
+    std::printf("Thread %ld done!\n", b->first);
     delete b;
-}
-
-// starts a thread for the rows first .. last-1; returns its id, or -1
-static long spawn_thread(long first, long last, long width)
-{
-    Band *b = new Band{first, last, width};
-    long tid = thread_create(run, b);
-    if (tid <= 0) delete b;
-    return tid;
 }
 
 // writes the image as filename.pgm with the gray levels from the histogram
@@ -126,7 +115,6 @@ static int combine_output(const std::string &filename, long size)
 
 int main(int argc, char **argv)
 {
-    long tids[MAX_THREADS + 1];
     if (argc != 7) {
         std::puts("Syntax: mandelbrot_histogram x y radius escape_limit image_size filename");
         return 1;
@@ -144,28 +132,22 @@ int main(int argc, char **argv)
     gYMax = y + radius;
     std::printf("Image Bounds: %f, %f, %f, %f\n", gXMin, gXMax, gYMin, gYMax);
     gImage = new long[imageSize * imageSize];
-    long cores = get_num_cores();
+    long cores = (long)std::thread::hardware_concurrency();
+    if (cores < 1) cores = 4;
     if (cores < gNumThreads) gNumThreads = cores;
     if (imageSize < gNumThreads) gNumThreads = imageSize;
     std::printf("Number of threads: %ld\n", gNumThreads);
+    std::vector<std::thread> threads;
     long firstRow = 0;
     for (long i = 1; i <= gNumThreads; i++) {
         long lastRow = (long)((double)imageSize / (double)gNumThreads * (double)i + 0.5);
-        long tid = spawn_thread(firstRow, lastRow, imageSize);
-        if (tid > 0) {
-            std::printf("Spawn thread for %ld\n", tid);
-            tids[i] = tid;
-        } else {
-            std::printf("Spawn thread for %ld failed!\n", tid);
-            tids[i] = 0;
-        }
+        std::printf("Spawn thread for %ld\n", firstRow);
+        threads.push_back(std::thread(run, new Band{firstRow, lastRow, imageSize}));
         firstRow = lastRow;
     }
-    for (long i = 1; i <= gNumThreads; i++) {
-        if (tids[i] > 0) {
-            std::printf("Waiting for %ld...\n", tids[i]);
-            thread_join(tids[i]);
-        }
+    for (long i = 0; i < gNumThreads; i++) {
+        std::printf("Waiting for thread %ld...\n", i + 1);
+        threads[i].join();
     }
     combine_output(filename, imageSize);
     delete[] gImage;
