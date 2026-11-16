@@ -15,7 +15,7 @@
  *         a mutex serializes them unless NO_PRINT_MUTEX is defined (put
  *         "#define NO_PRINT_MUTEX" before the includes to see the mixing).
  * C11 version of documentation/projects/CAS_printf_stress.asm; it uses
- * <thread.h>.
+ * <_Thread.h>.
  *
  * Usage:
  *     CAS_printf_stress
@@ -32,7 +32,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-#include <thread.h>
+#include <_Thread.h>
 
 #define CAS_ITERS 100000
 #define PRINT_ITERS 1000

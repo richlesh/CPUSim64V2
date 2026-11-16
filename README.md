@@ -83,16 +83,16 @@ In any window, a source file that contains `#export` or `#extern` is a relocatab
 ### **C11 Compiler (`compilers/C11`)**
 A C compiler written entirely in CPUSim64 assembly.  It compiles a core subset of C11 to CPUSim64 `.asm` (run it with `run.sh cc prog.c`, or from the IDE through File → New Compiler → C11).
 - Hand-written recursive-descent parser following the ANTLR grammars-v4 C grammar, a built-in preprocessor, type checking, and stack-machine code generation; it stops at the first error with `file:line: error: message`  
-- Types: `int`, `long`, `char`, `double`, pointers, arrays, structs, unions, enums, typedefs, function pointers, `_Bool`; compound literals, designated initializers, variadic functions, `_Static_assert`, unsigned arithmetic and conversions  
+- Types: `int`, `long`, `char`, `double`, pointers, arrays, structs, unions, enums, typedefs, function pointers, `_Bool`; compound literals, designated initializers, variadic functions, `_Static_assert`, unsigned arithmetic and conversions, `_Thread_local`  
 - Not supported (reported as errors): `float`, `long double`, `_Complex`, `_Atomic`, `_Generic`, bit-fields, variable length arrays, K&R parameter lists and GNU extensions  
 - Every scalar is one 64-bit word; `char` holds a Unicode codepoint  
-- Standard library written in C in `lib/` and compiled only when used: `stdio` (exact C `printf`/`scanf` families, files with `fseek`/`ftell`, `snprintf`, `getline`), `stdlib` (`malloc`, `qsort`, `strto*`, `rand`/`srand`, `atexit`, `getenv`), `string`, `math` (C99), `ctype`, `time`, `setjmp`, `assert`, `stdarg`, `stddef`, `stdint`, `stdbool`, `limits`, `float`  
+- Standard library written in C in `lib/` and compiled only when used: `stdio` (exact C `printf`/`scanf` families, files with `fseek`/`ftell`, `snprintf`, `getline`), `stdlib` (`malloc`, `qsort`, `strto*`, `rand`/`srand`, `atexit`, `getenv`), `string`, `math` (C99), `ctype`, `time`, `setjmp`, `assert`, `stdarg`, `stddef`, `stdint`, `stdbool`, `limits`, `float`, `threads` (C11 threads, mutexes, condition variables, `call_once`, thread-specific storage, `thread_local`) and `stdatomic` (C11 atomic types and operations; `__STDC_NO_ATOMICS__` is defined because `_Atomic` itself is not supported)  
 - `time()` returns the real wall-clock time (UTC) so `srand(time(NULL))` works; `getenv()` reads the host environment  
 - A header `#include <name.h>` is found in `lib/` (plus any `--lib=DIR`), and `lib/name.c` is appended once, compiling only the functions the program uses  
 - Separate compilation: `cc main.c util.c` compiles each file into its own linker module (external symbols exported, `static` ones private); `-lstd` links the C library as shared library modules instead of appending it  
 - `#line N "file"` renumbers the following lines (and names the file in `.source` directives and error messages), so a translator that emits C can be debugged on its own source  
-- `<thread.h>`: threads, `fork`, shared memory, atomics, spin locks and mutexes  
-- 102 regression tests: `compilers/C11/tests/run_tests.sh`; C versions of the documentation projects in `compilers/C11/projects`  
+- CPUSim64's own `<_Thread.h>`: threads, `fork`, shared memory, atomics, spin locks and mutexes  
+- 135 regression tests: `compilers/C11/tests/run_tests.sh`; C versions of the documentation projects in `compilers/C11/projects`  
 
 ### **MMIX Translator (`compilers/MMIX`)**
 Runs programs written in MMIXAL, the assembly language of Knuth's 64-bit MMIX computer, by translating them to CPUSim64 assembly (File → New Compiler → MMIX, or `compilers/MMIX/obj/mmixc.o64 prog.mms` on a simulator).

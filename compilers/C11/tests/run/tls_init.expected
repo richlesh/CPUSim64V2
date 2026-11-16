@@ -1,0 +1,9 @@
+main start: scalar=11 array=1,2,3,0,0 pt=3,4,2.5 *pointer=42 holder=holder,8,99 text=hello chars=abc small=250 flag=1 zeros=0
+main changed: scalar=-1 array=0,-1,-2,-3,-4 pt=0,0,0 *pointer=7 holder=holder,42,0 text=changed chars=xyz small=1 flag=0 zeros=19900
+thread A: scalar=11 array=1,2,3,0,0 pt=3,4,2.5 *pointer=42 holder=holder,8,99 text=hello chars=abc small=250 flag=1 zeros=0
+thread A: scalar=-1 array=0,-1,-2,-3,-4 pt=0,0,0 *pointer=7 holder=holder,42,0 text=changed chars=xyz small=1 flag=0 zeros=19900
+thread B: scalar=11 array=1,2,3,0,0 pt=3,4,2.5 *pointer=42 holder=holder,8,99 text=hello chars=abc small=250 flag=1 zeros=0
+thread B: scalar=-1 array=0,-1,-2,-3,-4 pt=0,0,0 *pointer=7 holder=holder,42,0 text=changed chars=xyz small=1 flag=0 zeros=19900
+thread C: scalar=11 array=1,2,3,0,0 pt=3,4,2.5 *pointer=42 holder=holder,8,99 text=hello chars=abc small=250 flag=1 zeros=0
+thread C: scalar=-1 array=0,-1,-2,-3,-4 pt=0,0,0 *pointer=7 holder=holder,42,0 text=changed chars=xyz small=1 flag=0 zeros=19900
+main end: scalar=-1 array=0,-1,-2,-3,-4 pt=0,0,0 *pointer=7 holder=holder,42,0 text=changed chars=xyz small=1 flag=0 zeros=19900

@@ -1,9 +1,9 @@
 /*
- * thread.h - threads, processes and atomic operations for the CPUSim64 C
+ * _Thread.h - threads, processes and atomic operations for the CPUSim64 C
  * compiler (not a standard header: CPUSim64's own, like system/thread.asm).
  *
  * Functions marked [rt] are provided by the assembly runtime (simulator
- * interrupts); the others are implemented in C in lib/thread.c.
+ * interrupts); the others are implemented in C in lib/_Thread.c.
  *
  * Threads share the heap and the global variables of the program, but each
  * thread has its own stack: pass a thread data that is global or allocated
@@ -14,8 +14,8 @@
  * from alloc_shared() is shared between processes (it is never freed).
  * Mutexes and spin locks used by several processes must be in shared memory.
  */
-#ifndef _CPUSIM64_THREAD_H
-#define _CPUSIM64_THREAD_H
+#ifndef _CPUSIM64__THREAD_H
+#define _CPUSIM64__THREAD_H
 
 #include <stddef.h>
 

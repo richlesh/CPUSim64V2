@@ -3,8 +3,9 @@
  *
  * clock() is provided by the assembly runtime; everything else is in C in
  * lib/time.c.  time() reads the wall clock with the iTIME interrupt
- * (seconds since 1970-01-01 UTC).  All calendar conversion is done in UTC:
- * localtime() is the same as gmtime() and mktime() is the same as timegm().
+ * (seconds since 1970-01-01 UTC), and timespec_get() with nanoseconds.
+ * All calendar conversion is done in UTC: localtime() is the same as
+ * gmtime() and mktime() is the same as timegm().
  */
 #ifndef _CPUSIM64_TIME_H
 #define _CPUSIM64_TIME_H
@@ -15,6 +16,12 @@ typedef long time_t;
 typedef long clock_t;
 
 #define CLOCKS_PER_SEC  1000000
+#define TIME_UTC        1
+
+struct timespec {
+    time_t tv_sec;      /* seconds since the Unix epoch (UTC) */
+    long tv_nsec;       /* nanoseconds [0, 999999999] */
+};
 
 struct tm {
     int tm_sec;     /* seconds after the minute [0, 60] */
@@ -31,6 +38,7 @@ struct tm {
 clock_t clock(void);                        /* elapsed run time in us */
 time_t time(time_t *t);                     /* seconds since the Unix epoch (UTC) */
 double difftime(time_t t1, time_t t0);
+int timespec_get(struct timespec *ts, int base);    /* base TIME_UTC: returns base, or 0 */
 
 time_t mktime(struct tm *tp);               /* normalizes *tp */
 time_t timegm(struct tm *tp);

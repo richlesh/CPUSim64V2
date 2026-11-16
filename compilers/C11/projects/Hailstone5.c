@@ -8,7 +8,7 @@
  * until none are left, so the threads stay busy to the end.  The memo cache
  * (CACHE_SIZE entries) is filled in by the main thread before the threads
  * start and is shared by all of them.
- * C11 version of documentation/projects/Hailstone5.asm; it uses <thread.h>.
+ * C11 version of documentation/projects/Hailstone5.asm; it uses <_Thread.h>.
  *
  * Usage:
  *     Hailstone5 <limit>
@@ -21,7 +21,7 @@
  */
 #include <stdio.h>
 #include <stdlib.h>
-#include <thread.h>
+#include <_Thread.h>
 
 #define CACHE_SIZE 8000000          /* number of memoized entries */
 

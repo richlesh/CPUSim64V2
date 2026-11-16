@@ -7,7 +7,7 @@
  * MAX_CHILDREN); each band is computed by a child process made with fork()
  * that writes its rows to a temporary file filename_<n>.tmp.  The parent
  * waits for the children and merges the files into filename.pgm.
- * C11 version of documentation/projects/mandelbrot_binary.asm; it uses <thread.h>.
+ * C11 version of documentation/projects/mandelbrot_binary.asm; it uses <_Thread.h>.
  *
  * Usage:
  *     mandelbrot_binary x y radius escape_limit image_size filename
@@ -25,7 +25,7 @@
  */
 #include <stdio.h>
 #include <stdlib.h>
-#include <thread.h>
+#include <_Thread.h>
 
 #define MAX_CHILDREN 100
 

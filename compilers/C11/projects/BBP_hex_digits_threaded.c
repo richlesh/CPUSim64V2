@@ -7,7 +7,7 @@
  * next block with an atomic counter until all 100 are done; the results are
  * written to a shared array and printed in order by the main thread.
  * C11 version of documentation/projects/BBP_hex_digits_threaded.asm; it uses
- * <thread.h>.
+ * <_Thread.h>.
  *
  * Usage:
  *     BBP_hex_digits_threaded <n>      (n = 1 is the first hex digit after the point)
@@ -25,7 +25,7 @@
  */
 #include <stdio.h>
 #include <stdlib.h>
-#include <thread.h>
+#include <_Thread.h>
 
 #define MAX_POSITION 10000000
 #define NUM_SLOTS 100               /* the positions n, n+32, ..., n+32*99 */

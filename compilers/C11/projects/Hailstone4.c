@@ -8,7 +8,7 @@
  * CACHE_SIZE are memoized in a heap array that all the threads share (two
  * threads may compute the same entry, but they store the same value).  Each
  * thread reports its best value under a mutex.
- * C11 version of documentation/projects/Hailstone4.asm; it uses <thread.h>.
+ * C11 version of documentation/projects/Hailstone4.asm; it uses <_Thread.h>.
  *
  * Usage:
  *     Hailstone4 <limit>
@@ -21,7 +21,7 @@
  */
 #include <stdio.h>
 #include <stdlib.h>
-#include <thread.h>
+#include <_Thread.h>
 
 #define CACHE_SIZE 3000000          /* number of memoized entries */
 

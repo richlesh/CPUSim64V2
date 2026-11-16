@@ -45,7 +45,7 @@ The library (`lib/`): `<iostream>`, `<iomanip>`, `<sstream>`, `<string>`,
 `<initializer_list>`, `<exception>`, `<stdexcept>`, `<new>`, `<typeinfo>`, and
 the C headers `<cstdio>`, `<cstdlib>`, `<cstring>`, `<cmath>`, `<cctype>`,
 `<climits>`, `<cstddef>`, `<cstdint>`, `<cassert>`, `<ctime>`, `<cfloat>`,
-and `<thread.h>` (the C11 library's threads, `fork`, atomics and mutexes).
+and `<thread.h>` (the C11 library's `<_Thread.h>` threads, `fork`, atomics and mutexes).
 
 Not supported (reported as an error): virtual base classes, pointers to
 members, user-defined literals, fold expressions, `decltype(auto)`,

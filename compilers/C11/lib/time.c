@@ -53,6 +53,18 @@ time_t time(time_t *__tm_t) {
     return __tm_now;
 }
 
+/* timespec_get: the wall clock in nanoseconds (iTIME) */
+long __time_ns(void);           /* [rt] iTIME: nanoseconds since the Unix epoch */
+
+int timespec_get(struct timespec *__tm_ts, int __tm_base) {
+    long __tm_ns;
+    if (__tm_base != TIME_UTC) return 0;
+    __tm_ns = __time_ns();
+    __tm_ts->tv_sec = __tm_ns / 1000000000;
+    __tm_ts->tv_nsec = __tm_ns % 1000000000;
+    return TIME_UTC;
+}
+
 double difftime(time_t __tm_t1, time_t __tm_t0) {
     return (double)(__tm_t1 - __tm_t0);
 }

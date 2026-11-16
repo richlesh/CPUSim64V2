@@ -10,7 +10,7 @@
  * with an iteration count up to its own), which spreads the gray levels
  * evenly over the image.  Pixels in the set (count 0) stay black.
  * C11 version of documentation/projects/mandelbrot_histogram.asm; it uses
- * <thread.h>.
+ * <_Thread.h>.
  *
  * Usage:
  *     mandelbrot_histogram x y radius escape_limit image_size filename
@@ -28,7 +28,7 @@
  */
 #include <stdio.h>
 #include <stdlib.h>
-#include <thread.h>
+#include <_Thread.h>
 
 #define MAX_THREADS 100
 

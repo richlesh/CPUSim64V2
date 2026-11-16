@@ -40,6 +40,7 @@ PRELUDE_SRC:
     .dcs    "#define __STDC__ 1"
     .dcs    "#define __STDC_VERSION__ 201112L"
     .dcs    "#define __STDC_HOSTED__ 1"
+    .dcs    "#define __STDC_NO_ATOMICS__ 1"
     .dci    -1
 
 PRELUDE_ASM_END:

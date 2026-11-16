@@ -114,7 +114,33 @@ RUNTIME_EMIT_ASM_START:
 
 // crt_emit(): copy every needed chunk that the program did not define itself
 #def_func crt_emit()
-    #var    recs, cnt, i, rec, a, g
+    #var    recs, cnt, i, rec, a, g, tc, tv
+    // thread_create of a program with _Thread_local objects (always, in a
+    // module: another module may define them) is the variant that gives the
+    // new thread its initial values
+    move    tv, 0
+    #call   intern_p("thread_create")
+    load    tc, r0[E_CRT]
+    #if_cond tc != 0
+        load    r0, tc[CR_NEEDED]
+        #if_cond r0 != 0
+            load    r0, CC_MODULE
+            #if_cond r0 != MOD_NONE
+                move    tv, 1
+            #end_cond
+            load    r0, CG_TLS_DEFS
+            #if_cond r0 != 0
+                move    tv, 1
+            #end_cond
+        #end_cond
+    #end_cond
+    #if_cond tv != 0
+        #call   crt_use_p("__tls_copy")
+        move    r0, 1
+        store   r0, CG_NEEDHEAD
+        #call   intern_p("__thread_create_tls")
+        load    tv, r0[E_CRT]
+    #end_cond
     load    recs, CRT_RECS
     #macro  VLEN(cnt, recs)
     #for    1, i <= cnt, 1
@@ -134,6 +160,11 @@ RUNTIME_EMIT_ASM_START:
         #end_cond
         #call   emit("\n")
         load    a, rec[CR_START]
+        #if_cond rec == tc
+            #if_cond tv != 0
+                load    a, tv[CR_START]
+            #end_cond
+        #end_cond
         #while  TRUE
             load    r0, a[0]
             #if_cond r0 < 0
@@ -411,6 +442,10 @@ CRT_TEXT:
     .dcs    "    int     iTIME"
     .dcs    "    div     r0, 1000000000"
     .dcs    "    return"
+    .dcs    "@@__time_ns"
+    .dcs    "__crt___time_ns:"
+    .dcs    "    int     iTIME"
+    .dcs    "    return"
     .dcs    "@@__udivmod"
     .dcs    "// unsigned 64-bit divide: r2 = r2 / r3, r3 = r2 % r3 (uses r4; r0, r1 kept)"
     .dcs    "__crt___udivmod:"
@@ -682,12 +717,62 @@ CRT_TEXT:
     .dcs    "    #call   fprintf(STDERR, \"%s:%d: Assertion `%s' failed.\\n\", r2, r3, r1)"
     .dcs    "    #call   exit(134)"
     .dcs    "#end_func"
-    .dcs    "// ---- threads and processes (lib/thread.h)"
+    .dcs    "// ---- threads and processes (lib/_Thread.h)"
     .dcs    "@@thread_create"
     .dcs    "__crt_thread_create:"
     .dcs    "    load    r1, sf[3]"
     .dcs    "    load    r2, sf[4]"
     .dcs    "    int     iTHREAD"
+    .dcs    "    return"
+    .dcs    "@@__thread_create_tls __tls_copy"
+    .dcs    "// thread_create(fn, arg) of a program with _Thread_local objects (selected by"
+    .dcs    "// crt_emit instead of the one above): the new thread runs __crt_thread_start,"
+    .dcs    "// which gives it its copy of the initial values, then calls fn(arg)"
+    .dcs    "__crt_thread_create:"
+    .dcs    "    move    r1, 2"
+    .dcs    "    int     iALLOC"
+    .dcs    "    load    r1, sf[3]"
+    .dcs    "    store   r1, r0[0]"
+    .dcs    "    load    r1, sf[4]"
+    .dcs    "    store   r1, r0[1]"
+    .dcs    "    move    r2, r0"
+    .dcs    "    move    r1, __crt_thread_start"
+    .dcs    "    int     iTHREAD"
+    .dcs    "    return"
+    .dcs    "__crt_thread_start:"
+    .dcs    "    add     sp, -1"
+    .dcs    "    load    r1, __crt_tls_head+1"
+    .dcs    "    move    r2, 0"
+    .dcs    "    call    __crt_tls_copy"
+    .dcs    "    load    r3, sf[3]"
+    .dcs    "    load    r1, r3[0]"
+    .dcs    "    store   r1, sf[0]"
+    .dcs    "    load    r1, r3[1]"
+    .dcs    "    push    r1"
+    .dcs    "    move    r1, r3"
+    .dcs    "    int     iFREE"
+    .dcs    "    load    r0, sf[0]"
+    .dcs    "    call    r0"
+    .dcs    "    return"
+    .dcs    "@@__tls_copy"
+    .dcs    "// __crt_tls_copy: r1 = first record of the list of thread-local images, r2 = the"
+    .dcs    "// record where to stop (not copied); copies each image to its object"
+    .dcs    "__crt_tls_copy:"
+    .dcs    "    cmp     r1, r2"
+    .dcs    "    jump    eq, __crt_tls_copy_done"
+    .dcs    "    load    r3, r1[1]"
+    .dcs    "    load    r4, r1[2]"
+    .dcs    "    load    r5, r1[3]"
+    .dcs    "    move    r6, 0"
+    .dcs    "__crt_tls_copy_word:"
+    .dcs    "    load    r0, r4[r6]"
+    .dcs    "    store   r0, r3[r6]"
+    .dcs    "    add     r6, 1"
+    .dcs    "    cmp     r6, r5"
+    .dcs    "    jump    lt, __crt_tls_copy_word"
+    .dcs    "    load    r1, r1[0]"
+    .dcs    "    jump    __crt_tls_copy"
+    .dcs    "__crt_tls_copy_done:"
     .dcs    "    return"
     .dcs    "@@thread_join"
     .dcs    "__crt_thread_join:"

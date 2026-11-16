@@ -1,9 +1,9 @@
 // <thread.h>: the CPUSim64 threads, processes, shared memory, atomics and
-// locks of the C library (compilers/C11/lib/thread.h), for C++ programs.
-// The generated C includes the C header; these are its declarations.
+// locks of the C library (compilers/C11/lib/_Thread.h), for C++ programs.
+// The generated C includes the C header <_Thread.h>; these are its declarations.
 #ifndef _CPPC_THREAD_H
 #define _CPPC_THREAD_H
-#pragma cppc c_include <thread.h>
+#pragma cppc c_include <_Thread.h>
 #include <stddef.h>
 extern "C" {
 typedef void (*thread_func)(void *arg);

@@ -1,0 +1,4 @@
+__crt_tls
+__crt_thread_start
+thread_create_tls
+_Thread_local
