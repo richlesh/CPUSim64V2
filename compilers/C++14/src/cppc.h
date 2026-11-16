@@ -51,6 +51,7 @@ void sb_init(StrBuf *b);
 void sb_putc(StrBuf *b, int c);
 void sb_put_cp(StrBuf *b, int cp);
 void sb_puts(StrBuf *b, const char *s);
+void sb_vprintf(StrBuf *b, const char *fmt, va_list ap);
 void sb_printf(StrBuf *b, const char *fmt, ...);
 char *sb_take(StrBuf *b);
 void out_cp(FILE *f, int cp);

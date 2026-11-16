@@ -37,12 +37,10 @@ static void emit(const char *s) {
 }
 
 static void emitf(const char *fmt, ...) {
-    char buf[1000];
     va_list ap;
     va_start(ap, fmt);
-    vsnprintf(buf, sizeof buf, fmt, ap);
+    sb_vprintf(out, fmt, ap);
     va_end(ap);
-    sb_puts(out, buf);
 }
 
 static const char *fmt_str(const char *fmt, ...);
@@ -144,6 +142,7 @@ static Ent *class_ctors(Type *cls);
 static const char *prvalue_dest(Type *cls, Node *n);
 static void aggregate_init_stmts(Type *cls, const char *dest, Node *list, Node *at);
 static Val *string_literal(Node *n);
+static int is_char_kind(Type *t);
 static void flush_temps_stmt(int mark);
 static const char *new_temp(Type *t);
 static Val *call_result(Type *ret, const char *call);
@@ -191,14 +190,12 @@ static void emit_line(Node *n) {
 
 
 static const char *fmt_str(const char *fmt, ...) {
-    char buf[1000];
     va_list ap;
     StrBuf sb;
-    va_start(ap, fmt);
-    vsnprintf(buf, sizeof buf, fmt, ap);
-    va_end(ap);
     sb_init(&sb);
-    sb_puts(&sb, buf);
+    va_start(ap, fmt);
+    sb_vprintf(&sb, fmt, ap);
+    va_end(ap);
     return sb.s;
 }
 
@@ -563,6 +560,8 @@ static Val *rvalue(Val *v) {
     Val *r;
     if (v->t->kind == TY_ARRAY) {
         r = val_new(ty_ptr(v->t->base), v->c);
+        /* the address of a string literal or of a static array is an address constant */
+        r->static_init = v->static_init;
         return r;
     }
     if (v->fn) {
@@ -2362,7 +2361,7 @@ static const char *init_text(Type *t, Node *init, int form, Node *at, int *stati
         if (e->kind == N_STRLIT || (e->kind == N_INITLIST && e->a && !e->a->next && e->a->kind == N_STRLIT && 0)) {
             Val *sv = string_literal(e);
             Type *ct = ty_unqual(t->base);
-            if (ct->kind != TY_CHAR && ct->kind != TY_SCHAR && ct->kind != TY_UCHAR && ct->kind != TY_WCHAR && ct->kind != TY_CHAR16 && ct->kind != TY_CHAR32)
+            if (!is_char_kind(ct))
                 serr(at, "an array of '%s' cannot be initialized with a string literal", ty_str(t->base));
             if (t->len < 0) t->len = sv->t->len;
             else if (sv->t->len - 1 > t->len) serr(at, "the initializer-string for the array is too long");
@@ -2698,6 +2697,13 @@ static void flush_temps_stmt(int mark) {
     if (d[0]) emit(d);
 }
 
+/* a character type: an array of it may be initialized with a string literal */
+static int is_char_kind(Type *t) {
+    Type *ct = ty_unqual(t);
+    return ct->kind == TY_CHAR || ct->kind == TY_SCHAR || ct->kind == TY_UCHAR || ct->kind == TY_WCHAR
+        || ct->kind == TY_CHAR16 || ct->kind == TY_CHAR32;
+}
+
 /* aggregate initialization of the class object at dest from a braced list */
 static void aggregate_init_stmts(Type *cls, const char *dest, Node *list, Node *at) {
     ClassInfo *ci = cinfo(cls);
@@ -2716,7 +2722,9 @@ static void aggregate_init_stmts(Type *cls, const char *dest, Node *list, Node *
                     }
                     for (; f->type->len >= 0 && i < f->type->len; i++)
                         if (!is_class_type(f->type->base)) emitf("(*%s).%s[%lld] = 0;\n", dest, f->name->s, i);
-                } else if (e->kind == N_STRLIT) {
+                } else if (e->kind == N_STRLIT && is_char_kind(f->type->base)) {
+                    /* a char array member from a string literal; for other element types (const char *)
+                       the literal is the first element of an elided brace list */
                     Val *sv = string_literal(e);
                     emitf("memcpy((*%s).%s, %s, %lld * sizeof(char));\n", dest, f->name->s, sv->c, sv->t->len);
                 } else {

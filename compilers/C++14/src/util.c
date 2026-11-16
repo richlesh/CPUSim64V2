@@ -119,13 +119,30 @@ void sb_puts(StrBuf *b, const char *s) {
     while (*s) sb_putc(b, *s++);
 }
 
-void sb_printf(StrBuf *b, const char *fmt, ...) {
+/* appends the formatted text, of any length */
+void sb_vprintf(StrBuf *b, const char *fmt, va_list ap) {
     char buf[512];
+    va_list aq;
+    int n;
+    va_copy(aq, ap);
+    n = vsnprintf(buf, sizeof buf, fmt, aq);
+    va_end(aq);
+    if (n < 0) return;
+    if ((size_t)n < sizeof buf) {
+        sb_puts(b, buf);
+    } else {
+        char *big = xalloc((size_t)n + 1);
+        vsnprintf(big, (size_t)n + 1, fmt, ap);
+        sb_puts(b, big);
+        free(big);
+    }
+}
+
+void sb_printf(StrBuf *b, const char *fmt, ...) {
     va_list ap;
     va_start(ap, fmt);
-    vsnprintf(buf, sizeof buf, fmt, ap);
+    sb_vprintf(b, fmt, ap);
     va_end(ap);
-    sb_puts(b, buf);
 }
 
 char *sb_take(StrBuf *b) {

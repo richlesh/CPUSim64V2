@@ -10,7 +10,6 @@
 #include <cstdlib>
 #include <ctime>
 #include <iostream>
-#include <vector>
 
 static const int FRAME_COUNT = 48;
 static const int FRAME_DELAY = 300;         // milliseconds
@@ -22,7 +21,7 @@ static const char *const HIDE_CURSOR = "\x1b[?25l";
 static const char *const SHOW_CURSOR = "\x1b[?25h";
 
 // bright cyan, magenta, yellow, red, green, blue
-static const std::vector<const char *> COLORS = {
+static const char *const COLORS[NUM_COLORS] = {
     "\x1b[96m", "\x1b[95m", "\x1b[93m", "\x1b[91m", "\x1b[92m", "\x1b[94m"
 };
 static const char SPINNER[4] = { '|', '/', '-', '\\' };

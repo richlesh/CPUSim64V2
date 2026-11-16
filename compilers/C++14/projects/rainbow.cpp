@@ -9,7 +9,6 @@
  * Author:   Richard Lesh
  */
 #include <iostream>
-#include <vector>
 
 static const char *const RESET = "\x1b[0m";
 static const char *const BOLD = "\x1b[1m";
@@ -17,13 +16,13 @@ static const char *const DIM = "\x1b[2m";
 static const char *const CLEAR_TO_EOL = "\x1b[0K";
 
 // black, red, green, yellow, blue, magenta, cyan, white
-static const std::vector<const char *> FG = {
+static const char *const FG[8] = {
     "\x1b[30m", "\x1b[31m", "\x1b[32m", "\x1b[33m", "\x1b[34m", "\x1b[35m", "\x1b[36m", "\x1b[37m"
 };
-static const std::vector<const char *> FG_BRIGHT = {
+static const char *const FG_BRIGHT[8] = {
     "\x1b[90m", "\x1b[91m", "\x1b[92m", "\x1b[93m", "\x1b[94m", "\x1b[95m", "\x1b[96m", "\x1b[97m"
 };
-static const std::vector<const char *> BG = {
+static const char *const BG[16] = {
     "\x1b[40m", "\x1b[41m", "\x1b[42m", "\x1b[43m", "\x1b[44m", "\x1b[45m", "\x1b[46m", "\x1b[47m",
     "\x1b[100m", "\x1b[101m", "\x1b[102m", "\x1b[103m", "\x1b[104m", "\x1b[105m", "\x1b[106m", "\x1b[107m"
 };
@@ -40,7 +39,7 @@ static void draw_text(const char *fg, const char *modifier)
 }
 
 // a heading and the eight colors of the table with the modifier
-static void draw_group(const char *title, const std::vector<const char *> &colors, const char *modifier)
+static void draw_group(const char *title, const char *const (&colors)[8], const char *modifier)
 {
     std::cout << '\n' << title << '\n';
     for (const char *color : colors) draw_text(color, modifier);
