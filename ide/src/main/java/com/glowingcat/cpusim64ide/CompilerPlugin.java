@@ -17,8 +17,12 @@ import java.util.stream.Stream;
  * A compiler written in CPUSim64 assembly language that the IDE can use to edit
  * and run another programming language (for example C11).
  *
- * <p>Each plugin is a folder inside the {@code compilers} directory. The folder
- * name is the plugin's name (it is shown in the File &gt; New Compiler menu and in
+ * <p>Each plugin is a folder inside the user's {@code ~/.cpusim64/compilers}
+ * directory, and only those are used. The compilers that come with the IDE
+ * (its own {@code compilers} directory) are copied there on the first run and
+ * copied again when the IDE has newer files (see {@link #syncBuiltIns}); the
+ * IDE never uses or changes its own copy. Users add their own compilers as
+ * further folders. The folder name is the plugin's name (it is shown in the File &gt; New Compiler menu and in
  * the window title). The folder contains:
  * <ul>
  *   <li>{@code config.properties} with
@@ -61,6 +65,16 @@ import java.util.stream.Stream;
 public final class CompilerPlugin {
 
     public static final String COMPILERS_DIR_PROPERTY = "cpusim64.compilers";
+
+    /** The plugins: {@code ~/.cpusim64/compilers}. */
+    public static Path userCompilersDir() {
+        return Path.of(System.getProperty("user.home"), ".cpusim64", "compilers");
+    }
+
+    /** Where a plugin whose folder cannot be written to is copied and built: {@code ~/.cpusim64/cache/compilers}. */
+    static Path cacheDir() {
+        return Path.of(System.getProperty("user.home"), ".cpusim64", "cache", "compilers");
+    }
 
     private final String name;
     private final Path dir;
@@ -226,11 +240,59 @@ public final class CompilerPlugin {
         return null;
     }
 
-    /** All plugins found in the {@code compilers} directory, sorted by name. */
-    public static List<CompilerPlugin> discover() {
-        return discover(findCompilersDir());
+    /** True once {@link #discover()} has synced the built-in plugins in this run of the IDE. */
+    private static boolean synced;
+
+    /**
+     * All plugins of {@code ~/.cpusim64/compilers}, sorted by name. The first
+     * call in a run of the IDE first syncs the built-in plugins into it.
+     */
+    public static synchronized List<CompilerPlugin> discover() {
+        Path user = userCompilersDir();
+        if (!synced) {
+            synced = true;
+            Path builtIn = findCompilersDir();
+            if (builtIn != null && !sameDir(builtIn, user)) {
+                try {
+                    syncBuiltIns(builtIn, user);
+                } catch (IOException e) {
+                    System.err.println("CPUSim64: the compilers could not be copied to " + user + ": " + e);
+                }
+            }
+        }
+        return discover(user);
     }
 
+    /**
+     * Copies every plugin of {@code builtInDir} (a folder with a {@code config.properties})
+     * to {@code userDir}: the files that are missing there or older than the
+     * built-in ones (see {@link #syncTree}). Files of the user's copy that are
+     * newer, files that only it has, and the user's own plugins are kept. When
+     * a plugin's files were copied its assembled compiler is deleted, so that the
+     * next run builds it from the new sources even if the object file looks
+     * newer. Returns the names of the plugins that were copied.
+     */
+    public static List<String> syncBuiltIns(Path builtInDir, Path userDir) throws IOException {
+        List<String> copied = new ArrayList<>();
+        for (CompilerPlugin p : discover(builtInDir)) {
+            Path dst = userDir.resolve(p.name);
+            if (syncTree(p.dir, dst) > 0) {
+                Files.deleteIfExists(p.compilerObj(dst));
+                copied.add(p.name);
+            }
+        }
+        return copied;
+    }
+
+    private static boolean sameDir(Path a, Path b) {
+        try {
+            return Files.isDirectory(b) && Files.isSameFile(a, b);
+        } catch (IOException e) {
+            return false;
+        }
+    }
+
+    /** All plugins found in one {@code compilers} directory, sorted by name. */
     public static List<CompilerPlugin> discover(Path compilersDir) {
         List<CompilerPlugin> result = new ArrayList<>();
         if (compilersDir == null || !Files.isDirectory(compilersDir)) return result;
@@ -259,13 +321,13 @@ public final class CompilerPlugin {
 
     /**
      * The folder in which the compiler is assembled and run. Normally the plugin
-     * folder itself; if that cannot be written to (for example an installed,
-     * read-only application folder) a per-user copy of the plugin (without tests
-     * and obj) is kept in {@code ~/.cpusim64/compilers/<name>} and used instead.
+     * folder itself; if that cannot be written to, a copy of the plugin
+     * (without tests and obj) is kept in {@code ~/.cpusim64/cache/compilers/<name>}
+     * and used instead.
      */
     public Path workingRoot() throws IOException {
         if (isWritableDir(dir)) return dir;
-        Path cache = Path.of(System.getProperty("user.home"), ".cpusim64", "compilers", name);
+        Path cache = cacheDir().resolve(name);
         syncTree(dir, cache);
         return cache;
     }
@@ -281,25 +343,40 @@ public final class CompilerPlugin {
         }
     }
 
-    /** Copies new or changed files from {@code from} to {@code to}, skipping tests/ and obj/. */
-    static void syncTree(Path from, Path to) throws IOException {
+    /**
+     * Copies the files of {@code from} that are missing in {@code to} or newer
+     * than their copy there (the copies keep the modification time), skipping
+     * the top-level tests/, every obj/ and output/ folder (build and test
+     * output) and hidden files. Returns the number of files copied.
+     */
+    static int syncTree(Path from, Path to) throws IOException {
+        int n = 0;
         Files.createDirectories(to);
         try (Stream<Path> walk = Files.walk(from)) {
             for (Path src : (Iterable<Path>) walk::iterator) {
                 Path rel = from.relativize(src);
-                if (rel.getNameCount() > 0) {
-                    String top = rel.getName(0).toString();
-                    if (top.equals("tests") || top.equals("obj") || top.startsWith(".")) continue;
-                }
+                if (skipped(rel)) continue;
                 Path dst = to.resolve(rel.toString());
                 if (Files.isDirectory(src)) {
                     Files.createDirectories(dst);
                 } else if (!Files.exists(dst)
                         || Files.getLastModifiedTime(src).compareTo(Files.getLastModifiedTime(dst)) > 0) {
                     Files.copy(src, dst, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.COPY_ATTRIBUTES);
+                    n++;
                 }
             }
         }
+        return n;
+    }
+
+    private static boolean skipped(Path rel) {
+        for (int i = 0; i < rel.getNameCount(); i++) {
+            String part = rel.getName(i).toString();
+            if (part.isEmpty()) continue;
+            if (part.startsWith(".") || part.equals("obj") || part.equals("output")) return true;
+            if (i == 0 && part.equals("tests")) return true;
+        }
+        return false;
     }
 
     public static Path compilerAsm(Path root, String source) { return root.resolve(source + ".asm"); }

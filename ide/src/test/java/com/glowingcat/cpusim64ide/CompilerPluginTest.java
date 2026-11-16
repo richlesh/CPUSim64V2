@@ -96,6 +96,58 @@ class CompilerPluginTest {
     }
 
     @Test
+    void builtInPluginsAreSyncedToTheUserFolder(@TempDir Path tmp) throws Exception {
+        Path builtIn = Files.createDirectories(tmp.resolve("app/compilers"));
+        Path user = tmp.resolve("home/.cpusim64/compilers");           // not there yet: the first run
+        Path c11 = plugin(builtIn, "C11", "compiler_source: cc\nfile_extensions: c,h\n");
+        Files.writeString(c11.resolve("cc.asm"), "v1");
+        Files.createDirectories(c11.resolve("lib"));
+        Files.writeString(c11.resolve("lib/stdio.h"), "h1");
+        Files.createDirectories(c11.resolve("tests"));
+        Files.writeString(c11.resolve("tests/t.c"), "t");
+        Files.createDirectories(c11.resolve("projects/obj"));
+        Files.writeString(c11.resolve("projects/obj/p.o64"), "o");
+        Files.writeString(c11.resolve(".DS_Store"), "x");
+        plugin(builtIn, "NotAPlugin", null);
+        long old = System.currentTimeMillis() - 60_000;
+        for (Path f : List.of(c11.resolve("cc.asm"), c11.resolve("lib/stdio.h"), c11.resolve("config.properties")))
+            Files.setLastModifiedTime(f, FileTime.fromMillis(old));
+
+        assertEquals(List.of("C11"), CompilerPlugin.syncBuiltIns(builtIn, user));
+        Path u11 = user.resolve("C11");
+        assertEquals("v1", Files.readString(u11.resolve("cc.asm")));
+        assertEquals("h1", Files.readString(u11.resolve("lib/stdio.h")));
+        assertFalse(Files.exists(u11.resolve("tests")));
+        assertFalse(Files.exists(u11.resolve("projects/obj")));
+        assertFalse(Files.exists(u11.resolve(".DS_Store")));
+        assertFalse(Files.exists(user.resolve("NotAPlugin")));
+
+        // the user builds the compiler, adds a plugin of their own and edits a file
+        Files.createDirectories(u11.resolve("obj"));
+        Files.writeString(u11.resolve("obj/cc.o64"), "built");
+        plugin(user, "Toy", "compiler_source: toy\n");
+        Files.writeString(u11.resolve("lib/stdio.h"), "edited");
+        assertTrue(CompilerPlugin.syncBuiltIns(builtIn, user).isEmpty(), "nothing newer: nothing copied");
+        assertEquals("built", Files.readString(u11.resolve("obj/cc.o64")), "the compiler is not rebuilt");
+        assertEquals("edited", Files.readString(u11.resolve("lib/stdio.h")), "a newer user copy is kept");
+
+        // an updated IDE has a newer compiler
+        Files.writeString(c11.resolve("cc.asm"), "v2");
+        Files.setLastModifiedTime(c11.resolve("cc.asm"), FileTime.fromMillis(System.currentTimeMillis() + 5_000));
+        assertEquals(List.of("C11"), CompilerPlugin.syncBuiltIns(builtIn, user));
+        assertEquals("v2", Files.readString(u11.resolve("cc.asm")));
+        assertFalse(Files.exists(u11.resolve("obj/cc.o64")), "the old compiler object is deleted");
+        assertEquals("h1", Files.readString(c11.resolve("lib/stdio.h")), "the built-in plugin is not changed");
+        assertFalse(Files.exists(c11.resolve("obj")), "nothing is built in the built-in plugin");
+        assertEquals("edited", Files.readString(u11.resolve("lib/stdio.h")));
+
+        // the menu is built from the user folder only
+        List<CompilerPlugin> found = CompilerPlugin.discover(user);
+        assertEquals(List.of("C11", "Toy"), found.stream().map(CompilerPlugin::getName).toList());
+        assertEquals(u11, CompilerPlugin.find(found, "c11").getDir());
+    }
+
+    @Test
     void noCompilersDirectoryGivesNoPlugins(@TempDir Path tmp) {
         assertTrue(CompilerPlugin.discover(null).isEmpty());
         assertTrue(CompilerPlugin.discover(tmp.resolve("missing")).isEmpty());
