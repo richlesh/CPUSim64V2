@@ -2085,16 +2085,47 @@ public class IDEApp {
         Path open = current;
         // before the first run the obj folder may not exist yet
         while (open != null && !Files.isDirectory(open)) open = open.getParent();
+        Path chosen = isMac() ? chooseDirectoryMac(t, open) : chooseDirectorySwing(t, open);
+        if (chosen == null) return;
+        chosen = chosen.toAbsolutePath().normalize();
+        t.workingDir = chosen.equals(defaultWorkingDir(t)) ? null : chosen;
+        updateWorkingDirTip();
+        appendConsole("Working directory: " + workingDirFor(t) + "\n");
+    }
+
+    private static boolean isMac() {
+        return System.getProperty("os.name", "").toLowerCase(java.util.Locale.ROOT).startsWith("mac");
+    }
+
+    /**
+     * The native macOS folder chooser: no file name field and no format menu,
+     * files are grayed out, and its button is enabled only for a folder. It opens
+     * inside {@code open}, so confirming at once keeps the current directory.
+     */
+    private Path chooseDirectoryMac(SourceTab t, Path open) {
+        String prop = "apple.awt.fileDialogForDirectories";
+        String old = System.getProperty(prop);
+        System.setProperty(prop, "true");
+        try {
+            FileDialog fd = new FileDialog(frame, "Set Working Directory for " + t.name(), FileDialog.LOAD);
+            if (open != null) fd.setDirectory(open.toString());
+            fd.setVisible(true);
+            if (fd.getFile() == null) return null;
+            Path p = Path.of(fd.getDirectory(), fd.getFile());
+            return Files.isDirectory(p) ? p : null;
+        } finally {
+            if (old == null) System.clearProperty(prop); else System.setProperty(prop, old);
+        }
+    }
+
+    /** Other platforms: a Swing chooser that lists only folders. */
+    private Path chooseDirectorySwing(SourceTab t, Path open) {
         JFileChooser fc = new JFileChooser(open == null ? null : open.toFile());
         fc.setDialogTitle("Set Working Directory for " + t.name());
         fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
         fc.setAcceptAllFileFilterUsed(false);
-        if (current != null) fc.setSelectedFile(current.toFile());
-        if (fc.showDialog(frame, "Set") != JFileChooser.APPROVE_OPTION || fc.getSelectedFile() == null) return;
-        Path chosen = fc.getSelectedFile().toPath().toAbsolutePath().normalize();
-        t.workingDir = chosen.equals(defaultWorkingDir(t)) ? null : chosen;
-        updateWorkingDirTip();
-        appendConsole("Working directory: " + workingDirFor(t) + "\n");
+        if (fc.showDialog(frame, "Set") != JFileChooser.APPROVE_OPTION || fc.getSelectedFile() == null) return null;
+        return fc.getSelectedFile().isDirectory() ? fc.getSelectedFile().toPath() : null;
     }
 
     /**
