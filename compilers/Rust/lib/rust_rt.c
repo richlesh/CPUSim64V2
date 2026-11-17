@@ -147,17 +147,33 @@ RS_ATTR static void rs_putcp(long port, long cp) {
 #endif
 }
 
-/* decode UTF-8 from packed bytes; invalid sequences become U+FFFD (one per
-   maximal invalid prefix, as String::from_utf8_lossy) */
+/* one byte written as it is (not as a codepoint): a stream in binary mode
+   writes the bytes fputc gets (the C11 library's __SIO_BIN mode bit, 8) */
+RS_ATTR static void rs_putbyte(long port, long b) {
+    FILE *f = port == 2 ? stderr : stdout;
+#ifdef RS_HOST
+    fputc((int)(b & 255), f);
+#else
+    long fl = f->__flags;
+    f->__flags = fl | 8;
+    fputc((int)(b & 255), f);
+    f->__flags = fl;
+#endif
+}
+
+/* Writes bytes like std's Stdout: valid UTF-8 is written as codepoints (the
+   port encodes them as UTF-8 again), the bytes of an invalid sequence are
+   written unchanged, so binary output (images, write_all of any bytes) is
+   exact. */
 RS_ATTR static void rs_write_bytes(long port, long base, long len) {
-    long i = 0, b, c, need, cp, lo, hi, j, ok;
+    long i = 0, b, c, need, cp, lo, hi, j, ok, k;
     while (i < len) {
         b = __ldb(base + i);
         if (b < 0x80) { rs_putcp(port, b); i++; continue; }
         if (b >= 0xC2 && b <= 0xDF) { need = 1; cp = b & 0x1F; }
         else if (b >= 0xE0 && b <= 0xEF) { need = 2; cp = b & 0x0F; }
         else if (b >= 0xF0 && b <= 0xF4) { need = 3; cp = b & 7; }
-        else { rs_putcp(port, 0xFFFD); i++; continue; }
+        else { rs_putbyte(port, b); i++; continue; }
         lo = 0x80; hi = 0xBF;
         if (b == 0xE0) lo = 0xA0;
         else if (b == 0xED) hi = 0x9F;
@@ -171,7 +187,10 @@ RS_ATTR static void rs_write_bytes(long port, long base, long len) {
             cp = (cp << 6) | (c & 0x3F);
         }
         if (ok) { rs_putcp(port, cp); i += need + 1; }
-        else { rs_putcp(port, 0xFFFD); i += j; }
+        else {
+            for (k = 0; k < j && i + k < len; k++) rs_putbyte(port, __ldb(base + i + k));
+            i += j;
+        }
     }
 }
 
