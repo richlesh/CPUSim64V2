@@ -31,6 +31,7 @@ enum { CG_RT, CG_TYPES, CG_PROTOS, CG_DATA, CG_FUNCS, CG_MAIN, CG_NSECT };
 extern StrBuf cg_sect[CG_NSECT];
 void cg_printf(int sect, const char *fmt, ...);
 void cg_line(Node *n);                 /* emits `#line N "file"` into CG_FUNCS if the line changed */
+void cg_line_resync(StrBuf *out);      /* repeats the current `#line` (one per emitted C line) */
 int cg_new_id(void);                   /* fresh number for names (F12, S7, t3, ...) */
 
 /* the instance being generated: generic args of the current fn (and impl) */

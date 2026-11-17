@@ -103,6 +103,14 @@ static void E(const char *fmt, ...) {
     n = vsnprintf(ge_lbuf, GE_LINEBUF, fmt, ap);
     va_end(ap);
     if (n < 0 || n >= GE_LINEBUF) fatal("code generator: output line too long");
+    /* every C line of a statement gets the statement's #line (see cg_line_resync),
+       unless the previous line already is that directive */
+    if (n > 0 && (ge_out->len == 0 || ge_out->s[ge_out->len - 1] == '\n')) {
+        int p = ge_out->len - 1;
+        while (p > 0 && ge_out->s[p - 1] != '\n') p--;
+        if (!(ge_out->len > 0 && p >= 0 && ge_out->len - p > 6 && strncmp(ge_out->s + p, "#line ", 6) == 0))
+            cg_line_resync(ge_out);
+    }
     sb_puts(ge_out, ge_lbuf);
 }
 

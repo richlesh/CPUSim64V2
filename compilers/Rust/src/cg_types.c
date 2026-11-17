@@ -115,6 +115,27 @@ void cg_line(Node *n) {
     free(b.s);
 }
 
+/* The C11 compiler numbers every C line after a #line, but one Rust
+   statement becomes several C lines: cg_expr.c calls this before each of
+   them, so they all map back to the statement's line (the debugger's
+   current line and breakpoints). */
+void cg_line_resync(StrBuf *out) {
+    StrBuf b;
+    if (cgt_last_line <= 0) return;
+    sb_init(&b);
+    cgt_line_name(&b, cgt_last_file);
+    sb_puts(out, "#line ");
+    {
+        char num[24];
+        sprintf(num, "%d", cgt_last_line);
+        sb_puts(out, num);
+    }
+    sb_puts(out, " \"");
+    sb_puts(out, b.s);
+    sb_puts(out, "\"\n");
+    free(b.s);
+}
+
 int cg_new_id(void) {
     return ++cgt_ids;
 }
