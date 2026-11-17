@@ -58,7 +58,8 @@ impl Simulator {
         if free.is_empty() {
             return Ok(0);
         }
-        if requested_words < 1 || requested_words > (i32::MAX as i64) - 3 {
+        // The block header is 3 words; keep requested_words + 3 from overflowing.
+        if requested_words < 1 || requested_words > i64::MAX - 3 {
             return Err(CpuException(format!(
                 "Illegal memory allocation: {}",
                 requested_words
@@ -287,7 +288,11 @@ impl Simulator {
         let mut a = addr;
         let byte_count = self.mem_read(a)?;
         a += 1;
-        if byte_count < 0 || byte_count > i32::MAX as i64 {
+        // Byte counts up to i32::MAX are accepted as in Java; larger ones only
+        // if the string can fit in memory (it would fail on the read anyway).
+        if byte_count < 0
+            || (byte_count > i32::MAX as i64 && byte_count / 8 > self.stack_base - a)
+        {
             return Err(CpuException(format!(
                 "Invalid UTF-8 byte count: {}",
                 byte_count

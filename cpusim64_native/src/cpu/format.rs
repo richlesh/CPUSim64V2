@@ -113,10 +113,10 @@ impl Simulator {
     }
 
     pub fn print_memory_dump(&mut self, addr: i64, count: i32) {
-        print!("Memory dump at {:08x}, {} words:\n", addr as u32, count);
+        print!("Memory dump at {}, {} words:\n", hex_addr(addr), count);
         for i in 0..count as i64 {
             let v = self.mem_read(addr + i).unwrap_or(0);
-            print!("  [{:08x}]: {:016x}  ({})\n", (addr + i) as u32, v as u64, v);
+            print!("  [{}]: {:016x}  ({})\n", hex_addr(addr + i), v as u64, v);
         }
     }
 
@@ -128,8 +128,8 @@ impl Simulator {
             let next = self.mem_read(p + 1).unwrap_or(0);
             let size = self.mem_read(p + 2).unwrap_or(0);
             print!(
-                "  [{:08x}]: {}, size={} words\n",
-                p as u32,
+                "  [{}]: {}, size={} words\n",
+                hex_addr(p),
                 if size > 0 { "IN USE" } else { "FREE" },
                 size.abs()
             );
@@ -159,7 +159,7 @@ impl Simulator {
             } else if r < GPR_COUNT - 3 {
                 out.push_str(&format!("{}: {}  ", reg, self.r[r]));
             } else if r < GPR_COUNT {
-                out.push_str(&format!("{}: {:08x}  ", reg, self.r[r] as u32));
+                out.push_str(&format!("{}: {}  ", reg, hex_addr(self.r[r])));
             }
         } else if is_const_kind(kind) {
             out.push_str(&format!("C(12)={}  ", v));
@@ -174,7 +174,7 @@ impl Simulator {
         // %-60.60s: left-justify, truncate to 60.
         let truncated: String = label_str.chars().take(60).collect();
         let padded = format!("{:<60}", truncated);
-        print!("{:>5}:{}{:08x} ", self.get_pid(), padded, pc as u32);
+        print!("{:>5}:{}{} ", self.get_pid(), padded, hex_addr(pc));
         match std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
             d.disassemble(&self.reverse_symbol_map)
         })) {
@@ -268,11 +268,32 @@ impl Decoded {
     }
 }
 
+/// Formats an address as Java's `%08x` of `(int)addr` does (8 hex digits,
+/// negative shared-memory addresses as their low 32 bits), but prints
+/// addresses above 32 bits in full instead of truncating them.
+fn hex_addr(a: i64) -> String {
+    if a > u32::MAX as i64 {
+        format!("{a:x}")
+    } else {
+        format!("{:08x}", a as u32)
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
     use crate::cpu::Simulator;
     use std::collections::HashMap;
+
+    #[test]
+    fn hex_addr_matches_java_below_32_bits_and_is_full_above() {
+        assert_eq!(hex_addr(0x1ba), "000001ba");
+        assert_eq!(hex_addr(0xffff_ffff), "ffffffff");
+        assert_eq!(hex_addr(i64::MIN + 5), "00000005"); // shared memory, as Java (int)
+        assert_eq!(hex_addr(0x1_0000_0000), "100000000");
+        assert_eq!(hex_addr(3_000_000_024), "b2d05e18");
+        assert_eq!(hex_addr(0x12_3456_789a), "123456789a");
+    }
 
     #[test]
     fn heading_line_matches_reference() {

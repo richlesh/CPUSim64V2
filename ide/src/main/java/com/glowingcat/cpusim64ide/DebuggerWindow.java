@@ -128,7 +128,8 @@ public class DebuggerWindow extends JFrame {
         if (userArgs != null && !userArgs.isEmpty()) {
             for (String a : userArgs.split("\\s+")) simArgs.add(a);
         }
-        sim = new Simulator((int)(settings.heapSizeMiB * 1024 * 1024), 0, (int)(settings.stackSizeKiB * 1024), simArgs.toArray(new String[0]));
+        // The debugger always runs the Java simulator, so the Java limit applies.
+        sim = new Simulator((int) settings.heapSizeWords(false), 0, (int)(settings.stackSizeKiB * 1024), simArgs.toArray(new String[0]));
         sim.setDebug(true);
         sim.loadProgram(program, 0L, reverseSymbolMap);
         startPC = program.get(0);

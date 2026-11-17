@@ -41,6 +41,32 @@ public class AppSettings {
     public double heapSizeMiB = 1.0;
     public double stackSizeKiB = 8.0;
 
+    /**
+     * The heap size in words to pass to a simulator: the Heap field (MiW) clamped
+     * to what that simulator can use. The Java simulator keeps memory in one
+     * {@code long[]}, so it is limited to {@link cloud.lesh.CPUSim64.Simulator#MAX_MEMORY_WORDS};
+     * the native simulator has 64-bit memory and is limited to the computer's RAM / 8.
+     */
+    public long heapSizeWords(boolean nativeSimulator) {
+        double words = heapSizeMiB * 1024 * 1024;
+        long max = nativeSimulator ? physicalMemoryWords() : cloud.lesh.CPUSim64.Simulator.MAX_MEMORY_WORDS;
+        if (!(words > 0)) return 0;
+        return words >= max ? max : (long) words;
+    }
+
+    /** The computer's physical memory in 8-byte words (Java simulator limit if unknown). */
+    public static long physicalMemoryWords() {
+        try {
+            var os = (com.sun.management.OperatingSystemMXBean)
+                    java.lang.management.ManagementFactory.getOperatingSystemMXBean();
+            long bytes = os.getTotalMemorySize();
+            if (bytes > 0) return bytes / 8;
+        } catch (Throwable ignored) {
+            // jdk.management not in the runtime, or not a HotSpot-style bean
+        }
+        return cloud.lesh.CPUSim64.Simulator.MAX_MEMORY_WORDS;
+    }
+
     public int mainWindowWidth = 1024;
     public int mainWindowHeight = 768;
     public boolean aiPanelVisible = false;

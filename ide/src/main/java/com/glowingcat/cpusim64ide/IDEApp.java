@@ -45,6 +45,10 @@ public class IDEApp {
     private TerminalPanel console;
     private JTextField argsField;               // the editor of argsCombo
     private JTextField optionsField;            // compiler windows only (editor of optionsCombo)
+    private JTextField heapField;               // Heap size in MiW (console toolbar)
+
+    /** Largest Heap field value (MiW) for the Java simulator: 2048 MiW = 2Gi words. */
+    private static final double JAVA_MAX_HEAP_MIW = 2048;
     private JComboBox<String> argsCombo, optionsCombo;
     private JCheckBox useLinkerBox;
     /** The focused editor tab; codeEditor is its text area. */
@@ -885,15 +889,15 @@ public class IDEApp {
         consoleToolBar.add(useLinkerBox);
         consoleToolBar.addSeparator();
         consoleToolBar.add(new JLabel("Heap: "));
-        JTextField heapField = new JTextField(String.valueOf(settings.heapSizeMiB), 5);
+        heapField = new JTextField(String.valueOf(settings.heapSizeMiB), 5);
         heapField.setMaximumSize(new Dimension(70, 24));
         heapField.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusLost(java.awt.event.FocusEvent e) {
-                try { settings.heapSizeMiB = Double.parseDouble(heapField.getText().trim()); settings.save(); } catch (NumberFormatException ignored) {}
+                applyHeapField();
             }
         });
         consoleToolBar.add(heapField);
-        consoleToolBar.add(new JLabel("MiB "));
+        consoleToolBar.add(new JLabel("MiW "));
         consoleToolBar.addSeparator();
         consoleToolBar.add(new JLabel("Stack: "));
         JTextField stackField = new JTextField(String.valueOf(settings.stackSizeKiB), 5);
@@ -904,7 +908,7 @@ public class IDEApp {
             }
         });
         consoleToolBar.add(stackField);
-        consoleToolBar.add(new JLabel("kiB"));
+        consoleToolBar.add(new JLabel("kiW"));
         consoleToolBar.addSeparator();
         workingDirBtn = new JButton("Set Working Directory");
         workingDirBtn.addActionListener(e -> chooseWorkingDirectory());
@@ -1740,8 +1744,28 @@ public class IDEApp {
         return combo;
     }
 
+    /**
+     * Reads the Heap field into the settings. With the Java simulator selected,
+     * a value above 2048 MiW (the Java simulator's 2Gi-word limit) is changed to
+     * 2048 in the field and in the settings; with the native simulator the value
+     * is kept as typed.
+     */
+    private void applyHeapField() {
+        if (heapField == null) return;
+        try {
+            double miw = Double.parseDouble(heapField.getText().trim());
+            if (!settings.useNativeSimulator && miw > JAVA_MAX_HEAP_MIW) {
+                miw = JAVA_MAX_HEAP_MIW;
+                heapField.setText(String.valueOf(miw));
+            }
+            settings.heapSizeMiB = miw;
+            settings.save();
+        } catch (NumberFormatException ignored) {}
+    }
+
     /** Remembers the Args and Options values of a Run or Debug in the settings file. */
     private void rememberFieldValues() {
+        applyHeapField();
         AppSettings.remember(settings.argsHistory, argsField.getText());
         if (optionsField != null) AppSettings.remember(settings.optionsHistoryFor(plugin.getName()), optionsField.getText());
         settings.save();
@@ -1907,7 +1931,7 @@ public class IDEApp {
                 java.util.List<String> simArgs = new java.util.ArrayList<>();
                 simArgs.add(objFile);
                 simArgs.add("--verbose");
-                simArgs.add("--mem=" + (int)(settings.heapSizeMiB * 1024 * 1024));
+                simArgs.add("--mem=" + settings.heapSizeWords(settings.useNativeSimulator));
                 simArgs.add("--stack=" + (int)(settings.stackSizeKiB * 1024));
                 if (mode != null) simArgs.add(mode);
                 String userArgs = argsField.getText().trim();

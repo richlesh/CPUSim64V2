@@ -44,7 +44,7 @@ The project is designed for educational use, computer architecture instruction, 
 - Assemble, Run, Debug, and Trace from the menu  
 - Run/Stop toggle button — Stop terminates the running program and all child processes  
 - Ctrl+C to interrupt running program, Ctrl+D to signal EOF  
-- Configurable Heap Size (MiB) and Stack Size (kiB) in the toolbar  
+- Configurable Heap Size (MiW, mebi-words) and Stack Size (kiW, kibi-words) in the toolbar; a word is 8 bytes  
 - **Set Working Directory** button in the toolbar: the folder a tab's program runs in (relative file names, `iSYSTEM` commands and `$PWD`), by default the folder of its `.o64` file (`obj/` next to the source); the same for Run, Trace and Debug with the Java or native simulator  
 - Find and Replace with regex/grep support and capture groups  
 - Shift Selection Left/Right (Cmd+[/]) for block indent/dedent  
@@ -146,6 +146,7 @@ Compiles Visual Basic .NET programs (File → New Compiler → VBNET) to CPUSim6
 
 ### **Simulation Engine**
 - Cycle-accurate execution  
+- Memory size (`--mem=`, in 8-byte words): the Java simulator keeps memory in one Java array, so it is limited to about 2Gi words (2³¹ − 9 words, 16 GiB), and larger sizes are reduced to that; the native simulator has no such limit (see below)  
 - Random-access files: `iOPEN_RANDOM_ACCESS_FILE`, `iSEEK` and `iTELL` (with `SEEK_BEGIN`/`SEEK_END`) in both the Java and native simulators  
 - `iTIME` returns the wall-clock time in nanoseconds since the Unix epoch (UTC)  
 - `iENV` fetches an environment variable as a string (cached, so fetching it again returns the same string; do not free it)  
@@ -159,6 +160,7 @@ Compiles Visual Basic .NET programs (File → New Compiler → VBNET) to CPUSim6
 - Full behavioral parity with the Java simulator: all 39 opcodes, the complete interrupt/syscall surface, endian-aware port I/O, file I/O, the Fibonacci-block heap allocator, and the fork/thread/shared-memory concurrency model  
 - Byte-for-byte identical `printCPUState`, dump, and trace output — including a port of the OpenJDK Schubfach `Double.toString` algorithm so even subnormal floats format exactly like Java  
 - Reads the same gzip-compressed `.o64` object files and `.sym1` symbol maps; accepts the same CLI flags (`--debug`, `--trace`, `--verbose`, `--mem=`, `--stack=`)  
+- 64-bit memory: `--mem=` and `--stack=` take 64-bit word counts, addresses are full 64-bit values (non-negative addresses for program memory, negative ones for shared memory), and a single `malloc` block can be larger than 2³¹ words; the limit is the computer's RAM, since all of the memory is allocated at start-up (and copied by `fork`). Programs that use more than about 2Gi words run only on the native simulator. The IDE's Heap field is clamped to the computer's RAM / 8 words when the native simulator is selected (and to the Java limit otherwise, and always in the debugger, which uses the Java simulator)  
 - Cycle-timing table built in by default, overridable at runtime by dropping an `instructions.data` file next to the executable  
 - Validation harness compares output against the committed reference `.out` files  
 - Implements the same interrupts as the Java simulator, including random-access files, `iTIME`, `iENV` and `iSYSTEM`; the validation tests require exact output and cycle parity for all 35 programs  
