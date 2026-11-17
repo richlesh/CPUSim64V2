@@ -1,0 +1,2309 @@
+(CRATE
+  (ITEM_FN main
+    c=(BLOCK
+      (STMT_LET
+        a=(P_IDENT w)
+        c=(E_LIT_INT "6" #6))
+      (STMT_LET
+        a=(P_IDENT p)
+        c=(E_LIT_INT "2" #2))
+      (STMT_LET
+        a=(P_IDENT v)
+        c=(E_LIT_FLOAT "3.14159"))
+      (STMT_LET
+        a=(P_IDENT name)
+        c=(E_LIT_STR "n\xC3\xA9"))
+      (STMT_EXPR {semi}
+        a=(BLOCK
+          (STMT_LET
+            a=(P_IDENT __out {mut})
+            c=(E_CALL
+              a=(E_PATH
+                a=(PATH {global}
+                  (PATH_SEG core)
+                  (PATH_SEG io)
+                  (PATH_SEG stdout_raw)))))
+          (STMT_LET
+            a=(P_IDENT __f {mut})
+            c=(E_CALL
+              a=(E_PATH
+                a=(PATH {global}
+                  (PATH_SEG core)
+                  (PATH_SEG fmt)
+                  (PATH_SEG Formatter)
+                  (PATH_SEG new)))
+              (E_REF {mut}
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG __out))))))
+          a=(BLOCK
+            (STMT_LET
+              a=(P_IDENT __a0)
+              c=(E_REF
+                a=(E_PAREN
+                  a=(E_LIT_STR "\xC3\xBCn\xC3\xAF"))))
+            (STMT_EXPR {semi}
+              a=(E_METHOD_CALL write_str
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG __f)))
+                (E_LIT_STR "h\xC3\xA9llo w\xC3\xB6rld \xE2\x9C\x93 ")))
+            (STMT_LET
+              a=(P_WILD)
+              c=(E_CALL
+                a=(E_PATH
+                  a=(PATH {global}
+                    (PATH_SEG core)
+                    (PATH_SEG fmt)
+                    (PATH_SEG Display)
+                    (PATH_SEG fmt)))
+                (E_PATH
+                  a=(PATH
+                    (PATH_SEG __a0)))
+                (E_REF {mut}
+                  a=(E_PATH
+                    a=(PATH
+                      (PATH_SEG __f))))))
+            (STMT_EXPR {semi}
+              a=(E_METHOD_CALL write_str
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG __f)))
+                (E_LIT_STR "\n"))))))
+      (STMT_EXPR {semi}
+        a=(BLOCK
+          (STMT_LET
+            a=(P_IDENT __out {mut})
+            c=(E_CALL
+              a=(E_PATH
+                a=(PATH {global}
+                  (PATH_SEG core)
+                  (PATH_SEG io)
+                  (PATH_SEG stdout_raw)))))
+          (STMT_LET
+            a=(P_IDENT __f {mut})
+            c=(E_CALL
+              a=(E_PATH
+                a=(PATH {global}
+                  (PATH_SEG core)
+                  (PATH_SEG fmt)
+                  (PATH_SEG Formatter)
+                  (PATH_SEG new)))
+              (E_REF {mut}
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG __out))))))
+          a=(BLOCK
+            (STMT_LET
+              a=(P_IDENT __a0)
+              c=(E_REF
+                a=(E_PAREN
+                  a=(E_LIT_INT "1" #1))))
+            (STMT_EXPR {semi}
+              a=(E_METHOD_CALL write_str
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG __f)))
+                (E_LIT_STR "raw { ")))
+            (STMT_LET
+              a=(P_WILD)
+              c=(E_CALL
+                a=(E_PATH
+                  a=(PATH {global}
+                    (PATH_SEG core)
+                    (PATH_SEG fmt)
+                    (PATH_SEG Display)
+                    (PATH_SEG fmt)))
+                (E_PATH
+                  a=(PATH
+                    (PATH_SEG __a0)))
+                (E_REF {mut}
+                  a=(E_PATH
+                    a=(PATH
+                      (PATH_SEG __f))))))
+            (STMT_EXPR {semi}
+              a=(E_METHOD_CALL write_str
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG __f)))
+                (E_LIT_STR " \\n\n"))))))
+      (STMT_EXPR {semi}
+        a=(BLOCK
+          (STMT_LET
+            a=(P_IDENT __out {mut})
+            c=(E_CALL
+              a=(E_PATH
+                a=(PATH {global}
+                  (PATH_SEG core)
+                  (PATH_SEG io)
+                  (PATH_SEG stdout_raw)))))
+          (STMT_LET
+            a=(P_IDENT __f {mut})
+            c=(E_CALL
+              a=(E_PATH
+                a=(PATH {global}
+                  (PATH_SEG core)
+                  (PATH_SEG fmt)
+                  (PATH_SEG Formatter)
+                  (PATH_SEG new)))
+              (E_REF {mut}
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG __out))))))
+          a=(BLOCK
+            (STMT_LET
+              a=(P_IDENT __a0)
+              c=(E_REF
+                a=(E_PAREN
+                  a=(E_LIT_INT "2" #2))))
+            (STMT_EXPR {semi}
+              a=(E_METHOD_CALL write_str
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG __f)))
+                (E_LIT_STR "raw \"quoted\" ")))
+            (STMT_LET
+              a=(P_WILD)
+              c=(E_CALL
+                a=(E_PATH
+                  a=(PATH {global}
+                    (PATH_SEG core)
+                    (PATH_SEG fmt)
+                    (PATH_SEG Display)
+                    (PATH_SEG fmt)))
+                (E_PATH
+                  a=(PATH
+                    (PATH_SEG __a0)))
+                (E_REF {mut}
+                  a=(E_PATH
+                    a=(PATH
+                      (PATH_SEG __f))))))
+            (STMT_EXPR {semi}
+              a=(E_METHOD_CALL write_str
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG __f)))
+                (E_LIT_STR "\n"))))))
+      (STMT_EXPR {semi}
+        a=(BLOCK
+          (STMT_LET
+            a=(P_IDENT __out {mut})
+            c=(E_CALL
+              a=(E_PATH
+                a=(PATH {global}
+                  (PATH_SEG core)
+                  (PATH_SEG io)
+                  (PATH_SEG stdout_raw)))))
+          (STMT_LET
+            a=(P_IDENT __f {mut})
+            c=(E_CALL
+              a=(E_PATH
+                a=(PATH {global}
+                  (PATH_SEG core)
+                  (PATH_SEG fmt)
+                  (PATH_SEG Formatter)
+                  (PATH_SEG new)))
+              (E_REF {mut}
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG __out))))))
+          a=(BLOCK
+            (STMT_LET
+              a=(P_IDENT __a0)
+              c=(E_REF
+                a=(E_PAREN
+                  a=(E_LIT_INT "1" #1))))
+            (STMT_LET
+              a=(P_IDENT __a1)
+              c=(E_REF
+                a=(E_PAREN
+                  a=(E_LIT_INT "2" #2))))
+            (STMT_LET
+              a=(P_IDENT __a2)
+              c=(E_REF
+                a=(E_PAREN
+                  a=(E_LIT_INT "3" #3))))
+            (STMT_LET
+              a=(P_IDENT __a3)
+              c=(E_REF
+                a=(E_PAREN
+                  a=(E_LIT_INT "4" #4))))
+            (STMT_EXPR {semi}
+              a=(E_METHOD_CALL set_spec
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG __f)))
+                (E_LIT_CHAR #8594)
+                (E_LIT_INT u8 "2" #2)
+                (E_LIT_INT u8 "0" #0)
+                (E_LIT_BOOL #0)
+                (E_LIT_BOOL #0)
+                (E_LIT_INT usize "9" #9)
+                (E_LIT_BOOL #1)
+                (E_LIT_INT usize "0" #0)
+                (E_LIT_BOOL #0)))
+            (STMT_LET
+              a=(P_WILD)
+              c=(E_CALL
+                a=(E_PATH
+                  a=(PATH {global}
+                    (PATH_SEG core)
+                    (PATH_SEG fmt)
+                    (PATH_SEG Display)
+                    (PATH_SEG fmt)))
+                (E_PATH
+                  a=(PATH
+                    (PATH_SEG __a0)))
+                (E_REF {mut}
+                  a=(E_PATH
+                    a=(PATH
+                      (PATH_SEG __f))))))
+            (STMT_EXPR {semi}
+              a=(E_METHOD_CALL clear_spec
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG __f)))))
+            (STMT_EXPR {semi}
+              a=(E_METHOD_CALL write_str
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG __f)))
+                (E_LIT_STR "|")))
+            (STMT_EXPR {semi}
+              a=(E_METHOD_CALL set_spec
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG __f)))
+                (E_LIT_CHAR #233)
+                (E_LIT_INT u8 "1" #1)
+                (E_LIT_INT u8 "0" #0)
+                (E_LIT_BOOL #0)
+                (E_LIT_BOOL #0)
+                (E_LIT_INT usize "4" #4)
+                (E_LIT_BOOL #1)
+                (E_LIT_INT usize "0" #0)
+                (E_LIT_BOOL #0)))
+            (STMT_LET
+              a=(P_WILD)
+              c=(E_CALL
+                a=(E_PATH
+                  a=(PATH {global}
+                    (PATH_SEG core)
+                    (PATH_SEG fmt)
+                    (PATH_SEG Display)
+                    (PATH_SEG fmt)))
+                (E_PATH
+                  a=(PATH
+                    (PATH_SEG __a1)))
+                (E_REF {mut}
+                  a=(E_PATH
+                    a=(PATH
+                      (PATH_SEG __f))))))
+            (STMT_EXPR {semi}
+              a=(E_METHOD_CALL clear_spec
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG __f)))))
+            (STMT_EXPR {semi}
+              a=(E_METHOD_CALL write_str
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG __f)))
+                (E_LIT_STR "|")))
+            (STMT_EXPR {semi}
+              a=(E_METHOD_CALL set_spec
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG __f)))
+                (E_LIT_CHAR #48)
+                (E_LIT_INT u8 "3" #3)
+                (E_LIT_INT u8 "0" #0)
+                (E_LIT_BOOL #0)
+                (E_LIT_BOOL #0)
+                (E_LIT_INT usize "5" #5)
+                (E_LIT_BOOL #1)
+                (E_LIT_INT usize "0" #0)
+                (E_LIT_BOOL #0)))
+            (STMT_LET
+              a=(P_WILD)
+              c=(E_CALL
+                a=(E_PATH
+                  a=(PATH {global}
+                    (PATH_SEG core)
+                    (PATH_SEG fmt)
+                    (PATH_SEG Display)
+                    (PATH_SEG fmt)))
+                (E_PATH
+                  a=(PATH
+                    (PATH_SEG __a2)))
+                (E_REF {mut}
+                  a=(E_PATH
+                    a=(PATH
+                      (PATH_SEG __f))))))
+            (STMT_EXPR {semi}
+              a=(E_METHOD_CALL clear_spec
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG __f)))))
+            (STMT_EXPR {semi}
+              a=(E_METHOD_CALL write_str
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG __f)))
+                (E_LIT_STR "|")))
+            (STMT_EXPR {semi}
+              a=(E_METHOD_CALL set_spec
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG __f)))
+                (E_LIT_CHAR #32)
+                (E_LIT_INT u8 "3" #3)
+                (E_LIT_INT u8 "0" #0)
+                (E_LIT_BOOL #0)
+                (E_LIT_BOOL #0)
+                (E_LIT_INT usize "3" #3)
+                (E_LIT_BOOL #1)
+                (E_LIT_INT usize "0" #0)
+                (E_LIT_BOOL #0)))
+            (STMT_LET
+              a=(P_WILD)
+              c=(E_CALL
+                a=(E_PATH
+                  a=(PATH {global}
+                    (PATH_SEG core)
+                    (PATH_SEG fmt)
+                    (PATH_SEG Display)
+                    (PATH_SEG fmt)))
+                (E_PATH
+                  a=(PATH
+                    (PATH_SEG __a3)))
+                (E_REF {mut}
+                  a=(E_PATH
+                    a=(PATH
+                      (PATH_SEG __f))))))
+            (STMT_EXPR {semi}
+              a=(E_METHOD_CALL clear_spec
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG __f)))))
+            (STMT_EXPR {semi}
+              a=(E_METHOD_CALL write_str
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG __f)))
+                (E_LIT_STR "\n"))))))
+      (STMT_EXPR {semi}
+        a=(BLOCK
+          (STMT_LET
+            a=(P_IDENT __out {mut})
+            c=(E_CALL
+              a=(E_PATH
+                a=(PATH {global}
+                  (PATH_SEG core)
+                  (PATH_SEG io)
+                  (PATH_SEG stdout_raw)))))
+          (STMT_LET
+            a=(P_IDENT __f {mut})
+            c=(E_CALL
+              a=(E_PATH
+                a=(PATH {global}
+                  (PATH_SEG core)
+                  (PATH_SEG fmt)
+                  (PATH_SEG Formatter)
+                  (PATH_SEG new)))
+              (E_REF {mut}
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG __out))))))
+          a=(BLOCK
+            (STMT_LET
+              a=(P_IDENT __a0)
+              c=(E_REF
+                a=(E_PAREN
+                  a=(E_PATH
+                    a=(PATH
+                      (PATH_SEG v))))))
+            (STMT_LET
+              a=(P_IDENT __a1)
+              c=(E_REF
+                a=(E_PAREN
+                  a=(E_LIT_INT "255" #255))))
+            (STMT_LET
+              a=(P_IDENT __a2)
+              c=(E_REF
+                a=(E_PAREN
+                  a=(E_LIT_INT "7" #7))))
+            (STMT_LET
+              a=(P_IDENT __a3)
+              c=(E_REF
+                a=(E_PAREN
+                  a=(E_PATH
+                    a=(PATH
+                      (PATH_SEG v))))))
+            (STMT_EXPR {semi}
+              a=(E_METHOD_CALL set_spec
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG __f)))
+                (E_LIT_CHAR #32)
+                (E_LIT_INT u8 "0" #0)
+                (E_LIT_INT u8 "1" #1)
+                (E_LIT_BOOL #0)
+                (E_LIT_BOOL #0)
+                (E_LIT_INT usize "0" #0)
+                (E_LIT_BOOL #0)
+                (E_LIT_INT usize "2" #2)
+                (E_LIT_BOOL #1)))
+            (STMT_LET
+              a=(P_WILD)
+              c=(E_CALL
+                a=(E_PATH
+                  a=(PATH {global}
+                    (PATH_SEG core)
+                    (PATH_SEG fmt)
+                    (PATH_SEG Display)
+                    (PATH_SEG fmt)))
+                (E_PATH
+                  a=(PATH
+                    (PATH_SEG __a0)))
+                (E_REF {mut}
+                  a=(E_PATH
+                    a=(PATH
+                      (PATH_SEG __f))))))
+            (STMT_EXPR {semi}
+              a=(E_METHOD_CALL clear_spec
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG __f)))))
+            (STMT_EXPR {semi}
+              a=(E_METHOD_CALL write_str
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG __f)))
+                (E_LIT_STR "|")))
+            (STMT_EXPR {semi}
+              a=(E_METHOD_CALL set_spec
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG __f)))
+                (E_LIT_CHAR #32)
+                (E_LIT_INT u8 "1" #1)
+                (E_LIT_INT u8 "0" #0)
+                (E_LIT_BOOL #1)
+                (E_LIT_BOOL #0)
+                (E_LIT_INT usize "10" #10)
+                (E_LIT_BOOL #1)
+                (E_LIT_INT usize "0" #0)
+                (E_LIT_BOOL #0)))
+            (STMT_LET
+              a=(P_WILD)
+              c=(E_CALL
+                a=(E_PATH
+                  a=(PATH {global}
+                    (PATH_SEG core)
+                    (PATH_SEG fmt)
+                    (PATH_SEG LowerHex)
+                    (PATH_SEG fmt)))
+                (E_PATH
+                  a=(PATH
+                    (PATH_SEG __a1)))
+                (E_REF {mut}
+                  a=(E_PATH
+                    a=(PATH
+                      (PATH_SEG __f))))))
+            (STMT_EXPR {semi}
+              a=(E_METHOD_CALL clear_spec
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG __f)))))
+            (STMT_EXPR {semi}
+              a=(E_METHOD_CALL write_str
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG __f)))
+                (E_LIT_STR "|")))
+            (STMT_EXPR {semi}
+              a=(E_METHOD_CALL set_spec
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG __f)))
+                (E_LIT_CHAR #32)
+                (E_LIT_INT u8 "2" #2)
+                (E_LIT_INT u8 "1" #1)
+                (E_LIT_BOOL #0)
+                (E_LIT_BOOL #0)
+                (E_LIT_INT usize "10" #10)
+                (E_LIT_BOOL #1)
+                (E_LIT_INT usize "0" #0)
+                (E_LIT_BOOL #0)))
+            (STMT_LET
+              a=(P_WILD)
+              c=(E_CALL
+                a=(E_PATH
+                  a=(PATH {global}
+                    (PATH_SEG core)
+                    (PATH_SEG fmt)
+                    (PATH_SEG Display)
+                    (PATH_SEG fmt)))
+                (E_PATH
+                  a=(PATH
+                    (PATH_SEG __a2)))
+                (E_REF {mut}
+                  a=(E_PATH
+                    a=(PATH
+                      (PATH_SEG __f))))))
+            (STMT_EXPR {semi}
+              a=(E_METHOD_CALL clear_spec
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG __f)))))
+            (STMT_EXPR {semi}
+              a=(E_METHOD_CALL write_str
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG __f)))
+                (E_LIT_STR "|")))
+            (STMT_EXPR {semi}
+              a=(E_METHOD_CALL set_spec
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG __f)))
+                (E_LIT_CHAR #32)
+                (E_LIT_INT u8 "0" #0)
+                (E_LIT_INT u8 "0" #0)
+                (E_LIT_BOOL #0)
+                (E_LIT_BOOL #1)
+                (E_LIT_INT usize "8" #8)
+                (E_LIT_BOOL #1)
+                (E_LIT_INT usize "3" #3)
+                (E_LIT_BOOL #1)))
+            (STMT_LET
+              a=(P_WILD)
+              c=(E_CALL
+                a=(E_PATH
+                  a=(PATH {global}
+                    (PATH_SEG core)
+                    (PATH_SEG fmt)
+                    (PATH_SEG Display)
+                    (PATH_SEG fmt)))
+                (E_PATH
+                  a=(PATH
+                    (PATH_SEG __a3)))
+                (E_REF {mut}
+                  a=(E_PATH
+                    a=(PATH
+                      (PATH_SEG __f))))))
+            (STMT_EXPR {semi}
+              a=(E_METHOD_CALL clear_spec
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG __f)))))
+            (STMT_EXPR {semi}
+              a=(E_METHOD_CALL write_str
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG __f)))
+                (E_LIT_STR "\n"))))))
+      (STMT_EXPR {semi}
+        a=(BLOCK
+          (STMT_LET
+            a=(P_IDENT __out {mut})
+            c=(E_CALL
+              a=(E_PATH
+                a=(PATH {global}
+                  (PATH_SEG core)
+                  (PATH_SEG io)
+                  (PATH_SEG stdout_raw)))))
+          (STMT_LET
+            a=(P_IDENT __f {mut})
+            c=(E_CALL
+              a=(E_PATH
+                a=(PATH {global}
+                  (PATH_SEG core)
+                  (PATH_SEG fmt)
+                  (PATH_SEG Formatter)
+                  (PATH_SEG new)))
+              (E_REF {mut}
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG __out))))))
+          a=(BLOCK
+            (STMT_LET
+              a=(P_IDENT __a0)
+              c=(E_REF
+                a=(E_PAREN
+                  a=(E_LIT_INT "5" #5))))
+            (STMT_LET
+              a=(P_IDENT __a1)
+              c=(E_REF
+                a=(E_PAREN
+                  a=(E_LIT_INT "3" #3))))
+            (STMT_LET
+              a=(P_IDENT __a2)
+              c=(E_REF
+                a=(E_PAREN
+                  a=(E_PATH
+                    a=(PATH
+                      (PATH_SEG v))))))
+            (STMT_LET
+              a=(P_IDENT __a3)
+              c=(E_REF
+                a=(E_PAREN
+                  a=(E_LIT_INT "9" #9))))
+            (STMT_LET
+              a=(P_IDENT __a4)
+              c=(E_REF
+                a=(E_PAREN
+                  a=(E_PATH
+                    a=(PATH
+                      (PATH_SEG w))))))
+            (STMT_LET
+              a=(P_IDENT __a5)
+              c=(E_REF
+                a=(E_PAREN
+                  a=(E_PATH
+                    a=(PATH
+                      (PATH_SEG p))))))
+            (STMT_EXPR {semi}
+              a=(E_METHOD_CALL set_spec
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG __f)))
+                (E_LIT_CHAR #32)
+                (E_LIT_INT u8 "0" #0)
+                (E_LIT_INT u8 "0" #0)
+                (E_LIT_BOOL #0)
+                (E_LIT_BOOL #0)
+                (E_DEREF
+                  a=(E_PATH
+                    a=(PATH
+                      (PATH_SEG __a1))))
+                (E_LIT_BOOL #1)
+                (E_LIT_INT usize "0" #0)
+                (E_LIT_BOOL #0)))
+            (STMT_LET
+              a=(P_WILD)
+              c=(E_CALL
+                a=(E_PATH
+                  a=(PATH {global}
+                    (PATH_SEG core)
+                    (PATH_SEG fmt)
+                    (PATH_SEG Display)
+                    (PATH_SEG fmt)))
+                (E_PATH
+                  a=(PATH
+                    (PATH_SEG __a0)))
+                (E_REF {mut}
+                  a=(E_PATH
+                    a=(PATH
+                      (PATH_SEG __f))))))
+            (STMT_EXPR {semi}
+              a=(E_METHOD_CALL clear_spec
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG __f)))))
+            (STMT_EXPR {semi}
+              a=(E_METHOD_CALL write_str
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG __f)))
+                (E_LIT_STR "|")))
+            (STMT_EXPR {semi}
+              a=(E_METHOD_CALL set_spec
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG __f)))
+                (E_LIT_CHAR #32)
+                (E_LIT_INT u8 "0" #0)
+                (E_LIT_INT u8 "0" #0)
+                (E_LIT_BOOL #0)
+                (E_LIT_BOOL #0)
+                (E_LIT_INT usize "0" #0)
+                (E_LIT_BOOL #0)
+                (E_DEREF
+                  a=(E_PATH
+                    a=(PATH
+                      (PATH_SEG __a1))))
+                (E_LIT_BOOL #1)))
+            (STMT_LET
+              a=(P_WILD)
+              c=(E_CALL
+                a=(E_PATH
+                  a=(PATH {global}
+                    (PATH_SEG core)
+                    (PATH_SEG fmt)
+                    (PATH_SEG Display)
+                    (PATH_SEG fmt)))
+                (E_PATH
+                  a=(PATH
+                    (PATH_SEG __a1)))
+                (E_REF {mut}
+                  a=(E_PATH
+                    a=(PATH
+                      (PATH_SEG __f))))))
+            (STMT_EXPR {semi}
+              a=(E_METHOD_CALL clear_spec
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG __f)))))
+            (STMT_EXPR {semi}
+              a=(E_METHOD_CALL write_str
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG __f)))
+                (E_LIT_STR "|")))
+            (STMT_EXPR {semi}
+              a=(E_METHOD_CALL set_spec
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG __f)))
+                (E_LIT_CHAR #32)
+                (E_LIT_INT u8 "0" #0)
+                (E_LIT_INT u8 "0" #0)
+                (E_LIT_BOOL #0)
+                (E_LIT_BOOL #0)
+                (E_DEREF
+                  a=(E_PATH
+                    a=(PATH
+                      (PATH_SEG __a4))))
+                (E_LIT_BOOL #1)
+                (E_DEREF
+                  a=(E_PATH
+                    a=(PATH
+                      (PATH_SEG __a5))))
+                (E_LIT_BOOL #1)))
+            (STMT_LET
+              a=(P_WILD)
+              c=(E_CALL
+                a=(E_PATH
+                  a=(PATH {global}
+                    (PATH_SEG core)
+                    (PATH_SEG fmt)
+                    (PATH_SEG Display)
+                    (PATH_SEG fmt)))
+                (E_PATH
+                  a=(PATH
+                    (PATH_SEG __a2)))
+                (E_REF {mut}
+                  a=(E_PATH
+                    a=(PATH
+                      (PATH_SEG __f))))))
+            (STMT_EXPR {semi}
+              a=(E_METHOD_CALL clear_spec
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG __f)))))
+            (STMT_EXPR {semi}
+              a=(E_METHOD_CALL write_str
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG __f)))
+                (E_LIT_STR "|")))
+            (STMT_EXPR {semi}
+              a=(E_METHOD_CALL set_spec
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG __f)))
+                (E_LIT_CHAR #32)
+                (E_LIT_INT u8 "3" #3)
+                (E_LIT_INT u8 "0" #0)
+                (E_LIT_BOOL #0)
+                (E_LIT_BOOL #0)
+                (E_DEREF
+                  a=(E_PATH
+                    a=(PATH
+                      (PATH_SEG __a1))))
+                (E_LIT_BOOL #1)
+                (E_LIT_INT usize "0" #0)
+                (E_LIT_BOOL #0)))
+            (STMT_LET
+              a=(P_WILD)
+              c=(E_CALL
+                a=(E_PATH
+                  a=(PATH {global}
+                    (PATH_SEG core)
+                    (PATH_SEG fmt)
+                    (PATH_SEG Display)
+                    (PATH_SEG fmt)))
+                (E_PATH
+                  a=(PATH
+                    (PATH_SEG __a3)))
+                (E_REF {mut}
+                  a=(E_PATH
+                    a=(PATH
+                      (PATH_SEG __f))))))
+            (STMT_EXPR {semi}
+              a=(E_METHOD_CALL clear_spec
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG __f)))))
+            (STMT_EXPR {semi}
+              a=(E_METHOD_CALL write_str
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG __f)))
+                (E_LIT_STR "\n"))))))
+      (STMT_EXPR {semi}
+        a=(BLOCK
+          (STMT_LET
+            a=(P_IDENT __out {mut})
+            c=(E_CALL
+              a=(E_PATH
+                a=(PATH {global}
+                  (PATH_SEG core)
+                  (PATH_SEG io)
+                  (PATH_SEG stdout_raw)))))
+          (STMT_LET
+            a=(P_IDENT __f {mut})
+            c=(E_CALL
+              a=(E_PATH
+                a=(PATH {global}
+                  (PATH_SEG core)
+                  (PATH_SEG fmt)
+                  (PATH_SEG Formatter)
+                  (PATH_SEG new)))
+              (E_REF {mut}
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG __out))))))
+          a=(BLOCK
+            (STMT_LET
+              a=(P_IDENT __a0)
+              c=(E_REF
+                a=(E_PAREN
+                  a=(E_PATH
+                    a=(PATH
+                      (PATH_SEG name))))))
+            (STMT_LET
+              a=(P_IDENT __a1)
+              c=(E_REF
+                a=(E_PAREN
+                  a=(E_PATH
+                    a=(PATH
+                      (PATH_SEG w))))))
+            (STMT_LET
+              a=(P_IDENT __a2)
+              c=(E_REF
+                a=(E_PAREN
+                  a=(E_PATH
+                    a=(PATH
+                      (PATH_SEG name))))))
+            (STMT_LET
+              a=(P_IDENT __a3)
+              c=(E_REF
+                a=(E_PAREN
+                  a=(E_PATH
+                    a=(PATH
+                      (PATH_SEG p))))))
+            (STMT_LET
+              a=(P_IDENT __a4)
+              c=(E_REF
+                a=(E_PAREN
+                  a=(E_PATH
+                    a=(PATH
+                      (PATH_SEG v))))))
+            (STMT_EXPR {semi}
+              a=(E_METHOD_CALL set_spec
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG __f)))
+                (E_LIT_CHAR #32)
+                (E_LIT_INT u8 "3" #3)
+                (E_LIT_INT u8 "0" #0)
+                (E_LIT_BOOL #0)
+                (E_LIT_BOOL #0)
+                (E_DEREF
+                  a=(E_PATH
+                    a=(PATH
+                      (PATH_SEG __a1))))
+                (E_LIT_BOOL #1)
+                (E_LIT_INT usize "0" #0)
+                (E_LIT_BOOL #0)))
+            (STMT_LET
+              a=(P_WILD)
+              c=(E_CALL
+                a=(E_PATH
+                  a=(PATH {global}
+                    (PATH_SEG core)
+                    (PATH_SEG fmt)
+                    (PATH_SEG Display)
+                    (PATH_SEG fmt)))
+                (E_PATH
+                  a=(PATH
+                    (PATH_SEG __a2)))
+                (E_REF {mut}
+                  a=(E_PATH
+                    a=(PATH
+                      (PATH_SEG __f))))))
+            (STMT_EXPR {semi}
+              a=(E_METHOD_CALL clear_spec
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG __f)))))
+            (STMT_EXPR {semi}
+              a=(E_METHOD_CALL write_str
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG __f)))
+                (E_LIT_STR "|")))
+            (STMT_EXPR {semi}
+              a=(E_METHOD_CALL set_spec
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG __f)))
+                (E_LIT_CHAR #32)
+                (E_LIT_INT u8 "0" #0)
+                (E_LIT_INT u8 "0" #0)
+                (E_LIT_BOOL #0)
+                (E_LIT_BOOL #0)
+                (E_LIT_INT usize "0" #0)
+                (E_LIT_BOOL #0)
+                (E_DEREF
+                  a=(E_PATH
+                    a=(PATH
+                      (PATH_SEG __a3))))
+                (E_LIT_BOOL #1)))
+            (STMT_LET
+              a=(P_WILD)
+              c=(E_CALL
+                a=(E_PATH
+                  a=(PATH {global}
+                    (PATH_SEG core)
+                    (PATH_SEG fmt)
+                    (PATH_SEG Display)
+                    (PATH_SEG fmt)))
+                (E_PATH
+                  a=(PATH
+                    (PATH_SEG __a4)))
+                (E_REF {mut}
+                  a=(E_PATH
+                    a=(PATH
+                      (PATH_SEG __f))))))
+            (STMT_EXPR {semi}
+              a=(E_METHOD_CALL clear_spec
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG __f)))))
+            (STMT_EXPR {semi}
+              a=(E_METHOD_CALL write_str
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG __f)))
+                (E_LIT_STR "|")))
+            (STMT_LET
+              a=(P_WILD)
+              c=(E_CALL
+                a=(E_PATH
+                  a=(PATH {global}
+                    (PATH_SEG core)
+                    (PATH_SEG fmt)
+                    (PATH_SEG Debug)
+                    (PATH_SEG fmt)))
+                (E_PATH
+                  a=(PATH
+                    (PATH_SEG __a0)))
+                (E_REF {mut}
+                  a=(E_PATH
+                    a=(PATH
+                      (PATH_SEG __f))))))
+            (STMT_EXPR {semi}
+              a=(E_METHOD_CALL write_str
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG __f)))
+                (E_LIT_STR "|")))
+            (STMT_LET
+              a=(P_WILD)
+              c=(E_CALL
+                a=(E_PATH
+                  a=(PATH {global}
+                    (PATH_SEG core)
+                    (PATH_SEG fmt)
+                    (PATH_SEG Display)
+                    (PATH_SEG fmt)))
+                (E_PATH
+                  a=(PATH
+                    (PATH_SEG __a0)))
+                (E_REF {mut}
+                  a=(E_PATH
+                    a=(PATH
+                      (PATH_SEG __f))))))
+            (STMT_EXPR {semi}
+              a=(E_METHOD_CALL write_str
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG __f)))
+                (E_LIT_STR "\n"))))))
+      (STMT_EXPR {semi}
+        a=(BLOCK
+          (STMT_LET
+            a=(P_IDENT __out {mut})
+            c=(E_CALL
+              a=(E_PATH
+                a=(PATH {global}
+                  (PATH_SEG core)
+                  (PATH_SEG io)
+                  (PATH_SEG stdout_raw)))))
+          (STMT_LET
+            a=(P_IDENT __f {mut})
+            c=(E_CALL
+              a=(E_PATH
+                a=(PATH {global}
+                  (PATH_SEG core)
+                  (PATH_SEG fmt)
+                  (PATH_SEG Formatter)
+                  (PATH_SEG new)))
+              (E_REF {mut}
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG __out))))))
+          a=(BLOCK
+            (STMT_LET
+              a=(P_IDENT __a0)
+              c=(E_REF
+                a=(E_PAREN
+                  a=(E_LIT_STR "ab"))))
+            (STMT_LET
+              a=(P_IDENT __a1)
+              c=(E_REF
+                a=(E_PAREN
+                  a=(E_LIT_STR "cd"))))
+            (STMT_LET
+              a=(P_IDENT __a2)
+              c=(E_REF
+                a=(E_PAREN
+                  a=(E_LIT_STR "ef"))))
+            (STMT_LET
+              a=(P_IDENT __a3)
+              c=(E_REF
+                a=(E_PAREN
+                  a=(E_LIT_STR "gh"))))
+            (STMT_EXPR {semi}
+              a=(E_METHOD_CALL set_spec
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG __f)))
+                (E_LIT_CHAR #32)
+                (E_LIT_INT u8 "0" #0)
+                (E_LIT_INT u8 "0" #0)
+                (E_LIT_BOOL #0)
+                (E_LIT_BOOL #0)
+                (E_LIT_INT usize "5" #5)
+                (E_LIT_BOOL #1)
+                (E_LIT_INT usize "0" #0)
+                (E_LIT_BOOL #0)))
+            (STMT_LET
+              a=(P_WILD)
+              c=(E_CALL
+                a=(E_PATH
+                  a=(PATH {global}
+                    (PATH_SEG core)
+                    (PATH_SEG fmt)
+                    (PATH_SEG Display)
+                    (PATH_SEG fmt)))
+                (E_PATH
+                  a=(PATH
+                    (PATH_SEG __a0)))
+                (E_REF {mut}
+                  a=(E_PATH
+                    a=(PATH
+                      (PATH_SEG __f))))))
+            (STMT_EXPR {semi}
+              a=(E_METHOD_CALL clear_spec
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG __f)))))
+            (STMT_EXPR {semi}
+              a=(E_METHOD_CALL write_str
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG __f)))
+                (E_LIT_STR "|")))
+            (STMT_EXPR {semi}
+              a=(E_METHOD_CALL set_spec
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG __f)))
+                (E_LIT_CHAR #32)
+                (E_LIT_INT u8 "1" #1)
+                (E_LIT_INT u8 "0" #0)
+                (E_LIT_BOOL #0)
+                (E_LIT_BOOL #0)
+                (E_LIT_INT usize "5" #5)
+                (E_LIT_BOOL #1)
+                (E_LIT_INT usize "0" #0)
+                (E_LIT_BOOL #0)))
+            (STMT_LET
+              a=(P_WILD)
+              c=(E_CALL
+                a=(E_PATH
+                  a=(PATH {global}
+                    (PATH_SEG core)
+                    (PATH_SEG fmt)
+                    (PATH_SEG Display)
+                    (PATH_SEG fmt)))
+                (E_PATH
+                  a=(PATH
+                    (PATH_SEG __a1)))
+                (E_REF {mut}
+                  a=(E_PATH
+                    a=(PATH
+                      (PATH_SEG __f))))))
+            (STMT_EXPR {semi}
+              a=(E_METHOD_CALL clear_spec
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG __f)))))
+            (STMT_EXPR {semi}
+              a=(E_METHOD_CALL write_str
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG __f)))
+                (E_LIT_STR "|")))
+            (STMT_EXPR {semi}
+              a=(E_METHOD_CALL set_spec
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG __f)))
+                (E_LIT_CHAR #32)
+                (E_LIT_INT u8 "2" #2)
+                (E_LIT_INT u8 "0" #0)
+                (E_LIT_BOOL #0)
+                (E_LIT_BOOL #0)
+                (E_LIT_INT usize "5" #5)
+                (E_LIT_BOOL #1)
+                (E_LIT_INT usize "0" #0)
+                (E_LIT_BOOL #0)))
+            (STMT_LET
+              a=(P_WILD)
+              c=(E_CALL
+                a=(E_PATH
+                  a=(PATH {global}
+                    (PATH_SEG core)
+                    (PATH_SEG fmt)
+                    (PATH_SEG Display)
+                    (PATH_SEG fmt)))
+                (E_PATH
+                  a=(PATH
+                    (PATH_SEG __a2)))
+                (E_REF {mut}
+                  a=(E_PATH
+                    a=(PATH
+                      (PATH_SEG __f))))))
+            (STMT_EXPR {semi}
+              a=(E_METHOD_CALL clear_spec
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG __f)))))
+            (STMT_EXPR {semi}
+              a=(E_METHOD_CALL write_str
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG __f)))
+                (E_LIT_STR "|")))
+            (STMT_EXPR {semi}
+              a=(E_METHOD_CALL set_spec
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG __f)))
+                (E_LIT_CHAR #32)
+                (E_LIT_INT u8 "3" #3)
+                (E_LIT_INT u8 "0" #0)
+                (E_LIT_BOOL #0)
+                (E_LIT_BOOL #0)
+                (E_LIT_INT usize "5" #5)
+                (E_LIT_BOOL #1)
+                (E_LIT_INT usize "0" #0)
+                (E_LIT_BOOL #0)))
+            (STMT_LET
+              a=(P_WILD)
+              c=(E_CALL
+                a=(E_PATH
+                  a=(PATH {global}
+                    (PATH_SEG core)
+                    (PATH_SEG fmt)
+                    (PATH_SEG Display)
+                    (PATH_SEG fmt)))
+                (E_PATH
+                  a=(PATH
+                    (PATH_SEG __a3)))
+                (E_REF {mut}
+                  a=(E_PATH
+                    a=(PATH
+                      (PATH_SEG __f))))))
+            (STMT_EXPR {semi}
+              a=(E_METHOD_CALL clear_spec
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG __f)))))
+            (STMT_EXPR {semi}
+              a=(E_METHOD_CALL write_str
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG __f)))
+                (E_LIT_STR "\n"))))))
+      (STMT_EXPR {semi}
+        a=(BLOCK
+          (STMT_LET
+            a=(P_IDENT __out {mut})
+            c=(E_CALL
+              a=(E_PATH
+                a=(PATH {global}
+                  (PATH_SEG core)
+                  (PATH_SEG io)
+                  (PATH_SEG stdout_raw)))))
+          (STMT_LET
+            a=(P_IDENT __f {mut})
+            c=(E_CALL
+              a=(E_PATH
+                a=(PATH {global}
+                  (PATH_SEG core)
+                  (PATH_SEG fmt)
+                  (PATH_SEG Formatter)
+                  (PATH_SEG new)))
+              (E_REF {mut}
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG __out))))))
+          a=(BLOCK
+            (STMT_LET
+              a=(P_IDENT __a0)
+              c=(E_REF
+                a=(E_PAREN
+                  a=(E_PATH
+                    a=(PATH
+                      (PATH_SEG name))))))
+            (STMT_EXPR {semi}
+              a=(E_METHOD_CALL set_spec
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG __f)))
+                (E_LIT_CHAR #32)
+                (E_LIT_INT u8 "0" #0)
+                (E_LIT_INT u8 "0" #0)
+                (E_LIT_BOOL #1)
+                (E_LIT_BOOL #0)
+                (E_LIT_INT usize "0" #0)
+                (E_LIT_BOOL #0)
+                (E_LIT_INT usize "0" #0)
+                (E_LIT_BOOL #0)))
+            (STMT_LET
+              a=(P_WILD)
+              c=(E_CALL
+                a=(E_PATH
+                  a=(PATH {global}
+                    (PATH_SEG core)
+                    (PATH_SEG fmt)
+                    (PATH_SEG Debug)
+                    (PATH_SEG fmt)))
+                (E_PATH
+                  a=(PATH
+                    (PATH_SEG __a0)))
+                (E_REF {mut}
+                  a=(E_PATH
+                    a=(PATH
+                      (PATH_SEG __f))))))
+            (STMT_EXPR {semi}
+              a=(E_METHOD_CALL clear_spec
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG __f)))))
+            (STMT_EXPR {semi}
+              a=(E_METHOD_CALL write_str
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG __f)))
+                (E_LIT_STR "\n"))))))
+      (STMT_EXPR {semi}
+        a=(BLOCK
+          (STMT_LET
+            a=(P_IDENT __out {mut})
+            c=(E_CALL
+              a=(E_PATH
+                a=(PATH {global}
+                  (PATH_SEG core)
+                  (PATH_SEG io)
+                  (PATH_SEG stdout_raw)))))
+          (STMT_LET
+            a=(P_IDENT __f {mut})
+            c=(E_CALL
+              a=(E_PATH
+                a=(PATH {global}
+                  (PATH_SEG core)
+                  (PATH_SEG fmt)
+                  (PATH_SEG Formatter)
+                  (PATH_SEG new)))
+              (E_REF {mut}
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG __out))))))
+          a=(BLOCK
+            (STMT_LET
+              a=(P_IDENT __a0)
+              c=(E_REF
+                a=(E_PAREN
+                  a=(E_LIT_FLOAT "1500.0"))))
+            (STMT_LET
+              a=(P_IDENT __a1)
+              c=(E_REF
+                a=(E_PAREN
+                  a=(E_LIT_FLOAT "0.00025"))))
+            (STMT_LET
+              a=(P_WILD)
+              c=(E_CALL
+                a=(E_PATH
+                  a=(PATH {global}
+                    (PATH_SEG core)
+                    (PATH_SEG fmt)
+                    (PATH_SEG LowerExp)
+                    (PATH_SEG fmt)))
+                (E_PATH
+                  a=(PATH
+                    (PATH_SEG __a0)))
+                (E_REF {mut}
+                  a=(E_PATH
+                    a=(PATH
+                      (PATH_SEG __f))))))
+            (STMT_EXPR {semi}
+              a=(E_METHOD_CALL write_str
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG __f)))
+                (E_LIT_STR " ")))
+            (STMT_LET
+              a=(P_WILD)
+              c=(E_CALL
+                a=(E_PATH
+                  a=(PATH {global}
+                    (PATH_SEG core)
+                    (PATH_SEG fmt)
+                    (PATH_SEG UpperExp)
+                    (PATH_SEG fmt)))
+                (E_PATH
+                  a=(PATH
+                    (PATH_SEG __a1)))
+                (E_REF {mut}
+                  a=(E_PATH
+                    a=(PATH
+                      (PATH_SEG __f))))))
+            (STMT_EXPR {semi}
+              a=(E_METHOD_CALL write_str
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG __f)))
+                (E_LIT_STR "\n"))))))
+      (STMT_EXPR {semi}
+        a=(BLOCK
+          (STMT_LET
+            a=(P_IDENT __out {mut})
+            c=(E_CALL
+              a=(E_PATH
+                a=(PATH {global}
+                  (PATH_SEG core)
+                  (PATH_SEG io)
+                  (PATH_SEG stdout_raw)))))
+          (STMT_LET
+            a=(P_IDENT __f {mut})
+            c=(E_CALL
+              a=(E_PATH
+                a=(PATH {global}
+                  (PATH_SEG core)
+                  (PATH_SEG fmt)
+                  (PATH_SEG Formatter)
+                  (PATH_SEG new)))
+              (E_REF {mut}
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG __out))))))
+          a=(BLOCK
+            (STMT_LET
+              a=(P_IDENT __a0)
+              c=(E_REF
+                a=(E_PAREN
+                  a=(E_LIT_INT "5" #5))))
+            (STMT_LET
+              a=(P_IDENT __a1)
+              c=(E_REF
+                a=(E_PAREN
+                  a=(E_LIT_INT "64" #64))))
+            (STMT_LET
+              a=(P_IDENT __a2)
+              c=(E_REF
+                a=(E_PAREN
+                  a=(E_LIT_INT "255" #255))))
+            (STMT_EXPR {semi}
+              a=(E_METHOD_CALL set_spec
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG __f)))
+                (E_LIT_CHAR #32)
+                (E_LIT_INT u8 "0" #0)
+                (E_LIT_INT u8 "0" #0)
+                (E_LIT_BOOL #1)
+                (E_LIT_BOOL #0)
+                (E_LIT_INT usize "0" #0)
+                (E_LIT_BOOL #0)
+                (E_LIT_INT usize "0" #0)
+                (E_LIT_BOOL #0)))
+            (STMT_LET
+              a=(P_WILD)
+              c=(E_CALL
+                a=(E_PATH
+                  a=(PATH {global}
+                    (PATH_SEG core)
+                    (PATH_SEG fmt)
+                    (PATH_SEG Binary)
+                    (PATH_SEG fmt)))
+                (E_PATH
+                  a=(PATH
+                    (PATH_SEG __a0)))
+                (E_REF {mut}
+                  a=(E_PATH
+                    a=(PATH
+                      (PATH_SEG __f))))))
+            (STMT_EXPR {semi}
+              a=(E_METHOD_CALL clear_spec
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG __f)))))
+            (STMT_EXPR {semi}
+              a=(E_METHOD_CALL write_str
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG __f)))
+                (E_LIT_STR " ")))
+            (STMT_EXPR {semi}
+              a=(E_METHOD_CALL set_spec
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG __f)))
+                (E_LIT_CHAR #32)
+                (E_LIT_INT u8 "0" #0)
+                (E_LIT_INT u8 "0" #0)
+                (E_LIT_BOOL #1)
+                (E_LIT_BOOL #0)
+                (E_LIT_INT usize "0" #0)
+                (E_LIT_BOOL #0)
+                (E_LIT_INT usize "0" #0)
+                (E_LIT_BOOL #0)))
+            (STMT_LET
+              a=(P_WILD)
+              c=(E_CALL
+                a=(E_PATH
+                  a=(PATH {global}
+                    (PATH_SEG core)
+                    (PATH_SEG fmt)
+                    (PATH_SEG Octal)
+                    (PATH_SEG fmt)))
+                (E_PATH
+                  a=(PATH
+                    (PATH_SEG __a1)))
+                (E_REF {mut}
+                  a=(E_PATH
+                    a=(PATH
+                      (PATH_SEG __f))))))
+            (STMT_EXPR {semi}
+              a=(E_METHOD_CALL clear_spec
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG __f)))))
+            (STMT_EXPR {semi}
+              a=(E_METHOD_CALL write_str
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG __f)))
+                (E_LIT_STR " ")))
+            (STMT_EXPR {semi}
+              a=(E_METHOD_CALL set_spec
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG __f)))
+                (E_LIT_CHAR #32)
+                (E_LIT_INT u8 "0" #0)
+                (E_LIT_INT u8 "0" #0)
+                (E_LIT_BOOL #1)
+                (E_LIT_BOOL #0)
+                (E_LIT_INT usize "0" #0)
+                (E_LIT_BOOL #0)
+                (E_LIT_INT usize "0" #0)
+                (E_LIT_BOOL #0)))
+            (STMT_LET
+              a=(P_WILD)
+              c=(E_CALL
+                a=(E_PATH
+                  a=(PATH {global}
+                    (PATH_SEG core)
+                    (PATH_SEG fmt)
+                    (PATH_SEG UpperHex)
+                    (PATH_SEG fmt)))
+                (E_PATH
+                  a=(PATH
+                    (PATH_SEG __a2)))
+                (E_REF {mut}
+                  a=(E_PATH
+                    a=(PATH
+                      (PATH_SEG __f))))))
+            (STMT_EXPR {semi}
+              a=(E_METHOD_CALL clear_spec
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG __f)))))
+            (STMT_EXPR {semi}
+              a=(E_METHOD_CALL write_str
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG __f)))
+                (E_LIT_STR "\n"))))))
+      (STMT_EXPR {semi}
+        a=(BLOCK
+          (STMT_LET
+            a=(P_IDENT __out {mut})
+            c=(E_CALL
+              a=(E_PATH
+                a=(PATH {global}
+                  (PATH_SEG core)
+                  (PATH_SEG io)
+                  (PATH_SEG stdout_raw)))))
+          (STMT_LET
+            a=(P_IDENT __f {mut})
+            c=(E_CALL
+              a=(E_PATH
+                a=(PATH {global}
+                  (PATH_SEG core)
+                  (PATH_SEG fmt)
+                  (PATH_SEG Formatter)
+                  (PATH_SEG new)))
+              (E_REF {mut}
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG __out))))))
+          a=(BLOCK
+            (STMT_LET
+              a=(P_IDENT __a0)
+              c=(E_REF
+                a=(E_PAREN
+                  a=(E_LIT_STR "q\"uote"))))
+            (STMT_LET
+              a=(P_IDENT __a1)
+              c=(E_REF
+                a=(E_PAREN
+                  a=(E_LIT_CHAR #99))))
+            (STMT_LET
+              a=(P_WILD)
+              c=(E_CALL
+                a=(E_PATH
+                  a=(PATH {global}
+                    (PATH_SEG core)
+                    (PATH_SEG fmt)
+                    (PATH_SEG Debug)
+                    (PATH_SEG fmt)))
+                (E_PATH
+                  a=(PATH
+                    (PATH_SEG __a0)))
+                (E_REF {mut}
+                  a=(E_PATH
+                    a=(PATH
+                      (PATH_SEG __f))))))
+            (STMT_EXPR {semi}
+              a=(E_METHOD_CALL write_str
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG __f)))
+                (E_LIT_STR " ")))
+            (STMT_LET
+              a=(P_WILD)
+              c=(E_CALL
+                a=(E_PATH
+                  a=(PATH {global}
+                    (PATH_SEG core)
+                    (PATH_SEG fmt)
+                    (PATH_SEG Debug)
+                    (PATH_SEG fmt)))
+                (E_PATH
+                  a=(PATH
+                    (PATH_SEG __a1)))
+                (E_REF {mut}
+                  a=(E_PATH
+                    a=(PATH
+                      (PATH_SEG __f))))))
+            (STMT_EXPR {semi}
+              a=(E_METHOD_CALL write_str
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG __f)))
+                (E_LIT_STR "\n"))))))
+      (STMT_EXPR {semi}
+        a=(BLOCK
+          (STMT_LET
+            a=(P_IDENT __out {mut})
+            c=(E_CALL
+              a=(E_PATH
+                a=(PATH {global}
+                  (PATH_SEG core)
+                  (PATH_SEG io)
+                  (PATH_SEG stdout_raw)))))
+          (STMT_LET
+            a=(P_IDENT __f {mut})
+            c=(E_CALL
+              a=(E_PATH
+                a=(PATH {global}
+                  (PATH_SEG core)
+                  (PATH_SEG fmt)
+                  (PATH_SEG Formatter)
+                  (PATH_SEG new)))
+              (E_REF {mut}
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG __out))))))
+          a=(BLOCK
+            (STMT_LET
+              a=(P_IDENT __a0)
+              c=(E_REF
+                a=(E_PAREN
+                  a=(E_LIT_INT "50" #50))))
+            (STMT_LET
+              a=(P_WILD)
+              c=(E_CALL
+                a=(E_PATH
+                  a=(PATH {global}
+                    (PATH_SEG core)
+                    (PATH_SEG fmt)
+                    (PATH_SEG Display)
+                    (PATH_SEG fmt)))
+                (E_PATH
+                  a=(PATH
+                    (PATH_SEG __a0)))
+                (E_REF {mut}
+                  a=(E_PATH
+                    a=(PATH
+                      (PATH_SEG __f))))))
+            (STMT_EXPR {semi}
+              a=(E_METHOD_CALL write_str
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG __f)))
+                (E_LIT_STR "%\n"))))))
+      (STMT_EXPR {semi}
+        a=(BLOCK
+          (STMT_LET
+            a=(P_IDENT __out {mut})
+            c=(E_CALL
+              a=(E_PATH
+                a=(PATH {global}
+                  (PATH_SEG core)
+                  (PATH_SEG io)
+                  (PATH_SEG stdout_raw)))))
+          (STMT_LET
+            a=(P_IDENT __f {mut})
+            c=(E_CALL
+              a=(E_PATH
+                a=(PATH {global}
+                  (PATH_SEG core)
+                  (PATH_SEG fmt)
+                  (PATH_SEG Formatter)
+                  (PATH_SEG new)))
+              (E_REF {mut}
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG __out))))))
+          a=(BLOCK
+            (STMT_LET
+              a=(P_IDENT __a0)
+              c=(E_REF
+                a=(E_PAREN
+                  a=(E_LIT_INT "1" #1))))
+            (STMT_EXPR {semi}
+              a=(E_METHOD_CALL write_str
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG __f)))
+                (E_LIT_STR "{} {")))
+            (STMT_LET
+              a=(P_WILD)
+              c=(E_CALL
+                a=(E_PATH
+                  a=(PATH {global}
+                    (PATH_SEG core)
+                    (PATH_SEG fmt)
+                    (PATH_SEG Display)
+                    (PATH_SEG fmt)))
+                (E_PATH
+                  a=(PATH
+                    (PATH_SEG __a0)))
+                (E_REF {mut}
+                  a=(E_PATH
+                    a=(PATH
+                      (PATH_SEG __f))))))
+            (STMT_EXPR {semi}
+              a=(E_METHOD_CALL write_str
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG __f)))
+                (E_LIT_STR "}\n"))))))
+      (STMT_EXPR {semi}
+        a=(BLOCK
+          (STMT_LET
+            a=(P_IDENT __out {mut})
+            c=(E_CALL
+              a=(E_PATH
+                a=(PATH {global}
+                  (PATH_SEG core)
+                  (PATH_SEG io)
+                  (PATH_SEG stdout_raw)))))
+          (STMT_LET
+            a=(P_IDENT __f {mut})
+            c=(E_CALL
+              a=(E_PATH
+                a=(PATH {global}
+                  (PATH_SEG core)
+                  (PATH_SEG fmt)
+                  (PATH_SEG Formatter)
+                  (PATH_SEG new)))
+              (E_REF {mut}
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG __out))))))
+          a=(BLOCK
+            (STMT_LET
+              a=(P_IDENT __a0)
+              c=(E_REF
+                a=(E_PAREN
+                  a=(E_LIT_STR "a"))))
+            (STMT_LET
+              a=(P_IDENT __a1)
+              c=(E_REF
+                a=(E_PAREN
+                  a=(E_LIT_STR "b"))))
+            (STMT_LET
+              a=(P_WILD)
+              c=(E_CALL
+                a=(E_PATH
+                  a=(PATH {global}
+                    (PATH_SEG core)
+                    (PATH_SEG fmt)
+                    (PATH_SEG Display)
+                    (PATH_SEG fmt)))
+                (E_PATH
+                  a=(PATH
+                    (PATH_SEG __a0)))
+                (E_REF {mut}
+                  a=(E_PATH
+                    a=(PATH
+                      (PATH_SEG __f))))))
+            (STMT_EXPR {semi}
+              a=(E_METHOD_CALL write_str
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG __f)))
+                (E_LIT_STR " ")))
+            (STMT_LET
+              a=(P_WILD)
+              c=(E_CALL
+                a=(E_PATH
+                  a=(PATH {global}
+                    (PATH_SEG core)
+                    (PATH_SEG fmt)
+                    (PATH_SEG Display)
+                    (PATH_SEG fmt)))
+                (E_PATH
+                  a=(PATH
+                    (PATH_SEG __a1)))
+                (E_REF {mut}
+                  a=(E_PATH
+                    a=(PATH
+                      (PATH_SEG __f))))))
+            (STMT_EXPR {semi}
+              a=(E_METHOD_CALL write_str
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG __f)))
+                (E_LIT_STR "\n"))))))
+      (STMT_EXPR {semi}
+        a=(BLOCK
+          (STMT_LET
+            a=(P_IDENT __out {mut})
+            c=(E_CALL
+              a=(E_PATH
+                a=(PATH {global}
+                  (PATH_SEG core)
+                  (PATH_SEG io)
+                  (PATH_SEG stdout_raw)))))
+          (STMT_LET
+            a=(P_IDENT __f {mut})
+            c=(E_CALL
+              a=(E_PATH
+                a=(PATH {global}
+                  (PATH_SEG core)
+                  (PATH_SEG fmt)
+                  (PATH_SEG Formatter)
+                  (PATH_SEG new)))
+              (E_REF {mut}
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG __out))))))
+          a=(BLOCK
+            (STMT_LET
+              a=(P_IDENT __a0)
+              c=(E_REF
+                a=(E_PAREN
+                  a=(E_LIT_INT "1" #1))))
+            (STMT_LET
+              a=(P_IDENT __a1)
+              c=(E_REF
+                a=(E_PAREN
+                  a=(E_LIT_INT "2" #2))))
+            (STMT_LET
+              a=(P_WILD)
+              c=(E_CALL
+                a=(E_PATH
+                  a=(PATH {global}
+                    (PATH_SEG core)
+                    (PATH_SEG fmt)
+                    (PATH_SEG Display)
+                    (PATH_SEG fmt)))
+                (E_PATH
+                  a=(PATH
+                    (PATH_SEG __a0)))
+                (E_REF {mut}
+                  a=(E_PATH
+                    a=(PATH
+                      (PATH_SEG __f))))))
+            (STMT_LET
+              a=(P_WILD)
+              c=(E_CALL
+                a=(E_PATH
+                  a=(PATH {global}
+                    (PATH_SEG core)
+                    (PATH_SEG fmt)
+                    (PATH_SEG Display)
+                    (PATH_SEG fmt)))
+                (E_PATH
+                  a=(PATH
+                    (PATH_SEG __a1)))
+                (E_REF {mut}
+                  a=(E_PATH
+                    a=(PATH
+                      (PATH_SEG __f))))))
+            (STMT_LET
+              a=(P_WILD)
+              c=(E_CALL
+                a=(E_PATH
+                  a=(PATH {global}
+                    (PATH_SEG core)
+                    (PATH_SEG fmt)
+                    (PATH_SEG Display)
+                    (PATH_SEG fmt)))
+                (E_PATH
+                  a=(PATH
+                    (PATH_SEG __a0)))
+                (E_REF {mut}
+                  a=(E_PATH
+                    a=(PATH
+                      (PATH_SEG __f))))))
+            (STMT_EXPR {semi}
+              a=(E_METHOD_CALL write_str
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG __f)))
+                (E_LIT_STR "\n"))))))
+      (STMT_EXPR {semi}
+        a=(BLOCK
+          (STMT_LET
+            a=(P_IDENT __out {mut})
+            c=(E_CALL
+              a=(E_PATH
+                a=(PATH {global}
+                  (PATH_SEG core)
+                  (PATH_SEG io)
+                  (PATH_SEG stdout_raw)))))
+          (STMT_LET
+            a=(P_IDENT __f {mut})
+            c=(E_CALL
+              a=(E_PATH
+                a=(PATH {global}
+                  (PATH_SEG core)
+                  (PATH_SEG fmt)
+                  (PATH_SEG Formatter)
+                  (PATH_SEG new)))
+              (E_REF {mut}
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG __out))))))
+          a=(BLOCK
+            (STMT_LET
+              a=(P_IDENT __a0)
+              c=(E_REF
+                a=(E_PAREN
+                  a=(E_LIT_INT "1" #1))))
+            (STMT_LET
+              a=(P_IDENT __a1)
+              c=(E_REF
+                a=(E_PAREN
+                  a=(E_LIT_INT "2" #2))))
+            (STMT_LET
+              a=(P_IDENT __a2)
+              c=(E_REF
+                a=(E_PAREN
+                  a=(E_LIT_INT "3" #3))))
+            (STMT_LET
+              a=(P_WILD)
+              c=(E_CALL
+                a=(E_PATH
+                  a=(PATH {global}
+                    (PATH_SEG core)
+                    (PATH_SEG fmt)
+                    (PATH_SEG Display)
+                    (PATH_SEG fmt)))
+                (E_PATH
+                  a=(PATH
+                    (PATH_SEG __a0)))
+                (E_REF {mut}
+                  a=(E_PATH
+                    a=(PATH
+                      (PATH_SEG __f))))))
+            (STMT_LET
+              a=(P_WILD)
+              c=(E_CALL
+                a=(E_PATH
+                  a=(PATH {global}
+                    (PATH_SEG core)
+                    (PATH_SEG fmt)
+                    (PATH_SEG Display)
+                    (PATH_SEG fmt)))
+                (E_PATH
+                  a=(PATH
+                    (PATH_SEG __a1)))
+                (E_REF {mut}
+                  a=(E_PATH
+                    a=(PATH
+                      (PATH_SEG __f))))))
+            (STMT_LET
+              a=(P_WILD)
+              c=(E_CALL
+                a=(E_PATH
+                  a=(PATH {global}
+                    (PATH_SEG core)
+                    (PATH_SEG fmt)
+                    (PATH_SEG Display)
+                    (PATH_SEG fmt)))
+                (E_PATH
+                  a=(PATH
+                    (PATH_SEG __a0)))
+                (E_REF {mut}
+                  a=(E_PATH
+                    a=(PATH
+                      (PATH_SEG __f))))))
+            (STMT_LET
+              a=(P_WILD)
+              c=(E_CALL
+                a=(E_PATH
+                  a=(PATH {global}
+                    (PATH_SEG core)
+                    (PATH_SEG fmt)
+                    (PATH_SEG Display)
+                    (PATH_SEG fmt)))
+                (E_PATH
+                  a=(PATH
+                    (PATH_SEG __a2)))
+                (E_REF {mut}
+                  a=(E_PATH
+                    a=(PATH
+                      (PATH_SEG __f))))))
+            (STMT_EXPR {semi}
+              a=(E_METHOD_CALL write_str
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG __f)))
+                (E_LIT_STR "\n"))))))
+      (STMT_EXPR {semi}
+        a=(BLOCK
+          (STMT_LET
+            a=(P_IDENT __out {mut})
+            c=(E_CALL
+              a=(E_PATH
+                a=(PATH {global}
+                  (PATH_SEG core)
+                  (PATH_SEG io)
+                  (PATH_SEG stdout_raw)))))
+          (STMT_LET
+            a=(P_IDENT __f {mut})
+            c=(E_CALL
+              a=(E_PATH
+                a=(PATH {global}
+                  (PATH_SEG core)
+                  (PATH_SEG fmt)
+                  (PATH_SEG Formatter)
+                  (PATH_SEG new)))
+              (E_REF {mut}
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG __out))))))
+          a=(BLOCK
+            (STMT_LET
+              a=(P_IDENT __a0)
+              c=(E_REF
+                a=(E_PAREN
+                  a=(E_PATH
+                    a=(PATH
+                      (PATH_SEG v))))))
+            (STMT_LET
+              a=(P_IDENT __a1)
+              c=(E_REF
+                a=(E_PAREN
+                  a=(E_LIT_INT "10" #10))))
+            (STMT_LET
+              a=(P_IDENT __a2)
+              c=(E_REF
+                a=(E_PAREN
+                  a=(E_LIT_INT "3" #3))))
+            (STMT_EXPR {semi}
+              a=(E_METHOD_CALL set_spec
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG __f)))
+                (E_LIT_CHAR #32)
+                (E_LIT_INT u8 "0" #0)
+                (E_LIT_INT u8 "0" #0)
+                (E_LIT_BOOL #0)
+                (E_LIT_BOOL #0)
+                (E_DEREF
+                  a=(E_PATH
+                    a=(PATH
+                      (PATH_SEG __a1))))
+                (E_LIT_BOOL #1)
+                (E_DEREF
+                  a=(E_PATH
+                    a=(PATH
+                      (PATH_SEG __a2))))
+                (E_LIT_BOOL #1)))
+            (STMT_LET
+              a=(P_WILD)
+              c=(E_CALL
+                a=(E_PATH
+                  a=(PATH {global}
+                    (PATH_SEG core)
+                    (PATH_SEG fmt)
+                    (PATH_SEG Display)
+                    (PATH_SEG fmt)))
+                (E_PATH
+                  a=(PATH
+                    (PATH_SEG __a0)))
+                (E_REF {mut}
+                  a=(E_PATH
+                    a=(PATH
+                      (PATH_SEG __f))))))
+            (STMT_EXPR {semi}
+              a=(E_METHOD_CALL clear_spec
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG __f)))))
+            (STMT_EXPR {semi}
+              a=(E_METHOD_CALL write_str
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG __f)))
+                (E_LIT_STR "\n"))))))
+      (STMT_EXPR {semi}
+        a=(BLOCK
+          (STMT_LET
+            a=(P_IDENT __out {mut})
+            c=(E_CALL
+              a=(E_PATH
+                a=(PATH {global}
+                  (PATH_SEG core)
+                  (PATH_SEG io)
+                  (PATH_SEG stdout_raw)))))
+          (STMT_LET
+            a=(P_IDENT __f {mut})
+            c=(E_CALL
+              a=(E_PATH
+                a=(PATH {global}
+                  (PATH_SEG core)
+                  (PATH_SEG fmt)
+                  (PATH_SEG Formatter)
+                  (PATH_SEG new)))
+              (E_REF {mut}
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG __out))))))
+          a=(BLOCK
+            (STMT_LET
+              a=(P_IDENT __a0)
+              c=(E_REF
+                a=(E_PAREN
+                  a=(E_LIT_INT "1" #1))))
+            (STMT_LET
+              a=(P_IDENT __a1)
+              c=(E_REF
+                a=(E_PAREN
+                  a=(E_LIT_INT "5" #5))))
+            (STMT_EXPR {semi}
+              a=(E_METHOD_CALL set_spec
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG __f)))
+                (E_LIT_CHAR #32)
+                (E_LIT_INT u8 "3" #3)
+                (E_LIT_INT u8 "0" #0)
+                (E_LIT_BOOL #0)
+                (E_LIT_BOOL #0)
+                (E_DEREF
+                  a=(E_PATH
+                    a=(PATH
+                      (PATH_SEG __a1))))
+                (E_LIT_BOOL #1)
+                (E_LIT_INT usize "0" #0)
+                (E_LIT_BOOL #0)))
+            (STMT_LET
+              a=(P_WILD)
+              c=(E_CALL
+                a=(E_PATH
+                  a=(PATH {global}
+                    (PATH_SEG core)
+                    (PATH_SEG fmt)
+                    (PATH_SEG Display)
+                    (PATH_SEG fmt)))
+                (E_PATH
+                  a=(PATH
+                    (PATH_SEG __a0)))
+                (E_REF {mut}
+                  a=(E_PATH
+                    a=(PATH
+                      (PATH_SEG __f))))))
+            (STMT_EXPR {semi}
+              a=(E_METHOD_CALL clear_spec
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG __f)))))
+            (STMT_EXPR {semi}
+              a=(E_METHOD_CALL write_str
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG __f)))
+                (E_LIT_STR " ")))
+            (STMT_EXPR {semi}
+              a=(E_METHOD_CALL set_spec
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG __f)))
+                (E_LIT_CHAR #32)
+                (E_LIT_INT u8 "3" #3)
+                (E_LIT_INT u8 "0" #0)
+                (E_LIT_BOOL #0)
+                (E_LIT_BOOL #0)
+                (E_DEREF
+                  a=(E_PATH
+                    a=(PATH
+                      (PATH_SEG __a1))))
+                (E_LIT_BOOL #1)
+                (E_LIT_INT usize "0" #0)
+                (E_LIT_BOOL #0)))
+            (STMT_LET
+              a=(P_WILD)
+              c=(E_CALL
+                a=(E_PATH
+                  a=(PATH {global}
+                    (PATH_SEG core)
+                    (PATH_SEG fmt)
+                    (PATH_SEG Display)
+                    (PATH_SEG fmt)))
+                (E_PATH
+                  a=(PATH
+                    (PATH_SEG __a1)))
+                (E_REF {mut}
+                  a=(E_PATH
+                    a=(PATH
+                      (PATH_SEG __f))))))
+            (STMT_EXPR {semi}
+              a=(E_METHOD_CALL clear_spec
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG __f)))))
+            (STMT_EXPR {semi}
+              a=(E_METHOD_CALL write_str
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG __f)))
+                (E_LIT_STR "\n"))))))
+      (STMT_EXPR {semi}
+        a=(BLOCK
+          (STMT_LET
+            a=(P_IDENT __out {mut})
+            c=(E_CALL
+              a=(E_PATH
+                a=(PATH {global}
+                  (PATH_SEG core)
+                  (PATH_SEG io)
+                  (PATH_SEG stdout_raw)))))
+          (STMT_LET
+            a=(P_IDENT __f {mut})
+            c=(E_CALL
+              a=(E_PATH
+                a=(PATH {global}
+                  (PATH_SEG core)
+                  (PATH_SEG fmt)
+                  (PATH_SEG Formatter)
+                  (PATH_SEG new)))
+              (E_REF {mut}
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG __out))))))
+          a=(BLOCK
+            (STMT_LET
+              a=(P_IDENT __a0)
+              c=(E_REF
+                a=(E_PAREN
+                  a=(E_METHOD_CALL len
+                    a=(E_LIT_BYTESTR "bytes")))))
+            (STMT_LET
+              a=(P_WILD)
+              c=(E_CALL
+                a=(E_PATH
+                  a=(PATH {global}
+                    (PATH_SEG core)
+                    (PATH_SEG fmt)
+                    (PATH_SEG Display)
+                    (PATH_SEG fmt)))
+                (E_PATH
+                  a=(PATH
+                    (PATH_SEG __a0)))
+                (E_REF {mut}
+                  a=(E_PATH
+                    a=(PATH
+                      (PATH_SEG __f))))))
+            (STMT_EXPR {semi}
+              a=(E_METHOD_CALL write_str
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG __f)))
+                (E_LIT_STR "\n"))))))
+      (STMT_EXPR {semi}
+        a=(BLOCK
+          (STMT_LET
+            a=(P_IDENT __out {mut})
+            c=(E_CALL
+              a=(E_PATH
+                a=(PATH {global}
+                  (PATH_SEG core)
+                  (PATH_SEG io)
+                  (PATH_SEG stdout_raw)))))
+          (STMT_LET
+            a=(P_IDENT __f {mut})
+            c=(E_CALL
+              a=(E_PATH
+                a=(PATH {global}
+                  (PATH_SEG core)
+                  (PATH_SEG fmt)
+                  (PATH_SEG Formatter)
+                  (PATH_SEG new)))
+              (E_REF {mut}
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG __out))))))
+          a=(BLOCK
+            (STMT_EXPR {semi}
+              a=(E_METHOD_CALL write_str
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG __f)))
+                (E_LIT_STR "a\tb\\n \xF0\x9F\x98\x80\n")))))))))

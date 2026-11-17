@@ -98,6 +98,7 @@ const char *op_spelling(int op) {
 
 int ast_cur_file = 0;
 void (*ast_tok_text)(FILE *f, const struct Token *toks, long ntoks) = 0;
+void (*ast_node_hook)(FILE *f, Node *n) = 0;
 
 Node *mk(int kind, int line, int col) {
     Node *n = ast_alloc(sizeof(Node));
@@ -209,6 +210,7 @@ static void dump_node(FILE *f, Node *n, const char *label, int depth, int closer
             ast_tok_text(f, n->toks, n->ntoks);
         }
     }
+    if (ast_node_hook) ast_node_hook(f, n);
     if (n->vis) { kids[nk] = n->vis; labels[nk++] = "vis="; }
     if (n->a) { kids[nk] = n->a; labels[nk++] = "a="; }
     if (n->b) { kids[nk] = n->b; labels[nk++] = "b="; }

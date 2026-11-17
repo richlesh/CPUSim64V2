@@ -1,0 +1,1 @@
+errors/expand_positional_after_named.rs:2: error: positional arguments cannot follow named arguments

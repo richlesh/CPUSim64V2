@@ -1,0 +1,3514 @@
+(CRATE ->crate
+  (ITEM_STRUCT Point {named} ->Point
+    @(ATTR derive {delim_paren} toks:15 Debug , Clone , Copy , PartialEq , Eq , PartialOrd , Ord , Default)
+    (FIELD x ->Point::x
+      a=(T_PATH ->i32
+        a=(PATH ->i32
+          (PATH_SEG i32 ->i32))))
+    (FIELD y ->Point::y
+      a=(T_PATH ->i32
+        a=(PATH ->i32
+          (PATH_SEG i32 ->i32)))))
+  (ITEM_IMPL ->Point
+    b=(T_PATH ->Point
+      a=(PATH ->Point
+        (PATH_SEG Point ->Point)))
+    c=(PATH {global} ->core::fmt::Debug
+      (PATH_SEG core ->core)
+      (PATH_SEG fmt ->core::fmt)
+      (PATH_SEG Debug ->core::fmt::Debug))
+    (ITEM_FN fmt ->Point::fmt
+      b=(T_PATH ->core::fmt::Result
+        a=(PATH {global} ->core::fmt::Result
+          (PATH_SEG core ->core)
+          (PATH_SEG fmt ->core::fmt)
+          (PATH_SEG Result ->core::fmt::Result)))
+      c=(BLOCK
+        a=(E_MATCH :Result<(), Error>
+          a=(E_DEREF :Point
+            a=(E_PATH ->self :&Point
+              a=(PATH ->self
+                (PATH_SEG self ->self))))
+          (ARM
+            a=(P_STRUCT ->Point :Point
+              a=(PATH ->Point
+                (PATH_SEG Point ->Point))
+              (P_FIELD x ->Point::x :i32
+                a=(P_IDENT __a0 {ref} ->__a0 :i32))
+              (P_FIELD y ->Point::y :i32
+                a=(P_IDENT __a1 {ref} ->__a1 :i32)))
+            c=(E_METHOD_CALL finish ->DebugStruct::finish :Result<(), Error>
+              a=(E_METHOD_CALL field ->DebugStruct::field :&mut DebugStruct
+                a=(E_METHOD_CALL field ->DebugStruct::field :&mut DebugStruct
+                  a=(E_METHOD_CALL debug_struct ->Formatter::debug_struct :DebugStruct
+                    a=(E_PATH ->f :&mut Formatter
+                      a=(PATH ->f
+                        (PATH_SEG f ->f)))
+                    (E_LIT_STR "Point" :&str))
+                  (E_LIT_STR "x" :&str)
+                  (E_PATH ->__a0 :&i32
+                    a=(PATH ->__a0
+                      (PATH_SEG __a0 ->__a0))))
+                (E_LIT_STR "y" :&str)
+                (E_PATH ->__a1 :&i32
+                  a=(PATH ->__a1
+                    (PATH_SEG __a1 ->__a1))))))))
+      (SELF_PARAM {ref} ->self)
+      (PARAM
+        a=(P_IDENT f ->f :&mut Formatter)
+        b=(T_REF {mut}
+          a=(T_PATH ->core::fmt::Formatter
+            a=(PATH {global} ->core::fmt::Formatter
+              (PATH_SEG core ->core)
+              (PATH_SEG fmt ->core::fmt)
+              (PATH_SEG Formatter {angle} ->core::fmt::Formatter
+                (LIFETIME '_))))))))
+  (ITEM_IMPL ->Point
+    b=(T_PATH ->Point
+      a=(PATH ->Point
+        (PATH_SEG Point ->Point)))
+    c=(PATH {global} ->core::clone::Clone
+      (PATH_SEG core ->core)
+      (PATH_SEG clone ->core::clone)
+      (PATH_SEG Clone ->core::clone::Clone))
+    (ITEM_FN clone ->Point::clone
+      b=(T_PATH ->Self
+        a=(PATH ->Self
+          (PATH_SEG Self ->Self)))
+      c=(BLOCK
+        a=(E_MATCH :Point
+          a=(E_DEREF :Point
+            a=(E_PATH ->self :&Point
+              a=(PATH ->self
+                (PATH_SEG self ->self))))
+          (ARM
+            a=(P_STRUCT ->Point :Point
+              a=(PATH ->Point
+                (PATH_SEG Point ->Point))
+              (P_FIELD x ->Point::x :i32
+                a=(P_IDENT __a0 {ref} ->__a0 :i32))
+              (P_FIELD y ->Point::y :i32
+                a=(P_IDENT __a1 {ref} ->__a1 :i32)))
+            c=(E_STRUCT ->Point :Point
+              a=(PATH ->Point
+                (PATH_SEG Point ->Point))
+              (FIELD_INIT x ->Point::x :i32
+                a=(E_CALL :i32
+                  a=(E_PATH ->i32::clone :fn(&i32) -> i32 {clone}
+                    a=(PATH {global} ->core::clone::Clone
+                      (PATH_SEG core ->core)
+                      (PATH_SEG clone ->core::clone)
+                      (PATH_SEG Clone ->core::clone::Clone)
+                      (PATH_SEG clone)))
+                  (E_PATH ->__a0 :&i32
+                    a=(PATH ->__a0
+                      (PATH_SEG __a0 ->__a0)))))
+              (FIELD_INIT y ->Point::y :i32
+                a=(E_CALL :i32
+                  a=(E_PATH ->i32::clone :fn(&i32) -> i32 {clone}
+                    a=(PATH {global} ->core::clone::Clone
+                      (PATH_SEG core ->core)
+                      (PATH_SEG clone ->core::clone)
+                      (PATH_SEG Clone ->core::clone::Clone)
+                      (PATH_SEG clone)))
+                  (E_PATH ->__a1 :&i32
+                    a=(PATH ->__a1
+                      (PATH_SEG __a1 ->__a1)))))))))
+      (SELF_PARAM {ref} ->self)))
+  (ITEM_IMPL ->Point
+    b=(T_PATH ->Point
+      a=(PATH ->Point
+        (PATH_SEG Point ->Point)))
+    c=(PATH {global} ->core::marker::Copy
+      (PATH_SEG core ->core)
+      (PATH_SEG marker ->core::marker)
+      (PATH_SEG Copy ->core::marker::Copy)))
+  (ITEM_IMPL ->Point
+    b=(T_PATH ->Point
+      a=(PATH ->Point
+        (PATH_SEG Point ->Point)))
+    c=(PATH {global} ->core::cmp::PartialEq
+      (PATH_SEG core ->core)
+      (PATH_SEG cmp ->core::cmp)
+      (PATH_SEG PartialEq ->core::cmp::PartialEq))
+    (ITEM_FN eq ->Point::eq
+      b=(T_PATH ->bool
+        a=(PATH ->bool
+          (PATH_SEG bool ->bool)))
+      c=(BLOCK
+        a=(E_MATCH :bool
+          a=(E_DEREF :Point
+            a=(E_PATH ->self :&Point
+              a=(PATH ->self
+                (PATH_SEG self ->self))))
+          (ARM
+            a=(P_STRUCT ->Point :Point
+              a=(PATH ->Point
+                (PATH_SEG Point ->Point))
+              (P_FIELD x ->Point::x :i32
+                a=(P_IDENT __a0 {ref} ->__a0 :i32))
+              (P_FIELD y ->Point::y :i32
+                a=(P_IDENT __a1 {ref} ->__a1 :i32)))
+            c=(E_MATCH :bool
+              a=(E_DEREF :Point
+                a=(E_PATH ->other :&Point
+                  a=(PATH ->other
+                    (PATH_SEG other ->other))))
+              (ARM
+                a=(P_STRUCT ->Point :Point
+                  a=(PATH ->Point
+                    (PATH_SEG Point ->Point))
+                  (P_FIELD x ->Point::x :i32
+                    a=(P_IDENT __b0 {ref} ->__b0 :i32))
+                  (P_FIELD y ->Point::y :i32
+                    a=(P_IDENT __b1 {ref} ->__b1 :i32)))
+                c=(E_BINARY op:&& :bool
+                  a=(E_CALL :bool
+                    a=(E_PATH ->i32::eq :fn(&i32, &i32) -> bool {eq::<i32>}
+                      a=(PATH {global} ->core::cmp::PartialEq
+                        (PATH_SEG core ->core)
+                        (PATH_SEG cmp ->core::cmp)
+                        (PATH_SEG PartialEq ->core::cmp::PartialEq)
+                        (PATH_SEG eq)))
+                    (E_PATH ->__a0 :&i32
+                      a=(PATH ->__a0
+                        (PATH_SEG __a0 ->__a0)))
+                    (E_PATH ->__b0 :&i32
+                      a=(PATH ->__b0
+                        (PATH_SEG __b0 ->__b0))))
+                  b=(E_CALL :bool
+                    a=(E_PATH ->i32::eq :fn(&i32, &i32) -> bool {eq::<i32>}
+                      a=(PATH {global} ->core::cmp::PartialEq
+                        (PATH_SEG core ->core)
+                        (PATH_SEG cmp ->core::cmp)
+                        (PATH_SEG PartialEq ->core::cmp::PartialEq)
+                        (PATH_SEG eq)))
+                    (E_PATH ->__a1 :&i32
+                      a=(PATH ->__a1
+                        (PATH_SEG __a1 ->__a1)))
+                    (E_PATH ->__b1 :&i32
+                      a=(PATH ->__b1
+                        (PATH_SEG __b1 ->__b1))))))))))
+      (SELF_PARAM {ref} ->self)
+      (PARAM
+        a=(P_IDENT other ->other :&Point)
+        b=(T_REF
+          a=(T_PATH ->Self
+            a=(PATH ->Self
+              (PATH_SEG Self ->Self)))))))
+  (ITEM_IMPL ->Point
+    b=(T_PATH ->Point
+      a=(PATH ->Point
+        (PATH_SEG Point ->Point)))
+    c=(PATH {global} ->core::cmp::Eq
+      (PATH_SEG core ->core)
+      (PATH_SEG cmp ->core::cmp)
+      (PATH_SEG Eq ->core::cmp::Eq)))
+  (ITEM_IMPL ->Point
+    b=(T_PATH ->Point
+      a=(PATH ->Point
+        (PATH_SEG Point ->Point)))
+    c=(PATH {global} ->core::cmp::PartialOrd
+      (PATH_SEG core ->core)
+      (PATH_SEG cmp ->core::cmp)
+      (PATH_SEG PartialOrd ->core::cmp::PartialOrd))
+    (ITEM_FN partial_cmp ->Point::partial_cmp
+      b=(T_PATH ->core::option::Option
+        a=(PATH {global} ->core::option::Option
+          (PATH_SEG core ->core)
+          (PATH_SEG option ->core::option)
+          (PATH_SEG Option {angle} ->core::option::Option
+            (T_PATH ->core::cmp::Ordering
+              a=(PATH {global} ->core::cmp::Ordering
+                (PATH_SEG core ->core)
+                (PATH_SEG cmp ->core::cmp)
+                (PATH_SEG Ordering ->core::cmp::Ordering))))))
+      c=(BLOCK
+        a=(E_MATCH :Option<Ordering>
+          a=(E_DEREF :Point
+            a=(E_PATH ->self :&Point
+              a=(PATH ->self
+                (PATH_SEG self ->self))))
+          (ARM
+            a=(P_STRUCT ->Point :Point
+              a=(PATH ->Point
+                (PATH_SEG Point ->Point))
+              (P_FIELD x ->Point::x :i32
+                a=(P_IDENT __a0 {ref} ->__a0 :i32))
+              (P_FIELD y ->Point::y :i32
+                a=(P_IDENT __a1 {ref} ->__a1 :i32)))
+            c=(E_MATCH :Option<Ordering>
+              a=(E_DEREF :Point
+                a=(E_PATH ->other :&Point
+                  a=(PATH ->other
+                    (PATH_SEG other ->other))))
+              (ARM
+                a=(P_STRUCT ->Point :Point
+                  a=(PATH ->Point
+                    (PATH_SEG Point ->Point))
+                  (P_FIELD x ->Point::x :i32
+                    a=(P_IDENT __b0 {ref} ->__b0 :i32))
+                  (P_FIELD y ->Point::y :i32
+                    a=(P_IDENT __b1 {ref} ->__b1 :i32)))
+                c=(E_MATCH :Option<Ordering>
+                  a=(E_CALL :Option<Ordering>
+                    a=(E_PATH ->i32::partial_cmp :fn(&i32, &i32) -> Option<Ordering> {partial_cmp::<i32>}
+                      a=(PATH {global} ->core::cmp::PartialOrd
+                        (PATH_SEG core ->core)
+                        (PATH_SEG cmp ->core::cmp)
+                        (PATH_SEG PartialOrd ->core::cmp::PartialOrd)
+                        (PATH_SEG partial_cmp)))
+                    (E_PATH ->__a0 :&i32
+                      a=(PATH ->__a0
+                        (PATH_SEG __a0 ->__a0)))
+                    (E_PATH ->__b0 :&i32
+                      a=(PATH ->__b0
+                        (PATH_SEG __b0 ->__b0))))
+                  (ARM
+                    a=(P_TUPLE_STRUCT ->core::option::Option::Some :Option<Ordering>
+                      a=(PATH {global} ->core::option::Option::Some
+                        (PATH_SEG core ->core)
+                        (PATH_SEG option ->core::option)
+                        (PATH_SEG Option ->core::option::Option)
+                        (PATH_SEG Some ->core::option::Option::Some))
+                      (P_PATH ->core::cmp::Ordering::Equal :Ordering
+                        a=(PATH {global} ->core::cmp::Ordering::Equal
+                          (PATH_SEG core ->core)
+                          (PATH_SEG cmp ->core::cmp)
+                          (PATH_SEG Ordering ->core::cmp::Ordering)
+                          (PATH_SEG Equal ->core::cmp::Ordering::Equal))))
+                    c=(E_CALL :Option<Ordering>
+                      a=(E_PATH ->i32::partial_cmp :fn(&i32, &i32) -> Option<Ordering> {partial_cmp::<i32>}
+                        a=(PATH {global} ->core::cmp::PartialOrd
+                          (PATH_SEG core ->core)
+                          (PATH_SEG cmp ->core::cmp)
+                          (PATH_SEG PartialOrd ->core::cmp::PartialOrd)
+                          (PATH_SEG partial_cmp)))
+                      (E_PATH ->__a1 :&i32
+                        a=(PATH ->__a1
+                          (PATH_SEG __a1 ->__a1)))
+                      (E_PATH ->__b1 :&i32
+                        a=(PATH ->__b1
+                          (PATH_SEG __b1 ->__b1)))))
+                  (ARM
+                    a=(P_IDENT __c ->__c :Option<Ordering>)
+                    c=(E_PATH ->__c :Option<Ordering>
+                      a=(PATH ->__c
+                        (PATH_SEG __c ->__c))))))))))
+      (SELF_PARAM {ref} ->self)
+      (PARAM
+        a=(P_IDENT other ->other :&Point)
+        b=(T_REF
+          a=(T_PATH ->Self
+            a=(PATH ->Self
+              (PATH_SEG Self ->Self)))))))
+  (ITEM_IMPL ->Point
+    b=(T_PATH ->Point
+      a=(PATH ->Point
+        (PATH_SEG Point ->Point)))
+    c=(PATH {global} ->core::cmp::Ord
+      (PATH_SEG core ->core)
+      (PATH_SEG cmp ->core::cmp)
+      (PATH_SEG Ord ->core::cmp::Ord))
+    (ITEM_FN cmp ->Point::cmp
+      b=(T_PATH ->core::cmp::Ordering
+        a=(PATH {global} ->core::cmp::Ordering
+          (PATH_SEG core ->core)
+          (PATH_SEG cmp ->core::cmp)
+          (PATH_SEG Ordering ->core::cmp::Ordering)))
+      c=(BLOCK
+        a=(E_MATCH :Ordering
+          a=(E_DEREF :Point
+            a=(E_PATH ->self :&Point
+              a=(PATH ->self
+                (PATH_SEG self ->self))))
+          (ARM
+            a=(P_STRUCT ->Point :Point
+              a=(PATH ->Point
+                (PATH_SEG Point ->Point))
+              (P_FIELD x ->Point::x :i32
+                a=(P_IDENT __a0 {ref} ->__a0 :i32))
+              (P_FIELD y ->Point::y :i32
+                a=(P_IDENT __a1 {ref} ->__a1 :i32)))
+            c=(E_MATCH :Ordering
+              a=(E_DEREF :Point
+                a=(E_PATH ->other :&Point
+                  a=(PATH ->other
+                    (PATH_SEG other ->other))))
+              (ARM
+                a=(P_STRUCT ->Point :Point
+                  a=(PATH ->Point
+                    (PATH_SEG Point ->Point))
+                  (P_FIELD x ->Point::x :i32
+                    a=(P_IDENT __b0 {ref} ->__b0 :i32))
+                  (P_FIELD y ->Point::y :i32
+                    a=(P_IDENT __b1 {ref} ->__b1 :i32)))
+                c=(E_MATCH :Ordering
+                  a=(E_CALL :Ordering
+                    a=(E_PATH ->i32::cmp :fn(&i32, &i32) -> Ordering {cmp}
+                      a=(PATH {global} ->core::cmp::Ord
+                        (PATH_SEG core ->core)
+                        (PATH_SEG cmp ->core::cmp)
+                        (PATH_SEG Ord ->core::cmp::Ord)
+                        (PATH_SEG cmp)))
+                    (E_PATH ->__a0 :&i32
+                      a=(PATH ->__a0
+                        (PATH_SEG __a0 ->__a0)))
+                    (E_PATH ->__b0 :&i32
+                      a=(PATH ->__b0
+                        (PATH_SEG __b0 ->__b0))))
+                  (ARM
+                    a=(P_PATH ->core::cmp::Ordering::Equal :Ordering
+                      a=(PATH {global} ->core::cmp::Ordering::Equal
+                        (PATH_SEG core ->core)
+                        (PATH_SEG cmp ->core::cmp)
+                        (PATH_SEG Ordering ->core::cmp::Ordering)
+                        (PATH_SEG Equal ->core::cmp::Ordering::Equal)))
+                    c=(E_CALL :Ordering
+                      a=(E_PATH ->i32::cmp :fn(&i32, &i32) -> Ordering {cmp}
+                        a=(PATH {global} ->core::cmp::Ord
+                          (PATH_SEG core ->core)
+                          (PATH_SEG cmp ->core::cmp)
+                          (PATH_SEG Ord ->core::cmp::Ord)
+                          (PATH_SEG cmp)))
+                      (E_PATH ->__a1 :&i32
+                        a=(PATH ->__a1
+                          (PATH_SEG __a1 ->__a1)))
+                      (E_PATH ->__b1 :&i32
+                        a=(PATH ->__b1
+                          (PATH_SEG __b1 ->__b1)))))
+                  (ARM
+                    a=(P_IDENT __c ->__c :Ordering)
+                    c=(E_PATH ->__c :Ordering
+                      a=(PATH ->__c
+                        (PATH_SEG __c ->__c))))))))))
+      (SELF_PARAM {ref} ->self)
+      (PARAM
+        a=(P_IDENT other ->other :&Point)
+        b=(T_REF
+          a=(T_PATH ->Self
+            a=(PATH ->Self
+              (PATH_SEG Self ->Self)))))))
+  (ITEM_IMPL ->Point
+    b=(T_PATH ->Point
+      a=(PATH ->Point
+        (PATH_SEG Point ->Point)))
+    c=(PATH {global} ->core::default::Default
+      (PATH_SEG core ->core)
+      (PATH_SEG default ->core::default)
+      (PATH_SEG Default ->core::default::Default))
+    (ITEM_FN default ->Point::default
+      b=(T_PATH ->Self
+        a=(PATH ->Self
+          (PATH_SEG Self ->Self)))
+      c=(BLOCK
+        a=(E_STRUCT ->Point :Point
+          a=(PATH ->Point
+            (PATH_SEG Point ->Point))
+          (FIELD_INIT x ->Point::x :i32
+            a=(E_CALL :i32
+              a=(E_PATH ->i32::default :fn() -> i32 {default}
+                a=(PATH {global} ->core::default::Default
+                  (PATH_SEG core ->core)
+                  (PATH_SEG default ->core::default)
+                  (PATH_SEG Default ->core::default::Default)
+                  (PATH_SEG default)))))
+          (FIELD_INIT y ->Point::y :i32
+            a=(E_CALL :i32
+              a=(E_PATH ->i32::default :fn() -> i32 {default}
+                a=(PATH {global} ->core::default::Default
+                  (PATH_SEG core ->core)
+                  (PATH_SEG default ->core::default)
+                  (PATH_SEG Default ->core::default::Default)
+                  (PATH_SEG default)))))))))
+  (ITEM_STRUCT Pair {tuple} ->Pair
+    @(ATTR derive {delim_paren} toks:9 Debug , Clone , PartialEq , PartialOrd , Default)
+    a=(GENERICS
+      (GEN_TYPE T ->T)
+      (GEN_TYPE U ->U))
+    (FIELD ->Pair::0
+      a=(T_PATH ->T
+        a=(PATH ->T
+          (PATH_SEG T ->T))))
+    (FIELD ->Pair::1
+      a=(T_PATH ->U
+        a=(PATH ->U
+          (PATH_SEG U ->U)))))
+  (ITEM_IMPL ->Pair
+    a=(GENERICS
+      (GEN_TYPE T ->T
+        b=(BOUNDS
+          (BOUND_TRAIT ->core::fmt::Debug
+            a=(PATH {global} ->core::fmt::Debug
+              (PATH_SEG core ->core)
+              (PATH_SEG fmt ->core::fmt)
+              (PATH_SEG Debug ->core::fmt::Debug)))))
+      (GEN_TYPE U ->U
+        b=(BOUNDS
+          (BOUND_TRAIT ->core::fmt::Debug
+            a=(PATH {global} ->core::fmt::Debug
+              (PATH_SEG core ->core)
+              (PATH_SEG fmt ->core::fmt)
+              (PATH_SEG Debug ->core::fmt::Debug))))))
+    b=(T_PATH ->Pair
+      a=(PATH ->Pair
+        (PATH_SEG Pair {angle} ->Pair
+          (T_PATH ->T
+            a=(PATH ->T
+              (PATH_SEG T ->T)))
+          (T_PATH ->U
+            a=(PATH ->U
+              (PATH_SEG U ->U))))))
+    c=(PATH {global} ->core::fmt::Debug
+      (PATH_SEG core ->core)
+      (PATH_SEG fmt ->core::fmt)
+      (PATH_SEG Debug ->core::fmt::Debug))
+    (ITEM_FN fmt ->Pair::fmt
+      b=(T_PATH ->core::fmt::Result
+        a=(PATH {global} ->core::fmt::Result
+          (PATH_SEG core ->core)
+          (PATH_SEG fmt ->core::fmt)
+          (PATH_SEG Result ->core::fmt::Result)))
+      c=(BLOCK
+        a=(E_MATCH :Result<(), Error>
+          a=(E_DEREF :Pair<T, U>
+            a=(E_PATH ->self :&Pair<T, U>
+              a=(PATH ->self
+                (PATH_SEG self ->self))))
+          (ARM
+            a=(P_TUPLE_STRUCT ->Pair :Pair<T, U>
+              a=(PATH ->Pair
+                (PATH_SEG Pair ->Pair))
+              (P_IDENT __a0 {ref} ->__a0 :T)
+              (P_IDENT __a1 {ref} ->__a1 :U))
+            c=(E_METHOD_CALL finish ->DebugTuple::finish :Result<(), Error>
+              a=(E_METHOD_CALL field ->DebugTuple::field :&mut DebugTuple
+                a=(E_METHOD_CALL field ->DebugTuple::field :&mut DebugTuple
+                  a=(E_METHOD_CALL debug_tuple ->Formatter::debug_tuple :DebugTuple
+                    a=(E_PATH ->f :&mut Formatter
+                      a=(PATH ->f
+                        (PATH_SEG f ->f)))
+                    (E_LIT_STR "Pair" :&str))
+                  (E_PATH ->__a0 :&T
+                    a=(PATH ->__a0
+                      (PATH_SEG __a0 ->__a0))))
+                (E_PATH ->__a1 :&U
+                  a=(PATH ->__a1
+                    (PATH_SEG __a1 ->__a1))))))))
+      (SELF_PARAM {ref} ->self)
+      (PARAM
+        a=(P_IDENT f ->f :&mut Formatter)
+        b=(T_REF {mut}
+          a=(T_PATH ->core::fmt::Formatter
+            a=(PATH {global} ->core::fmt::Formatter
+              (PATH_SEG core ->core)
+              (PATH_SEG fmt ->core::fmt)
+              (PATH_SEG Formatter {angle} ->core::fmt::Formatter
+                (LIFETIME '_))))))))
+  (ITEM_IMPL ->Pair
+    a=(GENERICS
+      (GEN_TYPE T ->T
+        b=(BOUNDS
+          (BOUND_TRAIT ->core::clone::Clone
+            a=(PATH {global} ->core::clone::Clone
+              (PATH_SEG core ->core)
+              (PATH_SEG clone ->core::clone)
+              (PATH_SEG Clone ->core::clone::Clone)))))
+      (GEN_TYPE U ->U
+        b=(BOUNDS
+          (BOUND_TRAIT ->core::clone::Clone
+            a=(PATH {global} ->core::clone::Clone
+              (PATH_SEG core ->core)
+              (PATH_SEG clone ->core::clone)
+              (PATH_SEG Clone ->core::clone::Clone))))))
+    b=(T_PATH ->Pair
+      a=(PATH ->Pair
+        (PATH_SEG Pair {angle} ->Pair
+          (T_PATH ->T
+            a=(PATH ->T
+              (PATH_SEG T ->T)))
+          (T_PATH ->U
+            a=(PATH ->U
+              (PATH_SEG U ->U))))))
+    c=(PATH {global} ->core::clone::Clone
+      (PATH_SEG core ->core)
+      (PATH_SEG clone ->core::clone)
+      (PATH_SEG Clone ->core::clone::Clone))
+    (ITEM_FN clone ->Pair::clone
+      b=(T_PATH ->Self
+        a=(PATH ->Self
+          (PATH_SEG Self ->Self)))
+      c=(BLOCK
+        a=(E_MATCH :Pair<T, U>
+          a=(E_DEREF :Pair<T, U>
+            a=(E_PATH ->self :&Pair<T, U>
+              a=(PATH ->self
+                (PATH_SEG self ->self))))
+          (ARM
+            a=(P_TUPLE_STRUCT ->Pair :Pair<T, U>
+              a=(PATH ->Pair
+                (PATH_SEG Pair ->Pair))
+              (P_IDENT __a0 {ref} ->__a0 :T)
+              (P_IDENT __a1 {ref} ->__a1 :U))
+            c=(E_CALL :Pair<T, U>
+              a=(E_PATH ->Pair :fn(T, U) -> Pair<T, U> {Pair::<T, U>}
+                a=(PATH ->Pair
+                  (PATH_SEG Pair ->Pair)))
+              (E_CALL :T
+                a=(E_PATH ->core::clone::Clone::clone :fn(&T) -> T {clone}
+                  a=(PATH {global} ->core::clone::Clone
+                    (PATH_SEG core ->core)
+                    (PATH_SEG clone ->core::clone)
+                    (PATH_SEG Clone ->core::clone::Clone)
+                    (PATH_SEG clone)))
+                (E_PATH ->__a0 :&T
+                  a=(PATH ->__a0
+                    (PATH_SEG __a0 ->__a0))))
+              (E_CALL :U
+                a=(E_PATH ->core::clone::Clone::clone :fn(&U) -> U {clone}
+                  a=(PATH {global} ->core::clone::Clone
+                    (PATH_SEG core ->core)
+                    (PATH_SEG clone ->core::clone)
+                    (PATH_SEG Clone ->core::clone::Clone)
+                    (PATH_SEG clone)))
+                (E_PATH ->__a1 :&U
+                  a=(PATH ->__a1
+                    (PATH_SEG __a1 ->__a1))))))))
+      (SELF_PARAM {ref} ->self)))
+  (ITEM_IMPL ->Pair
+    a=(GENERICS
+      (GEN_TYPE T ->T
+        b=(BOUNDS
+          (BOUND_TRAIT ->core::cmp::PartialEq
+            a=(PATH {global} ->core::cmp::PartialEq
+              (PATH_SEG core ->core)
+              (PATH_SEG cmp ->core::cmp)
+              (PATH_SEG PartialEq ->core::cmp::PartialEq)))))
+      (GEN_TYPE U ->U
+        b=(BOUNDS
+          (BOUND_TRAIT ->core::cmp::PartialEq
+            a=(PATH {global} ->core::cmp::PartialEq
+              (PATH_SEG core ->core)
+              (PATH_SEG cmp ->core::cmp)
+              (PATH_SEG PartialEq ->core::cmp::PartialEq))))))
+    b=(T_PATH ->Pair
+      a=(PATH ->Pair
+        (PATH_SEG Pair {angle} ->Pair
+          (T_PATH ->T
+            a=(PATH ->T
+              (PATH_SEG T ->T)))
+          (T_PATH ->U
+            a=(PATH ->U
+              (PATH_SEG U ->U))))))
+    c=(PATH {global} ->core::cmp::PartialEq
+      (PATH_SEG core ->core)
+      (PATH_SEG cmp ->core::cmp)
+      (PATH_SEG PartialEq ->core::cmp::PartialEq))
+    (ITEM_FN eq ->Pair::eq
+      b=(T_PATH ->bool
+        a=(PATH ->bool
+          (PATH_SEG bool ->bool)))
+      c=(BLOCK
+        a=(E_MATCH :bool
+          a=(E_DEREF :Pair<T, U>
+            a=(E_PATH ->self :&Pair<T, U>
+              a=(PATH ->self
+                (PATH_SEG self ->self))))
+          (ARM
+            a=(P_TUPLE_STRUCT ->Pair :Pair<T, U>
+              a=(PATH ->Pair
+                (PATH_SEG Pair ->Pair))
+              (P_IDENT __a0 {ref} ->__a0 :T)
+              (P_IDENT __a1 {ref} ->__a1 :U))
+            c=(E_MATCH :bool
+              a=(E_DEREF :Pair<T, U>
+                a=(E_PATH ->other :&Pair<T, U>
+                  a=(PATH ->other
+                    (PATH_SEG other ->other))))
+              (ARM
+                a=(P_TUPLE_STRUCT ->Pair :Pair<T, U>
+                  a=(PATH ->Pair
+                    (PATH_SEG Pair ->Pair))
+                  (P_IDENT __b0 {ref} ->__b0 :T)
+                  (P_IDENT __b1 {ref} ->__b1 :U))
+                c=(E_BINARY op:&& :bool
+                  a=(E_CALL :bool
+                    a=(E_PATH ->core::cmp::PartialEq::eq :fn(&T, &T) -> bool {eq::<T>}
+                      a=(PATH {global} ->core::cmp::PartialEq
+                        (PATH_SEG core ->core)
+                        (PATH_SEG cmp ->core::cmp)
+                        (PATH_SEG PartialEq ->core::cmp::PartialEq)
+                        (PATH_SEG eq)))
+                    (E_PATH ->__a0 :&T
+                      a=(PATH ->__a0
+                        (PATH_SEG __a0 ->__a0)))
+                    (E_PATH ->__b0 :&T
+                      a=(PATH ->__b0
+                        (PATH_SEG __b0 ->__b0))))
+                  b=(E_CALL :bool
+                    a=(E_PATH ->core::cmp::PartialEq::eq :fn(&U, &U) -> bool {eq::<U>}
+                      a=(PATH {global} ->core::cmp::PartialEq
+                        (PATH_SEG core ->core)
+                        (PATH_SEG cmp ->core::cmp)
+                        (PATH_SEG PartialEq ->core::cmp::PartialEq)
+                        (PATH_SEG eq)))
+                    (E_PATH ->__a1 :&U
+                      a=(PATH ->__a1
+                        (PATH_SEG __a1 ->__a1)))
+                    (E_PATH ->__b1 :&U
+                      a=(PATH ->__b1
+                        (PATH_SEG __b1 ->__b1))))))))))
+      (SELF_PARAM {ref} ->self)
+      (PARAM
+        a=(P_IDENT other ->other :&Pair<T, U>)
+        b=(T_REF
+          a=(T_PATH ->Self
+            a=(PATH ->Self
+              (PATH_SEG Self ->Self)))))))
+  (ITEM_IMPL ->Pair
+    a=(GENERICS
+      (GEN_TYPE T ->T
+        b=(BOUNDS
+          (BOUND_TRAIT ->core::cmp::PartialOrd
+            a=(PATH {global} ->core::cmp::PartialOrd
+              (PATH_SEG core ->core)
+              (PATH_SEG cmp ->core::cmp)
+              (PATH_SEG PartialOrd ->core::cmp::PartialOrd)))))
+      (GEN_TYPE U ->U
+        b=(BOUNDS
+          (BOUND_TRAIT ->core::cmp::PartialOrd
+            a=(PATH {global} ->core::cmp::PartialOrd
+              (PATH_SEG core ->core)
+              (PATH_SEG cmp ->core::cmp)
+              (PATH_SEG PartialOrd ->core::cmp::PartialOrd))))))
+    b=(T_PATH ->Pair
+      a=(PATH ->Pair
+        (PATH_SEG Pair {angle} ->Pair
+          (T_PATH ->T
+            a=(PATH ->T
+              (PATH_SEG T ->T)))
+          (T_PATH ->U
+            a=(PATH ->U
+              (PATH_SEG U ->U))))))
+    c=(PATH {global} ->core::cmp::PartialOrd
+      (PATH_SEG core ->core)
+      (PATH_SEG cmp ->core::cmp)
+      (PATH_SEG PartialOrd ->core::cmp::PartialOrd))
+    (ITEM_FN partial_cmp ->Pair::partial_cmp
+      b=(T_PATH ->core::option::Option
+        a=(PATH {global} ->core::option::Option
+          (PATH_SEG core ->core)
+          (PATH_SEG option ->core::option)
+          (PATH_SEG Option {angle} ->core::option::Option
+            (T_PATH ->core::cmp::Ordering
+              a=(PATH {global} ->core::cmp::Ordering
+                (PATH_SEG core ->core)
+                (PATH_SEG cmp ->core::cmp)
+                (PATH_SEG Ordering ->core::cmp::Ordering))))))
+      c=(BLOCK
+        a=(E_MATCH :Option<Ordering>
+          a=(E_DEREF :Pair<T, U>
+            a=(E_PATH ->self :&Pair<T, U>
+              a=(PATH ->self
+                (PATH_SEG self ->self))))
+          (ARM
+            a=(P_TUPLE_STRUCT ->Pair :Pair<T, U>
+              a=(PATH ->Pair
+                (PATH_SEG Pair ->Pair))
+              (P_IDENT __a0 {ref} ->__a0 :T)
+              (P_IDENT __a1 {ref} ->__a1 :U))
+            c=(E_MATCH :Option<Ordering>
+              a=(E_DEREF :Pair<T, U>
+                a=(E_PATH ->other :&Pair<T, U>
+                  a=(PATH ->other
+                    (PATH_SEG other ->other))))
+              (ARM
+                a=(P_TUPLE_STRUCT ->Pair :Pair<T, U>
+                  a=(PATH ->Pair
+                    (PATH_SEG Pair ->Pair))
+                  (P_IDENT __b0 {ref} ->__b0 :T)
+                  (P_IDENT __b1 {ref} ->__b1 :U))
+                c=(E_MATCH :Option<Ordering>
+                  a=(E_CALL :Option<Ordering>
+                    a=(E_PATH ->core::cmp::PartialOrd::partial_cmp :fn(&T, &T) -> Option<Ordering> {partial_cmp::<T>}
+                      a=(PATH {global} ->core::cmp::PartialOrd
+                        (PATH_SEG core ->core)
+                        (PATH_SEG cmp ->core::cmp)
+                        (PATH_SEG PartialOrd ->core::cmp::PartialOrd)
+                        (PATH_SEG partial_cmp)))
+                    (E_PATH ->__a0 :&T
+                      a=(PATH ->__a0
+                        (PATH_SEG __a0 ->__a0)))
+                    (E_PATH ->__b0 :&T
+                      a=(PATH ->__b0
+                        (PATH_SEG __b0 ->__b0))))
+                  (ARM
+                    a=(P_TUPLE_STRUCT ->core::option::Option::Some :Option<Ordering>
+                      a=(PATH {global} ->core::option::Option::Some
+                        (PATH_SEG core ->core)
+                        (PATH_SEG option ->core::option)
+                        (PATH_SEG Option ->core::option::Option)
+                        (PATH_SEG Some ->core::option::Option::Some))
+                      (P_PATH ->core::cmp::Ordering::Equal :Ordering
+                        a=(PATH {global} ->core::cmp::Ordering::Equal
+                          (PATH_SEG core ->core)
+                          (PATH_SEG cmp ->core::cmp)
+                          (PATH_SEG Ordering ->core::cmp::Ordering)
+                          (PATH_SEG Equal ->core::cmp::Ordering::Equal))))
+                    c=(E_CALL :Option<Ordering>
+                      a=(E_PATH ->core::cmp::PartialOrd::partial_cmp :fn(&U, &U) -> Option<Ordering> {partial_cmp::<U>}
+                        a=(PATH {global} ->core::cmp::PartialOrd
+                          (PATH_SEG core ->core)
+                          (PATH_SEG cmp ->core::cmp)
+                          (PATH_SEG PartialOrd ->core::cmp::PartialOrd)
+                          (PATH_SEG partial_cmp)))
+                      (E_PATH ->__a1 :&U
+                        a=(PATH ->__a1
+                          (PATH_SEG __a1 ->__a1)))
+                      (E_PATH ->__b1 :&U
+                        a=(PATH ->__b1
+                          (PATH_SEG __b1 ->__b1)))))
+                  (ARM
+                    a=(P_IDENT __c ->__c :Option<Ordering>)
+                    c=(E_PATH ->__c :Option<Ordering>
+                      a=(PATH ->__c
+                        (PATH_SEG __c ->__c))))))))))
+      (SELF_PARAM {ref} ->self)
+      (PARAM
+        a=(P_IDENT other ->other :&Pair<T, U>)
+        b=(T_REF
+          a=(T_PATH ->Self
+            a=(PATH ->Self
+              (PATH_SEG Self ->Self)))))))
+  (ITEM_IMPL ->Pair
+    a=(GENERICS
+      (GEN_TYPE T ->T
+        b=(BOUNDS
+          (BOUND_TRAIT ->core::default::Default
+            a=(PATH {global} ->core::default::Default
+              (PATH_SEG core ->core)
+              (PATH_SEG default ->core::default)
+              (PATH_SEG Default ->core::default::Default)))))
+      (GEN_TYPE U ->U
+        b=(BOUNDS
+          (BOUND_TRAIT ->core::default::Default
+            a=(PATH {global} ->core::default::Default
+              (PATH_SEG core ->core)
+              (PATH_SEG default ->core::default)
+              (PATH_SEG Default ->core::default::Default))))))
+    b=(T_PATH ->Pair
+      a=(PATH ->Pair
+        (PATH_SEG Pair {angle} ->Pair
+          (T_PATH ->T
+            a=(PATH ->T
+              (PATH_SEG T ->T)))
+          (T_PATH ->U
+            a=(PATH ->U
+              (PATH_SEG U ->U))))))
+    c=(PATH {global} ->core::default::Default
+      (PATH_SEG core ->core)
+      (PATH_SEG default ->core::default)
+      (PATH_SEG Default ->core::default::Default))
+    (ITEM_FN default ->Pair::default
+      b=(T_PATH ->Self
+        a=(PATH ->Self
+          (PATH_SEG Self ->Self)))
+      c=(BLOCK
+        a=(E_CALL :Pair<T, U>
+          a=(E_PATH ->Pair :fn(T, U) -> Pair<T, U> {Pair::<T, U>}
+            a=(PATH ->Pair
+              (PATH_SEG Pair ->Pair)))
+          (E_CALL :T
+            a=(E_PATH ->core::default::Default::default :fn() -> T {default}
+              a=(PATH {global} ->core::default::Default
+                (PATH_SEG core ->core)
+                (PATH_SEG default ->core::default)
+                (PATH_SEG Default ->core::default::Default)
+                (PATH_SEG default))))
+          (E_CALL :U
+            a=(E_PATH ->core::default::Default::default :fn() -> U {default}
+              a=(PATH {global} ->core::default::Default
+                (PATH_SEG core ->core)
+                (PATH_SEG default ->core::default)
+                (PATH_SEG Default ->core::default::Default)
+                (PATH_SEG default))))))))
+  (ITEM_STRUCT Unit ->Unit
+    @(ATTR derive {delim_paren} toks:15 Debug , Clone , Copy , PartialEq , Eq , PartialOrd , Ord , Default))
+  (ITEM_IMPL ->Unit
+    b=(T_PATH ->Unit
+      a=(PATH ->Unit
+        (PATH_SEG Unit ->Unit)))
+    c=(PATH {global} ->core::fmt::Debug
+      (PATH_SEG core ->core)
+      (PATH_SEG fmt ->core::fmt)
+      (PATH_SEG Debug ->core::fmt::Debug))
+    (ITEM_FN fmt ->Unit::fmt
+      b=(T_PATH ->core::fmt::Result
+        a=(PATH {global} ->core::fmt::Result
+          (PATH_SEG core ->core)
+          (PATH_SEG fmt ->core::fmt)
+          (PATH_SEG Result ->core::fmt::Result)))
+      c=(BLOCK
+        a=(E_MATCH :Result<(), Error>
+          a=(E_DEREF :Unit
+            a=(E_PATH ->self :&Unit
+              a=(PATH ->self
+                (PATH_SEG self ->self))))
+          (ARM
+            a=(P_IDENT Unit ->Unit :Unit)
+            c=(E_METHOD_CALL write_str ->Formatter::write_str :Result<(), Error>
+              a=(E_PATH ->f :&mut Formatter
+                a=(PATH ->f
+                  (PATH_SEG f ->f)))
+              (E_LIT_STR "Unit" :&str)))))
+      (SELF_PARAM {ref} ->self)
+      (PARAM
+        a=(P_IDENT f ->f :&mut Formatter)
+        b=(T_REF {mut}
+          a=(T_PATH ->core::fmt::Formatter
+            a=(PATH {global} ->core::fmt::Formatter
+              (PATH_SEG core ->core)
+              (PATH_SEG fmt ->core::fmt)
+              (PATH_SEG Formatter {angle} ->core::fmt::Formatter
+                (LIFETIME '_))))))))
+  (ITEM_IMPL ->Unit
+    b=(T_PATH ->Unit
+      a=(PATH ->Unit
+        (PATH_SEG Unit ->Unit)))
+    c=(PATH {global} ->core::clone::Clone
+      (PATH_SEG core ->core)
+      (PATH_SEG clone ->core::clone)
+      (PATH_SEG Clone ->core::clone::Clone))
+    (ITEM_FN clone ->Unit::clone
+      b=(T_PATH ->Self
+        a=(PATH ->Self
+          (PATH_SEG Self ->Self)))
+      c=(BLOCK
+        a=(E_MATCH :Unit
+          a=(E_DEREF :Unit
+            a=(E_PATH ->self :&Unit
+              a=(PATH ->self
+                (PATH_SEG self ->self))))
+          (ARM
+            a=(P_IDENT Unit ->Unit :Unit)
+            c=(E_PATH ->Unit :Unit
+              a=(PATH ->Unit
+                (PATH_SEG Unit ->Unit))))))
+      (SELF_PARAM {ref} ->self)))
+  (ITEM_IMPL ->Unit
+    b=(T_PATH ->Unit
+      a=(PATH ->Unit
+        (PATH_SEG Unit ->Unit)))
+    c=(PATH {global} ->core::marker::Copy
+      (PATH_SEG core ->core)
+      (PATH_SEG marker ->core::marker)
+      (PATH_SEG Copy ->core::marker::Copy)))
+  (ITEM_IMPL ->Unit
+    b=(T_PATH ->Unit
+      a=(PATH ->Unit
+        (PATH_SEG Unit ->Unit)))
+    c=(PATH {global} ->core::cmp::PartialEq
+      (PATH_SEG core ->core)
+      (PATH_SEG cmp ->core::cmp)
+      (PATH_SEG PartialEq ->core::cmp::PartialEq))
+    (ITEM_FN eq ->Unit::eq
+      b=(T_PATH ->bool
+        a=(PATH ->bool
+          (PATH_SEG bool ->bool)))
+      c=(BLOCK
+        a=(E_MATCH :bool
+          a=(E_DEREF :Unit
+            a=(E_PATH ->self :&Unit
+              a=(PATH ->self
+                (PATH_SEG self ->self))))
+          (ARM
+            a=(P_IDENT Unit ->Unit :Unit)
+            c=(E_MATCH :bool
+              a=(E_DEREF :Unit
+                a=(E_PATH ->other :&Unit
+                  a=(PATH ->other
+                    (PATH_SEG other ->other))))
+              (ARM
+                a=(P_IDENT Unit ->Unit :Unit)
+                c=(E_LIT_BOOL #1 :bool))))))
+      (SELF_PARAM {ref} ->self)
+      (PARAM
+        a=(P_IDENT other ->other :&Unit)
+        b=(T_REF
+          a=(T_PATH ->Self
+            a=(PATH ->Self
+              (PATH_SEG Self ->Self)))))))
+  (ITEM_IMPL ->Unit
+    b=(T_PATH ->Unit
+      a=(PATH ->Unit
+        (PATH_SEG Unit ->Unit)))
+    c=(PATH {global} ->core::cmp::Eq
+      (PATH_SEG core ->core)
+      (PATH_SEG cmp ->core::cmp)
+      (PATH_SEG Eq ->core::cmp::Eq)))
+  (ITEM_IMPL ->Unit
+    b=(T_PATH ->Unit
+      a=(PATH ->Unit
+        (PATH_SEG Unit ->Unit)))
+    c=(PATH {global} ->core::cmp::PartialOrd
+      (PATH_SEG core ->core)
+      (PATH_SEG cmp ->core::cmp)
+      (PATH_SEG PartialOrd ->core::cmp::PartialOrd))
+    (ITEM_FN partial_cmp ->Unit::partial_cmp
+      b=(T_PATH ->core::option::Option
+        a=(PATH {global} ->core::option::Option
+          (PATH_SEG core ->core)
+          (PATH_SEG option ->core::option)
+          (PATH_SEG Option {angle} ->core::option::Option
+            (T_PATH ->core::cmp::Ordering
+              a=(PATH {global} ->core::cmp::Ordering
+                (PATH_SEG core ->core)
+                (PATH_SEG cmp ->core::cmp)
+                (PATH_SEG Ordering ->core::cmp::Ordering))))))
+      c=(BLOCK
+        a=(E_MATCH :Option<Ordering>
+          a=(E_DEREF :Unit
+            a=(E_PATH ->self :&Unit
+              a=(PATH ->self
+                (PATH_SEG self ->self))))
+          (ARM
+            a=(P_IDENT Unit ->Unit :Unit)
+            c=(E_MATCH :Option<Ordering>
+              a=(E_DEREF :Unit
+                a=(E_PATH ->other :&Unit
+                  a=(PATH ->other
+                    (PATH_SEG other ->other))))
+              (ARM
+                a=(P_IDENT Unit ->Unit :Unit)
+                c=(E_CALL :Option<Ordering>
+                  a=(E_PATH ->core::option::Option::Some :fn(Ordering) -> Option<Ordering> {Some::<Ordering>}
+                    a=(PATH {global} ->core::option::Option::Some
+                      (PATH_SEG core ->core)
+                      (PATH_SEG option ->core::option)
+                      (PATH_SEG Option ->core::option::Option)
+                      (PATH_SEG Some ->core::option::Option::Some)))
+                  (E_PATH ->core::cmp::Ordering::Equal :Ordering
+                    a=(PATH {global} ->core::cmp::Ordering::Equal
+                      (PATH_SEG core ->core)
+                      (PATH_SEG cmp ->core::cmp)
+                      (PATH_SEG Ordering ->core::cmp::Ordering)
+                      (PATH_SEG Equal ->core::cmp::Ordering::Equal)))))))))
+      (SELF_PARAM {ref} ->self)
+      (PARAM
+        a=(P_IDENT other ->other :&Unit)
+        b=(T_REF
+          a=(T_PATH ->Self
+            a=(PATH ->Self
+              (PATH_SEG Self ->Self)))))))
+  (ITEM_IMPL ->Unit
+    b=(T_PATH ->Unit
+      a=(PATH ->Unit
+        (PATH_SEG Unit ->Unit)))
+    c=(PATH {global} ->core::cmp::Ord
+      (PATH_SEG core ->core)
+      (PATH_SEG cmp ->core::cmp)
+      (PATH_SEG Ord ->core::cmp::Ord))
+    (ITEM_FN cmp ->Unit::cmp
+      b=(T_PATH ->core::cmp::Ordering
+        a=(PATH {global} ->core::cmp::Ordering
+          (PATH_SEG core ->core)
+          (PATH_SEG cmp ->core::cmp)
+          (PATH_SEG Ordering ->core::cmp::Ordering)))
+      c=(BLOCK
+        a=(E_MATCH :Ordering
+          a=(E_DEREF :Unit
+            a=(E_PATH ->self :&Unit
+              a=(PATH ->self
+                (PATH_SEG self ->self))))
+          (ARM
+            a=(P_IDENT Unit ->Unit :Unit)
+            c=(E_MATCH :Ordering
+              a=(E_DEREF :Unit
+                a=(E_PATH ->other :&Unit
+                  a=(PATH ->other
+                    (PATH_SEG other ->other))))
+              (ARM
+                a=(P_IDENT Unit ->Unit :Unit)
+                c=(E_PATH ->core::cmp::Ordering::Equal :Ordering
+                  a=(PATH {global} ->core::cmp::Ordering::Equal
+                    (PATH_SEG core ->core)
+                    (PATH_SEG cmp ->core::cmp)
+                    (PATH_SEG Ordering ->core::cmp::Ordering)
+                    (PATH_SEG Equal ->core::cmp::Ordering::Equal))))))))
+      (SELF_PARAM {ref} ->self)
+      (PARAM
+        a=(P_IDENT other ->other :&Unit)
+        b=(T_REF
+          a=(T_PATH ->Self
+            a=(PATH ->Self
+              (PATH_SEG Self ->Self)))))))
+  (ITEM_IMPL ->Unit
+    b=(T_PATH ->Unit
+      a=(PATH ->Unit
+        (PATH_SEG Unit ->Unit)))
+    c=(PATH {global} ->core::default::Default
+      (PATH_SEG core ->core)
+      (PATH_SEG default ->core::default)
+      (PATH_SEG Default ->core::default::Default))
+    (ITEM_FN default ->Unit::default
+      b=(T_PATH ->Self
+        a=(PATH ->Self
+          (PATH_SEG Self ->Self)))
+      c=(BLOCK
+        a=(E_PATH ->Unit :Unit
+          a=(PATH ->Unit
+            (PATH_SEG Unit ->Unit))))))
+  (ITEM_ENUM Shape ->Shape
+    @(ATTR derive {delim_paren} toks:11 Debug , Clone , PartialEq , Eq , PartialOrd , Ord)
+    a=(GENERICS
+      (GEN_TYPE T ->T))
+    (VARIANT Empty ->Shape::Empty)
+    (VARIANT Circle {tuple} ->Shape::Circle
+      (FIELD ->Shape::Circle::0
+        a=(T_PATH ->T
+          a=(PATH ->T
+            (PATH_SEG T ->T)))))
+    (VARIANT Rect {named} ->Shape::Rect
+      (FIELD w ->Shape::Rect::w
+        a=(T_PATH ->T
+          a=(PATH ->T
+            (PATH_SEG T ->T))))
+      (FIELD h ->Shape::Rect::h
+        a=(T_PATH ->T
+          a=(PATH ->T
+            (PATH_SEG T ->T))))))
+  (ITEM_IMPL ->Shape
+    a=(GENERICS
+      (GEN_TYPE T ->T
+        b=(BOUNDS
+          (BOUND_TRAIT ->core::fmt::Debug
+            a=(PATH {global} ->core::fmt::Debug
+              (PATH_SEG core ->core)
+              (PATH_SEG fmt ->core::fmt)
+              (PATH_SEG Debug ->core::fmt::Debug))))))
+    b=(T_PATH ->Shape
+      a=(PATH ->Shape
+        (PATH_SEG Shape {angle} ->Shape
+          (T_PATH ->T
+            a=(PATH ->T
+              (PATH_SEG T ->T))))))
+    c=(PATH {global} ->core::fmt::Debug
+      (PATH_SEG core ->core)
+      (PATH_SEG fmt ->core::fmt)
+      (PATH_SEG Debug ->core::fmt::Debug))
+    (ITEM_FN fmt ->Shape::fmt
+      b=(T_PATH ->core::fmt::Result
+        a=(PATH {global} ->core::fmt::Result
+          (PATH_SEG core ->core)
+          (PATH_SEG fmt ->core::fmt)
+          (PATH_SEG Result ->core::fmt::Result)))
+      c=(BLOCK
+        a=(E_MATCH :Result<(), Error>
+          a=(E_DEREF :Shape<T>
+            a=(E_PATH ->self :&Shape<T>
+              a=(PATH ->self
+                (PATH_SEG self ->self))))
+          (ARM
+            a=(P_PATH ->Shape::Empty :Shape<T>
+              a=(PATH ->Shape::Empty
+                (PATH_SEG Shape ->Shape)
+                (PATH_SEG Empty ->Shape::Empty)))
+            c=(E_METHOD_CALL write_str ->Formatter::write_str :Result<(), Error>
+              a=(E_PATH ->f :&mut Formatter
+                a=(PATH ->f
+                  (PATH_SEG f ->f)))
+              (E_LIT_STR "Empty" :&str)))
+          (ARM
+            a=(P_TUPLE_STRUCT ->Shape::Circle :Shape<T>
+              a=(PATH ->Shape::Circle
+                (PATH_SEG Shape ->Shape)
+                (PATH_SEG Circle ->Shape::Circle))
+              (P_IDENT __a0 {ref} ->__a0 :T))
+            c=(E_METHOD_CALL finish ->DebugTuple::finish :Result<(), Error>
+              a=(E_METHOD_CALL field ->DebugTuple::field :&mut DebugTuple
+                a=(E_METHOD_CALL debug_tuple ->Formatter::debug_tuple :DebugTuple
+                  a=(E_PATH ->f :&mut Formatter
+                    a=(PATH ->f
+                      (PATH_SEG f ->f)))
+                  (E_LIT_STR "Circle" :&str))
+                (E_PATH ->__a0 :&T
+                  a=(PATH ->__a0
+                    (PATH_SEG __a0 ->__a0))))))
+          (ARM
+            a=(P_STRUCT ->Shape::Rect :Shape<T>
+              a=(PATH ->Shape::Rect
+                (PATH_SEG Shape ->Shape)
+                (PATH_SEG Rect ->Shape::Rect))
+              (P_FIELD w ->Shape::Rect::w :T
+                a=(P_IDENT __a0 {ref} ->__a0 :T))
+              (P_FIELD h ->Shape::Rect::h :T
+                a=(P_IDENT __a1 {ref} ->__a1 :T)))
+            c=(E_METHOD_CALL finish ->DebugStruct::finish :Result<(), Error>
+              a=(E_METHOD_CALL field ->DebugStruct::field :&mut DebugStruct
+                a=(E_METHOD_CALL field ->DebugStruct::field :&mut DebugStruct
+                  a=(E_METHOD_CALL debug_struct ->Formatter::debug_struct :DebugStruct
+                    a=(E_PATH ->f :&mut Formatter
+                      a=(PATH ->f
+                        (PATH_SEG f ->f)))
+                    (E_LIT_STR "Rect" :&str))
+                  (E_LIT_STR "w" :&str)
+                  (E_PATH ->__a0 :&T
+                    a=(PATH ->__a0
+                      (PATH_SEG __a0 ->__a0))))
+                (E_LIT_STR "h" :&str)
+                (E_PATH ->__a1 :&T
+                  a=(PATH ->__a1
+                    (PATH_SEG __a1 ->__a1))))))))
+      (SELF_PARAM {ref} ->self)
+      (PARAM
+        a=(P_IDENT f ->f :&mut Formatter)
+        b=(T_REF {mut}
+          a=(T_PATH ->core::fmt::Formatter
+            a=(PATH {global} ->core::fmt::Formatter
+              (PATH_SEG core ->core)
+              (PATH_SEG fmt ->core::fmt)
+              (PATH_SEG Formatter {angle} ->core::fmt::Formatter
+                (LIFETIME '_))))))))
+  (ITEM_IMPL ->Shape
+    a=(GENERICS
+      (GEN_TYPE T ->T
+        b=(BOUNDS
+          (BOUND_TRAIT ->core::clone::Clone
+            a=(PATH {global} ->core::clone::Clone
+              (PATH_SEG core ->core)
+              (PATH_SEG clone ->core::clone)
+              (PATH_SEG Clone ->core::clone::Clone))))))
+    b=(T_PATH ->Shape
+      a=(PATH ->Shape
+        (PATH_SEG Shape {angle} ->Shape
+          (T_PATH ->T
+            a=(PATH ->T
+              (PATH_SEG T ->T))))))
+    c=(PATH {global} ->core::clone::Clone
+      (PATH_SEG core ->core)
+      (PATH_SEG clone ->core::clone)
+      (PATH_SEG Clone ->core::clone::Clone))
+    (ITEM_FN clone ->Shape::clone
+      b=(T_PATH ->Self
+        a=(PATH ->Self
+          (PATH_SEG Self ->Self)))
+      c=(BLOCK
+        a=(E_MATCH :Shape<T>
+          a=(E_DEREF :Shape<T>
+            a=(E_PATH ->self :&Shape<T>
+              a=(PATH ->self
+                (PATH_SEG self ->self))))
+          (ARM
+            a=(P_PATH ->Shape::Empty :Shape<T>
+              a=(PATH ->Shape::Empty
+                (PATH_SEG Shape ->Shape)
+                (PATH_SEG Empty ->Shape::Empty)))
+            c=(E_PATH ->Shape::Empty :Shape<T>
+              a=(PATH ->Shape::Empty
+                (PATH_SEG Shape ->Shape)
+                (PATH_SEG Empty ->Shape::Empty))))
+          (ARM
+            a=(P_TUPLE_STRUCT ->Shape::Circle :Shape<T>
+              a=(PATH ->Shape::Circle
+                (PATH_SEG Shape ->Shape)
+                (PATH_SEG Circle ->Shape::Circle))
+              (P_IDENT __a0 {ref} ->__a0 :T))
+            c=(E_CALL :Shape<T>
+              a=(E_PATH ->Shape::Circle :fn(T) -> Shape<T> {Circle::<T>}
+                a=(PATH ->Shape::Circle
+                  (PATH_SEG Shape ->Shape)
+                  (PATH_SEG Circle ->Shape::Circle)))
+              (E_CALL :T
+                a=(E_PATH ->core::clone::Clone::clone :fn(&T) -> T {clone}
+                  a=(PATH {global} ->core::clone::Clone
+                    (PATH_SEG core ->core)
+                    (PATH_SEG clone ->core::clone)
+                    (PATH_SEG Clone ->core::clone::Clone)
+                    (PATH_SEG clone)))
+                (E_PATH ->__a0 :&T
+                  a=(PATH ->__a0
+                    (PATH_SEG __a0 ->__a0))))))
+          (ARM
+            a=(P_STRUCT ->Shape::Rect :Shape<T>
+              a=(PATH ->Shape::Rect
+                (PATH_SEG Shape ->Shape)
+                (PATH_SEG Rect ->Shape::Rect))
+              (P_FIELD w ->Shape::Rect::w :T
+                a=(P_IDENT __a0 {ref} ->__a0 :T))
+              (P_FIELD h ->Shape::Rect::h :T
+                a=(P_IDENT __a1 {ref} ->__a1 :T)))
+            c=(E_STRUCT ->Shape::Rect :Shape<T>
+              a=(PATH ->Shape::Rect
+                (PATH_SEG Shape ->Shape)
+                (PATH_SEG Rect ->Shape::Rect))
+              (FIELD_INIT w ->Shape::Rect::w :T
+                a=(E_CALL :T
+                  a=(E_PATH ->core::clone::Clone::clone :fn(&T) -> T {clone}
+                    a=(PATH {global} ->core::clone::Clone
+                      (PATH_SEG core ->core)
+                      (PATH_SEG clone ->core::clone)
+                      (PATH_SEG Clone ->core::clone::Clone)
+                      (PATH_SEG clone)))
+                  (E_PATH ->__a0 :&T
+                    a=(PATH ->__a0
+                      (PATH_SEG __a0 ->__a0)))))
+              (FIELD_INIT h ->Shape::Rect::h :T
+                a=(E_CALL :T
+                  a=(E_PATH ->core::clone::Clone::clone :fn(&T) -> T {clone}
+                    a=(PATH {global} ->core::clone::Clone
+                      (PATH_SEG core ->core)
+                      (PATH_SEG clone ->core::clone)
+                      (PATH_SEG Clone ->core::clone::Clone)
+                      (PATH_SEG clone)))
+                  (E_PATH ->__a1 :&T
+                    a=(PATH ->__a1
+                      (PATH_SEG __a1 ->__a1)))))))))
+      (SELF_PARAM {ref} ->self)))
+  (ITEM_IMPL ->Shape
+    a=(GENERICS
+      (GEN_TYPE T ->T
+        b=(BOUNDS
+          (BOUND_TRAIT ->core::cmp::PartialEq
+            a=(PATH {global} ->core::cmp::PartialEq
+              (PATH_SEG core ->core)
+              (PATH_SEG cmp ->core::cmp)
+              (PATH_SEG PartialEq ->core::cmp::PartialEq))))))
+    b=(T_PATH ->Shape
+      a=(PATH ->Shape
+        (PATH_SEG Shape {angle} ->Shape
+          (T_PATH ->T
+            a=(PATH ->T
+              (PATH_SEG T ->T))))))
+    c=(PATH {global} ->core::cmp::PartialEq
+      (PATH_SEG core ->core)
+      (PATH_SEG cmp ->core::cmp)
+      (PATH_SEG PartialEq ->core::cmp::PartialEq))
+    (ITEM_FN eq ->Shape::eq
+      b=(T_PATH ->bool
+        a=(PATH ->bool
+          (PATH_SEG bool ->bool)))
+      c=(BLOCK
+        a=(E_MATCH :bool
+          a=(E_DEREF :Shape<T>
+            a=(E_PATH ->self :&Shape<T>
+              a=(PATH ->self
+                (PATH_SEG self ->self))))
+          (ARM
+            a=(P_PATH ->Shape::Empty :Shape<T>
+              a=(PATH ->Shape::Empty
+                (PATH_SEG Shape ->Shape)
+                (PATH_SEG Empty ->Shape::Empty)))
+            c=(E_MATCH :bool
+              a=(E_DEREF :Shape<T>
+                a=(E_PATH ->other :&Shape<T>
+                  a=(PATH ->other
+                    (PATH_SEG other ->other))))
+              (ARM
+                a=(P_PATH ->Shape::Empty :Shape<T>
+                  a=(PATH ->Shape::Empty
+                    (PATH_SEG Shape ->Shape)
+                    (PATH_SEG Empty ->Shape::Empty)))
+                c=(E_LIT_BOOL #1 :bool))
+              (ARM
+                a=(P_WILD :Shape<T>)
+                c=(E_LIT_BOOL #0 :bool))))
+          (ARM
+            a=(P_TUPLE_STRUCT ->Shape::Circle :Shape<T>
+              a=(PATH ->Shape::Circle
+                (PATH_SEG Shape ->Shape)
+                (PATH_SEG Circle ->Shape::Circle))
+              (P_IDENT __a0 {ref} ->__a0 :T))
+            c=(E_MATCH :bool
+              a=(E_DEREF :Shape<T>
+                a=(E_PATH ->other :&Shape<T>
+                  a=(PATH ->other
+                    (PATH_SEG other ->other))))
+              (ARM
+                a=(P_TUPLE_STRUCT ->Shape::Circle :Shape<T>
+                  a=(PATH ->Shape::Circle
+                    (PATH_SEG Shape ->Shape)
+                    (PATH_SEG Circle ->Shape::Circle))
+                  (P_IDENT __b0 {ref} ->__b0 :T))
+                c=(E_CALL :bool
+                  a=(E_PATH ->core::cmp::PartialEq::eq :fn(&T, &T) -> bool {eq::<T>}
+                    a=(PATH {global} ->core::cmp::PartialEq
+                      (PATH_SEG core ->core)
+                      (PATH_SEG cmp ->core::cmp)
+                      (PATH_SEG PartialEq ->core::cmp::PartialEq)
+                      (PATH_SEG eq)))
+                  (E_PATH ->__a0 :&T
+                    a=(PATH ->__a0
+                      (PATH_SEG __a0 ->__a0)))
+                  (E_PATH ->__b0 :&T
+                    a=(PATH ->__b0
+                      (PATH_SEG __b0 ->__b0)))))
+              (ARM
+                a=(P_WILD :Shape<T>)
+                c=(E_LIT_BOOL #0 :bool))))
+          (ARM
+            a=(P_STRUCT ->Shape::Rect :Shape<T>
+              a=(PATH ->Shape::Rect
+                (PATH_SEG Shape ->Shape)
+                (PATH_SEG Rect ->Shape::Rect))
+              (P_FIELD w ->Shape::Rect::w :T
+                a=(P_IDENT __a0 {ref} ->__a0 :T))
+              (P_FIELD h ->Shape::Rect::h :T
+                a=(P_IDENT __a1 {ref} ->__a1 :T)))
+            c=(E_MATCH :bool
+              a=(E_DEREF :Shape<T>
+                a=(E_PATH ->other :&Shape<T>
+                  a=(PATH ->other
+                    (PATH_SEG other ->other))))
+              (ARM
+                a=(P_STRUCT ->Shape::Rect :Shape<T>
+                  a=(PATH ->Shape::Rect
+                    (PATH_SEG Shape ->Shape)
+                    (PATH_SEG Rect ->Shape::Rect))
+                  (P_FIELD w ->Shape::Rect::w :T
+                    a=(P_IDENT __b0 {ref} ->__b0 :T))
+                  (P_FIELD h ->Shape::Rect::h :T
+                    a=(P_IDENT __b1 {ref} ->__b1 :T)))
+                c=(E_BINARY op:&& :bool
+                  a=(E_CALL :bool
+                    a=(E_PATH ->core::cmp::PartialEq::eq :fn(&T, &T) -> bool {eq::<T>}
+                      a=(PATH {global} ->core::cmp::PartialEq
+                        (PATH_SEG core ->core)
+                        (PATH_SEG cmp ->core::cmp)
+                        (PATH_SEG PartialEq ->core::cmp::PartialEq)
+                        (PATH_SEG eq)))
+                    (E_PATH ->__a0 :&T
+                      a=(PATH ->__a0
+                        (PATH_SEG __a0 ->__a0)))
+                    (E_PATH ->__b0 :&T
+                      a=(PATH ->__b0
+                        (PATH_SEG __b0 ->__b0))))
+                  b=(E_CALL :bool
+                    a=(E_PATH ->core::cmp::PartialEq::eq :fn(&T, &T) -> bool {eq::<T>}
+                      a=(PATH {global} ->core::cmp::PartialEq
+                        (PATH_SEG core ->core)
+                        (PATH_SEG cmp ->core::cmp)
+                        (PATH_SEG PartialEq ->core::cmp::PartialEq)
+                        (PATH_SEG eq)))
+                    (E_PATH ->__a1 :&T
+                      a=(PATH ->__a1
+                        (PATH_SEG __a1 ->__a1)))
+                    (E_PATH ->__b1 :&T
+                      a=(PATH ->__b1
+                        (PATH_SEG __b1 ->__b1))))))
+              (ARM
+                a=(P_WILD :Shape<T>)
+                c=(E_LIT_BOOL #0 :bool))))))
+      (SELF_PARAM {ref} ->self)
+      (PARAM
+        a=(P_IDENT other ->other :&Shape<T>)
+        b=(T_REF
+          a=(T_PATH ->Self
+            a=(PATH ->Self
+              (PATH_SEG Self ->Self)))))))
+  (ITEM_IMPL ->Shape
+    a=(GENERICS
+      (GEN_TYPE T ->T
+        b=(BOUNDS
+          (BOUND_TRAIT ->core::cmp::Eq
+            a=(PATH {global} ->core::cmp::Eq
+              (PATH_SEG core ->core)
+              (PATH_SEG cmp ->core::cmp)
+              (PATH_SEG Eq ->core::cmp::Eq))))))
+    b=(T_PATH ->Shape
+      a=(PATH ->Shape
+        (PATH_SEG Shape {angle} ->Shape
+          (T_PATH ->T
+            a=(PATH ->T
+              (PATH_SEG T ->T))))))
+    c=(PATH {global} ->core::cmp::Eq
+      (PATH_SEG core ->core)
+      (PATH_SEG cmp ->core::cmp)
+      (PATH_SEG Eq ->core::cmp::Eq)))
+  (ITEM_IMPL ->Shape
+    a=(GENERICS
+      (GEN_TYPE T ->T
+        b=(BOUNDS
+          (BOUND_TRAIT ->core::cmp::PartialOrd
+            a=(PATH {global} ->core::cmp::PartialOrd
+              (PATH_SEG core ->core)
+              (PATH_SEG cmp ->core::cmp)
+              (PATH_SEG PartialOrd ->core::cmp::PartialOrd))))))
+    b=(T_PATH ->Shape
+      a=(PATH ->Shape
+        (PATH_SEG Shape {angle} ->Shape
+          (T_PATH ->T
+            a=(PATH ->T
+              (PATH_SEG T ->T))))))
+    c=(PATH {global} ->core::cmp::PartialOrd
+      (PATH_SEG core ->core)
+      (PATH_SEG cmp ->core::cmp)
+      (PATH_SEG PartialOrd ->core::cmp::PartialOrd))
+    (ITEM_FN partial_cmp ->Shape::partial_cmp
+      b=(T_PATH ->core::option::Option
+        a=(PATH {global} ->core::option::Option
+          (PATH_SEG core ->core)
+          (PATH_SEG option ->core::option)
+          (PATH_SEG Option {angle} ->core::option::Option
+            (T_PATH ->core::cmp::Ordering
+              a=(PATH {global} ->core::cmp::Ordering
+                (PATH_SEG core ->core)
+                (PATH_SEG cmp ->core::cmp)
+                (PATH_SEG Ordering ->core::cmp::Ordering))))))
+      c=(BLOCK
+        (STMT_LET
+          a=(P_IDENT __si ->__si :isize)
+          b=(T_PATH ->isize
+            a=(PATH ->isize
+              (PATH_SEG isize ->isize)))
+          c=(E_MATCH :isize
+            a=(E_DEREF :Shape<T>
+              a=(E_PATH ->self :&Shape<T>
+                a=(PATH ->self
+                  (PATH_SEG self ->self))))
+            (ARM
+              a=(P_PATH ->Shape::Empty :Shape<T>
+                a=(PATH ->Shape::Empty
+                  (PATH_SEG Shape ->Shape)
+                  (PATH_SEG Empty ->Shape::Empty)))
+              c=(E_LIT_INT isize "0" #0 :isize))
+            (ARM
+              a=(P_TUPLE_STRUCT ->Shape::Circle :Shape<T>
+                a=(PATH ->Shape::Circle
+                  (PATH_SEG Shape ->Shape)
+                  (PATH_SEG Circle ->Shape::Circle))
+                (P_REST))
+              c=(E_LIT_INT isize "1" #1 :isize))
+            (ARM
+              a=(P_STRUCT {rest} ->Shape::Rect :Shape<T>
+                a=(PATH ->Shape::Rect
+                  (PATH_SEG Shape ->Shape)
+                  (PATH_SEG Rect ->Shape::Rect)))
+              c=(E_LIT_INT isize "2" #2 :isize))))
+        (STMT_LET
+          a=(P_IDENT __oi ->__oi :isize)
+          b=(T_PATH ->isize
+            a=(PATH ->isize
+              (PATH_SEG isize ->isize)))
+          c=(E_MATCH :isize
+            a=(E_DEREF :Shape<T>
+              a=(E_PATH ->other :&Shape<T>
+                a=(PATH ->other
+                  (PATH_SEG other ->other))))
+            (ARM
+              a=(P_PATH ->Shape::Empty :Shape<T>
+                a=(PATH ->Shape::Empty
+                  (PATH_SEG Shape ->Shape)
+                  (PATH_SEG Empty ->Shape::Empty)))
+              c=(E_LIT_INT isize "0" #0 :isize))
+            (ARM
+              a=(P_TUPLE_STRUCT ->Shape::Circle :Shape<T>
+                a=(PATH ->Shape::Circle
+                  (PATH_SEG Shape ->Shape)
+                  (PATH_SEG Circle ->Shape::Circle))
+                (P_REST))
+              c=(E_LIT_INT isize "1" #1 :isize))
+            (ARM
+              a=(P_STRUCT {rest} ->Shape::Rect :Shape<T>
+                a=(PATH ->Shape::Rect
+                  (PATH_SEG Shape ->Shape)
+                  (PATH_SEG Rect ->Shape::Rect)))
+              c=(E_LIT_INT isize "2" #2 :isize))))
+        a=(E_IF :Option<Ordering>
+          a=(E_BINARY op:!= :bool
+            a=(E_PATH ->__si :isize
+              a=(PATH ->__si
+                (PATH_SEG __si ->__si)))
+            b=(E_PATH ->__oi :isize
+              a=(PATH ->__oi
+                (PATH_SEG __oi ->__oi))))
+          b=(BLOCK
+            a=(E_CALL :Option<Ordering>
+              a=(E_PATH ->isize::partial_cmp :fn(&isize, &isize) -> Option<Ordering> {partial_cmp::<isize>}
+                a=(PATH {global} ->core::cmp::PartialOrd
+                  (PATH_SEG core ->core)
+                  (PATH_SEG cmp ->core::cmp)
+                  (PATH_SEG PartialOrd ->core::cmp::PartialOrd)
+                  (PATH_SEG partial_cmp)))
+              (E_REF :&isize
+                a=(E_PATH ->__si :isize
+                  a=(PATH ->__si
+                    (PATH_SEG __si ->__si))))
+              (E_REF :&isize
+                a=(E_PATH ->__oi :isize
+                  a=(PATH ->__oi
+                    (PATH_SEG __oi ->__oi))))))
+          c=(BLOCK :Option<Ordering>
+            a=(E_MATCH :Option<Ordering>
+              a=(E_DEREF :Shape<T>
+                a=(E_PATH ->self :&Shape<T>
+                  a=(PATH ->self
+                    (PATH_SEG self ->self))))
+              (ARM
+                a=(P_PATH ->Shape::Empty :Shape<T>
+                  a=(PATH ->Shape::Empty
+                    (PATH_SEG Shape ->Shape)
+                    (PATH_SEG Empty ->Shape::Empty)))
+                c=(E_MATCH :Option<Ordering>
+                  a=(E_DEREF :Shape<T>
+                    a=(E_PATH ->other :&Shape<T>
+                      a=(PATH ->other
+                        (PATH_SEG other ->other))))
+                  (ARM
+                    a=(P_PATH ->Shape::Empty :Shape<T>
+                      a=(PATH ->Shape::Empty
+                        (PATH_SEG Shape ->Shape)
+                        (PATH_SEG Empty ->Shape::Empty)))
+                    c=(E_CALL :Option<Ordering>
+                      a=(E_PATH ->core::option::Option::Some :fn(Ordering) -> Option<Ordering> {Some::<Ordering>}
+                        a=(PATH {global} ->core::option::Option::Some
+                          (PATH_SEG core ->core)
+                          (PATH_SEG option ->core::option)
+                          (PATH_SEG Option ->core::option::Option)
+                          (PATH_SEG Some ->core::option::Option::Some)))
+                      (E_PATH ->core::cmp::Ordering::Equal :Ordering
+                        a=(PATH {global} ->core::cmp::Ordering::Equal
+                          (PATH_SEG core ->core)
+                          (PATH_SEG cmp ->core::cmp)
+                          (PATH_SEG Ordering ->core::cmp::Ordering)
+                          (PATH_SEG Equal ->core::cmp::Ordering::Equal)))))
+                  (ARM
+                    a=(P_WILD :Shape<T>)
+                    c=(E_CALL :Option<Ordering>
+                      a=(E_PATH ->core::option::Option::Some :fn(Ordering) -> Option<Ordering> {Some::<Ordering>}
+                        a=(PATH {global} ->core::option::Option::Some
+                          (PATH_SEG core ->core)
+                          (PATH_SEG option ->core::option)
+                          (PATH_SEG Option ->core::option::Option)
+                          (PATH_SEG Some ->core::option::Option::Some)))
+                      (E_PATH ->core::cmp::Ordering::Equal :Ordering
+                        a=(PATH {global} ->core::cmp::Ordering::Equal
+                          (PATH_SEG core ->core)
+                          (PATH_SEG cmp ->core::cmp)
+                          (PATH_SEG Ordering ->core::cmp::Ordering)
+                          (PATH_SEG Equal ->core::cmp::Ordering::Equal)))))))
+              (ARM
+                a=(P_TUPLE_STRUCT ->Shape::Circle :Shape<T>
+                  a=(PATH ->Shape::Circle
+                    (PATH_SEG Shape ->Shape)
+                    (PATH_SEG Circle ->Shape::Circle))
+                  (P_IDENT __a0 {ref} ->__a0 :T))
+                c=(E_MATCH :Option<Ordering>
+                  a=(E_DEREF :Shape<T>
+                    a=(E_PATH ->other :&Shape<T>
+                      a=(PATH ->other
+                        (PATH_SEG other ->other))))
+                  (ARM
+                    a=(P_TUPLE_STRUCT ->Shape::Circle :Shape<T>
+                      a=(PATH ->Shape::Circle
+                        (PATH_SEG Shape ->Shape)
+                        (PATH_SEG Circle ->Shape::Circle))
+                      (P_IDENT __b0 {ref} ->__b0 :T))
+                    c=(E_CALL :Option<Ordering>
+                      a=(E_PATH ->core::cmp::PartialOrd::partial_cmp :fn(&T, &T) -> Option<Ordering> {partial_cmp::<T>}
+                        a=(PATH {global} ->core::cmp::PartialOrd
+                          (PATH_SEG core ->core)
+                          (PATH_SEG cmp ->core::cmp)
+                          (PATH_SEG PartialOrd ->core::cmp::PartialOrd)
+                          (PATH_SEG partial_cmp)))
+                      (E_PATH ->__a0 :&T
+                        a=(PATH ->__a0
+                          (PATH_SEG __a0 ->__a0)))
+                      (E_PATH ->__b0 :&T
+                        a=(PATH ->__b0
+                          (PATH_SEG __b0 ->__b0)))))
+                  (ARM
+                    a=(P_WILD :Shape<T>)
+                    c=(E_CALL :Option<Ordering>
+                      a=(E_PATH ->core::option::Option::Some :fn(Ordering) -> Option<Ordering> {Some::<Ordering>}
+                        a=(PATH {global} ->core::option::Option::Some
+                          (PATH_SEG core ->core)
+                          (PATH_SEG option ->core::option)
+                          (PATH_SEG Option ->core::option::Option)
+                          (PATH_SEG Some ->core::option::Option::Some)))
+                      (E_PATH ->core::cmp::Ordering::Equal :Ordering
+                        a=(PATH {global} ->core::cmp::Ordering::Equal
+                          (PATH_SEG core ->core)
+                          (PATH_SEG cmp ->core::cmp)
+                          (PATH_SEG Ordering ->core::cmp::Ordering)
+                          (PATH_SEG Equal ->core::cmp::Ordering::Equal)))))))
+              (ARM
+                a=(P_STRUCT ->Shape::Rect :Shape<T>
+                  a=(PATH ->Shape::Rect
+                    (PATH_SEG Shape ->Shape)
+                    (PATH_SEG Rect ->Shape::Rect))
+                  (P_FIELD w ->Shape::Rect::w :T
+                    a=(P_IDENT __a0 {ref} ->__a0 :T))
+                  (P_FIELD h ->Shape::Rect::h :T
+                    a=(P_IDENT __a1 {ref} ->__a1 :T)))
+                c=(E_MATCH :Option<Ordering>
+                  a=(E_DEREF :Shape<T>
+                    a=(E_PATH ->other :&Shape<T>
+                      a=(PATH ->other
+                        (PATH_SEG other ->other))))
+                  (ARM
+                    a=(P_STRUCT ->Shape::Rect :Shape<T>
+                      a=(PATH ->Shape::Rect
+                        (PATH_SEG Shape ->Shape)
+                        (PATH_SEG Rect ->Shape::Rect))
+                      (P_FIELD w ->Shape::Rect::w :T
+                        a=(P_IDENT __b0 {ref} ->__b0 :T))
+                      (P_FIELD h ->Shape::Rect::h :T
+                        a=(P_IDENT __b1 {ref} ->__b1 :T)))
+                    c=(E_MATCH :Option<Ordering>
+                      a=(E_CALL :Option<Ordering>
+                        a=(E_PATH ->core::cmp::PartialOrd::partial_cmp :fn(&T, &T) -> Option<Ordering> {partial_cmp::<T>}
+                          a=(PATH {global} ->core::cmp::PartialOrd
+                            (PATH_SEG core ->core)
+                            (PATH_SEG cmp ->core::cmp)
+                            (PATH_SEG PartialOrd ->core::cmp::PartialOrd)
+                            (PATH_SEG partial_cmp)))
+                        (E_PATH ->__a0 :&T
+                          a=(PATH ->__a0
+                            (PATH_SEG __a0 ->__a0)))
+                        (E_PATH ->__b0 :&T
+                          a=(PATH ->__b0
+                            (PATH_SEG __b0 ->__b0))))
+                      (ARM
+                        a=(P_TUPLE_STRUCT ->core::option::Option::Some :Option<Ordering>
+                          a=(PATH {global} ->core::option::Option::Some
+                            (PATH_SEG core ->core)
+                            (PATH_SEG option ->core::option)
+                            (PATH_SEG Option ->core::option::Option)
+                            (PATH_SEG Some ->core::option::Option::Some))
+                          (P_PATH ->core::cmp::Ordering::Equal :Ordering
+                            a=(PATH {global} ->core::cmp::Ordering::Equal
+                              (PATH_SEG core ->core)
+                              (PATH_SEG cmp ->core::cmp)
+                              (PATH_SEG Ordering ->core::cmp::Ordering)
+                              (PATH_SEG Equal ->core::cmp::Ordering::Equal))))
+                        c=(E_CALL :Option<Ordering>
+                          a=(E_PATH ->core::cmp::PartialOrd::partial_cmp :fn(&T, &T) -> Option<Ordering> {partial_cmp::<T>}
+                            a=(PATH {global} ->core::cmp::PartialOrd
+                              (PATH_SEG core ->core)
+                              (PATH_SEG cmp ->core::cmp)
+                              (PATH_SEG PartialOrd ->core::cmp::PartialOrd)
+                              (PATH_SEG partial_cmp)))
+                          (E_PATH ->__a1 :&T
+                            a=(PATH ->__a1
+                              (PATH_SEG __a1 ->__a1)))
+                          (E_PATH ->__b1 :&T
+                            a=(PATH ->__b1
+                              (PATH_SEG __b1 ->__b1)))))
+                      (ARM
+                        a=(P_IDENT __c ->__c :Option<Ordering>)
+                        c=(E_PATH ->__c :Option<Ordering>
+                          a=(PATH ->__c
+                            (PATH_SEG __c ->__c))))))
+                  (ARM
+                    a=(P_WILD :Shape<T>)
+                    c=(E_CALL :Option<Ordering>
+                      a=(E_PATH ->core::option::Option::Some :fn(Ordering) -> Option<Ordering> {Some::<Ordering>}
+                        a=(PATH {global} ->core::option::Option::Some
+                          (PATH_SEG core ->core)
+                          (PATH_SEG option ->core::option)
+                          (PATH_SEG Option ->core::option::Option)
+                          (PATH_SEG Some ->core::option::Option::Some)))
+                      (E_PATH ->core::cmp::Ordering::Equal :Ordering
+                        a=(PATH {global} ->core::cmp::Ordering::Equal
+                          (PATH_SEG core ->core)
+                          (PATH_SEG cmp ->core::cmp)
+                          (PATH_SEG Ordering ->core::cmp::Ordering)
+                          (PATH_SEG Equal ->core::cmp::Ordering::Equal)))))))))))
+      (SELF_PARAM {ref} ->self)
+      (PARAM
+        a=(P_IDENT other ->other :&Shape<T>)
+        b=(T_REF
+          a=(T_PATH ->Self
+            a=(PATH ->Self
+              (PATH_SEG Self ->Self)))))))
+  (ITEM_IMPL ->Shape
+    a=(GENERICS
+      (GEN_TYPE T ->T
+        b=(BOUNDS
+          (BOUND_TRAIT ->core::cmp::Ord
+            a=(PATH {global} ->core::cmp::Ord
+              (PATH_SEG core ->core)
+              (PATH_SEG cmp ->core::cmp)
+              (PATH_SEG Ord ->core::cmp::Ord))))))
+    b=(T_PATH ->Shape
+      a=(PATH ->Shape
+        (PATH_SEG Shape {angle} ->Shape
+          (T_PATH ->T
+            a=(PATH ->T
+              (PATH_SEG T ->T))))))
+    c=(PATH {global} ->core::cmp::Ord
+      (PATH_SEG core ->core)
+      (PATH_SEG cmp ->core::cmp)
+      (PATH_SEG Ord ->core::cmp::Ord))
+    (ITEM_FN cmp ->Shape::cmp
+      b=(T_PATH ->core::cmp::Ordering
+        a=(PATH {global} ->core::cmp::Ordering
+          (PATH_SEG core ->core)
+          (PATH_SEG cmp ->core::cmp)
+          (PATH_SEG Ordering ->core::cmp::Ordering)))
+      c=(BLOCK
+        (STMT_LET
+          a=(P_IDENT __si ->__si :isize)
+          b=(T_PATH ->isize
+            a=(PATH ->isize
+              (PATH_SEG isize ->isize)))
+          c=(E_MATCH :isize
+            a=(E_DEREF :Shape<T>
+              a=(E_PATH ->self :&Shape<T>
+                a=(PATH ->self
+                  (PATH_SEG self ->self))))
+            (ARM
+              a=(P_PATH ->Shape::Empty :Shape<T>
+                a=(PATH ->Shape::Empty
+                  (PATH_SEG Shape ->Shape)
+                  (PATH_SEG Empty ->Shape::Empty)))
+              c=(E_LIT_INT isize "0" #0 :isize))
+            (ARM
+              a=(P_TUPLE_STRUCT ->Shape::Circle :Shape<T>
+                a=(PATH ->Shape::Circle
+                  (PATH_SEG Shape ->Shape)
+                  (PATH_SEG Circle ->Shape::Circle))
+                (P_REST))
+              c=(E_LIT_INT isize "1" #1 :isize))
+            (ARM
+              a=(P_STRUCT {rest} ->Shape::Rect :Shape<T>
+                a=(PATH ->Shape::Rect
+                  (PATH_SEG Shape ->Shape)
+                  (PATH_SEG Rect ->Shape::Rect)))
+              c=(E_LIT_INT isize "2" #2 :isize))))
+        (STMT_LET
+          a=(P_IDENT __oi ->__oi :isize)
+          b=(T_PATH ->isize
+            a=(PATH ->isize
+              (PATH_SEG isize ->isize)))
+          c=(E_MATCH :isize
+            a=(E_DEREF :Shape<T>
+              a=(E_PATH ->other :&Shape<T>
+                a=(PATH ->other
+                  (PATH_SEG other ->other))))
+            (ARM
+              a=(P_PATH ->Shape::Empty :Shape<T>
+                a=(PATH ->Shape::Empty
+                  (PATH_SEG Shape ->Shape)
+                  (PATH_SEG Empty ->Shape::Empty)))
+              c=(E_LIT_INT isize "0" #0 :isize))
+            (ARM
+              a=(P_TUPLE_STRUCT ->Shape::Circle :Shape<T>
+                a=(PATH ->Shape::Circle
+                  (PATH_SEG Shape ->Shape)
+                  (PATH_SEG Circle ->Shape::Circle))
+                (P_REST))
+              c=(E_LIT_INT isize "1" #1 :isize))
+            (ARM
+              a=(P_STRUCT {rest} ->Shape::Rect :Shape<T>
+                a=(PATH ->Shape::Rect
+                  (PATH_SEG Shape ->Shape)
+                  (PATH_SEG Rect ->Shape::Rect)))
+              c=(E_LIT_INT isize "2" #2 :isize))))
+        a=(E_IF :Ordering
+          a=(E_BINARY op:!= :bool
+            a=(E_PATH ->__si :isize
+              a=(PATH ->__si
+                (PATH_SEG __si ->__si)))
+            b=(E_PATH ->__oi :isize
+              a=(PATH ->__oi
+                (PATH_SEG __oi ->__oi))))
+          b=(BLOCK
+            a=(E_CALL :Ordering
+              a=(E_PATH ->isize::cmp :fn(&isize, &isize) -> Ordering {cmp}
+                a=(PATH {global} ->core::cmp::Ord
+                  (PATH_SEG core ->core)
+                  (PATH_SEG cmp ->core::cmp)
+                  (PATH_SEG Ord ->core::cmp::Ord)
+                  (PATH_SEG cmp)))
+              (E_REF :&isize
+                a=(E_PATH ->__si :isize
+                  a=(PATH ->__si
+                    (PATH_SEG __si ->__si))))
+              (E_REF :&isize
+                a=(E_PATH ->__oi :isize
+                  a=(PATH ->__oi
+                    (PATH_SEG __oi ->__oi))))))
+          c=(BLOCK :Ordering
+            a=(E_MATCH :Ordering
+              a=(E_DEREF :Shape<T>
+                a=(E_PATH ->self :&Shape<T>
+                  a=(PATH ->self
+                    (PATH_SEG self ->self))))
+              (ARM
+                a=(P_PATH ->Shape::Empty :Shape<T>
+                  a=(PATH ->Shape::Empty
+                    (PATH_SEG Shape ->Shape)
+                    (PATH_SEG Empty ->Shape::Empty)))
+                c=(E_MATCH :Ordering
+                  a=(E_DEREF :Shape<T>
+                    a=(E_PATH ->other :&Shape<T>
+                      a=(PATH ->other
+                        (PATH_SEG other ->other))))
+                  (ARM
+                    a=(P_PATH ->Shape::Empty :Shape<T>
+                      a=(PATH ->Shape::Empty
+                        (PATH_SEG Shape ->Shape)
+                        (PATH_SEG Empty ->Shape::Empty)))
+                    c=(E_PATH ->core::cmp::Ordering::Equal :Ordering
+                      a=(PATH {global} ->core::cmp::Ordering::Equal
+                        (PATH_SEG core ->core)
+                        (PATH_SEG cmp ->core::cmp)
+                        (PATH_SEG Ordering ->core::cmp::Ordering)
+                        (PATH_SEG Equal ->core::cmp::Ordering::Equal))))
+                  (ARM
+                    a=(P_WILD :Shape<T>)
+                    c=(E_PATH ->core::cmp::Ordering::Equal :Ordering
+                      a=(PATH {global} ->core::cmp::Ordering::Equal
+                        (PATH_SEG core ->core)
+                        (PATH_SEG cmp ->core::cmp)
+                        (PATH_SEG Ordering ->core::cmp::Ordering)
+                        (PATH_SEG Equal ->core::cmp::Ordering::Equal))))))
+              (ARM
+                a=(P_TUPLE_STRUCT ->Shape::Circle :Shape<T>
+                  a=(PATH ->Shape::Circle
+                    (PATH_SEG Shape ->Shape)
+                    (PATH_SEG Circle ->Shape::Circle))
+                  (P_IDENT __a0 {ref} ->__a0 :T))
+                c=(E_MATCH :Ordering
+                  a=(E_DEREF :Shape<T>
+                    a=(E_PATH ->other :&Shape<T>
+                      a=(PATH ->other
+                        (PATH_SEG other ->other))))
+                  (ARM
+                    a=(P_TUPLE_STRUCT ->Shape::Circle :Shape<T>
+                      a=(PATH ->Shape::Circle
+                        (PATH_SEG Shape ->Shape)
+                        (PATH_SEG Circle ->Shape::Circle))
+                      (P_IDENT __b0 {ref} ->__b0 :T))
+                    c=(E_CALL :Ordering
+                      a=(E_PATH ->core::cmp::Ord::cmp :fn(&T, &T) -> Ordering {cmp}
+                        a=(PATH {global} ->core::cmp::Ord
+                          (PATH_SEG core ->core)
+                          (PATH_SEG cmp ->core::cmp)
+                          (PATH_SEG Ord ->core::cmp::Ord)
+                          (PATH_SEG cmp)))
+                      (E_PATH ->__a0 :&T
+                        a=(PATH ->__a0
+                          (PATH_SEG __a0 ->__a0)))
+                      (E_PATH ->__b0 :&T
+                        a=(PATH ->__b0
+                          (PATH_SEG __b0 ->__b0)))))
+                  (ARM
+                    a=(P_WILD :Shape<T>)
+                    c=(E_PATH ->core::cmp::Ordering::Equal :Ordering
+                      a=(PATH {global} ->core::cmp::Ordering::Equal
+                        (PATH_SEG core ->core)
+                        (PATH_SEG cmp ->core::cmp)
+                        (PATH_SEG Ordering ->core::cmp::Ordering)
+                        (PATH_SEG Equal ->core::cmp::Ordering::Equal))))))
+              (ARM
+                a=(P_STRUCT ->Shape::Rect :Shape<T>
+                  a=(PATH ->Shape::Rect
+                    (PATH_SEG Shape ->Shape)
+                    (PATH_SEG Rect ->Shape::Rect))
+                  (P_FIELD w ->Shape::Rect::w :T
+                    a=(P_IDENT __a0 {ref} ->__a0 :T))
+                  (P_FIELD h ->Shape::Rect::h :T
+                    a=(P_IDENT __a1 {ref} ->__a1 :T)))
+                c=(E_MATCH :Ordering
+                  a=(E_DEREF :Shape<T>
+                    a=(E_PATH ->other :&Shape<T>
+                      a=(PATH ->other
+                        (PATH_SEG other ->other))))
+                  (ARM
+                    a=(P_STRUCT ->Shape::Rect :Shape<T>
+                      a=(PATH ->Shape::Rect
+                        (PATH_SEG Shape ->Shape)
+                        (PATH_SEG Rect ->Shape::Rect))
+                      (P_FIELD w ->Shape::Rect::w :T
+                        a=(P_IDENT __b0 {ref} ->__b0 :T))
+                      (P_FIELD h ->Shape::Rect::h :T
+                        a=(P_IDENT __b1 {ref} ->__b1 :T)))
+                    c=(E_MATCH :Ordering
+                      a=(E_CALL :Ordering
+                        a=(E_PATH ->core::cmp::Ord::cmp :fn(&T, &T) -> Ordering {cmp}
+                          a=(PATH {global} ->core::cmp::Ord
+                            (PATH_SEG core ->core)
+                            (PATH_SEG cmp ->core::cmp)
+                            (PATH_SEG Ord ->core::cmp::Ord)
+                            (PATH_SEG cmp)))
+                        (E_PATH ->__a0 :&T
+                          a=(PATH ->__a0
+                            (PATH_SEG __a0 ->__a0)))
+                        (E_PATH ->__b0 :&T
+                          a=(PATH ->__b0
+                            (PATH_SEG __b0 ->__b0))))
+                      (ARM
+                        a=(P_PATH ->core::cmp::Ordering::Equal :Ordering
+                          a=(PATH {global} ->core::cmp::Ordering::Equal
+                            (PATH_SEG core ->core)
+                            (PATH_SEG cmp ->core::cmp)
+                            (PATH_SEG Ordering ->core::cmp::Ordering)
+                            (PATH_SEG Equal ->core::cmp::Ordering::Equal)))
+                        c=(E_CALL :Ordering
+                          a=(E_PATH ->core::cmp::Ord::cmp :fn(&T, &T) -> Ordering {cmp}
+                            a=(PATH {global} ->core::cmp::Ord
+                              (PATH_SEG core ->core)
+                              (PATH_SEG cmp ->core::cmp)
+                              (PATH_SEG Ord ->core::cmp::Ord)
+                              (PATH_SEG cmp)))
+                          (E_PATH ->__a1 :&T
+                            a=(PATH ->__a1
+                              (PATH_SEG __a1 ->__a1)))
+                          (E_PATH ->__b1 :&T
+                            a=(PATH ->__b1
+                              (PATH_SEG __b1 ->__b1)))))
+                      (ARM
+                        a=(P_IDENT __c ->__c :Ordering)
+                        c=(E_PATH ->__c :Ordering
+                          a=(PATH ->__c
+                            (PATH_SEG __c ->__c))))))
+                  (ARM
+                    a=(P_WILD :Shape<T>)
+                    c=(E_PATH ->core::cmp::Ordering::Equal :Ordering
+                      a=(PATH {global} ->core::cmp::Ordering::Equal
+                        (PATH_SEG core ->core)
+                        (PATH_SEG cmp ->core::cmp)
+                        (PATH_SEG Ordering ->core::cmp::Ordering)
+                        (PATH_SEG Equal ->core::cmp::Ordering::Equal))))))))))
+      (SELF_PARAM {ref} ->self)
+      (PARAM
+        a=(P_IDENT other ->other :&Shape<T>)
+        b=(T_REF
+          a=(T_PATH ->Self
+            a=(PATH ->Self
+              (PATH_SEG Self ->Self)))))))
+  (ITEM_ENUM Mode ->Mode
+    @(ATTR derive {delim_paren} toks:9 Debug , Default , Clone , Copy , PartialEq)
+    (VARIANT Fast ->Mode::Fast)
+    (VARIANT Normal ->Mode::Normal
+      @(ATTR default)))
+  (ITEM_IMPL ->Mode
+    b=(T_PATH ->Mode
+      a=(PATH ->Mode
+        (PATH_SEG Mode ->Mode)))
+    c=(PATH {global} ->core::fmt::Debug
+      (PATH_SEG core ->core)
+      (PATH_SEG fmt ->core::fmt)
+      (PATH_SEG Debug ->core::fmt::Debug))
+    (ITEM_FN fmt ->Mode::fmt
+      b=(T_PATH ->core::fmt::Result
+        a=(PATH {global} ->core::fmt::Result
+          (PATH_SEG core ->core)
+          (PATH_SEG fmt ->core::fmt)
+          (PATH_SEG Result ->core::fmt::Result)))
+      c=(BLOCK
+        a=(E_MATCH :Result<(), Error>
+          a=(E_DEREF :Mode
+            a=(E_PATH ->self :&Mode
+              a=(PATH ->self
+                (PATH_SEG self ->self))))
+          (ARM
+            a=(P_PATH ->Mode::Fast :Mode
+              a=(PATH ->Mode::Fast
+                (PATH_SEG Mode ->Mode)
+                (PATH_SEG Fast ->Mode::Fast)))
+            c=(E_METHOD_CALL write_str ->Formatter::write_str :Result<(), Error>
+              a=(E_PATH ->f :&mut Formatter
+                a=(PATH ->f
+                  (PATH_SEG f ->f)))
+              (E_LIT_STR "Fast" :&str)))
+          (ARM
+            a=(P_PATH ->Mode::Normal :Mode
+              a=(PATH ->Mode::Normal
+                (PATH_SEG Mode ->Mode)
+                (PATH_SEG Normal ->Mode::Normal)))
+            c=(E_METHOD_CALL write_str ->Formatter::write_str :Result<(), Error>
+              a=(E_PATH ->f :&mut Formatter
+                a=(PATH ->f
+                  (PATH_SEG f ->f)))
+              (E_LIT_STR "Normal" :&str)))))
+      (SELF_PARAM {ref} ->self)
+      (PARAM
+        a=(P_IDENT f ->f :&mut Formatter)
+        b=(T_REF {mut}
+          a=(T_PATH ->core::fmt::Formatter
+            a=(PATH {global} ->core::fmt::Formatter
+              (PATH_SEG core ->core)
+              (PATH_SEG fmt ->core::fmt)
+              (PATH_SEG Formatter {angle} ->core::fmt::Formatter
+                (LIFETIME '_))))))))
+  (ITEM_IMPL ->Mode
+    b=(T_PATH ->Mode
+      a=(PATH ->Mode
+        (PATH_SEG Mode ->Mode)))
+    c=(PATH {global} ->core::default::Default
+      (PATH_SEG core ->core)
+      (PATH_SEG default ->core::default)
+      (PATH_SEG Default ->core::default::Default))
+    (ITEM_FN default ->Mode::default
+      b=(T_PATH ->Self
+        a=(PATH ->Self
+          (PATH_SEG Self ->Self)))
+      c=(BLOCK
+        a=(E_PATH ->Mode::Normal :Mode
+          a=(PATH ->Mode::Normal
+            (PATH_SEG Mode ->Mode)
+            (PATH_SEG Normal ->Mode::Normal))))))
+  (ITEM_IMPL ->Mode
+    b=(T_PATH ->Mode
+      a=(PATH ->Mode
+        (PATH_SEG Mode ->Mode)))
+    c=(PATH {global} ->core::clone::Clone
+      (PATH_SEG core ->core)
+      (PATH_SEG clone ->core::clone)
+      (PATH_SEG Clone ->core::clone::Clone))
+    (ITEM_FN clone ->Mode::clone
+      b=(T_PATH ->Self
+        a=(PATH ->Self
+          (PATH_SEG Self ->Self)))
+      c=(BLOCK
+        a=(E_MATCH :Mode
+          a=(E_DEREF :Mode
+            a=(E_PATH ->self :&Mode
+              a=(PATH ->self
+                (PATH_SEG self ->self))))
+          (ARM
+            a=(P_PATH ->Mode::Fast :Mode
+              a=(PATH ->Mode::Fast
+                (PATH_SEG Mode ->Mode)
+                (PATH_SEG Fast ->Mode::Fast)))
+            c=(E_PATH ->Mode::Fast :Mode
+              a=(PATH ->Mode::Fast
+                (PATH_SEG Mode ->Mode)
+                (PATH_SEG Fast ->Mode::Fast))))
+          (ARM
+            a=(P_PATH ->Mode::Normal :Mode
+              a=(PATH ->Mode::Normal
+                (PATH_SEG Mode ->Mode)
+                (PATH_SEG Normal ->Mode::Normal)))
+            c=(E_PATH ->Mode::Normal :Mode
+              a=(PATH ->Mode::Normal
+                (PATH_SEG Mode ->Mode)
+                (PATH_SEG Normal ->Mode::Normal))))))
+      (SELF_PARAM {ref} ->self)))
+  (ITEM_IMPL ->Mode
+    b=(T_PATH ->Mode
+      a=(PATH ->Mode
+        (PATH_SEG Mode ->Mode)))
+    c=(PATH {global} ->core::marker::Copy
+      (PATH_SEG core ->core)
+      (PATH_SEG marker ->core::marker)
+      (PATH_SEG Copy ->core::marker::Copy)))
+  (ITEM_IMPL ->Mode
+    b=(T_PATH ->Mode
+      a=(PATH ->Mode
+        (PATH_SEG Mode ->Mode)))
+    c=(PATH {global} ->core::cmp::PartialEq
+      (PATH_SEG core ->core)
+      (PATH_SEG cmp ->core::cmp)
+      (PATH_SEG PartialEq ->core::cmp::PartialEq))
+    (ITEM_FN eq ->Mode::eq
+      b=(T_PATH ->bool
+        a=(PATH ->bool
+          (PATH_SEG bool ->bool)))
+      c=(BLOCK
+        a=(E_MATCH :bool
+          a=(E_DEREF :Mode
+            a=(E_PATH ->self :&Mode
+              a=(PATH ->self
+                (PATH_SEG self ->self))))
+          (ARM
+            a=(P_PATH ->Mode::Fast :Mode
+              a=(PATH ->Mode::Fast
+                (PATH_SEG Mode ->Mode)
+                (PATH_SEG Fast ->Mode::Fast)))
+            c=(E_MATCH :bool
+              a=(E_DEREF :Mode
+                a=(E_PATH ->other :&Mode
+                  a=(PATH ->other
+                    (PATH_SEG other ->other))))
+              (ARM
+                a=(P_PATH ->Mode::Fast :Mode
+                  a=(PATH ->Mode::Fast
+                    (PATH_SEG Mode ->Mode)
+                    (PATH_SEG Fast ->Mode::Fast)))
+                c=(E_LIT_BOOL #1 :bool))
+              (ARM
+                a=(P_WILD :Mode)
+                c=(E_LIT_BOOL #0 :bool))))
+          (ARM
+            a=(P_PATH ->Mode::Normal :Mode
+              a=(PATH ->Mode::Normal
+                (PATH_SEG Mode ->Mode)
+                (PATH_SEG Normal ->Mode::Normal)))
+            c=(E_MATCH :bool
+              a=(E_DEREF :Mode
+                a=(E_PATH ->other :&Mode
+                  a=(PATH ->other
+                    (PATH_SEG other ->other))))
+              (ARM
+                a=(P_PATH ->Mode::Normal :Mode
+                  a=(PATH ->Mode::Normal
+                    (PATH_SEG Mode ->Mode)
+                    (PATH_SEG Normal ->Mode::Normal)))
+                c=(E_LIT_BOOL #1 :bool))
+              (ARM
+                a=(P_WILD :Mode)
+                c=(E_LIT_BOOL #0 :bool))))))
+      (SELF_PARAM {ref} ->self)
+      (PARAM
+        a=(P_IDENT other ->other :&Mode)
+        b=(T_REF
+          a=(T_PATH ->Self
+            a=(PATH ->Self
+              (PATH_SEG Self ->Self)))))))
+  (ITEM_STRUCT Named {named} ->Named
+    @(ATTR derive {delim_paren} toks:13 Debug , Clone , PartialEq , Eq , PartialOrd , Ord , Default)
+    (FIELD name ->Named::name
+      a=(T_PATH ->core::string::String
+        a=(PATH ->core::string::String
+          (PATH_SEG String ->core::string::String))))
+    (FIELD tags ->Named::tags
+      a=(T_PATH ->core::vec::Vec
+        a=(PATH ->core::vec::Vec
+          (PATH_SEG Vec {angle} ->core::vec::Vec
+            (T_PATH ->i32
+              a=(PATH ->i32
+                (PATH_SEG i32 ->i32)))))))
+    (FIELD p ->Named::p
+      a=(T_PATH ->Point
+        a=(PATH ->Point
+          (PATH_SEG Point ->Point)))))
+  (ITEM_IMPL ->Named
+    b=(T_PATH ->Named
+      a=(PATH ->Named
+        (PATH_SEG Named ->Named)))
+    c=(PATH {global} ->core::fmt::Debug
+      (PATH_SEG core ->core)
+      (PATH_SEG fmt ->core::fmt)
+      (PATH_SEG Debug ->core::fmt::Debug))
+    (ITEM_FN fmt ->Named::fmt
+      b=(T_PATH ->core::fmt::Result
+        a=(PATH {global} ->core::fmt::Result
+          (PATH_SEG core ->core)
+          (PATH_SEG fmt ->core::fmt)
+          (PATH_SEG Result ->core::fmt::Result)))
+      c=(BLOCK
+        a=(E_MATCH :Result<(), Error>
+          a=(E_DEREF :Named
+            a=(E_PATH ->self :&Named
+              a=(PATH ->self
+                (PATH_SEG self ->self))))
+          (ARM
+            a=(P_STRUCT ->Named :Named
+              a=(PATH ->Named
+                (PATH_SEG Named ->Named))
+              (P_FIELD name ->Named::name :String
+                a=(P_IDENT __a0 {ref} ->__a0 :String))
+              (P_FIELD tags ->Named::tags :Vec<i32>
+                a=(P_IDENT __a1 {ref} ->__a1 :Vec<i32>))
+              (P_FIELD p ->Named::p :Point
+                a=(P_IDENT __a2 {ref} ->__a2 :Point)))
+            c=(E_METHOD_CALL finish ->DebugStruct::finish :Result<(), Error>
+              a=(E_METHOD_CALL field ->DebugStruct::field :&mut DebugStruct
+                a=(E_METHOD_CALL field ->DebugStruct::field :&mut DebugStruct
+                  a=(E_METHOD_CALL field ->DebugStruct::field :&mut DebugStruct
+                    a=(E_METHOD_CALL debug_struct ->Formatter::debug_struct :DebugStruct
+                      a=(E_PATH ->f :&mut Formatter
+                        a=(PATH ->f
+                          (PATH_SEG f ->f)))
+                      (E_LIT_STR "Named" :&str))
+                    (E_LIT_STR "name" :&str)
+                    (E_PATH ->__a0 :&String
+                      a=(PATH ->__a0
+                        (PATH_SEG __a0 ->__a0))))
+                  (E_LIT_STR "tags" :&str)
+                  (E_PATH ->__a1 :&Vec<i32>
+                    a=(PATH ->__a1
+                      (PATH_SEG __a1 ->__a1))))
+                (E_LIT_STR "p" :&str)
+                (E_PATH ->__a2 :&Point
+                  a=(PATH ->__a2
+                    (PATH_SEG __a2 ->__a2))))))))
+      (SELF_PARAM {ref} ->self)
+      (PARAM
+        a=(P_IDENT f ->f :&mut Formatter)
+        b=(T_REF {mut}
+          a=(T_PATH ->core::fmt::Formatter
+            a=(PATH {global} ->core::fmt::Formatter
+              (PATH_SEG core ->core)
+              (PATH_SEG fmt ->core::fmt)
+              (PATH_SEG Formatter {angle} ->core::fmt::Formatter
+                (LIFETIME '_))))))))
+  (ITEM_IMPL ->Named
+    b=(T_PATH ->Named
+      a=(PATH ->Named
+        (PATH_SEG Named ->Named)))
+    c=(PATH {global} ->core::clone::Clone
+      (PATH_SEG core ->core)
+      (PATH_SEG clone ->core::clone)
+      (PATH_SEG Clone ->core::clone::Clone))
+    (ITEM_FN clone ->Named::clone
+      b=(T_PATH ->Self
+        a=(PATH ->Self
+          (PATH_SEG Self ->Self)))
+      c=(BLOCK
+        a=(E_MATCH :Named
+          a=(E_DEREF :Named
+            a=(E_PATH ->self :&Named
+              a=(PATH ->self
+                (PATH_SEG self ->self))))
+          (ARM
+            a=(P_STRUCT ->Named :Named
+              a=(PATH ->Named
+                (PATH_SEG Named ->Named))
+              (P_FIELD name ->Named::name :String
+                a=(P_IDENT __a0 {ref} ->__a0 :String))
+              (P_FIELD tags ->Named::tags :Vec<i32>
+                a=(P_IDENT __a1 {ref} ->__a1 :Vec<i32>))
+              (P_FIELD p ->Named::p :Point
+                a=(P_IDENT __a2 {ref} ->__a2 :Point)))
+            c=(E_STRUCT ->Named :Named
+              a=(PATH ->Named
+                (PATH_SEG Named ->Named))
+              (FIELD_INIT name ->Named::name :String
+                a=(E_CALL :String
+                  a=(E_PATH ->String::clone :fn(&String) -> String {clone}
+                    a=(PATH {global} ->core::clone::Clone
+                      (PATH_SEG core ->core)
+                      (PATH_SEG clone ->core::clone)
+                      (PATH_SEG Clone ->core::clone::Clone)
+                      (PATH_SEG clone)))
+                  (E_PATH ->__a0 :&String
+                    a=(PATH ->__a0
+                      (PATH_SEG __a0 ->__a0)))))
+              (FIELD_INIT tags ->Named::tags :Vec<i32>
+                a=(E_CALL :Vec<i32>
+                  a=(E_PATH ->Vec::clone :fn(&Vec<i32>) -> Vec<i32> {clone}
+                    a=(PATH {global} ->core::clone::Clone
+                      (PATH_SEG core ->core)
+                      (PATH_SEG clone ->core::clone)
+                      (PATH_SEG Clone ->core::clone::Clone)
+                      (PATH_SEG clone)))
+                  (E_PATH ->__a1 :&Vec<i32>
+                    a=(PATH ->__a1
+                      (PATH_SEG __a1 ->__a1)))))
+              (FIELD_INIT p ->Named::p :Point
+                a=(E_CALL :Point
+                  a=(E_PATH ->Point::clone :fn(&Point) -> Point {clone}
+                    a=(PATH {global} ->core::clone::Clone
+                      (PATH_SEG core ->core)
+                      (PATH_SEG clone ->core::clone)
+                      (PATH_SEG Clone ->core::clone::Clone)
+                      (PATH_SEG clone)))
+                  (E_PATH ->__a2 :&Point
+                    a=(PATH ->__a2
+                      (PATH_SEG __a2 ->__a2)))))))))
+      (SELF_PARAM {ref} ->self)))
+  (ITEM_IMPL ->Named
+    b=(T_PATH ->Named
+      a=(PATH ->Named
+        (PATH_SEG Named ->Named)))
+    c=(PATH {global} ->core::cmp::PartialEq
+      (PATH_SEG core ->core)
+      (PATH_SEG cmp ->core::cmp)
+      (PATH_SEG PartialEq ->core::cmp::PartialEq))
+    (ITEM_FN eq ->Named::eq
+      b=(T_PATH ->bool
+        a=(PATH ->bool
+          (PATH_SEG bool ->bool)))
+      c=(BLOCK
+        a=(E_MATCH :bool
+          a=(E_DEREF :Named
+            a=(E_PATH ->self :&Named
+              a=(PATH ->self
+                (PATH_SEG self ->self))))
+          (ARM
+            a=(P_STRUCT ->Named :Named
+              a=(PATH ->Named
+                (PATH_SEG Named ->Named))
+              (P_FIELD name ->Named::name :String
+                a=(P_IDENT __a0 {ref} ->__a0 :String))
+              (P_FIELD tags ->Named::tags :Vec<i32>
+                a=(P_IDENT __a1 {ref} ->__a1 :Vec<i32>))
+              (P_FIELD p ->Named::p :Point
+                a=(P_IDENT __a2 {ref} ->__a2 :Point)))
+            c=(E_MATCH :bool
+              a=(E_DEREF :Named
+                a=(E_PATH ->other :&Named
+                  a=(PATH ->other
+                    (PATH_SEG other ->other))))
+              (ARM
+                a=(P_STRUCT ->Named :Named
+                  a=(PATH ->Named
+                    (PATH_SEG Named ->Named))
+                  (P_FIELD name ->Named::name :String
+                    a=(P_IDENT __b0 {ref} ->__b0 :String))
+                  (P_FIELD tags ->Named::tags :Vec<i32>
+                    a=(P_IDENT __b1 {ref} ->__b1 :Vec<i32>))
+                  (P_FIELD p ->Named::p :Point
+                    a=(P_IDENT __b2 {ref} ->__b2 :Point)))
+                c=(E_BINARY op:&& :bool
+                  a=(E_BINARY op:&& :bool
+                    a=(E_CALL :bool
+                      a=(E_PATH ->String::eq :fn(&String, &String) -> bool {eq::<String>}
+                        a=(PATH {global} ->core::cmp::PartialEq
+                          (PATH_SEG core ->core)
+                          (PATH_SEG cmp ->core::cmp)
+                          (PATH_SEG PartialEq ->core::cmp::PartialEq)
+                          (PATH_SEG eq)))
+                      (E_PATH ->__a0 :&String
+                        a=(PATH ->__a0
+                          (PATH_SEG __a0 ->__a0)))
+                      (E_PATH ->__b0 :&String
+                        a=(PATH ->__b0
+                          (PATH_SEG __b0 ->__b0))))
+                    b=(E_CALL :bool
+                      a=(E_PATH ->Vec::eq :fn(&Vec<i32>, &Vec<i32>) -> bool {eq::<Vec<i32>>}
+                        a=(PATH {global} ->core::cmp::PartialEq
+                          (PATH_SEG core ->core)
+                          (PATH_SEG cmp ->core::cmp)
+                          (PATH_SEG PartialEq ->core::cmp::PartialEq)
+                          (PATH_SEG eq)))
+                      (E_PATH ->__a1 :&Vec<i32>
+                        a=(PATH ->__a1
+                          (PATH_SEG __a1 ->__a1)))
+                      (E_PATH ->__b1 :&Vec<i32>
+                        a=(PATH ->__b1
+                          (PATH_SEG __b1 ->__b1)))))
+                  b=(E_CALL :bool
+                    a=(E_PATH ->Point::eq :fn(&Point, &Point) -> bool {eq::<Point>}
+                      a=(PATH {global} ->core::cmp::PartialEq
+                        (PATH_SEG core ->core)
+                        (PATH_SEG cmp ->core::cmp)
+                        (PATH_SEG PartialEq ->core::cmp::PartialEq)
+                        (PATH_SEG eq)))
+                    (E_PATH ->__a2 :&Point
+                      a=(PATH ->__a2
+                        (PATH_SEG __a2 ->__a2)))
+                    (E_PATH ->__b2 :&Point
+                      a=(PATH ->__b2
+                        (PATH_SEG __b2 ->__b2))))))))))
+      (SELF_PARAM {ref} ->self)
+      (PARAM
+        a=(P_IDENT other ->other :&Named)
+        b=(T_REF
+          a=(T_PATH ->Self
+            a=(PATH ->Self
+              (PATH_SEG Self ->Self)))))))
+  (ITEM_IMPL ->Named
+    b=(T_PATH ->Named
+      a=(PATH ->Named
+        (PATH_SEG Named ->Named)))
+    c=(PATH {global} ->core::cmp::Eq
+      (PATH_SEG core ->core)
+      (PATH_SEG cmp ->core::cmp)
+      (PATH_SEG Eq ->core::cmp::Eq)))
+  (ITEM_IMPL ->Named
+    b=(T_PATH ->Named
+      a=(PATH ->Named
+        (PATH_SEG Named ->Named)))
+    c=(PATH {global} ->core::cmp::PartialOrd
+      (PATH_SEG core ->core)
+      (PATH_SEG cmp ->core::cmp)
+      (PATH_SEG PartialOrd ->core::cmp::PartialOrd))
+    (ITEM_FN partial_cmp ->Named::partial_cmp
+      b=(T_PATH ->core::option::Option
+        a=(PATH {global} ->core::option::Option
+          (PATH_SEG core ->core)
+          (PATH_SEG option ->core::option)
+          (PATH_SEG Option {angle} ->core::option::Option
+            (T_PATH ->core::cmp::Ordering
+              a=(PATH {global} ->core::cmp::Ordering
+                (PATH_SEG core ->core)
+                (PATH_SEG cmp ->core::cmp)
+                (PATH_SEG Ordering ->core::cmp::Ordering))))))
+      c=(BLOCK
+        a=(E_MATCH :Option<Ordering>
+          a=(E_DEREF :Named
+            a=(E_PATH ->self :&Named
+              a=(PATH ->self
+                (PATH_SEG self ->self))))
+          (ARM
+            a=(P_STRUCT ->Named :Named
+              a=(PATH ->Named
+                (PATH_SEG Named ->Named))
+              (P_FIELD name ->Named::name :String
+                a=(P_IDENT __a0 {ref} ->__a0 :String))
+              (P_FIELD tags ->Named::tags :Vec<i32>
+                a=(P_IDENT __a1 {ref} ->__a1 :Vec<i32>))
+              (P_FIELD p ->Named::p :Point
+                a=(P_IDENT __a2 {ref} ->__a2 :Point)))
+            c=(E_MATCH :Option<Ordering>
+              a=(E_DEREF :Named
+                a=(E_PATH ->other :&Named
+                  a=(PATH ->other
+                    (PATH_SEG other ->other))))
+              (ARM
+                a=(P_STRUCT ->Named :Named
+                  a=(PATH ->Named
+                    (PATH_SEG Named ->Named))
+                  (P_FIELD name ->Named::name :String
+                    a=(P_IDENT __b0 {ref} ->__b0 :String))
+                  (P_FIELD tags ->Named::tags :Vec<i32>
+                    a=(P_IDENT __b1 {ref} ->__b1 :Vec<i32>))
+                  (P_FIELD p ->Named::p :Point
+                    a=(P_IDENT __b2 {ref} ->__b2 :Point)))
+                c=(E_MATCH :Option<Ordering>
+                  a=(E_CALL :Option<Ordering>
+                    a=(E_PATH ->String::partial_cmp :fn(&String, &String) -> Option<Ordering> {partial_cmp::<String>}
+                      a=(PATH {global} ->core::cmp::PartialOrd
+                        (PATH_SEG core ->core)
+                        (PATH_SEG cmp ->core::cmp)
+                        (PATH_SEG PartialOrd ->core::cmp::PartialOrd)
+                        (PATH_SEG partial_cmp)))
+                    (E_PATH ->__a0 :&String
+                      a=(PATH ->__a0
+                        (PATH_SEG __a0 ->__a0)))
+                    (E_PATH ->__b0 :&String
+                      a=(PATH ->__b0
+                        (PATH_SEG __b0 ->__b0))))
+                  (ARM
+                    a=(P_TUPLE_STRUCT ->core::option::Option::Some :Option<Ordering>
+                      a=(PATH {global} ->core::option::Option::Some
+                        (PATH_SEG core ->core)
+                        (PATH_SEG option ->core::option)
+                        (PATH_SEG Option ->core::option::Option)
+                        (PATH_SEG Some ->core::option::Option::Some))
+                      (P_PATH ->core::cmp::Ordering::Equal :Ordering
+                        a=(PATH {global} ->core::cmp::Ordering::Equal
+                          (PATH_SEG core ->core)
+                          (PATH_SEG cmp ->core::cmp)
+                          (PATH_SEG Ordering ->core::cmp::Ordering)
+                          (PATH_SEG Equal ->core::cmp::Ordering::Equal))))
+                    c=(E_MATCH :Option<Ordering>
+                      a=(E_CALL :Option<Ordering>
+                        a=(E_PATH ->Vec::partial_cmp :fn(&Vec<i32>, &Vec<i32>) -> Option<Ordering> {partial_cmp::<Vec<i32>>}
+                          a=(PATH {global} ->core::cmp::PartialOrd
+                            (PATH_SEG core ->core)
+                            (PATH_SEG cmp ->core::cmp)
+                            (PATH_SEG PartialOrd ->core::cmp::PartialOrd)
+                            (PATH_SEG partial_cmp)))
+                        (E_PATH ->__a1 :&Vec<i32>
+                          a=(PATH ->__a1
+                            (PATH_SEG __a1 ->__a1)))
+                        (E_PATH ->__b1 :&Vec<i32>
+                          a=(PATH ->__b1
+                            (PATH_SEG __b1 ->__b1))))
+                      (ARM
+                        a=(P_TUPLE_STRUCT ->core::option::Option::Some :Option<Ordering>
+                          a=(PATH {global} ->core::option::Option::Some
+                            (PATH_SEG core ->core)
+                            (PATH_SEG option ->core::option)
+                            (PATH_SEG Option ->core::option::Option)
+                            (PATH_SEG Some ->core::option::Option::Some))
+                          (P_PATH ->core::cmp::Ordering::Equal :Ordering
+                            a=(PATH {global} ->core::cmp::Ordering::Equal
+                              (PATH_SEG core ->core)
+                              (PATH_SEG cmp ->core::cmp)
+                              (PATH_SEG Ordering ->core::cmp::Ordering)
+                              (PATH_SEG Equal ->core::cmp::Ordering::Equal))))
+                        c=(E_CALL :Option<Ordering>
+                          a=(E_PATH ->Point::partial_cmp :fn(&Point, &Point) -> Option<Ordering> {partial_cmp::<Point>}
+                            a=(PATH {global} ->core::cmp::PartialOrd
+                              (PATH_SEG core ->core)
+                              (PATH_SEG cmp ->core::cmp)
+                              (PATH_SEG PartialOrd ->core::cmp::PartialOrd)
+                              (PATH_SEG partial_cmp)))
+                          (E_PATH ->__a2 :&Point
+                            a=(PATH ->__a2
+                              (PATH_SEG __a2 ->__a2)))
+                          (E_PATH ->__b2 :&Point
+                            a=(PATH ->__b2
+                              (PATH_SEG __b2 ->__b2)))))
+                      (ARM
+                        a=(P_IDENT __c ->__c :Option<Ordering>)
+                        c=(E_PATH ->__c :Option<Ordering>
+                          a=(PATH ->__c
+                            (PATH_SEG __c ->__c))))))
+                  (ARM
+                    a=(P_IDENT __c ->__c :Option<Ordering>)
+                    c=(E_PATH ->__c :Option<Ordering>
+                      a=(PATH ->__c
+                        (PATH_SEG __c ->__c))))))))))
+      (SELF_PARAM {ref} ->self)
+      (PARAM
+        a=(P_IDENT other ->other :&Named)
+        b=(T_REF
+          a=(T_PATH ->Self
+            a=(PATH ->Self
+              (PATH_SEG Self ->Self)))))))
+  (ITEM_IMPL ->Named
+    b=(T_PATH ->Named
+      a=(PATH ->Named
+        (PATH_SEG Named ->Named)))
+    c=(PATH {global} ->core::cmp::Ord
+      (PATH_SEG core ->core)
+      (PATH_SEG cmp ->core::cmp)
+      (PATH_SEG Ord ->core::cmp::Ord))
+    (ITEM_FN cmp ->Named::cmp
+      b=(T_PATH ->core::cmp::Ordering
+        a=(PATH {global} ->core::cmp::Ordering
+          (PATH_SEG core ->core)
+          (PATH_SEG cmp ->core::cmp)
+          (PATH_SEG Ordering ->core::cmp::Ordering)))
+      c=(BLOCK
+        a=(E_MATCH :Ordering
+          a=(E_DEREF :Named
+            a=(E_PATH ->self :&Named
+              a=(PATH ->self
+                (PATH_SEG self ->self))))
+          (ARM
+            a=(P_STRUCT ->Named :Named
+              a=(PATH ->Named
+                (PATH_SEG Named ->Named))
+              (P_FIELD name ->Named::name :String
+                a=(P_IDENT __a0 {ref} ->__a0 :String))
+              (P_FIELD tags ->Named::tags :Vec<i32>
+                a=(P_IDENT __a1 {ref} ->__a1 :Vec<i32>))
+              (P_FIELD p ->Named::p :Point
+                a=(P_IDENT __a2 {ref} ->__a2 :Point)))
+            c=(E_MATCH :Ordering
+              a=(E_DEREF :Named
+                a=(E_PATH ->other :&Named
+                  a=(PATH ->other
+                    (PATH_SEG other ->other))))
+              (ARM
+                a=(P_STRUCT ->Named :Named
+                  a=(PATH ->Named
+                    (PATH_SEG Named ->Named))
+                  (P_FIELD name ->Named::name :String
+                    a=(P_IDENT __b0 {ref} ->__b0 :String))
+                  (P_FIELD tags ->Named::tags :Vec<i32>
+                    a=(P_IDENT __b1 {ref} ->__b1 :Vec<i32>))
+                  (P_FIELD p ->Named::p :Point
+                    a=(P_IDENT __b2 {ref} ->__b2 :Point)))
+                c=(E_MATCH :Ordering
+                  a=(E_CALL :Ordering
+                    a=(E_PATH ->String::cmp :fn(&String, &String) -> Ordering {cmp}
+                      a=(PATH {global} ->core::cmp::Ord
+                        (PATH_SEG core ->core)
+                        (PATH_SEG cmp ->core::cmp)
+                        (PATH_SEG Ord ->core::cmp::Ord)
+                        (PATH_SEG cmp)))
+                    (E_PATH ->__a0 :&String
+                      a=(PATH ->__a0
+                        (PATH_SEG __a0 ->__a0)))
+                    (E_PATH ->__b0 :&String
+                      a=(PATH ->__b0
+                        (PATH_SEG __b0 ->__b0))))
+                  (ARM
+                    a=(P_PATH ->core::cmp::Ordering::Equal :Ordering
+                      a=(PATH {global} ->core::cmp::Ordering::Equal
+                        (PATH_SEG core ->core)
+                        (PATH_SEG cmp ->core::cmp)
+                        (PATH_SEG Ordering ->core::cmp::Ordering)
+                        (PATH_SEG Equal ->core::cmp::Ordering::Equal)))
+                    c=(E_MATCH :Ordering
+                      a=(E_CALL :Ordering
+                        a=(E_PATH ->Vec::cmp :fn(&Vec<i32>, &Vec<i32>) -> Ordering {cmp}
+                          a=(PATH {global} ->core::cmp::Ord
+                            (PATH_SEG core ->core)
+                            (PATH_SEG cmp ->core::cmp)
+                            (PATH_SEG Ord ->core::cmp::Ord)
+                            (PATH_SEG cmp)))
+                        (E_PATH ->__a1 :&Vec<i32>
+                          a=(PATH ->__a1
+                            (PATH_SEG __a1 ->__a1)))
+                        (E_PATH ->__b1 :&Vec<i32>
+                          a=(PATH ->__b1
+                            (PATH_SEG __b1 ->__b1))))
+                      (ARM
+                        a=(P_PATH ->core::cmp::Ordering::Equal :Ordering
+                          a=(PATH {global} ->core::cmp::Ordering::Equal
+                            (PATH_SEG core ->core)
+                            (PATH_SEG cmp ->core::cmp)
+                            (PATH_SEG Ordering ->core::cmp::Ordering)
+                            (PATH_SEG Equal ->core::cmp::Ordering::Equal)))
+                        c=(E_CALL :Ordering
+                          a=(E_PATH ->Point::cmp :fn(&Point, &Point) -> Ordering {cmp}
+                            a=(PATH {global} ->core::cmp::Ord
+                              (PATH_SEG core ->core)
+                              (PATH_SEG cmp ->core::cmp)
+                              (PATH_SEG Ord ->core::cmp::Ord)
+                              (PATH_SEG cmp)))
+                          (E_PATH ->__a2 :&Point
+                            a=(PATH ->__a2
+                              (PATH_SEG __a2 ->__a2)))
+                          (E_PATH ->__b2 :&Point
+                            a=(PATH ->__b2
+                              (PATH_SEG __b2 ->__b2)))))
+                      (ARM
+                        a=(P_IDENT __c ->__c :Ordering)
+                        c=(E_PATH ->__c :Ordering
+                          a=(PATH ->__c
+                            (PATH_SEG __c ->__c))))))
+                  (ARM
+                    a=(P_IDENT __c ->__c :Ordering)
+                    c=(E_PATH ->__c :Ordering
+                      a=(PATH ->__c
+                        (PATH_SEG __c ->__c))))))))))
+      (SELF_PARAM {ref} ->self)
+      (PARAM
+        a=(P_IDENT other ->other :&Named)
+        b=(T_REF
+          a=(T_PATH ->Self
+            a=(PATH ->Self
+              (PATH_SEG Self ->Self)))))))
+  (ITEM_IMPL ->Named
+    b=(T_PATH ->Named
+      a=(PATH ->Named
+        (PATH_SEG Named ->Named)))
+    c=(PATH {global} ->core::default::Default
+      (PATH_SEG core ->core)
+      (PATH_SEG default ->core::default)
+      (PATH_SEG Default ->core::default::Default))
+    (ITEM_FN default ->Named::default
+      b=(T_PATH ->Self
+        a=(PATH ->Self
+          (PATH_SEG Self ->Self)))
+      c=(BLOCK
+        a=(E_STRUCT ->Named :Named
+          a=(PATH ->Named
+            (PATH_SEG Named ->Named))
+          (FIELD_INIT name ->Named::name :String
+            a=(E_CALL :String
+              a=(E_PATH ->String::default :fn() -> String {default}
+                a=(PATH {global} ->core::default::Default
+                  (PATH_SEG core ->core)
+                  (PATH_SEG default ->core::default)
+                  (PATH_SEG Default ->core::default::Default)
+                  (PATH_SEG default)))))
+          (FIELD_INIT tags ->Named::tags :Vec<i32>
+            a=(E_CALL :Vec<i32>
+              a=(E_PATH ->Vec::default :fn() -> Vec<i32> {default}
+                a=(PATH {global} ->core::default::Default
+                  (PATH_SEG core ->core)
+                  (PATH_SEG default ->core::default)
+                  (PATH_SEG Default ->core::default::Default)
+                  (PATH_SEG default)))))
+          (FIELD_INIT p ->Named::p :Point
+            a=(E_CALL :Point
+              a=(E_PATH ->Point::default :fn() -> Point {default}
+                a=(PATH {global} ->core::default::Default
+                  (PATH_SEG core ->core)
+                  (PATH_SEG default ->core::default)
+                  (PATH_SEG Default ->core::default::Default)
+                  (PATH_SEG default)))))))))
+  (ITEM_FN main ->main
+    c=(BLOCK
+      (STMT_LET
+        a=(P_IDENT a ->a :Point)
+        c=(E_STRUCT ->Point :Point
+          a=(PATH ->Point
+            (PATH_SEG Point ->Point))
+          (FIELD_INIT x ->Point::x :i32
+            a=(E_LIT_INT "1" #1 :i32))
+          (FIELD_INIT y ->Point::y :i32
+            a=(E_LIT_INT "2" #2 :i32))))
+      (STMT_LET
+        a=(P_IDENT b ->b :Point)
+        c=(E_PATH ->a :Point
+          a=(PATH ->a
+            (PATH_SEG a ->a))))
+      (STMT_LET
+        a=(P_IDENT c ->c :Point)
+        c=(E_METHOD_CALL clone ->Point::clone :Point
+          a=(E_PATH ->a :Point
+            a=(PATH ->a
+              (PATH_SEG a ->a)))))
+      (STMT_EXPR {semi}
+        a=(BLOCK :()
+          (STMT_LET
+            a=(P_IDENT __out {mut} ->__out :RawOut)
+            c=(E_CALL :RawOut
+              a=(E_PATH ->core::io::stdout_raw :fn() -> RawOut {stdout_raw}
+                a=(PATH {global} ->core::io::stdout_raw
+                  (PATH_SEG core ->core)
+                  (PATH_SEG io ->core::io)
+                  (PATH_SEG stdout_raw ->core::io::stdout_raw)))))
+          (STMT_LET
+            a=(P_IDENT __f {mut} ->__f :Formatter)
+            c=(E_CALL :Formatter
+              a=(E_PATH ->Formatter::new :fn(&mut dyn Write) -> Formatter {new}
+                a=(PATH {global} ->core::fmt::Formatter
+                  (PATH_SEG core ->core)
+                  (PATH_SEG fmt ->core::fmt)
+                  (PATH_SEG Formatter ->core::fmt::Formatter)
+                  (PATH_SEG new)))
+              (E_REF {mut} :&mut RawOut
+                a=(E_PATH ->__out :RawOut
+                  a=(PATH ->__out
+                    (PATH_SEG __out ->__out))))))
+          a=(BLOCK :()
+            (STMT_LET
+              a=(P_IDENT __a0 ->__a0 :&Point)
+              c=(E_REF :&Point
+                a=(E_PAREN :Point
+                  a=(E_PATH ->a :Point
+                    a=(PATH ->a
+                      (PATH_SEG a ->a))))))
+            (STMT_LET
+              a=(P_IDENT __a1 ->__a1 :&Point)
+              c=(E_REF :&Point
+                a=(E_PAREN :Point
+                  a=(E_PATH ->b :Point
+                    a=(PATH ->b
+                      (PATH_SEG b ->b))))))
+            (STMT_LET
+              a=(P_WILD :Result<(), Error>)
+              c=(E_CALL :Result<(), Error>
+                a=(E_PATH ->Point::fmt :fn(&Point, &mut Formatter) -> Result<(), Error> {fmt}
+                  a=(PATH {global} ->core::fmt::Debug
+                    (PATH_SEG core ->core)
+                    (PATH_SEG fmt ->core::fmt)
+                    (PATH_SEG Debug ->core::fmt::Debug)
+                    (PATH_SEG fmt)))
+                (E_PATH ->__a0 :&Point
+                  a=(PATH ->__a0
+                    (PATH_SEG __a0 ->__a0)))
+                (E_REF {mut} :&mut Formatter
+                  a=(E_PATH ->__f :Formatter
+                    a=(PATH ->__f
+                      (PATH_SEG __f ->__f))))))
+            (STMT_EXPR {semi}
+              a=(E_METHOD_CALL write_str ->Formatter::write_str :Result<(), Error>
+                a=(E_PATH ->__f :Formatter
+                  a=(PATH ->__f
+                    (PATH_SEG __f ->__f)))
+                (E_LIT_STR " " :&str)))
+            (STMT_EXPR {semi}
+              a=(E_METHOD_CALL set_spec ->Formatter::set_spec :()
+                a=(E_PATH ->__f :Formatter
+                  a=(PATH ->__f
+                    (PATH_SEG __f ->__f)))
+                (E_LIT_CHAR #32 :char)
+                (E_LIT_INT u8 "0" #0 :u8)
+                (E_LIT_INT u8 "0" #0 :u8)
+                (E_LIT_BOOL #1 :bool)
+                (E_LIT_BOOL #0 :bool)
+                (E_LIT_INT usize "0" #0 :usize)
+                (E_LIT_BOOL #0 :bool)
+                (E_LIT_INT usize "0" #0 :usize)
+                (E_LIT_BOOL #0 :bool)))
+            (STMT_LET
+              a=(P_WILD :Result<(), Error>)
+              c=(E_CALL :Result<(), Error>
+                a=(E_PATH ->Point::fmt :fn(&Point, &mut Formatter) -> Result<(), Error> {fmt}
+                  a=(PATH {global} ->core::fmt::Debug
+                    (PATH_SEG core ->core)
+                    (PATH_SEG fmt ->core::fmt)
+                    (PATH_SEG Debug ->core::fmt::Debug)
+                    (PATH_SEG fmt)))
+                (E_PATH ->__a1 :&Point
+                  a=(PATH ->__a1
+                    (PATH_SEG __a1 ->__a1)))
+                (E_REF {mut} :&mut Formatter
+                  a=(E_PATH ->__f :Formatter
+                    a=(PATH ->__f
+                      (PATH_SEG __f ->__f))))))
+            (STMT_EXPR {semi}
+              a=(E_METHOD_CALL clear_spec ->Formatter::clear_spec :()
+                a=(E_PATH ->__f :Formatter
+                  a=(PATH ->__f
+                    (PATH_SEG __f ->__f)))))
+            (STMT_EXPR {semi}
+              a=(E_METHOD_CALL write_str ->Formatter::write_str :Result<(), Error>
+                a=(E_PATH ->__f :Formatter
+                  a=(PATH ->__f
+                    (PATH_SEG __f ->__f)))
+                (E_LIT_STR "\n" :&str))))))
+      (STMT_LET
+        a=(P_IDENT eq ->eq :bool)
+        c=(E_BINARY op:== ->Point::eq :bool
+          a=(E_PATH ->a :Point
+            a=(PATH ->a
+              (PATH_SEG a ->a)))
+          b=(E_PATH ->c :Point
+            a=(PATH ->c
+              (PATH_SEG c ->c)))))
+      (STMT_LET
+        a=(P_IDENT ne ->ne :bool)
+        c=(E_BINARY op:!= ->core::cmp::PartialEq::ne :bool
+          a=(E_PATH ->a :Point
+            a=(PATH ->a
+              (PATH_SEG a ->a)))
+          b=(E_CALL :Point
+            a=(E_PATH ->Point::default :fn() -> Point {default}
+              a=(PATH ->Point
+                (PATH_SEG Point ->Point)
+                (PATH_SEG default))))))
+      (STMT_LET
+        a=(P_IDENT lt ->lt :bool)
+        c=(E_BINARY op:< ->core::cmp::PartialOrd::lt :bool
+          a=(E_PATH ->a :Point
+            a=(PATH ->a
+              (PATH_SEG a ->a)))
+          b=(E_STRUCT ->Point :Point
+            a=(PATH ->Point
+              (PATH_SEG Point ->Point))
+            (FIELD_INIT x ->Point::x :i32
+              a=(E_LIT_INT "1" #1 :i32))
+            (FIELD_INIT y ->Point::y :i32
+              a=(E_LIT_INT "3" #3 :i32)))))
+      (STMT_LET
+        a=(P_IDENT ord ->ord :Ordering)
+        c=(E_METHOD_CALL cmp ->Point::cmp :Ordering
+          a=(E_PATH ->a :Point
+            a=(PATH ->a
+              (PATH_SEG a ->a)))
+          (E_REF :&Point
+            a=(E_PATH ->c :Point
+              a=(PATH ->c
+                (PATH_SEG c ->c))))))
+      (STMT_LET
+        a=(P_IDENT pc ->pc :Option<Ordering>)
+        c=(E_METHOD_CALL partial_cmp ->Point::partial_cmp :Option<Ordering>
+          a=(E_PATH ->a :Point
+            a=(PATH ->a
+              (PATH_SEG a ->a)))
+          (E_REF :&Point
+            a=(E_PATH ->c :Point
+              a=(PATH ->c
+                (PATH_SEG c ->c))))))
+      (STMT_LET
+        a=(P_IDENT p ->p :Pair<i32, String>)
+        b=(T_PATH ->Pair
+          a=(PATH ->Pair
+            (PATH_SEG Pair {angle} ->Pair
+              (T_PATH ->i32
+                a=(PATH ->i32
+                  (PATH_SEG i32 ->i32)))
+              (T_PATH ->core::string::String
+                a=(PATH ->core::string::String
+                  (PATH_SEG String ->core::string::String))))))
+        c=(E_CALL :Pair<i32, String>
+          a=(E_PATH ->Pair::default :fn() -> Pair<i32, String> {default}
+            a=(PATH ->Pair
+              (PATH_SEG Pair ->Pair)
+              (PATH_SEG default)))))
+      (STMT_LET
+        a=(P_IDENT p2 ->p2 :Pair<i32, String>)
+        c=(E_METHOD_CALL clone ->Pair::clone :Pair<i32, String>
+          a=(E_PATH ->p :Pair<i32, String>
+            a=(PATH ->p
+              (PATH_SEG p ->p)))))
+      (STMT_EXPR {semi}
+        a=(BLOCK :()
+          (STMT_LET
+            a=(P_IDENT __out {mut} ->__out :RawOut)
+            c=(E_CALL :RawOut
+              a=(E_PATH ->core::io::stdout_raw :fn() -> RawOut {stdout_raw}
+                a=(PATH {global} ->core::io::stdout_raw
+                  (PATH_SEG core ->core)
+                  (PATH_SEG io ->core::io)
+                  (PATH_SEG stdout_raw ->core::io::stdout_raw)))))
+          (STMT_LET
+            a=(P_IDENT __f {mut} ->__f :Formatter)
+            c=(E_CALL :Formatter
+              a=(E_PATH ->Formatter::new :fn(&mut dyn Write) -> Formatter {new}
+                a=(PATH {global} ->core::fmt::Formatter
+                  (PATH_SEG core ->core)
+                  (PATH_SEG fmt ->core::fmt)
+                  (PATH_SEG Formatter ->core::fmt::Formatter)
+                  (PATH_SEG new)))
+              (E_REF {mut} :&mut RawOut
+                a=(E_PATH ->__out :RawOut
+                  a=(PATH ->__out
+                    (PATH_SEG __out ->__out))))))
+          a=(BLOCK :()
+            (STMT_LET
+              a=(P_IDENT __a0 ->__a0 :&Pair<i32, String>)
+              c=(E_REF :&Pair<i32, String>
+                a=(E_PAREN :Pair<i32, String>
+                  a=(E_PATH ->p2 :Pair<i32, String>
+                    a=(PATH ->p2
+                      (PATH_SEG p2 ->p2))))))
+            (STMT_LET
+              a=(P_IDENT __a1 ->__a1 :&bool)
+              c=(E_REF :&bool
+                a=(E_PAREN :bool
+                  a=(E_BINARY op:== ->Pair::eq :bool
+                    a=(E_PATH ->p :Pair<i32, String>
+                      a=(PATH ->p
+                        (PATH_SEG p ->p)))
+                    b=(E_PATH ->p2 :Pair<i32, String>
+                      a=(PATH ->p2
+                        (PATH_SEG p2 ->p2)))))))
+            (STMT_LET
+              a=(P_WILD :Result<(), Error>)
+              c=(E_CALL :Result<(), Error>
+                a=(E_PATH ->Pair::fmt :fn(&Pair<i32, String>, &mut Formatter) -> Result<(), Error> {fmt}
+                  a=(PATH {global} ->core::fmt::Debug
+                    (PATH_SEG core ->core)
+                    (PATH_SEG fmt ->core::fmt)
+                    (PATH_SEG Debug ->core::fmt::Debug)
+                    (PATH_SEG fmt)))
+                (E_PATH ->__a0 :&Pair<i32, String>
+                  a=(PATH ->__a0
+                    (PATH_SEG __a0 ->__a0)))
+                (E_REF {mut} :&mut Formatter
+                  a=(E_PATH ->__f :Formatter
+                    a=(PATH ->__f
+                      (PATH_SEG __f ->__f))))))
+            (STMT_EXPR {semi}
+              a=(E_METHOD_CALL write_str ->Formatter::write_str :Result<(), Error>
+                a=(E_PATH ->__f :Formatter
+                  a=(PATH ->__f
+                    (PATH_SEG __f ->__f)))
+                (E_LIT_STR " " :&str)))
+            (STMT_LET
+              a=(P_WILD :Result<(), Error>)
+              c=(E_CALL :Result<(), Error>
+                a=(E_PATH ->bool::fmt :fn(&bool, &mut Formatter) -> Result<(), Error> {fmt}
+                  a=(PATH {global} ->core::fmt::Display
+                    (PATH_SEG core ->core)
+                    (PATH_SEG fmt ->core::fmt)
+                    (PATH_SEG Display ->core::fmt::Display)
+                    (PATH_SEG fmt)))
+                (E_PATH ->__a1 :&bool
+                  a=(PATH ->__a1
+                    (PATH_SEG __a1 ->__a1)))
+                (E_REF {mut} :&mut Formatter
+                  a=(E_PATH ->__f :Formatter
+                    a=(PATH ->__f
+                      (PATH_SEG __f ->__f))))))
+            (STMT_EXPR {semi}
+              a=(E_METHOD_CALL write_str ->Formatter::write_str :Result<(), Error>
+                a=(E_PATH ->__f :Formatter
+                  a=(PATH ->__f
+                    (PATH_SEG __f ->__f)))
+                (E_LIT_STR "\n" :&str))))))
+      (STMT_LET
+        a=(P_IDENT u ->u :Unit)
+        c=(E_PATH ->Unit :Unit
+          a=(PATH ->Unit
+            (PATH_SEG Unit ->Unit))))
+      (STMT_EXPR {semi}
+        a=(BLOCK :()
+          (STMT_LET
+            a=(P_IDENT __out {mut} ->__out :RawOut)
+            c=(E_CALL :RawOut
+              a=(E_PATH ->core::io::stdout_raw :fn() -> RawOut {stdout_raw}
+                a=(PATH {global} ->core::io::stdout_raw
+                  (PATH_SEG core ->core)
+                  (PATH_SEG io ->core::io)
+                  (PATH_SEG stdout_raw ->core::io::stdout_raw)))))
+          (STMT_LET
+            a=(P_IDENT __f {mut} ->__f :Formatter)
+            c=(E_CALL :Formatter
+              a=(E_PATH ->Formatter::new :fn(&mut dyn Write) -> Formatter {new}
+                a=(PATH {global} ->core::fmt::Formatter
+                  (PATH_SEG core ->core)
+                  (PATH_SEG fmt ->core::fmt)
+                  (PATH_SEG Formatter ->core::fmt::Formatter)
+                  (PATH_SEG new)))
+              (E_REF {mut} :&mut RawOut
+                a=(E_PATH ->__out :RawOut
+                  a=(PATH ->__out
+                    (PATH_SEG __out ->__out))))))
+          a=(BLOCK :()
+            (STMT_LET
+              a=(P_IDENT __a0 ->__a0 :&Unit)
+              c=(E_REF :&Unit
+                a=(E_PAREN :Unit
+                  a=(E_PATH ->u :Unit
+                    a=(PATH ->u
+                      (PATH_SEG u ->u))))))
+            (STMT_LET
+              a=(P_IDENT __a1 ->__a1 :&bool)
+              c=(E_REF :&bool
+                a=(E_PAREN :bool
+                  a=(E_BINARY op:== ->Unit::eq :bool
+                    a=(E_PATH ->u :Unit
+                      a=(PATH ->u
+                        (PATH_SEG u ->u)))
+                    b=(E_CALL :Unit
+                      a=(E_PATH ->Unit::default :fn() -> Unit {default}
+                        a=(PATH ->Unit
+                          (PATH_SEG Unit ->Unit)
+                          (PATH_SEG default))))))))
+            (STMT_LET
+              a=(P_WILD :Result<(), Error>)
+              c=(E_CALL :Result<(), Error>
+                a=(E_PATH ->Unit::fmt :fn(&Unit, &mut Formatter) -> Result<(), Error> {fmt}
+                  a=(PATH {global} ->core::fmt::Debug
+                    (PATH_SEG core ->core)
+                    (PATH_SEG fmt ->core::fmt)
+                    (PATH_SEG Debug ->core::fmt::Debug)
+                    (PATH_SEG fmt)))
+                (E_PATH ->__a0 :&Unit
+                  a=(PATH ->__a0
+                    (PATH_SEG __a0 ->__a0)))
+                (E_REF {mut} :&mut Formatter
+                  a=(E_PATH ->__f :Formatter
+                    a=(PATH ->__f
+                      (PATH_SEG __f ->__f))))))
+            (STMT_EXPR {semi}
+              a=(E_METHOD_CALL write_str ->Formatter::write_str :Result<(), Error>
+                a=(E_PATH ->__f :Formatter
+                  a=(PATH ->__f
+                    (PATH_SEG __f ->__f)))
+                (E_LIT_STR " " :&str)))
+            (STMT_LET
+              a=(P_WILD :Result<(), Error>)
+              c=(E_CALL :Result<(), Error>
+                a=(E_PATH ->bool::fmt :fn(&bool, &mut Formatter) -> Result<(), Error> {fmt}
+                  a=(PATH {global} ->core::fmt::Display
+                    (PATH_SEG core ->core)
+                    (PATH_SEG fmt ->core::fmt)
+                    (PATH_SEG Display ->core::fmt::Display)
+                    (PATH_SEG fmt)))
+                (E_PATH ->__a1 :&bool
+                  a=(PATH ->__a1
+                    (PATH_SEG __a1 ->__a1)))
+                (E_REF {mut} :&mut Formatter
+                  a=(E_PATH ->__f :Formatter
+                    a=(PATH ->__f
+                      (PATH_SEG __f ->__f))))))
+            (STMT_EXPR {semi}
+              a=(E_METHOD_CALL write_str ->Formatter::write_str :Result<(), Error>
+                a=(E_PATH ->__f :Formatter
+                  a=(PATH ->__f
+                    (PATH_SEG __f ->__f)))
+                (E_LIT_STR "\n" :&str))))))
+      (STMT_LET
+        a=(P_IDENT s ->s :Shape<i32>)
+        b=(T_PATH ->Shape
+          a=(PATH ->Shape
+            (PATH_SEG Shape {angle} ->Shape
+              (T_PATH ->i32
+                a=(PATH ->i32
+                  (PATH_SEG i32 ->i32))))))
+        c=(E_STRUCT ->Shape::Rect :Shape<i32>
+          a=(PATH ->Shape::Rect
+            (PATH_SEG Shape ->Shape)
+            (PATH_SEG Rect ->Shape::Rect))
+          (FIELD_INIT w ->Shape::Rect::w :i32
+            a=(E_LIT_INT "1" #1 :i32))
+          (FIELD_INIT h ->Shape::Rect::h :i32
+            a=(E_LIT_INT "2" #2 :i32))))
+      (STMT_LET
+        a=(P_IDENT t ->t :Shape<i32>)
+        c=(E_CALL :Shape<i32>
+          a=(E_PATH ->Shape::Circle :fn(i32) -> Shape<i32> {Circle::<i32>}
+            a=(PATH ->Shape::Circle
+              (PATH_SEG Shape ->Shape)
+              (PATH_SEG Circle ->Shape::Circle)))
+          (E_LIT_INT "3" #3 :i32)))
+      (STMT_LET
+        a=(P_IDENT e0 ->e0 :Shape<i32>)
+        b=(T_PATH ->Shape
+          a=(PATH ->Shape
+            (PATH_SEG Shape {angle} ->Shape
+              (T_PATH ->i32
+                a=(PATH ->i32
+                  (PATH_SEG i32 ->i32))))))
+        c=(E_PATH ->Shape::Empty :Shape<i32>
+          a=(PATH ->Shape::Empty
+            (PATH_SEG Shape ->Shape)
+            (PATH_SEG Empty ->Shape::Empty))))
+      (STMT_EXPR {semi}
+        a=(BLOCK :()
+          (STMT_LET
+            a=(P_IDENT __out {mut} ->__out :RawOut)
+            c=(E_CALL :RawOut
+              a=(E_PATH ->core::io::stdout_raw :fn() -> RawOut {stdout_raw}
+                a=(PATH {global} ->core::io::stdout_raw
+                  (PATH_SEG core ->core)
+                  (PATH_SEG io ->core::io)
+                  (PATH_SEG stdout_raw ->core::io::stdout_raw)))))
+          (STMT_LET
+            a=(P_IDENT __f {mut} ->__f :Formatter)
+            c=(E_CALL :Formatter
+              a=(E_PATH ->Formatter::new :fn(&mut dyn Write) -> Formatter {new}
+                a=(PATH {global} ->core::fmt::Formatter
+                  (PATH_SEG core ->core)
+                  (PATH_SEG fmt ->core::fmt)
+                  (PATH_SEG Formatter ->core::fmt::Formatter)
+                  (PATH_SEG new)))
+              (E_REF {mut} :&mut RawOut
+                a=(E_PATH ->__out :RawOut
+                  a=(PATH ->__out
+                    (PATH_SEG __out ->__out))))))
+          a=(BLOCK :()
+            (STMT_LET
+              a=(P_IDENT __a0 ->__a0 :&Shape<i32>)
+              c=(E_REF :&Shape<i32>
+                a=(E_PAREN :Shape<i32>
+                  a=(E_PATH ->s :Shape<i32>
+                    a=(PATH ->s
+                      (PATH_SEG s ->s))))))
+            (STMT_LET
+              a=(P_IDENT __a1 ->__a1 :&bool)
+              c=(E_REF :&bool
+                a=(E_PAREN :bool
+                  a=(E_BINARY op:< ->core::cmp::PartialOrd::lt :bool
+                    a=(E_PATH ->s :Shape<i32>
+                      a=(PATH ->s
+                        (PATH_SEG s ->s)))
+                    b=(E_PATH ->t :Shape<i32>
+                      a=(PATH ->t
+                        (PATH_SEG t ->t)))))))
+            (STMT_LET
+              a=(P_IDENT __a2 ->__a2 :&bool)
+              c=(E_REF :&bool
+                a=(E_PAREN :bool
+                  a=(E_BINARY op:== ->Shape::eq :bool
+                    a=(E_PATH ->e0 :Shape<i32>
+                      a=(PATH ->e0
+                        (PATH_SEG e0 ->e0)))
+                    b=(E_PATH ->Shape::Empty :Shape<i32>
+                      a=(PATH ->Shape::Empty
+                        (PATH_SEG Shape ->Shape)
+                        (PATH_SEG Empty ->Shape::Empty)))))))
+            (STMT_LET
+              a=(P_WILD :Result<(), Error>)
+              c=(E_CALL :Result<(), Error>
+                a=(E_PATH ->Shape::fmt :fn(&Shape<i32>, &mut Formatter) -> Result<(), Error> {fmt}
+                  a=(PATH {global} ->core::fmt::Debug
+                    (PATH_SEG core ->core)
+                    (PATH_SEG fmt ->core::fmt)
+                    (PATH_SEG Debug ->core::fmt::Debug)
+                    (PATH_SEG fmt)))
+                (E_PATH ->__a0 :&Shape<i32>
+                  a=(PATH ->__a0
+                    (PATH_SEG __a0 ->__a0)))
+                (E_REF {mut} :&mut Formatter
+                  a=(E_PATH ->__f :Formatter
+                    a=(PATH ->__f
+                      (PATH_SEG __f ->__f))))))
+            (STMT_EXPR {semi}
+              a=(E_METHOD_CALL write_str ->Formatter::write_str :Result<(), Error>
+                a=(E_PATH ->__f :Formatter
+                  a=(PATH ->__f
+                    (PATH_SEG __f ->__f)))
+                (E_LIT_STR " " :&str)))
+            (STMT_LET
+              a=(P_WILD :Result<(), Error>)
+              c=(E_CALL :Result<(), Error>
+                a=(E_PATH ->bool::fmt :fn(&bool, &mut Formatter) -> Result<(), Error> {fmt}
+                  a=(PATH {global} ->core::fmt::Display
+                    (PATH_SEG core ->core)
+                    (PATH_SEG fmt ->core::fmt)
+                    (PATH_SEG Display ->core::fmt::Display)
+                    (PATH_SEG fmt)))
+                (E_PATH ->__a1 :&bool
+                  a=(PATH ->__a1
+                    (PATH_SEG __a1 ->__a1)))
+                (E_REF {mut} :&mut Formatter
+                  a=(E_PATH ->__f :Formatter
+                    a=(PATH ->__f
+                      (PATH_SEG __f ->__f))))))
+            (STMT_EXPR {semi}
+              a=(E_METHOD_CALL write_str ->Formatter::write_str :Result<(), Error>
+                a=(E_PATH ->__f :Formatter
+                  a=(PATH ->__f
+                    (PATH_SEG __f ->__f)))
+                (E_LIT_STR " " :&str)))
+            (STMT_LET
+              a=(P_WILD :Result<(), Error>)
+              c=(E_CALL :Result<(), Error>
+                a=(E_PATH ->bool::fmt :fn(&bool, &mut Formatter) -> Result<(), Error> {fmt}
+                  a=(PATH {global} ->core::fmt::Display
+                    (PATH_SEG core ->core)
+                    (PATH_SEG fmt ->core::fmt)
+                    (PATH_SEG Display ->core::fmt::Display)
+                    (PATH_SEG fmt)))
+                (E_PATH ->__a2 :&bool
+                  a=(PATH ->__a2
+                    (PATH_SEG __a2 ->__a2)))
+                (E_REF {mut} :&mut Formatter
+                  a=(E_PATH ->__f :Formatter
+                    a=(PATH ->__f
+                      (PATH_SEG __f ->__f))))))
+            (STMT_EXPR {semi}
+              a=(E_METHOD_CALL write_str ->Formatter::write_str :Result<(), Error>
+                a=(E_PATH ->__f :Formatter
+                  a=(PATH ->__f
+                    (PATH_SEG __f ->__f)))
+                (E_LIT_STR "\n" :&str))))))
+      (STMT_LET
+        a=(P_IDENT m ->m :Mode)
+        c=(E_CALL :Mode
+          a=(E_PATH ->Mode::default :fn() -> Mode {default}
+            a=(PATH ->Mode
+              (PATH_SEG Mode ->Mode)
+              (PATH_SEG default)))))
+      (STMT_EXPR {semi}
+        a=(BLOCK :()
+          (STMT_LET
+            a=(P_IDENT __out {mut} ->__out :RawOut)
+            c=(E_CALL :RawOut
+              a=(E_PATH ->core::io::stdout_raw :fn() -> RawOut {stdout_raw}
+                a=(PATH {global} ->core::io::stdout_raw
+                  (PATH_SEG core ->core)
+                  (PATH_SEG io ->core::io)
+                  (PATH_SEG stdout_raw ->core::io::stdout_raw)))))
+          (STMT_LET
+            a=(P_IDENT __f {mut} ->__f :Formatter)
+            c=(E_CALL :Formatter
+              a=(E_PATH ->Formatter::new :fn(&mut dyn Write) -> Formatter {new}
+                a=(PATH {global} ->core::fmt::Formatter
+                  (PATH_SEG core ->core)
+                  (PATH_SEG fmt ->core::fmt)
+                  (PATH_SEG Formatter ->core::fmt::Formatter)
+                  (PATH_SEG new)))
+              (E_REF {mut} :&mut RawOut
+                a=(E_PATH ->__out :RawOut
+                  a=(PATH ->__out
+                    (PATH_SEG __out ->__out))))))
+          a=(BLOCK :()
+            (STMT_LET
+              a=(P_IDENT __a0 ->__a0 :&Mode)
+              c=(E_REF :&Mode
+                a=(E_PAREN :Mode
+                  a=(E_PATH ->m :Mode
+                    a=(PATH ->m
+                      (PATH_SEG m ->m))))))
+            (STMT_LET
+              a=(P_WILD :Result<(), Error>)
+              c=(E_CALL :Result<(), Error>
+                a=(E_PATH ->Mode::fmt :fn(&Mode, &mut Formatter) -> Result<(), Error> {fmt}
+                  a=(PATH {global} ->core::fmt::Debug
+                    (PATH_SEG core ->core)
+                    (PATH_SEG fmt ->core::fmt)
+                    (PATH_SEG Debug ->core::fmt::Debug)
+                    (PATH_SEG fmt)))
+                (E_PATH ->__a0 :&Mode
+                  a=(PATH ->__a0
+                    (PATH_SEG __a0 ->__a0)))
+                (E_REF {mut} :&mut Formatter
+                  a=(E_PATH ->__f :Formatter
+                    a=(PATH ->__f
+                      (PATH_SEG __f ->__f))))))
+            (STMT_EXPR {semi}
+              a=(E_METHOD_CALL write_str ->Formatter::write_str :Result<(), Error>
+                a=(E_PATH ->__f :Formatter
+                  a=(PATH ->__f
+                    (PATH_SEG __f ->__f)))
+                (E_LIT_STR "\n" :&str))))))
+      (STMT_LET
+        a=(P_IDENT v {mut} ->v :Vec<Point>)
+        c=(E_CALL :Vec<Point>
+          a=(E_PATH ->Vec::from_array :fn([Point; 3]) -> Vec<Point> {from_array::<Point, 3>}
+            a=(PATH {global} ->core::vec::Vec
+              (PATH_SEG core ->core)
+              (PATH_SEG vec ->core::vec)
+              (PATH_SEG Vec ->core::vec::Vec)
+              (PATH_SEG from_array)))
+          (E_ARRAY :[Point; 3]
+            (E_STRUCT ->Point :Point
+              a=(PATH ->Point
+                (PATH_SEG Point ->Point))
+              (FIELD_INIT x ->Point::x :i32
+                a=(E_LIT_INT "2" #2 :i32))
+              (FIELD_INIT y ->Point::y :i32
+                a=(E_LIT_INT "1" #1 :i32)))
+            (E_STRUCT ->Point :Point
+              a=(PATH ->Point
+                (PATH_SEG Point ->Point))
+              (FIELD_INIT x ->Point::x :i32
+                a=(E_LIT_INT "1" #1 :i32))
+              (FIELD_INIT y ->Point::y :i32
+                a=(E_LIT_INT "5" #5 :i32)))
+            (E_STRUCT ->Point :Point
+              a=(PATH ->Point
+                (PATH_SEG Point ->Point))
+              (FIELD_INIT x ->Point::x :i32
+                a=(E_LIT_INT "1" #1 :i32))
+              (FIELD_INIT y ->Point::y :i32
+                a=(E_LIT_INT "2" #2 :i32))))))
+      (STMT_EXPR {semi}
+        a=(E_METHOD_CALL sort -><impl>::sort :()
+          a=(E_PATH ->v :Vec<Point>
+            a=(PATH ->v
+              (PATH_SEG v ->v)))))
+      (STMT_EXPR {semi}
+        a=(BLOCK :()
+          (STMT_LET
+            a=(P_IDENT __out {mut} ->__out :RawOut)
+            c=(E_CALL :RawOut
+              a=(E_PATH ->core::io::stdout_raw :fn() -> RawOut {stdout_raw}
+                a=(PATH {global} ->core::io::stdout_raw
+                  (PATH_SEG core ->core)
+                  (PATH_SEG io ->core::io)
+                  (PATH_SEG stdout_raw ->core::io::stdout_raw)))))
+          (STMT_LET
+            a=(P_IDENT __f {mut} ->__f :Formatter)
+            c=(E_CALL :Formatter
+              a=(E_PATH ->Formatter::new :fn(&mut dyn Write) -> Formatter {new}
+                a=(PATH {global} ->core::fmt::Formatter
+                  (PATH_SEG core ->core)
+                  (PATH_SEG fmt ->core::fmt)
+                  (PATH_SEG Formatter ->core::fmt::Formatter)
+                  (PATH_SEG new)))
+              (E_REF {mut} :&mut RawOut
+                a=(E_PATH ->__out :RawOut
+                  a=(PATH ->__out
+                    (PATH_SEG __out ->__out))))))
+          a=(BLOCK :()
+            (STMT_LET
+              a=(P_IDENT __a0 ->__a0 :&Vec<Point>)
+              c=(E_REF :&Vec<Point>
+                a=(E_PAREN :Vec<Point>
+                  a=(E_PATH ->v :Vec<Point>
+                    a=(PATH ->v
+                      (PATH_SEG v ->v))))))
+            (STMT_LET
+              a=(P_IDENT __a1 ->__a1 :&Option<&Point>)
+              c=(E_REF :&Option<&Point>
+                a=(E_PAREN :Option<&Point>
+                  a=(E_METHOD_CALL max ->core::iter::Iterator::max :Option<&Point>
+                    a=(E_METHOD_CALL iter ->Vec::iter :Iter<Point>
+                      a=(E_PATH ->v :Vec<Point>
+                        a=(PATH ->v
+                          (PATH_SEG v ->v))))))))
+            (STMT_LET
+              a=(P_WILD :Result<(), Error>)
+              c=(E_CALL :Result<(), Error>
+                a=(E_PATH ->Vec::fmt :fn(&Vec<Point>, &mut Formatter) -> Result<(), Error> {fmt}
+                  a=(PATH {global} ->core::fmt::Debug
+                    (PATH_SEG core ->core)
+                    (PATH_SEG fmt ->core::fmt)
+                    (PATH_SEG Debug ->core::fmt::Debug)
+                    (PATH_SEG fmt)))
+                (E_PATH ->__a0 :&Vec<Point>
+                  a=(PATH ->__a0
+                    (PATH_SEG __a0 ->__a0)))
+                (E_REF {mut} :&mut Formatter
+                  a=(E_PATH ->__f :Formatter
+                    a=(PATH ->__f
+                      (PATH_SEG __f ->__f))))))
+            (STMT_EXPR {semi}
+              a=(E_METHOD_CALL write_str ->Formatter::write_str :Result<(), Error>
+                a=(E_PATH ->__f :Formatter
+                  a=(PATH ->__f
+                    (PATH_SEG __f ->__f)))
+                (E_LIT_STR " " :&str)))
+            (STMT_LET
+              a=(P_WILD :Result<(), Error>)
+              c=(E_CALL :Result<(), Error>
+                a=(E_PATH ->Option::fmt :fn(&Option<&Point>, &mut Formatter) -> Result<(), Error> {fmt}
+                  a=(PATH {global} ->core::fmt::Debug
+                    (PATH_SEG core ->core)
+                    (PATH_SEG fmt ->core::fmt)
+                    (PATH_SEG Debug ->core::fmt::Debug)
+                    (PATH_SEG fmt)))
+                (E_PATH ->__a1 :&Option<&Point>
+                  a=(PATH ->__a1
+                    (PATH_SEG __a1 ->__a1)))
+                (E_REF {mut} :&mut Formatter
+                  a=(E_PATH ->__f :Formatter
+                    a=(PATH ->__f
+                      (PATH_SEG __f ->__f))))))
+            (STMT_EXPR {semi}
+              a=(E_METHOD_CALL write_str ->Formatter::write_str :Result<(), Error>
+                a=(E_PATH ->__f :Formatter
+                  a=(PATH ->__f
+                    (PATH_SEG __f ->__f)))
+                (E_LIT_STR "\n" :&str))))))
+      (STMT_LET
+        a=(P_IDENT ns {mut} ->ns :Vec<Named>)
+        c=(E_CALL :Vec<Named>
+          a=(E_PATH ->Vec::from_array :fn([Named; 2]) -> Vec<Named> {from_array::<Named, 2>}
+            a=(PATH {global} ->core::vec::Vec
+              (PATH_SEG core ->core)
+              (PATH_SEG vec ->core::vec)
+              (PATH_SEG Vec ->core::vec::Vec)
+              (PATH_SEG from_array)))
+          (E_ARRAY :[Named; 2]
+            (E_CALL :Named
+              a=(E_PATH ->Named::default :fn() -> Named {default}
+                a=(PATH ->Named
+                  (PATH_SEG Named ->Named)
+                  (PATH_SEG default))))
+            (E_STRUCT ->Named :Named
+              a=(PATH ->Named
+                (PATH_SEG Named ->Named))
+              (FIELD_INIT name ->Named::name :String
+                a=(E_CALL :String
+                  a=(E_PATH ->String::from :fn(&str) -> String {from::<&str>}
+                    a=(PATH ->core::string::String
+                      (PATH_SEG String ->core::string::String)
+                      (PATH_SEG from)))
+                  (E_LIT_STR "z" :&str)))
+              (FIELD_INIT tags ->Named::tags :Vec<i32>
+                a=(E_CALL :Vec<i32>
+                  a=(E_PATH ->Vec::from_array :fn([i32; 1]) -> Vec<i32> {from_array::<i32, 1>}
+                    a=(PATH {global} ->core::vec::Vec
+                      (PATH_SEG core ->core)
+                      (PATH_SEG vec ->core::vec)
+                      (PATH_SEG Vec ->core::vec::Vec)
+                      (PATH_SEG from_array)))
+                  (E_ARRAY :[i32; 1]
+                    (E_LIT_INT "1" #1 :i32))))
+              (FIELD_INIT p ->Named::p :Point
+                a=(E_PATH ->a :Point
+                  a=(PATH ->a
+                    (PATH_SEG a ->a))))))))
+      (STMT_EXPR {semi}
+        a=(E_METHOD_CALL sort -><impl>::sort :()
+          a=(E_PATH ->ns :Vec<Named>
+            a=(PATH ->ns
+              (PATH_SEG ns ->ns)))))
+      (STMT_LET
+        a=(P_IDENT n2 ->n2 :Vec<Named>)
+        c=(E_METHOD_CALL clone ->Vec::clone :Vec<Named>
+          a=(E_PATH ->ns :Vec<Named>
+            a=(PATH ->ns
+              (PATH_SEG ns ->ns)))))
+      (STMT_EXPR {semi}
+        a=(BLOCK :()
+          (STMT_LET
+            a=(P_IDENT __out {mut} ->__out :RawOut)
+            c=(E_CALL :RawOut
+              a=(E_PATH ->core::io::stdout_raw :fn() -> RawOut {stdout_raw}
+                a=(PATH {global} ->core::io::stdout_raw
+                  (PATH_SEG core ->core)
+                  (PATH_SEG io ->core::io)
+                  (PATH_SEG stdout_raw ->core::io::stdout_raw)))))
+          (STMT_LET
+            a=(P_IDENT __f {mut} ->__f :Formatter)
+            c=(E_CALL :Formatter
+              a=(E_PATH ->Formatter::new :fn(&mut dyn Write) -> Formatter {new}
+                a=(PATH {global} ->core::fmt::Formatter
+                  (PATH_SEG core ->core)
+                  (PATH_SEG fmt ->core::fmt)
+                  (PATH_SEG Formatter ->core::fmt::Formatter)
+                  (PATH_SEG new)))
+              (E_REF {mut} :&mut RawOut
+                a=(E_PATH ->__out :RawOut
+                  a=(PATH ->__out
+                    (PATH_SEG __out ->__out))))))
+          a=(BLOCK :()
+            (STMT_LET
+              a=(P_IDENT __a0 ->__a0 :&bool)
+              c=(E_REF :&bool
+                a=(E_PAREN :bool
+                  a=(E_BINARY op:== ->Vec::eq :bool
+                    a=(E_PATH ->ns :Vec<Named>
+                      a=(PATH ->ns
+                        (PATH_SEG ns ->ns)))
+                    b=(E_PATH ->n2 :Vec<Named>
+                      a=(PATH ->n2
+                        (PATH_SEG n2 ->n2)))))))
+            (STMT_LET
+              a=(P_WILD :Result<(), Error>)
+              c=(E_CALL :Result<(), Error>
+                a=(E_PATH ->bool::fmt :fn(&bool, &mut Formatter) -> Result<(), Error> {fmt}
+                  a=(PATH {global} ->core::fmt::Display
+                    (PATH_SEG core ->core)
+                    (PATH_SEG fmt ->core::fmt)
+                    (PATH_SEG Display ->core::fmt::Display)
+                    (PATH_SEG fmt)))
+                (E_PATH ->__a0 :&bool
+                  a=(PATH ->__a0
+                    (PATH_SEG __a0 ->__a0)))
+                (E_REF {mut} :&mut Formatter
+                  a=(E_PATH ->__f :Formatter
+                    a=(PATH ->__f
+                      (PATH_SEG __f ->__f))))))
+            (STMT_EXPR {semi}
+              a=(E_METHOD_CALL write_str ->Formatter::write_str :Result<(), Error>
+                a=(E_PATH ->__f :Formatter
+                  a=(PATH ->__f
+                    (PATH_SEG __f ->__f)))
+                (E_LIT_STR "\n" :&str)))))))))

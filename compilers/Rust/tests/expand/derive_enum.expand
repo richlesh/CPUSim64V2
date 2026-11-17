@@ -1,0 +1,2406 @@
+(CRATE
+  (ITEM_ENUM Color
+    @(ATTR derive {delim_paren} toks:13 Debug , Clone , Copy , PartialEq , Eq , PartialOrd , Ord)
+    (VARIANT Red)
+    (VARIANT Green)
+    (VARIANT Blue))
+  (ITEM_IMPL
+    b=(T_PATH
+      a=(PATH
+        (PATH_SEG Color)))
+    c=(PATH {global}
+      (PATH_SEG core)
+      (PATH_SEG fmt)
+      (PATH_SEG Debug))
+    (ITEM_FN fmt
+      b=(T_PATH
+        a=(PATH {global}
+          (PATH_SEG core)
+          (PATH_SEG fmt)
+          (PATH_SEG Result)))
+      c=(BLOCK
+        a=(E_MATCH
+          a=(E_DEREF
+            a=(E_PATH
+              a=(PATH
+                (PATH_SEG self))))
+          (ARM
+            a=(P_PATH
+              a=(PATH
+                (PATH_SEG Color)
+                (PATH_SEG Red)))
+            c=(E_METHOD_CALL write_str
+              a=(E_PATH
+                a=(PATH
+                  (PATH_SEG f)))
+              (E_LIT_STR "Red")))
+          (ARM
+            a=(P_PATH
+              a=(PATH
+                (PATH_SEG Color)
+                (PATH_SEG Green)))
+            c=(E_METHOD_CALL write_str
+              a=(E_PATH
+                a=(PATH
+                  (PATH_SEG f)))
+              (E_LIT_STR "Green")))
+          (ARM
+            a=(P_PATH
+              a=(PATH
+                (PATH_SEG Color)
+                (PATH_SEG Blue)))
+            c=(E_METHOD_CALL write_str
+              a=(E_PATH
+                a=(PATH
+                  (PATH_SEG f)))
+              (E_LIT_STR "Blue")))))
+      (SELF_PARAM {ref})
+      (PARAM
+        a=(P_IDENT f)
+        b=(T_REF {mut}
+          a=(T_PATH
+            a=(PATH {global}
+              (PATH_SEG core)
+              (PATH_SEG fmt)
+              (PATH_SEG Formatter {angle}
+                (LIFETIME '_))))))))
+  (ITEM_IMPL
+    b=(T_PATH
+      a=(PATH
+        (PATH_SEG Color)))
+    c=(PATH {global}
+      (PATH_SEG core)
+      (PATH_SEG clone)
+      (PATH_SEG Clone))
+    (ITEM_FN clone
+      b=(T_PATH
+        a=(PATH
+          (PATH_SEG Self)))
+      c=(BLOCK
+        a=(E_MATCH
+          a=(E_DEREF
+            a=(E_PATH
+              a=(PATH
+                (PATH_SEG self))))
+          (ARM
+            a=(P_PATH
+              a=(PATH
+                (PATH_SEG Color)
+                (PATH_SEG Red)))
+            c=(E_PATH
+              a=(PATH
+                (PATH_SEG Color)
+                (PATH_SEG Red))))
+          (ARM
+            a=(P_PATH
+              a=(PATH
+                (PATH_SEG Color)
+                (PATH_SEG Green)))
+            c=(E_PATH
+              a=(PATH
+                (PATH_SEG Color)
+                (PATH_SEG Green))))
+          (ARM
+            a=(P_PATH
+              a=(PATH
+                (PATH_SEG Color)
+                (PATH_SEG Blue)))
+            c=(E_PATH
+              a=(PATH
+                (PATH_SEG Color)
+                (PATH_SEG Blue))))))
+      (SELF_PARAM {ref})))
+  (ITEM_IMPL
+    b=(T_PATH
+      a=(PATH
+        (PATH_SEG Color)))
+    c=(PATH {global}
+      (PATH_SEG core)
+      (PATH_SEG marker)
+      (PATH_SEG Copy)))
+  (ITEM_IMPL
+    b=(T_PATH
+      a=(PATH
+        (PATH_SEG Color)))
+    c=(PATH {global}
+      (PATH_SEG core)
+      (PATH_SEG cmp)
+      (PATH_SEG PartialEq))
+    (ITEM_FN eq
+      b=(T_PATH
+        a=(PATH
+          (PATH_SEG bool)))
+      c=(BLOCK
+        a=(E_MATCH
+          a=(E_DEREF
+            a=(E_PATH
+              a=(PATH
+                (PATH_SEG self))))
+          (ARM
+            a=(P_PATH
+              a=(PATH
+                (PATH_SEG Color)
+                (PATH_SEG Red)))
+            c=(E_MATCH
+              a=(E_DEREF
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG other))))
+              (ARM
+                a=(P_PATH
+                  a=(PATH
+                    (PATH_SEG Color)
+                    (PATH_SEG Red)))
+                c=(E_LIT_BOOL #1))
+              (ARM
+                a=(P_WILD)
+                c=(E_LIT_BOOL #0))))
+          (ARM
+            a=(P_PATH
+              a=(PATH
+                (PATH_SEG Color)
+                (PATH_SEG Green)))
+            c=(E_MATCH
+              a=(E_DEREF
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG other))))
+              (ARM
+                a=(P_PATH
+                  a=(PATH
+                    (PATH_SEG Color)
+                    (PATH_SEG Green)))
+                c=(E_LIT_BOOL #1))
+              (ARM
+                a=(P_WILD)
+                c=(E_LIT_BOOL #0))))
+          (ARM
+            a=(P_PATH
+              a=(PATH
+                (PATH_SEG Color)
+                (PATH_SEG Blue)))
+            c=(E_MATCH
+              a=(E_DEREF
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG other))))
+              (ARM
+                a=(P_PATH
+                  a=(PATH
+                    (PATH_SEG Color)
+                    (PATH_SEG Blue)))
+                c=(E_LIT_BOOL #1))
+              (ARM
+                a=(P_WILD)
+                c=(E_LIT_BOOL #0))))))
+      (SELF_PARAM {ref})
+      (PARAM
+        a=(P_IDENT other)
+        b=(T_REF
+          a=(T_PATH
+            a=(PATH
+              (PATH_SEG Self)))))))
+  (ITEM_IMPL
+    b=(T_PATH
+      a=(PATH
+        (PATH_SEG Color)))
+    c=(PATH {global}
+      (PATH_SEG core)
+      (PATH_SEG cmp)
+      (PATH_SEG Eq)))
+  (ITEM_IMPL
+    b=(T_PATH
+      a=(PATH
+        (PATH_SEG Color)))
+    c=(PATH {global}
+      (PATH_SEG core)
+      (PATH_SEG cmp)
+      (PATH_SEG PartialOrd))
+    (ITEM_FN partial_cmp
+      b=(T_PATH
+        a=(PATH {global}
+          (PATH_SEG core)
+          (PATH_SEG option)
+          (PATH_SEG Option {angle}
+            (T_PATH
+              a=(PATH {global}
+                (PATH_SEG core)
+                (PATH_SEG cmp)
+                (PATH_SEG Ordering))))))
+      c=(BLOCK
+        (STMT_LET
+          a=(P_IDENT __si)
+          b=(T_PATH
+            a=(PATH
+              (PATH_SEG isize)))
+          c=(E_MATCH
+            a=(E_DEREF
+              a=(E_PATH
+                a=(PATH
+                  (PATH_SEG self))))
+            (ARM
+              a=(P_PATH
+                a=(PATH
+                  (PATH_SEG Color)
+                  (PATH_SEG Red)))
+              c=(E_LIT_INT isize "0" #0))
+            (ARM
+              a=(P_PATH
+                a=(PATH
+                  (PATH_SEG Color)
+                  (PATH_SEG Green)))
+              c=(E_LIT_INT isize "1" #1))
+            (ARM
+              a=(P_PATH
+                a=(PATH
+                  (PATH_SEG Color)
+                  (PATH_SEG Blue)))
+              c=(E_LIT_INT isize "2" #2))))
+        (STMT_LET
+          a=(P_IDENT __oi)
+          b=(T_PATH
+            a=(PATH
+              (PATH_SEG isize)))
+          c=(E_MATCH
+            a=(E_DEREF
+              a=(E_PATH
+                a=(PATH
+                  (PATH_SEG other))))
+            (ARM
+              a=(P_PATH
+                a=(PATH
+                  (PATH_SEG Color)
+                  (PATH_SEG Red)))
+              c=(E_LIT_INT isize "0" #0))
+            (ARM
+              a=(P_PATH
+                a=(PATH
+                  (PATH_SEG Color)
+                  (PATH_SEG Green)))
+              c=(E_LIT_INT isize "1" #1))
+            (ARM
+              a=(P_PATH
+                a=(PATH
+                  (PATH_SEG Color)
+                  (PATH_SEG Blue)))
+              c=(E_LIT_INT isize "2" #2))))
+        a=(E_IF
+          a=(E_BINARY op:!=
+            a=(E_PATH
+              a=(PATH
+                (PATH_SEG __si)))
+            b=(E_PATH
+              a=(PATH
+                (PATH_SEG __oi))))
+          b=(BLOCK
+            a=(E_CALL
+              a=(E_PATH
+                a=(PATH {global}
+                  (PATH_SEG core)
+                  (PATH_SEG cmp)
+                  (PATH_SEG PartialOrd)
+                  (PATH_SEG partial_cmp)))
+              (E_REF
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG __si))))
+              (E_REF
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG __oi))))))
+          c=(BLOCK
+            a=(E_MATCH
+              a=(E_DEREF
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG self))))
+              (ARM
+                a=(P_PATH
+                  a=(PATH
+                    (PATH_SEG Color)
+                    (PATH_SEG Red)))
+                c=(E_MATCH
+                  a=(E_DEREF
+                    a=(E_PATH
+                      a=(PATH
+                        (PATH_SEG other))))
+                  (ARM
+                    a=(P_PATH
+                      a=(PATH
+                        (PATH_SEG Color)
+                        (PATH_SEG Red)))
+                    c=(E_CALL
+                      a=(E_PATH
+                        a=(PATH {global}
+                          (PATH_SEG core)
+                          (PATH_SEG option)
+                          (PATH_SEG Option)
+                          (PATH_SEG Some)))
+                      (E_PATH
+                        a=(PATH {global}
+                          (PATH_SEG core)
+                          (PATH_SEG cmp)
+                          (PATH_SEG Ordering)
+                          (PATH_SEG Equal)))))
+                  (ARM
+                    a=(P_WILD)
+                    c=(E_CALL
+                      a=(E_PATH
+                        a=(PATH {global}
+                          (PATH_SEG core)
+                          (PATH_SEG option)
+                          (PATH_SEG Option)
+                          (PATH_SEG Some)))
+                      (E_PATH
+                        a=(PATH {global}
+                          (PATH_SEG core)
+                          (PATH_SEG cmp)
+                          (PATH_SEG Ordering)
+                          (PATH_SEG Equal)))))))
+              (ARM
+                a=(P_PATH
+                  a=(PATH
+                    (PATH_SEG Color)
+                    (PATH_SEG Green)))
+                c=(E_MATCH
+                  a=(E_DEREF
+                    a=(E_PATH
+                      a=(PATH
+                        (PATH_SEG other))))
+                  (ARM
+                    a=(P_PATH
+                      a=(PATH
+                        (PATH_SEG Color)
+                        (PATH_SEG Green)))
+                    c=(E_CALL
+                      a=(E_PATH
+                        a=(PATH {global}
+                          (PATH_SEG core)
+                          (PATH_SEG option)
+                          (PATH_SEG Option)
+                          (PATH_SEG Some)))
+                      (E_PATH
+                        a=(PATH {global}
+                          (PATH_SEG core)
+                          (PATH_SEG cmp)
+                          (PATH_SEG Ordering)
+                          (PATH_SEG Equal)))))
+                  (ARM
+                    a=(P_WILD)
+                    c=(E_CALL
+                      a=(E_PATH
+                        a=(PATH {global}
+                          (PATH_SEG core)
+                          (PATH_SEG option)
+                          (PATH_SEG Option)
+                          (PATH_SEG Some)))
+                      (E_PATH
+                        a=(PATH {global}
+                          (PATH_SEG core)
+                          (PATH_SEG cmp)
+                          (PATH_SEG Ordering)
+                          (PATH_SEG Equal)))))))
+              (ARM
+                a=(P_PATH
+                  a=(PATH
+                    (PATH_SEG Color)
+                    (PATH_SEG Blue)))
+                c=(E_MATCH
+                  a=(E_DEREF
+                    a=(E_PATH
+                      a=(PATH
+                        (PATH_SEG other))))
+                  (ARM
+                    a=(P_PATH
+                      a=(PATH
+                        (PATH_SEG Color)
+                        (PATH_SEG Blue)))
+                    c=(E_CALL
+                      a=(E_PATH
+                        a=(PATH {global}
+                          (PATH_SEG core)
+                          (PATH_SEG option)
+                          (PATH_SEG Option)
+                          (PATH_SEG Some)))
+                      (E_PATH
+                        a=(PATH {global}
+                          (PATH_SEG core)
+                          (PATH_SEG cmp)
+                          (PATH_SEG Ordering)
+                          (PATH_SEG Equal)))))
+                  (ARM
+                    a=(P_WILD)
+                    c=(E_CALL
+                      a=(E_PATH
+                        a=(PATH {global}
+                          (PATH_SEG core)
+                          (PATH_SEG option)
+                          (PATH_SEG Option)
+                          (PATH_SEG Some)))
+                      (E_PATH
+                        a=(PATH {global}
+                          (PATH_SEG core)
+                          (PATH_SEG cmp)
+                          (PATH_SEG Ordering)
+                          (PATH_SEG Equal)))))))))))
+      (SELF_PARAM {ref})
+      (PARAM
+        a=(P_IDENT other)
+        b=(T_REF
+          a=(T_PATH
+            a=(PATH
+              (PATH_SEG Self)))))))
+  (ITEM_IMPL
+    b=(T_PATH
+      a=(PATH
+        (PATH_SEG Color)))
+    c=(PATH {global}
+      (PATH_SEG core)
+      (PATH_SEG cmp)
+      (PATH_SEG Ord))
+    (ITEM_FN cmp
+      b=(T_PATH
+        a=(PATH {global}
+          (PATH_SEG core)
+          (PATH_SEG cmp)
+          (PATH_SEG Ordering)))
+      c=(BLOCK
+        (STMT_LET
+          a=(P_IDENT __si)
+          b=(T_PATH
+            a=(PATH
+              (PATH_SEG isize)))
+          c=(E_MATCH
+            a=(E_DEREF
+              a=(E_PATH
+                a=(PATH
+                  (PATH_SEG self))))
+            (ARM
+              a=(P_PATH
+                a=(PATH
+                  (PATH_SEG Color)
+                  (PATH_SEG Red)))
+              c=(E_LIT_INT isize "0" #0))
+            (ARM
+              a=(P_PATH
+                a=(PATH
+                  (PATH_SEG Color)
+                  (PATH_SEG Green)))
+              c=(E_LIT_INT isize "1" #1))
+            (ARM
+              a=(P_PATH
+                a=(PATH
+                  (PATH_SEG Color)
+                  (PATH_SEG Blue)))
+              c=(E_LIT_INT isize "2" #2))))
+        (STMT_LET
+          a=(P_IDENT __oi)
+          b=(T_PATH
+            a=(PATH
+              (PATH_SEG isize)))
+          c=(E_MATCH
+            a=(E_DEREF
+              a=(E_PATH
+                a=(PATH
+                  (PATH_SEG other))))
+            (ARM
+              a=(P_PATH
+                a=(PATH
+                  (PATH_SEG Color)
+                  (PATH_SEG Red)))
+              c=(E_LIT_INT isize "0" #0))
+            (ARM
+              a=(P_PATH
+                a=(PATH
+                  (PATH_SEG Color)
+                  (PATH_SEG Green)))
+              c=(E_LIT_INT isize "1" #1))
+            (ARM
+              a=(P_PATH
+                a=(PATH
+                  (PATH_SEG Color)
+                  (PATH_SEG Blue)))
+              c=(E_LIT_INT isize "2" #2))))
+        a=(E_IF
+          a=(E_BINARY op:!=
+            a=(E_PATH
+              a=(PATH
+                (PATH_SEG __si)))
+            b=(E_PATH
+              a=(PATH
+                (PATH_SEG __oi))))
+          b=(BLOCK
+            a=(E_CALL
+              a=(E_PATH
+                a=(PATH {global}
+                  (PATH_SEG core)
+                  (PATH_SEG cmp)
+                  (PATH_SEG Ord)
+                  (PATH_SEG cmp)))
+              (E_REF
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG __si))))
+              (E_REF
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG __oi))))))
+          c=(BLOCK
+            a=(E_MATCH
+              a=(E_DEREF
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG self))))
+              (ARM
+                a=(P_PATH
+                  a=(PATH
+                    (PATH_SEG Color)
+                    (PATH_SEG Red)))
+                c=(E_MATCH
+                  a=(E_DEREF
+                    a=(E_PATH
+                      a=(PATH
+                        (PATH_SEG other))))
+                  (ARM
+                    a=(P_PATH
+                      a=(PATH
+                        (PATH_SEG Color)
+                        (PATH_SEG Red)))
+                    c=(E_PATH
+                      a=(PATH {global}
+                        (PATH_SEG core)
+                        (PATH_SEG cmp)
+                        (PATH_SEG Ordering)
+                        (PATH_SEG Equal))))
+                  (ARM
+                    a=(P_WILD)
+                    c=(E_PATH
+                      a=(PATH {global}
+                        (PATH_SEG core)
+                        (PATH_SEG cmp)
+                        (PATH_SEG Ordering)
+                        (PATH_SEG Equal))))))
+              (ARM
+                a=(P_PATH
+                  a=(PATH
+                    (PATH_SEG Color)
+                    (PATH_SEG Green)))
+                c=(E_MATCH
+                  a=(E_DEREF
+                    a=(E_PATH
+                      a=(PATH
+                        (PATH_SEG other))))
+                  (ARM
+                    a=(P_PATH
+                      a=(PATH
+                        (PATH_SEG Color)
+                        (PATH_SEG Green)))
+                    c=(E_PATH
+                      a=(PATH {global}
+                        (PATH_SEG core)
+                        (PATH_SEG cmp)
+                        (PATH_SEG Ordering)
+                        (PATH_SEG Equal))))
+                  (ARM
+                    a=(P_WILD)
+                    c=(E_PATH
+                      a=(PATH {global}
+                        (PATH_SEG core)
+                        (PATH_SEG cmp)
+                        (PATH_SEG Ordering)
+                        (PATH_SEG Equal))))))
+              (ARM
+                a=(P_PATH
+                  a=(PATH
+                    (PATH_SEG Color)
+                    (PATH_SEG Blue)))
+                c=(E_MATCH
+                  a=(E_DEREF
+                    a=(E_PATH
+                      a=(PATH
+                        (PATH_SEG other))))
+                  (ARM
+                    a=(P_PATH
+                      a=(PATH
+                        (PATH_SEG Color)
+                        (PATH_SEG Blue)))
+                    c=(E_PATH
+                      a=(PATH {global}
+                        (PATH_SEG core)
+                        (PATH_SEG cmp)
+                        (PATH_SEG Ordering)
+                        (PATH_SEG Equal))))
+                  (ARM
+                    a=(P_WILD)
+                    c=(E_PATH
+                      a=(PATH {global}
+                        (PATH_SEG core)
+                        (PATH_SEG cmp)
+                        (PATH_SEG Ordering)
+                        (PATH_SEG Equal))))))))))
+      (SELF_PARAM {ref})
+      (PARAM
+        a=(P_IDENT other)
+        b=(T_REF
+          a=(T_PATH
+            a=(PATH
+              (PATH_SEG Self)))))))
+  (ITEM_ENUM Shape
+    @(ATTR derive {delim_paren} toks:11 Debug , Clone , PartialEq , Eq , PartialOrd , Ord)
+    a=(GENERICS
+      (GEN_TYPE T))
+    (VARIANT Empty)
+    (VARIANT Circle {tuple}
+      (FIELD
+        a=(T_PATH
+          a=(PATH
+            (PATH_SEG T)))))
+    (VARIANT Rect {named}
+      (FIELD w
+        a=(T_PATH
+          a=(PATH
+            (PATH_SEG T))))
+      (FIELD h
+        a=(T_PATH
+          a=(PATH
+            (PATH_SEG T)))))
+    (VARIANT Tri {tuple}
+      (FIELD
+        a=(T_PATH
+          a=(PATH
+            (PATH_SEG T))))
+      (FIELD
+        a=(T_PATH
+          a=(PATH
+            (PATH_SEG T))))
+      (FIELD
+        a=(T_PATH
+          a=(PATH
+            (PATH_SEG T))))))
+  (ITEM_IMPL
+    a=(GENERICS
+      (GEN_TYPE T
+        b=(BOUNDS
+          (BOUND_TRAIT
+            a=(PATH {global}
+              (PATH_SEG core)
+              (PATH_SEG fmt)
+              (PATH_SEG Debug))))))
+    b=(T_PATH
+      a=(PATH
+        (PATH_SEG Shape {angle}
+          (T_PATH
+            a=(PATH
+              (PATH_SEG T))))))
+    c=(PATH {global}
+      (PATH_SEG core)
+      (PATH_SEG fmt)
+      (PATH_SEG Debug))
+    (ITEM_FN fmt
+      b=(T_PATH
+        a=(PATH {global}
+          (PATH_SEG core)
+          (PATH_SEG fmt)
+          (PATH_SEG Result)))
+      c=(BLOCK
+        a=(E_MATCH
+          a=(E_DEREF
+            a=(E_PATH
+              a=(PATH
+                (PATH_SEG self))))
+          (ARM
+            a=(P_PATH
+              a=(PATH
+                (PATH_SEG Shape)
+                (PATH_SEG Empty)))
+            c=(E_METHOD_CALL write_str
+              a=(E_PATH
+                a=(PATH
+                  (PATH_SEG f)))
+              (E_LIT_STR "Empty")))
+          (ARM
+            a=(P_TUPLE_STRUCT
+              a=(PATH
+                (PATH_SEG Shape)
+                (PATH_SEG Circle))
+              (P_IDENT __a0 {ref}))
+            c=(E_METHOD_CALL finish
+              a=(E_METHOD_CALL field
+                a=(E_METHOD_CALL debug_tuple
+                  a=(E_PATH
+                    a=(PATH
+                      (PATH_SEG f)))
+                  (E_LIT_STR "Circle"))
+                (E_PATH
+                  a=(PATH
+                    (PATH_SEG __a0))))))
+          (ARM
+            a=(P_STRUCT
+              a=(PATH
+                (PATH_SEG Shape)
+                (PATH_SEG Rect))
+              (P_FIELD w
+                a=(P_IDENT __a0 {ref}))
+              (P_FIELD h
+                a=(P_IDENT __a1 {ref})))
+            c=(E_METHOD_CALL finish
+              a=(E_METHOD_CALL field
+                a=(E_METHOD_CALL field
+                  a=(E_METHOD_CALL debug_struct
+                    a=(E_PATH
+                      a=(PATH
+                        (PATH_SEG f)))
+                    (E_LIT_STR "Rect"))
+                  (E_LIT_STR "w")
+                  (E_PATH
+                    a=(PATH
+                      (PATH_SEG __a0))))
+                (E_LIT_STR "h")
+                (E_PATH
+                  a=(PATH
+                    (PATH_SEG __a1))))))
+          (ARM
+            a=(P_TUPLE_STRUCT
+              a=(PATH
+                (PATH_SEG Shape)
+                (PATH_SEG Tri))
+              (P_IDENT __a0 {ref})
+              (P_IDENT __a1 {ref})
+              (P_IDENT __a2 {ref}))
+            c=(E_METHOD_CALL finish
+              a=(E_METHOD_CALL field
+                a=(E_METHOD_CALL field
+                  a=(E_METHOD_CALL field
+                    a=(E_METHOD_CALL debug_tuple
+                      a=(E_PATH
+                        a=(PATH
+                          (PATH_SEG f)))
+                      (E_LIT_STR "Tri"))
+                    (E_PATH
+                      a=(PATH
+                        (PATH_SEG __a0))))
+                  (E_PATH
+                    a=(PATH
+                      (PATH_SEG __a1))))
+                (E_PATH
+                  a=(PATH
+                    (PATH_SEG __a2))))))))
+      (SELF_PARAM {ref})
+      (PARAM
+        a=(P_IDENT f)
+        b=(T_REF {mut}
+          a=(T_PATH
+            a=(PATH {global}
+              (PATH_SEG core)
+              (PATH_SEG fmt)
+              (PATH_SEG Formatter {angle}
+                (LIFETIME '_))))))))
+  (ITEM_IMPL
+    a=(GENERICS
+      (GEN_TYPE T
+        b=(BOUNDS
+          (BOUND_TRAIT
+            a=(PATH {global}
+              (PATH_SEG core)
+              (PATH_SEG clone)
+              (PATH_SEG Clone))))))
+    b=(T_PATH
+      a=(PATH
+        (PATH_SEG Shape {angle}
+          (T_PATH
+            a=(PATH
+              (PATH_SEG T))))))
+    c=(PATH {global}
+      (PATH_SEG core)
+      (PATH_SEG clone)
+      (PATH_SEG Clone))
+    (ITEM_FN clone
+      b=(T_PATH
+        a=(PATH
+          (PATH_SEG Self)))
+      c=(BLOCK
+        a=(E_MATCH
+          a=(E_DEREF
+            a=(E_PATH
+              a=(PATH
+                (PATH_SEG self))))
+          (ARM
+            a=(P_PATH
+              a=(PATH
+                (PATH_SEG Shape)
+                (PATH_SEG Empty)))
+            c=(E_PATH
+              a=(PATH
+                (PATH_SEG Shape)
+                (PATH_SEG Empty))))
+          (ARM
+            a=(P_TUPLE_STRUCT
+              a=(PATH
+                (PATH_SEG Shape)
+                (PATH_SEG Circle))
+              (P_IDENT __a0 {ref}))
+            c=(E_CALL
+              a=(E_PATH
+                a=(PATH
+                  (PATH_SEG Shape)
+                  (PATH_SEG Circle)))
+              (E_CALL
+                a=(E_PATH
+                  a=(PATH {global}
+                    (PATH_SEG core)
+                    (PATH_SEG clone)
+                    (PATH_SEG Clone)
+                    (PATH_SEG clone)))
+                (E_PATH
+                  a=(PATH
+                    (PATH_SEG __a0))))))
+          (ARM
+            a=(P_STRUCT
+              a=(PATH
+                (PATH_SEG Shape)
+                (PATH_SEG Rect))
+              (P_FIELD w
+                a=(P_IDENT __a0 {ref}))
+              (P_FIELD h
+                a=(P_IDENT __a1 {ref})))
+            c=(E_STRUCT
+              a=(PATH
+                (PATH_SEG Shape)
+                (PATH_SEG Rect))
+              (FIELD_INIT w
+                a=(E_CALL
+                  a=(E_PATH
+                    a=(PATH {global}
+                      (PATH_SEG core)
+                      (PATH_SEG clone)
+                      (PATH_SEG Clone)
+                      (PATH_SEG clone)))
+                  (E_PATH
+                    a=(PATH
+                      (PATH_SEG __a0)))))
+              (FIELD_INIT h
+                a=(E_CALL
+                  a=(E_PATH
+                    a=(PATH {global}
+                      (PATH_SEG core)
+                      (PATH_SEG clone)
+                      (PATH_SEG Clone)
+                      (PATH_SEG clone)))
+                  (E_PATH
+                    a=(PATH
+                      (PATH_SEG __a1)))))))
+          (ARM
+            a=(P_TUPLE_STRUCT
+              a=(PATH
+                (PATH_SEG Shape)
+                (PATH_SEG Tri))
+              (P_IDENT __a0 {ref})
+              (P_IDENT __a1 {ref})
+              (P_IDENT __a2 {ref}))
+            c=(E_CALL
+              a=(E_PATH
+                a=(PATH
+                  (PATH_SEG Shape)
+                  (PATH_SEG Tri)))
+              (E_CALL
+                a=(E_PATH
+                  a=(PATH {global}
+                    (PATH_SEG core)
+                    (PATH_SEG clone)
+                    (PATH_SEG Clone)
+                    (PATH_SEG clone)))
+                (E_PATH
+                  a=(PATH
+                    (PATH_SEG __a0))))
+              (E_CALL
+                a=(E_PATH
+                  a=(PATH {global}
+                    (PATH_SEG core)
+                    (PATH_SEG clone)
+                    (PATH_SEG Clone)
+                    (PATH_SEG clone)))
+                (E_PATH
+                  a=(PATH
+                    (PATH_SEG __a1))))
+              (E_CALL
+                a=(E_PATH
+                  a=(PATH {global}
+                    (PATH_SEG core)
+                    (PATH_SEG clone)
+                    (PATH_SEG Clone)
+                    (PATH_SEG clone)))
+                (E_PATH
+                  a=(PATH
+                    (PATH_SEG __a2))))))))
+      (SELF_PARAM {ref})))
+  (ITEM_IMPL
+    a=(GENERICS
+      (GEN_TYPE T
+        b=(BOUNDS
+          (BOUND_TRAIT
+            a=(PATH {global}
+              (PATH_SEG core)
+              (PATH_SEG cmp)
+              (PATH_SEG PartialEq))))))
+    b=(T_PATH
+      a=(PATH
+        (PATH_SEG Shape {angle}
+          (T_PATH
+            a=(PATH
+              (PATH_SEG T))))))
+    c=(PATH {global}
+      (PATH_SEG core)
+      (PATH_SEG cmp)
+      (PATH_SEG PartialEq))
+    (ITEM_FN eq
+      b=(T_PATH
+        a=(PATH
+          (PATH_SEG bool)))
+      c=(BLOCK
+        a=(E_MATCH
+          a=(E_DEREF
+            a=(E_PATH
+              a=(PATH
+                (PATH_SEG self))))
+          (ARM
+            a=(P_PATH
+              a=(PATH
+                (PATH_SEG Shape)
+                (PATH_SEG Empty)))
+            c=(E_MATCH
+              a=(E_DEREF
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG other))))
+              (ARM
+                a=(P_PATH
+                  a=(PATH
+                    (PATH_SEG Shape)
+                    (PATH_SEG Empty)))
+                c=(E_LIT_BOOL #1))
+              (ARM
+                a=(P_WILD)
+                c=(E_LIT_BOOL #0))))
+          (ARM
+            a=(P_TUPLE_STRUCT
+              a=(PATH
+                (PATH_SEG Shape)
+                (PATH_SEG Circle))
+              (P_IDENT __a0 {ref}))
+            c=(E_MATCH
+              a=(E_DEREF
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG other))))
+              (ARM
+                a=(P_TUPLE_STRUCT
+                  a=(PATH
+                    (PATH_SEG Shape)
+                    (PATH_SEG Circle))
+                  (P_IDENT __b0 {ref}))
+                c=(E_CALL
+                  a=(E_PATH
+                    a=(PATH {global}
+                      (PATH_SEG core)
+                      (PATH_SEG cmp)
+                      (PATH_SEG PartialEq)
+                      (PATH_SEG eq)))
+                  (E_PATH
+                    a=(PATH
+                      (PATH_SEG __a0)))
+                  (E_PATH
+                    a=(PATH
+                      (PATH_SEG __b0)))))
+              (ARM
+                a=(P_WILD)
+                c=(E_LIT_BOOL #0))))
+          (ARM
+            a=(P_STRUCT
+              a=(PATH
+                (PATH_SEG Shape)
+                (PATH_SEG Rect))
+              (P_FIELD w
+                a=(P_IDENT __a0 {ref}))
+              (P_FIELD h
+                a=(P_IDENT __a1 {ref})))
+            c=(E_MATCH
+              a=(E_DEREF
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG other))))
+              (ARM
+                a=(P_STRUCT
+                  a=(PATH
+                    (PATH_SEG Shape)
+                    (PATH_SEG Rect))
+                  (P_FIELD w
+                    a=(P_IDENT __b0 {ref}))
+                  (P_FIELD h
+                    a=(P_IDENT __b1 {ref})))
+                c=(E_BINARY op:&&
+                  a=(E_CALL
+                    a=(E_PATH
+                      a=(PATH {global}
+                        (PATH_SEG core)
+                        (PATH_SEG cmp)
+                        (PATH_SEG PartialEq)
+                        (PATH_SEG eq)))
+                    (E_PATH
+                      a=(PATH
+                        (PATH_SEG __a0)))
+                    (E_PATH
+                      a=(PATH
+                        (PATH_SEG __b0))))
+                  b=(E_CALL
+                    a=(E_PATH
+                      a=(PATH {global}
+                        (PATH_SEG core)
+                        (PATH_SEG cmp)
+                        (PATH_SEG PartialEq)
+                        (PATH_SEG eq)))
+                    (E_PATH
+                      a=(PATH
+                        (PATH_SEG __a1)))
+                    (E_PATH
+                      a=(PATH
+                        (PATH_SEG __b1))))))
+              (ARM
+                a=(P_WILD)
+                c=(E_LIT_BOOL #0))))
+          (ARM
+            a=(P_TUPLE_STRUCT
+              a=(PATH
+                (PATH_SEG Shape)
+                (PATH_SEG Tri))
+              (P_IDENT __a0 {ref})
+              (P_IDENT __a1 {ref})
+              (P_IDENT __a2 {ref}))
+            c=(E_MATCH
+              a=(E_DEREF
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG other))))
+              (ARM
+                a=(P_TUPLE_STRUCT
+                  a=(PATH
+                    (PATH_SEG Shape)
+                    (PATH_SEG Tri))
+                  (P_IDENT __b0 {ref})
+                  (P_IDENT __b1 {ref})
+                  (P_IDENT __b2 {ref}))
+                c=(E_BINARY op:&&
+                  a=(E_BINARY op:&&
+                    a=(E_CALL
+                      a=(E_PATH
+                        a=(PATH {global}
+                          (PATH_SEG core)
+                          (PATH_SEG cmp)
+                          (PATH_SEG PartialEq)
+                          (PATH_SEG eq)))
+                      (E_PATH
+                        a=(PATH
+                          (PATH_SEG __a0)))
+                      (E_PATH
+                        a=(PATH
+                          (PATH_SEG __b0))))
+                    b=(E_CALL
+                      a=(E_PATH
+                        a=(PATH {global}
+                          (PATH_SEG core)
+                          (PATH_SEG cmp)
+                          (PATH_SEG PartialEq)
+                          (PATH_SEG eq)))
+                      (E_PATH
+                        a=(PATH
+                          (PATH_SEG __a1)))
+                      (E_PATH
+                        a=(PATH
+                          (PATH_SEG __b1)))))
+                  b=(E_CALL
+                    a=(E_PATH
+                      a=(PATH {global}
+                        (PATH_SEG core)
+                        (PATH_SEG cmp)
+                        (PATH_SEG PartialEq)
+                        (PATH_SEG eq)))
+                    (E_PATH
+                      a=(PATH
+                        (PATH_SEG __a2)))
+                    (E_PATH
+                      a=(PATH
+                        (PATH_SEG __b2))))))
+              (ARM
+                a=(P_WILD)
+                c=(E_LIT_BOOL #0))))))
+      (SELF_PARAM {ref})
+      (PARAM
+        a=(P_IDENT other)
+        b=(T_REF
+          a=(T_PATH
+            a=(PATH
+              (PATH_SEG Self)))))))
+  (ITEM_IMPL
+    a=(GENERICS
+      (GEN_TYPE T
+        b=(BOUNDS
+          (BOUND_TRAIT
+            a=(PATH {global}
+              (PATH_SEG core)
+              (PATH_SEG cmp)
+              (PATH_SEG Eq))))))
+    b=(T_PATH
+      a=(PATH
+        (PATH_SEG Shape {angle}
+          (T_PATH
+            a=(PATH
+              (PATH_SEG T))))))
+    c=(PATH {global}
+      (PATH_SEG core)
+      (PATH_SEG cmp)
+      (PATH_SEG Eq)))
+  (ITEM_IMPL
+    a=(GENERICS
+      (GEN_TYPE T
+        b=(BOUNDS
+          (BOUND_TRAIT
+            a=(PATH {global}
+              (PATH_SEG core)
+              (PATH_SEG cmp)
+              (PATH_SEG PartialOrd))))))
+    b=(T_PATH
+      a=(PATH
+        (PATH_SEG Shape {angle}
+          (T_PATH
+            a=(PATH
+              (PATH_SEG T))))))
+    c=(PATH {global}
+      (PATH_SEG core)
+      (PATH_SEG cmp)
+      (PATH_SEG PartialOrd))
+    (ITEM_FN partial_cmp
+      b=(T_PATH
+        a=(PATH {global}
+          (PATH_SEG core)
+          (PATH_SEG option)
+          (PATH_SEG Option {angle}
+            (T_PATH
+              a=(PATH {global}
+                (PATH_SEG core)
+                (PATH_SEG cmp)
+                (PATH_SEG Ordering))))))
+      c=(BLOCK
+        (STMT_LET
+          a=(P_IDENT __si)
+          b=(T_PATH
+            a=(PATH
+              (PATH_SEG isize)))
+          c=(E_MATCH
+            a=(E_DEREF
+              a=(E_PATH
+                a=(PATH
+                  (PATH_SEG self))))
+            (ARM
+              a=(P_PATH
+                a=(PATH
+                  (PATH_SEG Shape)
+                  (PATH_SEG Empty)))
+              c=(E_LIT_INT isize "0" #0))
+            (ARM
+              a=(P_TUPLE_STRUCT
+                a=(PATH
+                  (PATH_SEG Shape)
+                  (PATH_SEG Circle))
+                (P_REST))
+              c=(E_LIT_INT isize "1" #1))
+            (ARM
+              a=(P_STRUCT {rest}
+                a=(PATH
+                  (PATH_SEG Shape)
+                  (PATH_SEG Rect)))
+              c=(E_LIT_INT isize "2" #2))
+            (ARM
+              a=(P_TUPLE_STRUCT
+                a=(PATH
+                  (PATH_SEG Shape)
+                  (PATH_SEG Tri))
+                (P_REST))
+              c=(E_LIT_INT isize "3" #3))))
+        (STMT_LET
+          a=(P_IDENT __oi)
+          b=(T_PATH
+            a=(PATH
+              (PATH_SEG isize)))
+          c=(E_MATCH
+            a=(E_DEREF
+              a=(E_PATH
+                a=(PATH
+                  (PATH_SEG other))))
+            (ARM
+              a=(P_PATH
+                a=(PATH
+                  (PATH_SEG Shape)
+                  (PATH_SEG Empty)))
+              c=(E_LIT_INT isize "0" #0))
+            (ARM
+              a=(P_TUPLE_STRUCT
+                a=(PATH
+                  (PATH_SEG Shape)
+                  (PATH_SEG Circle))
+                (P_REST))
+              c=(E_LIT_INT isize "1" #1))
+            (ARM
+              a=(P_STRUCT {rest}
+                a=(PATH
+                  (PATH_SEG Shape)
+                  (PATH_SEG Rect)))
+              c=(E_LIT_INT isize "2" #2))
+            (ARM
+              a=(P_TUPLE_STRUCT
+                a=(PATH
+                  (PATH_SEG Shape)
+                  (PATH_SEG Tri))
+                (P_REST))
+              c=(E_LIT_INT isize "3" #3))))
+        a=(E_IF
+          a=(E_BINARY op:!=
+            a=(E_PATH
+              a=(PATH
+                (PATH_SEG __si)))
+            b=(E_PATH
+              a=(PATH
+                (PATH_SEG __oi))))
+          b=(BLOCK
+            a=(E_CALL
+              a=(E_PATH
+                a=(PATH {global}
+                  (PATH_SEG core)
+                  (PATH_SEG cmp)
+                  (PATH_SEG PartialOrd)
+                  (PATH_SEG partial_cmp)))
+              (E_REF
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG __si))))
+              (E_REF
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG __oi))))))
+          c=(BLOCK
+            a=(E_MATCH
+              a=(E_DEREF
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG self))))
+              (ARM
+                a=(P_PATH
+                  a=(PATH
+                    (PATH_SEG Shape)
+                    (PATH_SEG Empty)))
+                c=(E_MATCH
+                  a=(E_DEREF
+                    a=(E_PATH
+                      a=(PATH
+                        (PATH_SEG other))))
+                  (ARM
+                    a=(P_PATH
+                      a=(PATH
+                        (PATH_SEG Shape)
+                        (PATH_SEG Empty)))
+                    c=(E_CALL
+                      a=(E_PATH
+                        a=(PATH {global}
+                          (PATH_SEG core)
+                          (PATH_SEG option)
+                          (PATH_SEG Option)
+                          (PATH_SEG Some)))
+                      (E_PATH
+                        a=(PATH {global}
+                          (PATH_SEG core)
+                          (PATH_SEG cmp)
+                          (PATH_SEG Ordering)
+                          (PATH_SEG Equal)))))
+                  (ARM
+                    a=(P_WILD)
+                    c=(E_CALL
+                      a=(E_PATH
+                        a=(PATH {global}
+                          (PATH_SEG core)
+                          (PATH_SEG option)
+                          (PATH_SEG Option)
+                          (PATH_SEG Some)))
+                      (E_PATH
+                        a=(PATH {global}
+                          (PATH_SEG core)
+                          (PATH_SEG cmp)
+                          (PATH_SEG Ordering)
+                          (PATH_SEG Equal)))))))
+              (ARM
+                a=(P_TUPLE_STRUCT
+                  a=(PATH
+                    (PATH_SEG Shape)
+                    (PATH_SEG Circle))
+                  (P_IDENT __a0 {ref}))
+                c=(E_MATCH
+                  a=(E_DEREF
+                    a=(E_PATH
+                      a=(PATH
+                        (PATH_SEG other))))
+                  (ARM
+                    a=(P_TUPLE_STRUCT
+                      a=(PATH
+                        (PATH_SEG Shape)
+                        (PATH_SEG Circle))
+                      (P_IDENT __b0 {ref}))
+                    c=(E_CALL
+                      a=(E_PATH
+                        a=(PATH {global}
+                          (PATH_SEG core)
+                          (PATH_SEG cmp)
+                          (PATH_SEG PartialOrd)
+                          (PATH_SEG partial_cmp)))
+                      (E_PATH
+                        a=(PATH
+                          (PATH_SEG __a0)))
+                      (E_PATH
+                        a=(PATH
+                          (PATH_SEG __b0)))))
+                  (ARM
+                    a=(P_WILD)
+                    c=(E_CALL
+                      a=(E_PATH
+                        a=(PATH {global}
+                          (PATH_SEG core)
+                          (PATH_SEG option)
+                          (PATH_SEG Option)
+                          (PATH_SEG Some)))
+                      (E_PATH
+                        a=(PATH {global}
+                          (PATH_SEG core)
+                          (PATH_SEG cmp)
+                          (PATH_SEG Ordering)
+                          (PATH_SEG Equal)))))))
+              (ARM
+                a=(P_STRUCT
+                  a=(PATH
+                    (PATH_SEG Shape)
+                    (PATH_SEG Rect))
+                  (P_FIELD w
+                    a=(P_IDENT __a0 {ref}))
+                  (P_FIELD h
+                    a=(P_IDENT __a1 {ref})))
+                c=(E_MATCH
+                  a=(E_DEREF
+                    a=(E_PATH
+                      a=(PATH
+                        (PATH_SEG other))))
+                  (ARM
+                    a=(P_STRUCT
+                      a=(PATH
+                        (PATH_SEG Shape)
+                        (PATH_SEG Rect))
+                      (P_FIELD w
+                        a=(P_IDENT __b0 {ref}))
+                      (P_FIELD h
+                        a=(P_IDENT __b1 {ref})))
+                    c=(E_MATCH
+                      a=(E_CALL
+                        a=(E_PATH
+                          a=(PATH {global}
+                            (PATH_SEG core)
+                            (PATH_SEG cmp)
+                            (PATH_SEG PartialOrd)
+                            (PATH_SEG partial_cmp)))
+                        (E_PATH
+                          a=(PATH
+                            (PATH_SEG __a0)))
+                        (E_PATH
+                          a=(PATH
+                            (PATH_SEG __b0))))
+                      (ARM
+                        a=(P_TUPLE_STRUCT
+                          a=(PATH {global}
+                            (PATH_SEG core)
+                            (PATH_SEG option)
+                            (PATH_SEG Option)
+                            (PATH_SEG Some))
+                          (P_PATH
+                            a=(PATH {global}
+                              (PATH_SEG core)
+                              (PATH_SEG cmp)
+                              (PATH_SEG Ordering)
+                              (PATH_SEG Equal))))
+                        c=(E_CALL
+                          a=(E_PATH
+                            a=(PATH {global}
+                              (PATH_SEG core)
+                              (PATH_SEG cmp)
+                              (PATH_SEG PartialOrd)
+                              (PATH_SEG partial_cmp)))
+                          (E_PATH
+                            a=(PATH
+                              (PATH_SEG __a1)))
+                          (E_PATH
+                            a=(PATH
+                              (PATH_SEG __b1)))))
+                      (ARM
+                        a=(P_IDENT __c)
+                        c=(E_PATH
+                          a=(PATH
+                            (PATH_SEG __c))))))
+                  (ARM
+                    a=(P_WILD)
+                    c=(E_CALL
+                      a=(E_PATH
+                        a=(PATH {global}
+                          (PATH_SEG core)
+                          (PATH_SEG option)
+                          (PATH_SEG Option)
+                          (PATH_SEG Some)))
+                      (E_PATH
+                        a=(PATH {global}
+                          (PATH_SEG core)
+                          (PATH_SEG cmp)
+                          (PATH_SEG Ordering)
+                          (PATH_SEG Equal)))))))
+              (ARM
+                a=(P_TUPLE_STRUCT
+                  a=(PATH
+                    (PATH_SEG Shape)
+                    (PATH_SEG Tri))
+                  (P_IDENT __a0 {ref})
+                  (P_IDENT __a1 {ref})
+                  (P_IDENT __a2 {ref}))
+                c=(E_MATCH
+                  a=(E_DEREF
+                    a=(E_PATH
+                      a=(PATH
+                        (PATH_SEG other))))
+                  (ARM
+                    a=(P_TUPLE_STRUCT
+                      a=(PATH
+                        (PATH_SEG Shape)
+                        (PATH_SEG Tri))
+                      (P_IDENT __b0 {ref})
+                      (P_IDENT __b1 {ref})
+                      (P_IDENT __b2 {ref}))
+                    c=(E_MATCH
+                      a=(E_CALL
+                        a=(E_PATH
+                          a=(PATH {global}
+                            (PATH_SEG core)
+                            (PATH_SEG cmp)
+                            (PATH_SEG PartialOrd)
+                            (PATH_SEG partial_cmp)))
+                        (E_PATH
+                          a=(PATH
+                            (PATH_SEG __a0)))
+                        (E_PATH
+                          a=(PATH
+                            (PATH_SEG __b0))))
+                      (ARM
+                        a=(P_TUPLE_STRUCT
+                          a=(PATH {global}
+                            (PATH_SEG core)
+                            (PATH_SEG option)
+                            (PATH_SEG Option)
+                            (PATH_SEG Some))
+                          (P_PATH
+                            a=(PATH {global}
+                              (PATH_SEG core)
+                              (PATH_SEG cmp)
+                              (PATH_SEG Ordering)
+                              (PATH_SEG Equal))))
+                        c=(E_MATCH
+                          a=(E_CALL
+                            a=(E_PATH
+                              a=(PATH {global}
+                                (PATH_SEG core)
+                                (PATH_SEG cmp)
+                                (PATH_SEG PartialOrd)
+                                (PATH_SEG partial_cmp)))
+                            (E_PATH
+                              a=(PATH
+                                (PATH_SEG __a1)))
+                            (E_PATH
+                              a=(PATH
+                                (PATH_SEG __b1))))
+                          (ARM
+                            a=(P_TUPLE_STRUCT
+                              a=(PATH {global}
+                                (PATH_SEG core)
+                                (PATH_SEG option)
+                                (PATH_SEG Option)
+                                (PATH_SEG Some))
+                              (P_PATH
+                                a=(PATH {global}
+                                  (PATH_SEG core)
+                                  (PATH_SEG cmp)
+                                  (PATH_SEG Ordering)
+                                  (PATH_SEG Equal))))
+                            c=(E_CALL
+                              a=(E_PATH
+                                a=(PATH {global}
+                                  (PATH_SEG core)
+                                  (PATH_SEG cmp)
+                                  (PATH_SEG PartialOrd)
+                                  (PATH_SEG partial_cmp)))
+                              (E_PATH
+                                a=(PATH
+                                  (PATH_SEG __a2)))
+                              (E_PATH
+                                a=(PATH
+                                  (PATH_SEG __b2)))))
+                          (ARM
+                            a=(P_IDENT __c)
+                            c=(E_PATH
+                              a=(PATH
+                                (PATH_SEG __c))))))
+                      (ARM
+                        a=(P_IDENT __c)
+                        c=(E_PATH
+                          a=(PATH
+                            (PATH_SEG __c))))))
+                  (ARM
+                    a=(P_WILD)
+                    c=(E_CALL
+                      a=(E_PATH
+                        a=(PATH {global}
+                          (PATH_SEG core)
+                          (PATH_SEG option)
+                          (PATH_SEG Option)
+                          (PATH_SEG Some)))
+                      (E_PATH
+                        a=(PATH {global}
+                          (PATH_SEG core)
+                          (PATH_SEG cmp)
+                          (PATH_SEG Ordering)
+                          (PATH_SEG Equal)))))))))))
+      (SELF_PARAM {ref})
+      (PARAM
+        a=(P_IDENT other)
+        b=(T_REF
+          a=(T_PATH
+            a=(PATH
+              (PATH_SEG Self)))))))
+  (ITEM_IMPL
+    a=(GENERICS
+      (GEN_TYPE T
+        b=(BOUNDS
+          (BOUND_TRAIT
+            a=(PATH {global}
+              (PATH_SEG core)
+              (PATH_SEG cmp)
+              (PATH_SEG Ord))))))
+    b=(T_PATH
+      a=(PATH
+        (PATH_SEG Shape {angle}
+          (T_PATH
+            a=(PATH
+              (PATH_SEG T))))))
+    c=(PATH {global}
+      (PATH_SEG core)
+      (PATH_SEG cmp)
+      (PATH_SEG Ord))
+    (ITEM_FN cmp
+      b=(T_PATH
+        a=(PATH {global}
+          (PATH_SEG core)
+          (PATH_SEG cmp)
+          (PATH_SEG Ordering)))
+      c=(BLOCK
+        (STMT_LET
+          a=(P_IDENT __si)
+          b=(T_PATH
+            a=(PATH
+              (PATH_SEG isize)))
+          c=(E_MATCH
+            a=(E_DEREF
+              a=(E_PATH
+                a=(PATH
+                  (PATH_SEG self))))
+            (ARM
+              a=(P_PATH
+                a=(PATH
+                  (PATH_SEG Shape)
+                  (PATH_SEG Empty)))
+              c=(E_LIT_INT isize "0" #0))
+            (ARM
+              a=(P_TUPLE_STRUCT
+                a=(PATH
+                  (PATH_SEG Shape)
+                  (PATH_SEG Circle))
+                (P_REST))
+              c=(E_LIT_INT isize "1" #1))
+            (ARM
+              a=(P_STRUCT {rest}
+                a=(PATH
+                  (PATH_SEG Shape)
+                  (PATH_SEG Rect)))
+              c=(E_LIT_INT isize "2" #2))
+            (ARM
+              a=(P_TUPLE_STRUCT
+                a=(PATH
+                  (PATH_SEG Shape)
+                  (PATH_SEG Tri))
+                (P_REST))
+              c=(E_LIT_INT isize "3" #3))))
+        (STMT_LET
+          a=(P_IDENT __oi)
+          b=(T_PATH
+            a=(PATH
+              (PATH_SEG isize)))
+          c=(E_MATCH
+            a=(E_DEREF
+              a=(E_PATH
+                a=(PATH
+                  (PATH_SEG other))))
+            (ARM
+              a=(P_PATH
+                a=(PATH
+                  (PATH_SEG Shape)
+                  (PATH_SEG Empty)))
+              c=(E_LIT_INT isize "0" #0))
+            (ARM
+              a=(P_TUPLE_STRUCT
+                a=(PATH
+                  (PATH_SEG Shape)
+                  (PATH_SEG Circle))
+                (P_REST))
+              c=(E_LIT_INT isize "1" #1))
+            (ARM
+              a=(P_STRUCT {rest}
+                a=(PATH
+                  (PATH_SEG Shape)
+                  (PATH_SEG Rect)))
+              c=(E_LIT_INT isize "2" #2))
+            (ARM
+              a=(P_TUPLE_STRUCT
+                a=(PATH
+                  (PATH_SEG Shape)
+                  (PATH_SEG Tri))
+                (P_REST))
+              c=(E_LIT_INT isize "3" #3))))
+        a=(E_IF
+          a=(E_BINARY op:!=
+            a=(E_PATH
+              a=(PATH
+                (PATH_SEG __si)))
+            b=(E_PATH
+              a=(PATH
+                (PATH_SEG __oi))))
+          b=(BLOCK
+            a=(E_CALL
+              a=(E_PATH
+                a=(PATH {global}
+                  (PATH_SEG core)
+                  (PATH_SEG cmp)
+                  (PATH_SEG Ord)
+                  (PATH_SEG cmp)))
+              (E_REF
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG __si))))
+              (E_REF
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG __oi))))))
+          c=(BLOCK
+            a=(E_MATCH
+              a=(E_DEREF
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG self))))
+              (ARM
+                a=(P_PATH
+                  a=(PATH
+                    (PATH_SEG Shape)
+                    (PATH_SEG Empty)))
+                c=(E_MATCH
+                  a=(E_DEREF
+                    a=(E_PATH
+                      a=(PATH
+                        (PATH_SEG other))))
+                  (ARM
+                    a=(P_PATH
+                      a=(PATH
+                        (PATH_SEG Shape)
+                        (PATH_SEG Empty)))
+                    c=(E_PATH
+                      a=(PATH {global}
+                        (PATH_SEG core)
+                        (PATH_SEG cmp)
+                        (PATH_SEG Ordering)
+                        (PATH_SEG Equal))))
+                  (ARM
+                    a=(P_WILD)
+                    c=(E_PATH
+                      a=(PATH {global}
+                        (PATH_SEG core)
+                        (PATH_SEG cmp)
+                        (PATH_SEG Ordering)
+                        (PATH_SEG Equal))))))
+              (ARM
+                a=(P_TUPLE_STRUCT
+                  a=(PATH
+                    (PATH_SEG Shape)
+                    (PATH_SEG Circle))
+                  (P_IDENT __a0 {ref}))
+                c=(E_MATCH
+                  a=(E_DEREF
+                    a=(E_PATH
+                      a=(PATH
+                        (PATH_SEG other))))
+                  (ARM
+                    a=(P_TUPLE_STRUCT
+                      a=(PATH
+                        (PATH_SEG Shape)
+                        (PATH_SEG Circle))
+                      (P_IDENT __b0 {ref}))
+                    c=(E_CALL
+                      a=(E_PATH
+                        a=(PATH {global}
+                          (PATH_SEG core)
+                          (PATH_SEG cmp)
+                          (PATH_SEG Ord)
+                          (PATH_SEG cmp)))
+                      (E_PATH
+                        a=(PATH
+                          (PATH_SEG __a0)))
+                      (E_PATH
+                        a=(PATH
+                          (PATH_SEG __b0)))))
+                  (ARM
+                    a=(P_WILD)
+                    c=(E_PATH
+                      a=(PATH {global}
+                        (PATH_SEG core)
+                        (PATH_SEG cmp)
+                        (PATH_SEG Ordering)
+                        (PATH_SEG Equal))))))
+              (ARM
+                a=(P_STRUCT
+                  a=(PATH
+                    (PATH_SEG Shape)
+                    (PATH_SEG Rect))
+                  (P_FIELD w
+                    a=(P_IDENT __a0 {ref}))
+                  (P_FIELD h
+                    a=(P_IDENT __a1 {ref})))
+                c=(E_MATCH
+                  a=(E_DEREF
+                    a=(E_PATH
+                      a=(PATH
+                        (PATH_SEG other))))
+                  (ARM
+                    a=(P_STRUCT
+                      a=(PATH
+                        (PATH_SEG Shape)
+                        (PATH_SEG Rect))
+                      (P_FIELD w
+                        a=(P_IDENT __b0 {ref}))
+                      (P_FIELD h
+                        a=(P_IDENT __b1 {ref})))
+                    c=(E_MATCH
+                      a=(E_CALL
+                        a=(E_PATH
+                          a=(PATH {global}
+                            (PATH_SEG core)
+                            (PATH_SEG cmp)
+                            (PATH_SEG Ord)
+                            (PATH_SEG cmp)))
+                        (E_PATH
+                          a=(PATH
+                            (PATH_SEG __a0)))
+                        (E_PATH
+                          a=(PATH
+                            (PATH_SEG __b0))))
+                      (ARM
+                        a=(P_PATH
+                          a=(PATH {global}
+                            (PATH_SEG core)
+                            (PATH_SEG cmp)
+                            (PATH_SEG Ordering)
+                            (PATH_SEG Equal)))
+                        c=(E_CALL
+                          a=(E_PATH
+                            a=(PATH {global}
+                              (PATH_SEG core)
+                              (PATH_SEG cmp)
+                              (PATH_SEG Ord)
+                              (PATH_SEG cmp)))
+                          (E_PATH
+                            a=(PATH
+                              (PATH_SEG __a1)))
+                          (E_PATH
+                            a=(PATH
+                              (PATH_SEG __b1)))))
+                      (ARM
+                        a=(P_IDENT __c)
+                        c=(E_PATH
+                          a=(PATH
+                            (PATH_SEG __c))))))
+                  (ARM
+                    a=(P_WILD)
+                    c=(E_PATH
+                      a=(PATH {global}
+                        (PATH_SEG core)
+                        (PATH_SEG cmp)
+                        (PATH_SEG Ordering)
+                        (PATH_SEG Equal))))))
+              (ARM
+                a=(P_TUPLE_STRUCT
+                  a=(PATH
+                    (PATH_SEG Shape)
+                    (PATH_SEG Tri))
+                  (P_IDENT __a0 {ref})
+                  (P_IDENT __a1 {ref})
+                  (P_IDENT __a2 {ref}))
+                c=(E_MATCH
+                  a=(E_DEREF
+                    a=(E_PATH
+                      a=(PATH
+                        (PATH_SEG other))))
+                  (ARM
+                    a=(P_TUPLE_STRUCT
+                      a=(PATH
+                        (PATH_SEG Shape)
+                        (PATH_SEG Tri))
+                      (P_IDENT __b0 {ref})
+                      (P_IDENT __b1 {ref})
+                      (P_IDENT __b2 {ref}))
+                    c=(E_MATCH
+                      a=(E_CALL
+                        a=(E_PATH
+                          a=(PATH {global}
+                            (PATH_SEG core)
+                            (PATH_SEG cmp)
+                            (PATH_SEG Ord)
+                            (PATH_SEG cmp)))
+                        (E_PATH
+                          a=(PATH
+                            (PATH_SEG __a0)))
+                        (E_PATH
+                          a=(PATH
+                            (PATH_SEG __b0))))
+                      (ARM
+                        a=(P_PATH
+                          a=(PATH {global}
+                            (PATH_SEG core)
+                            (PATH_SEG cmp)
+                            (PATH_SEG Ordering)
+                            (PATH_SEG Equal)))
+                        c=(E_MATCH
+                          a=(E_CALL
+                            a=(E_PATH
+                              a=(PATH {global}
+                                (PATH_SEG core)
+                                (PATH_SEG cmp)
+                                (PATH_SEG Ord)
+                                (PATH_SEG cmp)))
+                            (E_PATH
+                              a=(PATH
+                                (PATH_SEG __a1)))
+                            (E_PATH
+                              a=(PATH
+                                (PATH_SEG __b1))))
+                          (ARM
+                            a=(P_PATH
+                              a=(PATH {global}
+                                (PATH_SEG core)
+                                (PATH_SEG cmp)
+                                (PATH_SEG Ordering)
+                                (PATH_SEG Equal)))
+                            c=(E_CALL
+                              a=(E_PATH
+                                a=(PATH {global}
+                                  (PATH_SEG core)
+                                  (PATH_SEG cmp)
+                                  (PATH_SEG Ord)
+                                  (PATH_SEG cmp)))
+                              (E_PATH
+                                a=(PATH
+                                  (PATH_SEG __a2)))
+                              (E_PATH
+                                a=(PATH
+                                  (PATH_SEG __b2)))))
+                          (ARM
+                            a=(P_IDENT __c)
+                            c=(E_PATH
+                              a=(PATH
+                                (PATH_SEG __c))))))
+                      (ARM
+                        a=(P_IDENT __c)
+                        c=(E_PATH
+                          a=(PATH
+                            (PATH_SEG __c))))))
+                  (ARM
+                    a=(P_WILD)
+                    c=(E_PATH
+                      a=(PATH {global}
+                        (PATH_SEG core)
+                        (PATH_SEG cmp)
+                        (PATH_SEG Ordering)
+                        (PATH_SEG Equal))))))))))
+      (SELF_PARAM {ref})
+      (PARAM
+        a=(P_IDENT other)
+        b=(T_REF
+          a=(T_PATH
+            a=(PATH
+              (PATH_SEG Self)))))))
+  (ITEM_ENUM Mode
+    @(ATTR derive {delim_paren} toks:9 Debug , Default , Clone , Copy , PartialEq)
+    (VARIANT Fast)
+    (VARIANT Normal
+      @(ATTR default))
+    (VARIANT Slow))
+  (ITEM_IMPL
+    b=(T_PATH
+      a=(PATH
+        (PATH_SEG Mode)))
+    c=(PATH {global}
+      (PATH_SEG core)
+      (PATH_SEG fmt)
+      (PATH_SEG Debug))
+    (ITEM_FN fmt
+      b=(T_PATH
+        a=(PATH {global}
+          (PATH_SEG core)
+          (PATH_SEG fmt)
+          (PATH_SEG Result)))
+      c=(BLOCK
+        a=(E_MATCH
+          a=(E_DEREF
+            a=(E_PATH
+              a=(PATH
+                (PATH_SEG self))))
+          (ARM
+            a=(P_PATH
+              a=(PATH
+                (PATH_SEG Mode)
+                (PATH_SEG Fast)))
+            c=(E_METHOD_CALL write_str
+              a=(E_PATH
+                a=(PATH
+                  (PATH_SEG f)))
+              (E_LIT_STR "Fast")))
+          (ARM
+            a=(P_PATH
+              a=(PATH
+                (PATH_SEG Mode)
+                (PATH_SEG Normal)))
+            c=(E_METHOD_CALL write_str
+              a=(E_PATH
+                a=(PATH
+                  (PATH_SEG f)))
+              (E_LIT_STR "Normal")))
+          (ARM
+            a=(P_PATH
+              a=(PATH
+                (PATH_SEG Mode)
+                (PATH_SEG Slow)))
+            c=(E_METHOD_CALL write_str
+              a=(E_PATH
+                a=(PATH
+                  (PATH_SEG f)))
+              (E_LIT_STR "Slow")))))
+      (SELF_PARAM {ref})
+      (PARAM
+        a=(P_IDENT f)
+        b=(T_REF {mut}
+          a=(T_PATH
+            a=(PATH {global}
+              (PATH_SEG core)
+              (PATH_SEG fmt)
+              (PATH_SEG Formatter {angle}
+                (LIFETIME '_))))))))
+  (ITEM_IMPL
+    b=(T_PATH
+      a=(PATH
+        (PATH_SEG Mode)))
+    c=(PATH {global}
+      (PATH_SEG core)
+      (PATH_SEG default)
+      (PATH_SEG Default))
+    (ITEM_FN default
+      b=(T_PATH
+        a=(PATH
+          (PATH_SEG Self)))
+      c=(BLOCK
+        a=(E_PATH
+          a=(PATH
+            (PATH_SEG Mode)
+            (PATH_SEG Normal))))))
+  (ITEM_IMPL
+    b=(T_PATH
+      a=(PATH
+        (PATH_SEG Mode)))
+    c=(PATH {global}
+      (PATH_SEG core)
+      (PATH_SEG clone)
+      (PATH_SEG Clone))
+    (ITEM_FN clone
+      b=(T_PATH
+        a=(PATH
+          (PATH_SEG Self)))
+      c=(BLOCK
+        a=(E_MATCH
+          a=(E_DEREF
+            a=(E_PATH
+              a=(PATH
+                (PATH_SEG self))))
+          (ARM
+            a=(P_PATH
+              a=(PATH
+                (PATH_SEG Mode)
+                (PATH_SEG Fast)))
+            c=(E_PATH
+              a=(PATH
+                (PATH_SEG Mode)
+                (PATH_SEG Fast))))
+          (ARM
+            a=(P_PATH
+              a=(PATH
+                (PATH_SEG Mode)
+                (PATH_SEG Normal)))
+            c=(E_PATH
+              a=(PATH
+                (PATH_SEG Mode)
+                (PATH_SEG Normal))))
+          (ARM
+            a=(P_PATH
+              a=(PATH
+                (PATH_SEG Mode)
+                (PATH_SEG Slow)))
+            c=(E_PATH
+              a=(PATH
+                (PATH_SEG Mode)
+                (PATH_SEG Slow))))))
+      (SELF_PARAM {ref})))
+  (ITEM_IMPL
+    b=(T_PATH
+      a=(PATH
+        (PATH_SEG Mode)))
+    c=(PATH {global}
+      (PATH_SEG core)
+      (PATH_SEG marker)
+      (PATH_SEG Copy)))
+  (ITEM_IMPL
+    b=(T_PATH
+      a=(PATH
+        (PATH_SEG Mode)))
+    c=(PATH {global}
+      (PATH_SEG core)
+      (PATH_SEG cmp)
+      (PATH_SEG PartialEq))
+    (ITEM_FN eq
+      b=(T_PATH
+        a=(PATH
+          (PATH_SEG bool)))
+      c=(BLOCK
+        a=(E_MATCH
+          a=(E_DEREF
+            a=(E_PATH
+              a=(PATH
+                (PATH_SEG self))))
+          (ARM
+            a=(P_PATH
+              a=(PATH
+                (PATH_SEG Mode)
+                (PATH_SEG Fast)))
+            c=(E_MATCH
+              a=(E_DEREF
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG other))))
+              (ARM
+                a=(P_PATH
+                  a=(PATH
+                    (PATH_SEG Mode)
+                    (PATH_SEG Fast)))
+                c=(E_LIT_BOOL #1))
+              (ARM
+                a=(P_WILD)
+                c=(E_LIT_BOOL #0))))
+          (ARM
+            a=(P_PATH
+              a=(PATH
+                (PATH_SEG Mode)
+                (PATH_SEG Normal)))
+            c=(E_MATCH
+              a=(E_DEREF
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG other))))
+              (ARM
+                a=(P_PATH
+                  a=(PATH
+                    (PATH_SEG Mode)
+                    (PATH_SEG Normal)))
+                c=(E_LIT_BOOL #1))
+              (ARM
+                a=(P_WILD)
+                c=(E_LIT_BOOL #0))))
+          (ARM
+            a=(P_PATH
+              a=(PATH
+                (PATH_SEG Mode)
+                (PATH_SEG Slow)))
+            c=(E_MATCH
+              a=(E_DEREF
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG other))))
+              (ARM
+                a=(P_PATH
+                  a=(PATH
+                    (PATH_SEG Mode)
+                    (PATH_SEG Slow)))
+                c=(E_LIT_BOOL #1))
+              (ARM
+                a=(P_WILD)
+                c=(E_LIT_BOOL #0))))))
+      (SELF_PARAM {ref})
+      (PARAM
+        a=(P_IDENT other)
+        b=(T_REF
+          a=(T_PATH
+            a=(PATH
+              (PATH_SEG Self)))))))
+  (ITEM_ENUM One
+    @(ATTR derive {delim_paren} toks:9 Debug , PartialEq , Eq , PartialOrd , Ord)
+    (VARIANT Only {tuple}
+      (FIELD
+        a=(T_PATH
+          a=(PATH
+            (PATH_SEG i32))))))
+  (ITEM_IMPL
+    b=(T_PATH
+      a=(PATH
+        (PATH_SEG One)))
+    c=(PATH {global}
+      (PATH_SEG core)
+      (PATH_SEG fmt)
+      (PATH_SEG Debug))
+    (ITEM_FN fmt
+      b=(T_PATH
+        a=(PATH {global}
+          (PATH_SEG core)
+          (PATH_SEG fmt)
+          (PATH_SEG Result)))
+      c=(BLOCK
+        a=(E_MATCH
+          a=(E_DEREF
+            a=(E_PATH
+              a=(PATH
+                (PATH_SEG self))))
+          (ARM
+            a=(P_TUPLE_STRUCT
+              a=(PATH
+                (PATH_SEG One)
+                (PATH_SEG Only))
+              (P_IDENT __a0 {ref}))
+            c=(E_METHOD_CALL finish
+              a=(E_METHOD_CALL field
+                a=(E_METHOD_CALL debug_tuple
+                  a=(E_PATH
+                    a=(PATH
+                      (PATH_SEG f)))
+                  (E_LIT_STR "Only"))
+                (E_PATH
+                  a=(PATH
+                    (PATH_SEG __a0))))))))
+      (SELF_PARAM {ref})
+      (PARAM
+        a=(P_IDENT f)
+        b=(T_REF {mut}
+          a=(T_PATH
+            a=(PATH {global}
+              (PATH_SEG core)
+              (PATH_SEG fmt)
+              (PATH_SEG Formatter {angle}
+                (LIFETIME '_))))))))
+  (ITEM_IMPL
+    b=(T_PATH
+      a=(PATH
+        (PATH_SEG One)))
+    c=(PATH {global}
+      (PATH_SEG core)
+      (PATH_SEG cmp)
+      (PATH_SEG PartialEq))
+    (ITEM_FN eq
+      b=(T_PATH
+        a=(PATH
+          (PATH_SEG bool)))
+      c=(BLOCK
+        a=(E_MATCH
+          a=(E_DEREF
+            a=(E_PATH
+              a=(PATH
+                (PATH_SEG self))))
+          (ARM
+            a=(P_TUPLE_STRUCT
+              a=(PATH
+                (PATH_SEG One)
+                (PATH_SEG Only))
+              (P_IDENT __a0 {ref}))
+            c=(E_MATCH
+              a=(E_DEREF
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG other))))
+              (ARM
+                a=(P_TUPLE_STRUCT
+                  a=(PATH
+                    (PATH_SEG One)
+                    (PATH_SEG Only))
+                  (P_IDENT __b0 {ref}))
+                c=(E_CALL
+                  a=(E_PATH
+                    a=(PATH {global}
+                      (PATH_SEG core)
+                      (PATH_SEG cmp)
+                      (PATH_SEG PartialEq)
+                      (PATH_SEG eq)))
+                  (E_PATH
+                    a=(PATH
+                      (PATH_SEG __a0)))
+                  (E_PATH
+                    a=(PATH
+                      (PATH_SEG __b0)))))))))
+      (SELF_PARAM {ref})
+      (PARAM
+        a=(P_IDENT other)
+        b=(T_REF
+          a=(T_PATH
+            a=(PATH
+              (PATH_SEG Self)))))))
+  (ITEM_IMPL
+    b=(T_PATH
+      a=(PATH
+        (PATH_SEG One)))
+    c=(PATH {global}
+      (PATH_SEG core)
+      (PATH_SEG cmp)
+      (PATH_SEG Eq)))
+  (ITEM_IMPL
+    b=(T_PATH
+      a=(PATH
+        (PATH_SEG One)))
+    c=(PATH {global}
+      (PATH_SEG core)
+      (PATH_SEG cmp)
+      (PATH_SEG PartialOrd))
+    (ITEM_FN partial_cmp
+      b=(T_PATH
+        a=(PATH {global}
+          (PATH_SEG core)
+          (PATH_SEG option)
+          (PATH_SEG Option {angle}
+            (T_PATH
+              a=(PATH {global}
+                (PATH_SEG core)
+                (PATH_SEG cmp)
+                (PATH_SEG Ordering))))))
+      c=(BLOCK
+        a=(E_MATCH
+          a=(E_DEREF
+            a=(E_PATH
+              a=(PATH
+                (PATH_SEG self))))
+          (ARM
+            a=(P_TUPLE_STRUCT
+              a=(PATH
+                (PATH_SEG One)
+                (PATH_SEG Only))
+              (P_IDENT __a0 {ref}))
+            c=(E_MATCH
+              a=(E_DEREF
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG other))))
+              (ARM
+                a=(P_TUPLE_STRUCT
+                  a=(PATH
+                    (PATH_SEG One)
+                    (PATH_SEG Only))
+                  (P_IDENT __b0 {ref}))
+                c=(E_CALL
+                  a=(E_PATH
+                    a=(PATH {global}
+                      (PATH_SEG core)
+                      (PATH_SEG cmp)
+                      (PATH_SEG PartialOrd)
+                      (PATH_SEG partial_cmp)))
+                  (E_PATH
+                    a=(PATH
+                      (PATH_SEG __a0)))
+                  (E_PATH
+                    a=(PATH
+                      (PATH_SEG __b0)))))))))
+      (SELF_PARAM {ref})
+      (PARAM
+        a=(P_IDENT other)
+        b=(T_REF
+          a=(T_PATH
+            a=(PATH
+              (PATH_SEG Self)))))))
+  (ITEM_IMPL
+    b=(T_PATH
+      a=(PATH
+        (PATH_SEG One)))
+    c=(PATH {global}
+      (PATH_SEG core)
+      (PATH_SEG cmp)
+      (PATH_SEG Ord))
+    (ITEM_FN cmp
+      b=(T_PATH
+        a=(PATH {global}
+          (PATH_SEG core)
+          (PATH_SEG cmp)
+          (PATH_SEG Ordering)))
+      c=(BLOCK
+        a=(E_MATCH
+          a=(E_DEREF
+            a=(E_PATH
+              a=(PATH
+                (PATH_SEG self))))
+          (ARM
+            a=(P_TUPLE_STRUCT
+              a=(PATH
+                (PATH_SEG One)
+                (PATH_SEG Only))
+              (P_IDENT __a0 {ref}))
+            c=(E_MATCH
+              a=(E_DEREF
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG other))))
+              (ARM
+                a=(P_TUPLE_STRUCT
+                  a=(PATH
+                    (PATH_SEG One)
+                    (PATH_SEG Only))
+                  (P_IDENT __b0 {ref}))
+                c=(E_CALL
+                  a=(E_PATH
+                    a=(PATH {global}
+                      (PATH_SEG core)
+                      (PATH_SEG cmp)
+                      (PATH_SEG Ord)
+                      (PATH_SEG cmp)))
+                  (E_PATH
+                    a=(PATH
+                      (PATH_SEG __a0)))
+                  (E_PATH
+                    a=(PATH
+                      (PATH_SEG __b0)))))))))
+      (SELF_PARAM {ref})
+      (PARAM
+        a=(P_IDENT other)
+        b=(T_REF
+          a=(T_PATH
+            a=(PATH
+              (PATH_SEG Self)))))))
+  (ITEM_FN main
+    c=(BLOCK)))

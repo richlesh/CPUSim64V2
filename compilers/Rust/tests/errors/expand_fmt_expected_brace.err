@@ -1,0 +1,1 @@
+errors/expand_fmt_expected_brace.rs:2: error: invalid format string: expected `}`, found `x`

@@ -1,0 +1,1 @@
+errors/moves_loop.rs:5: error: use of moved value: `s`

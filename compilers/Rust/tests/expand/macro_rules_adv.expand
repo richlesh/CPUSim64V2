@@ -1,0 +1,365 @@
+(CRATE
+  (ITEM_MACRO_RULES calc {delim_brace}
+    (MACRO_RULE
+      a=(MACRO_TT {delim_paren} toks:7 @ go $ acc : expr ;)
+      b=(MACRO_TT {delim_brace} toks:2 $ acc))
+    (MACRO_RULE
+      a=(MACRO_TT {delim_paren} toks:20 @ go $ acc : expr ; plus $ n : literal $ ( $ rest : tt ) *)
+      b=(MACRO_TT {delim_brace} toks:18 calc ! ( @ go $ acc + $ n ; $ ( $ rest ) * )))
+    (MACRO_RULE
+      a=(MACRO_TT {delim_paren} toks:20 @ go $ acc : expr ; times $ n : literal $ ( $ rest : tt ) *)
+      b=(MACRO_TT {delim_brace} toks:20 calc ! ( @ go ( $ acc ) * $ n ; $ ( $ rest ) * )))
+    (MACRO_RULE
+      a=(MACRO_TT {delim_paren} toks:12 $ start : literal $ ( $ rest : tt ) *)
+      b=(MACRO_TT {delim_brace} toks:15 calc ! ( @ go $ start ; $ ( $ rest ) * ))))
+  (ITEM_MACRO_RULES enum_str {delim_brace}
+    (MACRO_RULE
+      a=(MACRO_TT {delim_paren} toks:41 $ ( # [ $ meta : meta ] ) * $ vis : vis enum $ name : ident { $ ( $ variant : ident = $ val : expr ) , + $ ( , ) ? })
+      b=(MACRO_TT {delim_brace} toks:64 $ ( # [ $ meta ] ) * $ vis enum $ name { $ ( $ variant = $ val ) , + } impl $ name { fn name ( & self ) -> & 'static str { match self { $ ( $ name :: $ variant => stringify ! ( $ variant ) ) , + } } })))
+  (ITEM_MACRO_RULES opt {delim_brace}
+    (MACRO_RULE
+      a=(MACRO_TT {delim_paren} toks:13 $ a : expr $ ( , $ b : expr ) ?)
+      b=(MACRO_TT {delim_brace} toks:9 $ a $ ( + $ b ) ?)))
+  (ITEM_MACRO_RULES matrix {delim_brace}
+    (MACRO_RULE
+      a=(MACRO_TT {delim_paren} toks:16 $ ( [ $ ( $ x : expr ) , * ] ) , *)
+      b=(MACRO_TT {delim_brace} toks:16 [ $ ( [ $ ( $ x ) , * ] ) , * ])))
+  (ITEM_MACRO_RULES kv {delim_brace}
+    (MACRO_RULE
+      a=(MACRO_TT {delim_paren} toks:19 $ ( $ k : ident = $ v : expr ) ; * $ ( ; ) ?)
+      b=(MACRO_TT {delim_brace} toks:11 $ ( let $ k = $ v ; ) *)))
+  (ITEM_MACRO_RULES tuple_sum {delim_brace}
+    (MACRO_RULE
+      a=(MACRO_TT {delim_paren} toks:14 $ ( $ i : tt : $ t : ident ) , *)
+      b=(MACRO_TT {delim_brace} toks:23 | t : ( $ ( $ t , ) * ) | 0 $ ( + t . $ i ) *)))
+  (ITEM_MACRO_RULES strs {delim_brace}
+    (MACRO_RULE
+      a=(MACRO_TT {delim_paren} toks:6 "a" => $ x : expr)
+      b=(MACRO_TT {delim_brace} toks:2 $ x))
+    (MACRO_RULE
+      a=(MACRO_TT {delim_paren} toks:6 "b" => $ x : expr)
+      b=(MACRO_TT {delim_brace} toks:4 $ x + 1)))
+  (ITEM_MACRO_RULES chars {delim_brace}
+    (MACRO_RULE
+      a=(MACRO_TT {delim_paren} toks:1 'x')
+      b=(MACRO_TT {delim_brace} toks:1 1))
+    (MACRO_RULE
+      a=(MACRO_TT {delim_paren} toks:1 'y')
+      b=(MACRO_TT {delim_brace} toks:1 2)))
+  (ITEM_MACRO_RULES with_ty {delim_brace}
+    (MACRO_RULE
+      a=(MACRO_TT {delim_paren} toks:14 $ v : ident : $ t : ty = $ e : expr)
+      b=(MACRO_TT {delim_brace} toks:10 let $ v : $ t = $ e ;)))
+  (ITEM_MACRO_RULES call_with {delim_brace}
+    (MACRO_RULE
+      a=(MACRO_TT {delim_paren} toks:14 $ f : path , $ ( $ a : expr ) , *)
+      b=(MACRO_TT {delim_brace} toks:11 $ f ( $ ( $ a ) , * ))))
+  (ITEM_MACRO_RULES items {delim_brace}
+    (MACRO_RULE
+      a=(MACRO_TT {delim_paren} toks:8 $ ( $ i : item ) *)
+      b=(MACRO_TT {delim_brace} toks:6 $ ( $ i ) *)))
+  (ITEM_MACRO_RULES sum_stmts {delim_brace}
+    (MACRO_RULE
+      a=(MACRO_TT {delim_paren} toks:9 $ ( $ s : stmt ) , *)
+      b=(MACRO_TT {delim_brace} toks:7 $ ( $ s ; ) *)))
+  (ITEM_MACRO_RULES forward {delim_brace}
+    (MACRO_RULE
+      a=(MACRO_TT {delim_paren} toks:8 $ ( $ t : tt ) *)
+      b=(MACRO_TT {delim_brace} toks:10 inner_fwd ! ( $ ( $ t ) * ))))
+  (ITEM_MACRO_RULES inner_fwd {delim_brace}
+    (MACRO_RULE
+      a=(MACRO_TT {delim_paren} toks:9 $ a : expr , $ b : expr)
+      b=(MACRO_TT {delim_brace} toks:5 $ a * $ b)))
+  (ITEM_MACRO_RULES idents {delim_brace}
+    (MACRO_RULE
+      a=(MACRO_TT {delim_paren} toks:8 $ ( $ i : ident ) *)
+      b=(MACRO_TT {delim_brace} toks:13 [ $ ( stringify ! ( $ i ) ) , * ])))
+  (ITEM_MACRO_RULES early {delim_brace}
+    (MACRO_RULE
+      a=(MACRO_TT {delim_paren} toks:4 $ x : expr)
+      b=(MACRO_TT {delim_brace} toks:10 if $ x > 0 { return 1 ; })))
+  (ITEM_ENUM Color
+    vis=(VIS)
+    @(ATTR derive {delim_paren} toks:1 Debug)
+    (VARIANT Red
+      a=(E_LIT_INT "1" #1))
+    (VARIANT Green
+      a=(E_LIT_INT "2" #2))
+    (VARIANT Blue
+      a=(E_LIT_INT "3" #3)))
+  (ITEM_IMPL
+    b=(T_PATH
+      a=(PATH
+        (PATH_SEG Color)))
+    c=(PATH {global}
+      (PATH_SEG core)
+      (PATH_SEG fmt)
+      (PATH_SEG Debug))
+    (ITEM_FN fmt
+      b=(T_PATH
+        a=(PATH {global}
+          (PATH_SEG core)
+          (PATH_SEG fmt)
+          (PATH_SEG Result)))
+      c=(BLOCK
+        a=(E_MATCH
+          a=(E_DEREF
+            a=(E_PATH
+              a=(PATH
+                (PATH_SEG self))))
+          (ARM
+            a=(P_PATH
+              a=(PATH
+                (PATH_SEG Color)
+                (PATH_SEG Red)))
+            c=(E_METHOD_CALL write_str
+              a=(E_PATH
+                a=(PATH
+                  (PATH_SEG f)))
+              (E_LIT_STR "Red")))
+          (ARM
+            a=(P_PATH
+              a=(PATH
+                (PATH_SEG Color)
+                (PATH_SEG Green)))
+            c=(E_METHOD_CALL write_str
+              a=(E_PATH
+                a=(PATH
+                  (PATH_SEG f)))
+              (E_LIT_STR "Green")))
+          (ARM
+            a=(P_PATH
+              a=(PATH
+                (PATH_SEG Color)
+                (PATH_SEG Blue)))
+            c=(E_METHOD_CALL write_str
+              a=(E_PATH
+                a=(PATH
+                  (PATH_SEG f)))
+              (E_LIT_STR "Blue")))))
+      (SELF_PARAM {ref})
+      (PARAM
+        a=(P_IDENT f)
+        b=(T_REF {mut}
+          a=(T_PATH
+            a=(PATH {global}
+              (PATH_SEG core)
+              (PATH_SEG fmt)
+              (PATH_SEG Formatter {angle}
+                (LIFETIME '_))))))))
+  (ITEM_IMPL
+    b=(T_PATH
+      a=(PATH
+        (PATH_SEG Color)))
+    (ITEM_FN name
+      b=(T_REF
+        a=(T_PATH
+          a=(PATH
+            (PATH_SEG str)))
+        b=(LIFETIME 'static))
+      c=(BLOCK
+        a=(E_MATCH
+          a=(E_PATH
+            a=(PATH
+              (PATH_SEG self)))
+          (ARM
+            a=(P_PATH
+              a=(PATH
+                (PATH_SEG Color)
+                (PATH_SEG Red)))
+            c=(E_LIT_STR "Red"))
+          (ARM
+            a=(P_PATH
+              a=(PATH
+                (PATH_SEG Color)
+                (PATH_SEG Green)))
+            c=(E_LIT_STR "Green"))
+          (ARM
+            a=(P_PATH
+              a=(PATH
+                (PATH_SEG Color)
+                (PATH_SEG Blue)))
+            c=(E_LIT_STR "Blue"))))
+      (SELF_PARAM {ref})))
+  (ITEM_FN one
+    b=(T_PATH
+      a=(PATH
+        (PATH_SEG i32)))
+    c=(BLOCK
+      a=(E_LIT_INT "1" #1)))
+  (ITEM_STRUCT W {tuple}
+    (FIELD
+      a=(T_PATH
+        a=(PATH
+          (PATH_SEG i32)))))
+  (ITEM_FN main
+    c=(BLOCK
+      (STMT_LET
+        a=(P_IDENT a)
+        c=(E_PAREN
+          a=(E_BINARY op:+
+            a=(E_PAREN
+              a=(E_BINARY op:*
+                a=(E_PAREN
+                  a=(E_PAREN
+                    a=(E_BINARY op:+
+                      a=(E_LIT_INT "1" #1)
+                      b=(E_LIT_INT "2" #2))))
+                b=(E_LIT_INT "3" #3)))
+            b=(E_LIT_INT "4" #4))))
+      (STMT_LET
+        a=(P_IDENT b)
+        c=(E_LIT_INT "1" #1))
+      (STMT_LET
+        a=(P_IDENT c)
+        c=(E_BINARY op:+
+          a=(E_LIT_INT "1" #1)
+          b=(E_LIT_INT "2" #2)))
+      (STMT_LET
+        a=(P_IDENT m)
+        c=(E_ARRAY
+          (E_ARRAY
+            (E_LIT_INT "1" #1)
+            (E_LIT_INT "2" #2))
+          (E_ARRAY
+            (E_LIT_INT "3" #3)
+            (E_LIT_INT "4" #4))))
+      (STMT_LET
+        a=(P_IDENT p)
+        c=(E_LIT_INT "1" #1))
+      (STMT_LET
+        a=(P_IDENT q)
+        c=(E_LIT_INT "2" #2))
+      (STMT_LET
+        a=(P_IDENT f)
+        c=(E_CLOSURE
+          (PARAM
+            a=(P_IDENT t__h65)
+            b=(T_TUPLE
+              (T_PATH
+                a=(PATH
+                  (PATH_SEG i32)))
+              (T_PATH
+                a=(PATH
+                  (PATH_SEG i32)))))
+          b=(E_BINARY op:+
+            a=(E_BINARY op:+
+              a=(E_LIT_INT "0" #0)
+              b=(E_TUPLE_FIELD #0
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG t__h65)))))
+            b=(E_TUPLE_FIELD #1
+              a=(E_PATH
+                a=(PATH
+                  (PATH_SEG t__h65)))))))
+      (STMT_LET
+        a=(P_IDENT s)
+        c=(E_BINARY op:+
+          a=(E_LIT_INT "1" #1)
+          b=(E_BINARY op:+
+            a=(E_LIT_INT "1" #1)
+            b=(E_LIT_INT "1" #1))))
+      (STMT_LET
+        a=(P_IDENT ch)
+        c=(E_BINARY op:+
+          a=(E_LIT_INT "1" #1)
+          b=(E_LIT_INT "2" #2)))
+      (STMT_LET
+        a=(P_IDENT w)
+        b=(T_PATH
+          a=(PATH
+            (PATH_SEG u8)))
+        c=(E_LIT_INT "3" #3))
+      (STMT_LET
+        a=(P_IDENT r)
+        c=(E_CALL
+          a=(E_PATH
+            a=(PATH
+              (PATH_SEG std)
+              (PATH_SEG cmp)
+              (PATH_SEG max)))
+          (E_LIT_INT "1" #1)
+          (E_LIT_INT "2" #2)))
+      (STMT_LET
+        a=(P_IDENT z)
+        c=(E_LIT_INT "1" #1))
+      (STMT_LET
+        a=(P_IDENT zz)
+        c=(E_LIT_INT "2" #2))
+      (STMT_LET
+        a=(P_IDENT fw)
+        c=(E_BINARY op:*
+          a=(E_LIT_INT "3" #3)
+          b=(E_LIT_INT "4" #4)))
+      (STMT_LET
+        a=(P_IDENT ids)
+        c=(E_ARRAY
+          (E_LIT_STR "alpha")
+          (E_LIT_STR "beta")))
+      (STMT_EXPR {semi}
+        a=(E_IF
+          a=(E_BINARY op:>
+            a=(E_PATH
+              a=(PATH
+                (PATH_SEG a)))
+            b=(E_LIT_INT "0" #0))
+          b=(BLOCK
+            (STMT_EXPR {semi}
+              a=(E_RETURN
+                a=(E_LIT_INT "1" #1))))))
+      (STMT_EXPR {semi}
+        a=(BLOCK
+          (STMT_LET
+            a=(P_IDENT __out {mut})
+            c=(E_CALL
+              a=(E_PATH
+                a=(PATH {global}
+                  (PATH_SEG core)
+                  (PATH_SEG io)
+                  (PATH_SEG stdout_raw)))))
+          (STMT_LET
+            a=(P_IDENT __f {mut})
+            c=(E_CALL
+              a=(E_PATH
+                a=(PATH {global}
+                  (PATH_SEG core)
+                  (PATH_SEG fmt)
+                  (PATH_SEG Formatter)
+                  (PATH_SEG new)))
+              (E_REF {mut}
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG __out))))))
+          a=(BLOCK
+            (STMT_LET
+              a=(P_IDENT __a0)
+              c=(E_REF
+                a=(E_PAREN
+                  a=(E_METHOD_CALL name
+                    a=(E_PATH
+                      a=(PATH
+                        (PATH_SEG Color)
+                        (PATH_SEG Red)))))))
+            (STMT_LET
+              a=(P_WILD)
+              c=(E_CALL
+                a=(E_PATH
+                  a=(PATH {global}
+                    (PATH_SEG core)
+                    (PATH_SEG fmt)
+                    (PATH_SEG Display)
+                    (PATH_SEG fmt)))
+                (E_PATH
+                  a=(PATH
+                    (PATH_SEG __a0)))
+                (E_REF {mut}
+                  a=(E_PATH
+                    a=(PATH
+                      (PATH_SEG __f))))))
+            (STMT_EXPR {semi}
+              a=(E_METHOD_CALL write_str
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG __f)))
+                (E_LIT_STR "\n")))))))))

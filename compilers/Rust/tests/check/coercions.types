@@ -1,0 +1,248 @@
+(CRATE ->crate
+  (ITEM_TRAIT Tr ->Tr
+    (ITEM_FN f ->Tr::f
+      b=(T_PATH ->i32
+        a=(PATH ->i32
+          (PATH_SEG i32 ->i32)))
+      (SELF_PARAM {ref} ->self)))
+  (ITEM_STRUCT S ->S)
+  (ITEM_IMPL ->S
+    b=(T_PATH ->S
+      a=(PATH ->S
+        (PATH_SEG S ->S)))
+    c=(PATH ->Tr
+      (PATH_SEG Tr ->Tr))
+    (ITEM_FN f ->S::f
+      b=(T_PATH ->i32
+        a=(PATH ->i32
+          (PATH_SEG i32 ->i32)))
+      c=(BLOCK
+        a=(E_LIT_INT "1" #1 :i32))
+      (SELF_PARAM {ref} ->self)))
+  (ITEM_FN takes_str ->takes_str
+    b=(T_PATH ->usize
+      a=(PATH ->usize
+        (PATH_SEG usize ->usize)))
+    c=(BLOCK
+      a=(E_METHOD_CALL len ->str::len :usize
+        a=(E_PATH ->s :&str
+          a=(PATH ->s
+            (PATH_SEG s ->s)))))
+    (PARAM
+      a=(P_IDENT s ->s :&str)
+      b=(T_REF
+        a=(T_PATH ->str
+          a=(PATH ->str
+            (PATH_SEG str ->str))))))
+  (ITEM_FN takes_slice ->takes_slice
+    b=(T_PATH ->usize
+      a=(PATH ->usize
+        (PATH_SEG usize ->usize)))
+    c=(BLOCK
+      a=(E_METHOD_CALL len -><impl>::len :usize
+        a=(E_PATH ->s :&[i32]
+          a=(PATH ->s
+            (PATH_SEG s ->s)))))
+    (PARAM
+      a=(P_IDENT s ->s :&[i32])
+      b=(T_REF
+        a=(T_SLICE
+          a=(T_PATH ->i32
+            a=(PATH ->i32
+              (PATH_SEG i32 ->i32)))))))
+  (ITEM_FN takes_ref ->takes_ref
+    b=(T_PATH ->i32
+      a=(PATH ->i32
+        (PATH_SEG i32 ->i32)))
+    c=(BLOCK
+      a=(E_DEREF :i32
+        a=(E_PATH ->s :&i32
+          a=(PATH ->s
+            (PATH_SEG s ->s)))))
+    (PARAM
+      a=(P_IDENT s ->s :&i32)
+      b=(T_REF
+        a=(T_PATH ->i32
+          a=(PATH ->i32
+            (PATH_SEG i32 ->i32))))))
+  (ITEM_FN takes_dyn ->takes_dyn
+    b=(T_PATH ->i32
+      a=(PATH ->i32
+        (PATH_SEG i32 ->i32)))
+    c=(BLOCK
+      a=(E_METHOD_CALL f ->Tr::f :i32
+        a=(E_PATH ->t :&dyn Tr
+          a=(PATH ->t
+            (PATH_SEG t ->t)))))
+    (PARAM
+      a=(P_IDENT t ->t :&dyn Tr)
+      b=(T_REF
+        a=(T_DYN {dyn}
+          a=(BOUNDS
+            (BOUND_TRAIT ->Tr
+              a=(PATH ->Tr
+                (PATH_SEG Tr ->Tr))))))))
+  (ITEM_FN nv ->nv
+    b=(T_PATH ->i32
+      a=(PATH ->i32
+        (PATH_SEG i32 ->i32)))
+    c=(BLOCK
+      (STMT_EXPR {semi}
+        a=(E_RETURN :!
+          a=(E_LIT_INT "1" #1 :i32)))))
+  (ITEM_FN main ->main
+    c=(BLOCK
+      (STMT_LET
+        a=(P_IDENT st ->st :String)
+        c=(E_CALL :String
+          a=(E_PATH ->String::from :fn(&str) -> String {from::<&str>}
+            a=(PATH ->core::string::String
+              (PATH_SEG String ->core::string::String)
+              (PATH_SEG from)))
+          (E_LIT_STR "a" :&str)))
+      (STMT_LET
+        a=(P_IDENT v ->v :Vec<i32>)
+        c=(E_CALL :Vec<i32>
+          a=(E_PATH ->Vec::from_array :fn([i32; 1]) -> Vec<i32> {from_array::<i32, 1>}
+            a=(PATH {global} ->core::vec::Vec
+              (PATH_SEG core ->core)
+              (PATH_SEG vec ->core::vec)
+              (PATH_SEG Vec ->core::vec::Vec)
+              (PATH_SEG from_array)))
+          (E_ARRAY :[i32; 1]
+            (E_LIT_INT "1" #1 :i32))))
+      (STMT_LET
+        a=(P_IDENT arr ->arr :[i32; 2])
+        c=(E_ARRAY :[i32; 2]
+          (E_LIT_INT "1" #1 :i32)
+          (E_LIT_INT "2" #2 :i32)))
+      (STMT_LET
+        a=(P_IDENT n {mut} ->n :i32)
+        c=(E_LIT_INT "5" #5 :i32))
+      (STMT_EXPR {semi}
+        a=(E_CALL :usize
+          a=(E_PATH ->takes_str :fn(&str) -> usize {takes_str}
+            a=(PATH ->takes_str
+              (PATH_SEG takes_str ->takes_str)))
+          (E_REF :&String
+            a=(E_PATH ->st :String
+              a=(PATH ->st
+                (PATH_SEG st ->st))))))
+      (STMT_EXPR {semi}
+        a=(E_CALL :usize
+          a=(E_PATH ->takes_slice :fn(&[i32]) -> usize {takes_slice}
+            a=(PATH ->takes_slice
+              (PATH_SEG takes_slice ->takes_slice)))
+          (E_REF :&Vec<i32>
+            a=(E_PATH ->v :Vec<i32>
+              a=(PATH ->v
+                (PATH_SEG v ->v))))))
+      (STMT_EXPR {semi}
+        a=(E_CALL :usize
+          a=(E_PATH ->takes_slice :fn(&[i32]) -> usize {takes_slice}
+            a=(PATH ->takes_slice
+              (PATH_SEG takes_slice ->takes_slice)))
+          (E_REF :&[i32; 2]
+            a=(E_PATH ->arr :[i32; 2]
+              a=(PATH ->arr
+                (PATH_SEG arr ->arr))))))
+      (STMT_EXPR {semi}
+        a=(E_CALL :i32
+          a=(E_PATH ->takes_ref :fn(&i32) -> i32 {takes_ref}
+            a=(PATH ->takes_ref
+              (PATH_SEG takes_ref ->takes_ref)))
+          (E_REF {mut} :&mut i32
+            a=(E_PATH ->n :i32
+              a=(PATH ->n
+                (PATH_SEG n ->n))))))
+      (STMT_EXPR {semi}
+        a=(E_CALL :i32
+          a=(E_PATH ->takes_dyn :fn(&dyn Tr) -> i32 {takes_dyn}
+            a=(PATH ->takes_dyn
+              (PATH_SEG takes_dyn ->takes_dyn)))
+          (E_REF :&S
+            a=(E_PATH ->S :S
+              a=(PATH ->S
+                (PATH_SEG S ->S))))))
+      (STMT_LET
+        a=(P_IDENT b ->b :Box<dyn Tr>)
+        b=(T_PATH ->core::boxed::Box
+          a=(PATH ->core::boxed::Box
+            (PATH_SEG Box {angle} ->core::boxed::Box
+              (T_DYN {dyn}
+                a=(BOUNDS
+                  (BOUND_TRAIT ->Tr
+                    a=(PATH ->Tr
+                      (PATH_SEG Tr ->Tr))))))))
+        c=(E_CALL :Box<S>
+          a=(E_PATH ->Box::new :fn(S) -> Box<S> {new::<S>}
+            a=(PATH ->core::boxed::Box
+              (PATH_SEG Box ->core::boxed::Box)
+              (PATH_SEG new)))
+          (E_PATH ->S :S
+            a=(PATH ->S
+              (PATH_SEG S ->S)))))
+      (STMT_LET
+        a=(P_IDENT r ->r :&&String)
+        c=(E_REF :&&String
+          a=(E_REF :&String
+            a=(E_PATH ->st :String
+              a=(PATH ->st
+                (PATH_SEG st ->st))))))
+      (STMT_EXPR {semi}
+        a=(E_CALL :usize
+          a=(E_PATH ->takes_str :fn(&str) -> usize {takes_str}
+            a=(PATH ->takes_str
+              (PATH_SEG takes_str ->takes_str)))
+          (E_PATH ->r :&&String
+            a=(PATH ->r
+              (PATH_SEG r ->r)))))
+      (STMT_LET
+        a=(P_IDENT x ->x :i32)
+        b=(T_PATH ->i32
+          a=(PATH ->i32
+            (PATH_SEG i32 ->i32)))
+        c=(E_IF :i32
+          a=(E_BINARY op:> :bool
+            a=(E_PATH ->n :i32
+              a=(PATH ->n
+                (PATH_SEG n ->n)))
+            b=(E_LIT_INT "1" #1 :i32))
+          b=(BLOCK
+            a=(E_LIT_INT "5" #5 :i32))
+          c=(BLOCK :i32
+            a=(E_CALL :!
+              a=(E_PATH ->core::panicking::panic_str :fn(&str, u32, u32, &str) -> ! {panic_str}
+                a=(PATH {global} ->core::panicking::panic_str
+                  (PATH_SEG core ->core)
+                  (PATH_SEG panicking ->core::panicking)
+                  (PATH_SEG panic_str ->core::panicking::panic_str)))
+              (E_LIT_STR "check/coercions.rs" :&str)
+              (E_LIT_INT u32 "22" #22 :u32)
+              (E_LIT_INT u32 "40" #40 :u32)
+              (E_LIT_STR "explicit panic" :&str)))))
+      (STMT_EXPR {semi}
+        a=(E_METHOD_CALL len ->String::len :usize
+          a=(E_PATH ->st :String
+            a=(PATH ->st
+              (PATH_SEG st ->st)))))
+      (STMT_EXPR {semi}
+        a=(E_METHOD_CALL len -><impl>::len :usize
+          a=(E_PATH ->arr :[i32; 2]
+            a=(PATH ->arr
+              (PATH_SEG arr ->arr)))))
+      (STMT_LET
+        a=(P_IDENT bx ->bx :Box<S>)
+        c=(E_CALL :Box<S>
+          a=(E_PATH ->Box::new :fn(S) -> Box<S> {new::<S>}
+            a=(PATH ->core::boxed::Box
+              (PATH_SEG Box ->core::boxed::Box)
+              (PATH_SEG new)))
+          (E_PATH ->S :S
+            a=(PATH ->S
+              (PATH_SEG S ->S)))))
+      (STMT_EXPR {semi}
+        a=(E_METHOD_CALL f ->S::f :i32
+          a=(E_PATH ->bx :Box<S>
+            a=(PATH ->bx
+              (PATH_SEG bx ->bx))))))))

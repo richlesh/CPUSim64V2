@@ -1,0 +1,1 @@
+errors/collect_param_count.rs:4: error: method `f` has 1 parameter but the declaration in trait `T::f` has 2

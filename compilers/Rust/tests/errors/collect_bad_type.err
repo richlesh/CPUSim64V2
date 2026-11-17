@@ -1,0 +1,1 @@
+errors/collect_bad_type.rs:4: error: method `f` has an incompatible type for trait

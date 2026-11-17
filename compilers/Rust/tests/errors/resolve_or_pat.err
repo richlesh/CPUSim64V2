@@ -1,0 +1,1 @@
+errors/resolve_or_pat.rs:3: error: variable `x` is not bound in all patterns

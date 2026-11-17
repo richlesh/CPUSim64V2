@@ -1,0 +1,114 @@
+(CRATE ->crate
+  (ITEM_FN main ->main
+    c=(BLOCK
+      (STMT_LET
+        a=(P_IDENT a ->a :i32)
+        c=(E_LIT_INT "1" #1 :i32))
+      (STMT_LET
+        a=(P_IDENT b {mut} ->b :i32)
+        c=(E_LIT_INT "2" #2 :i32))
+      (STMT_LET
+        a=(P_IDENT s ->s :String)
+        c=(E_CALL :String
+          a=(E_PATH ->String::from :fn(&str) -> String {from::<&str>}
+            a=(PATH ->core::string::String
+              (PATH_SEG String ->core::string::String)
+              (PATH_SEG from)))
+          (E_LIT_STR "x" :&str)))
+      (STMT_LET
+        a=(P_IDENT t ->t :String)
+        c=(E_CALL :String
+          a=(E_PATH ->String::from :fn(&str) -> String {from::<&str>}
+            a=(PATH ->core::string::String
+              (PATH_SEG String ->core::string::String)
+              (PATH_SEG from)))
+          (E_LIT_STR "y" :&str)))
+      (STMT_LET
+        a=(P_IDENT f1 ->f1 :{closure})
+        c=(E_CLOSURE :{closure}
+          b=(E_BINARY op:+ :i32
+            a=(E_PATH ->a :i32
+              a=(PATH ->a
+                (PATH_SEG a ->a)))
+            b=(E_LIT_INT "1" #1 :i32))))
+      (STMT_LET
+        a=(P_IDENT f2 {mut} ->f2 :{closure})
+        c=(E_CLOSURE :{closure}
+          b=(E_ASSIGN_OP op:+ :()
+            a=(E_PATH ->b :i32
+              a=(PATH ->b
+                (PATH_SEG b ->b)))
+            b=(E_LIT_INT "1" #1 :i32))))
+      (STMT_LET
+        a=(P_IDENT f3 ->f3 :{closure})
+        c=(E_CLOSURE :{closure}
+          b=(E_METHOD_CALL len ->String::len :usize
+            a=(E_PATH ->s :String
+              a=(PATH ->s
+                (PATH_SEG s ->s))))))
+      (STMT_LET
+        a=(P_IDENT f4 ->f4 :{closure})
+        c=(E_CLOSURE {move} :{closure}
+          b=(E_METHOD_CALL len ->String::len :usize
+            a=(E_PATH ->t :String
+              a=(PATH ->t
+                (PATH_SEG t ->t))))))
+      (STMT_LET
+        a=(P_IDENT u ->u :String)
+        c=(E_CALL :String
+          a=(E_PATH ->String::from :fn(&str) -> String {from::<&str>}
+            a=(PATH ->core::string::String
+              (PATH_SEG String ->core::string::String)
+              (PATH_SEG from)))
+          (E_LIT_STR "z" :&str)))
+      (STMT_LET
+        a=(P_IDENT f5 ->f5 :{closure})
+        c=(E_CLOSURE :{closure}
+          b=(BLOCK :usize
+            (STMT_LET
+              a=(P_IDENT v ->v :String)
+              c=(E_PATH ->u :String
+                a=(PATH ->u
+                  (PATH_SEG u ->u))))
+            a=(E_METHOD_CALL len ->String::len :usize
+              a=(E_PATH ->v :String
+                a=(PATH ->v
+                  (PATH_SEG v ->v)))))))
+      (STMT_LET
+        a=(P_IDENT f6 ->f6 :{closure})
+        c=(E_CLOSURE :{closure}
+          (PARAM
+            a=(P_IDENT x ->x :i32)
+            b=(T_PATH ->i32
+              a=(PATH ->i32
+                (PATH_SEG i32 ->i32))))
+          b=(BLOCK :i32
+            (STMT_LET
+              a=(P_IDENT g ->g :{closure})
+              c=(E_CLOSURE :{closure}
+                (PARAM
+                  a=(P_IDENT y ->y :i32)
+                  b=(T_PATH ->i32
+                    a=(PATH ->i32
+                      (PATH_SEG i32 ->i32))))
+                b=(E_BINARY op:+ :i32
+                  a=(E_BINARY op:+ :i32
+                    a=(E_PATH ->x :i32
+                      a=(PATH ->x
+                        (PATH_SEG x ->x)))
+                    b=(E_PATH ->y :i32
+                      a=(PATH ->y
+                        (PATH_SEG y ->y))))
+                  b=(E_PATH ->a :i32
+                    a=(PATH ->a
+                      (PATH_SEG a ->a))))))
+            a=(E_CALL :i32
+              a=(E_PATH ->g :{closure}
+                a=(PATH ->g
+                  (PATH_SEG g ->g)))
+              (E_LIT_INT "1" #1 :i32)))))
+      (STMT_EXPR {semi}
+        a=(E_CALL :()
+          a=(E_PATH ->f2 :{closure}
+            a=(PATH ->f2
+              (PATH_SEG f2 ->f2))))))))

@@ -1,0 +1,307 @@
+(CRATE ->crate
+  (ITEM_MOD a {inline} ->a
+    (ITEM_MOD b {inline} ->a::b
+      vis=(VIS)
+      (ITEM_FN f ->a::b::f
+        vis=(VIS)
+        b=(T_PATH ->i32
+          a=(PATH ->i32
+            (PATH_SEG i32 ->i32)))
+        c=(BLOCK
+          a=(E_LIT_INT "1" #1)))
+      (ITEM_STRUCT S {named} ->a::b::S
+        vis=(VIS)
+        (FIELD v ->a::b::S::v
+          vis=(VIS)
+          a=(T_PATH ->i32
+            a=(PATH ->i32
+              (PATH_SEG i32 ->i32)))))
+      (ITEM_CONST K ->a::b::K
+        vis=(VIS)
+        a=(T_PATH ->i32
+          a=(PATH ->i32
+            (PATH_SEG i32 ->i32)))
+        b=(E_LIT_INT "7" #7))
+      (ITEM_TRAIT T ->a::b::T
+        vis=(VIS)
+        (ITEM_FN t ->a::b::T::t
+          b=(T_PATH ->i32
+            a=(PATH ->i32
+              (PATH_SEG i32 ->i32)))
+          (SELF_PARAM {ref} ->self)))
+      (ITEM_IMPL ->S
+        b=(T_PATH ->a::b::S
+          a=(PATH ->a::b::S
+            (PATH_SEG S ->a::b::S)))
+        c=(PATH ->a::b::T
+          (PATH_SEG T ->a::b::T))
+        (ITEM_FN t ->S::t
+          b=(T_PATH ->i32
+            a=(PATH ->i32
+              (PATH_SEG i32 ->i32)))
+          c=(BLOCK
+            a=(E_FIELD v
+              a=(E_PATH ->self
+                a=(PATH ->self
+                  (PATH_SEG self ->self)))))
+          (SELF_PARAM {ref} ->self))))
+    (ITEM_USE
+      vis=(VIS)
+      a=(USE_TREE as:g
+        a=(PATH
+          (PATH_SEG self)
+          (PATH_SEG b)
+          (PATH_SEG f))))
+    (ITEM_USE
+      vis=(VIS)
+      a=(USE_TREE {glob}
+        a=(PATH
+          (PATH_SEG self)
+          (PATH_SEG b))))
+    (ITEM_FN only_crate ->a::only_crate
+      vis=(VIS {vis_crate})
+      c=(BLOCK))
+    (ITEM_FN only_super ->a::only_super
+      vis=(VIS {vis_super})
+      c=(BLOCK)))
+  (ITEM_MOD chain {inline} ->chain
+    (ITEM_USE
+      vis=(VIS)
+      a=(USE_TREE as:h
+        a=(PATH
+          (PATH_SEG crate)
+          (PATH_SEG a)
+          (PATH_SEG g))))
+    (ITEM_USE
+      vis=(VIS)
+      a=(USE_TREE
+        a=(PATH
+          (PATH_SEG crate)
+          (PATH_SEG chain2)
+          (PATH_SEG h2)))))
+  (ITEM_MOD chain2 {inline} ->chain2
+    (ITEM_USE
+      vis=(VIS)
+      a=(USE_TREE as:h2
+        a=(PATH
+          (PATH_SEG crate)
+          (PATH_SEG chain)
+          (PATH_SEG h)))))
+  (ITEM_USE
+    a=(USE_TREE {group}
+      a=(PATH
+        (PATH_SEG a)
+        (PATH_SEG b))
+      (USE_TREE
+        a=(PATH
+          (PATH_SEG self)))
+      (USE_TREE
+        a=(PATH
+          (PATH_SEG S)))
+      (USE_TREE as:_
+        a=(PATH
+          (PATH_SEG T)))))
+  (ITEM_USE
+    a=(USE_TREE {group}
+      a=(PATH
+        (PATH_SEG a))
+      (USE_TREE
+        a=(PATH
+          (PATH_SEG g)))
+      (USE_TREE
+        a=(PATH
+          (PATH_SEG K)))))
+  (ITEM_USE
+    a=(USE_TREE
+      a=(PATH
+        (PATH_SEG chain)
+        (PATH_SEG h2))))
+  (ITEM_USE
+    a=(USE_TREE
+      a=(PATH
+        (PATH_SEG std)
+        (PATH_SEG mem)
+        (PATH_SEG swap))))
+  (ITEM_USE
+    a=(USE_TREE
+      a=(PATH {global}
+        (PATH_SEG core)
+        (PATH_SEG mem))))
+  (ITEM_USE
+    a=(USE_TREE {group}
+      a=(PATH
+        (PATH_SEG core)
+        (PATH_SEG option)
+        (PATH_SEG Option))
+      (USE_TREE as:Yes
+        a=(PATH
+          (PATH_SEG Some)))
+      (USE_TREE as:No
+        a=(PATH
+          (PATH_SEG None)))))
+  (ITEM_ENUM Dir ->Dir
+    (VARIANT Up ->Dir::Up)
+    (VARIANT Down ->Dir::Down))
+  (ITEM_USE
+    a=(USE_TREE {glob}
+      a=(PATH
+        (PATH_SEG Dir))))
+  (ITEM_USE
+    a=(USE_TREE as:Climb
+      a=(PATH
+        (PATH_SEG self)
+        (PATH_SEG Dir)
+        (PATH_SEG Up))))
+  (ITEM_FN main ->main
+    c=(BLOCK
+      (STMT_LET
+        a=(P_IDENT x ->x)
+        c=(E_BINARY op:+
+          a=(E_BINARY op:+
+            a=(E_BINARY op:+
+              a=(E_BINARY op:+
+                a=(E_CALL
+                  a=(E_PATH ->a::b::f
+                    a=(PATH ->a::b::f
+                      (PATH_SEG b ->a::b)
+                      (PATH_SEG f ->a::b::f))))
+                b=(E_CALL
+                  a=(E_PATH ->a::b::f
+                    a=(PATH ->a::b::f
+                      (PATH_SEG g ->a::b::f)))))
+              b=(E_PATH ->a::b::K
+                a=(PATH ->a::b::K
+                  (PATH_SEG K ->a::b::K))))
+            b=(E_CALL
+              a=(E_PATH ->a::b::f
+                a=(PATH ->a::b::f
+                  (PATH_SEG h2 ->a::b::f)))))
+          b=(E_CALL
+            a=(E_PATH ->a::b::f
+              a=(PATH ->a::b::f
+                (PATH_SEG chain ->chain)
+                (PATH_SEG h ->a::b::f))))))
+      (STMT_LET
+        a=(P_IDENT s ->s)
+        c=(E_STRUCT ->a::b::S
+          a=(PATH ->a::b::S
+            (PATH_SEG S ->a::b::S))
+          (FIELD_INIT v
+            a=(E_LIT_INT "3" #3))))
+      (STMT_LET
+        a=(P_IDENT t ->t)
+        c=(E_METHOD_CALL t
+          a=(E_PATH ->s
+            a=(PATH ->s
+              (PATH_SEG s ->s)))))
+      (STMT_LET
+        a=(P_IDENT d ->d)
+        c=(E_PATH ->Dir::Up
+          a=(PATH ->Dir::Up
+            (PATH_SEG Up ->Dir::Up))))
+      (STMT_LET
+        a=(P_IDENT e ->e)
+        c=(E_PATH ->Dir::Up
+          a=(PATH ->Dir::Up
+            (PATH_SEG Climb ->Dir::Up))))
+      (STMT_EXPR
+        a=(E_MATCH
+          a=(E_PATH ->d
+            a=(PATH ->d
+              (PATH_SEG d ->d)))
+          (ARM
+            a=(P_IDENT Up ->Dir::Up)
+            c=(BLOCK))
+          (ARM
+            a=(P_IDENT Down ->Dir::Down)
+            c=(BLOCK))))
+      (STMT_LET
+        a=(P_IDENT p {mut} ->p)
+        c=(E_LIT_INT "1" #1))
+      (STMT_LET
+        a=(P_IDENT q {mut} ->q)
+        c=(E_LIT_INT "2" #2))
+      (STMT_EXPR {semi}
+        a=(E_CALL
+          a=(E_PATH ->core::mem::swap
+            a=(PATH ->core::mem::swap
+              (PATH_SEG swap ->core::mem::swap)))
+          (E_REF {mut}
+            a=(E_PATH ->p
+              a=(PATH ->p
+                (PATH_SEG p ->p))))
+          (E_REF {mut}
+            a=(E_PATH ->q
+              a=(PATH ->q
+                (PATH_SEG q ->q))))))
+      (STMT_EXPR {semi}
+        a=(E_CALL
+          a=(E_PATH ->core::mem::swap
+            a=(PATH ->core::mem::swap
+              (PATH_SEG mem ->core::mem)
+              (PATH_SEG swap ->core::mem::swap)))
+          (E_REF {mut}
+            a=(E_PATH ->p
+              a=(PATH ->p
+                (PATH_SEG p ->p))))
+          (E_REF {mut}
+            a=(E_PATH ->q
+              a=(PATH ->q
+                (PATH_SEG q ->q))))))
+      (STMT_LET
+        a=(P_IDENT y ->y)
+        c=(E_CALL
+          a=(E_PATH ->core::option::Option::Some
+            a=(PATH ->core::option::Option::Some
+              (PATH_SEG Yes ->core::option::Option::Some)))
+          (E_LIT_INT "1" #1)))
+      (STMT_LET
+        a=(P_IDENT n ->n)
+        b=(T_PATH ->core::option::Option
+          a=(PATH ->core::option::Option
+            (PATH_SEG Option {angle} ->core::option::Option
+              (T_PATH ->i32
+                a=(PATH ->i32
+                  (PATH_SEG i32 ->i32))))))
+        c=(E_PATH ->core::option::Option::None
+          a=(PATH ->core::option::Option::None
+            (PATH_SEG No ->core::option::Option::None))))
+      (STMT_EXPR {semi}
+        a=(E_CALL
+          a=(E_PATH ->a::only_crate
+            a=(PATH ->a::only_crate
+              (PATH_SEG a ->a)
+              (PATH_SEG only_crate ->a::only_crate)))))
+      (STMT_EXPR {semi}
+        a=(E_CALL
+          a=(E_PATH ->a::only_super
+            a=(PATH ->a::only_super
+              (PATH_SEG a ->a)
+              (PATH_SEG only_super ->a::only_super)))))
+      a=(BLOCK
+        (ITEM_USE
+          a=(USE_TREE as:inner_f
+            a=(PATH
+              (PATH_SEG a)
+              (PATH_SEG b)
+              (PATH_SEG f))))
+        (ITEM_FN nested ->nested
+          b=(T_PATH ->i32
+            a=(PATH ->i32
+              (PATH_SEG i32 ->i32)))
+          c=(BLOCK
+            a=(E_CALL
+              a=(E_PATH ->a::b::f
+                a=(PATH ->a::b::f
+                  (PATH_SEG inner_f ->a::b::f))))))
+        (STMT_LET
+          a=(P_IDENT z ->z)
+          c=(E_BINARY op:+
+            a=(E_CALL
+              a=(E_PATH ->a::b::f
+                a=(PATH ->a::b::f
+                  (PATH_SEG inner_f ->a::b::f))))
+            b=(E_CALL
+              a=(E_PATH ->nested
+                a=(PATH ->nested
+                  (PATH_SEG nested ->nested))))))))))

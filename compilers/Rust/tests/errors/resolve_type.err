@@ -1,0 +1,1 @@
+errors/resolve_type.rs:2: error: cannot find type `Foo` in this scope

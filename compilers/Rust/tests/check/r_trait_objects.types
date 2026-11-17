@@ -1,0 +1,579 @@
+(CRATE ->crate
+  (ITEM_TRAIT Animal ->Animal
+    (ITEM_FN name ->Animal::name
+      b=(T_PATH ->core::string::String
+        a=(PATH ->core::string::String
+          (PATH_SEG String ->core::string::String)))
+      (SELF_PARAM {ref} ->self))
+    (ITEM_FN sound ->Animal::sound
+      b=(T_PATH ->core::string::String
+        a=(PATH ->core::string::String
+          (PATH_SEG String ->core::string::String)))
+      (SELF_PARAM {ref} ->self))
+    (ITEM_FN legs ->Animal::legs
+      b=(T_PATH ->u32
+        a=(PATH ->u32
+          (PATH_SEG u32 ->u32)))
+      c=(BLOCK
+        a=(E_LIT_INT "4" #4 :u32))
+      (SELF_PARAM {ref} ->self))
+    (ITEM_FN describe ->Animal::describe
+      b=(T_PATH ->core::string::String
+        a=(PATH ->core::string::String
+          (PATH_SEG String ->core::string::String)))
+      c=(BLOCK
+        a=(BLOCK :String
+          (STMT_LET
+            a=(P_IDENT __s {mut} ->__s :String)
+            c=(E_CALL :String
+              a=(E_PATH ->String::new :fn() -> String {new}
+                a=(PATH {global} ->core::string::String
+                  (PATH_SEG core ->core)
+                  (PATH_SEG string ->core::string)
+                  (PATH_SEG String ->core::string::String)
+                  (PATH_SEG new)))))
+          (STMT_EXPR
+            a=(BLOCK :()
+              (STMT_LET
+                a=(P_IDENT __f {mut} ->__f :Formatter)
+                c=(E_CALL :Formatter
+                  a=(E_PATH ->Formatter::new :fn(&mut dyn Write) -> Formatter {new}
+                    a=(PATH {global} ->core::fmt::Formatter
+                      (PATH_SEG core ->core)
+                      (PATH_SEG fmt ->core::fmt)
+                      (PATH_SEG Formatter ->core::fmt::Formatter)
+                      (PATH_SEG new)))
+                  (E_REF {mut} :&mut String
+                    a=(E_PATH ->__s :String
+                      a=(PATH ->__s
+                        (PATH_SEG __s ->__s))))))
+              a=(BLOCK :()
+                (STMT_LET
+                  a=(P_IDENT __a0 ->__a0 :&String)
+                  c=(E_REF :&String
+                    a=(E_PAREN :String
+                      a=(E_METHOD_CALL name ->Animal::name :String
+                        a=(E_PATH ->self :&Self
+                          a=(PATH ->self
+                            (PATH_SEG self ->self)))))))
+                (STMT_LET
+                  a=(P_IDENT __a1 ->__a1 :&String)
+                  c=(E_REF :&String
+                    a=(E_PAREN :String
+                      a=(E_METHOD_CALL sound ->Animal::sound :String
+                        a=(E_PATH ->self :&Self
+                          a=(PATH ->self
+                            (PATH_SEG self ->self)))))))
+                (STMT_LET
+                  a=(P_IDENT __a2 ->__a2 :&u32)
+                  c=(E_REF :&u32
+                    a=(E_PAREN :u32
+                      a=(E_METHOD_CALL legs ->Animal::legs :u32
+                        a=(E_PATH ->self :&Self
+                          a=(PATH ->self
+                            (PATH_SEG self ->self)))))))
+                (STMT_LET
+                  a=(P_WILD :Result<(), Error>)
+                  c=(E_CALL :Result<(), Error>
+                    a=(E_PATH ->String::fmt :fn(&String, &mut Formatter) -> Result<(), Error> {fmt}
+                      a=(PATH {global} ->core::fmt::Display
+                        (PATH_SEG core ->core)
+                        (PATH_SEG fmt ->core::fmt)
+                        (PATH_SEG Display ->core::fmt::Display)
+                        (PATH_SEG fmt)))
+                    (E_PATH ->__a0 :&String
+                      a=(PATH ->__a0
+                        (PATH_SEG __a0 ->__a0)))
+                    (E_REF {mut} :&mut Formatter
+                      a=(E_PATH ->__f :Formatter
+                        a=(PATH ->__f
+                          (PATH_SEG __f ->__f))))))
+                (STMT_EXPR {semi}
+                  a=(E_METHOD_CALL write_str ->Formatter::write_str :Result<(), Error>
+                    a=(E_PATH ->__f :Formatter
+                      a=(PATH ->__f
+                        (PATH_SEG __f ->__f)))
+                    (E_LIT_STR " says " :&str)))
+                (STMT_LET
+                  a=(P_WILD :Result<(), Error>)
+                  c=(E_CALL :Result<(), Error>
+                    a=(E_PATH ->String::fmt :fn(&String, &mut Formatter) -> Result<(), Error> {fmt}
+                      a=(PATH {global} ->core::fmt::Display
+                        (PATH_SEG core ->core)
+                        (PATH_SEG fmt ->core::fmt)
+                        (PATH_SEG Display ->core::fmt::Display)
+                        (PATH_SEG fmt)))
+                    (E_PATH ->__a1 :&String
+                      a=(PATH ->__a1
+                        (PATH_SEG __a1 ->__a1)))
+                    (E_REF {mut} :&mut Formatter
+                      a=(E_PATH ->__f :Formatter
+                        a=(PATH ->__f
+                          (PATH_SEG __f ->__f))))))
+                (STMT_EXPR {semi}
+                  a=(E_METHOD_CALL write_str ->Formatter::write_str :Result<(), Error>
+                    a=(E_PATH ->__f :Formatter
+                      a=(PATH ->__f
+                        (PATH_SEG __f ->__f)))
+                    (E_LIT_STR " on " :&str)))
+                (STMT_LET
+                  a=(P_WILD :Result<(), Error>)
+                  c=(E_CALL :Result<(), Error>
+                    a=(E_PATH ->u32::fmt :fn(&u32, &mut Formatter) -> Result<(), Error> {fmt}
+                      a=(PATH {global} ->core::fmt::Display
+                        (PATH_SEG core ->core)
+                        (PATH_SEG fmt ->core::fmt)
+                        (PATH_SEG Display ->core::fmt::Display)
+                        (PATH_SEG fmt)))
+                    (E_PATH ->__a2 :&u32
+                      a=(PATH ->__a2
+                        (PATH_SEG __a2 ->__a2)))
+                    (E_REF {mut} :&mut Formatter
+                      a=(E_PATH ->__f :Formatter
+                        a=(PATH ->__f
+                          (PATH_SEG __f ->__f))))))
+                (STMT_EXPR {semi}
+                  a=(E_METHOD_CALL write_str ->Formatter::write_str :Result<(), Error>
+                    a=(E_PATH ->__f :Formatter
+                      a=(PATH ->__f
+                        (PATH_SEG __f ->__f)))
+                    (E_LIT_STR " legs" :&str))))))
+          a=(E_PATH ->__s :String
+            a=(PATH ->__s
+              (PATH_SEG __s ->__s)))))
+      (SELF_PARAM {ref} ->self)))
+  (ITEM_STRUCT Dog {named} ->Dog
+    (FIELD name ->Dog::name
+      a=(T_PATH ->core::string::String
+        a=(PATH ->core::string::String
+          (PATH_SEG String ->core::string::String)))))
+  (ITEM_STRUCT Bird ->Bird)
+  (ITEM_STRUCT Cow {named} ->Cow
+    (FIELD weight ->Cow::weight
+      a=(T_PATH ->f64
+        a=(PATH ->f64
+          (PATH_SEG f64 ->f64)))))
+  (ITEM_IMPL ->Dog
+    b=(T_PATH ->Dog
+      a=(PATH ->Dog
+        (PATH_SEG Dog ->Dog)))
+    c=(PATH ->Animal
+      (PATH_SEG Animal ->Animal))
+    (ITEM_FN name ->Dog::name
+      b=(T_PATH ->core::string::String
+        a=(PATH ->core::string::String
+          (PATH_SEG String ->core::string::String)))
+      c=(BLOCK
+        a=(E_METHOD_CALL clone ->String::clone :String
+          a=(E_FIELD name ->Dog::name :String
+            a=(E_PATH ->self :&Dog
+              a=(PATH ->self
+                (PATH_SEG self ->self))))))
+      (SELF_PARAM {ref} ->self))
+    (ITEM_FN sound ->Dog::sound
+      b=(T_PATH ->core::string::String
+        a=(PATH ->core::string::String
+          (PATH_SEG String ->core::string::String)))
+      c=(BLOCK
+        a=(E_METHOD_CALL to_string ->T::to_string :String
+          a=(E_LIT_STR "woof" :&str)))
+      (SELF_PARAM {ref} ->self)))
+  (ITEM_IMPL ->Bird
+    b=(T_PATH ->Bird
+      a=(PATH ->Bird
+        (PATH_SEG Bird ->Bird)))
+    c=(PATH ->Animal
+      (PATH_SEG Animal ->Animal))
+    (ITEM_FN name ->Bird::name
+      b=(T_PATH ->core::string::String
+        a=(PATH ->core::string::String
+          (PATH_SEG String ->core::string::String)))
+      c=(BLOCK
+        a=(E_METHOD_CALL into ->T::into :String
+          a=(E_LIT_STR "bird" :&str)))
+      (SELF_PARAM {ref} ->self))
+    (ITEM_FN sound ->Bird::sound
+      b=(T_PATH ->core::string::String
+        a=(PATH ->core::string::String
+          (PATH_SEG String ->core::string::String)))
+      c=(BLOCK
+        a=(E_CALL :String
+          a=(E_PATH ->String::from :fn(&str) -> String {from::<&str>}
+            a=(PATH ->core::string::String
+              (PATH_SEG String ->core::string::String)
+              (PATH_SEG from)))
+          (E_LIT_STR "tweet" :&str)))
+      (SELF_PARAM {ref} ->self))
+    (ITEM_FN legs ->Bird::legs
+      b=(T_PATH ->u32
+        a=(PATH ->u32
+          (PATH_SEG u32 ->u32)))
+      c=(BLOCK
+        a=(E_LIT_INT "2" #2 :u32))
+      (SELF_PARAM {ref} ->self)))
+  (ITEM_IMPL ->Cow
+    b=(T_PATH ->Cow
+      a=(PATH ->Cow
+        (PATH_SEG Cow ->Cow)))
+    c=(PATH ->Animal
+      (PATH_SEG Animal ->Animal))
+    (ITEM_FN name ->Cow::name
+      b=(T_PATH ->core::string::String
+        a=(PATH ->core::string::String
+          (PATH_SEG String ->core::string::String)))
+      c=(BLOCK
+        a=(E_METHOD_CALL to_string ->T::to_string :String
+          a=(E_LIT_STR "cow" :&str)))
+      (SELF_PARAM {ref} ->self))
+    (ITEM_FN sound ->Cow::sound
+      b=(T_PATH ->core::string::String
+        a=(PATH ->core::string::String
+          (PATH_SEG String ->core::string::String)))
+      c=(BLOCK
+        a=(E_METHOD_CALL to_string ->T::to_string :String
+          a=(E_LIT_STR "moo" :&str)))
+      (SELF_PARAM {ref} ->self)))
+  (ITEM_FN loudest ->loudest
+    b=(T_PATH ->core::option::Option
+      a=(PATH ->core::option::Option
+        (PATH_SEG Option {angle} ->core::option::Option
+          (T_REF
+            a=(T_PATH ->core::boxed::Box
+              a=(PATH ->core::boxed::Box
+                (PATH_SEG Box {angle} ->core::boxed::Box
+                  (T_DYN {dyn}
+                    a=(BOUNDS
+                      (BOUND_TRAIT ->Animal
+                        a=(PATH ->Animal
+                          (PATH_SEG Animal ->Animal))))))))))))
+    c=(BLOCK
+      (STMT_LET
+        a=(P_IDENT best {mut} ->best :Option<&Box<dyn Animal>>)
+        b=(T_PATH ->core::option::Option
+          a=(PATH ->core::option::Option
+            (PATH_SEG Option {angle} ->core::option::Option
+              (T_REF
+                a=(T_PATH ->core::boxed::Box
+                  a=(PATH ->core::boxed::Box
+                    (PATH_SEG Box {angle} ->core::boxed::Box
+                      (T_DYN {dyn}
+                        a=(BOUNDS
+                          (BOUND_TRAIT ->Animal
+                            a=(PATH ->Animal
+                              (PATH_SEG Animal ->Animal))))))))))))
+        c=(E_PATH ->core::option::Option::None :Option<&Box<dyn Animal>>
+          a=(PATH ->core::option::Option::None
+            (PATH_SEG None ->core::option::Option::None))))
+      (STMT_EXPR
+        a=(E_FOR :()
+          a=(P_IDENT a ->a :&Box<dyn Animal>)
+          b=(E_METHOD_CALL iter ->Vec::iter :Iter<Box<dyn Animal>>
+            a=(E_PATH ->zoo :&Vec<Box<dyn Animal>>
+              a=(PATH ->zoo
+                (PATH_SEG zoo ->zoo))))
+          c=(BLOCK
+            a=(E_IF :()
+              a=(E_BINARY op:|| :bool
+                a=(E_METHOD_CALL is_none ->Option::is_none :bool
+                  a=(E_PATH ->best :Option<&Box<dyn Animal>>
+                    a=(PATH ->best
+                      (PATH_SEG best ->best))))
+                b=(E_BINARY op:> :bool
+                  a=(E_METHOD_CALL len ->String::len :usize
+                    a=(E_METHOD_CALL sound ->Animal::sound :String
+                      a=(E_PATH ->a :&Box<dyn Animal>
+                        a=(PATH ->a
+                          (PATH_SEG a ->a)))))
+                  b=(E_METHOD_CALL len ->String::len :usize
+                    a=(E_METHOD_CALL sound ->Animal::sound :String
+                      a=(E_METHOD_CALL unwrap ->Option::unwrap :&Box<dyn Animal>
+                        a=(E_PATH ->best :Option<&Box<dyn Animal>>
+                          a=(PATH ->best
+                            (PATH_SEG best ->best))))))))
+              b=(BLOCK
+                (STMT_EXPR {semi}
+                  a=(E_ASSIGN :()
+                    a=(E_PATH ->best :Option<&Box<dyn Animal>>
+                      a=(PATH ->best
+                        (PATH_SEG best ->best)))
+                    b=(E_CALL :Option<&Box<dyn Animal>>
+                      a=(E_PATH ->core::option::Option::Some :fn(&Box<dyn Animal>) -> Option<&Box<dyn Animal>> {Some::<&Box<dyn Animal>>}
+                        a=(PATH ->core::option::Option::Some
+                          (PATH_SEG Some ->core::option::Option::Some)))
+                      (E_PATH ->a :&Box<dyn Animal>
+                        a=(PATH ->a
+                          (PATH_SEG a ->a)))))))))))
+      a=(E_PATH ->best :Option<&Box<dyn Animal>>
+        a=(PATH ->best
+          (PATH_SEG best ->best))))
+    (PARAM
+      a=(P_IDENT zoo ->zoo :&Vec<Box<dyn Animal>>)
+      b=(T_REF
+        a=(T_PATH ->core::vec::Vec
+          a=(PATH ->core::vec::Vec
+            (PATH_SEG Vec {angle} ->core::vec::Vec
+              (T_PATH ->core::boxed::Box
+                a=(PATH ->core::boxed::Box
+                  (PATH_SEG Box {angle} ->core::boxed::Box
+                    (T_DYN {dyn}
+                      a=(BOUNDS
+                        (BOUND_TRAIT ->Animal
+                          a=(PATH ->Animal
+                            (PATH_SEG Animal ->Animal))))))))))))))
+  (ITEM_FN total_legs ->total_legs
+    b=(T_PATH ->u32
+      a=(PATH ->u32
+        (PATH_SEG u32 ->u32)))
+    c=(BLOCK
+      a=(E_METHOD_CALL sum ->core::iter::Iterator::sum :u32
+        a=(E_METHOD_CALL map ->core::iter::Iterator::map :Map<Iter<Box<dyn Animal>>, {closure}>
+          a=(E_METHOD_CALL iter -><impl>::iter :Iter<Box<dyn Animal>>
+            a=(E_PATH ->zoo :&[Box<dyn Animal>]
+              a=(PATH ->zoo
+                (PATH_SEG zoo ->zoo))))
+          (E_CLOSURE :{closure}
+            (PARAM
+              a=(P_IDENT a ->a :&Box<dyn Animal>))
+            b=(E_METHOD_CALL legs ->Animal::legs :u32
+              a=(E_PATH ->a :&Box<dyn Animal>
+                a=(PATH ->a
+                  (PATH_SEG a ->a))))))))
+    (PARAM
+      a=(P_IDENT zoo ->zoo :&[Box<dyn Animal>])
+      b=(T_REF
+        a=(T_SLICE
+          a=(T_PATH ->core::boxed::Box
+            a=(PATH ->core::boxed::Box
+              (PATH_SEG Box {angle} ->core::boxed::Box
+                (T_DYN {dyn}
+                  a=(BOUNDS
+                    (BOUND_TRAIT ->Animal
+                      a=(PATH ->Animal
+                        (PATH_SEG Animal ->Animal))))))))))))
+  (ITEM_FN main ->main
+    c=(BLOCK
+      (STMT_LET
+        a=(P_IDENT zoo {mut} ->zoo :Vec<Box<dyn Animal>>)
+        b=(T_PATH ->core::vec::Vec
+          a=(PATH ->core::vec::Vec
+            (PATH_SEG Vec {angle} ->core::vec::Vec
+              (T_PATH ->core::boxed::Box
+                a=(PATH ->core::boxed::Box
+                  (PATH_SEG Box {angle} ->core::boxed::Box
+                    (T_DYN {dyn}
+                      a=(BOUNDS
+                        (BOUND_TRAIT ->Animal
+                          a=(PATH ->Animal
+                            (PATH_SEG Animal ->Animal)))))))))))
+        c=(E_CALL :Vec<Box<dyn Animal>>
+          a=(E_PATH ->Vec::new :fn() -> Vec<Box<dyn Animal>> {new::<Box<dyn Animal>>}
+            a=(PATH ->core::vec::Vec
+              (PATH_SEG Vec ->core::vec::Vec)
+              (PATH_SEG new)))))
+      (STMT_EXPR {semi}
+        a=(E_METHOD_CALL push ->Vec::push :()
+          a=(E_PATH ->zoo :Vec<Box<dyn Animal>>
+            a=(PATH ->zoo
+              (PATH_SEG zoo ->zoo)))
+          (E_CALL :Box<Dog>
+            a=(E_PATH ->Box::new :fn(Dog) -> Box<Dog> {new::<Dog>}
+              a=(PATH ->core::boxed::Box
+                (PATH_SEG Box ->core::boxed::Box)
+                (PATH_SEG new)))
+            (E_STRUCT ->Dog :Dog
+              a=(PATH ->Dog
+                (PATH_SEG Dog ->Dog))
+              (FIELD_INIT name ->Dog::name :String
+                a=(E_METHOD_CALL to_string ->T::to_string :String
+                  a=(E_LIT_STR "rex" :&str)))))))
+      (STMT_EXPR {semi}
+        a=(E_METHOD_CALL push ->Vec::push :()
+          a=(E_PATH ->zoo :Vec<Box<dyn Animal>>
+            a=(PATH ->zoo
+              (PATH_SEG zoo ->zoo)))
+          (E_CALL :Box<Bird>
+            a=(E_PATH ->Box::new :fn(Bird) -> Box<Bird> {new::<Bird>}
+              a=(PATH ->core::boxed::Box
+                (PATH_SEG Box ->core::boxed::Box)
+                (PATH_SEG new)))
+            (E_PATH ->Bird :Bird
+              a=(PATH ->Bird
+                (PATH_SEG Bird ->Bird))))))
+      (STMT_EXPR {semi}
+        a=(E_METHOD_CALL push ->Vec::push :()
+          a=(E_PATH ->zoo :Vec<Box<dyn Animal>>
+            a=(PATH ->zoo
+              (PATH_SEG zoo ->zoo)))
+          (E_CALL :Box<Cow>
+            a=(E_PATH ->Box::new :fn(Cow) -> Box<Cow> {new::<Cow>}
+              a=(PATH ->core::boxed::Box
+                (PATH_SEG Box ->core::boxed::Box)
+                (PATH_SEG new)))
+            (E_STRUCT ->Cow :Cow
+              a=(PATH ->Cow
+                (PATH_SEG Cow ->Cow))
+              (FIELD_INIT weight ->Cow::weight :f64
+                a=(E_LIT_FLOAT "500.0" :f64))))))
+      (STMT_EXPR
+        a=(E_FOR :()
+          a=(P_IDENT a ->a :&Box<dyn Animal>)
+          b=(E_REF :&Vec<Box<dyn Animal>>
+            a=(E_PATH ->zoo :Vec<Box<dyn Animal>>
+              a=(PATH ->zoo
+                (PATH_SEG zoo ->zoo))))
+          c=(BLOCK
+            (STMT_EXPR {semi}
+              a=(BLOCK :()
+                (STMT_LET
+                  a=(P_IDENT __out {mut} ->__out :RawOut)
+                  c=(E_CALL :RawOut
+                    a=(E_PATH ->core::io::stdout_raw :fn() -> RawOut {stdout_raw}
+                      a=(PATH {global} ->core::io::stdout_raw
+                        (PATH_SEG core ->core)
+                        (PATH_SEG io ->core::io)
+                        (PATH_SEG stdout_raw ->core::io::stdout_raw)))))
+                (STMT_LET
+                  a=(P_IDENT __f {mut} ->__f :Formatter)
+                  c=(E_CALL :Formatter
+                    a=(E_PATH ->Formatter::new :fn(&mut dyn Write) -> Formatter {new}
+                      a=(PATH {global} ->core::fmt::Formatter
+                        (PATH_SEG core ->core)
+                        (PATH_SEG fmt ->core::fmt)
+                        (PATH_SEG Formatter ->core::fmt::Formatter)
+                        (PATH_SEG new)))
+                    (E_REF {mut} :&mut RawOut
+                      a=(E_PATH ->__out :RawOut
+                        a=(PATH ->__out
+                          (PATH_SEG __out ->__out))))))
+                a=(BLOCK :()
+                  (STMT_LET
+                    a=(P_IDENT __a0 ->__a0 :&String)
+                    c=(E_REF :&String
+                      a=(E_PAREN :String
+                        a=(E_METHOD_CALL describe ->Animal::describe :String
+                          a=(E_PATH ->a :&Box<dyn Animal>
+                            a=(PATH ->a
+                              (PATH_SEG a ->a)))))))
+                  (STMT_LET
+                    a=(P_WILD :Result<(), Error>)
+                    c=(E_CALL :Result<(), Error>
+                      a=(E_PATH ->String::fmt :fn(&String, &mut Formatter) -> Result<(), Error> {fmt}
+                        a=(PATH {global} ->core::fmt::Display
+                          (PATH_SEG core ->core)
+                          (PATH_SEG fmt ->core::fmt)
+                          (PATH_SEG Display ->core::fmt::Display)
+                          (PATH_SEG fmt)))
+                      (E_PATH ->__a0 :&String
+                        a=(PATH ->__a0
+                          (PATH_SEG __a0 ->__a0)))
+                      (E_REF {mut} :&mut Formatter
+                        a=(E_PATH ->__f :Formatter
+                          a=(PATH ->__f
+                            (PATH_SEG __f ->__f))))))
+                  (STMT_EXPR {semi}
+                    a=(E_METHOD_CALL write_str ->Formatter::write_str :Result<(), Error>
+                      a=(E_PATH ->__f :Formatter
+                        a=(PATH ->__f
+                          (PATH_SEG __f ->__f)))
+                      (E_LIT_STR "\n" :&str)))))))))
+      (STMT_EXPR {semi}
+        a=(BLOCK :()
+          (STMT_LET
+            a=(P_IDENT __out {mut} ->__out :RawOut)
+            c=(E_CALL :RawOut
+              a=(E_PATH ->core::io::stdout_raw :fn() -> RawOut {stdout_raw}
+                a=(PATH {global} ->core::io::stdout_raw
+                  (PATH_SEG core ->core)
+                  (PATH_SEG io ->core::io)
+                  (PATH_SEG stdout_raw ->core::io::stdout_raw)))))
+          (STMT_LET
+            a=(P_IDENT __f {mut} ->__f :Formatter)
+            c=(E_CALL :Formatter
+              a=(E_PATH ->Formatter::new :fn(&mut dyn Write) -> Formatter {new}
+                a=(PATH {global} ->core::fmt::Formatter
+                  (PATH_SEG core ->core)
+                  (PATH_SEG fmt ->core::fmt)
+                  (PATH_SEG Formatter ->core::fmt::Formatter)
+                  (PATH_SEG new)))
+              (E_REF {mut} :&mut RawOut
+                a=(E_PATH ->__out :RawOut
+                  a=(PATH ->__out
+                    (PATH_SEG __out ->__out))))))
+          a=(BLOCK :()
+            (STMT_LET
+              a=(P_IDENT __a0 ->__a0 :&u32)
+              c=(E_REF :&u32
+                a=(E_PAREN :u32
+                  a=(E_CALL :u32
+                    a=(E_PATH ->total_legs :fn(&[Box<dyn Animal>]) -> u32 {total_legs}
+                      a=(PATH ->total_legs
+                        (PATH_SEG total_legs ->total_legs)))
+                    (E_REF :&Vec<Box<dyn Animal>>
+                      a=(E_PATH ->zoo :Vec<Box<dyn Animal>>
+                        a=(PATH ->zoo
+                          (PATH_SEG zoo ->zoo))))))))
+            (STMT_LET
+              a=(P_IDENT __a1 ->__a1 :&String)
+              c=(E_REF :&String
+                a=(E_PAREN :String
+                  a=(E_METHOD_CALL unwrap_or_default ->Option::unwrap_or_default :String
+                    a=(E_METHOD_CALL map ->Option::map :Option<String>
+                      a=(E_CALL :Option<&Box<dyn Animal>>
+                        a=(E_PATH ->loudest :fn(&Vec<Box<dyn Animal>>) -> Option<&Box<dyn Animal>> {loudest}
+                          a=(PATH ->loudest
+                            (PATH_SEG loudest ->loudest)))
+                        (E_REF :&Vec<Box<dyn Animal>>
+                          a=(E_PATH ->zoo :Vec<Box<dyn Animal>>
+                            a=(PATH ->zoo
+                              (PATH_SEG zoo ->zoo)))))
+                      (E_CLOSURE :{closure}
+                        (PARAM
+                          a=(P_IDENT a ->a :&Box<dyn Animal>))
+                        b=(E_METHOD_CALL name ->Animal::name :String
+                          a=(E_PATH ->a :&Box<dyn Animal>
+                            a=(PATH ->a
+                              (PATH_SEG a ->a))))))))))
+            (STMT_LET
+              a=(P_WILD :Result<(), Error>)
+              c=(E_CALL :Result<(), Error>
+                a=(E_PATH ->u32::fmt :fn(&u32, &mut Formatter) -> Result<(), Error> {fmt}
+                  a=(PATH {global} ->core::fmt::Display
+                    (PATH_SEG core ->core)
+                    (PATH_SEG fmt ->core::fmt)
+                    (PATH_SEG Display ->core::fmt::Display)
+                    (PATH_SEG fmt)))
+                (E_PATH ->__a0 :&u32
+                  a=(PATH ->__a0
+                    (PATH_SEG __a0 ->__a0)))
+                (E_REF {mut} :&mut Formatter
+                  a=(E_PATH ->__f :Formatter
+                    a=(PATH ->__f
+                      (PATH_SEG __f ->__f))))))
+            (STMT_EXPR {semi}
+              a=(E_METHOD_CALL write_str ->Formatter::write_str :Result<(), Error>
+                a=(E_PATH ->__f :Formatter
+                  a=(PATH ->__f
+                    (PATH_SEG __f ->__f)))
+                (E_LIT_STR " " :&str)))
+            (STMT_LET
+              a=(P_WILD :Result<(), Error>)
+              c=(E_CALL :Result<(), Error>
+                a=(E_PATH ->String::fmt :fn(&String, &mut Formatter) -> Result<(), Error> {fmt}
+                  a=(PATH {global} ->core::fmt::Display
+                    (PATH_SEG core ->core)
+                    (PATH_SEG fmt ->core::fmt)
+                    (PATH_SEG Display ->core::fmt::Display)
+                    (PATH_SEG fmt)))
+                (E_PATH ->__a1 :&String
+                  a=(PATH ->__a1
+                    (PATH_SEG __a1 ->__a1)))
+                (E_REF {mut} :&mut Formatter
+                  a=(E_PATH ->__f :Formatter
+                    a=(PATH ->__f
+                      (PATH_SEG __f ->__f))))))
+            (STMT_EXPR {semi}
+              a=(E_METHOD_CALL write_str ->Formatter::write_str :Result<(), Error>
+                a=(E_PATH ->__f :Formatter
+                  a=(PATH ->__f
+                    (PATH_SEG __f ->__f)))
+                (E_LIT_STR "\n" :&str)))))))))

@@ -1,0 +1,1 @@
+errors/collect_self_mismatch.rs:4: error: method `f` has a `&self` declaration in the trait, but not in the impl

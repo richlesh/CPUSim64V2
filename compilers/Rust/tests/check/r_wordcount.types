@@ -1,0 +1,446 @@
+(CRATE ->crate
+  (ITEM_FN count_words ->count_words
+    b=(T_PATH ->core::vec::Vec
+      a=(PATH ->core::vec::Vec
+        (PATH_SEG Vec {angle} ->core::vec::Vec
+          (T_TUPLE
+            (T_PATH ->core::string::String
+              a=(PATH ->core::string::String
+                (PATH_SEG String ->core::string::String)))
+            (T_PATH ->usize
+              a=(PATH ->usize
+                (PATH_SEG usize ->usize)))))))
+    c=(BLOCK
+      (STMT_LET
+        a=(P_IDENT counts {mut} ->counts :Vec<(String, usize)>)
+        b=(T_PATH ->core::vec::Vec
+          a=(PATH ->core::vec::Vec
+            (PATH_SEG Vec {angle} ->core::vec::Vec
+              (T_TUPLE
+                (T_PATH ->core::string::String
+                  a=(PATH ->core::string::String
+                    (PATH_SEG String ->core::string::String)))
+                (T_PATH ->usize
+                  a=(PATH ->usize
+                    (PATH_SEG usize ->usize)))))))
+        c=(E_CALL :Vec<(String, usize)>
+          a=(E_PATH ->Vec::new :fn() -> Vec<(String, usize)> {new::<(String, usize)>}
+            a=(PATH ->core::vec::Vec
+              (PATH_SEG Vec ->core::vec::Vec)
+              (PATH_SEG new)))))
+      (STMT_EXPR
+        a=(E_FOR :()
+          a=(P_IDENT w ->w :&str)
+          b=(E_METHOD_CALL split_whitespace ->str::split_whitespace :SplitWhitespace
+            a=(E_PATH ->text :&str
+              a=(PATH ->text
+                (PATH_SEG text ->text))))
+          c=(BLOCK
+            (STMT_LET
+              a=(P_IDENT word ->word :String)
+              c=(E_METHOD_CALL to_lowercase ->str::to_lowercase :String
+                a=(E_PATH ->w :&str
+                  a=(PATH ->w
+                    (PATH_SEG w ->w)))))
+            (STMT_LET
+              a=(P_IDENT found {mut} ->found :bool)
+              c=(E_LIT_BOOL #0 :bool))
+            (STMT_EXPR
+              a=(E_FOR :()
+                a=(P_IDENT entry ->entry :&mut (String, usize))
+                b=(E_METHOD_CALL iter_mut ->Vec::iter_mut :IterMut<(String, usize)>
+                  a=(E_PATH ->counts :Vec<(String, usize)>
+                    a=(PATH ->counts
+                      (PATH_SEG counts ->counts))))
+                c=(BLOCK
+                  a=(E_IF :()
+                    a=(E_BINARY op:== ->String::eq :bool
+                      a=(E_TUPLE_FIELD #0 :String
+                        a=(E_PATH ->entry :&mut (String, usize)
+                          a=(PATH ->entry
+                            (PATH_SEG entry ->entry))))
+                      b=(E_PATH ->word :String
+                        a=(PATH ->word
+                          (PATH_SEG word ->word))))
+                    b=(BLOCK
+                      (STMT_EXPR {semi}
+                        a=(E_ASSIGN_OP op:+ :()
+                          a=(E_TUPLE_FIELD #1 :usize
+                            a=(E_PATH ->entry :&mut (String, usize)
+                              a=(PATH ->entry
+                                (PATH_SEG entry ->entry))))
+                          b=(E_LIT_INT "1" #1 :usize)))
+                      (STMT_EXPR {semi}
+                        a=(E_ASSIGN :()
+                          a=(E_PATH ->found :bool
+                            a=(PATH ->found
+                              (PATH_SEG found ->found)))
+                          b=(E_LIT_BOOL #1 :bool)))
+                      (STMT_EXPR {semi}
+                        a=(E_BREAK :!)))))))
+            a=(E_IF :()
+              a=(E_UNARY op:! :bool
+                a=(E_PATH ->found :bool
+                  a=(PATH ->found
+                    (PATH_SEG found ->found))))
+              b=(BLOCK
+                (STMT_EXPR {semi}
+                  a=(E_METHOD_CALL push ->Vec::push :()
+                    a=(E_PATH ->counts :Vec<(String, usize)>
+                      a=(PATH ->counts
+                        (PATH_SEG counts ->counts)))
+                    (E_TUPLE :(String, usize)
+                      (E_PATH ->word :String
+                        a=(PATH ->word
+                          (PATH_SEG word ->word)))
+                      (E_LIT_INT "1" #1 :usize)))))))))
+      (STMT_EXPR {semi}
+        a=(E_METHOD_CALL sort_by -><impl>::sort_by :()
+          a=(E_PATH ->counts :Vec<(String, usize)>
+            a=(PATH ->counts
+              (PATH_SEG counts ->counts)))
+          (E_CLOSURE :{closure}
+            (PARAM
+              a=(P_IDENT a ->a :&(String, usize)))
+            (PARAM
+              a=(P_IDENT b ->b :&(String, usize)))
+            b=(E_METHOD_CALL then ->Ordering::then :Ordering
+              a=(E_METHOD_CALL cmp ->usize::cmp :Ordering
+                a=(E_TUPLE_FIELD #1 :usize
+                  a=(E_PATH ->b :&(String, usize)
+                    a=(PATH ->b
+                      (PATH_SEG b ->b))))
+                (E_REF :&usize
+                  a=(E_TUPLE_FIELD #1 :usize
+                    a=(E_PATH ->a :&(String, usize)
+                      a=(PATH ->a
+                        (PATH_SEG a ->a))))))
+              (E_METHOD_CALL cmp ->String::cmp :Ordering
+                a=(E_TUPLE_FIELD #0 :String
+                  a=(E_PATH ->a :&(String, usize)
+                    a=(PATH ->a
+                      (PATH_SEG a ->a))))
+                (E_REF :&String
+                  a=(E_TUPLE_FIELD #0 :String
+                    a=(E_PATH ->b :&(String, usize)
+                      a=(PATH ->b
+                        (PATH_SEG b ->b))))))))))
+      a=(E_PATH ->counts :Vec<(String, usize)>
+        a=(PATH ->counts
+          (PATH_SEG counts ->counts))))
+    (PARAM
+      a=(P_IDENT text ->text :&str)
+      b=(T_REF
+        a=(T_PATH ->str
+          a=(PATH ->str
+            (PATH_SEG str ->str))))))
+  (ITEM_FN longest ->longest
+    a=(GENERICS
+      (GEN_LIFETIME 'a))
+    b=(T_PATH ->core::option::Option
+      a=(PATH ->core::option::Option
+        (PATH_SEG Option {angle} ->core::option::Option
+          (T_REF
+            a=(T_PATH ->str
+              a=(PATH ->str
+                (PATH_SEG str ->str)))
+            b=(LIFETIME 'a)))))
+    c=(BLOCK
+      (STMT_LET
+        a=(P_IDENT best {mut} ->best :Option<&str>)
+        b=(T_PATH ->core::option::Option
+          a=(PATH ->core::option::Option
+            (PATH_SEG Option {angle} ->core::option::Option
+              (T_REF
+                a=(T_PATH ->str
+                  a=(PATH ->str
+                    (PATH_SEG str ->str)))))))
+        c=(E_PATH ->core::option::Option::None :Option<&str>
+          a=(PATH ->core::option::Option::None
+            (PATH_SEG None ->core::option::Option::None))))
+      (STMT_EXPR
+        a=(E_FOR :()
+          a=(P_IDENT w ->w :&&str)
+          b=(E_PATH ->words :&[&str]
+            a=(PATH ->words
+              (PATH_SEG words ->words)))
+          c=(BLOCK
+            a=(E_MATCH :()
+              a=(E_PATH ->best :Option<&str>
+                a=(PATH ->best
+                  (PATH_SEG best ->best)))
+              (ARM
+                a=(P_TUPLE_STRUCT ->core::option::Option::Some :Option<&str>
+                  a=(PATH ->core::option::Option::Some
+                    (PATH_SEG Some ->core::option::Option::Some))
+                  (P_IDENT b ->b :&str))
+                b=(E_BINARY op:>= :bool
+                  a=(E_METHOD_CALL len ->str::len :usize
+                    a=(E_PATH ->b :&str
+                      a=(PATH ->b
+                        (PATH_SEG b ->b))))
+                  b=(E_METHOD_CALL len ->str::len :usize
+                    a=(E_PATH ->w :&&str
+                      a=(PATH ->w
+                        (PATH_SEG w ->w)))))
+                c=(BLOCK :()))
+              (ARM
+                a=(P_WILD :Option<&str>)
+                c=(E_ASSIGN :()
+                  a=(E_PATH ->best :Option<&str>
+                    a=(PATH ->best
+                      (PATH_SEG best ->best)))
+                  b=(E_CALL :Option<&str>
+                    a=(E_PATH ->core::option::Option::Some :fn(&str) -> Option<&str> {Some::<&str>}
+                      a=(PATH ->core::option::Option::Some
+                        (PATH_SEG Some ->core::option::Option::Some)))
+                    (E_DEREF :&str
+                      a=(E_PATH ->w :&&str
+                        a=(PATH ->w
+                          (PATH_SEG w ->w)))))))))))
+      a=(E_PATH ->best :Option<&str>
+        a=(PATH ->best
+          (PATH_SEG best ->best))))
+    (PARAM
+      a=(P_IDENT words ->words :&[&str])
+      b=(T_REF
+        a=(T_SLICE
+          a=(T_REF
+            a=(T_PATH ->str
+              a=(PATH ->str
+                (PATH_SEG str ->str)))
+            b=(LIFETIME 'a))))))
+  (ITEM_FN main ->main
+    c=(BLOCK
+      (STMT_LET
+        a=(P_IDENT text ->text :String)
+        c=(E_CALL :String
+          a=(E_PATH ->String::from :fn(&str) -> String {from::<&str>}
+            a=(PATH ->core::string::String
+              (PATH_SEG String ->core::string::String)
+              (PATH_SEG from)))
+          (E_LIT_STR "the cat and The dog and the bird" :&str)))
+      (STMT_LET
+        a=(P_IDENT counts ->counts :Vec<(String, usize)>)
+        c=(E_CALL :Vec<(String, usize)>
+          a=(E_PATH ->count_words :fn(&str) -> Vec<(String, usize)> {count_words}
+            a=(PATH ->count_words
+              (PATH_SEG count_words ->count_words)))
+          (E_REF :&String
+            a=(E_PATH ->text :String
+              a=(PATH ->text
+                (PATH_SEG text ->text))))))
+      (STMT_EXPR
+        a=(E_FOR :()
+          a=(P_TUPLE :(String, usize)
+            (P_IDENT w ->w :String)
+            (P_IDENT n ->n :usize))
+          b=(E_REF :&Vec<(String, usize)>
+            a=(E_PATH ->counts :Vec<(String, usize)>
+              a=(PATH ->counts
+                (PATH_SEG counts ->counts))))
+          c=(BLOCK
+            (STMT_EXPR {semi}
+              a=(BLOCK :()
+                (STMT_LET
+                  a=(P_IDENT __out {mut} ->__out :RawOut)
+                  c=(E_CALL :RawOut
+                    a=(E_PATH ->core::io::stdout_raw :fn() -> RawOut {stdout_raw}
+                      a=(PATH {global} ->core::io::stdout_raw
+                        (PATH_SEG core ->core)
+                        (PATH_SEG io ->core::io)
+                        (PATH_SEG stdout_raw ->core::io::stdout_raw)))))
+                (STMT_LET
+                  a=(P_IDENT __f {mut} ->__f :Formatter)
+                  c=(E_CALL :Formatter
+                    a=(E_PATH ->Formatter::new :fn(&mut dyn Write) -> Formatter {new}
+                      a=(PATH {global} ->core::fmt::Formatter
+                        (PATH_SEG core ->core)
+                        (PATH_SEG fmt ->core::fmt)
+                        (PATH_SEG Formatter ->core::fmt::Formatter)
+                        (PATH_SEG new)))
+                    (E_REF {mut} :&mut RawOut
+                      a=(E_PATH ->__out :RawOut
+                        a=(PATH ->__out
+                          (PATH_SEG __out ->__out))))))
+                a=(BLOCK :()
+                  (STMT_LET
+                    a=(P_IDENT __a0 ->__a0 :&&String)
+                    c=(E_REF :&&String
+                      a=(E_PAREN :&String
+                        a=(E_PATH ->w :&String
+                          a=(PATH ->w
+                            (PATH_SEG w ->w))))))
+                  (STMT_LET
+                    a=(P_IDENT __a1 ->__a1 :&&usize)
+                    c=(E_REF :&&usize
+                      a=(E_PAREN :&usize
+                        a=(E_PATH ->n :&usize
+                          a=(PATH ->n
+                            (PATH_SEG n ->n))))))
+                  (STMT_LET
+                    a=(P_WILD :Result<(), Error>)
+                    c=(E_CALL :Result<(), Error>
+                      a=(E_PATH -><impl>::fmt :fn(&&String, &mut Formatter) -> Result<(), Error> {fmt}
+                        a=(PATH {global} ->core::fmt::Display
+                          (PATH_SEG core ->core)
+                          (PATH_SEG fmt ->core::fmt)
+                          (PATH_SEG Display ->core::fmt::Display)
+                          (PATH_SEG fmt)))
+                      (E_PATH ->__a0 :&&String
+                        a=(PATH ->__a0
+                          (PATH_SEG __a0 ->__a0)))
+                      (E_REF {mut} :&mut Formatter
+                        a=(E_PATH ->__f :Formatter
+                          a=(PATH ->__f
+                            (PATH_SEG __f ->__f))))))
+                  (STMT_EXPR {semi}
+                    a=(E_METHOD_CALL write_str ->Formatter::write_str :Result<(), Error>
+                      a=(E_PATH ->__f :Formatter
+                        a=(PATH ->__f
+                          (PATH_SEG __f ->__f)))
+                      (E_LIT_STR ": " :&str)))
+                  (STMT_LET
+                    a=(P_WILD :Result<(), Error>)
+                    c=(E_CALL :Result<(), Error>
+                      a=(E_PATH -><impl>::fmt :fn(&&usize, &mut Formatter) -> Result<(), Error> {fmt}
+                        a=(PATH {global} ->core::fmt::Display
+                          (PATH_SEG core ->core)
+                          (PATH_SEG fmt ->core::fmt)
+                          (PATH_SEG Display ->core::fmt::Display)
+                          (PATH_SEG fmt)))
+                      (E_PATH ->__a1 :&&usize
+                        a=(PATH ->__a1
+                          (PATH_SEG __a1 ->__a1)))
+                      (E_REF {mut} :&mut Formatter
+                        a=(E_PATH ->__f :Formatter
+                          a=(PATH ->__f
+                            (PATH_SEG __f ->__f))))))
+                  (STMT_EXPR {semi}
+                    a=(E_METHOD_CALL write_str ->Formatter::write_str :Result<(), Error>
+                      a=(E_PATH ->__f :Formatter
+                        a=(PATH ->__f
+                          (PATH_SEG __f ->__f)))
+                      (E_LIT_STR "\n" :&str)))))))))
+      (STMT_LET
+        a=(P_IDENT total ->total :usize)
+        b=(T_PATH ->usize
+          a=(PATH ->usize
+            (PATH_SEG usize ->usize)))
+        c=(E_METHOD_CALL sum ->core::iter::Iterator::sum :usize
+          a=(E_METHOD_CALL map ->core::iter::Iterator::map :Map<Iter<(String, usize)>, {closure}>
+            a=(E_METHOD_CALL iter ->Vec::iter :Iter<(String, usize)>
+              a=(E_PATH ->counts :Vec<(String, usize)>
+                a=(PATH ->counts
+                  (PATH_SEG counts ->counts))))
+            (E_CLOSURE :{closure}
+              (PARAM
+                a=(P_TUPLE :(String, usize)
+                  (P_WILD :String)
+                  (P_IDENT n ->n :usize)))
+              b=(E_DEREF :usize
+                a=(E_PATH ->n :&usize
+                  a=(PATH ->n
+                    (PATH_SEG n ->n))))))))
+      (STMT_LET
+        a=(P_IDENT words ->words :Vec<&str>)
+        b=(T_PATH ->core::vec::Vec
+          a=(PATH ->core::vec::Vec
+            (PATH_SEG Vec {angle} ->core::vec::Vec
+              (T_REF
+                a=(T_PATH ->str
+                  a=(PATH ->str
+                    (PATH_SEG str ->str)))))))
+        c=(E_METHOD_CALL collect ->core::iter::Iterator::collect :Vec<&str>
+          a=(E_METHOD_CALL split ->str::split :Split<char>
+            a=(E_PATH ->text :String
+              a=(PATH ->text
+                (PATH_SEG text ->text)))
+            (E_LIT_CHAR #32 :char))))
+      (STMT_EXPR {semi}
+        a=(BLOCK :()
+          (STMT_LET
+            a=(P_IDENT __out {mut} ->__out :RawOut)
+            c=(E_CALL :RawOut
+              a=(E_PATH ->core::io::stdout_raw :fn() -> RawOut {stdout_raw}
+                a=(PATH {global} ->core::io::stdout_raw
+                  (PATH_SEG core ->core)
+                  (PATH_SEG io ->core::io)
+                  (PATH_SEG stdout_raw ->core::io::stdout_raw)))))
+          (STMT_LET
+            a=(P_IDENT __f {mut} ->__f :Formatter)
+            c=(E_CALL :Formatter
+              a=(E_PATH ->Formatter::new :fn(&mut dyn Write) -> Formatter {new}
+                a=(PATH {global} ->core::fmt::Formatter
+                  (PATH_SEG core ->core)
+                  (PATH_SEG fmt ->core::fmt)
+                  (PATH_SEG Formatter ->core::fmt::Formatter)
+                  (PATH_SEG new)))
+              (E_REF {mut} :&mut RawOut
+                a=(E_PATH ->__out :RawOut
+                  a=(PATH ->__out
+                    (PATH_SEG __out ->__out))))))
+          a=(BLOCK :()
+            (STMT_LET
+              a=(P_IDENT __a0 ->__a0 :&usize)
+              c=(E_REF :&usize
+                a=(E_PAREN :usize
+                  a=(E_PATH ->total :usize
+                    a=(PATH ->total
+                      (PATH_SEG total ->total))))))
+            (STMT_LET
+              a=(P_IDENT __a1 ->__a1 :&Option<&str>)
+              c=(E_REF :&Option<&str>
+                a=(E_PAREN :Option<&str>
+                  a=(E_CALL :Option<&str>
+                    a=(E_PATH ->longest :fn(&[&str]) -> Option<&str> {longest}
+                      a=(PATH ->longest
+                        (PATH_SEG longest ->longest)))
+                    (E_REF :&Vec<&str>
+                      a=(E_PATH ->words :Vec<&str>
+                        a=(PATH ->words
+                          (PATH_SEG words ->words))))))))
+            (STMT_LET
+              a=(P_WILD :Result<(), Error>)
+              c=(E_CALL :Result<(), Error>
+                a=(E_PATH ->usize::fmt :fn(&usize, &mut Formatter) -> Result<(), Error> {fmt}
+                  a=(PATH {global} ->core::fmt::Display
+                    (PATH_SEG core ->core)
+                    (PATH_SEG fmt ->core::fmt)
+                    (PATH_SEG Display ->core::fmt::Display)
+                    (PATH_SEG fmt)))
+                (E_PATH ->__a0 :&usize
+                  a=(PATH ->__a0
+                    (PATH_SEG __a0 ->__a0)))
+                (E_REF {mut} :&mut Formatter
+                  a=(E_PATH ->__f :Formatter
+                    a=(PATH ->__f
+                      (PATH_SEG __f ->__f))))))
+            (STMT_EXPR {semi}
+              a=(E_METHOD_CALL write_str ->Formatter::write_str :Result<(), Error>
+                a=(E_PATH ->__f :Formatter
+                  a=(PATH ->__f
+                    (PATH_SEG __f ->__f)))
+                (E_LIT_STR " " :&str)))
+            (STMT_LET
+              a=(P_WILD :Result<(), Error>)
+              c=(E_CALL :Result<(), Error>
+                a=(E_PATH ->Option::fmt :fn(&Option<&str>, &mut Formatter) -> Result<(), Error> {fmt}
+                  a=(PATH {global} ->core::fmt::Debug
+                    (PATH_SEG core ->core)
+                    (PATH_SEG fmt ->core::fmt)
+                    (PATH_SEG Debug ->core::fmt::Debug)
+                    (PATH_SEG fmt)))
+                (E_PATH ->__a1 :&Option<&str>
+                  a=(PATH ->__a1
+                    (PATH_SEG __a1 ->__a1)))
+                (E_REF {mut} :&mut Formatter
+                  a=(E_PATH ->__f :Formatter
+                    a=(PATH ->__f
+                      (PATH_SEG __f ->__f))))))
+            (STMT_EXPR {semi}
+              a=(E_METHOD_CALL write_str ->Formatter::write_str :Result<(), Error>
+                a=(E_PATH ->__f :Formatter
+                  a=(PATH ->__f
+                    (PATH_SEG __f ->__f)))
+                (E_LIT_STR "\n" :&str)))))))))

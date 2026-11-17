@@ -1,0 +1,1 @@
+errors/moves_uninit.rs:3: error: used binding `x` isn't initialized

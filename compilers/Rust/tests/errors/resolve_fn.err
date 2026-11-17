@@ -1,0 +1,1 @@
+errors/resolve_fn.rs:2: error: cannot find function `foo` in this scope

@@ -1,0 +1,1 @@
+errors/resolve_expected_value.rs:3: error: expected value, found struct `S`

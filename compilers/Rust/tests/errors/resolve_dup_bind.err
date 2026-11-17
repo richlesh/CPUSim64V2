@@ -1,0 +1,1 @@
+errors/resolve_dup_bind.rs:2: error: identifier `a` is bound more than once in the same pattern

@@ -1,0 +1,1 @@
+errors/expand_recursion.rs:6: error: recursion limit reached while expanding `forever!`

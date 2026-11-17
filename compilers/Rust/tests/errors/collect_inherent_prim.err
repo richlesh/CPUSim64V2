@@ -1,0 +1,1 @@
+errors/collect_inherent_prim.rs:1: error: cannot define inherent `impl` for primitive types

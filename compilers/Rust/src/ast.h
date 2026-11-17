@@ -187,6 +187,7 @@ struct Node {
 
     void *ty;                          /* the type checker's slot */
     void *sym;                         /* the resolver's slot */
+    int adj;                           /* check.c: implicit adjustments (ADJ_xxx in sema.h) */
 };
 
 extern int ast_cur_file;               /* the file mk() stamps into new nodes */
@@ -205,5 +206,8 @@ void ast_dump(FILE *f, Node *root);
 
 /* optional hook: prints the spelling of ntoks tokens (set by the code that knows struct Token) */
 extern void (*ast_tok_text)(FILE *f, const struct Token *toks, long ntoks);
+
+/* optional hook: extra text at the end of each node line (rustc --resolve / --types) */
+extern void (*ast_node_hook)(FILE *f, Node *n);
 
 #endif

@@ -1,0 +1,1 @@
+errors/expand_fmt_not_literal.rs:3: error: format argument must be a string literal

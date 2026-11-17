@@ -1,0 +1,1 @@
+errors/resolve_crate_root.rs:2: error: cannot find function `nothing` in the crate root

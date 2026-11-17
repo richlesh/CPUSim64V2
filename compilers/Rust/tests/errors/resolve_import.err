@@ -1,0 +1,1 @@
+errors/resolve_import.rs:4: error: unresolved import `a::b`

@@ -1,0 +1,305 @@
+(CRATE ->crate
+  (ITEM_CONST N ->N
+    a=(T_PATH ->usize
+      a=(PATH ->usize
+        (PATH_SEG usize ->usize)))
+    b=(E_LIT_INT "4" #4 :usize))
+  (ITEM_STATIC NAME ->NAME
+    a=(T_REF
+      a=(T_PATH ->str
+        a=(PATH ->str
+          (PATH_SEG str ->str))))
+    b=(E_LIT_STR "n" :&str))
+  (ITEM_FN run ->run
+    b=(T_PATH ->f64
+      a=(PATH ->f64
+        (PATH_SEG f64 ->f64)))
+    c=(BLOCK
+      (STMT_LET
+        a=(P_IDENT arr {mut} ->arr :[i32; 4])
+        c=(E_REPEAT :[i32; 4]
+          a=(E_LIT_INT i32 "0" #0 :i32)
+          b=(E_PATH ->N :usize
+            a=(PATH ->N
+              (PATH_SEG N ->N)))))
+      (STMT_LET
+        a=(P_IDENT grid {mut} ->grid :[[u8; 3]; 2])
+        c=(E_REPEAT :[[u8; 3]; 2]
+          a=(E_REPEAT :[u8; 3]
+            a=(E_LIT_INT u8 "0" #0 :u8)
+            b=(E_LIT_INT "3" #3 :usize))
+          b=(E_LIT_INT "2" #2 :usize)))
+      (STMT_EXPR {semi}
+        a=(E_ASSIGN :()
+          a=(E_INDEX :u8
+            a=(E_INDEX :[u8; 3]
+              a=(E_PATH ->grid :[[u8; 3]; 2]
+                a=(PATH ->grid
+                  (PATH_SEG grid ->grid)))
+              b=(E_LIT_INT "1" #1 :usize))
+            b=(E_LIT_INT "2" #2 :usize))
+          b=(E_LIT_INT "5" #5 :u8)))
+      (STMT_EXPR
+        a=(E_FOR :()
+          a=(P_IDENT i ->i :usize)
+          b=(E_RANGE :Range<usize>
+            a=(E_LIT_INT "0" #0 :usize)
+            b=(E_PATH ->N :usize
+              a=(PATH ->N
+                (PATH_SEG N ->N))))
+          c=(BLOCK
+            (STMT_EXPR {semi}
+              a=(E_ASSIGN :()
+                a=(E_INDEX :i32
+                  a=(E_PATH ->arr :[i32; 4]
+                    a=(PATH ->arr
+                      (PATH_SEG arr ->arr)))
+                  b=(E_PATH ->i :usize
+                    a=(PATH ->i
+                      (PATH_SEG i ->i))))
+                b=(E_BINARY op:* :i32
+                  a=(E_CAST :i32
+                    a=(E_PATH ->i :usize
+                      a=(PATH ->i
+                        (PATH_SEG i ->i)))
+                    b=(T_PATH ->i32
+                      a=(PATH ->i32
+                        (PATH_SEG i32 ->i32))))
+                  b=(E_LIT_INT "2" #2 :i32)))))))
+      (STMT_LET
+        a=(P_IDENT t {mut} ->t :u64)
+        c=(E_LIT_INT u64 "0" #0 :u64))
+      (STMT_LET
+        a=(P_IDENT i {mut} ->i :u64)
+        c=(E_LIT_INT "0" #0 :u64))
+      (STMT_EXPR
+        a=(E_WHILE :()
+          a=(E_BINARY op:< :bool
+            a=(E_PATH ->i :u64
+              a=(PATH ->i
+                (PATH_SEG i ->i)))
+            b=(E_PATH ->n :u64
+              a=(PATH ->n
+                (PATH_SEG n ->n))))
+          b=(BLOCK
+            (STMT_EXPR {semi}
+              a=(E_ASSIGN_OP op:+ :()
+                a=(E_PATH ->t :u64
+                  a=(PATH ->t
+                    (PATH_SEG t ->t)))
+                b=(E_PATH ->i :u64
+                  a=(PATH ->i
+                    (PATH_SEG i ->i)))))
+            (STMT_EXPR {semi}
+              a=(E_ASSIGN_OP op:+ :()
+                a=(E_PATH ->i :u64
+                  a=(PATH ->i
+                    (PATH_SEG i ->i)))
+                b=(E_LIT_INT "1" #1 :u64))))))
+      (STMT_LET
+        a=(P_IDENT r ->r :u64)
+        c=(E_LOOP :u64
+          a=(BLOCK
+            (STMT_EXPR {semi}
+              a=(E_ASSIGN_OP op:+ :()
+                a=(E_PATH ->t :u64
+                  a=(PATH ->t
+                    (PATH_SEG t ->t)))
+                b=(E_LIT_INT "1" #1 :u64)))
+            a=(E_IF :()
+              a=(E_BINARY op:> :bool
+                a=(E_PATH ->t :u64
+                  a=(PATH ->t
+                    (PATH_SEG t ->t)))
+                b=(E_LIT_INT "100" #100 :u64))
+              b=(BLOCK
+                (STMT_EXPR {semi}
+                  a=(E_BREAK :!
+                    a=(E_PATH ->t :u64
+                      a=(PATH ->t
+                        (PATH_SEG t ->t))))))))))
+      (STMT_LET
+        a=(P_IDENT label ->label :i32)
+        c=(BLOCK 'a :i32
+          (STMT_EXPR
+            a=(E_IF :()
+              a=(E_BINARY op:> :bool
+                a=(E_PATH ->t :u64
+                  a=(PATH ->t
+                    (PATH_SEG t ->t)))
+                b=(E_LIT_INT "5" #5 :u64))
+              b=(BLOCK
+                (STMT_EXPR {semi}
+                  a=(E_BREAK 'a :!
+                    a=(E_LIT_INT "1" #1 :i32))))))
+          a=(E_LIT_INT "2" #2 :i32)))
+      (STMT_LET
+        a=(P_IDENT sl ->sl :&[i32])
+        c=(E_REF :&[i32]
+          a=(E_INDEX :[i32]
+            a=(E_PATH ->arr :[i32; 4]
+              a=(PATH ->arr
+                (PATH_SEG arr ->arr)))
+            b=(E_RANGE :Range<usize>
+              a=(E_LIT_INT "1" #1 :usize)
+              b=(E_LIT_INT "3" #3 :usize)))))
+      (STMT_LET
+        a=(P_IDENT s ->s :&str)
+        c=(E_REF :&str
+          a=(E_INDEX :str
+            a=(E_PATH ->NAME :&str
+              a=(PATH ->NAME
+                (PATH_SEG NAME ->NAME)))
+            b=(E_RANGE :Range<usize>
+              a=(E_LIT_INT "0" #0 :usize)
+              b=(E_LIT_INT "1" #1 :usize)))))
+      (STMT_LET
+        a=(P_IDENT c ->c :char)
+        c=(E_CAST :char
+          a=(E_PAREN :u8
+            a=(E_BINARY op:+ :u8
+              a=(E_LIT_BYTE #97 :u8)
+              b=(E_LIT_INT "1" #1 :u8)))
+          b=(T_PATH ->char
+            a=(PATH ->char
+              (PATH_SEG char ->char)))))
+      (STMT_LET
+        a=(P_IDENT x ->x :i32)
+        c=(E_BINARY op:+ :i32
+          a=(E_BINARY op:+ :i32
+            a=(E_CAST :i32
+              a=(E_LIT_FLOAT f64 "3.7" :f64)
+              b=(T_PATH ->i32
+                a=(PATH ->i32
+                  (PATH_SEG i32 ->i32))))
+            b=(E_CAST :i32
+              a=(E_PAREN :u8
+                a=(E_CAST :u8
+                  a=(E_PATH ->c :char
+                    a=(PATH ->c
+                      (PATH_SEG c ->c)))
+                  b=(T_PATH ->u8
+                    a=(PATH ->u8
+                      (PATH_SEG u8 ->u8)))))
+              b=(T_PATH ->i32
+                a=(PATH ->i32
+                  (PATH_SEG i32 ->i32)))))
+          b=(E_CAST :i32
+            a=(E_LIT_BOOL #1 :bool)
+            b=(T_PATH ->i32
+              a=(PATH ->i32
+                (PATH_SEG i32 ->i32))))))
+      (STMT_LET
+        a=(P_IDENT tup ->tup :(i32, &str, f64))
+        c=(E_TUPLE :(i32, &str, f64)
+          (E_LIT_INT "1" #1 :i32)
+          (E_LIT_STR "two" :&str)
+          (E_LIT_FLOAT "3.0" :f64)))
+      (STMT_LET
+        a=(P_TUPLE :(i32, &str, f64)
+          (P_IDENT a ->a :i32)
+          (P_IDENT b ->b :&str)
+          (P_IDENT d ->d :f64))
+        c=(E_PATH ->tup :(i32, &str, f64)
+          a=(PATH ->tup
+            (PATH_SEG tup ->tup))))
+      (STMT_LET
+        a=(P_IDENT ok ->ok :bool)
+        c=(E_BINARY op:|| :bool
+          a=(E_BINARY op:&& :bool
+            a=(E_BINARY op:< :bool
+              a=(E_PATH ->a :i32
+                a=(PATH ->a
+                  (PATH_SEG a ->a)))
+              b=(E_LIT_INT "2" #2 :i32))
+            b=(E_BINARY op:> :bool
+              a=(E_METHOD_CALL len ->str::len :usize
+                a=(E_PATH ->b :&str
+                  a=(PATH ->b
+                    (PATH_SEG b ->b))))
+              b=(E_LIT_INT "1" #1 :usize)))
+          b=(E_BINARY op:>= :bool
+            a=(E_PATH ->d :f64
+              a=(PATH ->d
+                (PATH_SEG d ->d)))
+            b=(E_LIT_FLOAT "1.0" :f64))))
+      (STMT_LET
+        a=(P_IDENT y ->y :f64)
+        c=(E_IF :f64
+          a=(E_PATH ->ok :bool
+            a=(PATH ->ok
+              (PATH_SEG ok ->ok)))
+          b=(BLOCK
+            a=(E_LIT_FLOAT "1.5" :f64))
+          c=(BLOCK :f64
+            a=(E_LIT_FLOAT "2.5" :f64))))
+      (STMT_LET
+        a=(P_IDENT neg ->neg :f64)
+        c=(E_BINARY op:- :f64
+          a=(E_BINARY op:+ :f64
+            a=(E_BINARY op:* :f64
+              a=(E_UNARY op:- :f64
+                a=(E_PATH ->y :f64
+                  a=(PATH ->y
+                    (PATH_SEG y ->y))))
+              b=(E_LIT_FLOAT "2.0" :f64))
+            b=(E_BINARY op:/ :f64
+              a=(E_PAREN :f64
+                a=(E_CAST :f64
+                  a=(E_PATH ->x :i32
+                    a=(PATH ->x
+                      (PATH_SEG x ->x)))
+                  b=(T_PATH ->f64
+                    a=(PATH ->f64
+                      (PATH_SEG f64 ->f64)))))
+              b=(E_LIT_FLOAT "2.0" :f64)))
+          b=(E_CAST :f64
+            a=(E_PAREN :usize
+              a=(E_BINARY op:+ :usize
+                a=(E_METHOD_CALL len -><impl>::len :usize
+                  a=(E_PATH ->sl :&[i32]
+                    a=(PATH ->sl
+                      (PATH_SEG sl ->sl))))
+                b=(E_METHOD_CALL len ->str::len :usize
+                  a=(E_PATH ->s :&str
+                    a=(PATH ->s
+                      (PATH_SEG s ->s))))))
+            b=(T_PATH ->f64
+              a=(PATH ->f64
+                (PATH_SEG f64 ->f64))))))
+      a=(E_BINARY op:+ :f64
+        a=(E_BINARY op:+ :f64
+          a=(E_BINARY op:+ :f64
+            a=(E_PATH ->neg :f64
+              a=(PATH ->neg
+                (PATH_SEG neg ->neg)))
+            b=(E_CAST :f64
+              a=(E_PATH ->label :i32
+                a=(PATH ->label
+                  (PATH_SEG label ->label)))
+              b=(T_PATH ->f64
+                a=(PATH ->f64
+                  (PATH_SEG f64 ->f64)))))
+          b=(E_CAST :f64
+            a=(E_PATH ->r :u64
+              a=(PATH ->r
+                (PATH_SEG r ->r)))
+            b=(T_PATH ->f64
+              a=(PATH ->f64
+                (PATH_SEG f64 ->f64)))))
+        b=(E_CAST :f64
+          a=(E_INDEX :u8
+            a=(E_INDEX :[u8; 3]
+              a=(E_PATH ->grid :[[u8; 3]; 2]
+                a=(PATH ->grid
+                  (PATH_SEG grid ->grid)))
+              b=(E_LIT_INT "1" #1 :usize))
+            b=(E_LIT_INT "2" #2 :usize))
+          b=(T_PATH ->f64
+            a=(PATH ->f64
+              (PATH_SEG f64 ->f64))))))
+    (PARAM
+      a=(P_IDENT n ->n :u64)
+      b=(T_PATH ->u64
+        a=(PATH ->u64
+          (PATH_SEG u64 ->u64))))))

@@ -11,6 +11,9 @@
 #                               print that too (see lex/README.md)
 #   parse/NAME.rs + NAME.ast    `rustc --ast parse/NAME.rs` must print exactly
 #                               the .ast file (the AST dump, see src/ast.h)
+#   expand/NAME.rs + NAME.expand  `rustc --expand`: the AST after macro expansion
+#   resolve/NAME.rs + NAME.resolve `rustc --resolve`: the AST with ` ->path` symbols
+#   check/NAME.rs + NAME.types     `rustc --types`: the AST with ` :type` and ` ->path`
 #   errors/NAME.rs + NAME.err   translation must fail and stderr must contain
 #                               the line in NAME.err
 #   run/NAME.rs                 translated to NAME.gen.c, compiled by the C11
@@ -164,6 +167,63 @@ for t in "$HERE"/parse/*.rs; do
     if ! diff -q "$TMP/cout" "$base.ast" > /dev/null; then
         bad "$name" "AST differs"
         diff "$base.ast" "$TMP/cout" | head -10
+        continue
+    fi
+    ok "$name"
+done
+
+# ---------------------------------------------------------------- expansion tests
+for t in "$HERE"/expand/*.rs; do
+    [[ -e "$t" ]] || continue
+    name="expand/$(basename "$t" .rs)"
+    want "$name" || continue
+    base="${t%.rs}"
+    [[ -e "$base.expand" ]] || continue
+    if ! ( cd "$HERE" && rustc --expand "expand/$(basename "$t")" ); then
+        bad "$name" "expansion failed: $(head -2 "$TMP/cerr")"
+        continue
+    fi
+    if ! diff -q "$TMP/cout" "$base.expand" > /dev/null; then
+        bad "$name" "expansion differs"
+        diff "$base.expand" "$TMP/cout" | head -10
+        continue
+    fi
+    ok "$name"
+done
+
+# ---------------------------------------------------------------- resolver tests
+for t in "$HERE"/resolve/*.rs; do
+    [[ -e "$t" ]] || continue
+    name="resolve/$(basename "$t" .rs)"
+    want "$name" || continue
+    base="${t%.rs}"
+    [[ -e "$base.resolve" ]] || continue
+    if ! ( cd "$HERE" && rustc --resolve "resolve/$(basename "$t")" ); then
+        bad "$name" "resolution failed: $(head -2 "$TMP/cerr")"
+        continue
+    fi
+    if ! diff -q "$TMP/cout" "$base.resolve" > /dev/null; then
+        bad "$name" "resolution differs"
+        diff "$base.resolve" "$TMP/cout" | head -10
+        continue
+    fi
+    ok "$name"
+done
+
+# ---------------------------------------------------------------- type checker tests
+for t in "$HERE"/check/*.rs; do
+    [[ -e "$t" ]] || continue
+    name="check/$(basename "$t" .rs)"
+    want "$name" || continue
+    base="${t%.rs}"
+    [[ -e "$base.types" ]] || continue
+    if ! ( cd "$HERE" && rustc --types "check/$(basename "$t")" ); then
+        bad "$name" "type checking failed: $(head -2 "$TMP/cerr")"
+        continue
+    fi
+    if ! diff -q "$TMP/cout" "$base.types" > /dev/null; then
+        bad "$name" "types differ"
+        diff "$base.types" "$TMP/cout" | head -10
         continue
     fi
     ok "$name"

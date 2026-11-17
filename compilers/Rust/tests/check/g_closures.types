@@ -1,0 +1,359 @@
+(CRATE ->crate
+  (ITEM_FN apply ->apply
+    a=(GENERICS
+      (GEN_TYPE F ->F
+        b=(BOUNDS
+          (BOUND_TRAIT ->core::ops::Fn
+            a=(PATH ->core::ops::Fn
+              (PATH_SEG Fn {parens} ->core::ops::Fn
+                a=(T_PATH ->i32
+                  a=(PATH ->i32
+                    (PATH_SEG i32 ->i32)))
+                (T_PATH ->i32
+                  a=(PATH ->i32
+                    (PATH_SEG i32 ->i32)))))))))
+    b=(T_PATH ->i32
+      a=(PATH ->i32
+        (PATH_SEG i32 ->i32)))
+    c=(BLOCK
+      a=(E_CALL :i32
+        a=(E_PATH ->f :F
+          a=(PATH ->f
+            (PATH_SEG f ->f)))
+        (E_PATH ->x :i32
+          a=(PATH ->x
+            (PATH_SEG x ->x)))))
+    (PARAM
+      a=(P_IDENT f ->f :F)
+      b=(T_PATH ->F
+        a=(PATH ->F
+          (PATH_SEG F ->F))))
+    (PARAM
+      a=(P_IDENT x ->x :i32)
+      b=(T_PATH ->i32
+        a=(PATH ->i32
+          (PATH_SEG i32 ->i32)))))
+  (ITEM_FN make ->make
+    b=(T_PATH ->core::boxed::Box
+      a=(PATH ->core::boxed::Box
+        (PATH_SEG Box {angle} ->core::boxed::Box
+          (T_DYN {dyn}
+            a=(BOUNDS
+              (BOUND_TRAIT ->core::ops::Fn
+                a=(PATH ->core::ops::Fn
+                  (PATH_SEG Fn {parens} ->core::ops::Fn
+                    a=(T_PATH ->i32
+                      a=(PATH ->i32
+                        (PATH_SEG i32 ->i32)))
+                    (T_PATH ->i32
+                      a=(PATH ->i32
+                        (PATH_SEG i32 ->i32)))))))))))
+    c=(BLOCK
+      a=(E_CALL :Box<{closure}>
+        a=(E_PATH ->Box::new :fn({closure}) -> Box<{closure}> {new::<{closure}>}
+          a=(PATH ->core::boxed::Box
+            (PATH_SEG Box ->core::boxed::Box)
+            (PATH_SEG new)))
+        (E_CLOSURE {move} :{closure}
+          (PARAM
+            a=(P_IDENT x ->x :i32))
+          b=(E_BINARY op:+ :i32
+            a=(E_PATH ->x :i32
+              a=(PATH ->x
+                (PATH_SEG x ->x)))
+            b=(E_PATH ->n :i32
+              a=(PATH ->n
+                (PATH_SEG n ->n)))))))
+    (PARAM
+      a=(P_IDENT n ->n :i32)
+      b=(T_PATH ->i32
+        a=(PATH ->i32
+          (PATH_SEG i32 ->i32)))))
+  (ITEM_FN run ->run
+    b=(T_PATH ->i32
+      a=(PATH ->i32
+        (PATH_SEG i32 ->i32)))
+    c=(BLOCK
+      (STMT_LET
+        a=(P_IDENT k ->k :i32)
+        c=(E_LIT_INT "10" #10 :i32))
+      (STMT_LET
+        a=(P_IDENT add ->add :{closure})
+        c=(E_CLOSURE :{closure}
+          (PARAM
+            a=(P_IDENT x ->x :i32))
+          b=(E_BINARY op:+ :i32
+            a=(E_PATH ->x :i32
+              a=(PATH ->x
+                (PATH_SEG x ->x)))
+            b=(E_PATH ->k :i32
+              a=(PATH ->k
+                (PATH_SEG k ->k))))))
+      (STMT_LET
+        a=(P_IDENT count {mut} ->count :i32)
+        c=(E_LIT_INT "0" #0 :i32))
+      (STMT_LET
+        a=(P_IDENT inc {mut} ->inc :{closure})
+        c=(E_CLOSURE :{closure}
+          b=(E_ASSIGN_OP op:+ :()
+            a=(E_PATH ->count :i32
+              a=(PATH ->count
+                (PATH_SEG count ->count)))
+            b=(E_LIT_INT "1" #1 :i32))))
+      (STMT_EXPR {semi}
+        a=(E_CALL :()
+          a=(E_PATH ->inc :{closure}
+            a=(PATH ->inc
+              (PATH_SEG inc ->inc)))))
+      (STMT_LET
+        a=(P_IDENT v ->v :Vec<i32>)
+        b=(T_PATH ->core::vec::Vec
+          a=(PATH ->core::vec::Vec
+            (PATH_SEG Vec {angle} ->core::vec::Vec
+              (T_PATH ->i32
+                a=(PATH ->i32
+                  (PATH_SEG i32 ->i32))))))
+        c=(E_CALL :Vec<i32>
+          a=(E_PATH ->Vec::from_array :fn([i32; 4]) -> Vec<i32> {from_array::<i32, 4>}
+            a=(PATH {global} ->core::vec::Vec
+              (PATH_SEG core ->core)
+              (PATH_SEG vec ->core::vec)
+              (PATH_SEG Vec ->core::vec::Vec)
+              (PATH_SEG from_array)))
+          (E_ARRAY :[i32; 4]
+            (E_LIT_INT "1" #1 :i32)
+            (E_LIT_INT "2" #2 :i32)
+            (E_LIT_INT "3" #3 :i32)
+            (E_LIT_INT "4" #4 :i32))))
+      (STMT_LET
+        a=(P_IDENT doubled ->doubled :Vec<i32>)
+        b=(T_PATH ->core::vec::Vec
+          a=(PATH ->core::vec::Vec
+            (PATH_SEG Vec {angle} ->core::vec::Vec
+              (T_PATH ->i32
+                a=(PATH ->i32
+                  (PATH_SEG i32 ->i32))))))
+        c=(E_METHOD_CALL collect ->core::iter::Iterator::collect :Vec<i32>
+          a=(E_METHOD_CALL map ->core::iter::Iterator::map :Map<Iter<i32>, {closure}>
+            a=(E_METHOD_CALL iter ->Vec::iter :Iter<i32>
+              a=(E_PATH ->v :Vec<i32>
+                a=(PATH ->v
+                  (PATH_SEG v ->v))))
+            (E_CLOSURE :{closure}
+              (PARAM
+                a=(P_IDENT x ->x :&i32))
+              b=(E_BINARY op:* -><impl>::mul :i32
+                a=(E_PATH ->x :&i32
+                  a=(PATH ->x
+                    (PATH_SEG x ->x)))
+                b=(E_LIT_INT "2" #2 :i32))))))
+      (STMT_LET
+        a=(P_IDENT evens ->evens :usize)
+        c=(E_METHOD_CALL count ->core::iter::Iterator::count :usize
+          a=(E_METHOD_CALL filter ->core::iter::Iterator::filter :Filter<Iter<i32>, {closure}>
+            a=(E_METHOD_CALL iter ->Vec::iter :Iter<i32>
+              a=(E_PATH ->v :Vec<i32>
+                a=(PATH ->v
+                  (PATH_SEG v ->v))))
+            (E_CLOSURE :{closure}
+              (PARAM
+                a=(P_IDENT x ->x :&&i32))
+              b=(E_BINARY op:== :bool
+                a=(E_BINARY op:% :i32
+                  a=(E_DEREF :i32
+                    a=(E_DEREF :&i32
+                      a=(E_PATH ->x :&&i32
+                        a=(PATH ->x
+                          (PATH_SEG x ->x)))))
+                  b=(E_LIT_INT "2" #2 :i32))
+                b=(E_LIT_INT "0" #0 :i32))))))
+      (STMT_LET
+        a=(P_IDENT sum ->sum :i32)
+        b=(T_PATH ->i32
+          a=(PATH ->i32
+            (PATH_SEG i32 ->i32)))
+        c=(E_METHOD_CALL sum ->core::iter::Iterator::sum :i32
+          a=(E_METHOD_CALL iter ->Vec::iter :Iter<i32>
+            a=(E_PATH ->v :Vec<i32>
+              a=(PATH ->v
+                (PATH_SEG v ->v))))))
+      (STMT_LET
+        a=(P_IDENT folded ->folded :i32)
+        c=(E_METHOD_CALL fold ->core::iter::Iterator::fold :i32
+          a=(E_METHOD_CALL iter ->Vec::iter :Iter<i32>
+            a=(E_PATH ->v :Vec<i32>
+              a=(PATH ->v
+                (PATH_SEG v ->v))))
+          (E_LIT_INT "0" #0 :i32)
+          (E_CLOSURE :{closure}
+            (PARAM
+              a=(P_IDENT a ->a :i32))
+            (PARAM
+              a=(P_IDENT b ->b :&i32))
+            b=(E_BINARY op:+ ->i32::add :i32
+              a=(E_PATH ->a :i32
+                a=(PATH ->a
+                  (PATH_SEG a ->a)))
+              b=(E_PATH ->b :&i32
+                a=(PATH ->b
+                  (PATH_SEG b ->b)))))))
+      (STMT_LET
+        a=(P_IDENT strs ->strs :Vec<String>)
+        b=(T_PATH ->core::vec::Vec
+          a=(PATH ->core::vec::Vec
+            (PATH_SEG Vec {angle} ->core::vec::Vec
+              (T_PATH ->core::string::String
+                a=(PATH ->core::string::String
+                  (PATH_SEG String ->core::string::String))))))
+        c=(E_METHOD_CALL collect ->core::iter::Iterator::collect :Vec<String>
+          a=(E_METHOD_CALL map ->core::iter::Iterator::map :Map<Iter<i32>, {closure}>
+            a=(E_METHOD_CALL iter ->Vec::iter :Iter<i32>
+              a=(E_PATH ->v :Vec<i32>
+                a=(PATH ->v
+                  (PATH_SEG v ->v))))
+            (E_CLOSURE :{closure}
+              (PARAM
+                a=(P_IDENT n ->n :&i32))
+              b=(E_METHOD_CALL to_string ->T::to_string :String
+                a=(E_PATH ->n :&i32
+                  a=(PATH ->n
+                    (PATH_SEG n ->n))))))))
+      (STMT_LET
+        a=(P_IDENT longest ->longest :usize)
+        c=(E_METHOD_CALL unwrap_or ->Option::unwrap_or :usize
+          a=(E_METHOD_CALL max ->core::iter::Iterator::max :Option<usize>
+            a=(E_METHOD_CALL map ->core::iter::Iterator::map :Map<Iter<String>, {closure}>
+              a=(E_METHOD_CALL iter ->Vec::iter :Iter<String>
+                a=(E_PATH ->strs :Vec<String>
+                  a=(PATH ->strs
+                    (PATH_SEG strs ->strs))))
+              (E_CLOSURE :{closure}
+                (PARAM
+                  a=(P_IDENT s ->s :&String))
+                b=(E_METHOD_CALL len ->String::len :usize
+                  a=(E_PATH ->s :&String
+                    a=(PATH ->s
+                      (PATH_SEG s ->s)))))))
+          (E_LIT_INT "0" #0 :usize)))
+      (STMT_LET
+        a=(P_IDENT pos ->pos :Option<usize>)
+        c=(E_METHOD_CALL position ->core::iter::Iterator::position :Option<usize>
+          a=(E_METHOD_CALL iter ->Vec::iter :Iter<i32>
+            a=(E_PATH ->v :Vec<i32>
+              a=(PATH ->v
+                (PATH_SEG v ->v))))
+          (E_CLOSURE :{closure}
+            (PARAM
+              a=(P_REF :&i32
+                a=(P_IDENT x ->x :i32)))
+            b=(E_BINARY op:== :bool
+              a=(E_PATH ->x :i32
+                a=(PATH ->x
+                  (PATH_SEG x ->x)))
+              b=(E_LIT_INT "3" #3 :i32)))))
+      (STMT_LET
+        a=(P_IDENT pairs ->pairs :Vec<(usize, &i32)>)
+        b=(T_PATH ->core::vec::Vec
+          a=(PATH ->core::vec::Vec
+            (PATH_SEG Vec {angle} ->core::vec::Vec
+              (T_TUPLE
+                (T_PATH ->usize
+                  a=(PATH ->usize
+                    (PATH_SEG usize ->usize)))
+                (T_REF
+                  a=(T_PATH ->i32
+                    a=(PATH ->i32
+                      (PATH_SEG i32 ->i32))))))))
+        c=(E_METHOD_CALL collect ->core::iter::Iterator::collect :Vec<(usize, &i32)>
+          a=(E_METHOD_CALL enumerate ->core::iter::Iterator::enumerate :Enumerate<Iter<i32>>
+            a=(E_METHOD_CALL iter ->Vec::iter :Iter<i32>
+              a=(E_PATH ->v :Vec<i32>
+                a=(PATH ->v
+                  (PATH_SEG v ->v)))))))
+      (STMT_LET
+        a=(P_IDENT f ->f :Box<dyn Fn<(i32,), Output = i32>>)
+        c=(E_CALL :Box<dyn Fn<(i32,), Output = i32>>
+          a=(E_PATH ->make :fn(i32) -> Box<dyn Fn<(i32,), Output = i32>> {make}
+            a=(PATH ->make
+              (PATH_SEG make ->make)))
+          (E_LIT_INT "3" #3 :i32)))
+      a=(E_BINARY op:+ :i32
+        a=(E_BINARY op:+ :i32
+          a=(E_BINARY op:+ :i32
+            a=(E_BINARY op:+ :i32
+              a=(E_BINARY op:+ :i32
+                a=(E_BINARY op:+ :i32
+                  a=(E_BINARY op:+ :i32
+                    a=(E_BINARY op:+ :i32
+                      a=(E_BINARY op:+ :i32
+                        a=(E_BINARY op:+ :i32
+                          a=(E_CALL :i32
+                            a=(E_PATH ->add :{closure}
+                              a=(PATH ->add
+                                (PATH_SEG add ->add)))
+                            (E_LIT_INT "1" #1 :i32))
+                          b=(E_CALL :i32
+                            a=(E_PATH ->apply :fn({closure}, i32) -> i32 {apply::<{closure}>}
+                              a=(PATH ->apply
+                                (PATH_SEG apply ->apply)))
+                            (E_CLOSURE :{closure}
+                              (PARAM
+                                a=(P_IDENT x ->x :i32))
+                              b=(E_BINARY op:* :i32
+                                a=(E_PATH ->x :i32
+                                  a=(PATH ->x
+                                    (PATH_SEG x ->x)))
+                                b=(E_LIT_INT "2" #2 :i32)))
+                            (E_LIT_INT "4" #4 :i32)))
+                        b=(E_CAST :i32
+                          a=(E_METHOD_CALL len ->Vec::len :usize
+                            a=(E_PATH ->doubled :Vec<i32>
+                              a=(PATH ->doubled
+                                (PATH_SEG doubled ->doubled))))
+                          b=(T_PATH ->i32
+                            a=(PATH ->i32
+                              (PATH_SEG i32 ->i32)))))
+                      b=(E_CAST :i32
+                        a=(E_PATH ->evens :usize
+                          a=(PATH ->evens
+                            (PATH_SEG evens ->evens)))
+                        b=(T_PATH ->i32
+                          a=(PATH ->i32
+                            (PATH_SEG i32 ->i32)))))
+                    b=(E_PATH ->sum :i32
+                      a=(PATH ->sum
+                        (PATH_SEG sum ->sum))))
+                  b=(E_PATH ->folded :i32
+                    a=(PATH ->folded
+                      (PATH_SEG folded ->folded))))
+                b=(E_CAST :i32
+                  a=(E_PATH ->longest :usize
+                    a=(PATH ->longest
+                      (PATH_SEG longest ->longest)))
+                  b=(T_PATH ->i32
+                    a=(PATH ->i32
+                      (PATH_SEG i32 ->i32)))))
+              b=(E_CAST :i32
+                a=(E_METHOD_CALL unwrap ->Option::unwrap :usize
+                  a=(E_PATH ->pos :Option<usize>
+                    a=(PATH ->pos
+                      (PATH_SEG pos ->pos))))
+                b=(T_PATH ->i32
+                  a=(PATH ->i32
+                    (PATH_SEG i32 ->i32)))))
+            b=(E_CAST :i32
+              a=(E_METHOD_CALL len ->Vec::len :usize
+                a=(E_PATH ->pairs :Vec<(usize, &i32)>
+                  a=(PATH ->pairs
+                    (PATH_SEG pairs ->pairs))))
+              b=(T_PATH ->i32
+                a=(PATH ->i32
+                  (PATH_SEG i32 ->i32)))))
+          b=(E_CALL :i32
+            a=(E_PATH ->f :Box<dyn Fn<(i32,), Output = i32>>
+              a=(PATH ->f
+                (PATH_SEG f ->f)))
+            (E_LIT_INT "2" #2 :i32)))
+        b=(E_PATH ->count :i32
+          a=(PATH ->count
+            (PATH_SEG count ->count)))))))

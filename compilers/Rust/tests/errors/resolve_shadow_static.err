@@ -1,0 +1,1 @@
+errors/resolve_shadow_static.rs:3: error: let bindings cannot shadow statics

@@ -1,0 +1,297 @@
+(CRATE ->crate
+  (ITEM_STRUCT Err1 {tuple} ->Err1
+    (FIELD ->Err1::0
+      a=(T_PATH ->i32
+        a=(PATH ->i32
+          (PATH_SEG i32 ->i32)))))
+  (ITEM_ENUM MyErr ->MyErr
+    (VARIANT Parse {tuple} ->MyErr::Parse
+      (FIELD ->MyErr::Parse::0
+        a=(T_PATH ->core::num::ParseIntError
+          a=(PATH ->core::num::ParseIntError
+            (PATH_SEG std ->core)
+            (PATH_SEG num ->core::num)
+            (PATH_SEG ParseIntError ->core::num::ParseIntError)))))
+    (VARIANT Neg {tuple} ->MyErr::Neg
+      (FIELD ->MyErr::Neg::0
+        a=(T_PATH ->i32
+          a=(PATH ->i32
+            (PATH_SEG i32 ->i32))))))
+  (ITEM_IMPL ->MyErr
+    b=(T_PATH ->MyErr
+      a=(PATH ->MyErr
+        (PATH_SEG MyErr ->MyErr)))
+    c=(PATH ->core::convert::From
+      (PATH_SEG From {angle} ->core::convert::From
+        (T_PATH ->core::num::ParseIntError
+          a=(PATH ->core::num::ParseIntError
+            (PATH_SEG std ->core)
+            (PATH_SEG num ->core::num)
+            (PATH_SEG ParseIntError ->core::num::ParseIntError)))))
+    (ITEM_FN from ->MyErr::from
+      b=(T_PATH ->MyErr
+        a=(PATH ->MyErr
+          (PATH_SEG MyErr ->MyErr)))
+      c=(BLOCK
+        a=(E_CALL :MyErr
+          a=(E_PATH ->MyErr::Parse :fn(ParseIntError) -> MyErr {Parse}
+            a=(PATH ->MyErr::Parse
+              (PATH_SEG MyErr ->MyErr)
+              (PATH_SEG Parse ->MyErr::Parse)))
+          (E_PATH ->e :ParseIntError
+            a=(PATH ->e
+              (PATH_SEG e ->e)))))
+      (PARAM
+        a=(P_IDENT e ->e :ParseIntError)
+        b=(T_PATH ->core::num::ParseIntError
+          a=(PATH ->core::num::ParseIntError
+            (PATH_SEG std ->core)
+            (PATH_SEG num ->core::num)
+            (PATH_SEG ParseIntError ->core::num::ParseIntError))))))
+  (ITEM_IMPL ->MyErr
+    b=(T_PATH ->MyErr
+      a=(PATH ->MyErr
+        (PATH_SEG MyErr ->MyErr)))
+    c=(PATH ->core::convert::From
+      (PATH_SEG From {angle} ->core::convert::From
+        (T_PATH ->Err1
+          a=(PATH ->Err1
+            (PATH_SEG Err1 ->Err1)))))
+    (ITEM_FN from ->MyErr::from
+      b=(T_PATH ->MyErr
+        a=(PATH ->MyErr
+          (PATH_SEG MyErr ->MyErr)))
+      c=(BLOCK
+        a=(E_CALL :MyErr
+          a=(E_PATH ->MyErr::Neg :fn(i32) -> MyErr {Neg}
+            a=(PATH ->MyErr::Neg
+              (PATH_SEG MyErr ->MyErr)
+              (PATH_SEG Neg ->MyErr::Neg)))
+          (E_TUPLE_FIELD #0 ->Err1::0 :i32
+            a=(E_PATH ->e :Err1
+              a=(PATH ->e
+                (PATH_SEG e ->e))))))
+      (PARAM
+        a=(P_IDENT e ->e :Err1)
+        b=(T_PATH ->Err1
+          a=(PATH ->Err1
+            (PATH_SEG Err1 ->Err1))))))
+  (ITEM_FN check ->check
+    b=(T_PATH ->core::result::Result
+      a=(PATH ->core::result::Result
+        (PATH_SEG Result {angle} ->core::result::Result
+          (T_PATH ->i32
+            a=(PATH ->i32
+              (PATH_SEG i32 ->i32)))
+          (T_PATH ->Err1
+            a=(PATH ->Err1
+              (PATH_SEG Err1 ->Err1))))))
+    c=(BLOCK
+      a=(E_IF :Result<i32, Err1>
+        a=(E_BINARY op:< :bool
+          a=(E_PATH ->n :i32
+            a=(PATH ->n
+              (PATH_SEG n ->n)))
+          b=(E_LIT_INT "0" #0 :i32))
+        b=(BLOCK
+          a=(E_CALL :Result<i32, Err1>
+            a=(E_PATH ->core::result::Result::Err :fn(Err1) -> Result<i32, Err1> {Err::<i32, Err1>}
+              a=(PATH ->core::result::Result::Err
+                (PATH_SEG Err ->core::result::Result::Err)))
+            (E_CALL :Err1
+              a=(E_PATH ->Err1 :fn(i32) -> Err1 {Err1}
+                a=(PATH ->Err1
+                  (PATH_SEG Err1 ->Err1)))
+              (E_PATH ->n :i32
+                a=(PATH ->n
+                  (PATH_SEG n ->n))))))
+        c=(BLOCK :Result<i32, Err1>
+          a=(E_CALL :Result<i32, Err1>
+            a=(E_PATH ->core::result::Result::Ok :fn(i32) -> Result<i32, Err1> {Ok::<i32, Err1>}
+              a=(PATH ->core::result::Result::Ok
+                (PATH_SEG Ok ->core::result::Result::Ok)))
+            (E_PATH ->n :i32
+              a=(PATH ->n
+                (PATH_SEG n ->n)))))))
+    (PARAM
+      a=(P_IDENT n ->n :i32)
+      b=(T_PATH ->i32
+        a=(PATH ->i32
+          (PATH_SEG i32 ->i32)))))
+  (ITEM_FN parse ->parse
+    b=(T_PATH ->core::result::Result
+      a=(PATH ->core::result::Result
+        (PATH_SEG Result {angle} ->core::result::Result
+          (T_PATH ->i32
+            a=(PATH ->i32
+              (PATH_SEG i32 ->i32)))
+          (T_PATH ->MyErr
+            a=(PATH ->MyErr
+              (PATH_SEG MyErr ->MyErr))))))
+    c=(BLOCK
+      (STMT_LET
+        a=(P_IDENT n ->n :i32)
+        c=(E_TRY :i32
+          a=(E_METHOD_CALL parse ->str::parse :Result<i32, ParseIntError>
+            a=(E_METHOD_CALL trim ->str::trim :&str
+              a=(E_PATH ->s :&str
+                a=(PATH ->s
+                  (PATH_SEG s ->s))))
+            b=(PATH_SEG parse {turbofish,angle}
+              (T_PATH ->i32
+                a=(PATH ->i32
+                  (PATH_SEG i32 ->i32)))))))
+      (STMT_LET
+        a=(P_IDENT m ->m :i32)
+        c=(E_TRY :i32
+          a=(E_CALL :Result<i32, Err1>
+            a=(E_PATH ->check :fn(i32) -> Result<i32, Err1> {check}
+              a=(PATH ->check
+                (PATH_SEG check ->check)))
+            (E_PATH ->n :i32
+              a=(PATH ->n
+                (PATH_SEG n ->n))))))
+      a=(E_CALL :Result<i32, MyErr>
+        a=(E_PATH ->core::result::Result::Ok :fn(i32) -> Result<i32, MyErr> {Ok::<i32, MyErr>}
+          a=(PATH ->core::result::Result::Ok
+            (PATH_SEG Ok ->core::result::Result::Ok)))
+        (E_BINARY op:* :i32
+          a=(E_PATH ->m :i32
+            a=(PATH ->m
+              (PATH_SEG m ->m)))
+          b=(E_LIT_INT "2" #2 :i32))))
+    (PARAM
+      a=(P_IDENT s ->s :&str)
+      b=(T_REF
+        a=(T_PATH ->str
+          a=(PATH ->str
+            (PATH_SEG str ->str))))))
+  (ITEM_FN first ->first
+    b=(T_PATH ->core::option::Option
+      a=(PATH ->core::option::Option
+        (PATH_SEG Option {angle} ->core::option::Option
+          (T_PATH ->i32
+            a=(PATH ->i32
+              (PATH_SEG i32 ->i32))))))
+    c=(BLOCK
+      (STMT_LET
+        a=(P_IDENT x ->x :&i32)
+        c=(E_TRY :&i32
+          a=(E_METHOD_CALL get -><impl>::get :Option<&i32>
+            a=(E_PATH ->v :&[i32]
+              a=(PATH ->v
+                (PATH_SEG v ->v)))
+            (E_LIT_INT "0" #0 :usize))))
+      (STMT_LET
+        a=(P_IDENT y ->y :&i32)
+        c=(E_TRY :&i32
+          a=(E_METHOD_CALL get -><impl>::get :Option<&i32>
+            a=(E_PATH ->v :&[i32]
+              a=(PATH ->v
+                (PATH_SEG v ->v)))
+            (E_LIT_INT "1" #1 :usize))))
+      a=(E_CALL :Option<i32>
+        a=(E_PATH ->core::option::Option::Some :fn(i32) -> Option<i32> {Some::<i32>}
+          a=(PATH ->core::option::Option::Some
+            (PATH_SEG Some ->core::option::Option::Some)))
+        (E_BINARY op:+ :i32
+          a=(E_DEREF :i32
+            a=(E_PATH ->x :&i32
+              a=(PATH ->x
+                (PATH_SEG x ->x))))
+          b=(E_DEREF :i32
+            a=(E_PATH ->y :&i32
+              a=(PATH ->y
+                (PATH_SEG y ->y)))))))
+    (PARAM
+      a=(P_IDENT v ->v :&[i32])
+      b=(T_REF
+        a=(T_SLICE
+          a=(T_PATH ->i32
+            a=(PATH ->i32
+              (PATH_SEG i32 ->i32)))))))
+  (ITEM_FN dynerr ->dynerr
+    b=(T_PATH ->core::result::Result
+      a=(PATH ->core::result::Result
+        (PATH_SEG Result {angle} ->core::result::Result
+          (T_PATH ->i32
+            a=(PATH ->i32
+              (PATH_SEG i32 ->i32)))
+          (T_PATH ->core::boxed::Box
+            a=(PATH ->core::boxed::Box
+              (PATH_SEG Box {angle} ->core::boxed::Box
+                (T_DYN {dyn}
+                  a=(BOUNDS
+                    (BOUND_TRAIT ->core::error::Error
+                      a=(PATH ->core::error::Error
+                        (PATH_SEG std ->core)
+                        (PATH_SEG error ->core::error)
+                        (PATH_SEG Error ->core::error::Error)))))))))))
+    c=(BLOCK
+      (STMT_LET
+        a=(P_IDENT n ->n :i32)
+        b=(T_PATH ->i32
+          a=(PATH ->i32
+            (PATH_SEG i32 ->i32)))
+        c=(E_TRY :i32
+          a=(E_METHOD_CALL parse ->str::parse :Result<i32, ParseIntError>
+            a=(E_PATH ->s :&str
+              a=(PATH ->s
+                (PATH_SEG s ->s))))))
+      (STMT_EXPR
+        a=(E_IF :()
+          a=(E_BINARY op:== :bool
+            a=(E_PATH ->n :i32
+              a=(PATH ->n
+                (PATH_SEG n ->n)))
+            b=(E_LIT_INT "0" #0 :i32))
+          b=(BLOCK
+            (STMT_EXPR {semi}
+              a=(E_RETURN :!
+                a=(E_CALL :Result<i32, Box<dyn Error>>
+                  a=(E_PATH ->core::result::Result::Err :fn(Box<dyn Error>) -> Result<i32, Box<dyn Error>> {Err::<i32, Box<dyn Error>>}
+                    a=(PATH ->core::result::Result::Err
+                      (PATH_SEG Err ->core::result::Result::Err)))
+                  (E_METHOD_CALL into ->T::into :Box<dyn Error>
+                    a=(E_LIT_STR "zero" :&str))))))))
+      a=(E_CALL :Result<i32, Box<dyn Error>>
+        a=(E_PATH ->core::result::Result::Ok :fn(i32) -> Result<i32, Box<dyn Error>> {Ok::<i32, Box<dyn Error>>}
+          a=(PATH ->core::result::Result::Ok
+            (PATH_SEG Ok ->core::result::Result::Ok)))
+        (E_PATH ->n :i32
+          a=(PATH ->n
+            (PATH_SEG n ->n)))))
+    (PARAM
+      a=(P_IDENT s ->s :&str)
+      b=(T_REF
+        a=(T_PATH ->str
+          a=(PATH ->str
+            (PATH_SEG str ->str))))))
+  (ITEM_FN unwrap_or ->unwrap_or
+    b=(T_PATH ->i32
+      a=(PATH ->i32
+        (PATH_SEG i32 ->i32)))
+    c=(BLOCK
+      (STMT_LET
+        a=(P_TUPLE_STRUCT ->core::option::Option::Some :Option<i32>
+          a=(PATH ->core::option::Option::Some
+            (PATH_SEG Some ->core::option::Option::Some))
+          (P_IDENT v ->v :i32))
+        c=(E_PATH ->o :Option<i32>
+          a=(PATH ->o
+            (PATH_SEG o ->o)))
+        d=(BLOCK
+          a=(E_RETURN :!
+            a=(E_UNARY op:- :i32
+              a=(E_LIT_INT "1" #1 :i32)))))
+      a=(E_PATH ->v :i32
+        a=(PATH ->v
+          (PATH_SEG v ->v))))
+    (PARAM
+      a=(P_IDENT o ->o :Option<i32>)
+      b=(T_PATH ->core::option::Option
+        a=(PATH ->core::option::Option
+          (PATH_SEG Option {angle} ->core::option::Option
+            (T_PATH ->i32
+              a=(PATH ->i32
+                (PATH_SEG i32 ->i32)))))))))

@@ -1,0 +1,1 @@
+errors/resolve_module.rs:2: error: failed to resolve: use of undeclared crate or module `nothing`

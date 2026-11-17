@@ -1,0 +1,64 @@
+trait Shape
+  const Shape::SIDES: i32
+  type Shape::Unit
+  fn Shape::area: fn(&Self) -> <Self as Shape>::Unit {area}
+  fn Shape::name: fn() -> i32 {name}
+trait Named
+  where Self: Debug, Self: Clone
+  fn Named::make: fn() -> Self {make}
+  fn Named::dup: fn(Self) -> (Self, Self) {dup}
+    where Self: Copy
+trait Container
+  where <Self as Container>::Item: Clone, <Self as Container>::Iter: Iterator<Item = <Self as Container>::Item>
+  type Container::Item
+  type Container::Iter
+  fn Container::items: fn(&Self) -> <Self as Container>::Iter {items}
+struct Sq<T>: Sq<T>
+  field Sq::0: T
+struct Arr<const N: usize>: Arr<N>
+  field Arr::d: [i32; N]
+struct Holder<T>: Holder<T>
+  field Holder::t: T
+enum Pick<A, B>: Pick<A, B>
+  variant Pick::Left
+    field Pick::Left::0: A
+  variant Pick::Right
+    field Pick::Right::b: B
+  variant Pick::Neither
+union Bits: Bits
+  field Bits::i: i32
+  field Bits::f: f64
+impl<const N: usize> Arr<N>
+  fn Arr::len: fn(&Arr<N>) -> usize {len::<N>}
+  fn Arr::new: fn() -> Arr<N> {new::<N>}
+  fn Arr::first: fn(Box<Arr<N>>) -> i32 {first::<N>}
+impl<T> Shape for Sq<T>
+  where T: Add<T, Output = T>, T: Copy, T: Sized
+  const Sq::SIDES: i32  (impl of Shape::SIDES)
+  type Sq::Unit = T  (impl of Shape::Unit)
+  fn Sq::area: fn(&Sq<T>) -> T {area::<T>}  (impl of Shape::area)
+impl<T> Container for Holder<T>
+  where T: Clone
+  type Holder::Item = T  (impl of Container::Item)
+  type Holder::Iter = Once<T>  (impl of Container::Iter)
+  fn Holder::items: fn(&Holder<T>) -> Once<T> {items::<T>}  (impl of Container::items)
+impl Clone for Bits
+  fn Bits::clone: fn(&Bits) -> Bits {clone}  (impl of core::clone::Clone::clone)
+impl Copy for Bits  [copy]
+fn apply<F, G>: fn(F, G) -> i32 {apply::<F, G>}
+  where F: Fn<(i32,), Output = i32>, G: Fn<(i32,), Output = i32>
+fn dynamic<impl Trait>: fn(&dyn Shape<Unit = i32>, impl Trait, fn(i32) -> i32, *const i32, [u8; 4], &[u8]) {dynamic::<impl Trait>}
+  where impl Trait: Add<i32>
+fn qualified<T>: fn(&T) -> <T as Shape>::Unit {qualified::<T>}
+  where T: Shape
+fn assoc<C>: fn(&C) -> <C as Container>::Item {assoc::<C>}
+  where C: Container, <C as Container>::Item: Debug
+fn unsized_ok<T>: fn(&T) {unsized_ok::<T>}
+  where T: ?Sized, T: Debug
+fn pair<A, B>: fn(A, B) -> Pick<A, B> {pair::<A, B>}
+  where B: Into<A>
+type Table<K> = Vec<(K, i32)>
+fn use_alias: fn(Vec<(u8, i32)>) -> Vec<(char, i32)> {use_alias}
+const LIMIT: usize
+static NAMES: [&str; 2]
+fn main: fn() {main}
