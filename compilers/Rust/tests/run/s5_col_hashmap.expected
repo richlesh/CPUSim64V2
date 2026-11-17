@@ -1,0 +1,40 @@
+and   1
+barks 1
+brown 1
+dog   2
+fox   2
+jumps 1
+lazy  1
+over  1
+quick 1
+runs  1
+the   4
+len 11 empty false
+Some(4) None
+true false
+None
+Some("one")
+uno three
+Some("two!!")
+None
+len 2
+[("a", [1, 2]), ("b", [3, 30]), ("c", [7])]
+occupied a [1, 2]
+vacant zz
+4
+big 500 41666500
+left 167 first [0, 3, 6, 9] last Some(498)
+Some(81) None
+total 13847306
+retained 84
+true
+false
+[(1, 11), (2, 20), (3, 30), (4, 40), (5, 50), (6, 60), (7, 70)]
+{} 0
+{"k": 1}
+{
+    "k": 1,
+}
+2
+Some("x") Some("y") None
+0 true

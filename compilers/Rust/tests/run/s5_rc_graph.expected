@@ -1,0 +1,6 @@
+bfs 0: [0, 1, 2, 3, 4]
+bfs 5: [5, 6]
+count = 2
+adj3 = [1, 2, 4, 6]
+degrees = [2, 2, 2, 4, 1, 1, 1]
+after drop count = 1 RefCell { value: [1, 2, 4, 6] }

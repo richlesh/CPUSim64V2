@@ -1,3 +1,3 @@
 #[derive(Hash)]
-struct P { x: i32 }
+struct P { x: f64 }
 fn main() {}

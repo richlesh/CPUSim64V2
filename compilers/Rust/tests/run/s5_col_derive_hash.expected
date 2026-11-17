@@ -1,0 +1,19 @@
+3 Some("a2") Some("b") None
+unique 15 dups 25
+Some(11) None
+[(Red, [0, 3, 6]), (Green, [1, 4, 7]), (Blue, [2, 5, 8])]
+shapes 7 of 9
+true
+false
+true
+false
+true
+false
+false
+true
+true
+true
+true
+2
+1
+Some(1) Some(2)

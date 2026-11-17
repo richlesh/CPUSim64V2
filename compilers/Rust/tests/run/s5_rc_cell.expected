@@ -1,0 +1,18 @@
+hits=5 last=16
+["-1->0", "0->1", "1->4", "4->9", "9->16"]
+took 5 now 0
+Cell { value: 7 }
+7
+RefCell { value: [1, 2, 3] }
+two readers 3 3
+try_borrow_mut err = true
+try_borrow ok = true
+try_borrow err = true
+RefCell { value: [1, 2, 3, 4] }
+[1, 2, 3, 4] [9]
+[9] []
+0
+abcd RefCell { value: "abcd" }
+ok abcde
+err RefCell already borrowed / BorrowMutError
+abcde

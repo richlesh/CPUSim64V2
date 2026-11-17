@@ -1,0 +1,10 @@
+tail count = 1
+after a: 2
+after b: 3
+in scope: 4 sum c = 12
+after scope: 3
+a = [1, 3, 4] sum 8
+b = [2, 3, 4] sum 9
+after drop a: 2
+after drop b: 1
+long sum = 4950

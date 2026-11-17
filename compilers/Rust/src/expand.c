@@ -2113,7 +2113,7 @@ static ExMac *ex_resolve(Node *call, int *builtin) {
  * clause.  The impls are placed right after the type.
  */
 
-enum { DV_DEBUG, DV_CLONE, DV_COPY, DV_PEQ, DV_EQ, DV_PORD, DV_ORD, DV_DEFAULT };
+enum { DV_DEBUG, DV_CLONE, DV_COPY, DV_PEQ, DV_EQ, DV_PORD, DV_ORD, DV_DEFAULT, DV_HASH };
 
 static Node *ex_clone(Node *n) {
     Node *c;
@@ -2324,6 +2324,30 @@ static void dv_clone(StrBuf *b, Node *item) {
     sb_puts(b, "}\n}\n}\n");
 }
 
+/* every field is fed to the hasher in order; an enum feeds its variant index first */
+static void dv_hash(StrBuf *b, Node *item) {
+    long i, k;
+    dv_impl_open(b, item, "::core::hash::Hash");
+    sb_puts(b, "fn hash<__H: ::core::hash::Hasher>(&self, state: &mut __H) {\nmatch *self {\n");
+    for (i = 0; i < dv_nvar(item); i++) {
+        Node *v = dv_var(item, i);
+        dv_pat(b, item, i, 'a', 0);
+        sb_puts(b, " => {\n");
+        if (dv_is_enum(item)) {
+            sb_puts(b, "::core::hash::Hasher::write_isize(&mut *state, ");
+            dv_num(b, i);
+            sb_puts(b, "isize);\n");
+        }
+        for (k = 0; k < v->list.n; k++) {
+            sb_puts(b, "::core::hash::Hash::hash(__a");
+            dv_num(b, k);
+            sb_puts(b, ", &mut *state);\n");
+        }
+        sb_puts(b, "}\n");
+    }
+    sb_puts(b, "}\n}\n}\n");
+}
+
 static void dv_default(StrBuf *b, Node *item, Node *attr) {
     long i;
     dv_impl_open(b, item, "::core::default::Default");
@@ -2465,6 +2489,7 @@ static int dv_lookup(const char *s) {
     if (strcmp(s, "PartialOrd") == 0) return DV_PORD;
     if (strcmp(s, "Ord") == 0) return DV_ORD;
     if (strcmp(s, "Default") == 0) return DV_DEFAULT;
+    if (strcmp(s, "Hash") == 0) return DV_HASH;
     return -1;
 }
 
@@ -2474,7 +2499,6 @@ static void dv_one(Node *item, Node *attr, Name *nm, NodeList *out) {
     NodeList sub;
     int which = dv_lookup(nm->s);
     long i;
-    if (strcmp(nm->s, "Hash") == 0) error_at(item->file, attr->line, "derive(Hash) is not supported");
     if (which < 0) {
         StrBuf m;
         sb_init(&m);
@@ -2490,6 +2514,7 @@ static void dv_one(Node *item, Node *attr, Name *nm, NodeList *out) {
     case DV_PEQ: dv_cmp(&b, item, 0); break;
     case DV_PORD: dv_cmp(&b, item, 1); break;
     case DV_ORD: dv_cmp(&b, item, 2); break;
+    case DV_HASH: dv_hash(&b, item); break;
     default: dv_default(&b, item, attr); break;
     }
     memset(&t, 0, sizeof t);
