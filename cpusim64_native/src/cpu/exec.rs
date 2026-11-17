@@ -122,11 +122,11 @@ impl Simulator {
                 self.add_cycles("move");
             }
             3 => {
-                self.op_load(d)?;
+                self.op_load(d, false)?;
                 self.add_cycles("load");
             }
             4 => {
-                self.op_store(d)?;
+                self.op_store(d, false)?;
                 self.add_cycles("store");
             }
             5 => {
@@ -263,6 +263,14 @@ impl Simulator {
             38 => {
                 self.op_readonly(d)?;
                 self.add_cycles("readonly");
+            }
+            39 => {
+                self.op_load(d, true)?;
+                self.add_cycles("ldb");
+            }
+            40 => {
+                self.op_store(d, true)?;
+                self.add_cycles("stb");
             }
             _ => return Err(CpuException(format!("Unimplemented opcode: {}", d.op))),
         }
@@ -417,25 +425,42 @@ impl Simulator {
         Err(CpuException("Illegal MOVE arguments.".into()))
     }
 
+    // ---- 39/40: LDB / STB helpers ----
+    fn load_at(&mut self, ea: i64, byte_mode: bool) -> CpuResult<i64> {
+        if byte_mode {
+            self.mem_read_byte(ea)
+        } else {
+            self.mem_read(ea)
+        }
+    }
+
+    fn store_at(&mut self, ea: i64, val: i64, byte_mode: bool) -> CpuResult<()> {
+        if byte_mode {
+            self.mem_write_byte(ea, val)
+        } else {
+            self.mem_write(ea, val)
+        }
+    }
+
     // ---- 3: LOAD ----
-    fn op_load(&mut self, d: &Decoded) -> CpuResult<()> {
+    fn op_load(&mut self, d: &Decoded, byte_mode: bool) -> CpuResult<()> {
         if d.tt == 2 {
             let addr = d.c2;
-            let word = self.mem_read(addr)?;
+            let word = self.load_at(addr, byte_mode)?;
             self.set_y(d.a, d.v0, word)?;
             return Ok(());
         } else if d.tt == 0 {
             let count = d.arg_count();
             if count == 2 && is_y_kind(d.a) && is_reg_kind(d.b) {
                 let addr = self.get_r_kind(d.b, d.v1)?;
-                let w = self.mem_read(addr)?;
+                let w = self.load_at(addr, byte_mode)?;
                 self.set_y(d.a, d.v0, w)?;
                 return Ok(());
             }
             if count == 3 && is_y_kind(d.a) && is_reg_kind(d.b) && is_reg_kind(d.c) {
                 let base = self.get_r_kind(d.b, d.v1)?;
                 let off = self.get_r_kind(d.c, d.v2)?;
-                let w = self.mem_read(base + off)?;
+                let w = self.load_at(base + off, byte_mode)?;
                 self.set_y(d.a, d.v0, w)?;
                 return Ok(());
             }
@@ -443,7 +468,7 @@ impl Simulator {
             if is_y_kind(d.a) && is_o_kind(d.b) {
                 let base = self.get_o(d.b, d.v1)?;
                 let addr = base + d.c3 as i64;
-                let w = self.mem_read(addr)?;
+                let w = self.load_at(addr, byte_mode)?;
                 self.set_y(d.a, d.v0, w)?;
                 return Ok(());
             }
@@ -452,10 +477,10 @@ impl Simulator {
     }
 
     // ---- 4: STORE ----
-    fn op_store(&mut self, d: &Decoded) -> CpuResult<()> {
+    fn op_store(&mut self, d: &Decoded, byte_mode: bool) -> CpuResult<()> {
         if d.tt == 2 {
             let val = self.get_q(d.a, d.v0)?;
-            self.mem_write(d.c2, val)?;
+            self.store_at(d.c2, val, byte_mode)?;
             return Ok(());
         }
         if d.tt == 0 {
@@ -463,14 +488,14 @@ impl Simulator {
             if count == 2 && is_q_kind(d.a) && is_reg_kind(d.b) {
                 let addr = self.get_r_kind(d.b, d.v1)?;
                 let val = self.get_q(d.a, d.v0)?;
-                self.mem_write(addr, val)?;
+                self.store_at(addr, val, byte_mode)?;
                 return Ok(());
             }
             if count == 3 && is_q_kind(d.a) && is_reg_kind(d.b) && is_reg_kind(d.c) {
                 let base = self.get_r_kind(d.b, d.v1)?;
                 let addr = base + self.get_r_kind(d.c, d.v2)?;
                 let val = self.get_q(d.a, d.v0)?;
-                self.mem_write(addr, val)?;
+                self.store_at(addr, val, byte_mode)?;
                 return Ok(());
             }
         } else if d.tt == 3 {
@@ -478,13 +503,13 @@ impl Simulator {
                 let base = self.get_r_kind(d.b, d.v1)?;
                 let addr = base + d.c3 as i64;
                 let val = self.get_q(d.a, d.v0)?;
-                self.mem_write(addr, val)?;
+                self.store_at(addr, val, byte_mode)?;
                 return Ok(());
             } else if is_q_kind(d.a) && is_const_kind(d.b) {
                 let base = self.get_o(d.b, d.v1)?;
                 let addr = base + d.c3 as i64;
                 let val = self.get_q(d.a, d.v0)?;
-                self.mem_write(addr, val)?;
+                self.store_at(addr, val, byte_mode)?;
                 return Ok(());
             }
         }
@@ -1504,5 +1529,214 @@ mod exec_tests {
         let prog = vec![enc_t2(opcode::LOAD, 2, 0, 0), enc_t1(opcode::STOP, 0)];
         let s = run_prog(&prog);
         assert_eq!(s.cycles, 4);
+    }
+}
+#[cfg(test)]
+mod byte_tests {
+    //! LDB (39) / STB (40) tests mirroring `ByteAccessTest.java`.
+    use crate::cpu::Simulator;
+    use crate::decode::{enc_t0, enc_t1, enc_t2, enc_t3, Decoded};
+    use crate::opcode;
+    use std::collections::HashMap;
+
+    fn stop() -> i64 {
+        enc_t1(opcode::STOP, 0)
+    }
+
+    fn mk() -> Simulator {
+        Simulator::new(4096, 0, 1024, vec![])
+    }
+
+    // MOVE Rn, #imm
+    fn mv(r: i32, imm: i64) -> i64 {
+        enc_t2(opcode::MOVE, 2, r, imm)
+    }
+    // LDB/STB Ra, Rb[#imm]   (tt3)
+    fn t3(op: u8, a: i32, b: i32, imm: i32) -> i64 {
+        enc_t3(op, 2, 2, a, b, imm)
+    }
+    // LDB/STB Ra, Rb[Rc]     (tt0, three registers)
+    fn rrr(op: u8, a: i32, b: i32, c: i32) -> i64 {
+        enc_t0(op, 2, 2, 2, 0, a, b, c, 0)
+    }
+
+    fn run_with(prog: &[i64], init: &[(usize, i64)]) -> Simulator {
+        let mut s = mk();
+        s.load_program(prog, 0, HashMap::new());
+        for &(a, v) in init {
+            s.mem.set(a, v);
+        }
+        s.run(0).expect("run");
+        s
+    }
+
+    #[test]
+    fn ldb_all_offsets_zero_extended() {
+        let mut prog = vec![mv(10, 200 * 8)];
+        for k in 0..8 {
+            prog.push(t3(opcode::LDB, 1 + k, 10, k));
+        }
+        prog.push(mv(11, 201 * 8));
+        prog.push(t3(opcode::LDB, 9, 11, 0));
+        prog.push(t3(opcode::LDB, 12, 11, 3));
+        prog.push(stop());
+        let s = run_with(
+            &prog,
+            &[(200, 0x0102030405060708), (201, 0xFFEEDDCCBBAA9988u64 as i64)],
+        );
+        for k in 0..8usize {
+            assert_eq!(s.r[1 + k], 1 + k as i64, "offset {k}");
+        }
+        assert_eq!(s.r[9], 0xFF); // zero-extended, not sign-extended
+        assert_eq!(s.r[12], 0xCC);
+    }
+
+    #[test]
+    fn ldb_register_offset_form() {
+        let prog = vec![mv(10, 200 * 8), mv(2, 5), rrr(opcode::LDB, 1, 10, 2), stop()];
+        let s = run_with(&prog, &[(200, 0x0102030405060708)]);
+        assert_eq!(s.r[1], 0x06);
+    }
+
+    #[test]
+    fn stb_leaves_neighbours_intact() {
+        let prog = vec![
+            mv(11, 200 * 8),
+            mv(5, 0xAA),
+            t3(opcode::STB, 5, 11, 3),
+            enc_t2(opcode::LOAD, 2, 1, 200),
+            mv(5, 0x1FF), // only the low 8 bits are stored
+            t3(opcode::STB, 5, 11, 0),
+            enc_t2(opcode::LOAD, 2, 2, 200),
+            mv(4, 0x1234),
+            t3(opcode::STB, 4, 11, 7),
+            enc_t2(opcode::LOAD, 2, 3, 200),
+            stop(),
+        ];
+        let s = run_with(&prog, &[(200, 0x0102030405060708)]);
+        assert_eq!(s.r[1], 0x010203AA05060708);
+        assert_eq!(s.r[2], 0xFF0203AA05060708u64 as i64);
+        assert_eq!(s.r[3], 0xFF0203AA05060734u64 as i64);
+    }
+
+    #[test]
+    fn string_copy_round_trip() {
+        // .dcs layout: length word then big-endian packed bytes.
+        let text = b"Hello, World!";
+        let mut w1: i64 = 0;
+        let mut w2: i64 = 0;
+        for (i, b) in text.iter().enumerate() {
+            if i < 8 {
+                w1 |= (*b as i64) << ((7 - i) * 8);
+            } else {
+                w2 |= (*b as i64) << ((7 - (i - 8)) * 8);
+            }
+        }
+        // r10 = byte addr of text (word 301), r11 = dest byte addr (word 400),
+        // r9 = length. The copy loop is unrolled: 13 LDB/STB pairs.
+        let mut prog = vec![
+            mv(10, 301 * 8),
+            mv(11, 400 * 8),
+            enc_t2(opcode::LOAD, 2, 9, 300),
+        ];
+        for i in 0..13 {
+            prog.push(mv(12, i));
+            prog.push(rrr(opcode::LDB, 1, 10, 12));
+            prog.push(rrr(opcode::STB, 1, 11, 12));
+        }
+        prog.push(enc_t2(opcode::LOAD, 2, 2, 400));
+        prog.push(enc_t2(opcode::LOAD, 2, 3, 401));
+        prog.push(stop());
+        let s = run_with(&prog, &[(300, 13), (301, w1), (302, w2)]);
+        assert_eq!(s.r[9], 13);
+        assert_eq!(s.r[2], 0x48656C6C6F2C2057);
+        assert_eq!(s.r[3], 0x6F726C6421000000);
+    }
+
+    #[test]
+    fn readonly_violation() {
+        let prog = vec![
+            enc_t1(opcode::READONLY, 4),
+            enc_t2(opcode::STB, 2, 0, 16), // byte addr 16 -> word 2, protected
+            stop(),
+            stop(),
+        ];
+        let mut s = mk();
+        s.load_program(&prog, 0, HashMap::new());
+        let e = s.run(0).unwrap_err();
+        assert!(
+            e.0.contains("Write access violation of 00000002"),
+            "{}",
+            e.0
+        );
+    }
+
+    #[test]
+    fn bounds_and_negative_ea_errors() {
+        let mut s = mk();
+        s.load_program(&[stop()], 0, HashMap::new());
+        // Past the end of memory (Java checks the stack range first).
+        assert!(s.mem_write_byte(8 * 100000, 1).is_err());
+        let e = s.mem_write_byte(-8, 1).unwrap_err();
+        assert!(e.0.contains("Illegal shared memory write access"), "{}", e.0);
+        assert!(s.mem_read_byte(-8).is_err());
+        let e = s.mem_write_byte(4096 * 8 + 1024 * 8, 1).unwrap_err();
+        assert!(e.0.contains("Illegal stack write access"), "{}", e.0);
+    }
+
+    #[test]
+    fn effective_address_shift() {
+        let mut s = mk();
+        s.load_program(&[stop()], 0, HashMap::new());
+        let w = 200i64;
+        s.mem_write_byte(w * 8, 0x11).unwrap();
+        s.mem_write_byte(w * 8 + 7, 0x22).unwrap();
+        s.mem_write_byte((w + 1) * 8 + 4, 0x33).unwrap();
+        assert_eq!(s.mem_read(w).unwrap(), 0x1100000000000022);
+        assert_eq!(s.mem_read(w + 1).unwrap(), 0x0000000033000000);
+    }
+
+    #[test]
+    fn adjacent_byte_stores_are_atomic() {
+        const ITER: i64 = 200_000;
+        let mut a = mk();
+        a.load_program(&[stop()], 0, HashMap::new());
+        let mut b = mk();
+        b.mem = a.mem.clone();
+        let w = 200i64;
+        std::thread::scope(|sc| {
+            for (sim, base) in [(&mut a, 0i64), (&mut b, 4i64)] {
+                sc.spawn(move || {
+                    for i in 0..ITER {
+                        for k in 0..4 {
+                            sim.mem_write_byte(w * 8 + base + k, (i + base + k) & 0xFF)
+                                .unwrap();
+                        }
+                    }
+                });
+            }
+        });
+        let mut expected: i64 = 0;
+        for bi in 0..8 {
+            expected = (expected << 8) | ((ITER - 1 + bi) & 0xFF);
+        }
+        assert_eq!(a.mem.get(w as usize), expected);
+    }
+
+    #[test]
+    fn disassembly_and_cycles() {
+        let ldb = enc_t2(opcode::LDB, 2, 1, 16);
+        let stb = enc_t2(opcode::STB, 2, 1, 16);
+        let mut d = Decoded::default();
+        d.decode_into(ldb);
+        assert!(d.disassemble(&HashMap::new()).starts_with("LDB"));
+        d.decode_into(stb);
+        assert!(d.disassemble(&HashMap::new()).starts_with("STB"));
+        // LDB: fetch(1) + memRead(1) + ldb extra(1) + fetch STOP(1) = 4
+        let s = run_with(&[enc_t2(opcode::LDB, 2, 0, 0), stop()], &[]);
+        assert_eq!(s.cycles, 4);
+        // STB: fetch(1) + write(1) + stb extra(0) + fetch STOP(1) = 3
+        let s = run_with(&[enc_t2(opcode::STB, 2, 0, 8 * 200), stop()], &[]);
+        assert_eq!(s.cycles, 3);
     }
 }

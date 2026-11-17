@@ -1040,8 +1040,8 @@ public class Simulator {
 			case 0 -> opNOP_DEBUG(d);
 			case 1 -> { opCLEAR(d); addCycles("clear"); }
 			case 2 -> { opMOVE(d); addCycles("move"); }
-			case 3 -> { opLOAD(d); addCycles("load"); }
-			case 4 -> { opSTORE(d); addCycles("store"); }
+			case 3 -> { opLOAD(d, false); addCycles("load"); }
+			case 4 -> { opSTORE(d, false); addCycles("store"); }
 			case 5 -> { opPOP(d); addCycles("pop"); }
 			case 6 -> { opPUSH(d); addCycles("push"); }
 			case 7 -> opJUMP(d);			// self-charges jump/jump0/jump1
@@ -1076,6 +1076,8 @@ public class Simulator {
 			case 36 -> { opSAVE(d); addCycles("save"); }
 			case 37 -> { opRESTORE(d); addCycles("restore"); }
 			case 38 -> { opREADONLY(d); addCycles("readonly"); }
+			case 39 -> { opLOAD(d, true); addCycles("ldb"); }
+			case 40 -> { opSTORE(d, true); addCycles("stb"); }
 			default -> throw new IllegalStateException("Unimplemented opcode: " + d.op);
 		}
 	}
@@ -1259,10 +1261,10 @@ public class Simulator {
 	}
 
 	// ---- 3: LOAD ----
-	private void opLOAD(Decoded d) {
+	private void opLOAD(Decoded d, boolean byteMode) {
 		if (d.tt == 2) { // YC: Y <- [C2]
 			long addr = d.c2;
-			long word = memRead(addr);
+			long word = loadAt(addr, byteMode);
 			setY(d.a, d.v0, word);
 			return;
 		} else if (d.tt == 0) {
@@ -1270,7 +1272,7 @@ public class Simulator {
 			// YA: Y <- [A]   (a=Y, b=A(reg))
 			if (count == 2 && (isYKind(d.a)) && isRegKind(d.b)) {
 				long addr = getR(d.b, d.v1);
-				long w = memRead(addr);
+				long w = loadAt(addr, byteMode);
 				setY(d.a, d.v0, w);
 				return;
 			}
@@ -1278,7 +1280,7 @@ public class Simulator {
 			if (count == 3 && (isYKind(d.a)) && isRegKind(d.b) && isRegKind(d.c)) {
 				long base = getR(d.b, d.v1);
 				long off = getR(d.c, d.v2);
-				setY(d.a, d.v0, memRead(base + off));
+				setY(d.a, d.v0, loadAt(base + off, byteMode));
 				return;
 			}
 		} else if (d.tt == 3) {
@@ -1287,7 +1289,7 @@ public class Simulator {
 			if ((isYKind(d.a)) && (isOKind(d.b))) {
 				long base = getO(d.b, d.v1);
 				long addr = base + d.c3;
-				setY(d.a, d.v0, memRead(addr));
+				setY(d.a, d.v0, loadAt(addr, byteMode));
 				return;
 			}
 		}
@@ -1295,11 +1297,11 @@ public class Simulator {
 	}
 
 	// ---- 4: STORE ----
-	private void opSTORE(Decoded d) {
+	private void opSTORE(Decoded d, boolean byteMode) {
 		if (d.tt == 2) { // QC: [C2] <- Q
 			long val = getQ(d.a, d.v0);
 			long addr = d.c2;
-			memWrite(addr, val);
+			storeAt(addr, val, byteMode);
 			return;
 		}
 		if (d.tt == 0) {
@@ -1308,7 +1310,7 @@ public class Simulator {
 			if (count == 2 && isQKind(d.a) && isRegKind(d.b)) {
 				long addr = getR(d.b, d.v1);
 				long val = getQ(d.a, d.v0);
-				memWrite(addr, val);
+				storeAt(addr, val, byteMode);
 				return;
 			}
 			// QAR: [A + R]
@@ -1316,7 +1318,7 @@ public class Simulator {
 				long base = getR(d.b, d.v1);
 				long addr = base + getR(d.c, d.v2);
 				long val = getQ(d.a, d.v0);
-				memWrite(addr, val);
+				storeAt(addr, val, byteMode);
 				return;
 			}
 		} else if (d.tt == 3) {
@@ -1326,17 +1328,80 @@ public class Simulator {
 				long base = getR(d.b, d.v1);
 				long addr = base + d.c3;
 				long val = getQ(d.a, d.v0);
-				memWrite(addr, val);
+				storeAt(addr, val, byteMode);
 				return;
 			} else if (isQKind(d.a) && isConstKind(d.b)) {
 				long base = getO(d.b, d.v1);
 				long addr = base + d.c3;
 				long val = getQ(d.a, d.v0);
-				memWrite(addr, val);
+				storeAt(addr, val, byteMode);
 				return;
 			}
 		}
 		throw new IllegalStateException("Illegal STORE arguments.");
+	}
+
+	// ---- 39/40: LDB / STB byte helpers ----
+	// A byte address EA maps to word floor(EA/8) (arithmetic shift) and byte index EA & 7;
+	// index 0 is the most significant byte (big-endian, same as .dcs/.dcb data).
+
+	private long loadAt(long ea, boolean byteMode) {
+		if (!byteMode) return memRead(ea);
+		long word = memRead(ea >> 3);
+		int shift = (7 - (int) (ea & 7)) * 8;
+		return (word >>> shift) & 0xFFL;
+	}
+
+	private void storeAt(long ea, long val, boolean byteMode) {
+		if (!byteMode) {
+			memWrite(ea, val);
+			return;
+		}
+		memWriteByte(ea, val);
+	}
+
+	/** Atomic read-modify-write of one byte; same access checks as {@link #memWrite}. */
+	public void memWriteByte(long ea, long val) {
+		long addr = ea >> 3;
+		int shift = (7 - (int) (ea & 7)) * 8;
+		long mask = 0xFFL << shift;
+		long bits = (val & 0xFFL) << shift;
+		if (addr < 0) {
+			try {
+				synchronized (Simulator.class) {
+					long cur = sharedMemRead(addr);
+					sharedMemWrite(addr, (cur & ~mask) | bits);
+				}
+			} catch (RuntimeException ex) {
+				throw new CPUException(String.format("Illegal shared memory write access of " + fmtAddress, addr));
+			}
+			return;
+		}
+		if (addr >= stackBase)
+			throw new CPUException(String.format("Illegal stack write access of " + fmtAddress, addr));
+		if (!protectedMemory.isEmpty()) {
+			for (var p : protectedMemory) {
+				if (addr >= p.first && addr < p.second) {
+					throw new CPUException(String.format("Write access violation of " + fmtAddress, addr));
+				}
+			}
+		}
+		try {
+			if (addr < heapLimit) {
+				int i = (int) addr;
+				long cur;
+				do {
+					cur = (long) atomicMem.getVolatile(mem, i);
+				} while (!atomicMem.compareAndSet(mem, i, cur, (cur & ~mask) | bits));
+			} else {
+				int i = Math.toIntExact(addr - heapLimit);
+				long cur = stack[i];
+				stack[i] = (cur & ~mask) | bits;
+			}
+			++cycles;
+		} catch (Exception ex) {
+			throw new CPUException(String.format("Illegal memory write access of " + fmtAddress, addr));
+		}
 	}
 
 	// ---- 5: POP ----

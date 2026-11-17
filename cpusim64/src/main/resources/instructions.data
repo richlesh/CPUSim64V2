@@ -48,3 +48,5 @@ unpack64:0
 cas:2
 endian:0
 readonly:0
+ldb:1
+stb:0
