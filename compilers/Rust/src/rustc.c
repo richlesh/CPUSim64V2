@@ -135,21 +135,39 @@ int main(int argc, char **argv) {
             return 0;
         }
         if (!no_core) {
-            /* lib/core.rs: the prelude, file 1 */
+            /* the crate `core`: lib/core.rs (file 1) followed by the other
+               library files that exist, lexed as one token stream; every
+               token keeps its own file, so messages name the right file */
+            static const char *core_files[] = { "core.rs", "collections.rs", "rc.rs", 0 };
             char *cp;
-            int cf, cn;
-            Token *ct;
+            int cf, cn, k, total = 0, cap = 0;
+            Token *ct, *all = 0;
             if (!lib_dir) lib_dir = find_lib(argc > 0 ? argv[0] : "");
-            cp = xalloc(strlen(lib_dir) + 16);
-            strcpy(cp, lib_dir);
-            strcat(cp, "/core.rs");
-            cf = load_file(cp);
-            if (cf < 0) {
-                fprintf(stderr, "rustc: can't open %s\n", display_path(cp));
-                return 2;
+            for (k = 0; core_files[k]; k++) {
+                cp = xalloc(strlen(lib_dir) + strlen(core_files[k]) + 2);
+                strcpy(cp, lib_dir);
+                strcat(cp, "/");
+                strcat(cp, core_files[k]);
+                if (k > 0) {
+                    FILE *probe = fopen(cp, "rb");
+                    if (!probe) continue;          /* optional library file */
+                    fclose(probe);
+                }
+                cf = load_file(cp);
+                if (cf < 0) {
+                    fprintf(stderr, "rustc: can't open %s\n", display_path(cp));
+                    return 2;
+                }
+                ct = lex_all(cf, &cn);
+                if (total + cn > cap) {
+                    cap = (total + cn) * 2;
+                    all = xrealloc(all, sizeof(Token) * cap);
+                }
+                if (total > 0) total--;            /* drop the previous file's EOF */
+                memcpy(all + total, ct, sizeof(Token) * cn);
+                total += cn;
             }
-            ct = lex_all(cf, &cn);
-            p_begin(ct, cn, cf);
+            p_begin(all, total, all[0].file);
             core = parse_crate();
             expand_crate(core);
         }

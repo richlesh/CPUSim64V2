@@ -4644,7 +4644,7 @@ static void begin_body(Sym *item, Node *n) {
     nclosures = 0;
     nneg = 0;
     nct = 0;
-    in_core = n->file == core_file;
+    in_core = core_file >= 0 && n->file >= core_file;   /* core spans files 1.. (the user crate is file 0) */
     set_env(item);
 }
 

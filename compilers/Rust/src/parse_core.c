@@ -43,6 +43,9 @@ void p_doc_skip_one(void) {
 
 Token *cur(void) {
     p_skip_docs();
+    /* a crate can span several files (core): nodes take the file of the
+       token they start at */
+    ast_cur_file = P.toks[P.pos].file;
     return &P.toks[P.pos];
 }
 
