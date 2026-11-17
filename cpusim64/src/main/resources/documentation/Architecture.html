@@ -16,7 +16,7 @@
   <div class="wrap">
 <h1>CPUSim64 Architecture</h1>
 <h2>Overview</h2>
-<p>CPUSim64 is an emulation of a simple 64-bit microprocessor.  All instructions are 64-bit as are all CPU registers.  Memory access is done using 64-bit at a time.  It is a Load/Store architecture which means that only the load, store, push and pop instructions interact with memory.  All other instructions operate on registers.</p>
+<p>CPUSim64 is an emulation of a simple 64-bit microprocessor.  All instructions are 64-bit as are all CPU registers.  Memory access is done using 64-bit at a time.  It is a Load/Store architecture which means that only the load, store, load byte, store byte, push and pop instructions interact with memory.  All other instructions operate on registers.</p>
 <h2>CPU Model</h2>
 <p>The CPUSim64 CPU has 32 64-bit integer registers that can be used for signed integers or addresses in memory.  It also has 32 64-bit floating point registers that can only be used for IEEE 754 floating point values.  It also has a special status register used to indicate attributes of the last value loaded or computed.</p>
 <p>All of the floating point registers can be used in user programs.  None are reserved but the first four <code>F0</code>, <code>F1</code>, <code>F2</code> and <code>F3</code> are used as working registers that are not assumed to be preserved by function calls or interrupts.  Three of the integer registers are reserved for CPU operation leaving 29 integer registers for use in user programs.  The three reserved integer registers are for the Stack Frame (<code>SF</code>), Stack Pointer (<code>SP</code>) and Program Counter (<code>PC</code>):</p>

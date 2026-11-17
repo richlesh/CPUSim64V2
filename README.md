@@ -93,7 +93,8 @@ A C compiler written entirely in CPUSim64 assembly.  It compiles a core subset o
 - `#line N "file"` renumbers the following lines (and names the file in `.source` directives and error messages), so a translator that emits C can be debugged on its own source  
 - POSIX subset `<unistd.h>` (`fork`, `getpid`, `sysconf(_SC_NPROCESSORS_ONLN)`, `sleep`, `usleep`) and `<sys/wait.h>` (`waitpid`, `wait`)  
 - CPUSim64's own `<_Thread.h>`: threads, `fork`, shared memory, atomics, spin locks and mutexes  
-- 137 regression tests: `compilers/C11/tests/run_tests.sh`; C versions of the documentation projects in `compilers/C11/projects`  
+- Byte intrinsics `__ldb(byte_addr)` / `__stb(byte_addr, v)` compile to the LDB / STB instructions (byte address = word address * 8 + index)  
+- 144 regression tests: `compilers/C11/tests/run_tests.sh`; C versions of the documentation projects in `compilers/C11/projects`  
 
 ### **MMIX Translator (`compilers/MMIX`)**
 Runs programs written in MMIXAL, the assembly language of Knuth's 64-bit MMIX computer, by translating them to CPUSim64 assembly (File → New Compiler → MMIX, or `compilers/MMIX/obj/mmixc.o64 prog.mms` on a simulator).
@@ -125,7 +126,7 @@ Compiles Visual Basic .NET programs (File → New Compiler → VBNET) to CPUSim6
 
 ### **Virtual CPU**
 - Custom 64-bit RISC-style architecture  
-- Support for integer/float arithmetic, branching, memory operations, and pseudo-instructions  
+- Support for integer/float arithmetic, branching, memory operations (including byte-addressed `LDB`/`STB`), and pseudo-instructions  
 - Configurable registers, memory size, and device interfaces  
 
 ### **Assembler**
@@ -146,6 +147,7 @@ Compiles Visual Basic .NET programs (File → New Compiler → VBNET) to CPUSim6
 
 ### **Simulation Engine**
 - Cycle-accurate execution  
+- Byte-addressed memory access: `LDB` (opcode 39) loads a zero-extended byte and `STB` (opcode 40) stores the low 8 bits of a register as an atomic read-modify-write of one byte (byte address = word address × 8 + index, index 0 = most significant byte), with the same cycle costs as `LOAD` and `STORE`  
 - Memory size (`--mem=`, in 8-byte words): the Java simulator keeps memory in one Java array, so it is limited to about 2Gi words (2³¹ − 9 words, 16 GiB), and larger sizes are reduced to that; the native simulator has no such limit (see below)  
 - Random-access files: `iOPEN_RANDOM_ACCESS_FILE`, `iSEEK` and `iTELL` (with `SEEK_BEGIN`/`SEEK_END`) in both the Java and native simulators  
 - `iTIME` returns the wall-clock time in nanoseconds since the Unix epoch (UTC)  
@@ -157,7 +159,7 @@ Compiles Visual Basic .NET programs (File → New Compiler → VBNET) to CPUSim6
 
 ### **Native Rust Simulator (`cpusim64_native`)**
 - Standalone Rust port of the CPUSim64 interpreter for faster, dependency-free execution  
-- Full behavioral parity with the Java simulator: all 39 opcodes, the complete interrupt/syscall surface, endian-aware port I/O, file I/O, the Fibonacci-block heap allocator, and the fork/thread/shared-memory concurrency model  
+- Full behavioral parity with the Java simulator: all 41 opcodes, the complete interrupt/syscall surface, endian-aware port I/O, file I/O, the Fibonacci-block heap allocator, and the fork/thread/shared-memory concurrency model  
 - Byte-for-byte identical `printCPUState`, dump, and trace output — including a port of the OpenJDK Schubfach `Double.toString` algorithm so even subnormal floats format exactly like Java  
 - Reads the same gzip-compressed `.o64` object files and `.sym1` symbol maps; accepts the same CLI flags (`--debug`, `--trace`, `--verbose`, `--mem=`, `--stack=`)  
 - 64-bit memory: `--mem=` and `--stack=` take 64-bit word counts, addresses are full 64-bit values (non-negative addresses for program memory, negative ones for shared memory), and a single `malloc` block can be larger than 2³¹ words; the limit is the computer's RAM, since all of the memory is allocated at start-up (and copied by `fork`). Programs that use more than about 2Gi words run only on the native simulator. The IDE's Heap field is clamped to the computer's RAM / 8 words when the native simulator is selected (and to the Java limit otherwise, and always in the debugger, which uses the Java simulator)  

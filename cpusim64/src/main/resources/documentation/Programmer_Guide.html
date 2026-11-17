@@ -355,6 +355,21 @@ end if</div>
 
 <h2>String Functions</h2>
 <p>There are a number of functions for operating on strings.  Strings are an array of UTF-8 encoded Unicode codepoints.  The string will start with a word that contains the number of UTF-8 bytes in the string.  Strings are either statically allocated using a <code>DCS</code> assembler directive and stored in the code segment or they are dynamically allocated in the heap using interrupt <code>iALLOC</code>.  It is important to free strings when you don't need them any longer to free up memory in the heap.</p>
+<p>Memory is addressed in 64-bit words, but the <code>LDB</code> and <code>STB</code> instructions access single bytes using a <em>byte address</em>.  A byte address is the word address times 8 plus the byte index (0-7), where byte index 0 is the most significant byte of the word (the same packing used by <code>.DCS</code> and <code>.DCB</code>).  The first byte of a string's data is therefore at byte address (<em>string address</em> + 1) * 8.  <code>LDB</code> zero-extends the byte into a register and <code>STB</code> stores the low 8 bits of a register without disturbing the other bytes of the word.  This example walks a string with <code>LDB</code> counting its bytes up to a zero byte:</p>
+<pre class="listing">    load r1, str            ; r1 = word address of string
+    add r1, r1, 1           ; skip the length word
+    mult r1, r1, 8          ; convert to byte address
+    clear r2                ; r2 = byte count
+loop:
+    ldb r3, [r1]            ; r3 = next byte, zero-extended
+    cmp r3, 0
+    jump z, done
+    add r1, r1, 1           ; next byte address
+    add r2, r2, 1
+    jump loop
+done:
+    ; r2 holds the number of bytes before the zero byte
+</pre>
 <div id="example_string_asm"></div>
 <script>register("example_string_asm")</script>
 <div id="example_string_out"></div>
