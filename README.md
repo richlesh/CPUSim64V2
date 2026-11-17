@@ -15,7 +15,7 @@ It includes:
 - A cycle-accurate simulation engine  
 - A native Rust reimplementation of the simulator (`cpusim64_native`) for faster, standalone execution  
 - A simple IDE with code editor, console, and integrated run/debug  
-- A pluggable compiler framework in the IDE, with a **C11 compiler written in CPUSim64 assembly** and its own C standard library (`compilers/C11`).  The C11 compiler is then used to bootstrap a **VB.NET compiler** (`compilers/VBNET`), an **MMIX translator** that runs Knuth's [MMIXAL](http://mmix.cs.hm.edu/) programs (`compilers/MMIX`), and a **C++ translator** (`compilers/C++14`) that runs C++14 (with some C++17 additions) programs through the C11 compiler.  
+- A pluggable compiler framework in the IDE, with a **C11 compiler written in CPUSim64 assembly** and its own C standard library (`compilers/C11`).  The C11 compiler is then used to bootstrap a **VB.NET compiler** (`compilers/VBNET`), an **MMIX translator** that runs Knuth's [MMIXAL](http://mmix.cs.hm.edu/) programs (`compilers/MMIX`), and a **C++ translator** (`compilers/C++14`) that runs C++14 (with some C++17 additions) programs through the C11 compiler, and a **Rust translator** (`compilers/Rust`) that runs Rust 2021 programs through the C11 compiler.  
 - A native CLI tool for command-line workflows  
 - An agentic AI assistant with RAG-based context retrieval for writing and debugging assembly code  
 - Native installers for macOS, Windows, and Linux (x64 and ARM64)  
@@ -113,6 +113,15 @@ Runs C++ programs (File → New Compiler → C++14) by translating them to C for
 - Programs of several `.cpp` files: the other files go in the Options field  
 - Not supported: virtual base classes, pointers to members, user-defined literals, fold expressions  
 - Regression tests compared with g++: `compilers/C++14/tests/run_tests.sh` (`HOST=1`)  
+
+### **Rust Compiler (`compilers/Rust`)**
+Runs Rust programs (File → New Compiler → Rust) by translating them to C for the C11 compiler (`translate_to: C11`); `#line` directives make the debugger show the `.rs` lines.
+- The translator `rustc` is written in portable C (`src/`) and compiled by the C11 compiler: lexer, parser, macro expansion, name resolution, type inference with trait resolution, move and mutability checks, and C code generation  
+- Rust 2021 with structs, enums, traits and `dyn Trait`, generics (monomorphized), closures, pattern matching, `?`, `derive`, `macro_rules!`, and the usual macros and format strings  
+- Its own standard library in Rust (`lib/`): `Option`, `Result`, `Box`, `String`, `Vec`, slices, iterators, `HashMap`, `HashSet`, `BTreeMap`, `BTreeSet`, `VecDeque`, `BinaryHeap`, `Rc`, `RefCell`, `fmt`, `io`; `Arc` and `Mutex` are single-threaded stand-ins  
+- Panics and integer overflow checks behave like a rustc debug build (exit status 101); types, moves and mutability are checked, lifetimes are not  
+- Not supported: `impl Trait` (for now), `i128`/`u128`, `async`, procedural macros, inline `unsafe` asm, threads; `f32` is an `f64`  
+- Regression tests compared with rustc: `compilers/Rust/tests/run_tests.sh` (`HOST=1`)  
 
 
 ### **VB.NET Compiler (`compilers/VBNET`)**
@@ -274,7 +283,7 @@ CPUSim64V2/
 │       ├── ports/                   (stdio / file / raw port handlers)
 │       └── javacompat/              (Java Formatter + Schubfach Double.toString)
 │
-├── compilers/                       (IDE compiler plug-ins: C11/, MMIX/, C++14/, VBNET/)
+├── compilers/                       (IDE compiler plug-ins: C11/, MMIX/, C++14/, Rust/, VBNET/)
 │
 ├── ide/                             (IDE Module)
 │   ├── pom.xml

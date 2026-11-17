@@ -19,9 +19,9 @@ read `run/NAME.rs:L:C`. It writes `.expected`, `.exit` for a non-zero status, an
 Regenerate only after reading the diff of the new output: the host compiler is the
 oracle.
 
-Every program stays inside what `lib/core.rs` provides: no `HashMap`, `HashSet`, `Rc`,
-`RefCell`, `BTreeMap`, threads, files, `i128`, `f32`, `async`, `unsafe`, `impl Trait`,
-and no std traits missing from core.rs (for example `BufRead`, `Read`). Each program
+The `t*`, `p_*` and `x_*` programs stay inside what `lib/core.rs` provides (no
+collections, `Rc`, threads, files, `i128`, `f32`, `async`, `unsafe`); the `s5_*` and
+`fe_*` programs exercise the later library files and front-end features. Each program
 must pass the front end: `obj/rustc-native --types tests/run/NAME.rs > /dev/null`.
 
 ## Tiers
@@ -35,6 +35,10 @@ must pass the front end: `obj/rustc-native --types tests/run/NAME.rs > /dev/null
 | `t5_*` | Larger programs: bank simulation, RPN evaluator with shunting-yard, tokenizer, matrix multiply and power, prime sieve and factorization, Fibonacci and `checked_*` / `wrapping_*` arithmetic, Unicode string reversal, state machines, Conway's Life |
 | `p_*` | Panics: exit status 101 and a `.stderr` message line. Integer overflow (add, sub, mul, neg, `u8`), index out of bounds (Vec, slice), `unwrap` / `expect` on `None` and `Err`, `panic!`, division and remainder by zero, `assert_eq!` with message |
 | `x_*` | Process exit and stdin: `std::process::exit(3)` (`.exit`), reading lines with `read_line` (`.stdin`) |
+| `s5_core_*` | The Stage 5 `core.rs` additions: `String`/`Vec`/slice methods, iterator adapters, ASCII and number methods, `f64` math, `io::Read`/`BufRead`/`Write`, `write!` to a `String` |
+| `s5_col_*` | `lib/collections.rs`: `HashMap` (entry API), `HashSet`, `BTreeMap`/`BTreeSet`, `VecDeque`, `BinaryHeap`, `derive(Hash)` (output never depends on hash order) |
+| `s5_rc_*` | `lib/rc.rs`: `Rc`/`Weak`, `Cell`, `RefCell`, trees and graphs, single-threaded `Arc`/`Mutex` |
+| `fe_*` | Front-end features: unsizing coercion in constructor arguments, fn item to fn pointer in tuples, const-generic arrays, integer-range `match` |
 
 ## Older tests
 
