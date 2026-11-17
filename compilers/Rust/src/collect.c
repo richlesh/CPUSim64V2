@@ -1165,7 +1165,9 @@ static int cl_builtin(Type *t, Sym *trait, Type **wargs, int nw, int depth) {
         (t->kind == TY_FN_DEF || t->kind == TY_FN_PTR || t->kind == TY_CLOSURE)) {
         if (t->kind == TY_CLOSURE && collect_closure_impl && !collect_closure_impl(t, trait)) return 0;
         if (nw > 0 && wargs && wargs[0]) {
-            if (!cl_unify(wargs[0], ty_tuple(t->params, t->nparams))) return 0;
+            /* the bound's argument tuple may hold projections (`FnMut(I::Item)`) */
+            if (!cl_unify(cl_norm_depth(wargs[0], depth + 1), ty_tuple(t->params, t->nparams)))
+                return 0;
         }
         return 1;
     }
@@ -1207,7 +1209,8 @@ static int cl_bound_holds(Bound *b, Subst *s, int depth) {
         if (dt != b->trait) cl_super_args(bt, b->trait, args, b->nargs, dt, &dargs, &nd, 0);
         norm = cl_norm_depth(ty_proj(bt, dt, b->assoc_name, dargs, nd), depth + 1);
         if (norm && norm->kind != TY_PROJ) {
-            want = ty_subst(b->assoc_ty, s);
+            /* the binding itself may be a projection (`B: Iterator<Item = A::Item>`) */
+            want = cl_norm_depth(ty_subst(b->assoc_ty, s), depth + 1);
             if (!cl_unify(norm, want)) return 0;
         }
     }

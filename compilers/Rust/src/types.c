@@ -330,8 +330,17 @@ Type *ty_subst(Type *t, Subst *s) {
         if (args) changed = 1;
     }
     if (t->nparams > 0) {
+        /* a dyn's associated bindings are projections on the object itself
+           (`<Self as FnOnce>::Output = i32`): that Self is not the enclosing
+           impl's Self, so it is not substituted */
+        Subst dyn_s, *ps = s;
+        if (t->kind == TY_DYN && s->self) {
+            dyn_s = *s;
+            dyn_s.self = 0;
+            ps = &dyn_s;
+        }
         for (i = 0; i < t->nparams; i++) {
-            c = ty_subst(t->params[i], s);
+            c = ty_subst(t->params[i], ps);
             if (c != t->params[i] && !params) {
                 params = ast_alloc(sizeof(Type *) * (size_t)t->nparams);
                 memcpy(params, t->params, sizeof(Type *) * (size_t)i);

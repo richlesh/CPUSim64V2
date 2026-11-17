@@ -4573,6 +4573,7 @@ static void devirtualize(Callee *c) {
     if (select_impl(tr, self, targs, tr->ngparams, &sel, 0) != 1) return;
     ifn = assoc_item(sel.impl, NS_VALUE, fn->name);
     if (!ifn || ifn->kind != SYM_FN || !ifn->ty || ifn->ty->kind != TY_FN_DEF) return;
+    if (ifn->parent != sel.impl) return;   /* a provided (default) method: the trait's fn stays the callee */
     ni = ifn->ngparams;
     nt = tr->ngparams;
     nargs = tvec(ni);
