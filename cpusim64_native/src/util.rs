@@ -1,5 +1,26 @@
 //! Small interpreter-relevant helpers ported from `Utils.java` plus build info.
 
+/// Ports `Utils.formatSI`: format a count with a binary (1024-based) suffix
+/// Ki/Mi/Gi/Ti/Pi/Ei, up to two decimals, no trailing zeros (134217728 -> "128Mi").
+pub fn format_si(value: u64) -> String {
+    const UNITS: [&str; 7] = ["", "Ki", "Mi", "Gi", "Ti", "Pi", "Ei"];
+    let mut d = value as f64;
+    let mut i = 0;
+    while d >= 1024.0 && i < UNITS.len() - 1 {
+        d /= 1024.0;
+        i += 1;
+    }
+    let s = if d == d.round() {
+        format!("{}", d as u64)
+    } else {
+        format!("{d:.2}")
+            .trim_end_matches('0')
+            .trim_end_matches('.')
+            .to_string()
+    };
+    format!("{s}{}", UNITS[i])
+}
+
 /// Ports `Utils.decodeSI`: parse an integer with an optional SI suffix
 /// (K/M/G/T/P/E, case-insensitive). Returns the value as i32.
 pub fn decode_si(s: &str) -> Result<i32, String> {

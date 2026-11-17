@@ -239,6 +239,27 @@ public class Utils {
 	}
 
 	/**
+	 * Formats a count with a binary (1024-based, IEC) suffix Ki, Mi, Gi, Ti, Pi or Ei,
+	 * with up to two decimals and no trailing zeros, e.g. 134217728 → "128Mi".
+	 *
+	 * @param value the non-negative count to format
+	 * @return the count followed by its suffix, or the plain number below 1024
+	 */
+	public static String formatSI(long value) {
+		String[] units = {"", "Ki", "Mi", "Gi", "Ti", "Pi", "Ei"};
+		double d = value;
+		int i = 0;
+		while (d >= 1024 && i < units.length - 1) {
+			d /= 1024;
+			i++;
+		}
+		String s = (d == Math.rint(d))
+				? String.valueOf((long) d)
+				: String.format(java.util.Locale.ROOT, "%.2f", d).replaceAll("0+$", "").replaceAll("\\.$", "");
+		return s + units[i];
+	}
+
+	/**
 	 * Parses a string representing an integer with an optional SI suffix
 	 * (K, M, G, T, P, E) and returns the corresponding {@code int} value.
 	 * <p>

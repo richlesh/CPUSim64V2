@@ -90,8 +90,10 @@ public class Simulation {
 			System.out.println("Implements a CPUSim64 Virtual Machine.");
 			System.out.println("=".repeat(80));
 			System.out.println("Debug: " + debug);
-			System.out.println("Memory size: " + memorySize);
-			System.out.println("Stack size: " + stackSize);
+			System.out.println("Memory size: " + Utils.formatSI(memorySize) + " words ("
+					+ Utils.formatSI(memorySize * 8L) + "B)");
+			System.out.println("Stack size: " + Utils.formatSI(stackSize) + " words ("
+					+ Utils.formatSI(stackSize * 8L) + "B)");
 		}
 		Path originalPath = Path.of(simulatorArgs.get(0)).toAbsolutePath();
 		Path newPath = originalPath;
