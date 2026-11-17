@@ -1,0 +1,376 @@
+(CRATE
+  (ITEM_TRAIT Empty)
+  (ITEM_TRAIT Sup
+    vis=(VIS)
+    c=(BOUNDS
+      (BOUND_TRAIT
+        a=(PATH
+          (PATH_SEG Clone)))
+      (BOUND_TRAIT
+        a=(PATH
+          (PATH_SEG Send)))
+      (BOUND_LIFETIME 'static)))
+  (ITEM_TRAIT Gen
+    a=(GENERICS
+      (GEN_TYPE T)
+      (GEN_TYPE U
+        a=(T_PATH
+          a=(PATH
+            (PATH_SEG i32)))))
+    c=(BOUNDS
+      (BOUND_TRAIT
+        a=(PATH
+          (PATH_SEG Into {angle}
+            (T_PATH
+              a=(PATH
+                (PATH_SEG T)))))))
+    d=(WHERE
+      (WHERE_TYPE
+        a=(T_PATH
+          a=(PATH
+            (PATH_SEG U)))
+        b=(BOUNDS
+          (BOUND_TRAIT
+            a=(PATH
+              (PATH_SEG Copy))))))
+    (ITEM_TYPE Item)
+    (ITEM_TYPE Bounded
+      c=(BOUNDS
+        (BOUND_TRAIT
+          a=(PATH
+            (PATH_SEG Clone)))
+        (BOUND_TRAIT
+          a=(PATH
+            (PATH_SEG Default)))))
+    (ITEM_TYPE WithDefault
+      b=(T_PATH
+        a=(PATH
+          (PATH_SEG i32))))
+    (ITEM_TYPE Both
+      b=(T_PATH
+        a=(PATH
+          (PATH_SEG u8)))
+      c=(BOUNDS
+        (BOUND_TRAIT
+          a=(PATH
+            (PATH_SEG Copy)))))
+    (ITEM_TYPE Gat
+      a=(GENERICS
+        (GEN_LIFETIME 'a))
+      d=(WHERE
+        (WHERE_TYPE
+          a=(T_PATH
+            a=(PATH
+              (PATH_SEG Self)))
+          b=(BOUNDS
+            (BOUND_LIFETIME 'a)))))
+    (ITEM_CONST N
+      a=(T_PATH
+        a=(PATH
+          (PATH_SEG usize))))
+    (ITEM_CONST D
+      a=(T_PATH
+        a=(PATH
+          (PATH_SEG usize)))
+      b=(E_LIT_INT "4" #4))
+    (ITEM_FN required
+      b=(T_PATH
+        a=(PATH
+          (PATH_SEG Self)
+          (PATH_SEG Item)))
+      (SELF_PARAM {ref}))
+    (ITEM_FN provided
+      b=(T_PATH
+        a=(PATH
+          (PATH_SEG i32)))
+      c=(BLOCK
+        a=(E_LIT_INT "1" #1))
+      (SELF_PARAM {ref}))
+    (ITEM_FN generic
+      a=(GENERICS
+        (GEN_TYPE V
+          b=(BOUNDS
+            (BOUND_TRAIT
+              a=(PATH
+                (PATH_SEG Into {angle}
+                  (T_PATH
+                    a=(PATH
+                      (PATH_SEG T)))))))))
+      (PARAM
+        a=(P_IDENT v)
+        b=(T_PATH
+          a=(PATH
+            (PATH_SEG V)))))
+    (ITEM_FN dangerous {unsafe})
+    (ITEM_FN attr
+      @(ATTR inline))
+    (ITEM_FN documented
+      @(ATTR doc " doc" {doc,eq}))
+    (MACRO_CALL {semi,delim_paren} toks:3 a , b
+      a=(PATH
+        (PATH_SEG my_macro)))
+    (MACRO_CALL {delim_brace} toks:1 x
+      a=(PATH
+        (PATH_SEG other))))
+  (ITEM_TRAIT Unsafe {unsafe})
+  (ITEM_TRAIT Auto {auto})
+  (ITEM_TRAIT UA {unsafe,auto})
+  (ITEM_TRAIT Inner
+    @(ATTR allow {inner,delim_paren} toks:1 dead_code)
+    (ITEM_FN f))
+  (ITEM_IMPL
+    b=(T_PATH
+      a=(PATH
+        (PATH_SEG Foo))))
+  (ITEM_IMPL
+    b=(T_PATH
+      a=(PATH
+        (PATH_SEG Foo)))
+    (ITEM_FN f
+      c=(BLOCK))
+    (ITEM_CONST C
+      a=(T_PATH
+        a=(PATH
+          (PATH_SEG i32)))
+      b=(E_LIT_INT "1" #1))
+    (ITEM_TYPE T
+      b=(T_PATH
+        a=(PATH
+          (PATH_SEG i32))))
+    (ITEM_FN g
+      vis=(VIS)
+      c=(BLOCK)
+      (SELF_PARAM {ref}))
+    (ITEM_CONST D
+      vis=(VIS {vis_crate})
+      a=(T_PATH
+        a=(PATH
+          (PATH_SEG u8)))
+      b=(E_LIT_INT "2" #2)))
+  (ITEM_IMPL
+    a=(GENERICS
+      (GEN_TYPE T))
+    b=(T_PATH
+      a=(PATH
+        (PATH_SEG Foo {angle}
+          (T_PATH
+            a=(PATH
+              (PATH_SEG T))))))
+    d=(WHERE
+      (WHERE_TYPE
+        a=(T_PATH
+          a=(PATH
+            (PATH_SEG T)))
+        b=(BOUNDS
+          (BOUND_TRAIT
+            a=(PATH
+              (PATH_SEG Clone)))))))
+  (ITEM_IMPL
+    a=(GENERICS
+      (GEN_LIFETIME 'a)
+      (GEN_TYPE T
+        b=(BOUNDS
+          (BOUND_LIFETIME 'a)))
+      (GEN_CONST N
+        a=(T_PATH
+          a=(PATH
+            (PATH_SEG usize)))))
+    b=(T_PATH
+      a=(PATH
+        (PATH_SEG Foo {angle}
+          (LIFETIME 'a)
+          (T_PATH
+            a=(PATH
+              (PATH_SEG T)))
+          (T_PATH
+            a=(PATH
+              (PATH_SEG N)))))))
+  (ITEM_IMPL
+    b=(T_PATH
+      a=(PATH
+        (PATH_SEG Foo)))
+    c=(PATH
+      (PATH_SEG Trait)))
+  (ITEM_IMPL
+    a=(GENERICS
+      (GEN_TYPE T))
+    b=(T_PATH
+      a=(PATH
+        (PATH_SEG Vec {angle}
+          (T_PATH
+            a=(PATH
+              (PATH_SEG T))))))
+    c=(PATH
+      (PATH_SEG Trait)))
+  (ITEM_IMPL
+    a=(GENERICS
+      (GEN_TYPE T
+        b=(BOUNDS
+          (BOUND_TRAIT
+            a=(PATH
+              (PATH_SEG Display))))))
+    b=(T_PATH
+      a=(PATH
+        (PATH_SEG Wrapper {angle}
+          (T_PATH
+            a=(PATH
+              (PATH_SEG T))))))
+    c=(PATH
+      (PATH_SEG fmt)
+      (PATH_SEG Display))
+    (ITEM_FN fmt
+      b=(T_PATH
+        a=(PATH
+          (PATH_SEG Result)))
+      c=(BLOCK
+        a=(E_CALL
+          a=(E_PATH
+            a=(PATH
+              (PATH_SEG Ok)))
+          (E_TUPLE)))
+      (SELF_PARAM {ref})
+      (PARAM
+        a=(P_IDENT f)
+        b=(T_REF {mut}
+          a=(T_PATH
+            a=(PATH
+              (PATH_SEG Formatter)))))))
+  (ITEM_IMPL
+    a=(GENERICS
+      (GEN_TYPE T))
+    b=(T_PATH
+      a=(PATH
+        (PATH_SEG Foo {angle}
+          (T_PATH
+            a=(PATH
+              (PATH_SEG T))))))
+    c=(PATH
+      (PATH_SEG From {angle}
+        (T_PATH
+          a=(PATH
+            (PATH_SEG T)))))
+    d=(WHERE
+      (WHERE_TYPE
+        a=(T_PATH
+          a=(PATH
+            (PATH_SEG T)))
+        b=(BOUNDS
+          (BOUND_TRAIT
+            a=(PATH
+              (PATH_SEG Copy))))))
+    (ITEM_FN from
+      b=(T_PATH
+        a=(PATH
+          (PATH_SEG Self)))
+      c=(BLOCK
+        a=(E_PATH
+          a=(PATH
+            (PATH_SEG Foo))))
+      (PARAM
+        a=(P_IDENT t)
+        b=(T_PATH
+          a=(PATH
+            (PATH_SEG T))))))
+  (ITEM_IMPL {unsafe}
+    b=(T_PATH
+      a=(PATH
+        (PATH_SEG Foo)))
+    c=(PATH
+      (PATH_SEG Send)))
+  (ITEM_IMPL {unsafe}
+    a=(GENERICS
+      (GEN_TYPE T))
+    b=(T_PATH
+      a=(PATH
+        (PATH_SEG Foo {angle}
+          (T_PATH
+            a=(PATH
+              (PATH_SEG T))))))
+    c=(PATH
+      (PATH_SEG Sync)))
+  (ITEM_IMPL {neg}
+    b=(T_PATH
+      a=(PATH
+        (PATH_SEG Foo)))
+    c=(PATH
+      (PATH_SEG Send)))
+  (ITEM_IMPL {neg}
+    a=(GENERICS
+      (GEN_TYPE T))
+    b=(T_PATH
+      a=(PATH
+        (PATH_SEG Foo {angle}
+          (T_PATH
+            a=(PATH
+              (PATH_SEG T))))))
+    c=(PATH
+      (PATH_SEG Sync)))
+  (ITEM_IMPL
+    a=(GENERICS
+      (GEN_TYPE T))
+    b=(T_REF
+      a=(T_PATH
+        a=(PATH
+          (PATH_SEG T))))
+    c=(PATH
+      (PATH_SEG Trait)))
+  (ITEM_IMPL
+    b=(T_ARRAY
+      a=(T_PATH
+        a=(PATH
+          (PATH_SEG u8)))
+      b=(E_LIT_INT "4" #4))
+    c=(PATH
+      (PATH_SEG Trait)))
+  (ITEM_IMPL
+    b=(T_TUPLE
+      (T_PATH
+        a=(PATH
+          (PATH_SEG i32)))
+      (T_PATH
+        a=(PATH
+          (PATH_SEG i32))))
+    c=(PATH
+      (PATH_SEG Trait)))
+  (ITEM_IMPL
+    @(ATTR allow {inner,delim_paren} toks:1 unused)
+    b=(T_PATH
+      a=(PATH
+        (PATH_SEG Foo)))
+    (ITEM_FN f
+      c=(BLOCK)))
+  (ITEM_IMPL
+    b=(T_PATH
+      a=(PATH
+        (PATH_SEG Outer)))
+    (MACRO_CALL {semi,delim_paren} toks:0 
+      a=(PATH
+        (PATH_SEG macro_in_impl))))
+  (ITEM_IMPL
+    a=(GENERICS
+      (GEN_TYPE T))
+    b=(T_PATH
+      a=(PATH
+        (PATH_SEG Counter {angle}
+          (T_PATH
+            a=(PATH
+              (PATH_SEG T))))))
+    c=(PATH
+      (PATH_SEG Iterator))
+    (ITEM_TYPE Item
+      b=(T_PATH
+        a=(PATH
+          (PATH_SEG T))))
+    (ITEM_FN next
+      b=(T_PATH
+        a=(PATH
+          (PATH_SEG Option {angle}
+            (T_PATH
+              a=(PATH
+                (PATH_SEG Self)
+                (PATH_SEG Item))))))
+      c=(BLOCK
+        a=(E_PATH
+          a=(PATH
+            (PATH_SEG None))))
+      (SELF_PARAM {mut,ref}))))

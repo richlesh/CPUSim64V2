@@ -1,0 +1,276 @@
+(CRATE
+  (ITEM_FN main
+    c=(BLOCK
+      (STMT_LET
+        a=(P_IDENT x)
+        c=(E_LIT_INT "1" #1))
+      (STMT_LET
+        a=(P_IDENT y)
+        b=(T_PATH
+          a=(PATH
+            (PATH_SEG i32))))
+      (STMT_LET
+        a=(P_IDENT z)
+        b=(T_PATH
+          a=(PATH
+            (PATH_SEG u8)))
+        c=(E_LIT_INT "2" #2))
+      (STMT_LET
+        a=(P_TUPLE
+          (P_IDENT a)
+          (P_IDENT b))
+        c=(E_TUPLE
+          (E_LIT_INT "1" #1)
+          (E_LIT_INT "2" #2)))
+      (STMT_LET
+        a=(P_TUPLE_STRUCT
+          a=(PATH
+            (PATH_SEG Some))
+          (P_IDENT v))
+        c=(E_PATH
+          a=(PATH
+            (PATH_SEG opt)))
+        d=(BLOCK
+          (STMT_EXPR {semi}
+            a=(E_RETURN))))
+      (STMT_LET
+        a=(P_TUPLE_STRUCT
+          a=(PATH
+            (PATH_SEG Ok))
+          (P_IDENT w))
+        c=(E_PATH
+          a=(PATH
+            (PATH_SEG res)))
+        d=(BLOCK
+          a=(MACRO_CALL {delim_paren} toks:1 "bad"
+            a=(PATH
+              (PATH_SEG panic)))))
+      (STMT_EMPTY)
+      (STMT_EMPTY)
+      (STMT_EMPTY)
+      (STMT_EXPR
+        a=(E_IF
+          a=(E_PATH
+            a=(PATH
+              (PATH_SEG x)))
+          b=(BLOCK)))
+      (STMT_EXPR {semi}
+        a=(E_UNARY op:-
+          a=(E_LIT_INT "1" #1)))
+      (STMT_EXPR
+        a=(E_IF
+          a=(E_PATH
+            a=(PATH
+              (PATH_SEG x)))
+          b=(BLOCK
+            a=(E_LIT_INT "1" #1))
+          c=(BLOCK
+            a=(E_LIT_INT "2" #2))))
+      (STMT_EXPR
+        a=(E_MATCH
+          a=(E_PATH
+            a=(PATH
+              (PATH_SEG x)))
+          (ARM
+            a=(P_WILD)
+            c=(BLOCK))))
+      (STMT_EXPR
+        a=(BLOCK
+          (STMT_LET
+            a=(P_IDENT inner)
+            c=(E_LIT_INT "1" #1))))
+      (STMT_EXPR {semi}
+        a=(BLOCK {unsafe}
+          a=(E_CALL
+            a=(E_PATH
+              a=(PATH
+                (PATH_SEG f))))))
+      (ITEM_FN inner_fn
+        b=(T_PATH
+          a=(PATH
+            (PATH_SEG i32)))
+        c=(BLOCK
+          a=(E_PATH
+            a=(PATH
+              (PATH_SEG a))))
+        (PARAM
+          a=(P_IDENT a)
+          b=(T_PATH
+            a=(PATH
+              (PATH_SEG i32)))))
+      (ITEM_STRUCT Local {named}
+        (FIELD v
+          a=(T_PATH
+            a=(PATH
+              (PATH_SEG i32)))))
+      (ITEM_CONST N
+        a=(T_PATH
+          a=(PATH
+            (PATH_SEG i32)))
+        b=(E_LIT_INT "3" #3))
+      (ITEM_USE
+        a=(USE_TREE
+          a=(PATH
+            (PATH_SEG std)
+            (PATH_SEG fmt))))
+      (MACRO_CALL {semi,delim_paren} toks:3 "hello {}" , x
+        a=(PATH
+          (PATH_SEG println)))
+      (MACRO_CALL {semi,delim_bracket} toks:5 1 , 2 , 3
+        a=(PATH
+          (PATH_SEG vec)))
+      (MACRO_CALL {delim_brace} toks:3 a b c
+        a=(PATH
+          (PATH_SEG m)))
+      (MACRO_CALL {delim_brace} toks:0 
+        a=(PATH
+          (PATH_SEG m)))
+      (STMT_EXPR {semi}
+        a=(E_UNARY op:-
+          a=(E_LIT_INT "1" #1)))
+      (STMT_EXPR {semi}
+        a=(E_METHOD_CALL len
+          a=(MACRO_CALL {delim_paren} toks:1 "x"
+            a=(PATH
+              (PATH_SEG println)))))
+      (STMT_EXPR {semi}
+        a=(E_METHOD_CALL len
+          a=(MACRO_CALL {delim_bracket} toks:3 1 , 2
+            a=(PATH
+              (PATH_SEG vec)))))
+      (STMT_LET
+        @(ATTR allow {delim_paren} toks:1 unused)
+        a=(P_IDENT q)
+        c=(E_LIT_INT "1" #1))
+      (ITEM_FN attr_fn
+        @(ATTR inline)
+        c=(BLOCK))
+      (STMT_EXPR {semi}
+        a=(E_ASSIGN_OP op:+
+          a=(E_PATH
+            a=(PATH
+              (PATH_SEG x)))
+          b=(E_LIT_INT "1" #1)))
+      (STMT_EXPR {semi}
+        a=(E_ASSIGN
+          a=(E_PATH
+            a=(PATH
+              (PATH_SEG x)))
+          b=(E_BINARY op:+
+            a=(E_IF
+              a=(E_PATH
+                a=(PATH
+                  (PATH_SEG a)))
+              b=(BLOCK
+                a=(E_LIT_INT "1" #1))
+              c=(BLOCK
+                a=(E_LIT_INT "2" #2)))
+            b=(E_LIT_INT "3" #3))))
+      (STMT_EXPR {semi}
+        a=(E_METHOD_CALL foo
+          a=(E_MATCH
+            a=(E_PATH
+              a=(PATH
+                (PATH_SEG x)))
+            (ARM
+              a=(P_WILD)
+              c=(E_LIT_INT "1" #1)))))
+      (STMT_EXPR {semi}
+        a=(E_METHOD_CALL to_string
+          a=(E_IF
+            a=(E_PATH
+              a=(PATH
+                (PATH_SEG a)))
+            b=(BLOCK
+              a=(E_PATH
+                a=(PATH
+                  (PATH_SEG b))))
+            c=(BLOCK
+              a=(E_PATH
+                a=(PATH
+                  (PATH_SEG c)))))))
+      (STMT_EXPR {semi}
+        a=(E_TRY
+          a=(E_CALL
+            a=(E_PATH
+              a=(PATH
+                (PATH_SEG f)))
+            (E_PATH
+              a=(PATH
+                (PATH_SEG x))))))
+      (STMT_EXPR
+        a=(E_LOOP
+          a=(BLOCK)))
+      (STMT_LET
+        a=(P_IDENT t)
+        c=(E_BINARY op:+
+          a=(E_BINARY op:+
+            a=(E_BINARY op:+
+              a=(E_BINARY op:+
+                a=(E_LIT_FLOAT "1.0")
+                b=(E_LIT_FLOAT "2.5e3"))
+              b=(E_LIT_FLOAT f32 "3"))
+            b=(E_LIT_INT i64 "4000" #4000))
+          b=(E_LIT_INT u8 "0xff" #255)))
+      (STMT_LET
+        a=(P_IDENT s)
+        c=(E_BINARY op:||
+          a=(E_BINARY op:==
+            a=(E_LIT_STR "str")
+            b=(E_LIT_STR "raw" {raw}))
+          b=(E_BINARY op:==
+            a=(E_LIT_BYTESTR "bytes")
+            b=(E_LIT_BYTESTR "raw" {raw}))))
+      (STMT_LET
+        a=(P_IDENT c)
+        c=(E_LIT_CHAR #99))
+      (STMT_LET
+        a=(P_IDENT by)
+        c=(E_LIT_BYTE #120))
+      (STMT_LET
+        a=(P_IDENT tr)
+        c=(E_BINARY op:&&
+          a=(E_LIT_BOOL #1)
+          b=(E_UNARY op:!
+            a=(E_LIT_BOOL #0))))
+      (STMT_LET
+        a=(P_IDENT e)
+        c=(BLOCK
+          a=(E_LIT_INT "1" #1)))
+      (STMT_LET
+        a=(P_IDENT r)
+        c=(E_LIT_INT "10" #10))
+      a=(E_PATH
+        a=(PATH
+          (PATH_SEG r)))))
+  (ITEM_FN tail
+    b=(T_PATH
+      a=(PATH
+        (PATH_SEG i32)))
+    c=(BLOCK
+      a=(E_IF
+        a=(E_PATH
+          a=(PATH
+            (PATH_SEG a)))
+        b=(BLOCK
+          a=(E_LIT_INT "1" #1))
+        c=(BLOCK
+          a=(E_LIT_INT "2" #2)))))
+  (ITEM_FN tail_macro
+    b=(T_PATH
+      a=(PATH
+        (PATH_SEG Vec {angle}
+          (T_PATH
+            a=(PATH
+              (PATH_SEG i32))))))
+    c=(BLOCK
+      a=(MACRO_CALL {delim_bracket} toks:3 1 , 2
+        a=(PATH
+          (PATH_SEG vec)))))
+  (ITEM_FN tail_block
+    b=(T_PATH
+      a=(PATH
+        (PATH_SEG i32)))
+    c=(BLOCK
+      a=(BLOCK
+        a=(E_LIT_INT "3" #3)))))

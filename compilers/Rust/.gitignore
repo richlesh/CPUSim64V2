@@ -1,0 +1,7 @@
+obj/
+tests/run/*.gen.c
+tests/run/*.gen.asm
+tests/run/*.asm
+tests/run/obj/
+tests/errors/*.gen.c
+tests/*/*.gen

@@ -1,0 +1,82 @@
+(CRATE
+  (ITEM_FN main
+    c=(BLOCK
+      (STMT_LET
+        a=(P_IDENT x)
+        c=(E_LIT_INT "5" #5))
+      (MACRO_CALL {semi,delim_paren} toks:1 "hello"
+        a=(PATH
+          (PATH_SEG println)))
+      (MACRO_CALL {semi,delim_paren} toks:7 "x = {}, y = {}" , x , x + 1
+        a=(PATH
+          (PATH_SEG println)))
+      (STMT_LET
+        a=(P_IDENT v)
+        c=(MACRO_CALL {delim_bracket} toks:5 1 , 2 , 3
+          a=(PATH
+            (PATH_SEG vec))))
+      (STMT_LET
+        a=(P_IDENT w)
+        c=(MACRO_CALL {delim_bracket} toks:3 0 ; 10
+          a=(PATH
+            (PATH_SEG vec))))
+      (MACRO_CALL {semi,delim_paren} toks:3 x == 5
+        a=(PATH
+          (PATH_SEG assert)))
+      (MACRO_CALL {semi,delim_paren} toks:7 x , 5 , "x is {}" , x
+        a=(PATH
+          (PATH_SEG assert_eq)))
+      (MACRO_CALL {semi,delim_paren} toks:9 "{}\n" , format ! ( "{:>4}" , x )
+        a=(PATH
+          (PATH_SEG print)))
+      (STMT_LET
+        a=(P_IDENT nested)
+        c=(MACRO_CALL {delim_bracket} toks:13 vec ! [ 1 , 2 ] , vec ! [ 3 ]
+          a=(PATH
+            (PATH_SEG vec))))
+      (STMT_LET
+        a=(P_IDENT s)
+        c=(MACRO_CALL {delim_paren} toks:21 "{}" , vec ! [ ( 1 , 2 ) , ( 3 , 4 ) ] . len ( )
+          a=(PATH
+            (PATH_SEG format))))
+      (MACRO_CALL {semi,delim_paren} toks:12 "{}" , { let a = 1 ; a + 1 }
+        a=(PATH
+          (PATH_SEG println)))
+      (MACRO_CALL {semi,delim_paren} toks:0 
+        a=(PATH
+          (PATH_SEG println)))
+      (STMT_EXPR
+        a=(E_IF
+          a=(E_LET
+            a=(P_TUPLE_STRUCT
+              a=(PATH
+                (PATH_SEG Some))
+              (P_IDENT m))
+            b=(MACRO_CALL {delim_paren} toks:1 x
+              a=(PATH
+                (PATH_SEG matches_it))))
+          b=(BLOCK
+            (MACRO_CALL {semi,delim_paren} toks:3 "{}" , m
+              a=(PATH
+                (PATH_SEG println))))))
+      (STMT_EXPR
+        a=(E_MATCH
+          a=(E_PATH
+            a=(PATH
+              (PATH_SEG x)))
+          (ARM
+            a=(MACRO_CALL {delim_paren} toks:1 1
+              a=(PATH
+                (PATH_SEG pat_macro)))
+            c=(BLOCK))
+          (ARM
+            a=(P_WILD)
+            c=(BLOCK))))
+      (MACRO_CALL {semi,delim_brace} toks:3 a b c
+        a=(PATH
+          (PATH_SEG some)
+          (PATH_SEG path)
+          (PATH_SEG mac)))
+      (MACRO_CALL {semi,delim_bracket} toks:3 1 , 2
+        a=(PATH
+          (PATH_SEG mac_stmt))))))

@@ -1,0 +1,184 @@
+(CRATE
+  (ITEM_FN f
+    c=(BLOCK
+      (STMT_LET
+        a=(P_IDENT a)
+        c=(E_CALL
+          a=(E_PATH
+            a=(PATH
+              (PATH_SEG Vec {turbofish,angle}
+                (T_PATH
+                  a=(PATH
+                    (PATH_SEG u8))))
+              (PATH_SEG new)))))
+      (STMT_LET
+        a=(P_IDENT b)
+        c=(E_CALL
+          a=(E_PATH
+            a=(PATH {qualified}
+              a=(T_PATH
+                a=(PATH
+                  (PATH_SEG T)))
+              b=(PATH
+                (PATH_SEG Default))
+              (PATH_SEG default)))))
+      (STMT_LET
+        a=(P_IDENT c)
+        c=(E_CALL
+          a=(E_PATH
+            a=(PATH {qualified}
+              a=(T_PATH
+                a=(PATH
+                  (PATH_SEG Vec {angle}
+                    (T_PATH
+                      a=(PATH
+                        (PATH_SEG u8))))))
+              (PATH_SEG with_capacity)))
+          (E_LIT_INT "3" #3)))
+      (STMT_LET
+        a=(P_IDENT d)
+        c=(E_PATH
+          a=(PATH {global}
+            (PATH_SEG std)
+            (PATH_SEG mem)
+            (PATH_SEG swap {turbofish,angle}
+              (T_PATH
+                a=(PATH
+                  (PATH_SEG u8)))))))
+      (STMT_LET
+        a=(P_IDENT e)
+        c=(E_BINARY op:+
+          a=(E_CAST
+            a=(E_PATH
+              a=(PATH
+                (PATH_SEG x)))
+            b=(T_PATH
+              a=(PATH
+                (PATH_SEG usize))))
+          b=(E_LIT_INT "1" #1)))
+      (STMT_LET
+        a=(P_IDENT g)
+        c=(E_CAST
+          a=(E_CAST
+            a=(E_PATH
+              a=(PATH
+                (PATH_SEG p)))
+            b=(T_PTR
+              a=(T_PATH
+                a=(PATH
+                  (PATH_SEG u8)))))
+          b=(T_PATH
+            a=(PATH
+              (PATH_SEG usize)))))
+      (STMT_LET
+        a=(P_IDENT h)
+        c=(E_CAST
+          a=(E_PATH
+            a=(PATH
+              (PATH_SEG r)))
+          b=(T_REF
+            a=(T_DYN {dyn}
+              a=(BOUNDS
+                (BOUND_TRAIT
+                  a=(PATH
+                    (PATH_SEG Trait))))))))
+      (STMT_LET
+        a=(P_IDENT i)
+        c=(E_CALL
+          a=(E_PATH
+            a=(PATH
+              (PATH_SEG HashMap {turbofish,angle}
+                (T_PATH
+                  a=(PATH
+                    (PATH_SEG String)))
+                (T_PATH
+                  a=(PATH
+                    (PATH_SEG Vec {angle}
+                      (T_TUPLE
+                        (T_PATH
+                          a=(PATH
+                            (PATH_SEG u8)))
+                        (T_PATH
+                          a=(PATH
+                            (PATH_SEG u8))))))))
+              (PATH_SEG new)))))
+      (STMT_LET
+        a=(P_IDENT j)
+        c=(E_CALL
+          a=(E_PATH
+            a=(PATH
+              (PATH_SEG Iterator)
+              (PATH_SEG sum {turbofish,angle}
+                (T_PATH
+                  a=(PATH
+                    (PATH_SEG i32))))))
+          (E_PATH
+            a=(PATH
+              (PATH_SEG it)))))
+      (STMT_LET
+        a=(P_IDENT k)
+        c=(E_CALL
+          a=(E_PATH
+            a=(PATH
+              (PATH_SEG foo {turbofish,angle}
+                (BLOCK
+                  a=(E_LIT_INT "3" #3))
+                (E_UNARY op:-
+                  a=(E_LIT_INT "1" #1))
+                (E_LIT_CHAR #97)
+                (T_PATH
+                  a=(PATH
+                    (PATH_SEG N))))))))
+      (STMT_LET
+        a=(P_IDENT l)
+        c=(E_CALL
+          a=(E_PATH
+            a=(PATH
+              (PATH_SEG self)
+              (PATH_SEG helper)))))
+      (STMT_LET
+        a=(P_IDENT m)
+        c=(E_CALL
+          a=(E_PATH
+            a=(PATH {qualified}
+              a=(T_PATH
+                a=(PATH {qualified}
+                  a=(T_PATH
+                    a=(PATH
+                      (PATH_SEG T)))
+                  b=(PATH
+                    (PATH_SEG A))
+                  (PATH_SEG B)))
+              b=(PATH
+                (PATH_SEG C))
+              (PATH_SEG D)
+              (PATH_SEG new)))))
+      (STMT_LET
+        a=(P_IDENT n)
+        c=(E_BINARY op:<=
+          a=(E_CAST
+            a=(E_PATH
+              a=(PATH
+                (PATH_SEG a)))
+            b=(T_PATH
+              a=(PATH
+                (PATH_SEG u8))))
+          b=(E_PATH
+            a=(PATH
+              (PATH_SEG b)))))
+      (STMT_LET
+        a=(P_IDENT o)
+        b=(T_PATH
+          a=(PATH
+            (PATH_SEG Vec {angle}
+              (T_PATH
+                a=(PATH
+                  (PATH_SEG Vec {angle}
+                    (T_PATH
+                      a=(PATH
+                        (PATH_SEG u8)))))))))
+        c=(E_CALL
+          a=(E_PATH
+            a=(PATH
+              (PATH_SEG Vec)
+              (PATH_SEG new))))))))

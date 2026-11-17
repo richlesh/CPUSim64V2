@@ -1,0 +1,80 @@
+(CRATE
+  (ITEM_MACRO_RULES empty {delim_brace}
+    (MACRO_RULE
+      a=(MACRO_TT {delim_paren} toks:0 )
+      b=(MACRO_TT {delim_brace} toks:0 )))
+  (ITEM_MACRO_RULES two {delim_brace}
+    (MACRO_RULE
+      a=(MACRO_TT {delim_paren} toks:4 $ a : expr)
+      b=(MACRO_TT {delim_brace} toks:2 $ a))
+    (MACRO_RULE
+      a=(MACRO_TT {delim_paren} toks:9 $ a : expr , $ b : expr)
+      b=(MACRO_TT {delim_brace} toks:5 $ a + $ b)))
+  (ITEM_MACRO_RULES paren {delim_paren}
+    (MACRO_RULE
+      a=(MACRO_TT {delim_paren} toks:0 )
+      b=(MACRO_TT {delim_brace} toks:0 )))
+  (ITEM_MACRO_RULES bracket {delim_bracket}
+    (MACRO_RULE
+      a=(MACRO_TT {delim_paren} toks:0 )
+      b=(MACRO_TT {delim_brace} toks:0 )))
+  (ITEM_MACRO_RULES exported {delim_brace}
+    @(ATTR macro_export)
+    (MACRO_RULE
+      a=(MACRO_TT {delim_paren} toks:0 )
+      b=(MACRO_TT {delim_brace} toks:0 )))
+  (MACRO_CALL {semi,delim_paren} toks:0 
+    a=(PATH
+      (PATH_SEG foo)))
+  (MACRO_CALL {semi,delim_paren} toks:3 a , b
+    a=(PATH
+      (PATH_SEG foo)))
+  (MACRO_CALL {semi,delim_bracket} toks:3 1 , 2
+    a=(PATH
+      (PATH_SEG foo)))
+  (MACRO_CALL {delim_brace} toks:3 a b c
+    a=(PATH
+      (PATH_SEG foo)))
+  (MACRO_CALL {delim_brace} toks:0 
+    a=(PATH
+      (PATH_SEG foo)))
+  (MACRO_CALL {semi,delim_paren} toks:1 x
+    a=(PATH
+      (PATH_SEG a)
+      (PATH_SEG b)
+      (PATH_SEG c)))
+  (MACRO_CALL {semi,delim_paren} toks:0 
+    a=(PATH
+      (PATH_SEG crate)
+      (PATH_SEG mac)))
+  (MACRO_CALL {semi,delim_paren} toks:1 "hi"
+    a=(PATH {global}
+      (PATH_SEG std)
+      (PATH_SEG println)))
+  (MACRO_CALL {semi,delim_paren} toks:1 S
+    @(ATTR derive_all)
+    a=(PATH
+      (PATH_SEG mk_struct)))
+  (ITEM_STRUCT After
+    vis=(VIS))
+  (MACRO_CALL {delim_brace} toks:7 static X : i32 = 1 ;
+    a=(PATH
+      (PATH_SEG thread_local)))
+  (MACRO_CALL {delim_brace} toks:7 static Y : i32 = 2 ;
+    a=(PATH
+      (PATH_SEG lazy)))
+  (ITEM_MOD m {inline}
+    (MACRO_CALL {semi,delim_paren} toks:0 
+      a=(PATH
+        (PATH_SEG inner)))
+    (ITEM_MACRO_RULES local {delim_brace}
+      (MACRO_RULE
+        a=(MACRO_TT {delim_paren} toks:0 )
+        b=(MACRO_TT {delim_brace} toks:0 ))))
+  (ITEM_FN f
+    c=(BLOCK
+      (ITEM_MACRO_RULES in_fn {delim_brace}
+        (MACRO_RULE
+          a=(MACRO_TT {delim_paren} toks:0 )
+          b=(MACRO_TT {delim_brace} toks:0 )))
+      (ITEM_STRUCT Inner))))

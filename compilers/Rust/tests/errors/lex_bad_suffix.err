@@ -1,0 +1,1 @@
+lex_bad_suffix.rs:2: error: invalid suffix `abc` for number literal

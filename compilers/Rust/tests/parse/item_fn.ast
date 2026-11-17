@@ -1,0 +1,214 @@
+(CRATE
+  (ITEM_FN plain
+    c=(BLOCK))
+  (ITEM_FN with_args
+    b=(T_PATH
+      a=(PATH
+        (PATH_SEG i32)))
+    c=(BLOCK
+      a=(E_LIT_INT "0" #0))
+    (PARAM
+      a=(P_IDENT a)
+      b=(T_PATH
+        a=(PATH
+          (PATH_SEG i32))))
+    (PARAM
+      a=(P_IDENT b)
+      b=(T_REF
+        a=(T_PATH
+          a=(PATH
+            (PATH_SEG str)))))
+    (PARAM
+      a=(P_TUPLE
+        (P_IDENT c)
+        (P_IDENT d))
+      b=(T_TUPLE
+        (T_PATH
+          a=(PATH
+            (PATH_SEG u8)))
+        (T_PATH
+          a=(PATH
+            (PATH_SEG u8)))))
+    (PARAM
+      a=(P_IDENT e {mut})
+      b=(T_PATH
+        a=(PATH
+          (PATH_SEG u64)))))
+  (ITEM_FN public
+    vis=(VIS)
+    b=(T_PATH
+      a=(PATH
+        (PATH_SEG bool)))
+    c=(BLOCK
+      a=(E_LIT_BOOL #1)))
+  (ITEM_FN in_crate
+    vis=(VIS {vis_crate})
+    c=(BLOCK))
+  (ITEM_FN in_super
+    vis=(VIS {vis_super})
+    c=(BLOCK))
+  (ITEM_FN in_self
+    vis=(VIS {vis_self})
+    c=(BLOCK))
+  (ITEM_FN in_path
+    vis=(VIS {vis_in}
+      a=(PATH
+        (PATH_SEG crate)
+        (PATH_SEG a)
+        (PATH_SEG b)))
+    c=(BLOCK))
+  (ITEM_FN const_fn {const}
+    b=(T_PATH
+      a=(PATH
+        (PATH_SEG usize)))
+    c=(BLOCK
+      a=(E_LIT_INT "3" #3)))
+  (ITEM_FN async_fn {async}
+    c=(BLOCK))
+  (ITEM_FN unsafe_fn {unsafe}
+    c=(BLOCK))
+  (ITEM_FN const_unsafe {const,unsafe}
+    c=(BLOCK))
+  (ITEM_FN async_unsafe {async,unsafe}
+    c=(BLOCK))
+  (ITEM_FN c_abi "C" {extern}
+    b=(T_PATH
+      a=(PATH
+        (PATH_SEG i32)))
+    c=(BLOCK
+      a=(E_PATH
+        a=(PATH
+          (PATH_SEG x))))
+    (PARAM
+      a=(P_IDENT x)
+      b=(T_PATH
+        a=(PATH
+          (PATH_SEG i32)))))
+  (ITEM_FN bare_extern {extern}
+    c=(BLOCK))
+  (ITEM_FN all_quals "C" {unsafe,extern}
+    vis=(VIS)
+    c=(BLOCK))
+  (ITEM_FN generic
+    a=(GENERICS
+      (GEN_TYPE T)
+      (GEN_LIFETIME 'a)
+      (GEN_CONST N
+        a=(T_PATH
+          a=(PATH
+            (PATH_SEG usize)))))
+    b=(T_REF
+      a=(T_PATH
+        a=(PATH
+          (PATH_SEG T)))
+      b=(LIFETIME 'a))
+    c=(BLOCK
+      a=(E_PATH
+        a=(PATH
+          (PATH_SEG x))))
+    d=(WHERE
+      (WHERE_TYPE
+        a=(T_PATH
+          a=(PATH
+            (PATH_SEG T)))
+        b=(BOUNDS
+          (BOUND_TRAIT
+            a=(PATH
+              (PATH_SEG Copy))))))
+    (PARAM
+      a=(P_IDENT x)
+      b=(T_REF
+        a=(T_ARRAY
+          a=(T_PATH
+            a=(PATH
+              (PATH_SEG T)))
+          b=(E_PATH
+            a=(PATH
+              (PATH_SEG N))))
+        b=(LIFETIME 'a))))
+  (ITEM_FN ret_impl
+    b=(T_IMPL
+      a=(BOUNDS
+        (BOUND_TRAIT
+          a=(PATH
+            (PATH_SEG Fn {parens}
+              a=(T_PATH
+                a=(PATH
+                  (PATH_SEG i32)))
+              (T_PATH
+                a=(PATH
+                  (PATH_SEG i32))))))
+        (BOUND_LIFETIME 'static)))
+    c=(BLOCK
+      a=(E_LOOP
+        a=(BLOCK))))
+  (ITEM_FN trailing_where
+    a=(GENERICS
+      (GEN_TYPE T))
+    b=(T_PATH
+      a=(PATH
+        (PATH_SEG T)))
+    c=(BLOCK
+      a=(E_PATH
+        a=(PATH
+          (PATH_SEG t))))
+    d=(WHERE
+      (WHERE_TYPE
+        a=(T_PATH
+          a=(PATH
+            (PATH_SEG T)))
+        b=(BOUNDS
+          (BOUND_TRAIT
+            a=(PATH
+              (PATH_SEG Clone)))
+          (BOUND_LIFETIME 'static)))
+      (WHERE_TYPE
+        a=(T_REF
+          a=(T_PATH
+            a=(PATH
+              (PATH_SEG T)))
+          b=(LIFETIME 'a))
+        b=(BOUNDS
+          (BOUND_TRAIT
+            a=(PATH
+              (PATH_SEG Copy))))
+        c=(GENERICS
+          (GEN_LIFETIME 'a))))
+    (PARAM
+      a=(P_IDENT t)
+      b=(T_PATH
+        a=(PATH
+          (PATH_SEG T)))))
+  (ITEM_FN never
+    b=(T_NEVER)
+    c=(BLOCK
+      a=(E_LOOP
+        a=(BLOCK))))
+  (ITEM_FN nested_generics
+    b=(T_PATH
+      a=(PATH
+        (PATH_SEG Option {angle}
+          (T_PATH
+            a=(PATH
+              (PATH_SEG Vec {angle}
+                (T_PATH
+                  a=(PATH
+                    (PATH_SEG Vec {angle}
+                      (T_PATH
+                        a=(PATH
+                          (PATH_SEG u8))))))))))))
+    c=(BLOCK
+      a=(E_PATH
+        a=(PATH
+          (PATH_SEG None))))
+    (PARAM
+      a=(P_IDENT v)
+      b=(T_PATH
+        a=(PATH
+          (PATH_SEG Vec {angle}
+            (T_PATH
+              a=(PATH
+                (PATH_SEG Vec {angle}
+                  (T_PATH
+                    a=(PATH
+                      (PATH_SEG i32))))))))))))

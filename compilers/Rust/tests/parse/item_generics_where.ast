@@ -1,0 +1,424 @@
+(CRATE
+  (ITEM_FN a
+    a=(GENERICS
+      (GEN_TYPE T))
+    c=(BLOCK))
+  (ITEM_FN b
+    a=(GENERICS
+      (GEN_TYPE T))
+    c=(BLOCK))
+  (ITEM_FN c
+    a=(GENERICS
+      (GEN_TYPE T
+        b=(BOUNDS
+          (BOUND_TRAIT
+            a=(PATH
+              (PATH_SEG Clone))))))
+    c=(BLOCK))
+  (ITEM_FN d
+    a=(GENERICS
+      (GEN_TYPE T
+        b=(BOUNDS
+          (BOUND_TRAIT
+            a=(PATH
+              (PATH_SEG Clone)))
+          (BOUND_TRAIT
+            a=(PATH
+              (PATH_SEG Copy)))
+          (BOUND_LIFETIME 'static))))
+    c=(BLOCK))
+  (ITEM_FN e
+    a=(GENERICS
+      (GEN_TYPE T
+        b=(BOUNDS
+          (BOUND_TRAIT {maybe}
+            a=(PATH
+              (PATH_SEG Sized))))))
+    c=(BLOCK))
+  (ITEM_FN f
+    a=(GENERICS
+      (GEN_LIFETIME 'a))
+    c=(BLOCK))
+  (ITEM_FN g
+    a=(GENERICS
+      (GEN_LIFETIME 'a)
+      (GEN_LIFETIME 'b
+        b=(BOUNDS
+          (BOUND_LIFETIME 'a))))
+    c=(BLOCK))
+  (ITEM_FN h
+    a=(GENERICS
+      (GEN_LIFETIME 'a)
+      (GEN_LIFETIME 'b
+        b=(BOUNDS
+          (BOUND_LIFETIME 'a)
+          (BOUND_LIFETIME 'static)))
+      (GEN_TYPE T))
+    c=(BLOCK))
+  (ITEM_FN i
+    a=(GENERICS
+      (GEN_TYPE T
+        a=(T_PATH
+          a=(PATH
+            (PATH_SEG i32)))))
+    c=(BLOCK))
+  (ITEM_FN j
+    a=(GENERICS
+      (GEN_TYPE T
+        a=(T_PATH
+          a=(PATH
+            (PATH_SEG i32)))
+        b=(BOUNDS
+          (BOUND_TRAIT
+            a=(PATH
+              (PATH_SEG Clone))))))
+    c=(BLOCK))
+  (ITEM_FN k
+    a=(GENERICS
+      (GEN_CONST N
+        a=(T_PATH
+          a=(PATH
+            (PATH_SEG usize)))))
+    c=(BLOCK))
+  (ITEM_FN l
+    a=(GENERICS
+      (GEN_CONST N
+        a=(T_PATH
+          a=(PATH
+            (PATH_SEG usize)))
+        b=(E_LIT_INT "3" #3)))
+    c=(BLOCK))
+  (ITEM_FN m
+    a=(GENERICS
+      (GEN_CONST N
+        a=(T_PATH
+          a=(PATH
+            (PATH_SEG i32)))
+        b=(E_UNARY op:-
+          a=(E_LIT_INT "1" #1))))
+    c=(BLOCK))
+  (ITEM_FN n
+    a=(GENERICS
+      (GEN_CONST B
+        a=(T_PATH
+          a=(PATH
+            (PATH_SEG bool)))
+        b=(E_LIT_BOOL #1)))
+    c=(BLOCK))
+  (ITEM_FN o
+    a=(GENERICS
+      (GEN_CONST N
+        a=(T_PATH
+          a=(PATH
+            (PATH_SEG usize)))
+        b=(BLOCK
+          a=(E_BINARY op:+
+            a=(E_LIT_INT "1" #1)
+            b=(E_LIT_INT "2" #2)))))
+    c=(BLOCK))
+  (ITEM_FN p
+    a=(GENERICS
+      (GEN_CONST N
+        a=(T_PATH
+          a=(PATH
+            (PATH_SEG usize)))
+        b=(E_PATH
+          a=(PATH
+            (PATH_SEG X)))))
+    c=(BLOCK))
+  (ITEM_FN q
+    a=(GENERICS
+      (GEN_LIFETIME 'a)
+      (GEN_TYPE T
+        b=(BOUNDS
+          (BOUND_LIFETIME 'a)))
+      (GEN_CONST N
+        a=(T_PATH
+          a=(PATH
+            (PATH_SEG usize)))))
+    c=(BLOCK))
+  (ITEM_FN r
+    a=(GENERICS
+      (GEN_TYPE T
+        b=(BOUNDS
+          (BOUND_TRAIT
+            a=(PATH
+              (PATH_SEG Fn {parens}
+                a=(T_REF
+                  a=(T_PATH
+                    a=(PATH
+                      (PATH_SEG i32)))
+                  b=(LIFETIME 'a))
+                (T_REF
+                  a=(T_PATH
+                    a=(PATH
+                      (PATH_SEG i32)))
+                  b=(LIFETIME 'a))))
+            b=(GENERICS
+              (GEN_LIFETIME 'a))))))
+    c=(BLOCK))
+  (ITEM_FN s
+    a=(GENERICS
+      (GEN_TYPE T
+        b=(BOUNDS
+          (BOUND_TRAIT
+            a=(PATH
+              (PATH_SEG Iterator {angle}
+                (ASSOC_BIND Item
+                  a=(T_PATH
+                    a=(PATH
+                      (PATH_SEG i32))))))))))
+    c=(BLOCK))
+  (ITEM_FN t
+    a=(GENERICS
+      (GEN_TYPE T
+        b=(BOUNDS
+          (BOUND_TRAIT
+            a=(PATH
+              (PATH_SEG Into {angle}
+                (T_PATH
+                  a=(PATH
+                    (PATH_SEG Vec {angle}
+                      (T_PATH
+                        a=(PATH
+                          (PATH_SEG Vec {angle}
+                            (T_PATH
+                              a=(PATH
+                                (PATH_SEG u8)))))))))))))))
+    c=(BLOCK))
+  (ITEM_FN u
+    a=(GENERICS
+      (GEN_TYPE T
+        b=(BOUNDS)))
+    c=(BLOCK))
+  (ITEM_FN v
+    a=(GENERICS
+      (GEN_TYPE F))
+    c=(BLOCK)
+    d=(WHERE
+      (WHERE_TYPE
+        a=(T_PATH
+          a=(PATH
+            (PATH_SEG F)))
+        b=(BOUNDS
+          (BOUND_TRAIT
+            a=(PATH
+              (PATH_SEG Fn {parens}
+                a=(T_PATH
+                  a=(PATH
+                    (PATH_SEG i32)))
+                (T_PATH
+                  a=(PATH
+                    (PATH_SEG i32)))))))))
+    (PARAM
+      a=(P_IDENT f)
+      b=(T_PATH
+        a=(PATH
+          (PATH_SEG F)))))
+  (ITEM_FN w
+    a=(GENERICS
+      (GEN_TYPE T)
+      (GEN_TYPE U))
+    c=(BLOCK)
+    d=(WHERE
+      (WHERE_TYPE
+        a=(T_PATH
+          a=(PATH
+            (PATH_SEG T)))
+        b=(BOUNDS
+          (BOUND_TRAIT
+            a=(PATH
+              (PATH_SEG Clone)))))
+      (WHERE_TYPE
+        a=(T_PATH
+          a=(PATH
+            (PATH_SEG U)))
+        b=(BOUNDS
+          (BOUND_TRAIT
+            a=(PATH
+              (PATH_SEG Copy)))))))
+  (ITEM_FN x
+    a=(GENERICS
+      (GEN_TYPE T))
+    c=(BLOCK)
+    d=(WHERE
+      (WHERE_TYPE
+        a=(T_PATH
+          a=(PATH
+            (PATH_SEG T)))
+        b=(BOUNDS
+          (BOUND_TRAIT
+            a=(PATH
+              (PATH_SEG Clone)))))))
+  (ITEM_FN y
+    a=(GENERICS
+      (GEN_LIFETIME 'a)
+      (GEN_TYPE T))
+    c=(BLOCK)
+    d=(WHERE
+      (WHERE_LIFETIME 'a
+        b=(BOUNDS
+          (BOUND_LIFETIME 'static)))
+      (WHERE_TYPE
+        a=(T_PATH
+          a=(PATH
+            (PATH_SEG T)))
+        b=(BOUNDS
+          (BOUND_LIFETIME 'a)))))
+  (ITEM_FN z
+    a=(GENERICS
+      (GEN_LIFETIME 'a)
+      (GEN_LIFETIME 'b))
+    c=(BLOCK)
+    d=(WHERE
+      (WHERE_LIFETIME 'a
+        b=(BOUNDS
+          (BOUND_LIFETIME 'b)))
+      (WHERE_LIFETIME 'b
+        b=(BOUNDS))))
+  (ITEM_FN aa
+    a=(GENERICS
+      (GEN_TYPE T))
+    c=(BLOCK)
+    d=(WHERE
+      (WHERE_TYPE
+        a=(T_PATH
+          a=(PATH
+            (PATH_SEG T)))
+        b=(BOUNDS
+          (BOUND_TRAIT
+            a=(PATH
+              (PATH_SEG Fn {parens}
+                (T_REF
+                  a=(T_PATH
+                    a=(PATH
+                      (PATH_SEG i32)))
+                  b=(LIFETIME 'a))))))
+        c=(GENERICS
+          (GEN_LIFETIME 'a)))))
+  (ITEM_FN bb
+    a=(GENERICS
+      (GEN_TYPE T))
+    c=(BLOCK)
+    d=(WHERE
+      (WHERE_TYPE
+        a=(T_PATH
+          a=(PATH
+            (PATH_SEG T)
+            (PATH_SEG Item)))
+        b=(BOUNDS
+          (BOUND_TRAIT
+            a=(PATH
+              (PATH_SEG Clone)))))))
+  (ITEM_FN cc
+    a=(GENERICS
+      (GEN_TYPE T))
+    c=(BLOCK)
+    d=(WHERE
+      (WHERE_TYPE
+        a=(T_PATH
+          a=(PATH
+            (PATH_SEG Vec {angle}
+              (T_PATH
+                a=(PATH
+                  (PATH_SEG T))))))
+        b=(BOUNDS
+          (BOUND_TRAIT
+            a=(PATH
+              (PATH_SEG Clone)))))
+      (WHERE_TYPE
+        a=(T_ARRAY
+          a=(T_PATH
+            a=(PATH
+              (PATH_SEG T)))
+          b=(E_LIT_INT "3" #3))
+        b=(BOUNDS
+          (BOUND_TRAIT
+            a=(PATH
+              (PATH_SEG Copy)))))
+      (WHERE_TYPE
+        a=(T_REF
+          a=(T_PATH
+            a=(PATH
+              (PATH_SEG T)))
+          b=(LIFETIME 'static))
+        b=(BOUNDS
+          (BOUND_TRAIT
+            a=(PATH
+              (PATH_SEG Sized)))))))
+  (ITEM_FN dd
+    a=(GENERICS
+      (GEN_TYPE T))
+    c=(BLOCK)
+    d=(WHERE
+      (WHERE_TYPE
+        a=(T_PATH
+          a=(PATH
+            (PATH_SEG T)))
+        b=(BOUNDS))))
+  (ITEM_FN ee
+    a=(GENERICS
+      (GEN_TYPE T))
+    c=(BLOCK)
+    d=(WHERE
+      (WHERE_TYPE
+        a=(T_PATH
+          a=(PATH
+            (PATH_SEG T)))
+        b=(BOUNDS
+          (BOUND_TRAIT {maybe}
+            a=(PATH
+              (PATH_SEG Sized)))
+          (BOUND_TRAIT
+            a=(PATH
+              (PATH_SEG Clone)))))))
+  (ITEM_FN ff
+    a=(GENERICS
+      (GEN_TYPE T))
+    b=(T_PATH
+      a=(PATH
+        (PATH_SEG T)))
+    c=(BLOCK
+      a=(E_CALL
+        a=(E_PATH
+          a=(PATH
+            (PATH_SEG T)
+            (PATH_SEG default)))))
+    d=(WHERE
+      (WHERE_TYPE
+        a=(T_PATH
+          a=(PATH
+            (PATH_SEG T)))
+        b=(BOUNDS
+          (BOUND_TRAIT
+            a=(PATH
+              (PATH_SEG Default)))))))
+  (ITEM_FN gg
+    a=(GENERICS
+      (GEN_TYPE T))
+    c=(BLOCK)
+    d=(WHERE
+      (WHERE_TYPE
+        a=(T_PATH
+          a=(PATH
+            (PATH_SEG T)))
+        b=(BOUNDS
+          (BOUND_TRAIT
+            a=(PATH
+              (PATH_SEG Fn {parens}
+                a=(T_PATH
+                  a=(PATH
+                    (PATH_SEG bool)))
+                (T_REF
+                  a=(T_PATH
+                    a=(PATH
+                      (PATH_SEG i32)))
+                  b=(LIFETIME 'a))
+                (T_REF
+                  a=(T_PATH
+                    a=(PATH
+                      (PATH_SEG i32)))
+                  b=(LIFETIME 'b))))))
+        c=(GENERICS
+          (GEN_LIFETIME 'a)
+          (GEN_LIFETIME 'b))))))

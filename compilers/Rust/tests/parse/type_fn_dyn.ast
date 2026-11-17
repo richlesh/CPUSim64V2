@@ -1,0 +1,357 @@
+(CRATE
+  (ITEM_TYPE A
+    b=(T_FN))
+  (ITEM_TYPE B
+    b=(T_FN
+      b=(T_PATH
+        a=(PATH
+          (PATH_SEG i32)))
+      (PARAM
+        b=(T_PATH
+          a=(PATH
+            (PATH_SEG i32))))
+      (PARAM
+        b=(T_PATH
+          a=(PATH
+            (PATH_SEG i32))))))
+  (ITEM_TYPE C
+    b=(T_FN
+      b=(T_NEVER)
+      (PARAM
+        a=(P_IDENT x)
+        b=(T_PATH
+          a=(PATH
+            (PATH_SEG i32))))
+      (PARAM
+        a=(P_WILD)
+        b=(T_PATH
+          a=(PATH
+            (PATH_SEG u8))))
+      (PARAM
+        b=(T_REF
+          a=(T_PATH
+            a=(PATH
+              (PATH_SEG str)))))))
+  (ITEM_TYPE D
+    b=(T_FN "C" {unsafe,extern,variadic}
+      b=(T_PATH
+        a=(PATH
+          (PATH_SEG i32)))
+      (PARAM
+        b=(T_PTR
+          a=(T_PATH
+            a=(PATH
+              (PATH_SEG u8)))))))
+  (ITEM_TYPE E
+    b=(T_FN {extern}
+      (PARAM
+        a=(P_IDENT a)
+        b=(T_PATH
+          a=(PATH
+            (PATH_SEG u8))))))
+  (ITEM_TYPE F
+    b=(T_FN {unsafe}))
+  (ITEM_TYPE G
+    b=(T_FN
+      b=(T_REF
+        a=(T_PATH
+          a=(PATH
+            (PATH_SEG u8)))
+        b=(LIFETIME 'a))
+      c=(GENERICS
+        (GEN_LIFETIME 'a))
+      (PARAM
+        b=(T_REF
+          a=(T_PATH
+            a=(PATH
+              (PATH_SEG u8)))
+          b=(LIFETIME 'a)))))
+  (ITEM_TYPE H
+    b=(T_FN
+      b=(T_FN
+        b=(T_PATH
+          a=(PATH
+            (PATH_SEG u8))))
+      (PARAM
+        b=(T_FN
+          b=(T_PATH
+            a=(PATH
+              (PATH_SEG i32)))
+          (PARAM
+            b=(T_PATH
+              a=(PATH
+                (PATH_SEG i32))))))))
+  (ITEM_TYPE I
+    b=(T_PATH
+      a=(PATH
+        (PATH_SEG Box {angle}
+          (T_DYN {dyn}
+            a=(BOUNDS
+              (BOUND_TRAIT
+                a=(PATH
+                  (PATH_SEG Fn {parens}
+                    a=(T_PATH
+                      a=(PATH
+                        (PATH_SEG i32)))
+                    (T_PATH
+                      a=(PATH
+                        (PATH_SEG i32)))
+                    (T_PATH
+                      a=(PATH
+                        (PATH_SEG i32))))))))))))
+  (ITEM_TYPE J
+    b=(T_PATH
+      a=(PATH
+        (PATH_SEG Box {angle}
+          (T_DYN {dyn}
+            a=(BOUNDS
+              (BOUND_TRAIT
+                a=(PATH
+                  (PATH_SEG Fn {parens}
+                    a=(T_PATH
+                      a=(PATH
+                        (PATH_SEG Vec {angle}
+                          (T_PATH
+                            a=(PATH
+                              (PATH_SEG u8))))))
+                    (T_REF
+                      a=(T_PATH
+                        a=(PATH
+                          (PATH_SEG str)))))))
+              (BOUND_TRAIT
+                a=(PATH
+                  (PATH_SEG Send)))
+              (BOUND_LIFETIME 'static)))))))
+  (ITEM_TYPE K
+    b=(T_PATH
+      a=(PATH
+        (PATH_SEG Box {angle}
+          (T_DYN {dyn}
+            a=(BOUNDS
+              (BOUND_TRAIT
+                a=(PATH
+                  (PATH_SEG A)))
+              (BOUND_TRAIT
+                a=(PATH
+                  (PATH_SEG B)))
+              (BOUND_LIFETIME 'a)))))))
+  (ITEM_TYPE L
+    b=(T_PATH
+      a=(PATH
+        (PATH_SEG Box {angle}
+          (T_DYN {dyn}
+            a=(BOUNDS
+              (BOUND_TRAIT
+                a=(PATH
+                  (PATH_SEG Fn {parens}
+                    (T_REF
+                      a=(T_PATH
+                        a=(PATH
+                          (PATH_SEG u8)))
+                      b=(LIFETIME 'a))))
+                b=(GENERICS
+                  (GEN_LIFETIME 'a)))
+              (BOUND_TRAIT
+                a=(PATH
+                  (PATH_SEG Send)))))))))
+  (ITEM_TYPE N1
+    b=(T_REF
+      a=(T_DYN {dyn}
+        a=(BOUNDS
+          (BOUND_TRAIT
+            a=(PATH
+              (PATH_SEG Trait)))))))
+  (ITEM_TYPE O
+    b=(T_REF {mut}
+      a=(T_DYN {dyn}
+        a=(BOUNDS
+          (BOUND_TRAIT
+            a=(PATH
+              (PATH_SEG Trait)))))
+      b=(LIFETIME 'a)))
+  (ITEM_TYPE P
+    b=(T_REF
+      a=(T_DYN {dyn}
+        a=(BOUNDS
+          (BOUND_TRAIT
+            a=(PATH
+              (PATH_SEG A)))
+          (BOUND_TRAIT
+            a=(PATH
+              (PATH_SEG B)))))))
+  (ITEM_TYPE Q
+    b=(T_PTR
+      a=(T_DYN {dyn}
+        a=(BOUNDS
+          (BOUND_TRAIT
+            a=(PATH
+              (PATH_SEG Trait)))))))
+  (ITEM_TYPE R
+    b=(T_IMPL
+      a=(BOUNDS
+        (BOUND_TRAIT
+          a=(PATH
+            (PATH_SEG Iterator {angle}
+              (ASSOC_BIND Item
+                a=(T_PATH
+                  a=(PATH
+                    (PATH_SEG u8)))))))
+        (BOUND_LIFETIME 'a))))
+  (ITEM_TYPE S
+    b=(T_IMPL
+      a=(BOUNDS
+        (BOUND_TRAIT
+          a=(PATH
+            (PATH_SEG Trait))))))
+  (ITEM_TYPE T1
+    b=(T_PATH
+      a=(PATH
+        (PATH_SEG Box {angle}
+          (T_DYN
+            a=(BOUNDS
+              (BOUND_TRAIT
+                a=(PATH
+                  (PATH_SEG Trait)))
+              (BOUND_TRAIT
+                a=(PATH
+                  (PATH_SEG Send)))))))))
+  (ITEM_TYPE U
+    b=(T_PATH
+      a=(PATH
+        (PATH_SEG Box {angle}
+          (T_DYN
+            a=(BOUNDS
+              (BOUND_TRAIT
+                a=(PATH
+                  (PATH_SEG Fn {parens}
+                    (T_REF
+                      a=(T_PATH
+                        a=(PATH
+                          (PATH_SEG u8)))
+                      b=(LIFETIME 'a))))
+                b=(GENERICS
+                  (GEN_LIFETIME 'a)))))))))
+  (ITEM_TYPE V
+    b=(T_PATH
+      a=(PATH
+        (PATH_SEG Box {angle}
+          (T_DYN {dyn}
+            a=(BOUNDS
+              (BOUND_TRAIT {paren}
+                a=(PATH
+                  (PATH_SEG Fn {parens}
+                    a=(T_PATH
+                      a=(PATH
+                        (PATH_SEG u8))))))
+              (BOUND_TRAIT
+                a=(PATH
+                  (PATH_SEG Send)))))))))
+  (ITEM_TYPE W
+    b=(T_PATH
+      a=(PATH
+        (PATH_SEG Box {angle}
+          (T_DYN {dyn}
+            a=(BOUNDS
+              (BOUND_TRAIT
+                a=(PATH
+                  (PATH_SEG Iterator {angle}
+                    (ASSOC_BIND Item
+                      b=(BOUNDS
+                        (BOUND_TRAIT
+                          a=(PATH
+                            (PATH_SEG Display)))))
+                    (ASSOC_BIND Foo
+                      a=(T_PATH
+                        a=(PATH
+                          (PATH_SEG Vec {angle}
+                            (T_PATH
+                              a=(PATH
+                                (PATH_SEG u8))))))))))))))))
+  (ITEM_TYPE X1
+    b=(T_PATH
+      a=(PATH
+        (PATH_SEG Box {angle}
+          (T_DYN {dyn}
+            a=(BOUNDS
+              (BOUND_TRAIT
+                a=(PATH
+                  (PATH_SEG Fn {parens}
+                    a=(T_PATH
+                      a=(PATH
+                        (PATH_SEG Box {angle}
+                          (T_DYN {dyn}
+                            a=(BOUNDS
+                              (BOUND_TRAIT
+                                a=(PATH
+                                  (PATH_SEG Fn {parens}
+                                    a=(T_PATH
+                                      a=(PATH
+                                        (PATH_SEG u8))))))))))))))))))))
+  (ITEM_TYPE Y1
+    b=(T_PATH
+      a=(PATH
+        (PATH_SEG Box {angle}
+          (T_DYN {dyn}
+            a=(BOUNDS
+              (BOUND_TRAIT
+                a=(PATH
+                  (PATH_SEG Tr {angle}
+                    (LIFETIME 'a)
+                    (LIFETIME 'b)))
+                b=(GENERICS
+                  (GEN_LIFETIME 'a)
+                  (GEN_LIFETIME 'b
+                    b=(BOUNDS
+                      (BOUND_LIFETIME 'a)))))))))))
+  (ITEM_FN f
+    b=(T_IMPL
+      a=(BOUNDS
+        (BOUND_TRAIT
+          a=(PATH
+            (PATH_SEG Iterator {angle}
+              (ASSOC_BIND Item
+                a=(T_REF
+                  a=(T_PATH
+                    a=(PATH
+                      (PATH_SEG T)))
+                  b=(LIFETIME 'a))))))
+        (BOUND_LIFETIME 'a)))
+    c=(BLOCK)
+    (PARAM
+      a=(P_IDENT x)
+      b=(T_REF
+        a=(T_DYN {dyn}
+          a=(BOUNDS
+            (BOUND_TRAIT
+              a=(PATH
+                (PATH_SEG A)))))))
+    (PARAM
+      a=(P_IDENT y)
+      b=(T_IMPL
+        a=(BOUNDS
+          (BOUND_TRAIT
+            a=(PATH
+              (PATH_SEG A)))
+          (BOUND_TRAIT
+            a=(PATH
+              (PATH_SEG B)))))))
+  (ITEM_FN g
+    c=(BLOCK)
+    d=(WHERE
+      (WHERE_TYPE
+        a=(T_PATH
+          a=(PATH
+            (PATH_SEG F)))
+        b=(BOUNDS
+          (BOUND_TRAIT
+            a=(PATH
+              (PATH_SEG Fn {parens}
+                a=(T_PATH
+                  a=(PATH
+                    (PATH_SEG u8)))
+                (T_PATH
+                  a=(PATH
+                    (PATH_SEG u8))))))
+          (BOUND_TRAIT
+            a=(PATH
+              (PATH_SEG Copy))))))))

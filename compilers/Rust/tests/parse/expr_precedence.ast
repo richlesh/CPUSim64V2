@@ -1,0 +1,331 @@
+(CRATE
+  (ITEM_FN main
+    c=(BLOCK
+      (STMT_LET
+        a=(P_IDENT a)
+        c=(E_BINARY op:-
+          a=(E_BINARY op:+
+            a=(E_LIT_INT "1" #1)
+            b=(E_BINARY op:*
+              a=(E_LIT_INT "2" #2)
+              b=(E_LIT_INT "3" #3)))
+          b=(E_BINARY op:%
+            a=(E_BINARY op:/
+              a=(E_LIT_INT "4" #4)
+              b=(E_LIT_INT "2" #2))
+            b=(E_LIT_INT "3" #3))))
+      (STMT_LET
+        a=(P_IDENT b)
+        c=(E_BINARY op:|
+          a=(E_BINARY op:^
+            a=(E_BINARY op:&
+              a=(E_BINARY op:>>
+                a=(E_BINARY op:<<
+                  a=(E_PATH
+                    a=(PATH
+                      (PATH_SEG a)))
+                  b=(E_LIT_INT "2" #2))
+                b=(E_LIT_INT "1" #1))
+              b=(E_LIT_INT "3" #3))
+            b=(E_LIT_INT "5" #5))
+          b=(E_LIT_INT "7" #7)))
+      (STMT_LET
+        a=(P_IDENT c)
+        c=(E_BINARY op:||
+          a=(E_BINARY op:&&
+            a=(E_BINARY op:<
+              a=(E_PATH
+                a=(PATH
+                  (PATH_SEG a)))
+              b=(E_PATH
+                a=(PATH
+                  (PATH_SEG b))))
+            b=(E_BINARY op:>=
+              a=(E_PATH
+                a=(PATH
+                  (PATH_SEG b)))
+              b=(E_PATH
+                a=(PATH
+                  (PATH_SEG a)))))
+          b=(E_BINARY op:!=
+            a=(E_PATH
+              a=(PATH
+                (PATH_SEG a)))
+            b=(E_PATH
+              a=(PATH
+                (PATH_SEG b))))))
+      (STMT_LET
+        a=(P_IDENT d)
+        c=(E_BINARY op:+
+          a=(E_CAST
+            a=(E_CAST
+              a=(E_PATH
+                a=(PATH
+                  (PATH_SEG x)))
+              b=(T_PATH
+                a=(PATH
+                  (PATH_SEG u8))))
+            b=(T_PATH
+              a=(PATH
+                (PATH_SEG i64))))
+          b=(E_LIT_INT "1" #1)))
+      (STMT_LET
+        a=(P_IDENT e)
+        c=(E_CAST
+          a=(E_UNARY op:-
+            a=(E_PATH
+              a=(PATH
+                (PATH_SEG x))))
+          b=(T_PATH
+            a=(PATH
+              (PATH_SEG u32)))))
+      (STMT_LET
+        a=(P_IDENT f)
+        c=(E_BINARY op:==
+          a=(E_UNARY op:!
+            a=(E_PATH
+              a=(PATH
+                (PATH_SEG a))))
+          b=(E_UNARY op:!
+            a=(E_PATH
+              a=(PATH
+                (PATH_SEG b))))))
+      (STMT_LET
+        a=(P_IDENT g)
+        c=(E_BINARY op:+
+          a=(E_DEREF
+            a=(E_PATH
+              a=(PATH
+                (PATH_SEG p))))
+          b=(E_BINARY op:*
+            a=(E_DEREF
+              a=(E_PATH
+                a=(PATH
+                  (PATH_SEG q))))
+            b=(E_LIT_INT "2" #2))))
+      (STMT_LET
+        a=(P_IDENT h)
+        c=(E_CAST
+          a=(E_REF {mut}
+            a=(E_INDEX
+              a=(E_PATH
+                a=(PATH
+                  (PATH_SEG v)))
+              b=(E_LIT_INT "0" #0)))
+          b=(T_PTR {mut}
+            a=(T_PATH
+              a=(PATH
+                (PATH_SEG i32))))))
+      (STMT_LET
+        a=(P_IDENT i)
+        c=(E_REF
+          a=(E_REF
+            a=(E_PATH
+              a=(PATH
+                (PATH_SEG x))))))
+      (STMT_LET
+        a=(P_IDENT j)
+        c=(E_RANGE
+          a=(E_PATH
+            a=(PATH
+              (PATH_SEG a)))
+          b=(E_PATH
+            a=(PATH
+              (PATH_SEG b)))))
+      (STMT_LET
+        a=(P_IDENT k)
+        c=(E_RANGE
+          b=(E_PATH
+            a=(PATH
+              (PATH_SEG b)))))
+      (STMT_LET
+        a=(P_IDENT l)
+        c=(E_RANGE
+          a=(E_PATH
+            a=(PATH
+              (PATH_SEG a)))))
+      (STMT_LET
+        a=(P_IDENT m)
+        c=(E_RANGE))
+      (STMT_LET
+        a=(P_IDENT n)
+        c=(E_RANGE {inclusive}
+          a=(E_PATH
+            a=(PATH
+              (PATH_SEG a)))
+          b=(E_PATH
+            a=(PATH
+              (PATH_SEG b)))))
+      (STMT_LET
+        a=(P_IDENT o)
+        c=(E_RANGE {inclusive}
+          b=(E_PATH
+            a=(PATH
+              (PATH_SEG b)))))
+      (STMT_LET
+        a=(P_IDENT p)
+        c=(E_RANGE
+          a=(E_BINARY op:+
+            a=(E_LIT_INT "1" #1)
+            b=(E_LIT_INT "2" #2))
+          b=(E_BINARY op:+
+            a=(E_LIT_INT "3" #3)
+            b=(E_LIT_INT "4" #4))))
+      (STMT_EXPR {semi}
+        a=(E_ASSIGN
+          a=(E_PATH
+            a=(PATH
+              (PATH_SEG a)))
+          b=(E_ASSIGN
+            a=(E_PATH
+              a=(PATH
+                (PATH_SEG b)))
+            b=(E_PATH
+              a=(PATH
+                (PATH_SEG c))))))
+      (STMT_EXPR {semi}
+        a=(E_ASSIGN_OP op:+
+          a=(E_PATH
+            a=(PATH
+              (PATH_SEG a)))
+          b=(E_LIT_INT "1" #1)))
+      (STMT_EXPR {semi}
+        a=(E_ASSIGN_OP op:-
+          a=(E_PATH
+            a=(PATH
+              (PATH_SEG a)))
+          b=(E_BINARY op:*
+            a=(E_PATH
+              a=(PATH
+                (PATH_SEG b)))
+            b=(E_LIT_INT "2" #2))))
+      (STMT_EXPR {semi}
+        a=(E_ASSIGN_OP op:*
+          a=(E_PATH
+            a=(PATH
+              (PATH_SEG a)))
+          b=(E_LIT_INT "2" #2)))
+      (STMT_EXPR {semi}
+        a=(E_ASSIGN_OP op:/
+          a=(E_PATH
+            a=(PATH
+              (PATH_SEG a)))
+          b=(E_LIT_INT "2" #2)))
+      (STMT_EXPR {semi}
+        a=(E_ASSIGN_OP op:%
+          a=(E_PATH
+            a=(PATH
+              (PATH_SEG a)))
+          b=(E_LIT_INT "2" #2)))
+      (STMT_EXPR {semi}
+        a=(E_ASSIGN_OP op:^
+          a=(E_PATH
+            a=(PATH
+              (PATH_SEG a)))
+          b=(E_LIT_INT "1" #1)))
+      (STMT_EXPR {semi}
+        a=(E_ASSIGN_OP op:&
+          a=(E_PATH
+            a=(PATH
+              (PATH_SEG a)))
+          b=(E_LIT_INT "1" #1)))
+      (STMT_EXPR {semi}
+        a=(E_ASSIGN_OP op:|
+          a=(E_PATH
+            a=(PATH
+              (PATH_SEG a)))
+          b=(E_LIT_INT "1" #1)))
+      (STMT_EXPR {semi}
+        a=(E_ASSIGN_OP op:<<
+          a=(E_PATH
+            a=(PATH
+              (PATH_SEG a)))
+          b=(E_LIT_INT "1" #1)))
+      (STMT_EXPR {semi}
+        a=(E_ASSIGN_OP op:>>
+          a=(E_PATH
+            a=(PATH
+              (PATH_SEG a)))
+          b=(E_LIT_INT "1" #1)))
+      (STMT_EXPR {semi}
+        a=(E_ASSIGN
+          a=(E_DEREF
+            a=(E_PATH
+              a=(PATH
+                (PATH_SEG p))))
+          b=(E_LIT_INT "5" #5)))
+      (STMT_EXPR {semi}
+        a=(E_ASSIGN
+          a=(E_FIELD y
+            a=(E_PATH
+              a=(PATH
+                (PATH_SEG x))))
+          b=(E_BINARY op:+
+            a=(E_FIELD w
+              a=(E_PATH
+                a=(PATH
+                  (PATH_SEG z))))
+            b=(E_LIT_INT "1" #1))))
+      (STMT_LET
+        a=(P_IDENT q)
+        c=(E_BINARY op:==
+          a=(E_PATH
+            a=(PATH
+              (PATH_SEG a)))
+          b=(E_PATH
+            a=(PATH
+              (PATH_SEG b)))))
+      (STMT_LET
+        a=(P_IDENT r)
+        c=(E_BINARY op:*
+          a=(E_PAREN
+            a=(E_BINARY op:+
+              a=(E_PATH
+                a=(PATH
+                  (PATH_SEG a)))
+              b=(E_PATH
+                a=(PATH
+                  (PATH_SEG b)))))
+          b=(E_PATH
+            a=(PATH
+              (PATH_SEG c)))))
+      (STMT_LET
+        a=(P_IDENT s)
+        c=(E_TUPLE
+          (E_LIT_INT "1" #1)))
+      (STMT_LET
+        a=(P_IDENT t)
+        c=(E_TUPLE
+          (E_LIT_INT "1" #1)
+          (E_LIT_INT "2" #2)))
+      (STMT_LET
+        a=(P_IDENT u)
+        c=(E_TUPLE))
+      (STMT_LET
+        a=(P_IDENT v)
+        c=(E_ARRAY
+          (E_LIT_INT "1" #1)
+          (E_LIT_INT "2" #2)
+          (E_LIT_INT "3" #3)))
+      (STMT_LET
+        a=(P_IDENT w)
+        c=(E_REPEAT
+          a=(E_LIT_INT u8 "0" #0)
+          b=(E_LIT_INT "16" #16)))
+      (STMT_LET
+        a=(P_IDENT z)
+        c=(E_ARRAY))
+      (STMT_LET
+        a=(P_IDENT y)
+        c=(E_BINARY op:<
+          a=(E_PAREN
+            a=(E_CAST
+              a=(E_PATH
+                a=(PATH
+                  (PATH_SEG a)))
+              b=(T_PATH
+                a=(PATH
+                  (PATH_SEG usize)))))
+          b=(E_PATH
+            a=(PATH
+              (PATH_SEG b))))))))

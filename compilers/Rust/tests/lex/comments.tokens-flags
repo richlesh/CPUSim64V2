@@ -1,0 +1,19 @@
+3:13 IDENT a space
+3:54 IDENT b space
+4:1 DOC outer " outer line doc" space
+6:1 DOC inner " inner line doc" space
+7:1 DOC outer " outer block doc\n * second line " space
+9:1 DOC inner " inner block doc " space
+10:6 IDENT c space
+10:14 IDENT d space
+11:1 KW fn space
+11:18 IDENT f space
+11:19 LPAREN (
+11:20 RPAREN )
+11:22 LBRACE { space
+11:23 RBRACE }
+12:1 DOC outer " doc with unicode \xC3\xA9 \xF0\x9F\x98\x80 and CRLF-free text" space
+13:1 IDENT x space
+13:26 IDENT y space
+16:13 IDENT z space
+17:1 EOF space
