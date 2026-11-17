@@ -19,11 +19,29 @@ pub struct SharedMem {
 }
 
 impl SharedMem {
+    /// Creates a zeroed heap of `words` cells without writing each cell.
+    ///
+    /// The memory comes from `alloc_zeroed` (`calloc`). For a large heap the
+    /// allocator maps fresh pages from the OS, which are zero and only backed
+    /// by RAM when first touched, so start-up time and resident memory no longer
+    /// grow with `--mem`. The heap still reads as all zeros, as in Java.
     pub fn new(words: usize) -> Arc<SharedMem> {
-        let mut cells = Vec::with_capacity(words);
-        for _ in 0..words {
-            cells.push(AtomicI64::new(0));
+        if words == 0 {
+            return Arc::new(SharedMem { cells: Vec::new() });
         }
+        let layout = std::alloc::Layout::array::<AtomicI64>(words)
+            .unwrap_or_else(|_| panic!("heap of {words} words is too large"));
+        // SAFETY: `AtomicI64` has the same size, alignment and bit validity as
+        // `i64`, so all-zero bytes are a valid `AtomicI64::new(0)`. The block
+        // is allocated by the global allocator with the layout of a
+        // `Vec<AtomicI64>` of capacity `words`, as `from_raw_parts` requires.
+        let cells = unsafe {
+            let ptr = std::alloc::alloc_zeroed(layout) as *mut AtomicI64;
+            if ptr.is_null() {
+                std::alloc::handle_alloc_error(layout);
+            }
+            Vec::from_raw_parts(ptr, words, words)
+        };
         Arc::new(SharedMem { cells })
     }
 
@@ -153,6 +171,18 @@ mod tests {
             }
         });
         assert_eq!(mem.get(0), THREADS as i64 * ITERS);
+    }
+
+    #[test]
+    fn new_heap_is_zeroed() {
+        for words in [0usize, 1, 7, 4096, 1 << 20] {
+            let mem = SharedMem::new(words);
+            assert_eq!(mem.cells.len(), words);
+            assert!(mem.cells.iter().all(|c| c.load(Ordering::Relaxed) == 0));
+        }
+        let mem = SharedMem::new(16);
+        mem.set(15, -7);
+        assert_eq!(mem.get(15), -7);
     }
 
     #[test]

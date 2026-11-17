@@ -5,7 +5,7 @@ use std::process::exit;
 
 use cpusim64_native::cpu::Simulator;
 use cpusim64_native::object;
-use cpusim64_native::util::{buildinfo, decode_si};
+use cpusim64_native::util::{buildinfo, decode_si, format_si};
 
 fn main() {
     let args: Vec<String> = std::env::args().skip(1).collect();
@@ -74,8 +74,16 @@ fn run(args: &[String]) -> i32 {
         println!("Implements a CPUSim64 Virtual Machine.");
         println!("{}", "=".repeat(80));
         println!("Debug: {debug}");
-        println!("Memory size: {memory_size}");
-        println!("Stack size: {stack_size}");
+        println!(
+            "Memory size: {} words ({}B)",
+            format_si(memory_size as u64),
+            format_si(memory_size as u64 * 8)
+        );
+        println!(
+            "Stack size: {} words ({}B)",
+            format_si(stack_size as u64),
+            format_si(stack_size as u64 * 8)
+        );
     }
 
     let program_path = sim_args

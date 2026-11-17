@@ -1,8 +1,30 @@
 //! Small interpreter-relevant helpers ported from `Utils.java` plus build info.
 
+/// Ports `Utils.formatSI`: format a count with a binary (1024-based) suffix
+/// Ki/Mi/Gi/Ti/Pi/Ei, up to two decimals, no trailing zeros (134217728 -> "128Mi").
+pub fn format_si(value: u64) -> String {
+    const UNITS: [&str; 7] = ["", "Ki", "Mi", "Gi", "Ti", "Pi", "Ei"];
+    let mut d = value as f64;
+    let mut i = 0;
+    while d >= 1024.0 && i < UNITS.len() - 1 {
+        d /= 1024.0;
+        i += 1;
+    }
+    let s = if d == d.round() {
+        format!("{}", d as u64)
+    } else {
+        format!("{d:.2}")
+            .trim_end_matches('0')
+            .trim_end_matches('.')
+            .to_string()
+    };
+    format!("{s}{}", UNITS[i])
+}
+
 /// Ports `Utils.decodeSI`: parse an integer with an optional SI suffix
-/// (K/M/G/T/P/E, case-insensitive). Returns the value as i32.
-pub fn decode_si(s: &str) -> Result<i32, String> {
+/// (K/M/G/T/P/E, case-insensitive). Returns the value as i64 (the Java
+/// version is limited to `int`; the native simulator allows 64-bit sizes).
+pub fn decode_si(s: &str) -> Result<i64, String> {
     let s = s.trim();
     if s.is_empty() {
         return Err("empty input".to_string());
@@ -22,10 +44,10 @@ pub fn decode_si(s: &str) -> Result<i32, String> {
         .parse()
         .map_err(|_| format!("invalid number: {s}"))?;
     let result = (value * multiplier).round();
-    if result > i32::MAX as f64 || result < 0.0 {
+    if result >= i64::MAX as f64 || result < 0.0 {
         return Err(format!("Value out of range for integer: {s}"));
     }
-    Ok(result as i32)
+    Ok(result as i64)
 }
 
 pub mod buildinfo {
@@ -141,6 +163,9 @@ mod tests {
         assert_eq!(decode_si("2.5M").unwrap(), 2_500_000);
         assert_eq!(decode_si("42").unwrap(), 42);
         assert_eq!(decode_si("1M").unwrap(), 1_000_000);
+        assert_eq!(decode_si("4G").unwrap(), 4_000_000_000);
+        assert_eq!(decode_si("3000000000").unwrap(), 3_000_000_000);
+        assert!(decode_si("10E").is_err());
     }
 
     #[test]

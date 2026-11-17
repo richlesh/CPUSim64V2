@@ -220,14 +220,18 @@ public class Simulator {
 		this(memoryWords, 0, memoryWords / 10, args);
 	}
 
+	/** Largest {@code long[]} the JVM can allocate (as {@code ArraysSupport.SOFT_MAX_ARRAY_LENGTH}). */
+	public static final int MAX_MEMORY_WORDS = Integer.MAX_VALUE - 8;
+
 	public Simulator(int memoryWords, int heapStart, int stackSize, String[] args) {
+		memoryWords = Math.min(memoryWords, MAX_MEMORY_WORDS);
 		pid = nextPID.getAndIncrement();
 		this.mem = new long[memoryWords];
 		this.stack = new long[stackSize];
 		this.stackSize = stackSize;
 		this.heapStart = heapStart;
 		heapLimit = memoryWords;
-		stackBase = memoryWords + stackSize;
+		stackBase = (long) memoryWords + stackSize;
 		atomicMem = MethodHandles.arrayElementVarHandle(long[].class);
 		interruptHandler = new StdInterruptHandler(this);
 		PortHandler ph = new StdIOPortHandler(this);
@@ -771,11 +775,10 @@ public class Simulator {
 			val = sharedMemRead(addr);
 		} else {
 			try {
-				int a = Math.toIntExact(addr);
-				if (a < heapLimit)
-					val = (long) atomicMem.getVolatile(mem, a);                        // heap is shared across threads: volatile
+				if (addr < heapLimit)
+					val = (long) atomicMem.getVolatile(mem, (int) addr);               // heap is shared across threads: volatile
 				else
-					val = stack[a - (int) heapLimit];                                  // stack is per-thread: plain access
+					val = stack[Math.toIntExact(addr - heapLimit)];                    // stack is per-thread: plain access
 				++cycles;
 			} catch (Exception ex) {
 				throw new CPUException(String.format("Illegal memory read access of " + fmtAddress, addr));
@@ -809,11 +812,10 @@ public class Simulator {
 				}
 			}
 			try {
-				int a = Math.toIntExact(addr);
-				if (a < heapLimit)
-					atomicMem.setVolatile(mem, a, val);                            // heap is shared across threads: volatile
+				if (addr < heapLimit)
+					atomicMem.setVolatile(mem, (int) addr, val);                   // heap is shared across threads: volatile
 				else
-					stack[a - (int) heapLimit] = val;                              // stack is per-thread: plain access
+					stack[Math.toIntExact(addr - heapLimit)] = val;                // stack is per-thread: plain access
 				++cycles;
 			} catch (Exception ex) {
 				throw new CPUException(String.format("Illegal memory write access of " + fmtAddress, addr));
