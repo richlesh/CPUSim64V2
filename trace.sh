@@ -7,7 +7,8 @@ STACKSIZE=8K
 
 SCRIPT_PATH="$(realpath "${BASH_SOURCE[0]}")"
 SCRIPT_DIR="$(dirname "$SCRIPT_PATH")"
-CLASSPATH="$SCRIPT_DIR"/lib/cpusim64-*.jar
+# the jar (not a copy such as "cpusim64-2.12.0 2.jar" that iCloud or Finder makes)
+for j in "$SCRIPT_DIR"/lib/cpusim64-*.jar; do case "${j##*/}" in *" "*) ;; *) CLASSPATH="$j" ;; esac; done
 
 # Determine the directory containing the .asm file and the base name
 ASM_DIR="$(dirname "$1")"
@@ -31,6 +32,6 @@ if [[ -n "$O64_FILE" ]]; then
 	if [[ "$USE_NATIVE" == "true" ]]; then
 		"$SCRIPT_DIR"/bin/cpusim64_native "$O64_FILE" --verbose --trace --mem=$MEMSIZE --stack=$STACKSIZE $2 $3 $4 $5 $6 $7 $8 $9
 	else
-		java -Dfile.encoding=UTF8 -cp "$SCRIPT_DIR"/lib/cpusim64-*.jar cloud.lesh.CPUSim64.Simulation "$O64_FILE" --verbose --trace --mem=$MEMSIZE --stack=$STACKSIZE $2 $3 $4 $5 $6 $7 $8 $9
+		java -Dfile.encoding=UTF8 -cp "$CLASSPATH" cloud.lesh.CPUSim64.Simulation "$O64_FILE" --verbose --trace --mem=$MEMSIZE --stack=$STACKSIZE $2 $3 $4 $5 $6 $7 $8 $9
 	fi
 fi

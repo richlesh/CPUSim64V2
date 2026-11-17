@@ -6,6 +6,7 @@
 
 SCRIPT_PATH="$(realpath "${BASH_SOURCE[0]}")"
 SCRIPT_DIR="$(dirname "$SCRIPT_PATH")"
-CLASSPATH="$SCRIPT_DIR"/lib/cpusim64-*.jar
+# the jar (not a copy such as "cpusim64-2.12.0 2.jar" that iCloud or Finder makes)
+for j in "$SCRIPT_DIR"/lib/cpusim64-*.jar; do case "${j##*/}" in *" "*) ;; *) CLASSPATH="$j" ;; esac; done
 
 exec java -Dfile.encoding=UTF8 -cp $CLASSPATH cloud.lesh.CPUSim64.Linker "$@"
