@@ -41,6 +41,8 @@ PRELUDE_SRC:
     .dcs    "#define __STDC_VERSION__ 201112L"
     .dcs    "#define __STDC_HOSTED__ 1"
     .dcs    "#define __STDC_NO_ATOMICS__ 1"
+    .dcs    "long __ldb(long);"
+    .dcs    "void __stb(long, long);"
     .dci    -1
 
 PRELUDE_ASM_END:

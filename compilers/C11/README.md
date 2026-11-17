@@ -15,6 +15,7 @@ The compiler targets a core subset of C11, roughly C99 plus a few C11 features. 
   - Library: stdio, stdlib, string, math, ctype, time, setjmp, stdarg, stddef, stdint, stdbool, limits, float, assert, threads and stdatomic, plus the POSIX subset unistd.h and sys/wait.h. The stdio formatted-input and
   output follow the C99 conversions.
   - CPUSim64's own `<_Thread.h>`: threads, `fork`, shared memory, atomic operations, spin locks, mutexes and `sleep_ms`.
+  - Byte intrinsics (always declared, no header): `long __ldb(long byte_addr)` and `void __stb(long byte_addr, long v)` access one byte at a byte address (word address * 8 + byte index, index 0 = most significant byte; a pointer value `p` is the word address, so use `(long)p * 8`). Each is one LDB / STB instruction; a negative byte address is a run time error.
   
   Not supported (reported as errors):
   - float, long double and _Complex

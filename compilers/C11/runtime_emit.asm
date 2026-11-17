@@ -829,6 +829,19 @@ CRT_TEXT:
     .dcs    "    move    r0, 1"
     .dcs    "__crt_atomic_cas_done:"
     .dcs    "    return"
+    .dcs    "@@__ldb"
+    .dcs    "// __ldb(byte_addr): the byte at a byte address (word*8 + index, index 0 = most significant)"
+    .dcs    "__crt___ldb:"
+    .dcs    "    load    r1, sf[3]"
+    .dcs    "    ldb     r0, r1"
+    .dcs    "    return"
+    .dcs    "@@__stb"
+    .dcs    "// __stb(byte_addr, v): stores the low 8 bits of v at a byte address"
+    .dcs    "__crt___stb:"
+    .dcs    "    load    r1, sf[3]"
+    .dcs    "    load    r2, sf[4]"
+    .dcs    "    stb     r2, r1"
+    .dcs    "    return"
     .dci    -1
 
 RUNTIME_EMIT_ASM_END:

@@ -1002,9 +1002,63 @@ ISV_SCALAR:
 ///////////////////////////////////////////////////////////////////////////////
 // calls
 ///////////////////////////////////////////////////////////////////////////////
+// gen_byte_builtin(call) -> 1 if the call is the __ldb / __stb intrinsic
+// (code generated inline as one LDB / STB instruction), else 0
+#def_func gen_byte_builtin(ndp)
+    #var    nd, fn, s, margs, a, nm, which
+    load    nd, ndp
+    load    fn, nd[N_A]
+    load    r0, fn[N_KIND]
+    #if_cond r0 != ND_VAR
+        #return 0
+    #end_cond
+    load    s, fn[N_VAL]
+    load    r0, s[S_KIND]
+    #if_cond r0 != SK_FUNC
+        #return 0
+    #end_cond
+    load    r0, s[S_FLAGS]
+    and     r0, SF_BUILTIN
+    #if_cond r0 == 0
+        #return 0
+    #end_cond
+    load    nm, s[S_NAME]
+    move    which, 0
+    #call   intern_p("__ldb")
+    #if_cond r0 == nm
+        move    which, 1
+    #end_cond
+    #call   intern_p("__stb")
+    #if_cond r0 == nm
+        move    which, 2
+    #end_cond
+    #if_cond which == 0
+        #return 0
+    #end_cond
+    load    margs, nd[N_VAL]
+    #if_cond which == 1
+        #macro  VGET(a, margs, 1)
+        #call   gen_expr(a)
+        #call   emit("    ldb     r0, r0\n")
+        #return 1
+    #end_cond
+    // __stb(addr, v): v first (pushed), then the address
+    #macro  VGET(a, margs, 2)
+    #call   gen_expr(a)
+    #call   emit("    push    r0\n")
+    #macro  VGET(a, margs, 1)
+    #call   gen_expr(a)
+    #call   emit("    pop     r1\n    stb     r1, r0\n")
+    #return 1
+#end_func
+
 #def_func gen_call(ndp)
     #var    nd, fn, margs, cnt, i, a, t, vc, nw, sz, j, rt, tmp, direct, s, pos, nfree
     load    nd, ndp
+    #call   gen_byte_builtin(nd)
+    #if_cond r0 != 0
+        #return 0
+    #end_cond
     load    fn, nd[N_A]
     load    margs, nd[N_VAL]
     load    rt, nd[N_TYPE]
