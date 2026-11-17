@@ -280,15 +280,17 @@ macro_rules! int_impls {
         impl ::core::str::FromStr for $t {
             type Err = ::core::num::ParseIntError;
             fn from_str(s: &str) -> ::core::result::Result<$t, ::core::num::ParseIntError> {
-                match ::core::num::parse_int(s, $min == 0) {
+                let mn: $t = $min;
+                let mx: $t = $max;
+                match ::core::num::parse_int(s, mn == 0) {
                     ::core::result::Result::Err(e) => ::core::result::Result::Err(e),
                     ::core::result::Result::Ok(p) => {
                         // p = (negative, magnitude)
                         if p.0 {
-                            let lim: u64 = if $min == 0 { 0 } else { ::core::intrinsics::wrapping_sub::<u64>(0, $min as u64) };
+                            let lim: u64 = if mn == 0 { 0 } else { ::core::intrinsics::wrapping_sub::<u64>(0, mn as u64) };
                             if p.1 > lim { ::core::result::Result::Err(::core::num::ParseIntError { kind: 3 }) }
                             else { ::core::result::Result::Ok(::core::intrinsics::wrapping_sub::<u64>(0, p.1) as $t) }
-                        } else if p.1 > ($max as u64) {
+                        } else if p.1 > (mx as u64) {
                             ::core::result::Result::Err(::core::num::ParseIntError { kind: 2 })
                         } else {
                             ::core::result::Result::Ok(p.1 as $t)
@@ -1737,9 +1739,9 @@ pub mod num {
             }
             if n < 0 { 1.0 / r } else { r }
         }
-        pub fn min(self, o: f64) -> f64 { if self != self { o } else if o != o { self } else if self < o { self } else { o } }
-        pub fn max(self, o: f64) -> f64 { if self != self { o } else if o != o { self } else if self > o { self } else { o } }
-        pub fn is_nan(self) -> bool { self != self }
+        pub fn min(self, o: f64) -> f64 { if self.is_nan() { o } else if o.is_nan() { self } else if self < o { self } else { o } }
+        pub fn max(self, o: f64) -> f64 { if self.is_nan() { o } else if o.is_nan() { self } else if self > o { self } else { o } }
+        pub fn is_nan(self) -> bool { (::core::intrinsics::f64_to_bits(self) & 0x7fffffffffffffffu64) > 0x7ff0000000000000u64 }
         pub fn is_infinite(self) -> bool { self == f64::INFINITY || self == f64::NEG_INFINITY }
         pub fn is_finite(self) -> bool { !self.is_nan() && !self.is_infinite() }
         pub fn is_sign_negative(self) -> bool { (::core::intrinsics::f64_to_bits(self) >> 63) != 0 }
@@ -1835,6 +1837,60 @@ pub mod char {
         else { Some((b'a' + (num - 10) as u8) as char) }
     }
 
+    // Simple case mapping for ASCII, Latin-1 Supplement, Latin Extended-A, Greek and Cyrillic.
+    // Pairs ranges are (even = upper, odd = lower) unless `odd_up` is set.
+    fn in_pairs(u: u32, lo: u32, hi: u32) -> bool { u >= lo && u <= hi }
+
+    pub fn upper_u32(u: u32) -> u32 {
+        if u < 128 { return if u >= 97 && u <= 122 { u - 32 } else { u }; }
+        if u == 0xB5 { return 0x39C; }
+        if u >= 0xE0 && u <= 0xFE && u != 0xF7 { return u - 32; }
+        if u == 0xFF { return 0x178; }
+        if u == 0x131 { return 73; }
+        if u == 0x17F { return 83; }
+        if (in_pairs(u, 0x100, 0x12F) || in_pairs(u, 0x132, 0x137) || in_pairs(u, 0x14A, 0x177)) { return if u % 2 == 1 { u - 1 } else { u }; }
+        if (in_pairs(u, 0x139, 0x148) || in_pairs(u, 0x179, 0x17E)) { return if u % 2 == 0 { u - 1 } else { u }; }
+        if u >= 0x3B1 && u <= 0x3CB && u != 0x3C2 { return u - 32; }
+        if u == 0x3C2 { return 0x3A3; }
+        if u == 0x3AC { return 0x386; }
+        if u >= 0x3AD && u <= 0x3AF { return u - 37; }
+        if u == 0x3CC { return 0x38C; }
+        if u == 0x3CD || u == 0x3CE { return u - 63; }
+        if u >= 0x430 && u <= 0x44F { return u - 32; }
+        if u >= 0x450 && u <= 0x45F { return u - 80; }
+        if (in_pairs(u, 0x460, 0x481) || in_pairs(u, 0x48A, 0x4BF) || in_pairs(u, 0x4D0, 0x52F)) { return if u % 2 == 1 { u - 1 } else { u }; }
+        u
+    }
+
+    pub fn lower_u32(u: u32) -> u32 {
+        if u < 128 { return if u >= 65 && u <= 90 { u + 32 } else { u }; }
+        if u >= 0xC0 && u <= 0xDE && u != 0xD7 { return u + 32; }
+        if u == 0x178 { return 0xFF; }
+        if (in_pairs(u, 0x100, 0x12F) || in_pairs(u, 0x132, 0x137) || in_pairs(u, 0x14A, 0x177)) { return if u % 2 == 0 { u + 1 } else { u }; }
+        if (in_pairs(u, 0x139, 0x148) || in_pairs(u, 0x179, 0x17E)) { return if u % 2 == 1 { u + 1 } else { u }; }
+        if u >= 0x391 && u <= 0x3AB && u != 0x3A2 { return u + 32; }
+        if u == 0x386 { return 0x3AC; }
+        if u >= 0x388 && u <= 0x38A { return u + 37; }
+        if u == 0x38C { return 0x3CC; }
+        if u == 0x38E || u == 0x38F { return u + 63; }
+        if u >= 0x410 && u <= 0x42F { return u + 32; }
+        if u >= 0x400 && u <= 0x40F { return u + 80; }
+        if (in_pairs(u, 0x460, 0x481) || in_pairs(u, 0x48A, 0x4BF) || in_pairs(u, 0x4D0, 0x52F)) { return if u % 2 == 0 { u + 1 } else { u }; }
+        u
+    }
+
+    // the iterator returned by char::to_uppercase / to_lowercase (always one char here)
+    pub struct ToCase { c: Option<char> }
+    impl ::core::iter::Iterator for ToCase {
+        type Item = char;
+        fn next(&mut self) -> Option<char> { self.c.take() }
+    }
+    impl ::core::fmt::Display for ToCase {
+        fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
+            match self.c { Some(c) => ::core::fmt::Display::fmt(&c, f), None => Ok(()) }
+        }
+    }
+
     impl char {
         pub const MAX: char = '\u{10FFFF}';
         pub fn from_u32(i: u32) -> Option<char> { from_u32(i) }
@@ -1860,8 +1916,10 @@ pub mod char {
         pub fn is_numeric(self) -> bool { self.is_ascii_digit() }
         pub fn is_alphanumeric(self) -> bool { self.is_alphabetic() || self.is_numeric() }
         pub fn is_whitespace(self) -> bool { self.is_ascii_whitespace() || self == '\u{0B}' }
-        pub fn is_uppercase(self) -> bool { self.is_ascii_uppercase() }
-        pub fn is_lowercase(self) -> bool { self.is_ascii_lowercase() }
+        pub fn is_uppercase(self) -> bool { lower_u32(self as u32) != self as u32 }
+        pub fn is_lowercase(self) -> bool { upper_u32(self as u32) != self as u32 || (self as u32) == 0xDF }
+        pub fn to_uppercase(self) -> ToCase { ToCase { c: Some(::core::intrinsics::transmute::<u32, char>(upper_u32(self as u32))) } }
+        pub fn to_lowercase(self) -> ToCase { ToCase { c: Some(::core::intrinsics::transmute::<u32, char>(lower_u32(self as u32))) } }
         pub fn is_control(self) -> bool { (self as u32) < 32 || self as u32 == 127 }
         pub fn is_digit(self, radix: u32) -> bool { self.to_digit(radix).is_some() }
         pub fn to_digit(self, radix: u32) -> Option<u32> {
@@ -2203,8 +2261,18 @@ pub mod str {
             while let Some(c) = it.next() { s.push(c.to_ascii_lowercase()); }
             s
         }
-        pub fn to_uppercase(&self) -> String { self.to_ascii_uppercase() }
-        pub fn to_lowercase(&self) -> String { self.to_ascii_lowercase() }
+        pub fn to_uppercase(&self) -> String {
+            let mut s = String::new();
+            let mut it = self.chars();
+            while let Some(c) = it.next() { s.push(::core::intrinsics::transmute::<u32, char>(::core::char::upper_u32(c as u32))); }
+            s
+        }
+        pub fn to_lowercase(&self) -> String {
+            let mut s = String::new();
+            let mut it = self.chars();
+            while let Some(c) = it.next() { s.push(::core::intrinsics::transmute::<u32, char>(::core::char::lower_u32(c as u32))); }
+            s
+        }
         pub fn eq_ignore_ascii_case(&self, o: &str) -> bool { str_eq(&self.to_ascii_lowercase(), &o.to_ascii_lowercase()) }
         pub fn repeat(&self, n: usize) -> String {
             let mut s = String::new();
@@ -2235,7 +2303,34 @@ pub mod str {
         }
     }
 
+    // strict UTF-8 validation (no overlongs, no surrogates, max U+10FFFF)
+    pub fn is_valid_utf8(v: &[u8]) -> bool {
+        let n = v.len();
+        let mut i = 0usize;
+        while i < n {
+            let b = v[i] as u32;
+            if b < 0x80 { i += 1; continue; }
+            let need: usize;
+            let mut lo = 0x80u32;
+            let mut hi = 0xBFu32;
+            if b >= 0xC2 && b <= 0xDF { need = 1; }
+            else if b >= 0xE0 && b <= 0xEF { need = 2; if b == 0xE0 { lo = 0xA0; } if b == 0xED { hi = 0x9F; } }
+            else if b >= 0xF0 && b <= 0xF4 { need = 3; if b == 0xF0 { lo = 0x90; } if b == 0xF4 { hi = 0x8F; } }
+            else { return false; }
+            if i + need >= n { return false; }
+            let mut j = 1usize;
+            while j <= need {
+                let c = v[i + j] as u32;
+                if j == 1 { if c < lo || c > hi { return false; } }
+                else if c < 0x80 || c > 0xBF { return false; }
+                j += 1;
+            }
+            i += need + 1;
+        }
+        true
+    }
     pub fn from_utf8(v: &[u8]) -> Result<&str, ::core::str::Utf8Error> {
+        if !is_valid_utf8(v) { return ::core::result::Result::Err(Utf8Error); }
         ::core::result::Result::Ok(str_from_raw(slice_base::<u8>(v), v.len()))
     }
     pub struct Utf8Error;
@@ -2293,6 +2388,7 @@ pub mod string {
             Some(c)
         }
         pub fn from_utf8(v: Vec<u8>) -> ::core::result::Result<String, ::core::str::Utf8Error> {
+            if !::core::str::is_valid_utf8(&v) { return ::core::result::Result::Err(::core::str::Utf8Error); }
             ::core::result::Result::Ok(String { vec: v })
         }
     }

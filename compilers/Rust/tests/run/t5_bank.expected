@@ -1,0 +1,20 @@
+ok, balance 750
+error: insufficient funds: need 80 have 50
+ok, balance 30
+error: no such account #999
+error: amount must be positive
+transfer ok
+transfer failed: insufficient funds: need 1000 have 330
+transfer failed: account #101 is frozen
+#100 alice     450 false
+    open 500
+    deposit 250
+    withdraw 300
+    withdraw 10
+#101 bob       330 true
+    open 50
+    withdraw 20
+    deposit 300
+total 780
+opened #100 for alice; opened #101 for bob
+Insufficient { needed: 1, available: 0 }

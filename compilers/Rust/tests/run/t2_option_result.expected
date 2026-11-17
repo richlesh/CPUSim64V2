@@ -1,0 +1,23 @@
+Some(2) None
+Ok(42)
+true
+Ok(3) Err("3 is odd")
+Some(60) None
+105
+Some(10)
+None
+Some(2)
+true true
+77
+Ok(5)
+Err("none")
+None
+Some(3) None
+3
+-1
+Ok(4)
+Err(3)
+found at 4
+error: 7 is odd
+3 2 1 
+None Some(3)

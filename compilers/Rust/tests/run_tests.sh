@@ -25,10 +25,10 @@
 #              [+ NAME.stderr]  a line that the program's stderr must contain
 #
 # Environment:
-#   HOST=1       run the translator natively (build.sh --native) and compile
-#                the generated C with the host cc and run it there, instead of
-#                the C11 compiler and the simulator.  Useful for development;
-#                the output must still equal NAME.expected.
+#   HOST=1       run the translator natively (build.sh --native) instead of
+#                rustc.asm on the simulator.  The generated C of run/ tests is
+#                still compiled by the C11 compiler and run on the simulator,
+#                because it only works on CPUSim64 (byte addresses).
 #   CPUSIM64_HOME  the CPUSim64 install to use for assemble.sh, the simulator
 #                and the C11 compiler (default: the root of this repository;
 #                the checked-in lib/cpusim64-*.jar may be older than the
@@ -114,8 +114,8 @@ rustc() {
     return $st
 }
 
-# the C11 compiler (not needed with HOST=1)
-if [[ -z "$HOST" ]]; then
+# the C11 compiler (run/ tests need it in both modes)
+if true; then
     if [[ ! -f "$C11/obj/cc.o64" || -n "$(find "$C11" -maxdepth 1 \( -name '*.asm' -o -name '*.def' \) -newer "$C11/obj/cc.o64")" ]]; then
         "$HOME_DIR/assemble.sh" "$C11/cc" > "$TMP/asmlog" 2>&1
         [[ -f "$C11/obj/cc.o64" ]] || { cat "$TMP/asmlog"; echo "FATAL: the C11 compiler does not assemble"; exit 1; }
@@ -266,28 +266,20 @@ for t in "$HERE"/run/*.rs; do
     [[ -e "$base.stdin" ]] && stdin="$base.stdin"
     expexit=0
     [[ -e "$base.exit" ]] && read -r expexit < "$base.exit"
-    if [[ -n "$HOST" ]]; then
-        # the generated C compiled and run by the host
-        if ! cc -std=c99 -w -o "$TMP/host.bin" "$base.gen.c" 2> "$TMP/hosterr"; then
-            bad "$name" "host cc failed: $(head -3 "$TMP/hosterr")"
-            continue
-        fi
-        ( cd "$HERE/run" && "$TMP/host.bin" $argv < "${stdin:-/dev/null}" > "$TMP/out" 2> "$TMP/err" )
-        echo $? > "$TMP/result"
-    else
-        if ! ( cd "$HERE/run" && cc11 "$base.gen.c" ) || [[ ! -f "$base.gen.asm" ]]; then
-            bad "$name" "C11 compilation of the generated C failed: $(head -3 "$TMP/ccerr")"
-            continue
-        fi
-        # as in the IDE: the C11 compiler's result prog.gen.asm becomes prog.asm
-        mv "$base.gen.asm" "$base.asm"
-        "$HOME_DIR/assemble.sh" "$base" > "$TMP/asmlog" 2>&1
-        if [[ ! -f "$HERE/run/obj/$(basename "$base").o64" ]]; then
-            bad "$name" "generated assembly failed: $(grep -i error "$TMP/asmlog" | head -3)"
-            continue
-        fi
-        ( cd "$HERE/run" && SIM_STDIN="$stdin" sim "$HERE/run/obj/$(basename "$base").o64" $argv )
+    # the generated C only runs on CPUSim64 (byte addresses), so it is always
+    # compiled by the C11 compiler and run on the simulator
+    if ! ( cd "$HERE/run" && cc11 "$base.gen.c" ) || [[ ! -f "$base.gen.asm" ]]; then
+        bad "$name" "C11 compilation of the generated C failed: $(head -3 "$TMP/ccerr")"
+        continue
     fi
+    # as in the IDE: the C11 compiler's result prog.gen.asm becomes prog.asm
+    mv "$base.gen.asm" "$base.asm"
+    "$HOME_DIR/assemble.sh" "$base" > "$TMP/asmlog" 2>&1
+    if [[ ! -f "$HERE/run/obj/$(basename "$base").o64" ]]; then
+        bad "$name" "generated assembly failed: $(grep -i error "$TMP/asmlog" | head -3)"
+        continue
+    fi
+    ( cd "$HERE/run" && SIM_STDIN="$stdin" sim "$HERE/run/obj/$(basename "$base").o64" $argv )
     res="$(cat "$TMP/result")"
     if ! diff -q "$TMP/out" "$base.expected" > /dev/null; then
         bad "$name" "output differs"

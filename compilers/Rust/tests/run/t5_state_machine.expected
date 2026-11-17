@@ -1,0 +1,17 @@
+Red(30) Green(25) Yellow(5) Red(30) Green(25) Yellow(5) Red(30) 
+150
+Idle --Select--> Idle
+Idle --Coin(50)--> HasMoney(50)
+HasMoney(50) --Select--> HasMoney(50)
+HasMoney(50) --Coin(50)--> HasMoney(100)
+HasMoney(100) --Select--> Dispensing(25)
+Dispensing(25) --Take--> HasMoney(25)
+HasMoney(25) --Take--> HasMoney(25)
+HasMoney(25) --Coin(100)--> HasMoney(125)
+HasMoney(125) --Select--> Dispensing(50)
+Dispensing(50) --Take--> HasMoney(50)
+HasMoney(50) --Take--> HasMoney(50)
+HasMoney(50) --Kick--> OutOfOrder
+OutOfOrder --Coin(5)--> OutOfOrder
+(2, 3)
+(0, 0)

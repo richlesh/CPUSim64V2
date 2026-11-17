@@ -1,0 +1,7 @@
+1: 1 + 2 = 3
+2: 10 / 3 = 3
+3: 7 * -6 = -42
+4: error: division by zero
+5: error: bad number x
+6: error: unknown operator ^
+7: 12 - 100 = -88

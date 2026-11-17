@@ -13,12 +13,11 @@
  * The translator is written in the C subset of the CPUSim64 C11 compiler (see
  * rustc.h) and is one translation unit: this file includes the others.
  *
- * Status: a first slice.  It accepts only
- *
- *     fn main() { println!("literal"); ... }
- *
- * where a literal has no {} placeholders.  Everything else is reported as
- * "not supported yet".
+ * Pipeline: lex, parse (parse_*.c), lib/core.rs as the crate `core`, macro
+ * expansion (expand.c), name resolution (resolve.c), item collection
+ * (collect.c), type checking (check.c), move checking (moves.c), and C code
+ * generation (cg_types.c, cg_expr.c) with lib/rust_rt.c as the runtime.
+ * Debug dumps: --tokens, --ast, --expand, --resolve, --types.
  */
 #include "rustc.h"
 #include "ast.h"
@@ -41,6 +40,9 @@
 #include "collect.c"
 #include "check.c"
 #include "moves.c"
+#include "cg.h"
+#include "cg_types.c"
+#include "cg_expr.c"
 
 static const char *lib_dir = 0;
 
@@ -80,147 +82,13 @@ static void banner(int argc, char **argv) {
     printf("\n");
 }
 
-/* ------------------------------------------------------------ parser */
-
-/* A println! statement: its string value (UTF-8 bytes) and the line of the statement. */
-typedef struct {
-    const char *text;
-    long len;
-    int line;
-} Print;
-
-typedef struct {
-    Print *v;
-    int n, cap;
-    int end_line;        /* the line of the closing brace of main */
-} Program;
-
 static Token *sl_toks;
-static int tpos;
-
-static void unsupported(Token *t) {
-    error_at(t->file, t->line, "not supported yet");
-}
-
-static Token *sl_cur(void) {
-    return &sl_toks[tpos];
-}
-
-static int is_punct(Token *t, int kind) {
-    return t->kind == kind;
-}
-
-static int is_word(Token *t, const char *w) {
-    return t->kind == TK_IDENT && strcmp(t->text->s, w) == 0;
-}
-
-static void expect_kind(int kind) {
-    if (sl_cur()->kind != kind) unsupported(sl_cur());
-    tpos++;
-}
-
-static int has_brace(const char *s, long len) {
-    long i;
-    for (i = 0; i < len; i++)
-        if (s[i] == '{' || s[i] == '}') return 1;
-    return 0;
-}
-
-/* fn main() { (println!("literal");)* } EOF */
-static Program *parse_program(void) {
-    Program *p = xalloc(sizeof(Program));
-    expect_kind(TK_KW_fn);
-    if (!is_word(sl_cur(), "main")) unsupported(sl_cur());
-    tpos++;
-    expect_kind(TK_LPAREN);
-    expect_kind(TK_RPAREN);
-    expect_kind(TK_LBRACE);
-    while (!is_punct(sl_cur(), TK_RBRACE)) {
-        Print pr;
-        Token *s;
-        if (!is_word(sl_cur(), "println")) unsupported(sl_cur());
-        tpos++;
-        pr.line = sl_toks[tpos - 1].line;
-        expect_kind(TK_NOT);
-        expect_kind(TK_LPAREN);
-        s = sl_cur();
-        if (s->kind != TK_STR || has_brace(s->str, s->slen)) unsupported(s);
-        tpos++;
-        expect_kind(TK_RPAREN);
-        pr.text = s->str;
-        pr.len = s->slen;
-        /* the semicolon may be left out before the closing brace */
-        if (!is_punct(sl_cur(), TK_RBRACE)) expect_kind(TK_SEMI);
-        if (p->n == p->cap) {
-            p->cap = p->cap ? p->cap * 2 : 16;
-            p->v = xrealloc(p->v, sizeof(Print) * p->cap);
-        }
-        p->v[p->n++] = pr;
-    }
-    p->end_line = sl_cur()->line;
-    tpos++;
-    if (sl_cur()->kind != TK_EOF) unsupported(sl_cur());
-    return p;
-}
-
-/* ------------------------------------------------------------ C output */
-
-/* the name of the source as the generated C names it in #line: relative to
-   the output directory */
-static const char *line_file_name(const char *src, const char *out) {
-    size_t n = strlen(out), i, dir = 0;
-    for (i = 0; i < n; i++)
-        if (out[i] == '/') dir = i + 1;
-    if (dir > 0 && strncmp(src, out, dir) == 0) return src + dir;
-    return src;
-}
-
-/* s: len UTF-8 bytes, one per char element.  The C string literal is written
-   with the codepoints decoded (out_cp makes them native). */
-static void put_c_string(FILE *f, const char *s, long len) {
-    long i = 0;
-    fputc('"', f);
-    while (i < len) {
-        int c = s[i++] & 0xFF;
-        if (c >= 0xC0) {
-            int need = c >= 0xF0 ? 3 : (c >= 0xE0 ? 2 : 1), cp = c & (0x3F >> need);
-            while (need-- > 0 && i < len) cp = (cp << 6) | (s[i++] & 0x3F);
-            c = cp;
-        }
-        if (c == '\n') fputs("\\n", f);
-        else if (c == '\t') fputs("\\t", f);
-        else if (c == '\r') fputs("\\r", f);
-        else if (c == '\\') fputs("\\\\", f);
-        else if (c == '"') fputs("\\\"", f);
-        else if (c < 32 || c == 127) fprintf(f, "\\%03o", c);
-        else if (c < 128) fputc(c, f);
-        else out_cp(f, c);
-    }
-    fputc('"', f);
-}
-
-static void emit_program(Program *p, const char *src, const char *out, FILE *f) {
-    const char *name = line_file_name(src, out);
-    int i;
-    fprintf(f, "#line 1 \"%s\"\n", name);
-    fprintf(f, "#include <stdio.h>\n\n");
-    fprintf(f, "int main(void) {\n");
-    for (i = 0; i < p->n; i++) {
-        fprintf(f, "#line %d \"%s\"\n", p->v[i].line, name);
-        fprintf(f, "    puts(");
-        put_c_string(f, p->v[i].text, p->v[i].len);
-        fprintf(f, ");\n");
-    }
-    fprintf(f, "#line %d \"%s\"\n", p->end_line, name);
-    fprintf(f, "    return 0;\n}\n");
-}
 
 int main(int argc, char **argv) {
     int i, ntok, tokens = 0, ast = 0, stage = 0, no_core = 0;
     const char *src = 0;
     char *out;
     FILE *f;
-    Program *prog;
     for (i = 1; i < argc; i++) {
         if (strcmp(argv[i], "--tokens") == 0) tokens |= 1;
         else if (strcmp(argv[i], "--tokens-flags") == 0) tokens |= 3;
@@ -304,23 +172,22 @@ int main(int argc, char **argv) {
             ast_dump(stdout, crate);
             return 0;
         }
+        {
+            char *rtp;
+            if (!lib_dir) lib_dir = find_lib(argc > 0 ? argv[0] : "");
+            rtp = xalloc(strlen(lib_dir) + 16);
+            strcpy(rtp, lib_dir);
+            strcat(rtp, "/rust_rt.c");
+            out = output_path(src);
+            f = fopen(out, "w");      /* text mode: CPUSim64 writes the codepoints of the chars as UTF-8 */
+            if (!f) {
+                fprintf(stderr, "rustc: can't write %s\n", display_path(out));
+                return 2;
+            }
+            cg_crate(f, src, rtp);
+            fclose(f);
+        }
     }
-    {
-        /* the println! slice ignores doc comments */
-        int k = 0;
-        for (i = 0; i < ntok; i++)
-            if (sl_toks[i].kind != TK_DOC) sl_toks[k++] = sl_toks[i];
-    }
-    tpos = 0;
-    prog = parse_program();
-    out = output_path(src);
-    f = fopen(out, "w");          /* text mode: CPUSim64 writes the codepoints of the chars as UTF-8 */
-    if (!f) {
-        fprintf(stderr, "rustc: can't write %s\n", display_path(out));
-        return 2;
-    }
-    emit_program(prog, src, out, f);
-    fclose(f);
     printf("Compiler output: %s\n", display_path(out));
     return 0;
 }
