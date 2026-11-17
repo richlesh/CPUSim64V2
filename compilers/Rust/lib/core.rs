@@ -207,6 +207,84 @@ macro_rules! int_impls {
                 n
             }
             pub fn is_power_of_two(self) -> bool { self > 0 && self.count_ones() == 1 }
+            pub fn wrapping_neg(self) -> $t { ::core::intrinsics::wrapping_sub::<$t>(0, self) }
+            pub fn checked_neg(self) -> ::core::option::Option<$t> {
+                if self == 0 { ::core::option::Option::Some(0) }
+                else if $min == 0 { ::core::option::Option::None }
+                else if self == $min { ::core::option::Option::None }
+                else { ::core::option::Option::Some(::core::intrinsics::wrapping_sub::<$t>(0, self)) }
+            }
+            pub fn checked_pow(self, exp: u32) -> ::core::option::Option<$t> {
+                let mut r: $t = 1;
+                let mut b: $t = self;
+                let mut e: u32 = exp;
+                while e > 0 {
+                    if e & 1 == 1 {
+                        match r.checked_mul(b) {
+                            ::core::option::Option::Some(v) => { r = v; }
+                            ::core::option::Option::None => { return ::core::option::Option::None; }
+                        }
+                    }
+                    e = e >> 1;
+                    if e > 0 {
+                        match b.checked_mul(b) {
+                            ::core::option::Option::Some(v) => { b = v; }
+                            ::core::option::Option::None => { return ::core::option::Option::None; }
+                        }
+                    }
+                }
+                ::core::option::Option::Some(r)
+            }
+            pub fn wrapping_pow(self, exp: u32) -> $t {
+                let mut r: $t = 1;
+                let mut b: $t = self;
+                let mut e: u32 = exp;
+                while e > 0 {
+                    if e & 1 == 1 { r = r.wrapping_mul(b); }
+                    e = e >> 1;
+                    if e > 0 { b = b.wrapping_mul(b); }
+                }
+                r
+            }
+            pub fn saturating_mul(self, o: $t) -> $t {
+                match self.checked_mul(o) {
+                    ::core::option::Option::Some(v) => v,
+                    ::core::option::Option::None => if (self < 0) != (o < 0) { $min } else { $max },
+                }
+            }
+            pub fn leading_zeros(self) -> u32 {
+                let mut x: $ut = self as $ut;
+                let mut n: u32 = 0;
+                while x != 0 { n += 1; x = x >> 1; }
+                $bits - n
+            }
+            pub fn trailing_zeros(self) -> u32 {
+                let mut x: $ut = self as $ut;
+                if x == 0 { return $bits; }
+                let mut n: u32 = 0;
+                while x & 1 == 0 { n += 1; x = x >> 1; }
+                n
+            }
+            pub fn count_zeros(self) -> u32 { $bits - self.count_ones() }
+            pub fn from_str_radix(s: &str, radix: u32) -> ::core::result::Result<$t, ::core::num::ParseIntError> {
+                let mn: $t = $min;
+                let mx: $t = $max;
+                match ::core::num::parse_int(s, mn == 0, radix) {
+                    ::core::result::Result::Err(e) => ::core::result::Result::Err(e),
+                    ::core::result::Result::Ok(p) => {
+                        // p = (negative, magnitude)
+                        if p.0 {
+                            let lim: u64 = if mn == 0 { 0 } else { ::core::intrinsics::wrapping_sub::<u64>(0, mn as u64) };
+                            if p.1 > lim { ::core::result::Result::Err(::core::num::ParseIntError { kind: 3 }) }
+                            else { ::core::result::Result::Ok(::core::intrinsics::wrapping_sub::<u64>(0, p.1) as $t) }
+                        } else if p.1 > (mx as u64) {
+                            ::core::result::Result::Err(::core::num::ParseIntError { kind: 2 })
+                        } else {
+                            ::core::result::Result::Ok(p.1 as $t)
+                        }
+                    }
+                }
+            }
         }
         impl ::core::fmt::Display for $t {
             fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
@@ -280,23 +358,7 @@ macro_rules! int_impls {
         impl ::core::str::FromStr for $t {
             type Err = ::core::num::ParseIntError;
             fn from_str(s: &str) -> ::core::result::Result<$t, ::core::num::ParseIntError> {
-                let mn: $t = $min;
-                let mx: $t = $max;
-                match ::core::num::parse_int(s, mn == 0) {
-                    ::core::result::Result::Err(e) => ::core::result::Result::Err(e),
-                    ::core::result::Result::Ok(p) => {
-                        // p = (negative, magnitude)
-                        if p.0 {
-                            let lim: u64 = if mn == 0 { 0 } else { ::core::intrinsics::wrapping_sub::<u64>(0, mn as u64) };
-                            if p.1 > lim { ::core::result::Result::Err(::core::num::ParseIntError { kind: 3 }) }
-                            else { ::core::result::Result::Ok(::core::intrinsics::wrapping_sub::<u64>(0, p.1) as $t) }
-                        } else if p.1 > (mx as u64) {
-                            ::core::result::Result::Err(::core::num::ParseIntError { kind: 2 })
-                        } else {
-                            ::core::result::Result::Ok(p.1 as $t)
-                        }
-                    }
-                }
+                $t::from_str_radix(s, 10)
             }
         }
     }
@@ -309,7 +371,10 @@ macro_rules! int_signed {
             pub fn signum(self) -> $t { if self < 0 { -1 } else if self == 0 { 0 } else { 1 } }
             pub fn is_negative(self) -> bool { self < 0 }
             pub fn is_positive(self) -> bool { self > 0 }
-            pub fn wrapping_neg(self) -> $t { ::core::intrinsics::wrapping_sub::<$t>(0, self) }
+            pub fn checked_abs(self) -> ::core::option::Option<$t> {
+                if self < 0 { self.checked_neg() } else { ::core::option::Option::Some(self) }
+            }
+            pub fn wrapping_abs(self) -> $t { if self < 0 { self.wrapping_neg() } else { self } }
         }
         impl ::core::ops::Neg for $t { type Output = $t; fn neg(self) -> $t { -self } }
         impl<'a> ::core::ops::Neg for &'a $t { type Output = $t; fn neg(self) -> $t { -*self } }
@@ -629,6 +694,15 @@ pub mod ops {
     impl<Idx: ::core::cmp::PartialEq> ::core::cmp::PartialEq for Range<Idx> {
         fn eq(&self, o: &Range<Idx>) -> bool { self.start == o.start && self.end == o.end }
     }
+
+    // (start, end) of a usize range; end == usize::MAX means "to the end" (used by drain and friends)
+    pub trait RangeArg { fn bounds(&self) -> (usize, usize); }
+    impl RangeArg for Range<usize> { fn bounds(&self) -> (usize, usize) { (self.start, self.end) } }
+    impl RangeArg for RangeInclusive<usize> { fn bounds(&self) -> (usize, usize) { (self.start, self.end + 1) } }
+    impl RangeArg for RangeFrom<usize> { fn bounds(&self) -> (usize, usize) { (self.start, usize::MAX) } }
+    impl RangeArg for RangeTo<usize> { fn bounds(&self) -> (usize, usize) { (0, self.end) } }
+    impl RangeArg for RangeToInclusive<usize> { fn bounds(&self) -> (usize, usize) { (0, self.end + 1) } }
+    impl RangeArg for RangeFull { fn bounds(&self) -> (usize, usize) { (0, usize::MAX) } }
 }
 
 // Instantiations live in a private module so that the primitive names (i8 .. f64,
@@ -654,6 +728,31 @@ mod prim_impls {
     int_impls!(u32, u32, 0, 4294967295, 32);
     int_impls!(u64, u64, 0, 18446744073709551615, 64);
     int_impls!(usize, usize, 0, 18446744073709551615, 64);
+    impl u8 {
+        pub fn is_ascii(&self) -> bool { *self < 128 }
+        pub fn is_ascii_digit(&self) -> bool { *self >= b'0' && *self <= b'9' }
+        pub fn is_ascii_uppercase(&self) -> bool { *self >= b'A' && *self <= b'Z' }
+        pub fn is_ascii_lowercase(&self) -> bool { *self >= b'a' && *self <= b'z' }
+        pub fn is_ascii_alphabetic(&self) -> bool { self.is_ascii_uppercase() || self.is_ascii_lowercase() }
+        pub fn is_ascii_alphanumeric(&self) -> bool { self.is_ascii_alphabetic() || self.is_ascii_digit() }
+        pub fn is_ascii_hexdigit(&self) -> bool {
+            self.is_ascii_digit() || (*self >= b'a' && *self <= b'f') || (*self >= b'A' && *self <= b'F')
+        }
+        pub fn is_ascii_whitespace(&self) -> bool {
+            *self == b' ' || *self == b'\t' || *self == b'\n' || *self == b'\r' || *self == 12u8
+        }
+        pub fn is_ascii_punctuation(&self) -> bool {
+            let u = *self;
+            (u >= 33 && u <= 47) || (u >= 58 && u <= 64) || (u >= 91 && u <= 96) || (u >= 123 && u <= 126)
+        }
+        pub fn is_ascii_graphic(&self) -> bool { *self >= 33 && *self <= 126 }
+        pub fn is_ascii_control(&self) -> bool { *self < 32 || *self == 127 }
+        pub fn to_ascii_uppercase(&self) -> u8 { if self.is_ascii_lowercase() { *self - 32 } else { *self } }
+        pub fn to_ascii_lowercase(&self) -> u8 { if self.is_ascii_uppercase() { *self + 32 } else { *self } }
+        pub fn make_ascii_uppercase(&mut self) { *self = self.to_ascii_uppercase(); }
+        pub fn make_ascii_lowercase(&mut self) { *self = self.to_ascii_lowercase(); }
+        pub fn eq_ignore_ascii_case(&self, o: &u8) -> bool { self.to_ascii_lowercase() == o.to_ascii_lowercase() }
+    }
     from_widen!(u8 => u16 u32 u64 usize i16 i32 i64 isize f64);
     from_widen!(u16 => u32 u64 usize i32 i64 f64);
     from_widen!(u32 => u64 i64 f64);
@@ -771,6 +870,12 @@ pub mod cmp {
     impl<T: ::core::clone::Clone> ::core::clone::Clone for Reverse<T> {
         fn clone(&self) -> Reverse<T> { Reverse(self.0.clone()) }
     }
+    impl<T: ::core::fmt::Debug> ::core::fmt::Debug for Reverse<T> {
+        fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
+            f.debug_tuple("Reverse").field(&self.0).finish()
+        }
+    }
+    impl<T: ::core::marker::Copy> ::core::marker::Copy for Reverse<T> {}
 
     // f64: partial order only
     impl PartialEq for f64 {
@@ -1095,6 +1200,8 @@ pub mod fmt {
         fn fmt(&self, f: &mut Formatter<'_>) -> Result { f.write_str("an error occurred when formatting an argument") }
     }
     pub type Result = ::core::result::Result<(), Error>;
+    // `Ok(())` of type fmt::Result (what write!/writeln! should end with, so the error type is known)
+    pub fn ok() -> Result { ::core::result::Result::Ok(()) }
 
     pub trait Write {
         fn write_str(&mut self, s: &str) -> Result;
@@ -1106,6 +1213,13 @@ pub mod fmt {
     }
     impl<'a, W: Write + ?Sized> Write for &'a mut W {
         fn write_str(&mut self, s: &str) -> Result { (**self).write_str(s) }
+    }
+    // The destination of write!/writeln!: `dst.__write_target()` is a method call, so
+    // the receiver is found as for std's `dst.write_fmt(..)` (a String, a &mut String,
+    // a Formatter, a stdout handle through Deref), never a deref to `str`.
+    pub trait WriteTarget { fn __write_target(&mut self) -> &mut dyn Write; }
+    impl<W: Write> WriteTarget for W {
+        fn __write_target(&mut self) -> &mut dyn Write { self }
     }
 
     pub trait Display { fn fmt(&self, f: &mut Formatter<'_>) -> Result; }
@@ -1464,14 +1578,122 @@ pub mod io {
     pub type Result<T> = ::core::result::Result<T, Error>;
 
     pub trait Write {
+        fn write(&mut self, buf: &[u8]) -> Result<usize>;
         fn flush(&mut self) -> Result<()>;
+        fn write_all(&mut self, buf: &[u8]) -> Result<()> {
+            let n = buf.len();
+            let mut done = 0usize;
+            while done < n {
+                match self.write(::core::slice::sub_slice(buf, done, n)) {
+                    ::core::result::Result::Ok(0) => return ::core::result::Result::Err(Error { kind: 2 }),
+                    ::core::result::Result::Ok(k) => { done += k; }
+                    ::core::result::Result::Err(e) => return ::core::result::Result::Err(e),
+                }
+            }
+            ::core::result::Result::Ok(())
+        }
     }
-    pub struct Stdout;
-    pub struct Stderr;
-    pub fn stdout() -> Stdout { Stdout }
-    pub fn stderr() -> Stderr { Stderr }
-    impl Stdout { pub fn lock(&self) -> Stdout { Stdout } }
-    impl Stderr { pub fn lock(&self) -> Stderr { Stderr } }
+    impl<'a, W: Write + ?Sized> Write for &'a mut W {
+        fn write(&mut self, buf: &[u8]) -> Result<usize> { (**self).write(buf) }
+        fn flush(&mut self) -> Result<()> { (**self).flush() }
+    }
+    impl Write for ::core::vec::Vec<u8> {
+        fn write(&mut self, buf: &[u8]) -> Result<usize> { self.extend_from_slice(buf); ::core::result::Result::Ok(buf.len()) }
+        fn flush(&mut self) -> Result<()> { ::core::result::Result::Ok(()) }
+    }
+    pub trait Read {
+        fn read(&mut self, buf: &mut [u8]) -> Result<usize>;
+        fn read_to_end(&mut self, out: &mut ::core::vec::Vec<u8>) -> Result<usize> {
+            let mut one = [0u8; 1];
+            let mut n = 0usize;
+            loop {
+                match self.read(&mut one) {
+                    ::core::result::Result::Ok(0) => break,
+                    ::core::result::Result::Ok(_) => { out.push(one[0]); n += 1; }
+                    ::core::result::Result::Err(e) => return ::core::result::Result::Err(e),
+                }
+            }
+            ::core::result::Result::Ok(n)
+        }
+        fn read_to_string(&mut self, buf: &mut String) -> Result<usize> {
+            let mut bytes: ::core::vec::Vec<u8> = ::core::vec::Vec::new();
+            let n = match self.read_to_end(&mut bytes) {
+                ::core::result::Result::Ok(n) => n,
+                ::core::result::Result::Err(e) => return ::core::result::Result::Err(e),
+            };
+            if !::core::str::is_valid_utf8(&bytes) { return ::core::result::Result::Err(Error { kind: 3 }); }
+            buf.vec.append(&mut bytes);
+            ::core::result::Result::Ok(n)
+        }
+    }
+    pub trait BufRead: Read {
+        fn read_line(&mut self, buf: &mut String) -> Result<usize> {
+            let mut one = [0u8; 1];
+            let mut n = 0usize;
+            loop {
+                match self.read(&mut one) {
+                    ::core::result::Result::Ok(0) => break,
+                    ::core::result::Result::Ok(_) => { buf.vec.push(one[0]); n += 1; if one[0] == 10u8 { break; } }
+                    ::core::result::Result::Err(e) => return ::core::result::Result::Err(e),
+                }
+            }
+            ::core::result::Result::Ok(n)
+        }
+        fn lines(self) -> Lines<Self> where Self: Sized { Lines { buf: self } }
+    }
+    pub struct Lines<B> { buf: B }
+    impl<B: BufRead> ::core::iter::Iterator for Lines<B> {
+        type Item = Result<String>;
+        fn next(&mut self) -> ::core::option::Option<Result<String>> {
+            let mut s = String::new();
+            match self.buf.read_line(&mut s) {
+                ::core::result::Result::Ok(0) => ::core::option::Option::None,
+                ::core::result::Result::Ok(_) => {
+                    if s.vec.len > 0 && s.vec.get(s.vec.len - 1).unwrap() == &10u8 {
+                        s.vec.pop();
+                        if s.vec.len > 0 && s.vec.get(s.vec.len - 1).unwrap() == &13u8 { s.vec.pop(); }
+                    }
+                    ::core::option::Option::Some(::core::result::Result::Ok(s))
+                }
+                ::core::result::Result::Err(e) => ::core::option::Option::Some(::core::result::Result::Err(e)),
+            }
+        }
+    }
+    pub struct BufReader<R> { inner: R }
+    impl<R: Read> BufReader<R> {
+        pub fn new(inner: R) -> BufReader<R> { BufReader { inner: inner } }
+    }
+    impl<R: Read> Read for BufReader<R> {
+        fn read(&mut self, buf: &mut [u8]) -> Result<usize> { self.inner.read(buf) }
+    }
+    impl<R: Read> BufRead for BufReader<R> {}
+    pub struct BufWriter<W: Write> { inner: W }
+    impl<W: Write> BufWriter<W> {
+        pub fn new(inner: W) -> BufWriter<W> { BufWriter { inner: inner } }
+    }
+    impl<W: Write> Write for BufWriter<W> {
+        fn write(&mut self, buf: &[u8]) -> Result<usize> { self.inner.write(buf) }
+        fn flush(&mut self) -> Result<()> { self.inner.flush() }
+    }
+    impl<W: Write> fmt::Write for BufWriter<W> {
+        fn write_str(&mut self, s: &str) -> fmt::Result {
+            match self.inner.write_all(s.as_bytes()) {
+                ::core::result::Result::Ok(_) => ::core::result::Result::Ok(()),
+                ::core::result::Result::Err(_) => ::core::result::Result::Err(fmt::Error),
+            }
+        }
+    }
+    pub struct Stdout { raw: RawOut }
+    pub struct Stderr { raw: RawOut }
+    pub fn stdout() -> Stdout { Stdout { raw: RawOut { port: 1 } } }
+    pub fn stderr() -> Stderr { Stderr { raw: RawOut { port: 2 } } }
+    impl Stdout { pub fn lock(&self) -> Stdout { stdout() } }
+    impl Stderr { pub fn lock(&self) -> Stderr { stderr() } }
+    // write!(w, ..) expands to `&mut *(w)`; these Derefs let it accept an owned handle
+    impl ::core::ops::Deref for Stdout { type Target = RawOut; fn deref(&self) -> &RawOut { &self.raw } }
+    impl ::core::ops::DerefMut for Stdout { fn deref_mut(&mut self) -> &mut RawOut { &mut self.raw } }
+    impl ::core::ops::Deref for Stderr { type Target = RawOut; fn deref(&self) -> &RawOut { &self.raw } }
+    impl ::core::ops::DerefMut for Stderr { fn deref_mut(&mut self) -> &mut RawOut { &mut self.raw } }
     impl fmt::Write for Stdout {
         fn write_str(&mut self, s: &str) -> fmt::Result {
             ::core::intrinsics::write_bytes(1, ::core::intrinsics::str_base(s), ::core::intrinsics::str_len(s));
@@ -1484,34 +1706,80 @@ pub mod io {
             ::core::result::Result::Ok(())
         }
     }
-    impl Write for Stdout { fn flush(&mut self) -> Result<()> { ::core::result::Result::Ok(()) } }
-    impl Write for Stderr { fn flush(&mut self) -> Result<()> { ::core::result::Result::Ok(()) } }
+    impl Write for Stdout {
+        fn write(&mut self, buf: &[u8]) -> Result<usize> {
+            ::core::intrinsics::write_bytes(1, ::core::intrinsics::slice_base::<u8>(buf), buf.len());
+            ::core::result::Result::Ok(buf.len())
+        }
+        fn flush(&mut self) -> Result<()> { ::core::result::Result::Ok(()) }
+    }
+    impl Write for Stderr {
+        fn write(&mut self, buf: &[u8]) -> Result<usize> {
+            ::core::intrinsics::write_bytes(2, ::core::intrinsics::slice_base::<u8>(buf), buf.len());
+            ::core::result::Result::Ok(buf.len())
+        }
+        fn flush(&mut self) -> Result<()> { ::core::result::Result::Ok(()) }
+    }
 
     pub struct Stdin;
     pub fn stdin() -> Stdin { Stdin }
+    // appends one line including its '\n'; returns the number of bytes read (0 at end of input)
+    fn stdin_read_line(buf: &mut String) -> Result<usize> {
+        let mut n = 0usize;
+        loop {
+            let b = ::core::intrinsics::read_byte(0);
+            if b < 0 { break; }
+            buf.vec.push(b as u8);
+            n += 1;
+            if b == 10 { break; }
+        }
+        ::core::result::Result::Ok(n)
+    }
+    fn stdin_read_all(buf: &mut String) -> Result<usize> {
+        let mut n = 0usize;
+        loop {
+            let b = ::core::intrinsics::read_byte(0);
+            if b < 0 { break; }
+            buf.vec.push(b as u8);
+            n += 1;
+        }
+        ::core::result::Result::Ok(n)
+    }
     impl Stdin {
         pub fn lock(&self) -> Stdin { Stdin }
-        // appends one line including its '\n'; returns the number of bytes read (0 at end of input)
-        pub fn read_line(&self, buf: &mut String) -> Result<usize> {
-            let mut n = 0usize;
-            loop {
+        pub fn read_line(&self, buf: &mut String) -> Result<usize> { stdin_read_line(buf) }
+        pub fn read_to_string(&self, buf: &mut String) -> Result<usize> { stdin_read_all(buf) }
+        pub fn lines(self) -> Lines<Stdin> { Lines { buf: Stdin } }
+    }
+    impl Read for Stdin {
+        fn read(&mut self, buf: &mut [u8]) -> Result<usize> {
+            let n = buf.len();
+            let mut i = 0usize;
+            while i < n {
                 let b = ::core::intrinsics::read_byte(0);
                 if b < 0 { break; }
-                buf.vec.push(b as u8);
-                n += 1;
-                if b == 10 { break; }
+                buf[i] = b as u8;
+                i += 1;
             }
-            ::core::result::Result::Ok(n)
+            ::core::result::Result::Ok(i)
         }
-        pub fn read_to_string(&self, buf: &mut String) -> Result<usize> {
-            let mut n = 0usize;
-            loop {
-                let b = ::core::intrinsics::read_byte(0);
-                if b < 0 { break; }
-                buf.vec.push(b as u8);
-                n += 1;
-            }
-            ::core::result::Result::Ok(n)
+        fn read_to_string(&mut self, buf: &mut String) -> Result<usize> { stdin_read_all(buf) }
+    }
+    impl BufRead for Stdin {
+        fn read_line(&mut self, buf: &mut String) -> Result<usize> { stdin_read_line(buf) }
+    }
+}
+
+pub mod env {
+    use ::core::string::String;
+    // the simulator passes no command line: args() is just the program name
+    pub struct Args { done: bool }
+    pub fn args() -> Args { Args { done: false } }
+    impl ::core::iter::Iterator for Args {
+        type Item = String;
+        fn next(&mut self) -> ::core::option::Option<String> {
+            if self.done { ::core::option::Option::None }
+            else { self.done = true; ::core::option::Option::Some(String::from("main")) }
         }
     }
 }
@@ -1661,7 +1929,7 @@ pub mod num {
     impl ::core::cmp::Eq for ParseIntError {}
 
     // (negative, magnitude); "+5" and "-5" are accepted, "-" alone is InvalidDigit
-    pub fn parse_int(s: &str, unsigned: bool) -> Result<(bool, u64), ParseIntError> {
+    pub fn parse_int(s: &str, unsigned: bool, radix: u32) -> Result<(bool, u64), ParseIntError> {
         let n = s.len();
         if n == 0 { return Err(ParseIntError { kind: 0 }); }
         let bytes = s.as_bytes();
@@ -1677,10 +1945,14 @@ pub mod num {
         let mut acc: u64 = 0;
         while i < n {
             let c = bytes[i];
-            if c < b'0' || c > b'9' { return Err(ParseIntError { kind: 1 }); }
-            let d = (c - b'0') as u64;
+            let dv: u32 = if c >= b'0' && c <= b'9' { (c - b'0') as u32 }
+                else if c >= b'a' && c <= b'z' { (c - b'a') as u32 + 10 }
+                else if c >= b'A' && c <= b'Z' { (c - b'A') as u32 + 10 }
+                else { 99 };
+            if dv >= radix { return Err(ParseIntError { kind: 1 }); }
+            let d = dv as u64;
             let ovf = ParseIntError { kind: if neg { 3 } else { 2 } };
-            match acc.checked_mul(10) {
+            match acc.checked_mul(radix as u64) {
                 None => return Err(ovf),
                 Some(v) => match v.checked_add(d) {
                     None => return Err(ovf),
@@ -1726,7 +1998,14 @@ pub mod num {
         pub fn floor(self) -> f64 { ::core::intrinsics::floorf64(self) }
         pub fn ceil(self) -> f64 { ::core::intrinsics::ceilf64(self) }
         pub fn trunc(self) -> f64 { if self >= 0.0 { self.floor() } else { self.ceil() } }
-        pub fn round(self) -> f64 { if self >= 0.0 { (self + 0.5).floor() } else { -((-self + 0.5).floor()) } }
+        pub fn round(self) -> f64 {
+            if self.is_nan() || self.is_infinite() { return self; }
+            let a = self.abs();
+            if a >= 4503599627370496.0 { return self; }
+            let t = a.floor();
+            let r = if a - t >= 0.5 { t + 1.0 } else { t };
+            r.copysign(self)
+        }
         pub fn fract(self) -> f64 { self - self.trunc() }
         pub fn powi(self, n: i32) -> f64 {
             let mut e: i64 = if n < 0 { -(n as i64) } else { n as i64 };
@@ -1751,7 +2030,217 @@ pub mod num {
         pub fn clamp(self, lo: f64, hi: f64) -> f64 { if self < lo { lo } else if self > hi { hi } else { self } }
         pub fn abs_sub(self, o: f64) -> f64 { if self > o { self - o } else { 0.0 } }
     }
-    impl ::core::ops::Neg for f64 { type Output = f64; fn neg(self) -> f64 { -self } }
+    // 2^k for -1022 <= k <= 1023
+    pub fn pow2i(k: i64) -> f64 { ::core::intrinsics::f64_from_bits(((k + 1023) as u64) << 52) }
+    pub fn scale2(v: f64, k: i64) -> f64 {
+        if k > 1023 { v * pow2i(1023) * pow2i(k - 1023) }
+        else if k < -1022 { v * pow2i(-1000) * pow2i(k + 1000) }
+        else { v * pow2i(k) }
+    }
+    // x = lnm_e.1 * 2^k * m with m in [sqrt(1/2), sqrt(2)): returns (ln m, k)
+    pub fn ln_parts(x: f64) -> (f64, i64) {
+        let mut bits = ::core::intrinsics::f64_to_bits(x);
+        let mut e: i64 = 0;
+        if (bits >> 52) == 0 {
+            bits = ::core::intrinsics::f64_to_bits(x * 18014398509481984.0);
+            e = -54;
+        }
+        e += ((bits >> 52) & 0x7ff) as i64 - 1023;
+        let mut m = ::core::intrinsics::f64_from_bits((bits & 0x000fffffffffffffu64) | 0x3ff0000000000000u64);
+        if m > 1.4142135623730951 { m = m * 0.5; e += 1; }
+        let f = (m - 1.0) / (m + 1.0);
+        let s = f * f;
+        let mut term = s;
+        let mut sum = 1.0f64;
+        let mut k = 3.0f64;
+        let mut i = 0;
+        while i < 13 { sum = sum + term / k; term = term * s; k = k + 2.0; i += 1; }
+        (2.0 * f * sum, e)
+    }
+    // x = q * pi/2 + r with |r| <= pi/4: returns (sin r, cos r, q mod 4)
+    pub fn trig_parts(x: f64) -> (f64, f64, i64) {
+        let kf = (x * 0.6366197723675814).round();
+        let r = (x - kf * 1.57079632673412561417e+00) - kf * 6.07710050650619224932e-11;
+        let s = r * r;
+        let mut st = r;
+        let mut sn = r;
+        let mut ct = 1.0f64;
+        let mut cs = 1.0f64;
+        let mut i = 1;
+        while i <= 13 {
+            let a = (2 * i) as f64;
+            ct = -ct * s / ((a - 1.0) * a);
+            cs = cs + ct;
+            st = -st * s / (a * (a + 1.0));
+            sn = sn + st;
+            i += 1;
+        }
+        let k = kf as i64;
+        (sn, cs, ((k % 4) + 4) % 4)
+    }
+
+    impl f64 {
+        pub const RADIX: u32 = 2;
+        pub fn copysign(self, s: f64) -> f64 {
+            ::core::intrinsics::f64_from_bits((::core::intrinsics::f64_to_bits(self) & 0x7fffffffffffffffu64)
+                | (::core::intrinsics::f64_to_bits(s) & 0x8000000000000000u64))
+        }
+        pub fn is_sign_positive(self) -> bool { !self.is_sign_negative() }
+        pub fn recip(self) -> f64 { 1.0 / self }
+        pub fn mul_add(self, a: f64, b: f64) -> f64 { self * a + b }
+        pub fn to_radians(self) -> f64 { self * (3.14159265358979323846264338327950288 / 180.0) }
+        pub fn to_degrees(self) -> f64 { self * 57.2957795130823208767981548141051703 }
+        pub fn exp(self) -> f64 {
+            let x = self;
+            if x.is_nan() { return x; }
+            if x > 709.782712893384 { return f64::INFINITY; }
+            if x < -745.2 { return 0.0; }
+            let kf = (x * 1.4426950408889634).round();
+            let r = (x - kf * 6.93147180369123816490e-01) - kf * 1.90821492927058770002e-10;
+            let mut term = 1.0f64;
+            let mut sum = 1.0f64;
+            let mut n = 1.0f64;
+            while n < 22.0 { term = term * r / n; sum = sum + term; n = n + 1.0; }
+            scale2(sum, kf as i64)
+        }
+        pub fn exp2(self) -> f64 { (self * 0.6931471805599453).exp() }
+        pub fn ln(self) -> f64 {
+            let x = self;
+            if x.is_nan() || x < 0.0 { return f64::NAN; }
+            if x == 0.0 { return f64::NEG_INFINITY; }
+            if x == f64::INFINITY { return x; }
+            let p = ln_parts(x);
+            let ef = p.1 as f64;
+            ef * 6.93147180369123816490e-01 + (ef * 1.90821492927058770002e-10 + p.0)
+        }
+        pub fn log2(self) -> f64 {
+            let x = self;
+            if x.is_nan() || x < 0.0 { return f64::NAN; }
+            if x == 0.0 { return f64::NEG_INFINITY; }
+            if x == f64::INFINITY { return x; }
+            let p = ln_parts(x);
+            (p.1 as f64) + p.0 * 1.4426950408889634
+        }
+        pub fn log10(self) -> f64 { self.ln() / 2.302585092994046 }
+        pub fn log(self, base: f64) -> f64 { self.ln() / base.ln() }
+        pub fn powf(self, y: f64) -> f64 {
+            let x = self;
+            if y == 0.0 || x == 1.0 { return 1.0; }
+            if x.is_nan() || y.is_nan() { return f64::NAN; }
+            let yi = y.trunc();
+            if x == 0.0 {
+                let odd = yi == y && y.abs() < 9007199254740992.0 && ((yi.abs() as u64) & 1) == 1;
+                return if y > 0.0 { if odd { x } else { 0.0 } }
+                       else { if odd { 1.0 / x } else { f64::INFINITY } };
+            }
+            if yi == y && y.abs() <= 2147483647.0 { return x.powi(y as i32); }
+            if x < 0.0 { return f64::NAN; }
+            if y.abs() < 2147483647.0 {
+                let yf = y - yi;
+                let frac = if yf == 0.5 { x.sqrt() }
+                           else if yf == -0.5 { 1.0 / x.sqrt() }
+                           else { (yf * x.ln()).exp() };
+                return x.powi(yi as i32) * frac;
+            }
+            (y * x.ln()).exp()
+        }
+        pub fn cbrt(self) -> f64 {
+            let x = self;
+            if x == 0.0 || x.is_nan() || x.is_infinite() { return x; }
+            let a = x.abs();
+            let mut y = (a.ln() / 3.0).exp();
+            y = y - (y * y * y - a) / (3.0 * y * y);
+            y = y - (y * y * y - a) / (3.0 * y * y);
+            let r = y.round();
+            if r * r * r == a { y = r; }
+            if x < 0.0 { -y } else { y }
+        }
+        pub fn hypot(self, o: f64) -> f64 {
+            let mut a = self.abs();
+            let mut b = o.abs();
+            if a.is_infinite() || b.is_infinite() { return f64::INFINITY; }
+            if a.is_nan() || b.is_nan() { return f64::NAN; }
+            if a < b { let t = a; a = b; b = t; }
+            if a == 0.0 { return 0.0; }
+            let r = b / a;
+            a * (1.0 + r * r).sqrt()
+        }
+        pub fn sin(self) -> f64 {
+            if self.is_nan() || self.is_infinite() { return f64::NAN; }
+            let t = trig_parts(self);
+            if t.2 == 0 { t.0 } else if t.2 == 1 { t.1 } else if t.2 == 2 { -t.0 } else { -t.1 }
+        }
+        pub fn cos(self) -> f64 {
+            if self.is_nan() || self.is_infinite() { return f64::NAN; }
+            let t = trig_parts(self);
+            if t.2 == 0 { t.1 } else if t.2 == 1 { -t.0 } else if t.2 == 2 { -t.1 } else { t.0 }
+        }
+        pub fn tan(self) -> f64 {
+            if self.is_nan() || self.is_infinite() { return f64::NAN; }
+            let t = trig_parts(self);
+            if t.2 % 2 == 0 { t.0 / t.1 } else { -t.1 / t.0 }
+        }
+        pub fn sin_cos(self) -> (f64, f64) { (self.sin(), self.cos()) }
+        pub fn atan(self) -> f64 {
+            let x = self;
+            if x.is_nan() { return x; }
+            let a = x.abs();
+            if a == f64::INFINITY { return if x < 0.0 { -1.57079632679489661923132169163975144 } else { 1.57079632679489661923132169163975144 }; }
+            let inv = a > 1.0;
+            let mut y = if inv { 1.0 / a } else { a };
+            y = y / (1.0 + (1.0 + y * y).sqrt());
+            y = y / (1.0 + (1.0 + y * y).sqrt());
+            let s = y * y;
+            let mut term = y;
+            let mut sum = y;
+            let mut k = 1;
+            while k <= 14 {
+                term = -term * s;
+                sum = sum + term / ((2 * k + 1) as f64);
+                k += 1;
+            }
+            let mut r = 4.0 * sum;
+            if inv { r = 1.57079632679489661923132169163975144 - r; }
+            if x < 0.0 { -r } else { r }
+        }
+        pub fn atan2(self, x: f64) -> f64 {
+            let y = self;
+            let pi = 3.14159265358979323846264338327950288;
+            if y.is_nan() || x.is_nan() { return f64::NAN; }
+            if x == 0.0 {
+                if y == 0.0 {
+                    return if x.is_sign_negative() { if y.is_sign_negative() { -pi } else { pi } } else { y };
+                }
+                return if y > 0.0 { pi / 2.0 } else { -pi / 2.0 };
+            }
+            if x > 0.0 { return (y / x).atan(); }
+            if y.is_sign_negative() { (y / x).atan() - pi } else { (y / x).atan() + pi }
+        }
+        pub fn asin(self) -> f64 {
+            if self.abs() > 1.0 { return f64::NAN; }
+            self.atan2((1.0 - self * self).sqrt())
+        }
+        pub fn acos(self) -> f64 {
+            if self.abs() > 1.0 { return f64::NAN; }
+            (1.0 - self * self).sqrt().atan2(self)
+        }
+        pub fn sinh(self) -> f64 { let e = self.exp(); (e - 1.0 / e) / 2.0 }
+        pub fn cosh(self) -> f64 { let e = self.exp(); (e + 1.0 / e) / 2.0 }
+        pub fn tanh(self) -> f64 {
+            if self > 20.0 { return 1.0; }
+            if self < -20.0 { return -1.0; }
+            let e = (2.0 * self).exp();
+            (e - 1.0) / (e + 1.0)
+        }
+        pub fn div_euclid(self, o: f64) -> f64 {
+            let q = (self / o).trunc();
+            if self % o < 0.0 { if o > 0.0 { q - 1.0 } else { q + 1.0 } } else { q }
+        }
+        pub fn rem_euclid(self, o: f64) -> f64 {
+            let r = self % o;
+            if r < 0.0 { r + o.abs() } else { r }
+        }
+    }
     impl<'a> ::core::ops::Neg for &'a f64 { type Output = f64; fn neg(self) -> f64 { -*self } }
     impl ::core::iter::Sum<f64> for f64 {
         fn sum<I: ::core::iter::Iterator<Item = f64>>(iter: I) -> f64 {
@@ -1766,6 +2255,14 @@ pub mod num {
             let mut a = 0.0f64;
             let mut it = iter;
             while let Some(x) = it.next() { a = a + *x; }
+            a
+        }
+    }
+    impl<'a> ::core::iter::Product<&'a f64> for f64 {
+        fn product<I: ::core::iter::Iterator<Item = &'a f64>>(iter: I) -> f64 {
+            let mut a = 1.0f64;
+            let mut it = iter;
+            while let Some(x) = it.next() { a = a * *x; }
             a
         }
     }
@@ -2391,6 +2888,115 @@ pub mod string {
             if !::core::str::is_valid_utf8(&v) { return ::core::result::Result::Err(::core::str::Utf8Error); }
             ::core::result::Result::Ok(String { vec: v })
         }
+        fn check_boundary(&self, idx: usize) {
+            if !self.as_str().is_char_boundary(idx) {
+                ::core::panicking::panic_str("library/alloc/src/string.rs", 1, 1, "assertion failed: self.is_char_boundary(idx)");
+            }
+        }
+        pub fn insert_str(&mut self, idx: usize, s: &str) {
+            self.check_boundary(idx);
+            let n = s.len();
+            let l = self.vec.len;
+            self.vec.reserve(n);
+            let p = self.vec.ptr;
+            let mut i = l;
+            while i > idx { i -= 1; elem_write::<u8>(p, i + n, elem_read::<u8>(p, i)); }
+            let src = str_base(s);
+            let mut j = 0usize;
+            while j < n { elem_write::<u8>(p, idx + j, elem_read::<u8>(src, j)); j += 1; }
+            self.vec.len = l + n;
+        }
+        pub fn insert(&mut self, idx: usize, c: char) {
+            let mut b = [0u8; 4];
+            let n = ::core::char::encode_utf8(c, &mut b);
+            self.insert_str(idx, ::core::str::buf_range(&b, 0, n));
+        }
+        pub fn remove(&mut self, idx: usize) -> char {
+            let c = match ::core::str::sub_str(self.as_str(), idx, usize::MAX).chars().next() {
+                Some(c) => c,
+                None => ::core::panicking::panic_str("library/alloc/src/string.rs", 1, 1, "cannot remove a char from the end of a string"),
+            };
+            let n = c.len_utf8();
+            let p = self.vec.ptr;
+            let l = self.vec.len;
+            let mut i = idx + n;
+            while i < l { elem_write::<u8>(p, i - n, elem_read::<u8>(p, i)); i += 1; }
+            self.vec.len = l - n;
+            c
+        }
+        pub fn retain<F: FnMut(char) -> bool>(&mut self, mut f: F) {
+            let mut out = String::new();
+            {
+                let mut it = self.as_str().chars();
+                while let Some(c) = it.next() { if f(c) { out.push(c); } }
+            }
+            *self = out;
+        }
+        pub fn split_off(&mut self, at: usize) -> String {
+            self.check_boundary(at);
+            let r = String::from(::core::str::sub_str(self.as_str(), at, usize::MAX));
+            self.vec.len = at;
+            r
+        }
+        pub fn drain<R: ::core::ops::RangeArg>(&mut self, r: R) -> Drain {
+            let b = r.bounds();
+            let l = self.vec.len;
+            let end = if b.1 == usize::MAX { l } else { b.1 };
+            if b.0 > end || end > l {
+                ::core::panicking::panic_str("library/alloc/src/string.rs", 1, 1, "range end index out of range for slice");
+            }
+            self.check_boundary(b.0);
+            self.check_boundary(end);
+            let taken = String::from(::core::str::sub_str(self.as_str(), b.0, end));
+            let p = self.vec.ptr;
+            let mut i = end;
+            while i < l { elem_write::<u8>(p, b.0 + (i - end), elem_read::<u8>(p, i)); i += 1; }
+            self.vec.len = l - (end - b.0);
+            Drain { s: taken, pos: 0 }
+        }
+        pub fn replace_range<R: ::core::ops::RangeArg>(&mut self, r: R, with: &str) {
+            let b = r.bounds();
+            let end = if b.1 == usize::MAX { self.vec.len } else { b.1 };
+            let tail = self.split_off(end);
+            self.truncate(b.0);
+            self.push_str(with);
+            self.push_str(tail.as_str());
+        }
+    }
+    pub struct Drain { s: String, pos: usize }
+    impl ::core::iter::Iterator for Drain {
+        type Item = char;
+        fn next(&mut self) -> Option<char> {
+            let c = match ::core::str::sub_str(self.s.as_str(), self.pos, usize::MAX).chars().next() { Some(c) => c, None => return None };
+            self.pos += c.len_utf8();
+            Some(c)
+        }
+    }
+    impl ::core::iter::DoubleEndedIterator for Drain {
+        fn next_back(&mut self) -> Option<char> {
+            if self.pos >= self.s.len() { return None; }
+            self.s.pop()
+        }
+    }
+    impl<'a> ::core::iter::FromIterator<&'a char> for String {
+        fn from_iter<I: ::core::iter::IntoIterator<Item = &'a char>>(iter: I) -> String {
+            let mut s = String::new();
+            let mut it = iter.into_iter();
+            while let Some(c) = it.next() { s.push(*c); }
+            s
+        }
+    }
+    impl<'a> ::core::iter::Extend<&'a char> for String {
+        fn extend<I: ::core::iter::IntoIterator<Item = &'a char>>(&mut self, iter: I) {
+            let mut it = iter.into_iter();
+            while let Some(c) = it.next() { self.push(*c); }
+        }
+    }
+    impl ::core::iter::Extend<String> for String {
+        fn extend<I: ::core::iter::IntoIterator<Item = String>>(&mut self, iter: I) {
+            let mut it = iter.into_iter();
+            while let Some(c) = it.next() { self.push_str(c.as_str()); }
+        }
     }
     impl ::core::ops::Deref for String {
         type Target = str;
@@ -2635,6 +3241,51 @@ pub mod iter {
             let mut best = match it.next() { Some(x) => x, None => return None };
             while let Some(x) = it.next() { if g(&x, &best) == Ordering::Less { best = x; } }
             Some(best)
+        }
+        fn rposition<P: FnMut(Self::Item) -> bool>(&mut self, p: P) -> Option<usize> where Self: Sized {
+            let mut g = p;
+            let mut i = 0usize;
+            let mut r: Option<usize> = None;
+            while let Some(x) = self.next() { if g(x) { r = Some(i); } i += 1; }
+            r
+        }
+        fn reduce<F: FnMut(Self::Item, Self::Item) -> Self::Item>(self, f: F) -> Option<Self::Item> where Self: Sized {
+            let mut it = self;
+            let mut g = f;
+            let mut acc = match it.next() { Some(x) => x, None => return None };
+            while let Some(x) = it.next() { acc = g(acc, x); }
+            Some(acc)
+        }
+        fn inspect<F: FnMut(&Self::Item)>(self, f: F) -> Inspect<Self, F> where Self: Sized { Inspect { iter: self, f: f } }
+        fn scan<St, B, F: FnMut(&mut St, Self::Item) -> Option<B>>(self, init: St, f: F) -> Scan<Self, St, F> where Self: Sized {
+            Scan { iter: self, state: init, f: f }
+        }
+        fn flat_map<U: IntoIterator, F: FnMut(Self::Item) -> U>(self, f: F) -> FlatMap<Self, U, F> where Self: Sized {
+            FlatMap { iter: self, f: f, cur: None }
+        }
+        fn flatten(self) -> Flatten<Self> where Self: Sized, Self::Item: IntoIterator {
+            Flatten { iter: self, cur: None }
+        }
+        fn cycle(self) -> Cycle<Self> where Self: Sized + Clone { Cycle { orig: self.clone(), cur: self } }
+        fn partition<B: Default + Extend<Self::Item>, F: FnMut(&Self::Item) -> bool>(self, f: F) -> (B, B) where Self: Sized {
+            let mut a: B = Default::default();
+            let mut b: B = Default::default();
+            let mut it = self;
+            let mut g = f;
+            while let Some(x) = it.next() {
+                if g(&x) { a.extend(once(x)); } else { b.extend(once(x)); }
+            }
+            (a, b)
+        }
+        fn unzip<A, B, FromA: Default + Extend<A>, FromB: Default + Extend<B>>(self) -> (FromA, FromB) where Self: Sized + Iterator<Item = (A, B)> {
+            let mut a: FromA = Default::default();
+            let mut b: FromB = Default::default();
+            let mut it = self;
+            while let Some(x) = it.next() {
+                a.extend(once(x.0));
+                b.extend(once(x.1));
+            }
+            (a, b)
         }
         fn sum<S: Sum<Self::Item>>(self) -> S where Self: Sized { S::sum(self) }
         fn product<P: Product<Self::Item>>(self) -> P where Self: Sized { P::product(self) }
@@ -2903,6 +3554,74 @@ pub mod iter {
     }
 
     pub struct Cloned<I> { iter: I }
+    impl<I: Clone> Clone for Cloned<I> { fn clone(&self) -> Cloned<I> { Cloned { iter: self.iter.clone() } } }
+    impl<I: Clone> Clone for Copied<I> { fn clone(&self) -> Copied<I> { Copied { iter: self.iter.clone() } } }
+    impl<I: Clone> Clone for Rev<I> { fn clone(&self) -> Rev<I> { Rev { iter: self.iter.clone() } } }
+    impl<I: Clone, F: Clone> Clone for Map<I, F> { fn clone(&self) -> Map<I, F> { Map { iter: self.iter.clone(), f: self.f.clone() } } }
+    impl<I: Clone> Clone for Enumerate<I> { fn clone(&self) -> Enumerate<I> { Enumerate { iter: self.iter.clone(), count: self.count } } }
+    impl<I: Clone> Clone for Take<I> { fn clone(&self) -> Take<I> { Take { iter: self.iter.clone(), n: self.n } } }
+
+    pub struct Inspect<I, F> { iter: I, f: F }
+    impl<I: Iterator, F: FnMut(&I::Item)> Iterator for Inspect<I, F> {
+        type Item = I::Item;
+        fn next(&mut self) -> Option<I::Item> {
+            match self.iter.next() { Some(x) => { (self.f)(&x); Some(x) } None => None }
+        }
+    }
+    pub struct Scan<I, St, F> { iter: I, state: St, f: F }
+    impl<B, I: Iterator, St, F: FnMut(&mut St, I::Item) -> Option<B>> Iterator for Scan<I, St, F> {
+        type Item = B;
+        fn next(&mut self) -> Option<B> {
+            match self.iter.next() { Some(x) => (self.f)(&mut self.state, x), None => None }
+        }
+    }
+    pub struct FlatMap<I, U: IntoIterator, F> { iter: I, f: F, cur: Option<U::IntoIter> }
+    impl<I: Iterator, U: IntoIterator, F: FnMut(I::Item) -> U> Iterator for FlatMap<I, U, F> {
+        type Item = U::Item;
+        fn next(&mut self) -> Option<U::Item> {
+            loop {
+                match self.cur.as_mut() {
+                    Some(c) => { match c.next() { Some(x) => return Some(x), None => {} } }
+                    None => {}
+                }
+                match self.iter.next() {
+                    Some(x) => { self.cur = Some((self.f)(x).into_iter()); }
+                    None => return None,
+                }
+            }
+        }
+    }
+    pub struct Flatten<I: Iterator> where I::Item: IntoIterator { iter: I, cur: Option<<I::Item as IntoIterator>::IntoIter> }
+    impl<I: Iterator> Iterator for Flatten<I> where I::Item: IntoIterator {
+        type Item = <I::Item as IntoIterator>::Item;
+        fn next(&mut self) -> Option<<I::Item as IntoIterator>::Item> {
+            loop {
+                match self.cur.as_mut() {
+                    Some(c) => { match c.next() { Some(x) => return Some(x), None => {} } }
+                    None => {}
+                }
+                match self.iter.next() {
+                    Some(x) => { self.cur = Some(x.into_iter()); }
+                    None => return None,
+                }
+            }
+        }
+    }
+    pub struct Cycle<I> { orig: I, cur: I }
+    impl<I: Iterator + Clone> Iterator for Cycle<I> {
+        type Item = I::Item;
+        fn next(&mut self) -> Option<I::Item> {
+            match self.cur.next() {
+                Some(x) => Some(x),
+                None => { self.cur = self.orig.clone(); self.cur.next() }
+            }
+        }
+    }
+    impl<T> IntoIterator for Option<T> {
+        type Item = T;
+        type IntoIter = Once<T>;
+        fn into_iter(self) -> Once<T> { Once { v: self } }
+    }
     impl<'a, T: Clone, I: Iterator<Item = &'a T>> Iterator for Cloned<I> {
         type Item = T;
         fn next(&mut self) -> Option<T> { match self.iter.next() { Some(x) => Some(x.clone()), None => None } }
@@ -3075,6 +3794,25 @@ pub mod slice {
         }
     }
 
+    pub struct ChunksExact<'a, T> { s: &'a [T], size: usize, pos: usize }
+    impl<'a, T> ::core::iter::Iterator for ChunksExact<'a, T> {
+        type Item = &'a [T];
+        fn next(&mut self) -> Option<&'a [T]> {
+            let s: &'a [T] = self.s;
+            if self.pos + self.size > slice_len::<T>(s) { return None; }
+            let r = sub_slice(s, self.pos, self.pos + self.size);
+            self.pos += self.size;
+            Some(r)
+        }
+    }
+    impl<'a, T> ChunksExact<'a, T> {
+        pub fn remainder(&self) -> &'a [T] {
+            let s: &'a [T] = self.s;
+            let n = slice_len::<T>(s);
+            sub_slice(s, n - n % self.size, n)
+        }
+    }
+
     // stable bottom-up merge sort moving elements bitwise between two buffers
     fn merge_sort<T, F: FnMut(&T, &T) -> Ordering>(base: usize, n: usize, mut compare: F) {
         if n < 2 { return; }
@@ -3189,6 +3927,52 @@ pub mod slice {
         pub fn windows(&self, size: usize) -> Windows<'_, T> { Windows { s: self, size: size, pos: 0 } }
         pub fn chunks(&self, size: usize) -> Chunks<'_, T> { Chunks { s: self, size: size, pos: 0 } }
         pub fn split_at(&self, mid: usize) -> (&[T], &[T]) { (sub_slice(self, 0, mid), sub_slice(self, mid, usize::MAX)) }
+        pub fn split_at_mut(&mut self, mid: usize) -> (&mut [T], &mut [T]) {
+            let n = slice_len::<T>(self);
+            if mid > n {
+                ::core::panicking::panic_str("library/core/src/slice/mod.rs", 1, 1, "mid > len");
+            }
+            let b = slice_base::<T>(self);
+            (slice_from_raw_mut::<T>(b, mid), slice_from_raw_mut::<T>(elem_offset::<T>(b, mid), n - mid))
+        }
+        pub fn split_first(&self) -> Option<(&T, &[T])> {
+            if slice_len::<T>(self) == 0 { None } else { Some((self.get(0).unwrap(), sub_slice(self, 1, usize::MAX))) }
+        }
+        pub fn split_last(&self) -> Option<(&T, &[T])> {
+            let n = slice_len::<T>(self);
+            if n == 0 { None } else { Some((self.get(n - 1).unwrap(), sub_slice(self, 0, n - 1))) }
+        }
+        pub fn rotate_left(&mut self, k: usize) {
+            let n = slice_len::<T>(self);
+            if k > n { ::core::panicking::panic_str("library/core/src/slice/mod.rs", 1, 1, "assertion failed: mid <= self.len()"); }
+            sub_slice_mut(self, 0, k).reverse();
+            sub_slice_mut(self, k, usize::MAX).reverse();
+            self.reverse();
+        }
+        pub fn rotate_right(&mut self, k: usize) {
+            let n = slice_len::<T>(self);
+            if k > n { ::core::panicking::panic_str("library/core/src/slice/mod.rs", 1, 1, "assertion failed: k <= self.len()"); }
+            self.rotate_left(n - k);
+        }
+        pub fn fill(&mut self, v: T) where T: ::core::clone::Clone {
+            let n = slice_len::<T>(self);
+            let b = slice_base::<T>(self);
+            let mut i = 0usize;
+            while i < n { *elem_ref_mut::<T>(b, i) = v.clone(); i += 1; }
+        }
+        pub fn chunks_exact(&self, size: usize) -> ChunksExact<'_, T> {
+            if size == 0 { ::core::panicking::panic_str("library/core/src/slice/mod.rs", 1, 1, "chunk size must be non-zero"); }
+            ChunksExact { s: self, size: size, pos: 0 }
+        }
+        pub fn starts_with(&self, p: &[T]) -> bool where T: ::core::cmp::PartialEq {
+            let n = slice_len::<T>(p);
+            n <= slice_len::<T>(self) && slice_eq::<T, T>(sub_slice(self, 0, n), p)
+        }
+        pub fn ends_with(&self, p: &[T]) -> bool where T: ::core::cmp::PartialEq {
+            let n = slice_len::<T>(p);
+            let l = slice_len::<T>(self);
+            n <= l && slice_eq::<T, T>(sub_slice(self, l - n, l), p)
+        }
         pub fn to_vec(&self) -> Vec<T> where T: ::core::clone::Clone {
             let mut v = Vec::with_capacity(slice_len::<T>(self));
             let mut it = self.iter();
@@ -3222,19 +4006,89 @@ pub mod slice {
             ::core::result::Result::Err(lo)
         }
     }
-    impl<S: ::core::convert::AsRef<str>> [S] {
-        pub fn join(&self, sep: &str) -> String {
-            let mut r = String::new();
+    impl<T: JoinItem> [T] {
+        pub fn join(&self, sep: &<T as JoinItem>::Sep) -> <T as JoinItem>::Out { <T as JoinItem>::join_items(self, sep) }
+        pub fn concat(&self) -> <T as JoinItem>::Out { <T as JoinItem>::concat_items(self) }
+    }
+    // element types that [T]::join / concat accept (Strings and Vecs)
+    pub trait JoinItem: Sized {
+        type Out;
+        type Sep: ?Sized;
+        fn join_items(s: &[Self], sep: &Self::Sep) -> Self::Out;
+        fn concat_items(s: &[Self]) -> Self::Out;
+    }
+    fn join_strs<S: ::core::convert::AsRef<str>>(s: &[S], sep: &str) -> String {
+        let mut r = String::new();
+        let mut i = 0usize;
+        let n = slice_len::<S>(s);
+        while i < n {
+            if i > 0 { r.push_str(sep); }
+            r.push_str(s.get(i).unwrap().as_ref());
+            i += 1;
+        }
+        r
+    }
+    impl JoinItem for String {
+        type Out = String;
+        type Sep = str;
+        fn join_items(s: &[String], sep: &str) -> String { join_strs::<String>(s, sep) }
+        fn concat_items(s: &[String]) -> String { join_strs::<String>(s, "") }
+    }
+    impl<'a> JoinItem for &'a str {
+        type Out = String;
+        type Sep = str;
+        fn join_items(s: &[&'a str], sep: &str) -> String { join_strs::<&'a str>(s, sep) }
+        fn concat_items(s: &[&'a str]) -> String { join_strs::<&'a str>(s, "") }
+    }
+    impl<'a> JoinItem for &'a String {
+        type Out = String;
+        type Sep = str;
+        fn join_items(s: &[&'a String], sep: &str) -> String { join_strs::<&'a String>(s, sep) }
+        fn concat_items(s: &[&'a String]) -> String { join_strs::<&'a String>(s, "") }
+    }
+    impl<U: ::core::clone::Clone> JoinItem for Vec<U> {
+        type Out = Vec<U>;
+        type Sep = U;
+        fn join_items(s: &[Vec<U>], sep: &U) -> Vec<U> {
+            let mut r: Vec<U> = Vec::new();
             let mut i = 0usize;
-            let n = slice_len::<S>(self);
+            let n = slice_len::<Vec<U>>(s);
             while i < n {
-                if i > 0 { r.push_str(sep); }
-                r.push_str(self.get(i).unwrap().as_ref());
+                if i > 0 { r.push(sep.clone()); }
+                r.extend_from_slice(s.get(i).unwrap().as_slice());
                 i += 1;
             }
             r
         }
-        pub fn concat(&self) -> String { self.join("") }
+        fn concat_items(s: &[Vec<U>]) -> Vec<U> {
+            let mut r: Vec<U> = Vec::new();
+            let mut i = 0usize;
+            let n = slice_len::<Vec<U>>(s);
+            while i < n { r.extend_from_slice(s.get(i).unwrap().as_slice()); i += 1; }
+            r
+        }
+    }
+    impl<'a, U: ::core::clone::Clone> JoinItem for &'a [U] {
+        type Out = Vec<U>;
+        type Sep = U;
+        fn join_items(s: &[&'a [U]], sep: &U) -> Vec<U> {
+            let mut r: Vec<U> = Vec::new();
+            let mut i = 0usize;
+            let n = slice_len::<&'a [U]>(s);
+            while i < n {
+                if i > 0 { r.push(sep.clone()); }
+                r.extend_from_slice(*s.get(i).unwrap());
+                i += 1;
+            }
+            r
+        }
+        fn concat_items(s: &[&'a [U]]) -> Vec<U> {
+            let mut r: Vec<U> = Vec::new();
+            let mut i = 0usize;
+            let n = slice_len::<&'a [U]>(s);
+            while i < n { r.extend_from_slice(*s.get(i).unwrap()); i += 1; }
+            r
+        }
     }
 
     impl<A: ::core::cmp::PartialEq<B>, B> ::core::cmp::PartialEq<[B]> for [A] {
@@ -3440,6 +4294,50 @@ pub mod vec {
             }
             self.len = w;
         }
+        pub fn dedup_by<F: FnMut(&mut T, &mut T) -> bool>(&mut self, mut same: F) {
+            if self.len < 2 { return; }
+            let n = self.len;
+            let mut w = 1usize;
+            let mut r = 1usize;
+            while r < n {
+                if same(elem_ref_mut::<T>(self.ptr, r), elem_ref_mut::<T>(self.ptr, w - 1)) {
+                    let _x = elem_read::<T>(self.ptr, r);
+                } else {
+                    if w != r { elem_write::<T>(self.ptr, w, elem_read::<T>(self.ptr, r)); }
+                    w += 1;
+                }
+                r += 1;
+            }
+            self.len = w;
+        }
+        pub fn dedup_by_key<K: ::core::cmp::PartialEq, F: FnMut(&mut T) -> K>(&mut self, mut key: F) {
+            self.dedup_by(|a, b| key(a) == key(b));
+        }
+        pub fn split_off(&mut self, at: usize) -> Vec<T> {
+            if at > self.len {
+                ::core::panicking::panic_str("library/alloc/src/vec/mod.rs", 1, 1, "`at` split index out of bounds");
+            }
+            let mut r: Vec<T> = Vec::with_capacity(self.len - at);
+            let mut i = at;
+            while i < self.len { r.push(elem_read::<T>(self.ptr, i)); i += 1; }
+            self.len = at;
+            r
+        }
+        pub fn drain<R: ::core::ops::RangeArg>(&mut self, range: R) -> IntoIter<T> {
+            let b = range.bounds();
+            let l = self.len;
+            let end = if b.1 == usize::MAX { l } else { b.1 };
+            if b.0 > end || end > l {
+                ::core::panicking::panic_str("library/alloc/src/vec/mod.rs", 1, 1, "range end index out of range for slice");
+            }
+            let mut taken: Vec<T> = Vec::with_capacity(end - b.0);
+            let mut i = b.0;
+            while i < end { taken.push(elem_read::<T>(self.ptr, i)); i += 1; }
+            let mut j = end;
+            while j < l { elem_write::<T>(self.ptr, b.0 + (j - end), elem_read::<T>(self.ptr, j)); j += 1; }
+            self.len = l - (end - b.0);
+            taken.into_iter()
+        }
     }
 
     // vec![x; n]
@@ -3572,6 +4470,12 @@ pub mod boxed {
     impl<T> Box<T> {
         pub fn new(x: T) -> Box<T> { box_new::<T>(x) }
     }
+    impl<T: ?Sized> ::core::convert::AsRef<T> for Box<T> {
+        fn as_ref(&self) -> &T { box_deref::<T>(self) }
+    }
+    impl<T: ?Sized> ::core::convert::AsMut<T> for Box<T> {
+        fn as_mut(&mut self) -> &mut T { box_deref_mut::<T>(self) }
+    }
     impl<T: ?Sized> ::core::ops::Deref for Box<T> {
         type Target = T;
         fn deref(&self) -> &T { box_deref::<T>(self) }
@@ -3659,6 +4563,7 @@ pub mod prelude {
     pub use ::core::iter::{DoubleEndedIterator, Extend, FromIterator, IntoIterator, Iterator};
     pub use ::core::option::Option::{self, None, Some};
     pub use ::core::result::Result::{self, Err, Ok};
+    pub use ::core::fmt::WriteTarget;   // write!/writeln! expansion (a hidden method name)
     pub use ::core::string::{String, ToString};
     pub use ::core::vec::Vec;
 }

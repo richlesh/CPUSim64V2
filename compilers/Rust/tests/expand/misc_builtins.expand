@@ -37,12 +37,11 @@
                       (PATH_SEG fmt)
                       (PATH_SEG Formatter)
                       (PATH_SEG new)))
-                  (E_REF {mut}
-                    a=(E_DEREF
-                      a=(E_PAREN
-                        a=(E_PATH
-                          a=(PATH
-                            (PATH_SEG f))))))))
+                  (E_METHOD_CALL __write_target
+                    a=(E_PAREN
+                      a=(E_PATH
+                        a=(PATH
+                          (PATH_SEG f)))))))
               (STMT_EXPR
                 a=(BLOCK
                   (STMT_LET
@@ -85,10 +84,8 @@
                 a=(E_PATH
                   a=(PATH {global}
                     (PATH_SEG core)
-                    (PATH_SEG result)
-                    (PATH_SEG Result)
-                    (PATH_SEG Ok)))
-                (E_TUPLE)))))
+                    (PATH_SEG fmt)
+                    (PATH_SEG ok)))))))
         (STMT_EXPR {semi}
           a=(E_TRY
             a=(BLOCK
@@ -101,12 +98,11 @@
                       (PATH_SEG fmt)
                       (PATH_SEG Formatter)
                       (PATH_SEG new)))
-                  (E_REF {mut}
-                    a=(E_DEREF
-                      a=(E_PAREN
-                        a=(E_PATH
-                          a=(PATH
-                            (PATH_SEG f))))))))
+                  (E_METHOD_CALL __write_target
+                    a=(E_PAREN
+                      a=(E_PATH
+                        a=(PATH
+                          (PATH_SEG f)))))))
               (STMT_EXPR
                 a=(BLOCK
                   (STMT_EXPR {semi}
@@ -119,10 +115,8 @@
                 a=(E_PATH
                   a=(PATH {global}
                     (PATH_SEG core)
-                    (PATH_SEG result)
-                    (PATH_SEG Result)
-                    (PATH_SEG Ok)))
-                (E_TUPLE)))))
+                    (PATH_SEG fmt)
+                    (PATH_SEG ok)))))))
         a=(BLOCK
           (STMT_LET
             a=(P_IDENT __f {mut})
@@ -133,12 +127,11 @@
                   (PATH_SEG fmt)
                   (PATH_SEG Formatter)
                   (PATH_SEG new)))
-              (E_REF {mut}
-                a=(E_DEREF
-                  a=(E_PAREN
-                    a=(E_PATH
-                      a=(PATH
-                        (PATH_SEG f))))))))
+              (E_METHOD_CALL __write_target
+                a=(E_PAREN
+                  a=(E_PATH
+                    a=(PATH
+                      (PATH_SEG f)))))))
           (STMT_EXPR
             a=(BLOCK
               (STMT_LET
@@ -194,10 +187,8 @@
             a=(E_PATH
               a=(PATH {global}
                 (PATH_SEG core)
-                (PATH_SEG result)
-                (PATH_SEG Result)
-                (PATH_SEG Ok)))
-            (E_TUPLE))))
+                (PATH_SEG fmt)
+                (PATH_SEG ok))))))
       (SELF_PARAM {ref})
       (PARAM
         a=(P_IDENT f)
@@ -228,12 +219,11 @@
                     (PATH_SEG fmt)
                     (PATH_SEG Formatter)
                     (PATH_SEG new)))
-                (E_REF {mut}
-                  a=(E_DEREF
-                    a=(E_PAREN
-                      a=(E_PATH
-                        a=(PATH
-                          (PATH_SEG s))))))))
+                (E_METHOD_CALL __write_target
+                  a=(E_PAREN
+                    a=(E_PATH
+                      a=(PATH
+                        (PATH_SEG s)))))))
             (STMT_EXPR
               a=(BLOCK
                 (STMT_LET
@@ -288,10 +278,8 @@
               a=(E_PATH
                 a=(PATH {global}
                   (PATH_SEG core)
-                  (PATH_SEG result)
-                  (PATH_SEG Result)
-                  (PATH_SEG Ok)))
-              (E_TUPLE)))))
+                  (PATH_SEG fmt)
+                  (PATH_SEG ok)))))))
       (STMT_EXPR {semi}
         a=(E_METHOD_CALL unwrap
           a=(BLOCK
@@ -304,13 +292,12 @@
                     (PATH_SEG fmt)
                     (PATH_SEG Formatter)
                     (PATH_SEG new)))
-                (E_REF {mut}
-                  a=(E_DEREF
-                    a=(E_PAREN
-                      a=(E_REF {mut}
-                        a=(E_PATH
-                          a=(PATH
-                            (PATH_SEG s)))))))))
+                (E_METHOD_CALL __write_target
+                  a=(E_PAREN
+                    a=(E_REF {mut}
+                      a=(E_PATH
+                        a=(PATH
+                          (PATH_SEG s))))))))
             (STMT_EXPR
               a=(BLOCK
                 (STMT_EXPR {semi}
@@ -323,10 +310,8 @@
               a=(E_PATH
                 a=(PATH {global}
                   (PATH_SEG core)
-                  (PATH_SEG result)
-                  (PATH_SEG Result)
-                  (PATH_SEG Ok)))
-              (E_TUPLE)))))
+                  (PATH_SEG fmt)
+                  (PATH_SEG ok)))))))
       (STMT_LET
         a=(P_IDENT v)
         b=(T_PATH

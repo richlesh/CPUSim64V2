@@ -1181,12 +1181,12 @@ static void ex_builtin(Node *call, const char *name, ExToks *out) {
         nl = name[strlen(name) - 1] == 'n';
         if (n > 0) sp = ex_split(call, t, n, &nsp);
         if (nsp < 1) ex_err(call, "unexpected end of macro invocation");
-        ex_snip(out, "{ let mut __f = ::core::fmt::Formatter::new(&mut *(");
+        ex_snip(out, "{ let mut __f = ::core::fmt::Formatter::new((");
         ex_tappend(out, t + sp[0].s, sp[0].e - sp[0].s);
-        ex_snip(out, "));");
+        ex_snip(out, ").__write_target());");
         if (nsp > 1) ex_format(call, t + sp[1].s, n - sp[1].s, 0, nl ? "\n" : 0, out, 0, nl ? 0 : 2);
         else ex_format(call, t, 0, 0, nl ? "\n" : 0, out, 0, nl ? 0 : 2);
-        ex_snip(out, "::core::result::Result::Ok(()) }");
+        ex_snip(out, "::core::fmt::ok() }");
     } else if (strcmp(name, "panic") == 0 || strcmp(name, "unreachable") == 0 || strcmp(name, "todo") == 0 ||
                strcmp(name, "unimplemented") == 0) {
         const char *dflt = "explicit panic", *prefix = 0;

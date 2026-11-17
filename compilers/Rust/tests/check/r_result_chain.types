@@ -48,12 +48,11 @@
                       (PATH_SEG fmt ->core::fmt)
                       (PATH_SEG Formatter ->core::fmt::Formatter)
                       (PATH_SEG new)))
-                  (E_REF {mut} :&mut Formatter
-                    a=(E_DEREF :Formatter
-                      a=(E_PAREN :&mut Formatter
-                        a=(E_PATH ->f :&mut Formatter
-                          a=(PATH ->f
-                            (PATH_SEG f ->f))))))))
+                  (E_METHOD_CALL __write_target ->W::__write_target :&mut dyn Write
+                    a=(E_PAREN :&mut Formatter
+                      a=(E_PATH ->f :&mut Formatter
+                        a=(PATH ->f
+                          (PATH_SEG f ->f)))))))
               (STMT_EXPR
                 a=(BLOCK :()
                   (STMT_EXPR {semi}
@@ -63,13 +62,11 @@
                           (PATH_SEG __f ->__f)))
                       (E_LIT_STR "empty input" :&str)))))
               a=(E_CALL :Result<(), Error>
-                a=(E_PATH ->core::result::Result::Ok :fn(()) -> Result<(), Error> {Ok::<(), Error>}
-                  a=(PATH {global} ->core::result::Result::Ok
+                a=(E_PATH ->core::fmt::ok :fn() -> Result<(), Error> {ok}
+                  a=(PATH {global} ->core::fmt::ok
                     (PATH_SEG core ->core)
-                    (PATH_SEG result ->core::result)
-                    (PATH_SEG Result ->core::result::Result)
-                    (PATH_SEG Ok ->core::result::Result::Ok)))
-                (E_TUPLE :()))))
+                    (PATH_SEG fmt ->core::fmt)
+                    (PATH_SEG ok ->core::fmt::ok))))))
           (ARM
             a=(P_TUPLE_STRUCT ->AppError::BadNumber :AppError
               a=(PATH ->AppError::BadNumber
@@ -86,12 +83,11 @@
                       (PATH_SEG fmt ->core::fmt)
                       (PATH_SEG Formatter ->core::fmt::Formatter)
                       (PATH_SEG new)))
-                  (E_REF {mut} :&mut Formatter
-                    a=(E_DEREF :Formatter
-                      a=(E_PAREN :&mut Formatter
-                        a=(E_PATH ->f :&mut Formatter
-                          a=(PATH ->f
-                            (PATH_SEG f ->f))))))))
+                  (E_METHOD_CALL __write_target ->W::__write_target :&mut dyn Write
+                    a=(E_PAREN :&mut Formatter
+                      a=(E_PATH ->f :&mut Formatter
+                        a=(PATH ->f
+                          (PATH_SEG f ->f)))))))
               (STMT_EXPR
                 a=(BLOCK :()
                   (STMT_LET
@@ -130,13 +126,11 @@
                           (PATH_SEG __f ->__f)))
                       (E_LIT_STR "'" :&str)))))
               a=(E_CALL :Result<(), Error>
-                a=(E_PATH ->core::result::Result::Ok :fn(()) -> Result<(), Error> {Ok::<(), Error>}
-                  a=(PATH {global} ->core::result::Result::Ok
+                a=(E_PATH ->core::fmt::ok :fn() -> Result<(), Error> {ok}
+                  a=(PATH {global} ->core::fmt::ok
                     (PATH_SEG core ->core)
-                    (PATH_SEG result ->core::result)
-                    (PATH_SEG Result ->core::result::Result)
-                    (PATH_SEG Ok ->core::result::Result::Ok)))
-                (E_TUPLE :()))))
+                    (PATH_SEG fmt ->core::fmt)
+                    (PATH_SEG ok ->core::fmt::ok))))))
           (ARM
             a=(P_TUPLE_STRUCT ->AppError::Negative :AppError
               a=(PATH ->AppError::Negative
@@ -153,12 +147,11 @@
                       (PATH_SEG fmt ->core::fmt)
                       (PATH_SEG Formatter ->core::fmt::Formatter)
                       (PATH_SEG new)))
-                  (E_REF {mut} :&mut Formatter
-                    a=(E_DEREF :Formatter
-                      a=(E_PAREN :&mut Formatter
-                        a=(E_PATH ->f :&mut Formatter
-                          a=(PATH ->f
-                            (PATH_SEG f ->f))))))))
+                  (E_METHOD_CALL __write_target ->W::__write_target :&mut dyn Write
+                    a=(E_PAREN :&mut Formatter
+                      a=(E_PATH ->f :&mut Formatter
+                        a=(PATH ->f
+                          (PATH_SEG f ->f)))))))
               (STMT_EXPR
                 a=(BLOCK :()
                   (STMT_LET
@@ -191,13 +184,11 @@
                           a=(PATH ->__f
                             (PATH_SEG __f ->__f))))))))
               a=(E_CALL :Result<(), Error>
-                a=(E_PATH ->core::result::Result::Ok :fn(()) -> Result<(), Error> {Ok::<(), Error>}
-                  a=(PATH {global} ->core::result::Result::Ok
+                a=(E_PATH ->core::fmt::ok :fn() -> Result<(), Error> {ok}
+                  a=(PATH {global} ->core::fmt::ok
                     (PATH_SEG core ->core)
-                    (PATH_SEG result ->core::result)
-                    (PATH_SEG Result ->core::result::Result)
-                    (PATH_SEG Ok ->core::result::Result::Ok)))
-                (E_TUPLE :()))))))
+                    (PATH_SEG fmt ->core::fmt)
+                    (PATH_SEG ok ->core::fmt::ok))))))))
       (SELF_PARAM {ref} ->self)
       (PARAM
         a=(P_IDENT f ->f :&mut Formatter)
