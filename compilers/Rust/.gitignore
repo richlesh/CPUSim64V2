@@ -5,3 +5,7 @@ tests/run/*.asm
 tests/run/obj/
 tests/errors/*.gen.c
 tests/*/*.gen
+projects/*.gen.c
+projects/*.asm
+projects/obj/
+projects/output/
