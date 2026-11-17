@@ -236,7 +236,18 @@ static int cu(Type *a, Type *b) {
     if (a->kind == TY_NEVER || b->kind == TY_NEVER) return 1;
     if (a->kind == TY_INFER) return bind_var2(a, b);
     if (b->kind == TY_INFER) return bind_var2(b, a);
-    if (a->kind != b->kind) return 0;
+    if (a->kind != b->kind) {
+        /* a const generic argument is either a TY_PARAM (lowered from a path) or a const type
+           (array without elem: a length or a length variable); both name the same thing */
+        Type *p = a->kind == TY_PARAM ? a : b->kind == TY_PARAM ? b : 0;
+        Type *c = a->kind == TY_ARRAY ? a : b->kind == TY_ARRAY ? b : 0;
+        if (p && c && !c->elem && p->def && p->def->kind == SYM_CONST_GENERIC) {
+            Type *pc = ty_array(0, 0);
+            pc->len_param = p->def;
+            return uni_len(p == a ? pc : c, p == a ? c : pc);
+        }
+        return 0;
+    }
     switch (a->kind) {
     case TY_BOOL: case TY_CHAR: case TY_STR: case TY_SELF:
         return 1;
@@ -1391,6 +1402,7 @@ static void ck_cond(Node *c);
 static void check_match_exhaustive(Node *m, Type *scrut);
 static void check_irrefutable(Node *pat, Type *ty, Node *at, const char *what);
 static void queue_item(Node *n);
+static void note_neg_lit(Node *lit);
 
 static Name *nm_target, *nm_item_name;
 
@@ -2044,6 +2056,7 @@ static void ck_pat(Node *p, Type *ty, int bm) {
         Type *lt;
         Node *lit = p->a;
         lt = ck_expr(lit, t);
+        if ((p->flags & F_NEG) && lit->kind == N_E_LIT_INT) note_neg_lit(lit);
         if ((p->flags & F_NEG) && !ty_is_numeric(lt))
             error_at(p->file, p->line, "cannot apply unary operator `-` to type `%s`", tn(lt));
         if (!uni(lt, t)) mismatch(p, t, lt);
@@ -2435,7 +2448,16 @@ static void check_args(Node *call, Node **args, int na, Type **params, int np, T
                 continue;
             }
             if (hints && hints[i]) {
+                /* like rustc: the argument is a coercion site to the type the expected
+                   result type implies (so `Some(Box::new(c))` against Option<Box<dyn T>>
+                   unsizes the argument); that type is then unified with the formal one */
+                int m, adj0;
                 t = ck(a, hints[i], 0);
+                m = snap();
+                adj0 = a->adj;
+                if (coerce(a, t, hints[i]) && uni(params[i], hints[i])) continue;
+                rollback(m);
+                a->adj = adj0;
                 if (!coerce(a, t, params[i])) mismatch(a, params[i], t);
             } else {
                 ck_coerce(a, params[i]);
@@ -3166,6 +3188,17 @@ static Type *ck_tuple(Node *e, Type *hint) {
     for (i = 0; i < e->list.n; i++) {
         Type *h = (x && x->kind == TY_TUPLE && i < x->nargs) ? x->args[i] : 0;
         v[i] = ck_expr(e->list.v[i], h);
+        if (h && res(h)->kind != TY_INFER) {
+            /* like rustc, an element is a coercion site to the expected element type
+               (fn item -> fn pointer, Box<T> -> Box<dyn Tr>, ...); keep the checked
+               type when it does not coerce */
+            int m = snap(), adj0 = e->list.v[i]->adj;
+            if (coerce(e->list.v[i], v[i], h)) v[i] = h;
+            else {
+                rollback(m);
+                e->list.v[i]->adj = adj0;
+            }
+        }
     }
     return ty_tuple(v, (int)e->list.n);
 }
@@ -3690,6 +3723,7 @@ typedef struct DP {
     int ctor;
     long idx;                /* variant position / bool value / int low / slice length (fixed) */
     long hi;                 /* int high */
+    int lo_open, hi_open;    /* C_INT: the range has no lower / upper bound (`..=5`, `6..`) */
     int arity;
     struct DP **sub;
     struct DP **alts;
@@ -3777,6 +3811,53 @@ static long lit_value(Node *lit, int neg, int *ok) {
 
 static DP *dp_from(Node *p);
 
+/* the value of an integer / char constant expression (a literal, `-lit`, a const item, + - *) */
+static int dp_const_val(Node *e, long *out, int depth) {
+    long x, y;
+    Sym *s;
+    if (!e || depth > 24) return 0;
+    switch (e->kind) {
+    case N_E_LIT_INT: case N_E_LIT_CHAR: case N_E_LIT_BYTE:
+        *out = (long)e->ival;
+        return 1;
+    case N_E_PAREN: case N_E_CAST:
+        return dp_const_val(e->a, out, depth + 1);
+    case N_E_UNARY:
+        if (e->op != OP_NEG || !dp_const_val(e->a, &x, depth + 1)) return 0;
+        *out = -x;
+        return 1;
+    case N_E_PATH:
+        s = (Sym *)e->sym;
+        if (!s && e->a) s = (Sym *)e->a->sym;
+        if (s && s->kind == SYM_CONST && s->node && s->node->b) return dp_const_val(s->node->b, out, depth + 1);
+        return 0;
+    case N_E_BINARY:
+        if (!dp_const_val(e->a, &x, depth + 1) || !dp_const_val(e->b, &y, depth + 1)) return 0;
+        switch (e->op) {
+        case OP_ADD: *out = x + y; return 1;
+        case OP_SUB: *out = x - y; return 1;
+        case OP_MUL: *out = x * y; return 1;
+        }
+        return 0;
+    }
+    return 0;
+}
+
+/* the value of a pattern bound: a literal or a path / ident naming a const */
+static int dp_bound(Node *b, long *out) {
+    Sym *s;
+    int ok;
+    if (!b) return 0;
+    if (b->kind == N_P_LIT) {
+        *out = lit_value(b->a, (b->flags & F_NEG) != 0, &ok);
+        return ok && b->a->kind != N_E_LIT_BOOL;
+    }
+    if (b->kind == N_P_PATH || b->kind == N_P_IDENT) {
+        s = (Sym *)b->sym;
+        if (s && s->kind == SYM_CONST && s->node && s->node->b) return dp_const_val(s->node->b, out, 0);
+    }
+    return 0;
+}
 static DP *dp_ctor_of(Node *p, Sym *vs, Node **subpats, int nsub, int has_rest, Node *tuple_rest_host) {
     DP *d = dp_new(DP_CTOR, vs->kind == SYM_VARIANT ? C_VARIANT : C_SINGLE);
     int nf = count_fields(vs), i, rest = -1;
@@ -3813,7 +3894,10 @@ static DP *dp_from(Node *p) {
             return dp_wild();
         }
         if (s->kind == SYM_VARIANT || s->kind == SYM_STRUCT) d = dp_ctor_of(p, s, 0, 0, 0, 0);
-        else d = dp_new(DP_CTOR, C_OPAQUE);
+        else if (dp_bound(p, &k)) {
+            d = dp_new(DP_CTOR, C_INT);
+            d->idx = d->hi = k;
+        } else d = dp_new(DP_CTOR, C_OPAQUE);
         return dp_wrap_ref(d, peel);
     case N_P_LIT: {
         int ok;
@@ -3835,16 +3919,21 @@ static DP *dp_from(Node *p) {
         return dp_wrap_ref(d, peel);
     }
     case N_P_RANGE: {
-        int ok1 = 1, ok2 = 1;
         long lo = 0, hi = 0;
         d = dp_new(DP_CTOR, C_OPAQUE);
-        if (p->a && p->a->kind == N_P_LIT) lo = lit_value(p->a->a, (p->a->flags & F_NEG) != 0, &ok1); else ok1 = 0;
-        if (p->b && p->b->kind == N_P_LIT) hi = lit_value(p->b->a, (p->b->flags & F_NEG) != 0, &ok2); else ok2 = 0;
-        if (ok1 && ok2) {
-            d->ctor = C_INT;
-            d->idx = lo;
-            d->hi = (p->flags & F_INCLUSIVE) ? hi : hi - 1;
+        if (p->a) {
+            if (!dp_bound(p->a, &lo)) return dp_wrap_ref(d, peel);
+        } else {
+            d->lo_open = 1;
         }
+        if (p->b) {
+            if (!dp_bound(p->b, &hi)) return dp_wrap_ref(d, peel);
+        } else {
+            d->hi_open = 1;
+        }
+        d->ctor = C_INT;
+        d->idx = lo;
+        d->hi = (p->flags & F_INCLUSIVE) || !p->b ? hi : hi - 1;
         return dp_wrap_ref(d, peel);
     }
     case N_P_REF:
@@ -3912,7 +4001,10 @@ static DP *dp_from(Node *p) {
         Sym *vs = 0;
         Type *adt = 0;
         if (resolve_ctor(p->a, &vs, &adt)) d = dp_ctor_of(p, vs, 0, 0, 0, 0);
-        else d = dp_new(DP_CTOR, C_OPAQUE);
+        else if (dp_bound(p, &k)) {
+            d = dp_new(DP_CTOR, C_INT);
+            d->idx = d->hi = k;
+        } else d = dp_new(DP_CTOR, C_OPAQUE);
         return dp_wrap_ref(d, peel);
     }
     case N_P_TUPLE_STRUCT:
@@ -4162,6 +4254,121 @@ static char *ctor_text(Type *t, int kind, long idx, char **subs, int nsub) {
     return sb_take(&sb);
 }
 
+/* ---- integer / char value domains, as keys ordered like signed longs */
+
+#define DP_KMAX 9223372036854775807L
+#define DP_KMIN (-9223372036854775807L - 1)
+
+typedef struct {
+    int is_char, uns, uns64;
+    long kmin, kmax;         /* the whole type */
+    int nseg;
+    long sl[2], sh[2];       /* the valid segments (char has a hole at the surrogates) */
+    const char *name;
+} DomInfo;
+
+static long dm_key(DomInfo *d, long v) {
+    if (d->uns64) return (long)((unsigned long)v ^ ((unsigned long)1 << 63));
+    return v;
+}
+
+static int int_domain(Type *t, DomInfo *d) {
+    int bits = 64;
+    t = res(t);
+    memset(d, 0, sizeof(*d));
+    if (!t) return 0;
+    if (t->kind == TY_CHAR) {
+        d->is_char = 1;
+        d->nseg = 2;
+        d->sl[0] = 0;
+        d->sh[0] = 0xD7FF;
+        d->sl[1] = 0xE000;
+        d->sh[1] = 0x10FFFF;
+        d->kmin = 0;
+        d->kmax = 0x10FFFF;
+        d->name = "char";
+        return 1;
+    }
+    d->name = "i32";
+    if (t->kind == TY_INFER && t->ik == INFER_INT) {
+        bits = 32;
+    } else if (t->kind == TY_INT) {
+        d->name = tn(t);
+        d->uns = t->ik >= IK_U8 && t->ik != IK_ISIZE;
+        switch (t->ik) {
+        case IK_I8: case IK_U8: bits = 8; break;
+        case IK_I16: case IK_U16: bits = 16; break;
+        case IK_I32: case IK_U32: bits = 32; break;
+        default: bits = 64; break;
+        }
+    } else {
+        return 0;
+    }
+    if (d->uns) {
+        if (bits == 64) {
+            d->uns64 = 1;
+            d->kmin = DP_KMIN;
+            d->kmax = DP_KMAX;
+        } else {
+            d->kmin = 0;
+            d->kmax = ((long)1 << bits) - 1;
+        }
+    } else if (bits == 64) {
+        d->kmin = DP_KMIN;
+        d->kmax = DP_KMAX;
+    } else {
+        d->kmin = -((long)1 << (bits - 1));
+        d->kmax = ((long)1 << (bits - 1)) - 1;
+    }
+    d->nseg = 1;
+    d->sl[0] = d->kmin;
+    d->sh[0] = d->kmax;
+    return 1;
+}
+
+/* rustc's text of one value: `5_u8`, `-1_i32`, `u8::MAX`, `i32::MIN`, `'a'` */
+static char *dm_val_text(DomInfo *d, long key) {
+    StrBuf sb;
+    char buf[64];
+    unsigned long raw = d->uns64 ? ((unsigned long)key ^ ((unsigned long)1 << 63)) : (unsigned long)key;
+    sb_init(&sb);
+    if (d->is_char) {
+        if (key == d->kmax) {
+            sb_puts(&sb, "char::MAX");
+        } else if (key >= 0x20 && key < 0x7f) {
+            sb_putc(&sb, '\'');
+            if (key == '\'' || key == '\\') sb_putc(&sb, '\\');
+            sb_putc(&sb, (char)key);
+            sb_putc(&sb, '\'');
+        } else {
+            sprintf(buf, "'\\u{%lx}'", raw);
+            sb_puts(&sb, buf);
+        }
+        return sb_take(&sb);
+    }
+    if (key == d->kmax || (!d->uns && key == d->kmin)) {
+        sb_puts(&sb, d->name);
+        sb_puts(&sb, key == d->kmax ? "::MAX" : "::MIN");
+        return sb_take(&sb);
+    }
+    if (d->uns) sprintf(buf, "%lu_", raw);
+    else sprintf(buf, "%ld_", (long)raw);
+    sb_puts(&sb, buf);
+    sb_puts(&sb, d->name);
+    return sb_take(&sb);
+}
+
+static char *dm_range_text(DomInfo *d, long a, long b) {
+    StrBuf sb;
+    sb_init(&sb);
+    sb_puts(&sb, dm_val_text(d, a));
+    if (a != b) {
+        sb_puts(&sb, "..=");
+        sb_puts(&sb, dm_val_text(d, b));
+    }
+    return sb_take(&sb);
+}
+
 static int dp_missing(Row *rows0, int nrows0, int n, Type **tys, char **out, int depth) {
     Row *rows = 0;
     int nrows = 0, cap = 0, i, kind = 0, nct, ci, k;
@@ -4244,6 +4451,96 @@ static int dp_missing(Row *rows0, int nrows0, int n, Type **tys, char **out, int
                 return 1;
             }
             return 0;
+        }
+    }
+    /* integers and chars: split the type's value range at every boundary of the range patterns
+       of this column; each elementary interval is either inside or outside every pattern */
+    if (nct == -1) {
+        DomInfo dm;
+        int nint = 0;
+        for (i = 0; i < nrows; i++)
+            if (rows[i].c[0]->kind == DP_CTOR && rows[i].c[0]->ctor == C_INT) nint++;
+        if (nint > 0 && int_domain(tys[0], &dm)) {
+            long *pts = (long *)ast_alloc(sizeof(long) * (size_t)(2 * nint + 2));
+            long *ma = (long *)ast_alloc(sizeof(long) * (size_t)(2 * nint + 4));
+            long *mb = (long *)ast_alloc(sizeof(long) * (size_t)(2 * nint + 4));
+            char **first = 0;
+            int np = 0, nm = 0, sg, listing = (depth == 0 && n == 1);
+            for (i = 0; i < nrows; i++) {
+                DP *h = rows[i].c[0];
+                long klo, khi;
+                if (h->kind != DP_CTOR || h->ctor != C_INT) continue;
+                klo = h->lo_open ? DP_KMIN : dm_key(&dm, h->idx);
+                khi = h->hi_open ? DP_KMAX : dm_key(&dm, h->hi);
+                if (klo > khi) continue;
+                pts[np++] = klo;
+                if (khi < DP_KMAX) pts[np++] = khi + 1;
+            }
+            for (i = 1; i < np; i++) {              /* insertion sort */
+                long v = pts[i];
+                int j = i - 1;
+                while (j >= 0 && pts[j] > v) {
+                    pts[j + 1] = pts[j];
+                    j--;
+                }
+                pts[j + 1] = v;
+            }
+            for (sg = 0; sg < dm.nseg; sg++) {
+                int pi = 0;
+                long a = dm.sl[sg];
+                while (1) {
+                    long b, v;
+                    int nspec, jj;
+                    Row *spec = 0;
+                    int scap = 0, ns = 0;
+                    char **sub;
+                    while (pi < np && pts[pi] <= a) pi++;
+                    b = (pi < np && pts[pi] <= dm.sh[sg]) ? pts[pi] - 1 : dm.sh[sg];
+                    for (i = 0; i < nrows; i++) {
+                        DP *h = rows[i].c[0];
+                        Row r;
+                        if (h->kind == DP_CTOR && h->ctor == C_INT) {
+                            long klo = h->lo_open ? DP_KMIN : dm_key(&dm, h->idx);
+                            long khi = h->hi_open ? DP_KMAX : dm_key(&dm, h->hi);
+                            if (!(klo <= a && b <= khi)) continue;
+                        } else if (h->kind != DP_WILD) {
+                            continue;
+                        }
+                        r.c = (DP **)ast_alloc(sizeof(DP *) * (size_t)(n + 1));
+                        for (jj = 1; jj < n; jj++) r.c[jj - 1] = rows[i].c[jj];
+                        row_push(&spec, &ns, &scap, r);
+                    }
+                    nspec = ns;
+                    sub = (char **)ast_alloc(sizeof(char *) * (size_t)(n + 1));
+                    if (dp_missing(spec, nspec, n - 1, tys + 1, sub + 1, depth + 1)) {
+                        if (!first) first = sub;
+                        if (nm > 0 && listing && mb[nm - 1] < DP_KMAX && mb[nm - 1] + 1 == a) {
+                            mb[nm - 1] = b;
+                        } else {
+                            ma[nm] = a;
+                            mb[nm] = b;
+                            nm++;
+                        }
+                        if (!listing) break;
+                    }
+                    v = b;
+                    if (v >= dm.sh[sg]) break;
+                    a = v + 1;
+                }
+                if (nm > 0 && !listing) break;
+            }
+            if (nm == 0) return 0;
+            {
+                StrBuf sb;
+                sb_init(&sb);
+                for (i = 0; i < nm; i++) {
+                    if (i) sb_putc(&sb, 1);
+                    sb_puts(&sb, dm_range_text(&dm, ma[i], mb[i]));
+                }
+                out[0] = sb_take(&sb);
+            }
+            for (k = 1; k < n; k++) out[k] = first[k];
+            return 1;
         }
     }
     /* infinite signature: only the wildcard rows cover the rest */
@@ -4661,6 +4958,137 @@ static void queue_item(Node *n) {
     pending[npending++] = n;
 }
 
+static void check_item(Node *n);
+
+/* ---- `-> impl Trait`: the hidden type is an inference variable of the fn's signature (types.c),
+   bound while checking the fn's body.  Callers see the bound type, so every fn with an
+   impl Trait return is checked before the bodies that use it (ir_prepass). */
+
+static Node **ir_done = 0;
+static int nir_done = 0;
+
+static int ir_is_done(Node *n) {
+    int i;
+    for (i = 0; i < nir_done; i++)
+        if (ir_done[i] == n) return 1;
+    return 0;
+}
+
+static int ir_has_ret(Sym *s) {
+    int i;
+    for (i = 0; i < nimpl_rets; i++)
+        if (impl_rets[i].fn == s) return 1;
+    return 0;
+}
+
+/* the hidden type must implement the declared bounds (and bind the associated types): obligations
+   on the variable, which also give a closure body its expected signature */
+static void register_impl_rets(Sym *fn, Node *at) {
+    int i, k;
+    for (i = 0; i < nimpl_rets; i++) {
+        Type *b, *h;
+        if (impl_rets[i].fn != fn) continue;
+        b = impl_rets[i].bound;
+        h = impl_rets[i].hidden;
+        ob_node = at;
+        if (b->nparams == 0) {
+            ob_pred(h, b->def, b->args, b->nargs, 0, 0);
+        } else {
+            for (k = 0; k < b->nparams; k++) ob_pred(h, b->def, b->args, b->nargs, b->params[k]->name, b->params[k]->ret);
+        }
+    }
+}
+
+static void ir_collect(Node *n, Node ***v, int *cnt, int *cap) {
+    long i;
+    if (!n) return;
+    switch (n->kind) {
+    case N_ITEM_MOD:
+        for (i = 0; i < n->list.n; i++) ir_collect(n->list.v[i], v, cnt, cap);
+        break;
+    case N_ITEM_IMPL:
+        for (i = 0; i < n->list.n; i++)
+            if (n->list.v[i]->kind == N_ITEM_FN) ir_collect(n->list.v[i], v, cnt, cap);
+        break;
+    case N_ITEM_TRAIT:
+        for (i = 0; i < n->list.n; i++) {
+            Node *m = n->list.v[i];
+            if (m->kind == N_ITEM_FN && m->sym && ir_has_ret((Sym *)m->sym))
+                error_at(m->file, m->line, "`impl Trait` in a trait method's return type is not supported");
+        }
+        break;
+    case N_ITEM_FN:
+        if (n->c && n->sym && ir_has_ret((Sym *)n->sym)) {
+            if (*cnt >= *cap) {
+                *cap = *cap ? *cap * 2 : 8;
+                *v = (Node **)xrealloc(*v, sizeof(Node *) * (size_t)*cap);
+            }
+            (*v)[(*cnt)++] = n;
+        } else if (!n->c && n->sym && ir_has_ret((Sym *)n->sym)) {
+            error_at(n->file, n->line, "`impl Trait` is not allowed in the return type of a function without a body");
+        }
+        break;
+    }
+}
+
+/* marks deps[j] when the tree e mentions fns[j] (by resolved path, or by method name) */
+static void ir_scan(Node *e, Node **fns, int nf, int *deps, int depth) {
+    long i;
+    int j;
+    if (!e || depth > 200) return;
+    if (e->kind == N_E_PATH) {
+        Sym *s = (Sym *)e->sym;
+        if (!s && e->a) s = (Sym *)e->a->sym;
+        for (j = 0; s && j < nf; j++)
+            if ((Sym *)fns[j]->sym == s) deps[j] = 1;
+    } else if (e->kind == N_E_METHOD_CALL && e->name) {
+        for (j = 0; j < nf; j++)
+            if (fns[j]->name == e->name) deps[j] = 1;
+    }
+    ir_scan(e->a, fns, nf, deps, depth + 1);
+    ir_scan(e->b, fns, nf, deps, depth + 1);
+    ir_scan(e->c, fns, nf, deps, depth + 1);
+    ir_scan(e->d, fns, nf, deps, depth + 1);
+    for (i = 0; i < e->list.n; i++) ir_scan(e->list.v[i], fns, nf, deps, depth + 1);
+}
+
+static void drain_pending(void);
+
+static void ir_visit(int i, Node **fns, int nf, int *state) {
+    int *deps = (int *)ast_alloc(sizeof(int) * (size_t)(nf + 1)), j;
+    state[i] = 1;
+    for (j = 0; j < nf; j++) deps[j] = 0;
+    ir_scan(fns[i]->c, fns, nf, deps, 0);
+    for (j = 0; j < nf; j++)
+        if (deps[j] && state[j] == 0) ir_visit(j, fns, nf, state);
+    check_item(fns[i]);
+    drain_pending();
+    if (nir_done % 16 == 0) ir_done = (Node **)xrealloc(ir_done, sizeof(Node *) * (size_t)(nir_done + 16));
+    ir_done[nir_done++] = fns[i];
+    state[i] = 2;
+}
+
+static void ir_prepass(Node *crate) {
+    Node **fns = 0;
+    int nf = 0, cap = 0, i, *state;
+    if (nimpl_rets == 0) return;
+    for (i = 0; i < crate->list.n; i++) ir_collect(crate->list.v[i], &fns, &nf, &cap);
+    if (nf == 0) return;
+    state = (int *)ast_alloc(sizeof(int) * (size_t)nf);
+    for (i = 0; i < nf; i++) state[i] = 0;
+    for (i = 0; i < nf; i++)
+        if (state[i] == 0) ir_visit(i, fns, nf, state);
+}
+
+/* after every body is checked: the signatures hold the concrete hidden types */
+static void ir_fixup(void) {
+    int i;
+    for (i = 0; i < nimpl_rets; i++) {
+        Sym *s = impl_rets[i].fn;
+        if (s && s->ty && s->ty->kind == TY_FN_DEF && s->ty->ret) s->ty->ret = zonk(s->ty->ret);
+    }
+}
+
 static void check_fn_item(Node *n) {
     Sym *s = (Sym *)n->sym;
     Type *sig, *ret;
@@ -4673,6 +5101,7 @@ static void check_fn_item(Node *n) {
     sig = s->ty;
     ret = norm(sig->ret);
     push_fcx(ret, 0);
+    register_impl_rets(s, n);
     for (i = 0; i < n->list.n; i++) {
         Node *p = n->list.v[i];
         Type *pt;
@@ -4710,6 +5139,7 @@ static void check_item(Node *n) {
     long i;
     switch (n->kind) {
     case N_ITEM_FN:
+        if (ir_is_done(n)) break;
         check_fn_item(n);
         break;
     case N_ITEM_CONST: case N_ITEM_STATIC:
@@ -4737,6 +5167,7 @@ static void drain_pending(void) {
 static void check_crate_items(Node *crate) {
     long i;
     if (!crate) return;
+    ir_prepass(crate);
     for (i = 0; i < crate->list.n; i++) {
         check_item(crate->list.v[i]);
         drain_pending();
@@ -4756,6 +5187,7 @@ void check_crate(void) {
     collect_closure_impl = ck_closure_impl;
     if (core_root && core_root->node) check_crate_items(core_root->node);
     if (crate_root && crate_root->node) check_crate_items(crate_root->node);
+    ir_fixup();
     ty_infer_missing_args = saved;
     if (getenv("RUSTC_CHECK_STATS"))
         fprintf(stderr, "check: %ld bodies, %ld typed nodes\n", stat_bodies, stat_nodes);

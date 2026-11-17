@@ -228,6 +228,20 @@ const char *ty_str(Type *t);             /* ty_print into a fresh string */
  * from the T_PATH's resolved syms.  `_` gives a fresh inference variable. */
 Type *ty_from_ast(Node *tnode);
 
+/* `-> impl Trait` in a fn's return type: while collect.c lowers the return type it sets
+ * ty_impl_ret_fn; each impl Trait then becomes a fresh inference variable (the hidden type,
+ * bound when check.c checks the fn's body, before any caller) and an ImplRet is recorded with
+ * the trait bounds (a TY_DYN type) the hidden type must satisfy. */
+typedef struct ImplRet {
+    Sym *fn;
+    Node *node;
+    Type *hidden;
+    Type *bound;
+} ImplRet;
+extern Sym *ty_impl_ret_fn;
+extern ImplRet *impl_rets;
+extern int nimpl_rets;
+
 /* defaulting after a body is checked: {integer} -> i32, {float} -> f64 */
 void ty_default(Type *t);
 

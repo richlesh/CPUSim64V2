@@ -32,6 +32,11 @@ Type *ty_from_path_prefix(Node *path, int nseg);
  * variables instead of an error (check.c sets it around expression paths) */
 int ty_infer_missing_args = 0;
 
+/* `-> impl Trait` bookkeeping, see sema.h */
+Sym *ty_impl_ret_fn = 0;
+ImplRet *impl_rets = 0;
+int nimpl_rets = 0;
+
 /* ------------------------------------------------------------ constructors */
 
 static Type *ty_new(int kind) {
@@ -758,7 +763,15 @@ static int lower_args(Sym *sym, Node *seg, Node *errn, Type *self, Type ***out) 
                 args[i] = ty_subst(args[i], &s2);
             }
         } else if (ty_infer_missing_args) {
-            args[i] = ty_infer(0);
+            if (sym->gparams && i < sym->ngparams && sym->gparams[i] &&
+                sym->gparams[i]->kind == SYM_CONST_GENERIC) {
+                /* an inferred const argument is an array-length variable (see check.c) */
+                Sym *lv = sym_new(SYM_CONST_GENERIC, name_intern_str("{len}"), 0, 0);
+                args[i] = ty_array(0, 0);
+                args[i]->len_param = lv;
+            } else {
+                args[i] = ty_infer(0);
+            }
         } else {
             error_at(errn->file, errn->line, "missing generics for %s `%s`",
                      sym_kind_name(sym->kind), sym->name ? sym->name->s : "?");
@@ -1073,7 +1086,21 @@ Type *ty_from_ast(Node *t) {
     case N_T_DYN:
         return lower_dyn(t);
     case N_T_IMPL:
-        error_at(t->file, t->line, "impl Trait is not supported yet");
+        if (ty_impl_ret_fn) {
+            int ri;
+            Type *h;
+            for (ri = 0; ri < nimpl_rets; ri++)
+                if (impl_rets[ri].fn == ty_impl_ret_fn && impl_rets[ri].node == t) return impl_rets[ri].hidden;
+            h = ty_infer(0);
+            impl_rets = (ImplRet *)xrealloc(impl_rets, sizeof(ImplRet) * (size_t)(nimpl_rets + 1));
+            impl_rets[nimpl_rets].fn = ty_impl_ret_fn;
+            impl_rets[nimpl_rets].node = t;
+            impl_rets[nimpl_rets].hidden = h;
+            impl_rets[nimpl_rets].bound = lower_dyn(t);
+            nimpl_rets++;
+            return h;
+        }
+        error_at(t->file, t->line, "`impl Trait` is only allowed in function argument and return types");
         return 0;
     case N_T_INFER:
         return ty_infer(0);

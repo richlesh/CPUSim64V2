@@ -833,7 +833,9 @@ static void cl_lower_fn(Sym *s) {
         }
         ps[np++] = t;
     }
+    ty_impl_ret_fn = s;
     ret = n->b ? cl_lower(n->b, s) : ty_unit();
+    ty_impl_ret_fn = 0;
     s->ty = ty_fn_def(s, s->ngparams ? cl_identity(s) : 0, s->ngparams, ps, np, ret);
     if (np > 0 && n->list.n > 0 && n->list.v[0]->kind == N_SELF_PARAM) s->flags |= SF_METHOD;
 }

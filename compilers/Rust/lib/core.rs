@@ -4129,6 +4129,20 @@ pub mod slice {
         fn eq(&self, o: &[B; N]) -> bool { let a: &[A] = self; let b: &[B] = o; slice_eq(a, b) }
     }
     impl<T: ::core::cmp::Eq, const N: usize> ::core::cmp::Eq for [T; N] {}
+    impl<T: ::core::cmp::PartialOrd, const N: usize> ::core::cmp::PartialOrd for [T; N] {
+        fn partial_cmp(&self, o: &[T; N]) -> Option<Ordering> {
+            let a: &[T] = self;
+            let b: &[T] = o;
+            ::core::cmp::PartialOrd::partial_cmp(a, b)
+        }
+    }
+    impl<T: ::core::cmp::Ord, const N: usize> ::core::cmp::Ord for [T; N] {
+        fn cmp(&self, o: &[T; N]) -> Ordering {
+            let a: &[T] = self;
+            let b: &[T] = o;
+            slice_cmp(a, b)
+        }
+    }
     impl<T: ::core::default::Default + ::core::marker::Copy, const N: usize> ::core::default::Default for [T; N] {
         fn default() -> [T; N] { [T::default(); N] }
     }
