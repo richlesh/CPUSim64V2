@@ -120,7 +120,8 @@ Runs Rust programs (File → New Compiler → Rust) by translating them to C for
 - Rust 2021 with structs, enums, traits and `dyn Trait`, generics (monomorphized), closures, pattern matching, `?`, `derive`, `macro_rules!`, and the usual macros and format strings  
 - Its own standard library in Rust (`lib/`): `Option`, `Result`, `Box`, `String`, `Vec`, slices, iterators, `HashMap`, `HashSet`, `BTreeMap`, `BTreeSet`, `VecDeque`, `BinaryHeap`, `Rc`, `RefCell`, `fmt`, `io`; `Arc` and `Mutex` are single-threaded stand-ins  
 - Panics and integer overflow checks behave like a rustc debug build (exit status 101); types, moves and mutability are checked, lifetimes are not  
-- Not supported: `impl Trait` (for now), `i128`/`u128`, `async`, procedural macros, inline `unsafe` asm, threads; `f32` is an `f64`  
+- `impl Trait` in argument and return position (not in `let` bindings or trait method returns)  
+- Not supported: `i128`/`u128`, `async`, procedural macros, inline `unsafe` asm, threads; `f32` is an `f64`  
 - Regression tests compared with rustc: `compilers/Rust/tests/run_tests.sh` (`HOST=1`)  
 
 

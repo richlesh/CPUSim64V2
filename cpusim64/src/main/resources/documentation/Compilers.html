@@ -416,7 +416,7 @@ compiler_stack: 1M</pre>
 
 <h3>Left out, and differences from the standard</h3>
 <ul>
-	<li><b>Not supported:</b> <code>impl Trait</code> (not yet; this may be lifted), <code>i128</code>/<code>u128</code>, <code>async</code>/<code>await</code>, procedural macros, inline <code>unsafe</code> assembly, <code>std::thread</code>.</li>
+	<li><b>Not supported:</b> <code>impl Trait</code> outside argument and return position, <code>i128</code>/<code>u128</code>, <code>async</code>/<code>await</code>, procedural macros, inline <code>unsafe</code> assembly, <code>std::thread</code>.</li>
 	<li><code>f32</code> is not a separate type; it is an <code>f64</code>.</li>
 	<li><b>Borrow checking:</b> moves and mutability are checked, but lifetimes are not, so some programs that <code>rustc</code> rejects will be accepted.</li>
 	<li><code>Arc</code> and <code>Mutex</code> are single-threaded; <code>env::args()</code> gives only the program name; <code>HashMap</code> has no hasher parameter; <code>Rc</code> works only for sized types.</li>

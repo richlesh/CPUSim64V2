@@ -1,0 +1,1 @@
+errors/it_bound_not_satisfied.rs:14: error: the trait bound `Rock: Speak` is not satisfied

@@ -398,8 +398,13 @@ static Type *isub(Type *t, Subst *s) {
     case TY_SELF:
         return s->self ? s->self : t;
     case TY_ERR: case TY_INFER: case TY_BOOL: case TY_CHAR: case TY_INT: case TY_FLOAT:
-    case TY_STR: case TY_NEVER: case TY_CLOSURE:
+    case TY_STR: case TY_NEVER:
         return t;
+    case TY_CLOSURE:
+        /* an untagged closure is generic over its creator's context implicitly; a tagged one
+           (ir_tag) names that context in args, which are substituted like any type's */
+        if (t->len == 0) return t;
+        break;
     }
     elem = t->elem ? isub(t->elem, s) : 0;
     if (elem != t->elem) changed = 1;
@@ -1730,6 +1735,73 @@ static void apply_turbofish(Sym *fn, Subst *S, Node *seg, Node *at) {
     }
 }
 
+/* `-> impl Trait`: a closure in a hidden type was created by the body of fn, so its identity is
+   the closure node together with the generic args of the instance of fn that created it (the
+   code generator's closure tag, cg_types.c cgt_tag: len = 1 + n, args = the args, mut = has
+   Self).  Callers see the hidden type tagged with fn's own parameters, which the call's
+   substitution then replaces (isub), so `make_adder(1)` in two generic contexts gives the closure
+   of the right instance.  Closures that are already tagged come from an impl Trait fn that fn
+   calls and keep their tag; fn's own type arguments never contain closures of fn's body. */
+static Type *ir_tag_rec(Type *t, Type **ids, int n, int depth) {
+    Type *r, *c, **args = 0, **params = 0, *elem, *ret;
+    int i, changed = 0;
+    t = ty_resolve(t);
+    if (!t || depth > 64) return t;
+    switch (t->kind) {
+    case TY_PARAM: case TY_SELF: case TY_ERR: case TY_INFER: case TY_BOOL: case TY_CHAR:
+    case TY_INT: case TY_FLOAT: case TY_STR: case TY_NEVER:
+        return t;
+    case TY_CLOSURE:
+        if (t->len != 0) return t;
+        r = copy_type(t);
+        r->len = 1 + n;
+        r->mut = 0;
+        r->args = ids;
+        r->nargs = n;
+        return r;
+    }
+    elem = t->elem ? ir_tag_rec(t->elem, ids, n, depth + 1) : 0;
+    if (elem != t->elem) changed = 1;
+    ret = t->ret ? ir_tag_rec(t->ret, ids, n, depth + 1) : 0;
+    if (ret != t->ret) changed = 1;
+    for (i = 0; i < t->nargs; i++) {
+        c = ir_tag_rec(t->args[i], ids, n, depth + 1);
+        if (c != t->args[i] && !args) {
+            args = tvec(t->nargs);
+            memcpy(args, t->args, sizeof(Type *) * (size_t)i);
+        }
+        if (args) args[i] = c;
+    }
+    if (args) changed = 1;
+    for (i = 0; i < t->nparams; i++) {
+        c = ir_tag_rec(t->params[i], ids, n, depth + 1);
+        if (c != t->params[i] && !params) {
+            params = tvec(t->nparams);
+            memcpy(params, t->params, sizeof(Type *) * (size_t)i);
+        }
+        if (params) params[i] = c;
+    }
+    if (params) changed = 1;
+    if (!changed) return t;
+    r = copy_type(t);
+    r->elem = elem;
+    r->ret = ret;
+    if (args) r->args = args;
+    if (params) r->params = params;
+    return r;
+}
+
+static Type *ir_tag(Sym *fn, Type *ret) {
+    Type **ids;
+    int i, has = 0;
+    for (i = 0; i < nimpl_rets; i++)
+        if (impl_rets[i].fn == fn) has = 1;
+    if (!has || !ret) return ret;
+    ids = tvec(fn->ngparams);
+    for (i = 0; i < fn->ngparams; i++) ids[i] = ty_param(fn->gparams[i]);
+    return ir_tag_rec(ret, ids, fn->ngparams, 0);
+}
+
 /* the signature of fn under S, as a TY_FN_DEF; bounds are registered as obligations */
 static Type *inst_sig(Sym *fn, Subst *S, Type *self, Node *at, int reg) {
     Type *sig = fn->ty, **params, **targs;
@@ -1748,7 +1820,7 @@ static Type *inst_sig(Sym *fn, Subst *S, Type *self, Node *at, int reg) {
             if (S->params[j] == fn->gparams[i]) targs[i] = S->args[j];
     }
     if (reg) reg_bounds(fn, S, self, at);
-    return ty_fn_def(fn, targs, nt, params, np, norm(isub(sig->ret, S)));
+    return ty_fn_def(fn, targs, nt, params, np, norm(isub(ir_tag(fn, sig->ret), S)));
 }
 
 /* a free fn / path to a fn with its own generics only */
@@ -5014,7 +5086,7 @@ static void ir_collect(Node *n, Node ***v, int *cnt, int *cap) {
         for (i = 0; i < n->list.n; i++) {
             Node *m = n->list.v[i];
             if (m->kind == N_ITEM_FN && m->sym && ir_has_ret((Sym *)m->sym))
-                error_at(m->file, m->line, "`impl Trait` in a trait method's return type is not supported");
+                error_at(m->file, m->line, "`impl Trait` is not supported here (in a trait method's return type)");
         }
         break;
     case N_ITEM_FN:
@@ -5031,7 +5103,8 @@ static void ir_collect(Node *n, Node ***v, int *cnt, int *cap) {
     }
 }
 
-/* marks deps[j] when the tree e mentions fns[j] (by resolved path, or by method name) */
+/* marks deps[j] when the tree e mentions fns[j]: 1 by resolved path (a certain dependency),
+   2 by method name (a possible one) */
 static void ir_scan(Node *e, Node **fns, int nf, int *deps, int depth) {
     long i;
     int j;
@@ -5043,7 +5116,7 @@ static void ir_scan(Node *e, Node **fns, int nf, int *deps, int depth) {
             if ((Sym *)fns[j]->sym == s) deps[j] = 1;
     } else if (e->kind == N_E_METHOD_CALL && e->name) {
         for (j = 0; j < nf; j++)
-            if (fns[j]->name == e->name) deps[j] = 1;
+            if (fns[j]->name == e->name && !deps[j]) deps[j] = 2;
     }
     ir_scan(e->a, fns, nf, deps, depth + 1);
     ir_scan(e->b, fns, nf, deps, depth + 1);
@@ -5061,6 +5134,13 @@ static void ir_visit(int i, Node **fns, int nf, int *state) {
     ir_scan(fns[i]->c, fns, nf, deps, 0);
     for (j = 0; j < nf; j++)
         if (deps[j] && state[j] == 0) ir_visit(j, fns, nf, state);
+    /* a fn whose body calls itself defines the hidden type by its other returns; a cycle through
+       another impl Trait fn leaves both hidden types undetermined */
+    for (j = 0; j < nf; j++)
+        if (deps[j] == 1 && j != i && state[j] == 1)
+            error_at(fns[i]->file, fns[i]->line,
+                     "cannot infer the hidden type of `impl Trait` in `%s`: it depends on itself through `%s`",
+                     fns[i]->name ? fns[i]->name->s : "?", fns[j]->name ? fns[j]->name->s : "?");
     check_item(fns[i]);
     drain_pending();
     if (nir_done % 16 == 0) ir_done = (Node **)xrealloc(ir_done, sizeof(Node *) * (size_t)(nir_done + 16));

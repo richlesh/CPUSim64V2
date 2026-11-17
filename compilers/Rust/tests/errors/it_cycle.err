@@ -1,0 +1,1 @@
+errors/it_cycle.rs:7: error: cannot infer the hidden type of `impl Trait` in `b`: it depends on itself through `a`

@@ -1100,7 +1100,7 @@ Type *ty_from_ast(Node *t) {
             nimpl_rets++;
             return h;
         }
-        error_at(t->file, t->line, "`impl Trait` is only allowed in function argument and return types");
+        error_at(t->file, t->line, "`impl Trait` is not supported here (only in function argument and return types)");
         return 0;
     case N_T_INFER:
         return ty_infer(0);

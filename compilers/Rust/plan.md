@@ -51,8 +51,8 @@ the C11 compiler produces the assembly (`translate_to: C11`).
 
 ## Known gaps
 
-- `impl Trait` (argument and return position): not supported yet, being
-  fixed, so this limitation may be lifted.
+- `impl Trait` works in argument and return position only (not in `let`
+  bindings, struct fields or trait method return types).
 - No `i128` / `u128`; `f32` is an `f64`.
 - No `async` / `await`, procedural macros or inline `unsafe` asm.
 - No lifetime or borrow checking (moves and mutability are checked).

@@ -39,6 +39,7 @@ must pass the front end: `obj/rustc-native --types tests/run/NAME.rs > /dev/null
 | `s5_col_*` | `lib/collections.rs`: `HashMap` (entry API), `HashSet`, `BTreeMap`/`BTreeSet`, `VecDeque`, `BinaryHeap`, `derive(Hash)` (output never depends on hash order) |
 | `s5_rc_*` | `lib/rc.rs`: `Rc`/`Weak`, `Cell`, `RefCell`, trees and graphs, single-threaded `Arc`/`Mutex` |
 | `fe_*` | Front-end features: unsizing coercion in constructor arguments, fn item to fn pointer in tuples, const-generic arrays, integer-range `match` |
+| `it_*` | `impl Trait` in argument and return position: closures, iterator chains, `Display`, methods, generic fns, nested types |
 
 ## Older tests
 

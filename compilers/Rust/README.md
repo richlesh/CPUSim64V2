@@ -82,7 +82,7 @@ and mutability. There is no lifetime or borrow checker.
 
 ## Known gaps
 
-- `impl Trait` in argument and return position is not supported yet (this may be lifted soon).
+- `impl Trait` only in argument and return position (not in `let` bindings, struct fields, aliases or trait method return types), as in rustc.
 - No `i128` / `u128`; `f32` is an `f64`.
 - No `async` / `await`, no procedural macros, no inline `unsafe` asm.
 - Lifetimes are parsed but not checked: some programs `rustc` rejects are accepted.

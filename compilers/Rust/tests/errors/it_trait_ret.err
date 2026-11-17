@@ -1,0 +1,1 @@
+errors/it_trait_ret.rs:4: error: `impl Trait` is not supported here (in a trait method's return type)

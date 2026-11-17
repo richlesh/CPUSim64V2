@@ -25,7 +25,8 @@ iterators with the usual adapters, `HashMap`, `HashSet`, `BTreeMap`,
 `io` (`stdin().read_line`, `lines`, `Write`), `mem`, `cmp`, integer, `f64` and
 `char` methods.  `Arc` and `Mutex` exist but are single-threaded stand-ins.
 
-Not supported: `impl Trait` (for now; use generics or `Box<dyn Trait>`),
+`impl Trait` works in argument and return position (not in `let`
+bindings or trait method return types).  Not supported:
 `i128`/`u128`, `async`, procedural macros, inline `unsafe` asm,
 `std::thread`, files and networking.  Lifetimes are accepted but not checked
 (moves and mutability are checked).  `env::args()` has only the program name.

@@ -977,6 +977,20 @@ static Type **cgt_zonk_list(Type **v, int n) {
     return r;
 }
 
+/* t contains a closure type without a generic context tag */
+static int cgt_has_untagged(Type *t) {
+    int i;
+    t = ty_resolve(t);
+    if (!t) return 0;
+    if (t->kind == TY_CLOSURE && t->len == 0) return 1;
+    if (t->elem && cgt_has_untagged(t->elem)) return 1;
+    for (i = 0; i < t->nargs; i++)
+        if (cgt_has_untagged(t->args[i])) return 1;
+    for (i = 0; i < t->nparams; i++)
+        if (cgt_has_untagged(t->params[i])) return 1;
+    return t->ret && cgt_has_untagged(t->ret);
+}
+
 /* the signature of fn instantiated with args / self, as a TY_FN_DEF */
 static Type *cgt_sig(Sym *fn, Type **args, int n, Type *self) {
     Type *sig = fn->ty, **params, *ret;
@@ -991,6 +1005,23 @@ static Type *cgt_sig(Sym *fn, Type **args, int n, Type *self) {
     params = (Type **)ast_alloc(sizeof(Type *) * (size_t)(np + 1));
     for (i = 0; i < np; i++) params[i] = cgt_inst(sig->params[i], &s);
     ret = cgt_inst(sig->ret, &s);
+    /* a closure in the return type that is still untagged (the hidden type of `-> impl Trait`)
+       was created by this fn's body: it gets the identity the body gives it, i.e. the context of
+       this instance (cgt_instance; closures in the args were tagged by the caller already) */
+    if (ret && cgt_has_untagged(ret)) {
+        Subst *save = cg_subst, cs = s;
+        Type **ta = n > 0 ? (Type **)ast_alloc(sizeof(Type *) * (size_t)n) : 0;
+        for (i = 0; i < n; i++) ta[i] = args[i] ? cgt_tag(cgt_zonk(args[i])) : 0;
+        cs.args = ta;
+        if (!fn->parent || fn->parent->kind != SYM_TRAIT) cs.self = 0;
+        else if (self) cs.self = cgt_tag(cgt_zonk(self));
+        for (i = 0; i < cs.n; i++)
+            if (!ta[i]) { cs.n = i; break; }
+        ret = cgt_inst(sig->ret, &cs);
+        cg_subst = &cs;
+        ret = cgt_tag(ret);
+        cg_subst = save;
+    }
     return ty_fn_def(fn, args, n, params, np, ret);
 }
 
