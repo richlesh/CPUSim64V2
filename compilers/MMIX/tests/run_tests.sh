@@ -29,7 +29,7 @@
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 MMIX_DIR="$(dirname "$HERE")"
 ROOT="$(cd "$MMIX_DIR/../.." && pwd)"
-JAR="$(ls "$ROOT"/lib/cpusim64-*.jar | head -1)"
+JAR="$(ls "$ROOT"/lib/cpusim64-*.jar | grep -v ' ' | head -1)"
 NATIVE="$ROOT/bin/cpusim64_native"
 FILTER="${1:-}"
 TMP="$(mktemp -d)"

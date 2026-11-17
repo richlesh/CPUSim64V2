@@ -48,7 +48,7 @@ if [[ -z "$ROOT" ]]; then
     echo "FATAL: CPUSim64 install not found; set CPUSIM64_HOME"
     exit 1
 fi
-JAR="$(ls "$ROOT"/lib/cpusim64-*.jar | head -1)"
+JAR="$(ls "$ROOT"/lib/cpusim64-*.jar | grep -v ' ' | head -1)"
 MEM=16M
 STACK=256K
 FILTER="${1:-}"
