@@ -38,6 +38,7 @@ Some instructions break this ideal. Operations such as division are typically no
 <tr><td>PACK, PACK64, UNPACK, UNPACK64</td><td>&mdash;</td><td>1</td></tr>
 <tr><td>ENDIAN</td><td>&mdash;</td><td>1</td></tr>
 <tr><td>READONLY</td><td>&mdash;</td><td>1</td></tr>
+<tr><td>LDCR, STCR</td><td>&mdash;</td><td>1</td></tr>
 
 <tr class="category"><th colspan="3">Arithmetic</th></tr>
 <tr><td>NEGATE</td><td>integer</td><td>1</td></tr>
@@ -69,13 +70,14 @@ Some instructions break this ideal. Operations such as division are typically no
 <tr><td>CALL</td><td>conditional, taken</td><td>4</td></tr>
 <tr><td>CALL</td><td>conditional, not taken</td><td>1</td></tr>
 <tr><td>RETURN</td><td>&mdash;</td><td>3</td></tr>
+<tr><td>IRET</td><td>&mdash;</td><td>4</td></tr>
 <tr><td>STOP</td><td>&mdash;</td><td>1</td></tr>
 
 <tr class="category"><th colspan="3">I/O &amp; System</th></tr>
 <tr><td>IN</td><td>&mdash;</td><td>1</td></tr>
 <tr><td>OUT</td><td>&mdash;</td><td>1</td></tr>
-<tr><td>INTERRUPT</td><td>unconditional</td><td>11</td></tr>
-<tr><td>INTERRUPT</td><td>conditional, taken</td><td>11</td></tr>
+<tr><td>INTERRUPT</td><td>unconditional</td><td>7</td></tr>
+<tr><td>INTERRUPT</td><td>conditional, taken</td><td>7</td></tr>
 <tr><td>INTERRUPT</td><td>conditional, not taken</td><td>1</td></tr>
 <tr><td>DEBUG</td><td>&mdash;</td><td>1</td></tr>
 </table>
@@ -88,7 +90,7 @@ Some instructions break this ideal. Operations such as division are typically no
 <li><strong>SAVE/RESTORE:</strong> N = number of registers in the range (e.g., <code>SAVE R0, R28</code> &rarr; N = 29). The per-register cost comes from the N stack writes/reads (1 cycle each); the instruction itself adds no extra beyond fetch.</li>
 <li><strong>CAS:</strong> A compare-and-swap on heap or stack memory uses an atomic primitive with a 2-cycle extra cost (3 total). A CAS on shared memory additionally performs a separate read and write (2 memory cycles), for 5 total.</li>
 <li><strong>Conditional branches:</strong> JUMP, CALL, and INTERRUPT charge the <code>xxx0</code> value when the condition is not taken and the <code>xxx1</code> value when taken; unconditional forms use the base key.</li>
-<li><strong>INTERRUPT:</strong> The 10-cycle extra (11 total) represents the trap/return cost. Actual handler execution time is tracked separately as wall-clock &ldquo;System Time.&rdquo;</li>
+<li><strong>INTERRUPT:</strong> The 7 cycles are the instruction fetch plus 6 for the interrupt frame (three words pushed on entry and three popped on return); the <code>interrupt</code> and <code>interrupt1</code> extra cycles are 0 and can be raised in <code>instructions.data</code>. A built-in service (<code>INT -n</code>, or an empty vector) is charged the same 6 cycles even though its frame is not materialized on the stack. A handler installed in the vector table additionally pays for its own instructions, ending with <code>IRET</code> (fetch plus three reads, 4 cycles). Reading the vector table entry is free. Actual built-in service time is tracked separately as wall-clock &ldquo;System Time.&rdquo;</li>
 <li><strong>IN/OUT:</strong> Each port access is charged a fixed 1 cycle for the instruction itself. The real time spent performing the underlying port transfer (e.g. file or device I/O) is measured separately and added to wall-clock &ldquo;System Time,&rdquo; the same way interrupt-handler time is tracked, so slow I/O does not distort the deterministic cycle count.</li>
 </ul>
 </div>

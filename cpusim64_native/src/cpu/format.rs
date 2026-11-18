@@ -38,6 +38,9 @@ impl Simulator {
         let regs = register_names();
         let mut out = String::new();
         out.push_str(&format!("\nCPU State    SR: {}\n", self.format_sr()));
+        if self.ivt_base != 0 {
+            out.push_str(&format!("             IVT: {:08x}\n", self.ivt_base));
+        }
 
         // Heading: "%3s  %16s %21s %3s  %23s   %5s  %16s %21s %23s\n"
         let labels = ["R", "hex", "dec", "FP", "float", "Stack", "hex", "dec", "float"];

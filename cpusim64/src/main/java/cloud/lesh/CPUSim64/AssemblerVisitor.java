@@ -933,15 +933,45 @@ public class AssemblerVisitor extends CPUSim64BaseVisitor<Void> implements HasLo
 			addWord(LabelType.CODE, encType0(Opcode.INTERRUPT.code, aType, OT_NONE, OT_NONE, OT_NONE, (int) v0, 0, 0, 0));
 		} else {
 			v0 = parseIntLike(ctx.cLiteral().getText());
-			if (fitsIn(v0, C0_BITS, false)) {
+			// Signed: a negative number selects a built-in host service ("INT -n"),
+			// and the 12-bit field is sign-extended when decoded.
+			if (fitsIn(v0, C0_BITS, true)) {
 				aType = OT_CONST;
-				v0 = v0;
 				addWord(LabelType.CODE, encType0(Opcode.INTERRUPT.code, aType, OT_NONE, OT_NONE, OT_NONE, (int) v0, 0, 0, 0));
 			} else {
 				addWord(LabelType.CODE, encType1C1(Opcode.INTERRUPT.code, v0));
 			}
 		}
 		return null;
+	}
+
+	@Override
+	public Void visitInstrLDCR(CPUSim64Parser.InstrLDCRContext ctx) {
+		int rd = regIndex(ctx.rOperand().REG_R().getText());
+		long n = controlRegisterNumber(ctx.cLiteral().getText());
+		addWord(LabelType.CODE, encType0(Opcode.LDCR.code, OT_REG, OT_CONST, OT_NONE, OT_NONE, rd, (int) n, 0, 0));
+		return null;
+	}
+
+	@Override
+	public Void visitInstrSTCR(CPUSim64Parser.InstrSTCRContext ctx) {
+		long n = controlRegisterNumber(ctx.cLiteral().getText());
+		int rs = regIndex(ctx.rOperand().REG_R().getText());
+		addWord(LabelType.CODE, encType0(Opcode.STCR.code, OT_CONST, OT_REG, OT_NONE, OT_NONE, (int) n, rs, 0, 0));
+		return null;
+	}
+
+	@Override
+	public Void visitInstrIRET(CPUSim64Parser.InstrIRETContext ctx) {
+		addWord(LabelType.CODE, encType0(Opcode.IRET.code, OT_NONE, OT_NONE, OT_NONE, OT_NONE, 0, 0, 0, 0));
+		return null;
+	}
+
+	private long controlRegisterNumber(String text) {
+		long n = parseIntLike(text);
+		if (n < 0 || n > 0x7FF)
+			throw new AssemblerException("Control register number out of range (0..2047): " + n);
+		return n;
 	}
 
 	@Override

@@ -1,6 +1,6 @@
 //! Opcode table (ports `Opcode.java`).
 //!
-//! Opcode numbers 0..40. Note the Java enum has two names sharing code 0
+//! Opcode numbers 0..43. Note the Java enum has two names sharing code 0
 //! (NOP/DEBUG) and two sharing code 16 (DIVIDE/RECIP). The canonical display
 //! name used by the disassembler is derived via `name_for_code`, which matches
 //! `Opcode.fromCode(op).getName()` — `codeMap` is built by iterating the enum
@@ -52,6 +52,9 @@ pub const RESTORE: u8 = 37;
 pub const READONLY: u8 = 38;
 pub const LDB: u8 = 39;
 pub const STB: u8 = 40;
+pub const LDCR: u8 = 41;
+pub const STCR: u8 = 42;
+pub const IRET: u8 = 43;
 
 /// Returns the canonical opcode name for a code, matching Java
 /// `Opcode.fromCode(op).getName()`.
@@ -101,6 +104,9 @@ pub fn name_for_code(op: u8) -> &'static str {
         38 => "READONLY",
         39 => "LDB",
         40 => "STB",
+        41 => "LDCR",
+        42 => "STCR",
+        43 => "IRET",
         _ => "UNDEFINED",
     }
 }

@@ -65,6 +65,9 @@ public enum Opcode {
 	READONLY(38),
 	LDB(39),
 	STB(40),
+	LDCR(41),
+	STCR(42),
+	IRET(43),
 	UNDEFINED(-1);
 
 	public final int code;

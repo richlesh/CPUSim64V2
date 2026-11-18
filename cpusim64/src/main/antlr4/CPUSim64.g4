@@ -57,6 +57,9 @@ instruction
   | instrSTORE
   | instrLDB
   | instrSTB
+  | instrLDCR
+  | instrSTCR
+  | instrIRET
   | instrPOP
   | instrPUSH
   | instrJUMP
@@ -140,6 +143,19 @@ instrLDB
 
 instrSTB
   : STB qOperand ',' memRef
+  ;
+
+/* ----- 41 LDCR / 42 STCR / 43 IRET (control registers and interrupt return) ----- */
+instrLDCR
+  : LDCR rOperand ',' cLiteral         /* R,C: rd <- control register C */
+  ;
+
+instrSTCR
+  : STCR cLiteral ',' rOperand         /* C,R: control register C <- rs */
+  ;
+
+instrIRET
+  : IRET                               /* N: SP=SF; pop SF; pop SR; pop PC */
   ;
 
 /* ----- 5 POP / 6 PUSH ----- */
@@ -423,6 +439,9 @@ RESTORE  : [rR][eE][sS][tT]([oO][rR][eE])? ;
 READONLY : [rR][eE][aA][dD][oO][nN][lL][yY] ;
 LDB      : [lL][dD][bB] ;
 STB      : [sS][tT][bB] ;
+LDCR     : [lL][dD][cC][rR] ;
+STCR     : [sS][tT][cC][rR] ;
+IRET     : [iI][rR][eE][tT] ;
 
 /* Registers */
 REG_R : [rR] [0-9]+ ;			// r0..r28 (range-check later)

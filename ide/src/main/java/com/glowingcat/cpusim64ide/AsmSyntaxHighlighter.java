@@ -10,7 +10,7 @@ import java.util.regex.*;
 public class AsmSyntaxHighlighter {
 
     private static final Set<String> INSTRUCTIONS = Set.of(
-        "nop", "debug", "clear", "move", "mov", "load", "loa", "store", "sto", "ldb", "stb",
+        "nop", "debug", "clear", "move", "mov", "load", "loa", "store", "sto", "ldb", "stb", "ldcr", "stcr", "iret",
         "pop", "push", "jump", "call", "return", "ret", "interrupt", "int", "stop",
         "neg", "add", "sub", "mult", "mul", "div", "recip", "compl", "not",
         "and", "or", "xor", "test", "tst", "cmp",

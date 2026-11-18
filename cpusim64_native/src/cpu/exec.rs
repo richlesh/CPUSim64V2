@@ -1,7 +1,10 @@
 //! Opcode execution (ports the `exec` dispatch and all 39 `op*` handlers of
 //! `Simulator.java`), with interleaved cycle accounting (Task 5).
 
-use super::{CpuException, CpuResult, Simulator, R_PC, R_SF, R_SP};
+use super::{
+    CpuException, CpuResult, Simulator, CR_IVT_BASE, INT_FRAME_CYCLES, IVT_ENTRIES, R_PC, R_SF,
+    R_SP,
+};
 use crate::decode::{
     is_const_kind, is_fp_kind, is_none_kind, is_o_kind, is_q_kind, is_reg_kind, is_y_kind,
     Decoded, FPR_COUNT, GPR_COUNT,
@@ -271,6 +274,18 @@ impl Simulator {
             40 => {
                 self.op_store(d, true)?;
                 self.add_cycles("stb");
+            }
+            41 => {
+                self.op_ldcr(d)?;
+                self.add_cycles("ldcr");
+            }
+            42 => {
+                self.op_stcr(d)?;
+                self.add_cycles("stcr");
+            }
+            43 => {
+                self.op_iret(d)?;
+                self.add_cycles("iret");
             }
             _ => return Err(CpuException(format!("Unimplemented opcode: {}", d.op))),
         }
@@ -612,12 +627,15 @@ impl Simulator {
 
     // ---- 10: INTERRUPT ----
     fn op_interrupt(&mut self, d: &Decoded) -> CpuResult<()> {
-        let mut code: i64 = -1;
+        let mut code: i64 = 0; // 0 none, n > 0 vectored/host service n, n < 0 host service -n
+        let mut valid = false;
         let mut conditional = false;
         if d.tt == 1 {
             code = d.c1;
+            valid = true;
         } else if d.tt == 2 {
             conditional = true;
+            valid = true;
             code = if self.test_cond(self.get_const(d.a, d.v0)?) {
                 d.c2
             } else {
@@ -627,8 +645,10 @@ impl Simulator {
             let count = d.arg_count();
             if count == 1 && is_o_kind(d.a) {
                 code = self.get_o(d.a, d.v0)?;
+                valid = true;
             } else if count == 2 && is_o_kind(d.b) {
                 conditional = true;
+                valid = true;
                 code = if self.test_cond(self.get_const(d.a, d.v0)?) {
                     self.get_o(d.b, d.v1)?
                 } else {
@@ -636,16 +656,107 @@ impl Simulator {
                 };
             }
         }
-        if code > 0 {
-            self.add_cycles(if conditional { "interrupt1" } else { "interrupt" });
-            let start = crate::util::nano_time();
-            self.dispatch_interrupt(code as i32)?;
-            self.total_system_time_ns += crate::util::nano_time() - start;
-        } else if code == 0 {
-            self.add_cycles("interrupt0");
-        } else {
+        if !valid {
             return Err(CpuException("Illegal INTERRUPT arguments.".into()));
         }
+        if code == 0 {
+            self.add_cycles("interrupt0");
+            return Ok(());
+        }
+        if code < -(i32::MAX as i64) || code > i32::MAX as i64 {
+            return Err(CpuException("Illegal INTERRUPT arguments.".into()));
+        }
+        self.add_cycles(if conditional { "interrupt1" } else { "interrupt" });
+        if code > 0 && code < IVT_ENTRIES && self.ivt_base != 0 {
+            let handler = self.peek_vector(code)?;
+            if handler != 0 {
+                return self.enter_interrupt(handler);
+            }
+        }
+        // Built-in host service: "INT -n" always, and "INT n" when no handler is
+        // installed. The frame (return PC, SR, SF) is virtual here: nothing
+        // observable can see it, and services such as iSAVE/iRESTORE and the printf
+        // family work on the caller's SP/SF.
+        self.cycles += INT_FRAME_CYCLES;
+        let start = crate::util::nano_time();
+        self.dispatch_interrupt(code.unsigned_abs() as i32)?;
+        self.total_system_time_ns += crate::util::nano_time() - start;
+        Ok(())
+    }
+
+    /// Reads vector table entry `n` without charging a memory cycle.
+    fn peek_vector(&mut self, n: i64) -> CpuResult<i64> {
+        let saved = self.cycles;
+        let v = self.mem_read(self.ivt_base + n);
+        self.cycles = saved;
+        v
+    }
+
+    /// INT entry: push the return PC, SR and SF, set SF = SP, jump to the handler.
+    fn enter_interrupt(&mut self, handler: i64) -> CpuResult<()> {
+        self.mem_write(self.r[R_SP], self.r[R_PC])?;
+        self.r[R_SP] -= 1;
+        self.mem_write(self.r[R_SP], self.sr)?;
+        self.r[R_SP] -= 1;
+        self.mem_write(self.r[R_SP], self.r[R_SF])?;
+        self.r[R_SP] -= 1;
+        if self.r[R_SP] < self.heap_limit {
+            return Err(CpuException("Stack/Heap collision".into()));
+        }
+        self.r[R_SF] = self.r[R_SP];
+        self.r[R_PC] = handler;
+        Ok(())
+    }
+
+    // ---- 41: LDCR rd, n ----
+    fn op_ldcr(&mut self, d: &Decoded) -> CpuResult<()> {
+        if d.tt == 0 && is_reg_kind(d.a) && is_const_kind(d.b) && d.arg_count() == 2 {
+            let v = self.read_control_register(d.v1 as i64)?;
+            return self.set_r_kind(d.a, d.v0, v);
+        }
+        Err(CpuException("LDCR form not implemented".into()))
+    }
+
+    // ---- 42: STCR n, rs ----
+    fn op_stcr(&mut self, d: &Decoded) -> CpuResult<()> {
+        if d.tt == 0 && is_const_kind(d.a) && is_reg_kind(d.b) && d.arg_count() == 2 {
+            let v = self.get_r_kind(d.b, d.v1)?;
+            return self.write_control_register(d.v0 as i64, v);
+        }
+        Err(CpuException("STCR form not implemented".into()))
+    }
+
+    fn read_control_register(&self, n: i64) -> CpuResult<i64> {
+        if n == CR_IVT_BASE {
+            return Ok(self.ivt_base);
+        }
+        Err(CpuException(format!("Illegal control register {}", n)))
+    }
+
+    fn write_control_register(&mut self, n: i64, value: i64) -> CpuResult<()> {
+        if n == CR_IVT_BASE {
+            // 0 disables the table. Otherwise all 256 entries must lie in heap-range RAM.
+            if value != 0 && (value < 0 || value > self.heap_limit - IVT_ENTRIES) {
+                return Err(CpuException(format!(
+                    "Illegal interrupt vector table base {:08x}",
+                    value
+                )));
+            }
+            self.ivt_base = value;
+            return Ok(());
+        }
+        Err(CpuException(format!("Illegal control register {}", n)))
+    }
+
+    // ---- 43: IRET ----
+    fn op_iret(&mut self, _d: &Decoded) -> CpuResult<()> {
+        self.r[R_SP] = self.r[R_SF];
+        self.r[R_SP] += 1;
+        self.r[R_SF] = self.mem_read(self.r[R_SP])?;
+        self.r[R_SP] += 1;
+        self.sr = self.mem_read(self.r[R_SP])?;
+        self.r[R_SP] += 1;
+        self.r[R_PC] = self.mem_read(self.r[R_SP])?;
         Ok(())
     }
 
@@ -1352,6 +1463,17 @@ impl Simulator {
 
     pub fn exit(&mut self, code: i32) {
         self.set_r(0, code as i64);
+        // Exit hook: the main thread only. A nonzero vector 0 receives control with
+        // the exit code in R0 instead of the process ending; the handler may clear
+        // the vector and exit again to terminate.
+        if self.is_root && self.ivt_base != 0 {
+            if let Ok(hook) = self.peek_vector(0) {
+                if hook != 0 {
+                    self.r[R_PC] = hook;
+                    return;
+                }
+            }
+        }
         self.running = false;
     }
 
@@ -1738,5 +1860,339 @@ mod byte_tests {
         // STB: fetch(1) + write(1) + stb extra(0) + fetch STOP(1) = 3
         let s = run_with(&[enc_t2(opcode::STB, 2, 0, 8 * 200), stop()], &[]);
         assert_eq!(s.cycles, 3);
+    }
+}
+
+#[cfg(test)]
+mod ivt_tests {
+    //! Vectored interrupts (LDCR 41, STCR 42, IRET 43, INT -n, exit hook),
+    //! mirroring `IvtTest.java`. Memory is 4096 words, so the vector table sits
+    //! at word 3000 and entry n lives at 3000 + n.
+    use crate::cpu::{CpuResult, Simulator, SR_S};
+    use crate::decode::{enc_t0, enc_t1, enc_t2, Decoded};
+    use crate::opcode;
+    use std::collections::HashMap;
+
+    const IVT: i64 = 3000;
+
+    fn stop() -> i64 {
+        enc_t1(opcode::STOP, 0)
+    }
+    fn mv(r: i32, imm: i64) -> i64 {
+        enc_t2(opcode::MOVE, 2, r, imm)
+    }
+    fn mv_rr(dst: i32, src: i32) -> i64 {
+        enc_t0(opcode::MOVE, 2, 2, 0, 0, dst, src, 0, 0)
+    }
+    fn add_imm(r: i32, imm: i64) -> i64 {
+        enc_t2(opcode::ADD, 2, r, imm)
+    }
+    fn int(n: i64) -> i64 {
+        enc_t1(opcode::INTERRUPT, n)
+    }
+    fn stcr(n: i32, r: i32) -> i64 {
+        enc_t0(opcode::STCR, 1, 2, 0, 0, n, r, 0, 0)
+    }
+    fn ldcr(r: i32, n: i32) -> i64 {
+        enc_t0(opcode::LDCR, 2, 1, 0, 0, r, n, 0, 0)
+    }
+    fn iret() -> i64 {
+        enc_t0(opcode::IRET, 0, 0, 0, 0, 0, 0, 0, 0)
+    }
+    fn nop() -> i64 {
+        enc_t0(opcode::NOP, 0, 0, 0, 0, 0, 0, 0, 0)
+    }
+
+    fn try_run(prog: &[i64], vectors: &[(i64, i64)]) -> (Simulator, CpuResult<i32>) {
+        let mut s = Simulator::new(4096, 0, 1024, vec![]);
+        s.load_program(prog, 0, HashMap::new());
+        for &(n, h) in vectors {
+            s.mem.set((IVT + n) as usize, h);
+        }
+        let r = s.run(0);
+        (s, r)
+    }
+
+    fn run(prog: &[i64], vectors: &[(i64, i64)]) -> Simulator {
+        let (s, r) = try_run(prog, vectors);
+        r.expect("run");
+        s
+    }
+
+    #[test]
+    fn vectored_call_and_return_preserves_state() {
+        let prog = vec![
+            mv(1, IVT),         // 0
+            stcr(0, 1),         // 1
+            mv(3, 7),           // 2
+            mv(5, -1),          // 3: sets S, clears Z
+            int(5),             // 4
+            stop(),             // 5
+            add_imm(3, 1),      // 6: handler clobbers SR
+            mv(6, 0),           // 7: sets Z
+            iret(),             // 8
+        ];
+        let s = run(&prog, &[(5, 6)]);
+        assert_eq!(s.r[3], 8);
+        assert_eq!(s.r[30], s.stack_base - 1, "SP restored");
+        assert_eq!(s.r[29], s.stack_base - 1, "SF restored");
+        assert_eq!(s.sr, SR_S, "SR restored to the value before INT");
+    }
+
+    #[test]
+    fn handler_sees_frame_and_registers() {
+        let prog = vec![
+            mv(1, IVT),
+            stcr(0, 1),
+            mv(7, 77),
+            mv_rr(22, 30),      // r22 = SP before INT
+            int(5),
+            stop(),
+            mv_rr(8, 29),       // 6: r8 = SF inside the handler
+            mv_rr(9, 7),        //    registers are not saved or cleared
+            iret(),
+        ];
+        let s = run(&prog, &[(5, 6)]);
+        assert_eq!(s.r[9], 77);
+        assert_eq!(s.r[8], s.r[22] - 3, "SF = SP after pushing 3 words");
+    }
+
+    #[test]
+    fn negative_number_runs_host_service() {
+        // iGET_PID = 34; the root simulator has pid 1.
+        let prog = vec![int(34), mv_rr(1, 0), int(-34), mv_rr(2, 0), stop()];
+        let s = run(&prog, &[]);
+        assert_eq!(s.r[1], 1);
+        assert_eq!(s.r[2], 1);
+    }
+
+    #[test]
+    fn empty_vector_falls_through_with_table_installed() {
+        let prog = vec![mv(1, IVT), stcr(0, 1), int(34), mv_rr(2, 0), stop()];
+        let s = run(&prog, &[]);
+        assert_eq!(s.r[2], 1);
+    }
+
+    #[test]
+    fn installed_vector_overrides_and_can_wrap_host_service() {
+        let prog = vec![
+            mv(1, IVT),         // 0
+            stcr(0, 1),         // 1
+            int(-34),           // 2: built-in, never consults the table
+            mv_rr(10, 0),       // 3
+            int(34),            // 4: vectored
+            mv_rr(11, 0),       // 5
+            stop(),             // 6
+            int(-34),           // 7: handler wraps the built-in
+            add_imm(0, 1000),   // 8
+            iret(),             // 9
+        ];
+        let s = run(&prog, &[(34, 7)]);
+        assert_eq!(s.r[10], 1);
+        assert_eq!(s.r[11], 1001);
+    }
+
+    #[test]
+    fn nested_interrupts() {
+        let prog = vec![
+            mv(1, IVT),        // 0
+            stcr(0, 1),        // 1
+            int(5),            // 2
+            stop(),            // 3
+            add_imm(3, 1),     // 4: H5
+            int(6),            // 5
+            add_imm(3, 10),    // 6
+            iret(),            // 7
+            add_imm(3, 100),   // 8: H6
+            iret(),            // 9
+        ];
+        let s = run(&prog, &[(5, 4), (6, 8)]);
+        assert_eq!(s.r[3], 111);
+        assert_eq!(s.r[30], s.stack_base - 1);
+    }
+
+    #[test]
+    fn conditional_interrupt() {
+        // Condition codes: 1 = z, 2 = nz. MOVE R1,IVT leaves Z clear.
+        let prog = vec![
+            mv(1, IVT),                                  // 0
+            stcr(0, 1),                                  // 1
+            enc_t2(opcode::INTERRUPT, 1, 1, 5),          // 2: INT z, 5   (not taken)
+            enc_t2(opcode::INTERRUPT, 1, 2, 5),          // 3: INT nz, 5  (taken)
+            stop(),                                      // 4
+            add_imm(3, 1),                               // 5: H5
+            iret(),                                      // 6
+        ];
+        let s = run(&prog, &[(5, 5)]);
+        assert_eq!(s.r[3], 1);
+    }
+
+    #[test]
+    fn int_zero_is_a_no_op() {
+        let prog = vec![mv(1, IVT), stcr(0, 1), int(0), mv(3, 5), stop(), mv(3, 99), stop()];
+        let s = run(&prog, &[(0, 5)]);
+        assert_eq!(s.r[3], 5);
+    }
+
+    #[test]
+    fn control_register_read_back() {
+        let prog = vec![
+            ldcr(1, 0),
+            mv(2, IVT),
+            stcr(0, 2),
+            ldcr(3, 0),
+            mv(4, 0),
+            stcr(0, 4),
+            ldcr(5, 0),
+            stop(),
+        ];
+        let s = run(&prog, &[]);
+        assert_eq!(s.r[1], 0);
+        assert_eq!(s.r[3], IVT);
+        assert_eq!(s.r[5], 0);
+        assert_eq!(s.ivt_base, 0);
+    }
+
+    #[test]
+    fn bad_control_register_and_base() {
+        let (_, r) = try_run(&[ldcr(1, 7), stop()], &[]);
+        assert!(r.unwrap_err().0.contains("Illegal control register 7"));
+        let (_, r) = try_run(&[mv(1, -1), stcr(0, 1), stop()], &[]);
+        assert!(r.unwrap_err().0.contains("Illegal interrupt vector table base"));
+        // base + 255 would pass the end of memory (4096 - 256 = 3840 is the last base)
+        let (_, r) = try_run(&[mv(1, 3841), stcr(0, 1), stop()], &[]);
+        assert!(r.unwrap_err().0.contains("Illegal interrupt vector table base"));
+        let (s, r) = try_run(&[mv(1, 3840), stcr(0, 1), stop()], &[]);
+        r.unwrap();
+        assert_eq!(s.ivt_base, 3840);
+    }
+
+    #[test]
+    fn exit_hook_receives_exit_code() {
+        let prog = vec![
+            mv(1, IVT),        // 0
+            stcr(0, 1),        // 1
+            mv(1, 3),          // 2
+            int(-32),          // 3: iEXIT, hook runs instead of terminating
+            mv(9, 111),        // 4: never reached
+            stop(),            // 5
+            mv_rr(9, 0),       // 6: hook
+            stop(),            // 7
+        ];
+        let s = run(&prog, &[(0, 6)]);
+        assert_eq!(s.r[9], 3);
+    }
+
+    #[test]
+    fn exit_hook_on_return_to_negative_pc() {
+        let prog = vec![
+            mv(1, IVT),                                       // 0
+            stcr(0, 1),                                       // 1
+            enc_t1(opcode::PUSH, -5),                         // 2
+            enc_t1(opcode::PUSH, 0),                          // 3
+            mv_rr(29, 30),                                    // 4: SF = SP
+            enc_t0(opcode::RETURN, 0, 0, 0, 0, 0, 0, 0, 0),   // 5
+            stop(),                                           // 6
+            mv_rr(9, 0),                                      // 7: hook
+            stop(),                                           // 8
+        ];
+        let s = run(&prog, &[(0, 7)]);
+        assert_eq!(s.r[9], -5);
+    }
+
+    #[test]
+    fn exit_hook_can_be_disarmed_to_terminate() {
+        let prog = vec![
+            mv(1, IVT),            // 0
+            stcr(0, 1),            // 1
+            mv(1, 4),              // 2
+            int(-32),              // 3
+            stop(),                // 4
+            add_imm(8, 1),         // 5: hook counts entries
+            mv(6, 0),              // 6
+            enc_t2(opcode::STORE, 2, 6, IVT),   // 7: clear vector 0
+            mv_rr(1, 0),           // 8
+            int(-32),              // 9: now terminates for real
+            mv(9, 111),            // 10
+            stop(),                // 11
+        ];
+        let s = run(&prog, &[(0, 5)]);
+        assert_eq!(s.r[8], 1);
+        assert_eq!(s.r[9], 0);
+        assert_eq!(s.r[0], 4);
+    }
+
+    #[test]
+    fn thread_inherits_table_and_does_not_run_exit_hook() {
+        let prog = vec![
+            mv(1, IVT),                                    // 0
+            stcr(0, 1),                                    // 1
+            mv(1, 10),                                     // 2: WORKER address
+            mv(2, 0),                                      // 3
+            int(-40),                                      // 4: iTHREAD
+            mv_rr(1, 0),                                   // 5
+            int(-41),                                      // 6: iJOIN_THREAD
+            enc_t2(opcode::LOAD, 2, 4, 3900),              // 7: r4 = [3900]
+            enc_t2(opcode::LOAD, 2, 5, 3901),              // 8: r5 = [3901]
+            stop(),                                        // 9
+            int(5),                                        // 10: WORKER
+            enc_t0(opcode::RETURN, 0, 0, 0, 0, 0, 0, 0, 0),// 11
+            enc_t2(opcode::LOAD, 2, 3, 3900),              // 12: H5
+            add_imm(3, 1),                                 // 13
+            enc_t2(opcode::STORE, 2, 3, 3900),             // 14
+            iret(),                                        // 15
+            enc_t2(opcode::LOAD, 2, 3, 3901),              // 16: HEXIT
+            add_imm(3, 1),                                 // 17
+            enc_t2(opcode::STORE, 2, 3, 3901),             // 18
+            stop(),                                        // 19
+        ];
+        let s = run(&prog, &[(5, 12), (0, 16)]);
+        assert_eq!(s.r[4], 1);
+        assert_eq!(s.r[5], 0);
+    }
+
+    #[test]
+    fn no_hook_without_table() {
+        let s = run(&[mv(1, 6), int(-32), mv(9, 111), stop()], &[]);
+        assert_eq!(s.r[9], 0);
+        assert_eq!(s.r[0], 6);
+    }
+
+    #[test]
+    fn cycle_costs() {
+        let setup = |x: i64| {
+            vec![mv(1, IVT), stcr(0, 1), x, stop(), iret()]
+        };
+        let nop_c = run(&setup(nop()), &[(5, 4)]).cycles;
+        let host_c = run(&setup(int(-10)), &[(5, 4)]).cycles; // iCYCLES
+        let vec_c = run(&setup(int(5)), &[(5, 4)]).cycles;
+        assert_eq!(host_c - nop_c, 6, "host service: 3 pushes + 3 pops");
+        assert_eq!(vec_c - nop_c, 7, "vectored: 3 pushes + IRET fetch + 3 pops");
+    }
+
+    #[test]
+    fn save_restore_still_work_as_host_services() {
+        let prog = vec![
+            mv(1, 11),
+            mv(2, 22),
+            int(-12), // iSAVE
+            mv(1, 0),
+            mv(2, 0),
+            int(-14), // iRESTORE
+            stop(),
+        ];
+        let s = run(&prog, &[]);
+        assert_eq!(s.r[1], 11);
+        assert_eq!(s.r[2], 22);
+        assert_eq!(s.r[30], s.stack_base - 1);
+    }
+
+    #[test]
+    fn disassembly() {
+        let mut d = Decoded::default();
+        for (w, name) in [(ldcr(1, 0), "LDCR"), (stcr(0, 1), "STCR"), (iret(), "IRET")] {
+            d.decode_into(w);
+            assert!(d.disassemble(&HashMap::new()).starts_with(name), "{name}");
+        }
     }
 }

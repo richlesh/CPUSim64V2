@@ -1,6 +1,6 @@
 # IVT Plan: Vectored Interrupts, Control Registers and OS ROMs
 
-Status: design agreed in discussion, nothing implemented yet. Items marked **Verify** are assumptions about the code that must be checked before work starts.
+Status: work items 1 to 11 are implemented on branch `feature/ivt`, except that the debugger part of item 11 is limited to showing the table base in the CPU state dump. Phase 3 (strict mode) is not started. See "Implementation notes" at the end for where the code differs from the text above.
 
 ## 1. Goal
 
@@ -125,3 +125,21 @@ Let an operating system written in CPUSim64 code (first target: an MS-DOS-style 
 - Per-thread or per-process `ivt_base`.
 - Whether to add a second argument to bound the table size later.
 - Executable format for programs under the OS (`.o64`, or a new header with relocations).
+
+## 8. Implementation notes (Phase 1)
+
+Findings from the verification spike and how the code differs from the design above.
+
+- **Host-service frame is virtual.** Sections 3.4 and 3.7 say a host service gets the same 3-word frame as a handler. That cannot work as written. `iSAVE`, `iSAVE_FP`, `iRESTORE` and `iRESTORE_FP` change `SP` on purpose, and `iPRINTF`, `iCOND_PRINTF` and the other stack-argument services read their arguments relative to the caller's `SF` (`[SF+3]` and up). A pushed frame would hide both. The simulators therefore charge the frame's 6 cycles for a host service but do not push it. The contract in 3.4 (PC advances, `SP`, `SF` and `SR` unchanged) still holds for everything except the four save/restore services, which keep their stack effect. Because nothing is pushed, fork and thread creation from a host service need no epilogue, and the exit hook (3.6) needs no frame handling.
+- **Frames are real for vectored handlers.** `INT n` with an installed vector pushes PC, `SR`, `SF` and sets `SF = SP` exactly as in 3.4. `IRET` pops them. A handler can call fork or thread services; the copied stack makes the child return through its own `IRET`.
+- **Numbers above 255.** Section 3.1 says positive numbers above 255 are an error, but built-in services such as `iPUT_NL` (200) and `iSTRCAT` (355) are numbered above 255 until Phase 2 renumbers them as negatives. In Phase 1 `INT n` with `n > 255` runs host service `n` directly. Enforce the error after Phase 2.
+- **Vector reads are free.** Reading table entry `n` is not charged a memory cycle, so an `INT` costs 6 cycles as in 3.5.
+- **IVT base range.** `STCR 0, r` accepts 0 or a word address with `0 <= base <= heap_limit - 256` (heap-range RAM, not the per-thread stack).
+- **INT operand.** The assembler now range-checks the constant of `INT` as signed 12 bits, so `INT -5` assembles in the short form. Constants from 2048 to 4095 now use the long form; before, they were encoded in the short form and decoded as negative.
+- **Exit hook.** The hook is not disarmed when it fires. The OS handler must clear vector 0 before its final exit, or a second exit re-enters the hook. In the C11 runtime, `exit()` (`lib/stdlib.c`) runs the `atexit` functions and then `_Exit` executes `iEXIT`, so the `atexit` functions run before the hook sees the exit.
+- **Conditional INT.** The assembler has no syntax for a conditional `INT`; the encoded forms (ZR, ZC) behave as before and are covered by unit tests built from encoded words.
+- **Installed copies.** An installed `bin/instructions.data` (copied from `cpusim64/src/main/resources/instructions.data` by `install.sh`) still holds `interrupt:10` and `interrupt1:10` until it is refreshed, which makes the native simulator disagree with Java on cycle totals.
+- **Phase 2 done.** All 150 `#define iNAME N` values in `system.def`, `io.def`, `math.def` and `string.def` are now negative. Hard-coded positive literals in existing `.asm` files still work through the Phase 1 fall-through, so nothing had to be renumbered by hand. Programs, validation output and cycle counts are unchanged on both simulators. Enforcing "positive above 255 is an error" is left for Phase 3 because literals such as `INT 200` still exist in older generated `.asm` files.
+- **Debugger.** The CPU state dump prints an `IVT:` line when the table base is nonzero (and nothing otherwise, so existing output is unchanged). Stepping into a handler needs no change, since `INT n` jumps to the handler like a call. Merging ROM symbols into the source map is not done.
+- **OS ROM prototype.** `cpusim64/validation/T107_OS_ROM.asm` boots a vector table, installs an INT 21h handler (function 09h print string, 4Ch terminate), and a loader that regains control with its saved `SP`/`SF` when the program terminates.
+

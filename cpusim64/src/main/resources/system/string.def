@@ -18,42 +18,42 @@
 #ifndef _STRING_DEF
 #define _STRING_DEF
 
-#define	iFMT_DEC			301
-#define	iFMT_HEX			302
-#define	iFMT_FLOAT			303
-#define	iPARSE_INT			304
-#define	iPARSE_DEC			305
-#define	iPARSE_HEX			306
-#define	iPARSE_FLOAT		307
-#define	iSPRINTF			308
-#define iFORMAT				309
+#define	iFMT_DEC			-301
+#define	iFMT_HEX			-302
+#define	iFMT_FLOAT			-303
+#define	iPARSE_INT			-304
+#define	iPARSE_DEC			-305
+#define	iPARSE_HEX			-306
+#define	iPARSE_FLOAT		-307
+#define	iSPRINTF			-308
+#define iFORMAT				-309
 
-#define	iTO_LOWER			310
-#define	iTO_UPPER			311
-#define	iTO_LOWER_STR		312
-#define	iTO_UPPER_STR		313
-#define iSTRCOPY			314
-#define iSTRCMP				315
-#define	iSTRICMP			316
-#define iSUBSTRING			317
-#define	iPREFIX				318
-#define iSUFFIX				319
-#define iCHAR_SEARCH		320
-#define iLAST_CHAR_SEARCH	321
-#define iSUBSTRING_SEARCH	322
-#define iLAST_SUBSTRING_SEARCH	323
-#define iGET_CODEPOINTS		324
-#define iFROM_CODEPOINTS	325
-#define iCOUNT_GLPYHS		326
-#define iHASHCODE			327
-#define iTRIM				328
+#define	iTO_LOWER			-310
+#define	iTO_UPPER			-311
+#define	iTO_LOWER_STR		-312
+#define	iTO_UPPER_STR		-313
+#define iSTRCOPY			-314
+#define iSTRCMP				-315
+#define	iSTRICMP			-316
+#define iSUBSTRING			-317
+#define	iPREFIX				-318
+#define iSUFFIX				-319
+#define iCHAR_SEARCH		-320
+#define iLAST_CHAR_SEARCH	-321
+#define iSUBSTRING_SEARCH	-322
+#define iLAST_SUBSTRING_SEARCH	-323
+#define iGET_CODEPOINTS		-324
+#define iFROM_CODEPOINTS	-325
+#define iCOUNT_GLPYHS		-326
+#define iHASHCODE			-327
+#define iTRIM				-328
 
-#define	iMATCHES			350
-#define	iREPLACE_FIRST		351
-#define iREPLACE_ALL		352
-#define	iSPLIT				353
-#define	iJOIN				354
-#define	iSTRCAT				355
+#define	iMATCHES			-350
+#define	iREPLACE_FIRST		-351
+#define iREPLACE_ALL		-352
+#define	iSPLIT				-353
+#define	iJOIN				-354
+#define	iSTRCAT				-355
 
 #def_macro	FMT_DEC(x)
 	move	r1, ${x}

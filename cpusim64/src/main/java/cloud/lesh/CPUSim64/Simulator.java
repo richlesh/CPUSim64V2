@@ -152,6 +152,16 @@ public class Simulator {
 	long SR = 0;
 	public long getSR() { return SR; }
 
+	// ===== Vectored interrupts / control registers =====
+	/** Control register 0: word address of the 256-entry interrupt vector table; 0 = no table. */
+	private long ivtBase = 0;
+	public long getIvtBase() { return ivtBase; }
+	public static final int CR_IVT_BASE = 0;
+	/** Number of entries in the vector table (INT 1..255 index it; entry 0 is the exit hook). */
+	public static final int IVT_ENTRIES = 256;
+	/** Cycles charged for the 3-word frame of an INT (3 pushes + 3 pops), vectored or host service. */
+	private static final int INT_FRAME_CYCLES = 6;
+
 	// Execution controls
 	private boolean running = false;
 	private boolean debug = false;
@@ -259,6 +269,7 @@ public class Simulator {
 		setDebug(cloneMe.debug);
 		setTrace(cloneMe.trace);
 		reverseSymbolMap = cloneMe.reverseSymbolMap;
+		ivtBase = cloneMe.ivtBase;
 
 		try {
 			stackBase = cloneMe.stackBase;
@@ -1078,6 +1089,9 @@ public class Simulator {
 			case 38 -> { opREADONLY(d); addCycles("readonly"); }
 			case 39 -> { opLOAD(d, true); addCycles("ldb"); }
 			case 40 -> { opSTORE(d, true); addCycles("stb"); }
+			case 41 -> { opLDCR(d); addCycles("ldcr"); }
+			case 42 -> { opSTCR(d); addCycles("stcr"); }
+			case 43 -> { opIRET(d); addCycles("iret"); }
 			default -> throw new IllegalStateException("Unimplemented opcode: " + d.op);
 		}
 	}
@@ -1499,12 +1513,15 @@ public class Simulator {
 
 	// ---- 10: INTERRUPT ----
 	private void opINTERRUPT(Decoded d) {
-		long code = -1;            // -1 Illegal, 0 don't interrupt, 1... valid interrupts
+		long code = 0;             // 0 = no interrupt, n > 0 = vectored/host service n, n < 0 = host service -n
+		boolean valid = false;     // false if the operand form is not recognized
 		boolean conditional = false;
 		if (d.tt == 1) {        // C
 			code = d.c1;
+			valid = true;
 		} else if (d.tt == 2) { // ZC
 			conditional = true;
+			valid = true;
 			if (testCond(getConst(d.a, d.v0)))
 				code = d.c2;
 			else code = 0;
@@ -1513,24 +1530,106 @@ public class Simulator {
 			int count = d.getArgCount();
 			if (count == 1 && isOKind(d.a)) {
 				code = getO(d.a, d.v0);
+				valid = true;
 			} else if (count == 2 && isOKind(d.b)) {
 				conditional = true;
+				valid = true;
 				if (testCond(getConst(d.a, d.v0)))
 					code = getO(d.b, d.v1);
 				else code = 0;
 			}
 		}
-		if (code > 0) {
-			// Unconditional -> "interrupt"; conditional taken -> "interrupt1".
-			addCycles(conditional ? "interrupt1" : "interrupt");
-			long start = System.nanoTime();
-			interruptHandler.dispatch((int) code);
-			long stop = System.nanoTime();
-			totalSystemTime += stop - start;
-		} else if (code == 0) {
-			addCycles("interrupt0");	// conditional interrupt not taken
-		} else
+		if (!valid)
 			throw new IllegalStateException("Illegal INTERRUPT arguments.");
+		if (code == 0) {
+			addCycles("interrupt0");	// conditional interrupt not taken, or INT 0
+			return;
+		}
+		if (code < -Integer.MAX_VALUE || code > Integer.MAX_VALUE)
+			throw new IllegalStateException("Illegal INTERRUPT arguments.");
+		// Unconditional -> "interrupt"; conditional taken -> "interrupt1".
+		addCycles(conditional ? "interrupt1" : "interrupt");
+		if (code > 0 && code < IVT_ENTRIES && ivtBase != 0) {
+			long handler = peekVector((int) code);
+			if (handler != 0) {
+				enterInterrupt(handler);
+				return;
+			}
+		}
+		// Built-in host service: "INT -n" always, and "INT n" when no handler is installed.
+		// The frame (return PC, SR, SF) is virtual here: nothing observable can see it, and
+		// services such as iSAVE/iRESTORE and the printf family work on the caller's SP/SF.
+		cycles += INT_FRAME_CYCLES;
+		long start = System.nanoTime();
+		interruptHandler.dispatch((int) Math.abs(code));
+		long stop = System.nanoTime();
+		totalSystemTime += stop - start;
+	}
+
+	/** Reads vector table entry {@code n} without charging a memory cycle. */
+	private long peekVector(int n) {
+		long saved = cycles;
+		long v = memRead(ivtBase + n);
+		cycles = saved;
+		return v;
+	}
+
+	/** INT entry: push the return PC, SR and SF, set SF = SP, jump to the handler. */
+	private void enterInterrupt(long handler) {
+		memWrite(R[R_SP], R[R_PC]);
+		R[R_SP]--;
+		memWrite(R[R_SP], SR);
+		R[R_SP]--;
+		memWrite(R[R_SP], R[R_SF]);
+		R[R_SP]--;
+		if (R[R_SP] < heapLimit) throw new CPUException("Stack/Heap collision");
+		R[R_SF] = R[R_SP];
+		R[R_PC] = handler;
+	}
+
+	// ---- 41: LDCR rd, n ----
+	private void opLDCR(Decoded d) {
+		if (d.tt == 0 && isRegKind(d.a) && isConstKind(d.b) && d.getArgCount() == 2) {
+			setR(d.a, d.v0, readControlRegister(d.v1));
+			return;
+		}
+		throw new IllegalStateException("LDCR form not implemented");
+	}
+
+	// ---- 42: STCR n, rs ----
+	private void opSTCR(Decoded d) {
+		if (d.tt == 0 && isConstKind(d.a) && isRegKind(d.b) && d.getArgCount() == 2) {
+			writeControlRegister(d.v0, getR(d.b, d.v1));
+			return;
+		}
+		throw new IllegalStateException("STCR form not implemented");
+	}
+
+	private long readControlRegister(int n) {
+		if (n == CR_IVT_BASE) return ivtBase;
+		throw new CPUException("Illegal control register " + n);
+	}
+
+	private void writeControlRegister(int n, long value) {
+		if (n == CR_IVT_BASE) {
+			// 0 disables the table. Otherwise all 256 entries must lie in heap-range RAM.
+			if (value != 0 && (value < 0 || value > heapLimit - IVT_ENTRIES))
+				throw new CPUException(String.format("Illegal interrupt vector table base " + fmtAddress, value));
+			ivtBase = value;
+			return;
+		}
+		throw new CPUException("Illegal control register " + n);
+	}
+
+	// ---- 43: IRET ----
+	private void opIRET(Decoded d) {
+		R[R_SP] = R[R_SF];
+		R[R_SP]++;
+		R[R_SF] = memRead(R[R_SP]);
+		R[R_SP]++;
+		SR = memRead(R[R_SP]);
+		R[R_SP]++;
+		R[R_PC] = memRead(R[R_SP]);
 	}
 
 	// ---- 12: NEGATE ----
@@ -2800,11 +2899,22 @@ public class Simulator {
 
 	public void exit(int code) {
 		setR(0, code);
+		// Exit hook: the main thread only. A nonzero vector 0 receives control with the
+		// exit code in R0 instead of the process ending; the handler may clear the
+		// vector and exit again to terminate.
+		if (isRoot && ivtBase != 0) {
+			long hook = peekVector(0);
+			if (hook != 0) {
+				R[R_PC] = hook;
+				return;
+			}
+		}
 		running = false;
 	}
 
 	public void printCPUState() {
 		System.out.printf("\nCPU State    SR: %s\n", formatSR());
+		if (ivtBase != 0) System.out.printf("             IVT: " + fmtAddress + "\n", ivtBase);
 		System.out.printf(fmtHeading,(Object[])cpuLabels);
 		int stack_base = (int)R[R_SP] + FPR_COUNT;
 		if (stack_base >= stackBase) stack_base = (int)stackBase - 1;

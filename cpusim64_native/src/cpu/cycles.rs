@@ -40,9 +40,9 @@ pub fn default_extra_cycles(key: &str) -> i64 {
         "call0" => 0,
         "call1" => 1,
         "return" => 0,
-        "interrupt" => 10,
+        "interrupt" => 0,
         "interrupt0" => 0,
-        "interrupt1" => 10,
+        "interrupt1" => 0,
         "stop" => 0,
         "negate" => 0,
         "fnegate" => 0,
@@ -76,6 +76,9 @@ pub fn default_extra_cycles(key: &str) -> i64 {
         "readonly" => 0,
         "ldb" => 1,
         "stb" => 0,
+        "ldcr" => 0,
+        "stcr" => 0,
+        "iret" => 0,
         _ => 0,
     }
 }
@@ -87,7 +90,7 @@ const KEYS: &[&str] = &[
     "negate", "fnegate", "add", "fadd", "subtract", "fsubtract", "multiply", "fmultiply", "divide",
     "fdivide", "compliment", "and", "or", "xor", "test", "compare", "lshift", "rshift", "arshift",
     "lrotate", "rrotate", "in", "out", "pack", "pack64", "unpack", "unpack64", "cas", "endian",
-    "readonly", "ldb", "stb",
+    "readonly", "ldb", "stb", "ldcr", "stcr", "iret",
 ];
 
 fn cycle_table() -> &'static HashMap<String, i64> {
@@ -163,10 +166,11 @@ mod tests {
         assert_eq!(default_extra_cycles("load"), 1);
         assert_eq!(default_extra_cycles("fdivide"), 19);
         assert_eq!(default_extra_cycles("divide"), 11);
-        assert_eq!(default_extra_cycles("interrupt"), 10);
+        assert_eq!(default_extra_cycles("interrupt"), 0);
         assert_eq!(default_extra_cycles("cas"), 2);
         assert_eq!(default_extra_cycles("ldb"), 1);
         assert_eq!(default_extra_cycles("stb"), 0);
+        assert_eq!(default_extra_cycles("iret"), 0);
         assert_eq!(default_extra_cycles("unknownkey"), 0);
     }
 
