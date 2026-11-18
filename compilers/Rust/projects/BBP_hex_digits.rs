@@ -8,10 +8,18 @@
 //! Input (first line of standard input): n
 
 use std::io::BufRead;
+use std::io::Write;
 
 const MAX_POSITION: i64 = 10000000;
 
 fn args() -> Vec<String> {
+    let v: Vec<String> = std::env::args().collect();
+    if v.len() > 1 {
+        return v; // real command-line arguments (host rustc)
+    }
+    // CPUSim64: no arguments, so read them from the first line of stdin
+    print!("n? ");
+    let _ = std::io::stdout().flush();
     let mut line = String::new();
     let _ = std::io::stdin().read_line(&mut line);
     let mut v = vec![String::from("BBP_hex_digits")];

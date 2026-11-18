@@ -173943,11 +173943,18 @@ __L17649:
     call    __F1102_cg_printf
     add     sp, 2
 .source "src/cg_types.c", 1754
+    move    r0, __W1977+1
+    push    r0
+    move    r0, 5
+    push    r0
+    call    __F1102_cg_printf
+    add     sp, 2
+.source "src/cg_types.c", 1755
     add     r0, sf, -5
     push    r0
     call    __F8_sb_init
     add     sp, 1
-.source "src/cg_types.c", 1755
+.source "src/cg_types.c", 1756
     load    r0, sf[-2]
     push    r0
     load    r0, sf[-1]
@@ -173956,9 +173963,9 @@ __L17649:
     push    r0
     call    __F1214_cgt_main_tail
     add     sp, 3
-.source "src/cg_types.c", 1756
-    call    __F1215_cgt_drain
 .source "src/cg_types.c", 1757
+    call    __F1215_cgt_drain
+.source "src/cg_types.c", 1758
     add     r0, sf, -5
     add     r0, 1
     load    r0, r0[0]
@@ -173972,14 +173979,14 @@ __L17649:
     push    r0
     call    __F1142_cgt_append
     add     sp, 3
-.source "src/cg_types.c", 1758
-    move    r0, __W1977+1
+.source "src/cg_types.c", 1759
+    move    r0, __W1978+1
     push    r0
     move    r0, 5
     push    r0
     call    __F1102_cg_printf
     add     sp, 2
-.source "src/cg_types.c", 1760
+.source "src/cg_types.c", 1761
     move    r0, 0
     store   r0, sf[-7]
 __L17651:
@@ -174072,7 +174079,7 @@ __L17658:
 __L17659:
     test    r0
     jump    z, __L17656
-    move    r0, __W1979+1
+    move    r0, __W1980+1
     push    r0
     call    __F2_fatal
     add     sp, 1
@@ -174239,7 +174246,7 @@ __L17684:
     jump    z, __L17681
     move    r0, 6
     push    r0
-    move    r0, __W1980+1
+    move    r0, __W1981+1
     push    r0
     load    r0, __G1216_ge_out+1
     load    r0, r0[0]
@@ -174333,7 +174340,7 @@ __L17695:
 __L17696:
     test    r0
     jump    z, __L17693
-    move    r0, __W1981+1
+    move    r0, __W1982+1
     push    r0
     call    __F2_fatal
     add     sp, 1
@@ -174352,7 +174359,7 @@ __L17693:
 __F1238_ge_decl_line:
 .source "src/cg_expr.c", 127
 .source "src/cg_expr.c", 128
-    move    r0, __W1982+1
+    move    r0, __W1983+1
     push    r0
     move    r0, __G1218_ge_decl+1
     push    r0
@@ -174384,7 +174391,7 @@ __F1238_ge_decl_line:
     test    r0
     jump    z, __L17701
 .source "src/cg_expr.c", 133
-    move    r0, __W1983+1
+    move    r0, __W1984+1
     push    r0
     move    r0, __G1218_ge_decl+1
     push    r0
@@ -174399,7 +174406,7 @@ __F1238_ge_decl_line:
     add     sp, 2
 __L17701:
 .source "src/cg_expr.c", 136
-    move    r0, __W1984+1
+    move    r0, __W1985+1
     push    r0
     move    r0, __G1218_ge_decl+1
     push    r0
@@ -174416,7 +174423,7 @@ __F1239_ge_tmp:
 .source "src/cg_expr.c", 140
     call    __F1105_cg_new_id
     push    r0
-    move    r0, __W1985+1
+    move    r0, __W1986+1
     push    r0
     call    __F1237_S
     add     sp, 2
@@ -174794,7 +174801,7 @@ __L17751:
     move    z, r0, 1, 0
     test    r0
     jump    z, __L17753
-    move    r0, __W1986+1
+    move    r0, __W1987+1
     return
 __L17753:
 .source "src/cg_expr.c", 186
@@ -174804,7 +174811,7 @@ __L17753:
     add     sp, 1
     store   r0, sf[0]
 .source "src/cg_expr.c", 187
-    move    r0, __W1987+1
+    move    r0, __W1988+1
     push    r0
     load    r0, sf[0]
     push    r0
@@ -174815,7 +174822,7 @@ __L17753:
     move    eq, r0, 1, 0
     test    r0
     jump    nz, __L17757
-    move    r0, __W1988+1
+    move    r0, __W1989+1
     push    r0
     load    r0, sf[0]
     push    r0
@@ -174833,7 +174840,7 @@ __L17757:
 __L17758:
     test    r0
     jump    z, __L17755
-    move    r0, __W1989+1
+    move    r0, __W1990+1
     return
 __L17755:
 .source "src/cg_expr.c", 188
@@ -174879,7 +174886,7 @@ __L17763:
 __L17764:
     test    r0
     jump    z, __L17761
-    move    r0, __W1990+1
+    move    r0, __W1991+1
     return
 __L17761:
 .source "src/cg_expr.c", 195
@@ -174893,7 +174900,7 @@ __L17761:
     push    r0
     load    r0, sf[0]
     push    r0
-    move    r0, __W1991+1
+    move    r0, __W1992+1
     push    r0
     call    __F1236_E
     add     sp, 3
@@ -174919,7 +174926,7 @@ __F1248_ge_cname:
     load    r0, r0[0]
     jump    __L17766
 __L17765:
-    move    r0, __W1992+1
+    move    r0, __W1993+1
 __L17766:
     store   r0, sf[-97]
 .source "src/cg_expr.c", 206
@@ -175116,7 +175123,7 @@ __L17769:
     push    r0
     add     r0, sf, -95
     push    r0
-    move    r0, __W1993+1
+    move    r0, __W1994+1
     push    r0
     call    __F1237_S
     add     sp, 3
@@ -175577,7 +175584,7 @@ __L17822:
     add     r0, 2
     load    r0, r0[0]
     push    r0
-    move    r0, __W1994+1
+    move    r0, __W1995+1
     push    r0
     call    __F1236_E
     add     sp, 5
@@ -175589,7 +175596,7 @@ __L17824:
     push    r0
     load    r0, sf[0]
     push    r0
-    move    r0, __W1995+1
+    move    r0, __W1996+1
     push    r0
     call    __F1236_E
     add     sp, 3
@@ -175835,17 +175842,17 @@ __F1259_ge_new_flag:
 .source "src/cg_expr.c", 300
     call    __F1105_cg_new_id
     push    r0
-    move    r0, __W1996+1
+    move    r0, __W1997+1
     push    r0
     call    __F1237_S
     add     sp, 2
     store   r0, sf[0]
 .source "src/cg_expr.c", 301
-    move    r0, __W1998+1
+    move    r0, __W1999+1
     push    r0
     load    r0, sf[0]
     push    r0
-    move    r0, __W1997+1
+    move    r0, __W1998+1
     push    r0
     call    __F1238_ge_decl_line
     add     sp, 3
@@ -176002,7 +176009,7 @@ __F1264_ge_imin:
     move    z, r0, 1, 0
     test    r0
     jump    z, __L17869
-    move    r0, __W1999+1
+    move    r0, __W2000+1
     return
 __L17869:
 .source "src/cg_expr.c", 330
@@ -176019,19 +176026,19 @@ __L17869:
     jump    __L17871
 .source "src/cg_expr.c", 331
 __L17872:
-    move    r0, __W2000+1
+    move    r0, __W2001+1
     return
 .source "src/cg_expr.c", 332
 __L17873:
-    move    r0, __W2001+1
+    move    r0, __W2002+1
     return
 .source "src/cg_expr.c", 333
 __L17874:
-    move    r0, __W2002+1
+    move    r0, __W2003+1
     return
 __L17871:
 .source "src/cg_expr.c", 335
-    move    r0, __W2003+1
+    move    r0, __W2004+1
     return
     move    r0, 0
     return
@@ -176064,10 +176071,10 @@ __L17876:
     load    r0, sf[0]
     test    r0
     jump    z, __L17879
-    move    r0, __W2004+1
+    move    r0, __W2005+1
     jump    __L17880
 __L17879:
-    move    r0, __W2005+1
+    move    r0, __W2006+1
 __L17880:
     return
 .source "src/cg_expr.c", 342
@@ -176075,10 +176082,10 @@ __L17877:
     load    r0, sf[0]
     test    r0
     jump    z, __L17881
-    move    r0, __W2006+1
+    move    r0, __W2007+1
     jump    __L17882
 __L17881:
-    move    r0, __W2007+1
+    move    r0, __W2008+1
 __L17882:
     return
 .source "src/cg_expr.c", 343
@@ -176086,10 +176093,10 @@ __L17878:
     load    r0, sf[0]
     test    r0
     jump    z, __L17883
-    move    r0, __W2008+1
+    move    r0, __W2009+1
     jump    __L17884
 __L17883:
-    move    r0, __W2009+1
+    move    r0, __W2010+1
 __L17884:
     return
 __L17875:
@@ -176097,10 +176104,10 @@ __L17875:
     load    r0, sf[0]
     test    r0
     jump    z, __L17885
-    move    r0, __W2010+1
+    move    r0, __W2011+1
     jump    __L17886
 __L17885:
-    move    r0, __W2011+1
+    move    r0, __W2012+1
 __L17886:
     return
     move    r0, 0
@@ -176143,7 +176150,7 @@ __L17887:
     jump    z, __L17891
     load    r0, sf[4]
     push    r0
-    move    r0, __W2012+1
+    move    r0, __W2013+1
     push    r0
     call    __F1237_S
     add     sp, 2
@@ -176158,7 +176165,7 @@ __L17891:
     jump    z, __L17893
     load    r0, sf[4]
     push    r0
-    move    r0, __W2013+1
+    move    r0, __W2014+1
     push    r0
     call    __F1237_S
     add     sp, 2
@@ -176167,7 +176174,7 @@ __L17893:
 .source "src/cg_expr.c", 355
     load    r0, sf[4]
     push    r0
-    move    r0, __W2014+1
+    move    r0, __W2015+1
     push    r0
     call    __F1237_S
     add     sp, 2
@@ -176182,7 +176189,7 @@ __L17889:
     jump    z, __L17895
     load    r0, sf[4]
     push    r0
-    move    r0, __W2015+1
+    move    r0, __W2016+1
     push    r0
     call    __F1237_S
     add     sp, 2
@@ -176197,7 +176204,7 @@ __L17895:
     jump    z, __L17897
     load    r0, sf[4]
     push    r0
-    move    r0, __W2016+1
+    move    r0, __W2017+1
     push    r0
     call    __F1237_S
     add     sp, 2
@@ -176206,7 +176213,7 @@ __L17897:
 .source "src/cg_expr.c", 359
     load    r0, sf[4]
     push    r0
-    move    r0, __W2017+1
+    move    r0, __W2018+1
     push    r0
     call    __F1237_S
     add     sp, 2
@@ -176349,7 +176356,7 @@ __F1269_ge_strlit:
     push    r0
     load    r0, sf[-1]
     push    r0
-    move    r0, __W2018+1
+    move    r0, __W2019+1
     push    r0
     call    __F1237_S
     add     sp, 3
@@ -176397,7 +176404,7 @@ __L17916:
     call    __F1269_ge_strlit
     add     sp, 1
     push    r0
-    move    r0, __W2019+1
+    move    r0, __W2020+1
     push    r0
     call    __F1236_E
     add     sp, 5
@@ -176411,7 +176418,7 @@ __F1271_ge_panic_if:
 .source "src/cg_expr.c", 385
     load    r0, sf[4]
     push    r0
-    move    r0, __W2020+1
+    move    r0, __W2021+1
     push    r0
     call    __F1236_E
     add     sp, 2
@@ -176440,19 +176447,19 @@ __F1272_ge_arith_name:
     jump    __L17917
 .source "src/cg_expr.c", 393
 __L17918:
-    move    r0, __W2021+1
+    move    r0, __W2022+1
     return
 .source "src/cg_expr.c", 394
 __L17919:
-    move    r0, __W2022+1
+    move    r0, __W2023+1
     return
 .source "src/cg_expr.c", 395
 __L17920:
-    move    r0, __W2023+1
+    move    r0, __W2024+1
     return
 __L17917:
 .source "src/cg_expr.c", 397
-    move    r0, __W2024+1
+    move    r0, __W2025+1
     return
     move    r0, 0
     return
@@ -176488,7 +176495,7 @@ __L17924:
     push    r0
     load    r0, sf[6]
     push    r0
-    move    r0, __W2025+1
+    move    r0, __W2026+1
     push    r0
     call    __F1237_S
     add     sp, 3
@@ -176499,7 +176506,7 @@ __L17925:
     push    r0
     load    r0, sf[6]
     push    r0
-    move    r0, __W2026+1
+    move    r0, __W2027+1
     push    r0
     call    __F1237_S
     add     sp, 3
@@ -176510,7 +176517,7 @@ __L17926:
     push    r0
     load    r0, sf[6]
     push    r0
-    move    r0, __W2027+1
+    move    r0, __W2028+1
     push    r0
     call    __F1237_S
     add     sp, 3
@@ -176521,7 +176528,7 @@ __L17927:
     push    r0
     load    r0, sf[6]
     push    r0
-    move    r0, __W2028+1
+    move    r0, __W2029+1
     push    r0
     call    __F1237_S
     add     sp, 3
@@ -176532,14 +176539,14 @@ __L17928:
     push    r0
     load    r0, sf[6]
     push    r0
-    move    r0, __W2029+1
+    move    r0, __W2030+1
     push    r0
     call    __F1237_S
     add     sp, 3
     return
 __L17923:
 .source "src/cg_expr.c", 412
-    move    r0, __W2030+1
+    move    r0, __W2031+1
     return
 __L17921:
 .source "src/cg_expr.c", 414
@@ -176565,7 +176572,7 @@ __L17932:
     push    r0
     load    r0, sf[6]
     push    r0
-    move    r0, __W2031+1
+    move    r0, __W2032+1
     push    r0
     call    __F1237_S
     add     sp, 3
@@ -176576,7 +176583,7 @@ __L17933:
     push    r0
     load    r0, sf[6]
     push    r0
-    move    r0, __W2032+1
+    move    r0, __W2033+1
     push    r0
     call    __F1237_S
     add     sp, 3
@@ -176587,14 +176594,14 @@ __L17934:
     push    r0
     load    r0, sf[6]
     push    r0
-    move    r0, __W2033+1
+    move    r0, __W2034+1
     push    r0
     call    __F1237_S
     add     sp, 3
     return
 __L17931:
 .source "src/cg_expr.c", 420
-    move    r0, __W2034+1
+    move    r0, __W2035+1
     return
 __L17929:
 .source "src/cg_expr.c", 422
@@ -176626,7 +176633,7 @@ __L17936:
     push    r0
     load    r0, sf[6]
     push    r0
-    move    r0, __W2035+1
+    move    r0, __W2036+1
     push    r0
     call    __F1237_S
     add     sp, 3
@@ -176637,7 +176644,7 @@ __L17937:
     push    r0
     load    r0, sf[6]
     push    r0
-    move    r0, __W2036+1
+    move    r0, __W2037+1
     push    r0
     call    __F1237_S
     add     sp, 3
@@ -176648,7 +176655,7 @@ __L17938:
     push    r0
     load    r0, sf[6]
     push    r0
-    move    r0, __W2037+1
+    move    r0, __W2038+1
     push    r0
     call    __F1237_S
     add     sp, 3
@@ -176672,7 +176679,7 @@ __L17941:
     add     sp, 1
     store   r0, sf[-3]
 .source "src/cg_expr.c", 428
-    move    r0, __W2038+1
+    move    r0, __W2039+1
     push    r0
     call    __F1239_ge_tmp
     add     sp, 1
@@ -176683,7 +176690,7 @@ __L17941:
     call    __F1272_ge_arith_name
     add     sp, 1
     push    r0
-    move    r0, __W2039+1
+    move    r0, __W2040+1
     push    r0
     call    __F1237_S
     add     sp, 2
@@ -176708,7 +176715,7 @@ __L17941:
     push    r0
     load    r0, sf[0]
     push    r0
-    move    r0, __W2040+1
+    move    r0, __W2041+1
     push    r0
     call    __F1236_E
     add     sp, 4
@@ -176721,7 +176728,7 @@ __L17948:
     push    r0
     load    r0, sf[0]
     push    r0
-    move    r0, __W2041+1
+    move    r0, __W2042+1
     push    r0
     call    __F1236_E
     add     sp, 4
@@ -176739,7 +176746,7 @@ __L17948:
     push    r0
     load    r0, sf[6]
     push    r0
-    move    r0, __W2042+1
+    move    r0, __W2043+1
     push    r0
     call    __F1237_S
     add     sp, 5
@@ -176757,7 +176764,7 @@ __L17950:
     push    r0
     load    r0, sf[0]
     push    r0
-    move    r0, __W2043+1
+    move    r0, __W2044+1
     push    r0
     call    __F1237_S
     add     sp, 3
@@ -176793,7 +176800,7 @@ __L17946:
     push    r0
     load    r0, sf[0]
     push    r0
-    move    r0, __W2044+1
+    move    r0, __W2045+1
     push    r0
     call    __F1236_E
     add     sp, 4
@@ -176810,7 +176817,7 @@ __L17954:
     push    r0
     load    r0, sf[0]
     push    r0
-    move    r0, __W2045+1
+    move    r0, __W2046+1
     push    r0
     call    __F1236_E
     add     sp, 4
@@ -176825,7 +176832,7 @@ __L17954:
     push    r0
     load    r0, sf[6]
     push    r0
-    move    r0, __W2046+1
+    move    r0, __W2047+1
     push    r0
     call    __F1237_S
     add     sp, 5
@@ -176846,7 +176853,7 @@ __L17956:
     push    r0
     load    r0, sf[6]
     push    r0
-    move    r0, __W2047+1
+    move    r0, __W2048+1
     push    r0
     call    __F1237_S
     add     sp, 3
@@ -176862,7 +176869,7 @@ __L17956:
     push    r0
     load    r0, sf[0]
     push    r0
-    move    r0, __W2048+1
+    move    r0, __W2049+1
     push    r0
     call    __F1236_E
     add     sp, 4
@@ -176884,7 +176891,7 @@ __L17952:
     push    r0
     load    r0, sf[0]
     push    r0
-    move    r0, __W2049+1
+    move    r0, __W2050+1
     push    r0
     call    __F1236_E
     add     sp, 4
@@ -176898,13 +176905,13 @@ __L17952:
     load    r0, sf[-3]
     test    r0
     jump    z, __L17960
-    move    r0, __W2051+1
+    move    r0, __W2052+1
     jump    __L17961
 __L17960:
-    move    r0, __W2052+1
+    move    r0, __W2053+1
 __L17961:
     push    r0
-    move    r0, __W2050+1
+    move    r0, __W2051+1
     push    r0
     call    __F1237_S
     add     sp, 4
@@ -176927,7 +176934,7 @@ __L17958:
     push    r0
     load    r0, sf[0]
     push    r0
-    move    r0, __W2053+1
+    move    r0, __W2054+1
     push    r0
     call    __F1236_E
     add     sp, 4
@@ -176940,7 +176947,7 @@ __L17962:
     push    r0
     load    r0, sf[0]
     push    r0
-    move    r0, __W2054+1
+    move    r0, __W2055+1
     push    r0
     call    __F1236_E
     add     sp, 4
@@ -176967,7 +176974,7 @@ __L17947:
     push    r0
     load    r0, sf[0]
     push    r0
-    move    r0, __W2055+1
+    move    r0, __W2056+1
     push    r0
     call    __F1237_S
     add     sp, 5
@@ -176989,7 +176996,7 @@ __L17964:
     push    r0
     load    r0, sf[0]
     push    r0
-    move    r0, __W2056+1
+    move    r0, __W2057+1
     push    r0
     call    __F1237_S
     add     sp, 2
@@ -177010,7 +177017,7 @@ __L17966:
     push    r0
     load    r0, sf[0]
     push    r0
-    move    r0, __W2057+1
+    move    r0, __W2058+1
     push    r0
     call    __F1237_S
     add     sp, 3
@@ -177034,7 +177041,7 @@ __L17943:
     move    eq, r0, 1, 0
     store   r0, sf[-4]
 .source "src/cg_expr.c", 468
-    move    r0, __W2058+1
+    move    r0, __W2059+1
     push    r0
     call    __F1239_ge_tmp
     add     sp, 1
@@ -177043,15 +177050,15 @@ __L17943:
     load    r0, sf[-4]
     test    r0
     jump    z, __L17968
-    move    r0, __W2060+1
+    move    r0, __W2061+1
     jump    __L17969
 __L17968:
-    move    r0, __W2061+1
+    move    r0, __W2062+1
 __L17969:
     push    r0
     load    r0, sf[7]
     push    r0
-    move    r0, __W2059+1
+    move    r0, __W2060+1
     push    r0
     call    __F1237_S
     add     sp, 2
@@ -177071,10 +177078,10 @@ __L17969:
     load    r0, sf[-4]
     test    r0
     jump    z, __L17972
-    move    r0, __W2063+1
+    move    r0, __W2064+1
     jump    __L17973
 __L17972:
-    move    r0, __W2064+1
+    move    r0, __W2065+1
 __L17973:
     push    r0
     load    r0, sf[5]
@@ -177086,7 +177093,7 @@ __L17973:
     push    r0
     load    r0, sf[7]
     push    r0
-    move    r0, __W2062+1
+    move    r0, __W2063+1
     push    r0
     call    __F1237_S
     add     sp, 4
@@ -177108,17 +177115,17 @@ __L17970:
     load    r0, sf[-4]
     test    r0
     jump    z, __L17976
-    move    r0, __W2066+1
+    move    r0, __W2067+1
     jump    __L17977
 __L17976:
-    move    r0, __W2067+1
+    move    r0, __W2068+1
 __L17977:
     push    r0
     load    r0, sf[6]
     push    r0
     load    r0, sf[0]
     push    r0
-    move    r0, __W2065+1
+    move    r0, __W2066+1
     push    r0
     call    __F1236_E
     add     sp, 5
@@ -177130,17 +177137,17 @@ __L17974:
     load    r0, sf[-4]
     test    r0
     jump    z, __L17978
-    move    r0, __W2069+1
+    move    r0, __W2070+1
     jump    __L17979
 __L17978:
-    move    r0, __W2070+1
+    move    r0, __W2071+1
 __L17979:
     push    r0
     load    r0, sf[6]
     push    r0
     load    r0, sf[0]
     push    r0
-    move    r0, __W2068+1
+    move    r0, __W2069+1
     push    r0
     call    __F1236_E
     add     sp, 5
@@ -177166,7 +177173,7 @@ __L17945:
 .source "src/cg_expr.c", 480
     load    r0, sf[8]
 .source "src/cg_expr.c", 481
-    move    r0, __W2071+1
+    move    r0, __W2072+1
     push    r0
     call    __F1239_ge_tmp
     add     sp, 1
@@ -177175,17 +177182,17 @@ __L17945:
     load    r0, sf[-6]
     test    r0
     jump    z, __L17980
-    move    r0, __W2073+1
+    move    r0, __W2074+1
     jump    __L17981
 __L17980:
-    move    r0, __W2074+1
+    move    r0, __W2075+1
 __L17981:
     push    r0
     load    r0, sf[-5]
     push    r0
     load    r0, sf[7]
     push    r0
-    move    r0, __W2072+1
+    move    r0, __W2073+1
     push    r0
     call    __F1237_S
     add     sp, 3
@@ -177205,7 +177212,7 @@ __L17981:
     push    r0
     load    r0, sf[0]
     push    r0
-    move    r0, __W2075+1
+    move    r0, __W2076+1
     push    r0
     call    __F1236_E
     add     sp, 4
@@ -177230,7 +177237,7 @@ __L17987:
     push    r0
     load    r0, sf[0]
     push    r0
-    move    r0, __W2076+1
+    move    r0, __W2077+1
     push    r0
     call    __F1236_E
     add     sp, 3
@@ -177251,7 +177258,7 @@ __L17982:
     push    r0
     load    r0, sf[0]
     push    r0
-    move    r0, __W2077+1
+    move    r0, __W2078+1
     push    r0
     call    __F1236_E
     add     sp, 4
@@ -177264,7 +177271,7 @@ __L17988:
     push    r0
     load    r0, sf[0]
     push    r0
-    move    r0, __W2078+1
+    move    r0, __W2079+1
     push    r0
     call    __F1236_E
     add     sp, 4
@@ -177275,7 +177282,7 @@ __L17983:
     return
 __L17935:
 .source "src/cg_expr.c", 494
-    move    r0, __W2079+1
+    move    r0, __W2080+1
     return
     move    r0, 0
     return
@@ -177292,7 +177299,7 @@ __F1274_ge_cmp:
     move    eq, r0, 1, 0
     test    r0
     jump    z, __L17990
-    move    r0, __W2080+1
+    move    r0, __W2081+1
     jump    __L17991
 __L17990:
     load    r0, sf[3]
@@ -177301,7 +177308,7 @@ __L17990:
     move    eq, r0, 1, 0
     test    r0
     jump    z, __L17992
-    move    r0, __W2081+1
+    move    r0, __W2082+1
     jump    __L17993
 __L17992:
     load    r0, sf[3]
@@ -177310,7 +177317,7 @@ __L17992:
     move    eq, r0, 1, 0
     test    r0
     jump    z, __L17994
-    move    r0, __W2082+1
+    move    r0, __W2083+1
     jump    __L17995
 __L17994:
     load    r0, sf[3]
@@ -177319,7 +177326,7 @@ __L17994:
     move    eq, r0, 1, 0
     test    r0
     jump    z, __L17996
-    move    r0, __W2083+1
+    move    r0, __W2084+1
     jump    __L17997
 __L17996:
     load    r0, sf[3]
@@ -177328,10 +177335,10 @@ __L17996:
     move    eq, r0, 1, 0
     test    r0
     jump    z, __L17998
-    move    r0, __W2084+1
+    move    r0, __W2085+1
     jump    __L17999
 __L17998:
-    move    r0, __W2085+1
+    move    r0, __W2086+1
 __L17999:
 __L17997:
 __L17995:
@@ -177378,7 +177385,7 @@ __L18003:
     push    r0
     load    r0, sf[5]
     push    r0
-    move    r0, __W2086+1
+    move    r0, __W2087+1
     push    r0
     call    __F1237_S
     add     sp, 4
@@ -177391,7 +177398,7 @@ __L18000:
     push    r0
     load    r0, sf[5]
     push    r0
-    move    r0, __W2087+1
+    move    r0, __W2088+1
     push    r0
     call    __F1237_S
     add     sp, 4
@@ -177413,20 +177420,20 @@ __F1275_ge_neg:
     jump    z, __L18006
     load    r0, sf[5]
     push    r0
-    move    r0, __W2088+1
+    move    r0, __W2089+1
     push    r0
     call    __F1237_S
     add     sp, 2
     return
 __L18006:
 .source "src/cg_expr.c", 508
-    move    r0, __W2089+1
+    move    r0, __W2090+1
     push    r0
     call    __F1239_ge_tmp
     add     sp, 1
     store   r0, sf[0]
 .source "src/cg_expr.c", 509
-    move    r0, __W2091+1
+    move    r0, __W2092+1
     push    r0
     load    r0, sf[4]
     push    r0
@@ -177435,7 +177442,7 @@ __L18006:
     push    r0
     load    r0, sf[5]
     push    r0
-    move    r0, __W2090+1
+    move    r0, __W2091+1
     push    r0
     call    __F1237_S
     add     sp, 3
@@ -177449,7 +177456,7 @@ __L18006:
     push    r0
     load    r0, sf[0]
     push    r0
-    move    r0, __W2092+1
+    move    r0, __W2093+1
     push    r0
     call    __F1236_E
     add     sp, 3
@@ -177473,7 +177480,7 @@ __F1276_ge_not:
     jump    z, __L18008
     load    r0, sf[4]
     push    r0
-    move    r0, __W2093+1
+    move    r0, __W2094+1
     push    r0
     call    __F1237_S
     add     sp, 2
@@ -177504,7 +177511,7 @@ __L18013:
     jump    z, __L18010
     load    r0, sf[4]
     push    r0
-    move    r0, __W2094+1
+    move    r0, __W2095+1
     push    r0
     call    __F1237_S
     add     sp, 2
@@ -177518,7 +177525,7 @@ __L18010:
     push    r0
     load    r0, sf[4]
     push    r0
-    move    r0, __W2095+1
+    move    r0, __W2096+1
     push    r0
     call    __F1237_S
     add     sp, 3
@@ -177597,14 +177604,14 @@ __L18016:
     jump    z, __L18021
     load    r0, sf[4]
     push    r0
-    move    r0, __W2096+1
+    move    r0, __W2097+1
     push    r0
     call    __F1237_S
     add     sp, 2
     return
 __L18021:
 .source "src/cg_expr.c", 531
-    move    r0, __W2097+1
+    move    r0, __W2098+1
     push    r0
     call    __F1239_ge_tmp
     add     sp, 1
@@ -177647,13 +177654,13 @@ __L18027:
     load    r0, sf[-2]
     test    r0
     jump    z, __L18028
-    move    r0, __W2099+1
+    move    r0, __W2100+1
     jump    __L18029
 __L18028:
-    move    r0, __W2100+1
+    move    r0, __W2101+1
 __L18029:
     push    r0
-    move    r0, __W2098+1
+    move    r0, __W2099+1
     push    r0
     call    __F1236_E
     add     sp, 6
@@ -177758,7 +177765,7 @@ __L18041:
     push    r0
     load    r0, sf[6]
     push    r0
-    move    r0, __W2101+1
+    move    r0, __W2102+1
     push    r0
     call    __F1237_S
     add     sp, 4
@@ -177873,7 +177880,7 @@ __L18055:
     jump    z, __L18052
     load    r0, sf[6]
     push    r0
-    move    r0, __W2102+1
+    move    r0, __W2103+1
     push    r0
     call    __F1237_S
     add     sp, 2
@@ -177930,7 +177937,7 @@ __L18060:
     jump    z, __L18062
     load    r0, sf[6]
     push    r0
-    move    r0, __W2103+1
+    move    r0, __W2104+1
     push    r0
     call    __F1237_S
     add     sp, 2
@@ -177939,7 +177946,7 @@ __L18062:
 .source "src/cg_expr.c", 557
     load    r0, sf[6]
     push    r0
-    move    r0, __W2104+1
+    move    r0, __W2105+1
     push    r0
     call    __F1237_S
     add     sp, 2
@@ -178105,15 +178112,15 @@ __L18087:
     move    eq, r0, 1, 0
     test    r0
     jump    z, __L18092
-    move    r0, __W2106+1
+    move    r0, __W2107+1
     jump    __L18093
 __L18092:
-    move    r0, __W2107+1
+    move    r0, __W2108+1
 __L18093:
     push    r0
     load    r0, sf[6]
     push    r0
-    move    r0, __W2105+1
+    move    r0, __W2106+1
     push    r0
     call    __F1237_S
     add     sp, 3
@@ -178309,7 +178316,7 @@ __F1287_ge_mk_slice:
 .source "src/cg_expr.c", 601
     add     sp, -1
 .source "src/cg_expr.c", 602
-    move    r0, __W2108+1
+    move    r0, __W2109+1
     push    r0
     call    __F1239_ge_tmp
     add     sp, 1
@@ -178323,7 +178330,7 @@ __F1287_ge_mk_slice:
     push    r0
     load    r0, sf[0]
     push    r0
-    move    r0, __W2109+1
+    move    r0, __W2110+1
     push    r0
     call    __F1236_E
     add     sp, 5
@@ -178339,7 +178346,7 @@ __F1288_ge_mk_dyn:
 .source "src/cg_expr.c", 607
     add     sp, -1
 .source "src/cg_expr.c", 608
-    move    r0, __W2110+1
+    move    r0, __W2111+1
     push    r0
     call    __F1239_ge_tmp
     add     sp, 1
@@ -178353,7 +178360,7 @@ __F1288_ge_mk_dyn:
     push    r0
     load    r0, sf[0]
     push    r0
-    move    r0, __W2111+1
+    move    r0, __W2112+1
     push    r0
     call    __F1236_E
     add     sp, 5
@@ -178472,7 +178479,7 @@ __L18127:
     call    __F1242_ge_ct
     add     sp, 1
     push    r0
-    move    r0, __W2112+1
+    move    r0, __W2113+1
     push    r0
     call    __F1237_S
     add     sp, 3
@@ -178634,7 +178641,7 @@ __F1291_ge_load:
     add     r0, 1
     load    r0, r0[0]
     push    r0
-    move    r0, __W2113+1
+    move    r0, __W2114+1
     push    r0
     call    __F1237_S
     add     sp, 2
@@ -178649,7 +178656,7 @@ __L18135:
     add     sp, 1
     test    r0
     jump    z, __L18137
-    move    r0, __W2114+1
+    move    r0, __W2115+1
     return
 __L18137:
 .source "src/cg_expr.c", 641
@@ -178721,7 +178728,7 @@ __L18142:
     add     r0, 6
     load    r0, r0[0]
     push    r0
-    move    r0, __W2115+1
+    move    r0, __W2116+1
     push    r0
     call    __F1236_E
     add     sp, 2
@@ -178751,7 +178758,7 @@ __F1293_ge_store:
     add     r0, 1
     load    r0, r0[0]
     push    r0
-    move    r0, __W2116+1
+    move    r0, __W2117+1
     push    r0
     call    __F1236_E
     add     sp, 3
@@ -178806,7 +178813,7 @@ __L18147:
     add     r0, 1
     load    r0, r0[0]
     push    r0
-    move    r0, __W2117+1
+    move    r0, __W2118+1
     push    r0
     call    __F1236_E
     add     sp, 3
@@ -178868,7 +178875,7 @@ __L18157:
     add     r0, 1
     load    r0, r0[0]
     push    r0
-    move    r0, __W2118+1
+    move    r0, __W2119+1
     push    r0
     call    __F1237_S
     add     sp, 2
@@ -178879,7 +178886,7 @@ __L18159:
     add     r0, 1
     load    r0, r0[0]
     push    r0
-    move    r0, __W2119+1
+    move    r0, __W2120+1
     push    r0
     call    __F1237_S
     add     sp, 2
@@ -178953,7 +178960,7 @@ __L18161:
     push    r0
     load    r0, __G1233_ge_envtype+1
     push    r0
-    move    r0, __W2120+1
+    move    r0, __W2121+1
     push    r0
     call    __F1237_S
     add     sp, 3
@@ -178994,7 +179001,7 @@ __L18163:
     push    r0
     load    r0, __G1233_ge_envtype+1
     push    r0
-    move    r0, __W2121+1
+    move    r0, __W2122+1
     push    r0
     call    __F1237_S
     add     sp, 3
@@ -179051,7 +179058,7 @@ __L18168:
     push    r0
     load    r0, __G1233_ge_envtype+1
     push    r0
-    move    r0, __W2122+1
+    move    r0, __W2123+1
     push    r0
     call    __F1237_S
     add     sp, 3
@@ -179072,7 +179079,7 @@ __L18168:
     call    __F1242_ge_ct
     add     sp, 1
     push    r0
-    move    r0, __W2123+1
+    move    r0, __W2124+1
     push    r0
     call    __F1237_S
     add     sp, 3
@@ -179264,7 +179271,7 @@ __L18176:
     add     r0, 6
     load    r0, r0[0]
     push    r0
-    move    r0, __W2124+1
+    move    r0, __W2125+1
     push    r0
     call    __F1236_E
     add     sp, 2
@@ -179410,10 +179417,10 @@ __F1301_ge_overloaded_deref:
     load    r0, sf[9]
     test    r0
     jump    z, __L18177
-    move    r0, __W2125+1
+    move    r0, __W2126+1
     jump    __L18178
 __L18177:
-    move    r0, __W2126+1
+    move    r0, __W2127+1
 __L18178:
     push    r0
     load    r0, sf[9]
@@ -179557,10 +179564,10 @@ __L18185:
     load    r0, sf[10]
     test    r0
     jump    z, __L18187
-    move    r0, __W2127+1
+    move    r0, __W2128+1
     jump    __L18188
 __L18187:
-    move    r0, __W2128+1
+    move    r0, __W2129+1
 __L18188:
     push    r0
     load    r0, sf[10]
@@ -179713,7 +179720,7 @@ __L18194:
     move    z, r0, 1, 0
     test    r0
     jump    z, __L18197
-    move    r0, __W2129+1
+    move    r0, __W2130+1
     push    r0
     call    __F2_fatal
     add     sp, 1
@@ -180090,7 +180097,7 @@ __F1307_ge_arr_base:
     add     r0, 1
     load    r0, r0[0]
     push    r0
-    move    r0, __W2130+1
+    move    r0, __W2131+1
     push    r0
     call    __F1237_S
     add     sp, 2
@@ -180101,7 +180108,7 @@ __L18228:
     add     r0, 1
     load    r0, r0[0]
     push    r0
-    move    r0, __W2131+1
+    move    r0, __W2132+1
     push    r0
     call    __F1237_S
     add     sp, 2
@@ -180134,7 +180141,7 @@ __F1308_ge_panic_bounds:
     call    __F1269_ge_strlit
     add     sp, 1
     push    r0
-    move    r0, __W2132+1
+    move    r0, __W2133+1
     push    r0
     call    __F1236_E
     add     sp, 6
@@ -180174,14 +180181,14 @@ __F1309_ge_index_int:
     push    r0
     load    r0, sf[10]
     push    r0
-    move    r0, __W2133+1
+    move    r0, __W2134+1
     push    r0
     call    __F1236_E
     add     sp, 3
 .source "src/cg_expr.c", 830
     load    r0, sf[-2]
     push    r0
-    move    r0, __W2134+1
+    move    r0, __W2135+1
     push    r0
     call    __F1237_S
     add     sp, 2
@@ -180209,7 +180216,7 @@ __F1309_ge_index_int:
     add     r0, 1
     load    r0, r0[0]
     push    r0
-    move    r0, __W2135+1
+    move    r0, __W2136+1
     push    r0
     call    __F1237_S
     add     sp, 3
@@ -180248,7 +180255,7 @@ __L18232:
     add     r0, 1
     load    r0, r0[0]
     push    r0
-    move    r0, __W2136+1
+    move    r0, __W2137+1
     push    r0
     call    __F1237_S
     add     sp, 3
@@ -180281,7 +180288,7 @@ __L18230:
     push    r0
     load    r0, sf[10]
     push    r0
-    move    r0, __W2137+1
+    move    r0, __W2138+1
     push    r0
     call    __F1236_E
     add     sp, 3
@@ -180290,7 +180297,7 @@ __L18230:
     add     r0, 1
     load    r0, r0[0]
     push    r0
-    move    r0, __W2138+1
+    move    r0, __W2139+1
     push    r0
     call    __F1237_S
     add     sp, 2
@@ -180318,7 +180325,7 @@ __L18230:
     add     r0, 1
     load    r0, r0[0]
     push    r0
-    move    r0, __W2139+1
+    move    r0, __W2140+1
     push    r0
     call    __F1237_S
     add     sp, 3
@@ -180360,7 +180367,7 @@ __L18234:
     call    __F1242_ge_ct
     add     sp, 1
     push    r0
-    move    r0, __W2140+1
+    move    r0, __W2141+1
     push    r0
     call    __F1237_S
     add     sp, 4
@@ -180411,7 +180418,7 @@ __F1310_ge_index_range:
     call    __F1280_ex_to
     add     sp, 2
     store   r0, sf[-2]
-    move    r0, __W2141+1
+    move    r0, __W2142+1
     store   r0, sf[-3]
 .source "src/cg_expr.c", 844
     load    r0, sf[0]
@@ -180516,7 +180523,7 @@ __L18243:
     call    __F1305_ge_array_len
     add     sp, 1
     push    r0
-    move    r0, __W2142+1
+    move    r0, __W2143+1
     push    r0
     call    __F1237_S
     add     sp, 2
@@ -180545,7 +180552,7 @@ __L18244:
     add     r0, 1
     load    r0, r0[0]
     push    r0
-    move    r0, __W2143+1
+    move    r0, __W2144+1
     push    r0
     call    __F1237_S
     add     sp, 2
@@ -180555,7 +180562,7 @@ __L18244:
     add     r0, 1
     load    r0, r0[0]
     push    r0
-    move    r0, __W2144+1
+    move    r0, __W2145+1
     push    r0
     call    __F1237_S
     add     sp, 2
@@ -180565,7 +180572,7 @@ __L18245:
     load    r0, sf[-10]
     test    r0
     jump    z, __L18246
-    move    r0, __W2146+1
+    move    r0, __W2147+1
     push    r0
     load    r0, sf[-8]
     push    r0
@@ -180577,7 +180584,7 @@ __L18245:
     push    r0
     load    r0, sf[-2]
     push    r0
-    move    r0, __W2145+1
+    move    r0, __W2146+1
     push    r0
     call    __F1237_S
     add     sp, 3
@@ -180590,7 +180597,7 @@ __L18246:
     load    r0, sf[-11]
     test    r0
     jump    z, __L18248
-    move    r0, __W2148+1
+    move    r0, __W2149+1
     push    r0
     load    r0, sf[-8]
     push    r0
@@ -180602,7 +180609,7 @@ __L18246:
     push    r0
     load    r0, sf[-2]
     push    r0
-    move    r0, __W2147+1
+    move    r0, __W2148+1
     push    r0
     call    __F1237_S
     add     sp, 3
@@ -180613,17 +180620,17 @@ __L18248:
     test    r0
     jump    z, __L18250
 .source "src/cg_expr.c", 861
-    move    r0, __W2149+1
+    move    r0, __W2150+1
     push    r0
     call    __F1239_ge_tmp
     add     sp, 1
     store   r0, sf[-13]
 .source "src/cg_expr.c", 862
-    move    r0, __W2151+1
+    move    r0, __W2152+1
     push    r0
     load    r0, sf[-4]
     push    r0
-    move    r0, __W2150+1
+    move    r0, __W2151+1
     push    r0
     call    __F1237_S
     add     sp, 2
@@ -180637,7 +180644,7 @@ __L18248:
     push    r0
     load    r0, sf[-13]
     push    r0
-    move    r0, __W2152+1
+    move    r0, __W2153+1
     push    r0
     call    __F1236_E
     add     sp, 3
@@ -180694,7 +180701,7 @@ __L18250:
     call    __F1269_ge_strlit
     add     sp, 1
     push    r0
-    move    r0, __W2153+1
+    move    r0, __W2154+1
     push    r0
     call    __F1236_E
     add     sp, 8
@@ -180723,7 +180730,7 @@ __L18252:
     call    __F1269_ge_strlit
     add     sp, 1
     push    r0
-    move    r0, __W2154+1
+    move    r0, __W2155+1
     push    r0
     call    __F1236_E
     add     sp, 7
@@ -180755,7 +180762,7 @@ __L18257:
     push    r0
     load    r0, sf[-4]
     push    r0
-    move    r0, __W2156+1
+    move    r0, __W2157+1
     push    r0
     call    __F1237_S
     add     sp, 3
@@ -180764,7 +180771,7 @@ __L18257:
     push    r0
     load    r0, sf[-6]
     push    r0
-    move    r0, __W2155+1
+    move    r0, __W2156+1
     push    r0
     call    __F1237_S
     add     sp, 3
@@ -180779,7 +180786,7 @@ __L18254:
     push    r0
     load    r0, sf[-4]
     push    r0
-    move    r0, __W2158+1
+    move    r0, __W2159+1
     push    r0
     call    __F1237_S
     add     sp, 3
@@ -180795,7 +180802,7 @@ __L18254:
     call    __F1242_ge_ct
     add     sp, 1
     push    r0
-    move    r0, __W2157+1
+    move    r0, __W2158+1
     push    r0
     call    __F1237_S
     add     sp, 4
@@ -181237,10 +181244,10 @@ __L18274:
     load    r0, sf[5]
     test    r0
     jump    z, __L18284
-    move    r0, __W2159+1
+    move    r0, __W2160+1
     jump    __L18285
 __L18284:
-    move    r0, __W2160+1
+    move    r0, __W2161+1
 __L18285:
     push    r0
     load    r0, sf[5]
@@ -181395,7 +181402,7 @@ __L18293:
     add     r0, 20
     load    r0, r0[0]
     push    r0
-    move    r0, __W2161+1
+    move    r0, __W2162+1
     push    r0
     call    __F1237_S
     add     sp, 2
@@ -181426,7 +181433,7 @@ __L18291:
     add     r0, 1
     load    r0, r0[0]
     push    r0
-    move    r0, __W2162+1
+    move    r0, __W2163+1
     push    r0
     call    __F1237_S
     add     sp, 3
@@ -181510,7 +181517,7 @@ __L18294:
     push    r0
     load    r0, sf[0]
     push    r0
-    move    r0, __W2163+1
+    move    r0, __W2164+1
     push    r0
     call    __F1236_E
     add     sp, 3
@@ -181689,7 +181696,7 @@ __L18312:
     move    z, r0, 1, 0
     test    r0
     jump    z, __L18313
-    move    r0, __W2164+1
+    move    r0, __W2165+1
     push    r0
     call    __F2_fatal
     add     sp, 1
@@ -182104,7 +182111,7 @@ __L18329:
     load    r0, sf[-3]
     test    r0
     jump    z, __L18330
-    move    r0, __W2165+1
+    move    r0, __W2166+1
     push    r0
     add     r0, sf, -2
     push    r0
@@ -182151,7 +182158,7 @@ __F1316_ge_emit_call:
     push    r0
     load    r0, sf[3]
     push    r0
-    move    r0, __W2166+1
+    move    r0, __W2167+1
     push    r0
     call    __F1237_S
     add     sp, 3
@@ -182178,7 +182185,7 @@ __L18335:
 .source "src/cg_expr.c", 991
     load    r0, sf[0]
     push    r0
-    move    r0, __W2167+1
+    move    r0, __W2168+1
     push    r0
     call    __F1236_E
     add     sp, 2
@@ -182196,12 +182203,12 @@ __L18332:
 .source "src/cg_expr.c", 995
     load    r0, sf[0]
     push    r0
-    move    r0, __W2168+1
+    move    r0, __W2169+1
     push    r0
     call    __F1236_E
     add     sp, 2
 .source "src/cg_expr.c", 996
-    move    r0, __W2169+1
+    move    r0, __W2170+1
     return
 __L18336:
 .source "src/cg_expr.c", 998
@@ -182215,7 +182222,7 @@ __L18336:
     push    r0
     load    r0, sf[-1]
     push    r0
-    move    r0, __W2170+1
+    move    r0, __W2171+1
     push    r0
     call    __F1236_E
     add     sp, 3
@@ -182253,7 +182260,7 @@ __L18339:
     call    __F11_sb_puts
     add     sp, 2
 .source "src/cg_expr.c", 1009
-    move    r0, __W2171+1
+    move    r0, __W2172+1
     push    r0
     add     r0, sf, -2
     push    r0
@@ -182299,7 +182306,7 @@ __L18349:
 __L18350:
     test    r0
     jump    z, __L18347
-    move    r0, __W2172+1
+    move    r0, __W2173+1
     push    r0
     add     r0, sf, -2
     push    r0
@@ -182345,7 +182352,7 @@ __L18353:
 __L18354:
     test    r0
     jump    z, __L18351
-    move    r0, __W2173+1
+    move    r0, __W2174+1
     push    r0
     add     r0, sf, -2
     push    r0
@@ -182482,7 +182489,7 @@ __F1320_ge_elem_addr:
     push    r0
     load    r0, sf[4]
     push    r0
-    move    r0, __W2174+1
+    move    r0, __W2175+1
     push    r0
     call    __F1237_S
     add     sp, 3
@@ -182498,7 +182505,7 @@ __L18367:
     call    __F1242_ge_ct
     add     sp, 1
     push    r0
-    move    r0, __W2175+1
+    move    r0, __W2176+1
     push    r0
     call    __F1237_S
     add     sp, 4
@@ -182526,7 +182533,7 @@ __F1321_ge_elem_place:
     push    r0
     load    r0, sf[5]
     push    r0
-    move    r0, __W2176+1
+    move    r0, __W2177+1
     push    r0
     call    __F1237_S
     add     sp, 3
@@ -182566,7 +182573,7 @@ __L18369:
     call    __F1242_ge_ct
     add     sp, 1
     push    r0
-    move    r0, __W2177+1
+    move    r0, __W2178+1
     push    r0
     call    __F1237_S
     add     sp, 4
@@ -182605,12 +182612,12 @@ __F1322_ge_with_overflow:
     call    __F1243_ge_tmp_ty
     add     sp, 1
     store   r0, sf[0]
-    move    r0, __W2178+1
+    move    r0, __W2179+1
     push    r0
     call    __F1239_ge_tmp
     add     sp, 1
     store   r0, sf[-1]
-    move    r0, __W2179+1
+    move    r0, __W2180+1
     push    r0
     call    __F1239_ge_tmp
     add     sp, 1
@@ -182649,16 +182656,16 @@ __F1322_ge_with_overflow:
     load    r0, sf[-3]
     test    r0
     jump    z, __L18371
-    move    r0, __W2180+1
+    move    r0, __W2181+1
     jump    __L18372
 __L18371:
     load    r0, sf[-4]
     test    r0
     jump    z, __L18373
-    move    r0, __W2181+1
+    move    r0, __W2182+1
     jump    __L18374
 __L18373:
-    move    r0, __W2182+1
+    move    r0, __W2183+1
 __L18374:
 __L18372:
     store   r0, sf[-7]
@@ -182693,7 +182700,7 @@ __L18380:
     push    r0
     load    r0, sf[-1]
     push    r0
-    move    r0, __W2183+1
+    move    r0, __W2184+1
     push    r0
     call    __F1236_E
     add     sp, 4
@@ -182705,15 +182712,15 @@ __L18380:
     load    r0, sf[-6]
     test    r0
     jump    z, __L18381
-    move    r0, __W2185+1
+    move    r0, __W2186+1
     jump    __L18382
 __L18381:
-    move    r0, __W2186+1
+    move    r0, __W2187+1
 __L18382:
     push    r0
     load    r0, sf[-2]
     push    r0
-    move    r0, __W2184+1
+    move    r0, __W2185+1
     push    r0
     call    __F1236_E
     add     sp, 5
@@ -182728,7 +182735,7 @@ __L18377:
     push    r0
     load    r0, sf[-1]
     push    r0
-    move    r0, __W2187+1
+    move    r0, __W2188+1
     push    r0
     call    __F1236_E
     add     sp, 5
@@ -182756,7 +182763,7 @@ __L18386:
     push    r0
     load    r0, sf[-2]
     push    r0
-    move    r0, __W2188+1
+    move    r0, __W2189+1
     push    r0
     call    __F1236_E
     add     sp, 6
@@ -182772,7 +182779,7 @@ __L18383:
     push    r0
     load    r0, sf[-2]
     push    r0
-    move    r0, __W2189+1
+    move    r0, __W2190+1
     push    r0
     call    __F1236_E
     add     sp, 4
@@ -182792,7 +182799,7 @@ __L18387:
     push    r0
     load    r0, sf[-2]
     push    r0
-    move    r0, __W2190+1
+    move    r0, __W2191+1
     push    r0
     call    __F1236_E
     add     sp, 6
@@ -182805,7 +182812,7 @@ __L18389:
     push    r0
     load    r0, sf[-2]
     push    r0
-    move    r0, __W2191+1
+    move    r0, __W2192+1
     push    r0
     call    __F1236_E
     add     sp, 4
@@ -182827,7 +182834,7 @@ __L18375:
     push    r0
     load    r0, sf[-1]
     push    r0
-    move    r0, __W2192+1
+    move    r0, __W2193+1
     push    r0
     call    __F1236_E
     add     sp, 5
@@ -182842,7 +182849,7 @@ __L18391:
     push    r0
     load    r0, sf[-1]
     push    r0
-    move    r0, __W2193+1
+    move    r0, __W2194+1
     push    r0
     call    __F1236_E
     add     sp, 5
@@ -182867,7 +182874,7 @@ __L18392:
     push    r0
     load    r0, sf[-2]
     push    r0
-    move    r0, __W2194+1
+    move    r0, __W2195+1
     push    r0
     call    __F1236_E
     add     sp, 6
@@ -182881,7 +182888,7 @@ __L18393:
     push    r0
     load    r0, sf[-2]
     push    r0
-    move    r0, __W2195+1
+    move    r0, __W2196+1
     push    r0
     call    __F1236_E
     add     sp, 3
@@ -182897,7 +182904,7 @@ __L18395:
     push    r0
     load    r0, sf[-2]
     push    r0
-    move    r0, __W2196+1
+    move    r0, __W2197+1
     push    r0
     call    __F1236_E
     add     sp, 4
@@ -182913,7 +182920,7 @@ __L18394:
     push    r0
     load    r0, sf[-1]
     push    r0
-    move    r0, __W2197+1
+    move    r0, __W2198+1
     push    r0
     call    __F1236_E
     add     sp, 3
@@ -182927,7 +182934,7 @@ __L18376:
     push    r0
     load    r0, sf[0]
     push    r0
-    move    r0, __W2198+1
+    move    r0, __W2199+1
     push    r0
     call    __F1236_E
     add     sp, 5
@@ -182983,7 +182990,7 @@ __L18402:
 .source "src/cg_expr.c", 1071
     load    r0, sf[9]
 .source "src/cg_expr.c", 1072
-    move    r0, __W2199+1
+    move    r0, __W2200+1
     push    r0
     load    r0, sf[4]
     push    r0
@@ -183005,7 +183012,7 @@ __L18402:
     add     r0, r1
     load    r0, r0[0]
     push    r0
-    move    r0, __W2200+1
+    move    r0, __W2201+1
     push    r0
     call    __F1237_S
     add     sp, 2
@@ -183022,14 +183029,14 @@ __L18405:
     add     r0, r1
     load    r0, r0[0]
     push    r0
-    move    r0, __W2201+1
+    move    r0, __W2202+1
     push    r0
     call    __F1237_S
     add     sp, 3
     return
 __L18403:
 .source "src/cg_expr.c", 1076
-    move    r0, __W2202+1
+    move    r0, __W2203+1
     push    r0
     load    r0, sf[4]
     push    r0
@@ -183061,7 +183068,7 @@ __L18403:
     add     r0, r1
     load    r0, r0[0]
     push    r0
-    move    r0, __W2203+1
+    move    r0, __W2204+1
     push    r0
     call    __F1237_S
     add     sp, 4
@@ -183093,14 +183100,14 @@ __L18409:
     add     r0, r1
     load    r0, r0[0]
     push    r0
-    move    r0, __W2204+1
+    move    r0, __W2205+1
     push    r0
     call    __F1237_S
     add     sp, 6
     return
 __L18407:
 .source "src/cg_expr.c", 1080
-    move    r0, __W2205+1
+    move    r0, __W2206+1
     push    r0
     load    r0, sf[4]
     push    r0
@@ -183122,22 +183129,22 @@ __L18407:
     add     sp, 1
     test    r0
     jump    z, __L18413
-    move    r0, __W2207+1
+    move    r0, __W2208+1
     jump    __L18414
 __L18413:
-    move    r0, __W2208+1
+    move    r0, __W2209+1
 __L18414:
     push    r0
-    move    r0, __W2206+1
+    move    r0, __W2207+1
     push    r0
     call    __F1236_E
     add     sp, 3
 .source "src/cg_expr.c", 1082
-    move    r0, __W2209+1
+    move    r0, __W2210+1
     return
 __L18411:
 .source "src/cg_expr.c", 1084
-    move    r0, __W2210+1
+    move    r0, __W2211+1
     push    r0
     load    r0, sf[4]
     push    r0
@@ -183191,7 +183198,7 @@ __L18411:
     add     sp, 1
     test    r0
     jump    z, __L18417
-    move    r0, __W2211+1
+    move    r0, __W2212+1
     return
 __L18417:
 .source "src/cg_expr.c", 1087
@@ -183216,7 +183223,7 @@ __L18417:
     return
 __L18415:
 .source "src/cg_expr.c", 1089
-    move    r0, __W2212+1
+    move    r0, __W2213+1
     push    r0
     load    r0, sf[4]
     push    r0
@@ -183283,11 +183290,11 @@ __L18415:
     call    __F1293_ge_store
     add     sp, 6
 .source "src/cg_expr.c", 1092
-    move    r0, __W2213+1
+    move    r0, __W2214+1
     return
 __L18419:
 .source "src/cg_expr.c", 1094
-    move    r0, __W2214+1
+    move    r0, __W2215+1
     push    r0
     load    r0, sf[4]
     push    r0
@@ -183314,7 +183321,7 @@ __L18419:
     add     r0, r1
     load    r0, r0[0]
     push    r0
-    move    r0, __W2215+1
+    move    r0, __W2216+1
     push    r0
     call    __F1237_S
     add     sp, 3
@@ -183336,14 +183343,14 @@ __L18423:
     call    __F1242_ge_ct
     add     sp, 1
     push    r0
-    move    r0, __W2216+1
+    move    r0, __W2217+1
     push    r0
     call    __F1237_S
     add     sp, 4
     return
 __L18421:
 .source "src/cg_expr.c", 1098
-    move    r0, __W2217+1
+    move    r0, __W2218+1
     push    r0
     load    r0, sf[4]
     push    r0
@@ -183353,7 +183360,7 @@ __L18421:
     move    z, r0, 1, 0
     test    r0
     jump    nz, __L18427
-    move    r0, __W2218+1
+    move    r0, __W2219+1
     push    r0
     load    r0, sf[4]
     push    r0
@@ -183387,7 +183394,7 @@ __L18428:
     return
 __L18425:
 .source "src/cg_expr.c", 1099
-    move    r0, __W2219+1
+    move    r0, __W2220+1
     push    r0
     load    r0, sf[4]
     push    r0
@@ -183438,7 +183445,7 @@ __L18425:
     add     sp, 1
     test    r0
     jump    z, __L18431
-    move    r0, __W2220+1
+    move    r0, __W2221+1
     return
 __L18431:
 .source "src/cg_expr.c", 1102
@@ -183463,7 +183470,7 @@ __L18431:
     return
 __L18429:
 .source "src/cg_expr.c", 1104
-    move    r0, __W2221+1
+    move    r0, __W2222+1
     push    r0
     load    r0, sf[4]
     push    r0
@@ -183527,11 +183534,11 @@ __L18429:
     call    __F1293_ge_store
     add     sp, 6
 .source "src/cg_expr.c", 1107
-    move    r0, __W2222+1
+    move    r0, __W2223+1
     return
 __L18433:
 .source "src/cg_expr.c", 1109
-    move    r0, __W2223+1
+    move    r0, __W2224+1
     push    r0
     load    r0, sf[4]
     push    r0
@@ -183541,11 +183548,11 @@ __L18433:
     move    z, r0, 1, 0
     test    r0
     jump    z, __L18435
-    move    r0, __W2224+1
+    move    r0, __W2225+1
     return
 __L18435:
 .source "src/cg_expr.c", 1110
-    move    r0, __W2225+1
+    move    r0, __W2226+1
     push    r0
     load    r0, sf[4]
     push    r0
@@ -183562,14 +183569,14 @@ __L18435:
     move    r1, 8
     mult    r0, r1
     push    r0
-    move    r0, __W2226+1
+    move    r0, __W2227+1
     push    r0
     call    __F1237_S
     add     sp, 2
     return
 __L18437:
 .source "src/cg_expr.c", 1111
-    move    r0, __W2227+1
+    move    r0, __W2228+1
     push    r0
     load    r0, sf[4]
     push    r0
@@ -183630,7 +183637,7 @@ __L18448:
     add     r0, r1
     load    r0, r0[0]
     push    r0
-    move    r0, __W2228+1
+    move    r0, __W2229+1
     push    r0
     call    __F1237_S
     add     sp, 2
@@ -183663,7 +183670,7 @@ __L18452:
     add     r0, r1
     load    r0, r0[0]
     push    r0
-    move    r0, __W2229+1
+    move    r0, __W2230+1
     push    r0
     call    __F1237_S
     add     sp, 2
@@ -183677,7 +183684,7 @@ __L18449:
     return
 __L18439:
 .source "src/cg_expr.c", 1117
-    move    r0, __W2230+1
+    move    r0, __W2231+1
     push    r0
     load    r0, sf[4]
     push    r0
@@ -183687,7 +183694,7 @@ __L18439:
     move    z, r0, 1, 0
     test    r0
     jump    nz, __L18455
-    move    r0, __W2231+1
+    move    r0, __W2232+1
     push    r0
     load    r0, sf[4]
     push    r0
@@ -183709,14 +183716,14 @@ __L18456:
     add     r0, r1
     load    r0, r0[0]
     push    r0
-    move    r0, __W2232+1
+    move    r0, __W2233+1
     push    r0
     call    __F1237_S
     add     sp, 2
     return
 __L18453:
 .source "src/cg_expr.c", 1118
-    move    r0, __W2233+1
+    move    r0, __W2234+1
     push    r0
     load    r0, sf[4]
     push    r0
@@ -183726,7 +183733,7 @@ __L18453:
     move    z, r0, 1, 0
     test    r0
     jump    nz, __L18459
-    move    r0, __W2234+1
+    move    r0, __W2235+1
     push    r0
     load    r0, sf[4]
     push    r0
@@ -183748,14 +183755,14 @@ __L18460:
     add     r0, r1
     load    r0, r0[0]
     push    r0
-    move    r0, __W2235+1
+    move    r0, __W2236+1
     push    r0
     call    __F1237_S
     add     sp, 2
     return
 __L18457:
 .source "src/cg_expr.c", 1119
-    move    r0, __W2236+1
+    move    r0, __W2237+1
     push    r0
     load    r0, sf[4]
     push    r0
@@ -183765,7 +183772,7 @@ __L18457:
     move    z, r0, 1, 0
     test    r0
     jump    nz, __L18465
-    move    r0, __W2237+1
+    move    r0, __W2238+1
     push    r0
     load    r0, sf[4]
     push    r0
@@ -183782,7 +183789,7 @@ __L18465:
 __L18466:
     test    r0
     jump    nz, __L18463
-    move    r0, __W2238+1
+    move    r0, __W2239+1
     push    r0
     load    r0, sf[4]
     push    r0
@@ -183815,7 +183822,7 @@ __L18464:
     return
 __L18461:
 .source "src/cg_expr.c", 1121
-    move    r0, __W2239+1
+    move    r0, __W2240+1
     push    r0
     load    r0, sf[4]
     push    r0
@@ -183826,7 +183833,7 @@ __L18461:
     test    r0
     jump    z, __L18467
 .source "src/cg_expr.c", 1122
-    move    r0, __W2240+1
+    move    r0, __W2241+1
     push    r0
     call    __F1239_ge_tmp
     add     sp, 1
@@ -183841,7 +183848,7 @@ __L18461:
 .source "src/cg_expr.c", 1124
     load    r0, sf[-2]
     push    r0
-    move    r0, __W2241+1
+    move    r0, __W2242+1
     push    r0
     call    __F1236_E
     add     sp, 2
@@ -183853,7 +183860,7 @@ __L18461:
     push    r0
     load    r0, sf[-2]
     push    r0
-    move    r0, __W2242+1
+    move    r0, __W2243+1
     push    r0
     call    __F1236_E
     add     sp, 3
@@ -183867,7 +183874,7 @@ __L18469:
     push    r0
     load    r0, sf[-2]
     push    r0
-    move    r0, __W2243+1
+    move    r0, __W2244+1
     push    r0
     call    __F1236_E
     add     sp, 3
@@ -183892,7 +183899,7 @@ __L18469:
     call    __F1242_ge_ct
     add     sp, 1
     push    r0
-    move    r0, __W2244+1
+    move    r0, __W2245+1
     push    r0
     call    __F1236_E
     add     sp, 4
@@ -183903,7 +183910,7 @@ __L18470:
     return
 __L18467:
 .source "src/cg_expr.c", 1132
-    move    r0, __W2245+1
+    move    r0, __W2246+1
     push    r0
     load    r0, sf[4]
     push    r0
@@ -183913,7 +183920,7 @@ __L18467:
     move    z, r0, 1, 0
     test    r0
     jump    nz, __L18475
-    move    r0, __W2246+1
+    move    r0, __W2247+1
     push    r0
     load    r0, sf[4]
     push    r0
@@ -183948,7 +183955,7 @@ __L18476:
     add     r0, r1
     load    r0, r0[0]
     push    r0
-    move    r0, __W2247+1
+    move    r0, __W2248+1
     push    r0
     call    __F1237_S
     add     sp, 2
@@ -183976,7 +183983,7 @@ __L18477:
     add     r0, r1
     load    r0, r0[0]
     push    r0
-    move    r0, __W2248+1
+    move    r0, __W2249+1
     push    r0
     call    __F1237_S
     add     sp, 2
@@ -183998,7 +184005,7 @@ __L18479:
     add     r0, r1
     load    r0, r0[0]
     push    r0
-    move    r0, __W2249+1
+    move    r0, __W2250+1
     push    r0
     call    __F1237_S
     add     sp, 2
@@ -184013,7 +184020,7 @@ __L18479:
     return
 __L18473:
 .source "src/cg_expr.c", 1138
-    move    r0, __W2250+1
+    move    r0, __W2251+1
     push    r0
     load    r0, sf[4]
     push    r0
@@ -184050,7 +184057,7 @@ __L18486:
     test    r0
     jump    z, __L18483
 .source "src/cg_expr.c", 1141
-    move    r0, __W2251+1
+    move    r0, __W2252+1
     push    r0
     call    __F1239_ge_tmp
     add     sp, 1
@@ -184078,7 +184085,7 @@ __L18488:
     push    r0
     load    r0, sf[-46]
     push    r0
-    move    r0, __W2252+1
+    move    r0, __W2253+1
     push    r0
     call    __F1236_E
     add     sp, 3
@@ -184090,7 +184097,7 @@ __L18488:
     push    r0
     load    r0, sf[-47]
     push    r0
-    move    r0, __W2253+1
+    move    r0, __W2254+1
     push    r0
     call    __F1236_E
     add     sp, 3
@@ -184104,7 +184111,7 @@ __L18489:
     jump    z, __L18491
     load    r0, sf[-46]
     push    r0
-    move    r0, __W2255+1
+    move    r0, __W2256+1
     push    r0
     call    __F1237_S
     add     sp, 2
@@ -184113,7 +184120,7 @@ __L18491:
     load    r0, sf[-46]
 __L18492:
     push    r0
-    move    r0, __W2254+1
+    move    r0, __W2255+1
     push    r0
     call    __F1236_E
     add     sp, 2
@@ -184127,7 +184134,7 @@ __L18483:
     test    r0
     jump    z, __L18493
 .source "src/cg_expr.c", 1146
-    move    r0, __W2256+1
+    move    r0, __W2257+1
     push    r0
     call    __F1239_ge_tmp
     add     sp, 1
@@ -184184,7 +184191,7 @@ __L18498:
     push    r0
     load    r0, sf[-48]
     push    r0
-    move    r0, __W2257+1
+    move    r0, __W2258+1
     push    r0
     call    __F1236_E
     add     sp, 3
@@ -184193,7 +184200,7 @@ __L18498:
     test    r0
     jump    z, __L18501
 .source "src/cg_expr.c", 1151
-    move    r0, __W2258+1
+    move    r0, __W2259+1
     push    r0
     call    __F1239_ge_tmp
     add     sp, 1
@@ -184218,7 +184225,7 @@ __L18498:
     push    r0
     load    r0, sf[-51]
     push    r0
-    move    r0, __W2259+1
+    move    r0, __W2260+1
     push    r0
     call    __F1236_E
     add     sp, 9
@@ -184244,7 +184251,7 @@ __L18506:
     jump    z, __L18503
     load    r0, sf[-48]
     push    r0
-    move    r0, __W2260+1
+    move    r0, __W2261+1
     push    r0
     call    __F1236_E
     add     sp, 2
@@ -184253,7 +184260,7 @@ __L18503:
 .source "src/cg_expr.c", 1155
     load    r0, sf[-48]
     push    r0
-    move    r0, __W2261+1
+    move    r0, __W2262+1
     push    r0
     call    __F1236_E
     add     sp, 2
@@ -184261,7 +184268,7 @@ __L18504:
     jump    __L18494
 __L18493:
 .source "src/cg_expr.c", 1157
-    move    r0, __W2262+1
+    move    r0, __W2263+1
     push    r0
     call    __F1239_ge_tmp
     add     sp, 1
@@ -184274,7 +184281,7 @@ __L18493:
     push    r0
     load    r0, sf[-52]
     push    r0
-    move    r0, __W2263+1
+    move    r0, __W2264+1
     push    r0
     call    __F1236_E
     add     sp, 3
@@ -184285,25 +184292,25 @@ __L18493:
     push    r0
     load    r0, sf[-52]
     push    r0
-    move    r0, __W2264+1
+    move    r0, __W2265+1
     push    r0
     call    __F1236_E
     add     sp, 4
 .source "src/cg_expr.c", 1160
     load    r0, sf[-52]
     push    r0
-    move    r0, __W2265+1
+    move    r0, __W2266+1
     push    r0
     call    __F1236_E
     add     sp, 2
 __L18494:
 __L18484:
 .source "src/cg_expr.c", 1162
-    move    r0, __W2266+1
+    move    r0, __W2267+1
     return
 __L18481:
 .source "src/cg_expr.c", 1164
-    move    r0, __W2267+1
+    move    r0, __W2268+1
     push    r0
     load    r0, sf[4]
     push    r0
@@ -184313,7 +184320,7 @@ __L18481:
     move    z, r0, 1, 0
     test    r0
     jump    nz, __L18511
-    move    r0, __W2268+1
+    move    r0, __W2269+1
     push    r0
     load    r0, sf[4]
     push    r0
@@ -184330,7 +184337,7 @@ __L18511:
 __L18512:
     test    r0
     jump    nz, __L18509
-    move    r0, __W2269+1
+    move    r0, __W2270+1
     push    r0
     load    r0, sf[4]
     push    r0
@@ -184357,7 +184364,7 @@ __L18510:
     move    eq, r0, 1, 0
     test    r0
     jump    z, __L18513
-    move    r0, __W2270+1
+    move    r0, __W2271+1
     jump    __L18514
 __L18513:
     load    r0, sf[4]
@@ -184369,10 +184376,10 @@ __L18513:
     move    eq, r0, 1, 0
     test    r0
     jump    z, __L18515
-    move    r0, __W2271+1
+    move    r0, __W2272+1
     jump    __L18516
 __L18515:
-    move    r0, __W2272+1
+    move    r0, __W2273+1
 __L18516:
 __L18514:
     store   r0, sf[-53]
@@ -184389,7 +184396,7 @@ __L18514:
     add     r0, r1
     load    r0, r0[0]
     push    r0
-    move    r0, __W2273+1
+    move    r0, __W2274+1
     push    r0
     call    __F1237_S
     add     sp, 4
@@ -184401,7 +184408,7 @@ __L18514:
     return
 __L18507:
 .source "src/cg_expr.c", 1168
-    move    r0, __W2274+1
+    move    r0, __W2275+1
     push    r0
     load    r0, sf[4]
     push    r0
@@ -184411,7 +184418,7 @@ __L18507:
     move    z, r0, 1, 0
     test    r0
     jump    nz, __L18521
-    move    r0, __W2275+1
+    move    r0, __W2276+1
     push    r0
     load    r0, sf[4]
     push    r0
@@ -184428,7 +184435,7 @@ __L18521:
 __L18522:
     test    r0
     jump    nz, __L18519
-    move    r0, __W2276+1
+    move    r0, __W2277+1
     push    r0
     load    r0, sf[4]
     push    r0
@@ -184469,7 +184476,7 @@ __L18520:
     return
 __L18517:
 .source "src/cg_expr.c", 1170
-    move    r0, __W2277+1
+    move    r0, __W2278+1
     push    r0
     load    r0, sf[4]
     push    r0
@@ -184484,14 +184491,14 @@ __L18517:
     add     r0, r1
     load    r0, r0[0]
     push    r0
-    move    r0, __W2278+1
+    move    r0, __W2279+1
     push    r0
     call    __F1237_S
     add     sp, 2
     return
 __L18523:
 .source "src/cg_expr.c", 1171
-    move    r0, __W2279+1
+    move    r0, __W2280+1
     push    r0
     load    r0, sf[4]
     push    r0
@@ -184506,14 +184513,14 @@ __L18523:
     add     r0, r1
     load    r0, r0[0]
     push    r0
-    move    r0, __W2280+1
+    move    r0, __W2281+1
     push    r0
     call    __F1237_S
     add     sp, 2
     return
 __L18525:
 .source "src/cg_expr.c", 1172
-    move    r0, __W2281+1
+    move    r0, __W2282+1
     push    r0
     load    r0, sf[4]
     push    r0
@@ -184528,14 +184535,14 @@ __L18525:
     add     r0, r1
     load    r0, r0[0]
     push    r0
-    move    r0, __W2282+1
+    move    r0, __W2283+1
     push    r0
     call    __F1237_S
     add     sp, 2
     return
 __L18527:
 .source "src/cg_expr.c", 1173
-    move    r0, __W2283+1
+    move    r0, __W2284+1
     push    r0
     load    r0, sf[4]
     push    r0
@@ -184550,14 +184557,14 @@ __L18527:
     add     r0, r1
     load    r0, r0[0]
     push    r0
-    move    r0, __W2284+1
+    move    r0, __W2285+1
     push    r0
     call    __F1237_S
     add     sp, 2
     return
 __L18529:
 .source "src/cg_expr.c", 1174
-    move    r0, __W2285+1
+    move    r0, __W2286+1
     push    r0
     load    r0, sf[4]
     push    r0
@@ -184572,14 +184579,14 @@ __L18529:
     add     r0, r1
     load    r0, r0[0]
     push    r0
-    move    r0, __W2286+1
+    move    r0, __W2287+1
     push    r0
     call    __F1237_S
     add     sp, 2
     return
 __L18531:
 .source "src/cg_expr.c", 1175
-    move    r0, __W2287+1
+    move    r0, __W2288+1
     push    r0
     load    r0, sf[4]
     push    r0
@@ -184614,7 +184621,7 @@ __L18531:
     add     r0, r1
     load    r0, r0[0]
     push    r0
-    move    r0, __W2288+1
+    move    r0, __W2289+1
     push    r0
     call    __F1237_S
     add     sp, 6
@@ -184629,7 +184636,7 @@ __L18531:
     return
 __L18533:
 .source "src/cg_expr.c", 1176
-    move    r0, __W2289+1
+    move    r0, __W2290+1
     push    r0
     load    r0, sf[4]
     push    r0
@@ -184654,7 +184661,7 @@ __L18533:
     add     r0, r1
     load    r0, r0[0]
     push    r0
-    move    r0, __W2290+1
+    move    r0, __W2291+1
     push    r0
     call    __F1237_S
     add     sp, 4
@@ -184669,7 +184676,7 @@ __L18533:
     return
 __L18535:
 .source "src/cg_expr.c", 1177
-    move    r0, __W2291+1
+    move    r0, __W2292+1
     push    r0
     load    r0, sf[4]
     push    r0
@@ -184695,16 +184702,16 @@ __L18535:
     add     r0, r1
     load    r0, r0[0]
     push    r0
-    move    r0, __W2292+1
+    move    r0, __W2293+1
     push    r0
     call    __F1236_E
     add     sp, 4
 .source "src/cg_expr.c", 1179
-    move    r0, __W2293+1
+    move    r0, __W2294+1
     return
 __L18537:
 .source "src/cg_expr.c", 1181
-    move    r0, __W2294+1
+    move    r0, __W2295+1
     push    r0
     load    r0, sf[4]
     push    r0
@@ -184719,7 +184726,7 @@ __L18537:
     add     r0, r1
     load    r0, r0[0]
     push    r0
-    move    r0, __W2295+1
+    move    r0, __W2296+1
     push    r0
     call    __F1237_S
     add     sp, 2
@@ -184734,7 +184741,7 @@ __L18537:
     return
 __L18539:
 .source "src/cg_expr.c", 1182
-    move    r0, __W2296+1
+    move    r0, __W2297+1
     push    r0
     load    r0, sf[4]
     push    r0
@@ -184744,22 +184751,22 @@ __L18539:
     move    z, r0, 1, 0
     test    r0
     jump    z, __L18541
-.source "src/cg_expr.c", 1183
-    load    r0, sf[8]
-    move    r1, 0
-    add     r0, r1
-    load    r0, r0[0]
+    move    r0, __W2298+1
     push    r0
-    move    r0, __W2297+1
+    call    __F1237_S
+    add     sp, 1
     push    r0
-    call    __F1236_E
+    move    r0, 12
+    push    r0
+    call    __F102_ty_int
+    add     sp, 1
+    push    r0
+    call    __F1247_ge_snap
     add     sp, 2
-.source "src/cg_expr.c", 1184
-    move    r0, __G1235_ge_never_s+1
     return
 __L18541:
-.source "src/cg_expr.c", 1186
-    move    r0, __W2298+1
+.source "src/cg_expr.c", 1183
+    move    r0, __W2299+1
     push    r0
     load    r0, sf[4]
     push    r0
@@ -184769,27 +184776,87 @@ __L18541:
     move    z, r0, 1, 0
     test    r0
     jump    z, __L18543
-.source "src/cg_expr.c", 1187
-    move    r0, __W2299+1
+    load    r0, sf[8]
+    move    r1, 1
+    add     r0, r1
+    load    r0, r0[0]
+    push    r0
+    load    r0, sf[8]
+    move    r1, 0
+    add     r0, r1
+    load    r0, r0[0]
+    push    r0
+    move    r0, __W2300+1
+    push    r0
+    call    __F1237_S
+    add     sp, 3
+    push    r0
+    move    r0, 12
+    push    r0
+    call    __F102_ty_int
+    add     sp, 1
+    push    r0
+    call    __F1247_ge_snap
+    add     sp, 2
+    return
+__L18543:
+.source "src/cg_expr.c", 1184
+    move    r0, __W2301+1
+    push    r0
+    load    r0, sf[4]
+    push    r0
+    call    __crt_strcmp
+    add     sp, 2
+    test    r0
+    move    z, r0, 1, 0
+    test    r0
+    jump    z, __L18545
+.source "src/cg_expr.c", 1185
+    load    r0, sf[8]
+    move    r1, 0
+    add     r0, r1
+    load    r0, r0[0]
+    push    r0
+    move    r0, __W2302+1
+    push    r0
+    call    __F1236_E
+    add     sp, 2
+.source "src/cg_expr.c", 1186
+    move    r0, __G1235_ge_never_s+1
+    return
+__L18545:
+.source "src/cg_expr.c", 1188
+    move    r0, __W2303+1
+    push    r0
+    load    r0, sf[4]
+    push    r0
+    call    __crt_strcmp
+    add     sp, 2
+    test    r0
+    move    z, r0, 1, 0
+    test    r0
+    jump    z, __L18547
+.source "src/cg_expr.c", 1189
+    move    r0, __W2304+1
     push    r0
     call    __F1236_E
     add     sp, 1
-.source "src/cg_expr.c", 1188
+.source "src/cg_expr.c", 1190
     move    r0, __G1235_ge_never_s+1
     return
-__L18543:
-.source "src/cg_expr.c", 1190
+__L18547:
+.source "src/cg_expr.c", 1192
     load    r0, sf[4]
     push    r0
-    move    r0, __W2300+1
+    move    r0, __W2305+1
     push    r0
     call    __F1237_S
     add     sp, 2
     push    r0
     call    __F2_fatal
     add     sp, 1
-.source "src/cg_expr.c", 1191
-    move    r0, __W2301+1
+.source "src/cg_expr.c", 1193
+    move    r0, __W2306+1
     return
     move    r0, 0
     return
@@ -184797,17 +184864,17 @@ __L18543:
 
 // ge_call_callable
 __F1324_ge_call_callable:
-.source "src/cg_expr.c", 1197
+.source "src/cg_expr.c", 1199
     add     sp, -10
-.source "src/cg_expr.c", 1198
+.source "src/cg_expr.c", 1200
     load    r0, sf[4]
     load    r0, r0[0]
     move    r1, 16
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L18545
-.source "src/cg_expr.c", 1199
+    jump    z, __L18549
+.source "src/cg_expr.c", 1201
     move    r0, 1
     push    r0
     load    r0, sf[12]
@@ -184820,13 +184887,13 @@ __F1324_ge_call_callable:
     call    __F3_xalloc
     add     sp, 1
     store   r0, sf[-1]
-.source "src/cg_expr.c", 1201
+.source "src/cg_expr.c", 1203
     load    r0, sf[4]
     push    r0
     call    __F1194_cg_closure_fn
     add     sp, 1
     store   r0, sf[-3]
-.source "src/cg_expr.c", 1202
+.source "src/cg_expr.c", 1204
     add     r0, sf, 5
     load    r1, r0[4]
     push    r1
@@ -184841,7 +184908,7 @@ __F1324_ge_call_callable:
     call    __F1294_ge_addr
     add     sp, 5
     store   r0, sf[0]
-.source "src/cg_expr.c", 1203
+.source "src/cg_expr.c", 1205
     load    r0, sf[-1]
     move    r1, 0
     add     r0, r1
@@ -184849,21 +184916,21 @@ __F1324_ge_call_callable:
     load    r0, sf[0]
     pop     r1
     store   r0, r1[0]
-.source "src/cg_expr.c", 1204
+.source "src/cg_expr.c", 1206
     move    r0, 0
     store   r0, sf[-2]
-__L18547:
+__L18551:
     load    r0, sf[-2]
     load    r1, sf[12]
     cmp     r0, r1
-    jump    o, __L18550
+    jump    o, __L18554
     move    lt, r0, 1, 0
-    jump    __L18551
-__L18550:
+    jump    __L18555
+__L18554:
     move    lt, r0, 0, 1
-__L18551:
+__L18555:
     test    r0
-    jump    z, __L18549
+    jump    z, __L18553
     load    r0, sf[-1]
     push    r0
     load    r0, sf[-2]
@@ -184879,55 +184946,55 @@ __L18551:
     load    r0, r0[0]
     pop     r1
     store   r0, r1[0]
-__L18548:
+__L18552:
     load    r1, sf[-2]
     add     r2, r1, 1
     store   r2, sf[-2]
     move    r0, r1
-    jump    __L18547
-__L18549:
-.source "src/cg_expr.c", 1205
+    jump    __L18551
+__L18553:
+.source "src/cg_expr.c", 1207
     load    r0, sf[10]
     test    r0
-    jump    z, __L18556
+    jump    z, __L18560
     add     r0, sf, 5
     add     r0, 3
     load    r0, r0[0]
     test    r0
-    jump    z, __L18556
+    jump    z, __L18560
     move    r0, 1
-    jump    __L18557
-__L18556:
+    jump    __L18561
+__L18560:
     move    r0, 0
-__L18557:
+__L18561:
     test    r0
-    jump    z, __L18554
+    jump    z, __L18558
     add     r0, sf, 5
     add     r0, 3
     load    r0, r0[0]
     add     r0, 6
     load    r0, r0[0]
     test    r0
-    jump    z, __L18554
+    jump    z, __L18558
     move    r0, 1
-    jump    __L18555
-__L18554:
+    jump    __L18559
+__L18558:
     move    r0, 0
-__L18555:
+__L18559:
     test    r0
-    jump    z, __L18552
+    jump    z, __L18556
     add     r0, sf, 5
     add     r0, 3
     load    r0, r0[0]
     add     r0, 6
     load    r0, r0[0]
     push    r0
-    move    r0, __W2302+1
+    move    r0, __W2307+1
     push    r0
     call    __F1236_E
     add     sp, 2
-__L18552:
-.source "src/cg_expr.c", 1206
+__L18556:
+.source "src/cg_expr.c", 1208
     load    r0, sf[4]
     add     r0, 10
     load    r0, r0[0]
@@ -184946,16 +185013,16 @@ __L18552:
     call    __F1316_ge_emit_call
     add     sp, 4
     return
-__L18545:
-.source "src/cg_expr.c", 1208
+__L18549:
+.source "src/cg_expr.c", 1210
     load    r0, sf[4]
     load    r0, r0[0]
     move    r1, 15
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L18558
-.source "src/cg_expr.c", 1209
+    jump    z, __L18562
+.source "src/cg_expr.c", 1211
     add     r0, sf, 5
     load    r1, r0[4]
     push    r1
@@ -184978,7 +185045,7 @@ __L18545:
     call    __F1247_ge_snap
     add     sp, 2
     store   r0, sf[-4]
-.source "src/cg_expr.c", 1210
+.source "src/cg_expr.c", 1212
     load    r0, sf[4]
     add     r0, 10
     load    r0, r0[0]
@@ -185012,7 +185079,7 @@ __L18545:
     call    __F1317_ge_fnptr_type
     add     sp, 4
     push    r0
-    move    r0, __W2303+1
+    move    r0, __W2308+1
     push    r0
     call    __F1237_S
     add     sp, 3
@@ -185020,16 +185087,16 @@ __L18545:
     call    __F1316_ge_emit_call
     add     sp, 4
     return
-__L18558:
-.source "src/cg_expr.c", 1213
+__L18562:
+.source "src/cg_expr.c", 1215
     move    r0, 0
     store   r0, sf[-5]
     move    r0, 0
     store   r0, sf[-6]
-.source "src/cg_expr.c", 1214
+.source "src/cg_expr.c", 1216
     move    r0, 0
     store   r0, sf[-7]
-.source "src/cg_expr.c", 1215
+.source "src/cg_expr.c", 1217
     add     r0, sf, -6
     push    r0
     add     r0, sf, -7
@@ -185041,14 +185108,14 @@ __L18558:
     call    __F1125_cg_resolve_fn_type
     add     sp, 4
     store   r0, sf[-8]
-.source "src/cg_expr.c", 1217
+.source "src/cg_expr.c", 1219
     load    r0, sf[-8]
     add     r0, 5
     load    r0, r0[0]
     move    r1, 16
     and     r0, r1
     test    r0
-    jump    z, __L18560
+    jump    z, __L18564
     load    r0, sf[12]
     push    r0
     load    r0, sf[11]
@@ -185069,8 +185136,8 @@ __L18558:
     call    __F1323_ge_intrinsic
     add     sp, 7
     return
-__L18560:
-.source "src/cg_expr.c", 1218
+__L18564:
+.source "src/cg_expr.c", 1220
     move    r0, 0
     push    r0
     load    r0, sf[-7]
@@ -185082,7 +185149,7 @@ __L18560:
     call    __F1123_cg_fn_instance
     add     sp, 4
     store   r0, sf[-9]
-.source "src/cg_expr.c", 1219
+.source "src/cg_expr.c", 1221
     load    r0, sf[-6]
     add     r0, 10
     load    r0, r0[0]
@@ -185105,9 +185172,9 @@ __L18560:
 
 // ge_call_dyn
 __F1325_ge_call_dyn:
-.source "src/cg_expr.c", 1225
+.source "src/cg_expr.c", 1227
     add     sp, -5
-.source "src/cg_expr.c", 1226
+.source "src/cg_expr.c", 1228
     add     r0, sf, 5
     add     r0, 1
     load    r0, r0[0]
@@ -185124,7 +185191,7 @@ __F1325_ge_call_dyn:
     call    __F3_xalloc
     add     sp, 1
     store   r0, sf[-2]
-.source "src/cg_expr.c", 1227
+.source "src/cg_expr.c", 1229
     load    r0, sf[4]
     push    r0
     load    r0, sf[3]
@@ -185132,7 +185199,7 @@ __F1325_ge_call_dyn:
     call    __F1128_cg_vtable_slot
     add     sp, 2
     store   r0, sf[-3]
-.source "src/cg_expr.c", 1228
+.source "src/cg_expr.c", 1230
     load    r0, sf[0]
     push    r0
     call    __F1286_ge_is_name
@@ -185140,7 +185207,7 @@ __F1325_ge_call_dyn:
     test    r0
     move    z, r0, 1, 0
     test    r0
-    jump    z, __L18562
+    jump    z, __L18566
     load    r0, sf[0]
     push    r0
     move    r0, 0
@@ -185153,8 +185220,8 @@ __F1325_ge_call_dyn:
     call    __F1247_ge_snap
     add     sp, 2
     store   r0, sf[0]
-__L18562:
-.source "src/cg_expr.c", 1229
+__L18566:
+.source "src/cg_expr.c", 1231
     load    r0, sf[-3]
     push    r0
     load    r0, sf[0]
@@ -185163,46 +185230,46 @@ __L18562:
     push    r0
     load    r0, sf[11]
     push    r0
-    move    r0, __W2305+1
+    move    r0, __W2310+1
     push    r0
     load    r0, sf[10]
     push    r0
     call    __F1317_ge_fnptr_type
     add     sp, 4
     push    r0
-    move    r0, __W2304+1
+    move    r0, __W2309+1
     push    r0
     call    __F1237_S
     add     sp, 4
     store   r0, sf[-1]
-.source "src/cg_expr.c", 1230
+.source "src/cg_expr.c", 1232
     load    r0, sf[-2]
     move    r1, 0
     add     r0, r1
     push    r0
     load    r0, sf[0]
     push    r0
-    move    r0, __W2306+1
+    move    r0, __W2311+1
     push    r0
     call    __F1237_S
     add     sp, 2
     pop     r1
     store   r0, r1[0]
-.source "src/cg_expr.c", 1231
+.source "src/cg_expr.c", 1233
     move    r0, 0
     store   r0, sf[-4]
-__L18564:
+__L18568:
     load    r0, sf[-4]
     load    r1, sf[14]
     cmp     r0, r1
-    jump    o, __L18567
+    jump    o, __L18571
     move    lt, r0, 1, 0
-    jump    __L18568
-__L18567:
+    jump    __L18572
+__L18571:
     move    lt, r0, 0, 1
-__L18568:
+__L18572:
     test    r0
-    jump    z, __L18566
+    jump    z, __L18570
     load    r0, sf[-2]
     push    r0
     load    r0, sf[-4]
@@ -185218,14 +185285,14 @@ __L18568:
     load    r0, r0[0]
     pop     r1
     store   r0, r1[0]
-__L18565:
+__L18569:
     load    r1, sf[-4]
     add     r2, r1, 1
     store   r2, sf[-4]
     move    r0, r1
-    jump    __L18564
-__L18566:
-.source "src/cg_expr.c", 1232
+    jump    __L18568
+__L18570:
+.source "src/cg_expr.c", 1234
     load    r0, sf[10]
     push    r0
     load    r0, sf[14]
@@ -185245,9 +185312,9 @@ __L18566:
 
 // ge_call_callee
 __F1285_ge_call_callee:
-.source "src/cg_expr.c", 1237
+.source "src/cg_expr.c", 1239
     add     sp, -58
-.source "src/cg_expr.c", 1238
+.source "src/cg_expr.c", 1240
     move    r0, 0
     store   r0, sf[0]
     move    r0, 0
@@ -185256,41 +185323,41 @@ __F1285_ge_call_callee:
     add     r0, 4
     load    r0, r0[0]
     test    r0
-    jump    z, __L18569
+    jump    z, __L18573
     load    r0, sf[4]
     add     r0, 4
     load    r0, r0[0]
     push    r0
     call    __F1240_gm
     add     sp, 1
-    jump    __L18570
-__L18569:
+    jump    __L18574
+__L18573:
     move    r0, 0
-__L18570:
+__L18574:
     store   r0, sf[-2]
-.source "src/cg_expr.c", 1239
+.source "src/cg_expr.c", 1241
     move    r0, 0
     store   r0, sf[-4]
-.source "src/cg_expr.c", 1241
+.source "src/cg_expr.c", 1243
     load    r0, sf[4]
     add     r0, 2
     load    r0, r0[0]
     test    r0
-    jump    z, __L18575
+    jump    z, __L18579
     load    r0, sf[4]
     add     r0, 2
     load    r0, r0[0]
     add     r0, 3
     load    r0, r0[0]
     test    r0
-    jump    z, __L18575
+    jump    z, __L18579
     move    r0, 1
-    jump    __L18576
-__L18575:
+    jump    __L18580
+__L18579:
     move    r0, 0
-__L18576:
+__L18580:
     test    r0
-    jump    z, __L18573
+    jump    z, __L18577
     load    r0, sf[4]
     add     r0, 2
     load    r0, r0[0]
@@ -185301,29 +185368,55 @@ __L18576:
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L18573
+    jump    z, __L18577
     move    r0, 1
-    jump    __L18574
-__L18573:
+    jump    __L18578
+__L18577:
     move    r0, 0
-__L18574:
+__L18578:
     test    r0
-    jump    z, __L18571
+    jump    z, __L18575
     load    r0, sf[4]
     add     r0, 2
     load    r0, r0[0]
     add     r0, 3
     load    r0, r0[0]
-    jump    __L18572
-__L18571:
+    jump    __L18576
+__L18575:
     move    r0, 0
-__L18572:
+__L18576:
     store   r0, sf[-6]
-.source "src/cg_expr.c", 1243
+.source "src/cg_expr.c", 1245
     load    r0, sf[-6]
     test    r0
-    jump    z, __L18583
+    jump    z, __L18587
     load    r0, sf[-2]
+    test    r0
+    jump    z, __L18587
+    move    r0, 1
+    jump    __L18588
+__L18587:
+    move    r0, 0
+__L18588:
+    test    r0
+    jump    z, __L18585
+    load    r0, sf[-2]
+    push    r0
+    call    __F1319_ge_is_callable_ty
+    add     sp, 1
+    test    r0
+    jump    z, __L18585
+    move    r0, 1
+    jump    __L18586
+__L18585:
+    move    r0, 0
+__L18586:
+    test    r0
+    jump    z, __L18583
+    load    r0, sf[-6]
+    push    r0
+    call    __F1318_ge_is_fn_trait
+    add     sp, 1
     test    r0
     jump    z, __L18583
     move    r0, 1
@@ -185333,38 +185426,12 @@ __L18583:
 __L18584:
     test    r0
     jump    z, __L18581
-    load    r0, sf[-2]
-    push    r0
-    call    __F1319_ge_is_callable_ty
-    add     sp, 1
-    test    r0
-    jump    z, __L18581
-    move    r0, 1
-    jump    __L18582
-__L18581:
-    move    r0, 0
-__L18582:
-    test    r0
-    jump    z, __L18579
-    load    r0, sf[-6]
-    push    r0
-    call    __F1318_ge_is_fn_trait
-    add     sp, 1
-    test    r0
-    jump    z, __L18579
-    move    r0, 1
-    jump    __L18580
-__L18579:
-    move    r0, 0
-__L18580:
-    test    r0
-    jump    z, __L18577
-.source "src/cg_expr.c", 1245
+.source "src/cg_expr.c", 1247
     load    r0, sf[4]
     add     r0, 3
     load    r0, r0[0]
     test    r0
-    jump    z, __L18587
+    jump    z, __L18591
     move    r0, 1
     push    r0
     load    r0, sf[4]
@@ -185375,21 +185442,21 @@ __L18580:
     move    r1, r0
     pop     r0
     cmp     r0, r1
-    jump    o, __L18589
+    jump    o, __L18593
     move    lt, r0, 1, 0
-    jump    __L18590
-__L18589:
+    jump    __L18594
+__L18593:
     move    lt, r0, 0, 1
-__L18590:
+__L18594:
     test    r0
-    jump    z, __L18587
+    jump    z, __L18591
     move    r0, 1
-    jump    __L18588
-__L18587:
+    jump    __L18592
+__L18591:
     move    r0, 0
-__L18588:
+__L18592:
     test    r0
-    jump    z, __L18585
+    jump    z, __L18589
     load    r0, sf[4]
     add     r0, 3
     load    r0, r0[0]
@@ -185401,40 +185468,40 @@ __L18588:
     push    r0
     call    __F1240_gm
     add     sp, 1
-    jump    __L18586
-__L18585:
+    jump    __L18590
+__L18589:
     move    r0, 0
-__L18586:
+__L18590:
     store   r0, sf[-8]
-.source "src/cg_expr.c", 1247
+.source "src/cg_expr.c", 1249
     load    r0, sf[-8]
     test    r0
-    jump    z, __L18593
+    jump    z, __L18597
     load    r0, sf[-8]
     load    r0, r0[0]
     move    r1, 8
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L18593
+    jump    z, __L18597
     move    r0, 1
-    jump    __L18594
-__L18593:
+    jump    __L18598
+__L18597:
     move    r0, 0
-__L18594:
+__L18598:
     test    r0
-    jump    z, __L18591
+    jump    z, __L18595
     load    r0, sf[-8]
     add     r0, 7
     load    r0, r0[0]
-    jump    __L18592
-__L18591:
+    jump    __L18596
+__L18595:
     move    r0, 0
-__L18592:
+__L18596:
     store   r0, sf[-12]
-.source "src/cg_expr.c", 1249
+.source "src/cg_expr.c", 1251
     load    r0, sf[-11]
-.source "src/cg_expr.c", 1250
+.source "src/cg_expr.c", 1252
     move    r0, 1
     push    r0
     load    r0, sf[-12]
@@ -185447,21 +185514,21 @@ __L18592:
     call    __F3_xalloc
     add     sp, 1
     store   r0, sf[-10]
-.source "src/cg_expr.c", 1251
+.source "src/cg_expr.c", 1253
     move    r0, 0
     store   r0, sf[-11]
-__L18595:
+__L18599:
     load    r0, sf[-11]
     load    r1, sf[-12]
     cmp     r0, r1
-    jump    o, __L18598
+    jump    o, __L18602
     move    lt, r0, 1, 0
-    jump    __L18599
-__L18598:
+    jump    __L18603
+__L18602:
     move    lt, r0, 0, 1
-__L18599:
+__L18603:
     test    r0
-    jump    z, __L18597
+    jump    z, __L18601
     load    r0, sf[-10]
     load    r1, sf[-11]
     add     r0, r1
@@ -185473,32 +185540,32 @@ __L18599:
     add     r0, r1
     load    r0, r0[0]
     push    r0
-    move    r0, __W2307+1
+    move    r0, __W2312+1
     push    r0
     call    __F1237_S
     add     sp, 3
     pop     r1
     store   r0, r1[0]
-__L18596:
+__L18600:
     load    r1, sf[-11]
     add     r2, r1, 1
     store   r2, sf[-11]
     move    r0, r1
-    jump    __L18595
-__L18597:
-.source "src/cg_expr.c", 1252
+    jump    __L18599
+__L18601:
+.source "src/cg_expr.c", 1254
     load    r0, sf[5]
     move    r1, 0
     add     r0, r1
     load    r0, r0[0]
     store   r0, sf[-9]
-.source "src/cg_expr.c", 1253
+.source "src/cg_expr.c", 1255
     load    r0, sf[-6]
     load    r1, __G773_L_fn_once+1
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L18600
+    jump    z, __L18604
     add     r0, sf, -17
     push    r0
     load    r0, sf[-9]
@@ -185524,9 +185591,9 @@ __L18597:
     load    r2, r0[4]
     store   r2, r1[4]
     move    r0, r1
-    jump    __L18601
-__L18600:
-.source "src/cg_expr.c", 1254
+    jump    __L18605
+__L18604:
+.source "src/cg_expr.c", 1256
     add     r0, sf, -17
     push    r0
     move    r0, 0
@@ -185552,8 +185619,8 @@ __L18600:
     load    r2, r0[4]
     store   r2, r1[4]
     move    r0, r1
-__L18601:
-.source "src/cg_expr.c", 1255
+__L18605:
+.source "src/cg_expr.c", 1257
     load    r0, sf[-12]
     push    r0
     load    r0, sf[-10]
@@ -185581,38 +185648,38 @@ __L18601:
     call    __F1324_ge_call_callable
     add     sp, 10
     return
-__L18577:
-.source "src/cg_expr.c", 1257
+__L18581:
+.source "src/cg_expr.c", 1259
     load    r0, sf[-6]
     load    r1, __G790_L_clone+1
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L18606
+    jump    z, __L18610
     load    r0, sf[-2]
     test    r0
-    jump    z, __L18606
+    jump    z, __L18610
     move    r0, 1
-    jump    __L18607
-__L18606:
+    jump    __L18611
+__L18610:
     move    r0, 0
-__L18607:
+__L18611:
     test    r0
-    jump    z, __L18604
+    jump    z, __L18608
     load    r0, sf[-2]
     push    r0
     call    __F1319_ge_is_callable_ty
     add     sp, 1
     test    r0
-    jump    z, __L18604
+    jump    z, __L18608
     move    r0, 1
-    jump    __L18605
-__L18604:
+    jump    __L18609
+__L18608:
     move    r0, 0
-__L18605:
+__L18609:
     test    r0
-    jump    z, __L18602
-.source "src/cg_expr.c", 1258
+    jump    z, __L18606
+.source "src/cg_expr.c", 1260
     store   0, sf[-37]
     store   0, sf[-36]
     store   0, sf[-35]
@@ -185646,7 +185713,7 @@ __L18605:
     load    r2, r0[4]
     store   r2, r1[4]
     move    r0, r1
-.source "src/cg_expr.c", 1259
+.source "src/cg_expr.c", 1261
     add     r0, sf, -37
     load    r1, r0[4]
     push    r1
@@ -185661,8 +185728,8 @@ __L18605:
     call    __F1291_ge_load
     add     sp, 5
     return
-__L18602:
-.source "src/cg_expr.c", 1261
+__L18606:
+.source "src/cg_expr.c", 1263
     add     r0, sf, -1
     push    r0
     add     r0, sf, -4
@@ -185674,29 +185741,29 @@ __L18602:
     call    __F1124_cg_resolve_callee
     add     sp, 4
     store   r0, sf[-5]
-.source "src/cg_expr.c", 1262
+.source "src/cg_expr.c", 1264
     load    r0, sf[-1]
     test    r0
-    jump    z, __L18608
+    jump    z, __L18612
     load    r0, sf[-1]
     add     r0, 10
     load    r0, r0[0]
     push    r0
     call    __F1240_gm
     add     sp, 1
-    jump    __L18609
-__L18608:
+    jump    __L18613
+__L18612:
     call    __F104_ty_unit
-__L18609:
+__L18613:
     store   r0, sf[-3]
-.source "src/cg_expr.c", 1263
+.source "src/cg_expr.c", 1265
     load    r0, sf[-5]
     add     r0, 5
     load    r0, r0[0]
     move    r1, 16
     and     r0, r1
     test    r0
-    jump    z, __L18610
+    jump    z, __L18614
     load    r0, sf[6]
     push    r0
     load    r0, sf[5]
@@ -185717,36 +185784,36 @@ __L18609:
     call    __F1323_ge_intrinsic
     add     sp, 7
     return
-__L18610:
-.source "src/cg_expr.c", 1264
+__L18614:
+.source "src/cg_expr.c", 1266
     load    r0, sf[-6]
     test    r0
-    jump    z, __L18616
+    jump    z, __L18620
     load    r0, sf[-2]
     test    r0
-    jump    z, __L18616
+    jump    z, __L18620
     move    r0, 1
-    jump    __L18617
-__L18616:
+    jump    __L18621
+__L18620:
     move    r0, 0
-__L18617:
+__L18621:
     test    r0
-    jump    z, __L18614
+    jump    z, __L18618
     load    r0, sf[-2]
     load    r0, r0[0]
     move    r1, 18
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L18614
+    jump    z, __L18618
     move    r0, 1
-    jump    __L18615
-__L18614:
+    jump    __L18619
+__L18618:
     move    r0, 0
-__L18615:
+__L18619:
     test    r0
-    jump    z, __L18612
-.source "src/cg_expr.c", 1265
+    jump    z, __L18616
+.source "src/cg_expr.c", 1267
     store   0, sf[-47]
     store   0, sf[-46]
     store   0, sf[-45]
@@ -185780,13 +185847,13 @@ __L18615:
     load    r2, r0[4]
     store   r2, r1[4]
     move    r0, r1
-.source "src/cg_expr.c", 1266
+.source "src/cg_expr.c", 1268
     add     r0, sf, -47
     push    r0
     move    r0, 3
     pop     r1
     store   r0, r1[0]
-.source "src/cg_expr.c", 1267
+.source "src/cg_expr.c", 1269
     add     r0, sf, -47
     add     r0, 1
     push    r0
@@ -185796,7 +185863,7 @@ __L18615:
     load    r0, r0[0]
     pop     r1
     store   r0, r1[0]
-.source "src/cg_expr.c", 1268
+.source "src/cg_expr.c", 1270
     load    r0, sf[6]
     move    r1, 1
     sub     r0, r1
@@ -185839,13 +185906,13 @@ __L18615:
     call    __F1325_ge_call_dyn
     add     sp, 12
     return
-__L18612:
-.source "src/cg_expr.c", 1270
+__L18616:
+.source "src/cg_expr.c", 1272
     load    r0, sf[-5]
     add     r0, 3
     load    r0, r0[0]
     test    r0
-    jump    z, __L18620
+    jump    z, __L18624
     load    r0, sf[-5]
     add     r0, 3
     load    r0, r0[0]
@@ -185854,7 +185921,7 @@ __L18612:
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    nz, __L18622
+    jump    nz, __L18626
     load    r0, sf[-5]
     add     r0, 3
     load    r0, r0[0]
@@ -185863,26 +185930,26 @@ __L18612:
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    nz, __L18622
+    jump    nz, __L18626
     move    r0, 0
+    jump    __L18627
+__L18626:
+    move    r0, 1
+__L18627:
+    test    r0
+    jump    z, __L18624
+    move    r0, 1
+    jump    __L18625
+__L18624:
+    move    r0, 0
+__L18625:
+    test    r0
+    jump    z, __L18622
+    load    r0, sf[-2]
     jump    __L18623
 __L18622:
-    move    r0, 1
+    move    r0, 0
 __L18623:
-    test    r0
-    jump    z, __L18620
-    move    r0, 1
-    jump    __L18621
-__L18620:
-    move    r0, 0
-__L18621:
-    test    r0
-    jump    z, __L18618
-    load    r0, sf[-2]
-    jump    __L18619
-__L18618:
-    move    r0, 0
-__L18619:
     push    r0
     load    r0, sf[-4]
     push    r0
@@ -185893,36 +185960,36 @@ __L18619:
     call    __F1123_cg_fn_instance
     add     sp, 4
     store   r0, sf[-7]
-.source "src/cg_expr.c", 1271
+.source "src/cg_expr.c", 1273
     load    r0, sf[-7]
     test    r0
     move    z, r0, 1, 0
     test    r0
-    jump    z, __L18628
+    jump    z, __L18632
     load    r0, sf[-6]
     load    r1, __G790_L_clone+1
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L18628
+    jump    z, __L18632
     move    r0, 1
-    jump    __L18629
-__L18628:
+    jump    __L18633
+__L18632:
     move    r0, 0
-__L18629:
+__L18633:
     test    r0
-    jump    z, __L18626
+    jump    z, __L18630
     load    r0, sf[-2]
     test    r0
-    jump    z, __L18626
+    jump    z, __L18630
     move    r0, 1
-    jump    __L18627
-__L18626:
+    jump    __L18631
+__L18630:
     move    r0, 0
-__L18627:
+__L18631:
     test    r0
-    jump    z, __L18624
-.source "src/cg_expr.c", 1273
+    jump    z, __L18628
+.source "src/cg_expr.c", 1275
     store   0, sf[-57]
     store   0, sf[-56]
     store   0, sf[-55]
@@ -185956,7 +186023,7 @@ __L18627:
     load    r2, r0[4]
     store   r2, r1[4]
     move    r0, r1
-.source "src/cg_expr.c", 1274
+.source "src/cg_expr.c", 1276
     add     r0, sf, -57
     load    r1, r0[4]
     push    r1
@@ -185976,68 +186043,68 @@ __L18627:
     call    __F1247_ge_snap
     add     sp, 2
     return
-__L18624:
-.source "src/cg_expr.c", 1276
+__L18628:
+.source "src/cg_expr.c", 1278
     load    r0, sf[-7]
     test    r0
     move    z, r0, 1, 0
     test    r0
-    jump    z, __L18630
-.source "src/cg_expr.c", 1277
+    jump    z, __L18634
+.source "src/cg_expr.c", 1279
     load    r0, sf[-2]
     test    r0
-    jump    z, __L18632
+    jump    z, __L18636
     load    r0, sf[-2]
     push    r0
     call    __F123_ty_str
     add     sp, 1
-    jump    __L18633
-__L18632:
-    move    r0, __W2310+1
-__L18633:
-    push    r0
-    load    r0, sf[-5]
-    add     r0, 1
-    load    r0, r0[0]
-    test    r0
-    jump    z, __L18634
-    load    r0, sf[-5]
-    add     r0, 1
-    load    r0, r0[0]
-    load    r0, r0[0]
-    jump    __L18635
-__L18634:
-    move    r0, __W2309+1
-__L18635:
-    push    r0
-    move    r0, __W2308+1
-    push    r0
-    load    r0, sf[3]
-    test    r0
-    jump    z, __L18636
-    load    r0, sf[3]
-    add     r0, 2
-    load    r0, r0[0]
     jump    __L18637
 __L18636:
-    move    r0, 0
+    move    r0, __W2315+1
 __L18637:
     push    r0
-    load    r0, sf[3]
+    load    r0, sf[-5]
+    add     r0, 1
+    load    r0, r0[0]
     test    r0
     jump    z, __L18638
-    load    r0, sf[3]
-    add     r0, 4
+    load    r0, sf[-5]
+    add     r0, 1
+    load    r0, r0[0]
     load    r0, r0[0]
     jump    __L18639
 __L18638:
-    move    r0, -1
+    move    r0, __W2314+1
 __L18639:
+    push    r0
+    move    r0, __W2313+1
+    push    r0
+    load    r0, sf[3]
+    test    r0
+    jump    z, __L18640
+    load    r0, sf[3]
+    add     r0, 2
+    load    r0, r0[0]
+    jump    __L18641
+__L18640:
+    move    r0, 0
+__L18641:
+    push    r0
+    load    r0, sf[3]
+    test    r0
+    jump    z, __L18642
+    load    r0, sf[3]
+    add     r0, 4
+    load    r0, r0[0]
+    jump    __L18643
+__L18642:
+    move    r0, -1
+__L18643:
     push    r0
     call    __F18_error_at
     add     sp, 5
-__L18630:
-.source "src/cg_expr.c", 1279
+__L18634:
+.source "src/cg_expr.c", 1281
     load    r0, sf[-3]
     push    r0
     load    r0, sf[6]
@@ -186055,8 +186122,8 @@ __L18630:
 
 // ge_int_lit
 __F1326_ge_int_lit:
-.source "src/cg_expr.c", 1284
-.source "src/cg_expr.c", 1285
+.source "src/cg_expr.c", 1286
+.source "src/cg_expr.c", 1287
     load    r0, sf[3]
     push    r0
     load    r0, __K14
@@ -186067,34 +186134,34 @@ __F1326_ge_int_lit:
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L18640
-    move    r0, __W2311+1
+    jump    z, __L18644
+    move    r0, __W2316+1
     return
-__L18640:
-.source "src/cg_expr.c", 1286
+__L18644:
+.source "src/cg_expr.c", 1288
     load    r0, sf[3]
     move    r1, 0
     cmp     r0, r1
-    jump    o, __L18644
+    jump    o, __L18648
     move    lt, r0, 1, 0
-    jump    __L18645
-__L18644:
+    jump    __L18649
+__L18648:
     move    lt, r0, 0, 1
-__L18645:
+__L18649:
     test    r0
-    jump    z, __L18642
+    jump    z, __L18646
     load    r0, sf[3]
     push    r0
-    move    r0, __W2312+1
+    move    r0, __W2317+1
     push    r0
     call    __F1237_S
     add     sp, 2
     return
-__L18642:
-.source "src/cg_expr.c", 1287
+__L18646:
+.source "src/cg_expr.c", 1289
     load    r0, sf[3]
     push    r0
-    move    r0, __W2313+1
+    move    r0, __W2318+1
     push    r0
     call    __F1237_S
     add     sp, 2
@@ -186105,101 +186172,101 @@ __L18642:
 
 // ge_float_lit
 __F1327_ge_float_lit:
-.source "src/cg_expr.c", 1291
-    add     sp, -131
 .source "src/cg_expr.c", 1293
+    add     sp, -131
+.source "src/cg_expr.c", 1295
     move    r0, 0
     store   r0, sf[-128]
     move    r0, 0
     store   r0, sf[-129]
-.source "src/cg_expr.c", 1294
+.source "src/cg_expr.c", 1296
     load    r0, sf[3]
     add     r0, 18
     load    r0, r0[0]
     test    r0
-    jump    z, __L18646
+    jump    z, __L18650
     load    r0, sf[3]
     add     r0, 18
     load    r0, r0[0]
-    jump    __L18647
-__L18646:
-    move    r0, __W2314+1
-__L18647:
+    jump    __L18651
+__L18650:
+    move    r0, __W2319+1
+__L18651:
     store   r0, sf[-130]
-.source "src/cg_expr.c", 1295
-__L18648:
+.source "src/cg_expr.c", 1297
+__L18652:
     load    r0, sf[-130]
     load    r0, r0[0]
     test    r0
-    jump    z, __L18651
+    jump    z, __L18655
     load    r0, sf[-128]
     move    r1, 100
     cmp     r0, r1
-    jump    o, __L18653
+    jump    o, __L18657
     move    lt, r0, 1, 0
-    jump    __L18654
-__L18653:
+    jump    __L18658
+__L18657:
     move    lt, r0, 0, 1
-__L18654:
+__L18658:
     test    r0
-    jump    z, __L18651
+    jump    z, __L18655
     move    r0, 1
-    jump    __L18652
-__L18651:
+    jump    __L18656
+__L18655:
     move    r0, 0
-__L18652:
+__L18656:
     test    r0
-    jump    z, __L18650
-.source "src/cg_expr.c", 1296
+    jump    z, __L18654
+.source "src/cg_expr.c", 1298
     load    r0, sf[-130]
     load    r0, r0[0]
     move    r1, 95
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L18655
-    jump    __L18649
-__L18655:
-.source "src/cg_expr.c", 1297
+    jump    z, __L18659
+    jump    __L18653
+__L18659:
+.source "src/cg_expr.c", 1299
     load    r0, sf[-130]
     load    r0, r0[0]
     move    r1, 46
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    nz, __L18661
+    jump    nz, __L18665
     load    r0, sf[-130]
     load    r0, r0[0]
     move    r1, 101
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    nz, __L18661
+    jump    nz, __L18665
     move    r0, 0
-    jump    __L18662
-__L18661:
+    jump    __L18666
+__L18665:
     move    r0, 1
-__L18662:
+__L18666:
     test    r0
-    jump    nz, __L18659
+    jump    nz, __L18663
     load    r0, sf[-130]
     load    r0, r0[0]
     move    r1, 69
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    nz, __L18659
+    jump    nz, __L18663
     move    r0, 0
-    jump    __L18660
-__L18659:
+    jump    __L18664
+__L18663:
     move    r0, 1
-__L18660:
+__L18664:
     test    r0
-    jump    z, __L18657
+    jump    z, __L18661
     move    r0, 1
     store   r0, sf[-129]
-__L18657:
-.source "src/cg_expr.c", 1298
+__L18661:
+.source "src/cg_expr.c", 1300
     add     r0, sf, -127
     push    r0
     load    r1, sf[-128]
@@ -186214,26 +186281,26 @@ __L18657:
     load    r0, r0[0]
     pop     r1
     store   r0, r1[0]
-__L18649:
-.source "src/cg_expr.c", 1295
+__L18653:
+.source "src/cg_expr.c", 1297
     load    r1, sf[-130]
     add     r2, r1, 1
     store   r2, sf[-130]
     move    r0, r1
-    jump    __L18648
-__L18650:
-.source "src/cg_expr.c", 1300
+    jump    __L18652
+__L18654:
+.source "src/cg_expr.c", 1302
     move    r0, 0
     load    r1, sf[-128]
     cmp     r0, r1
-    jump    o, __L18667
+    jump    o, __L18671
     move    lt, r0, 1, 0
-    jump    __L18668
-__L18667:
+    jump    __L18672
+__L18671:
     move    lt, r0, 0, 1
-__L18668:
+__L18672:
     test    r0
-    jump    z, __L18665
+    jump    z, __L18669
     add     r0, sf, -127
     push    r0
     load    r0, sf[-128]
@@ -186247,14 +186314,14 @@ __L18668:
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L18665
+    jump    z, __L18669
     move    r0, 1
-    jump    __L18666
-__L18665:
+    jump    __L18670
+__L18669:
     move    r0, 0
-__L18666:
+__L18670:
     test    r0
-    jump    z, __L18663
+    jump    z, __L18667
     add     r0, sf, -127
     push    r0
     load    r1, sf[-128]
@@ -186268,14 +186335,14 @@ __L18666:
     move    r0, 48
     pop     r1
     store   r0, r1[0]
-    jump    __L18664
-__L18663:
-.source "src/cg_expr.c", 1301
+    jump    __L18668
+__L18667:
+.source "src/cg_expr.c", 1303
     load    r0, sf[-129]
     test    r0
     move    z, r0, 1, 0
     test    r0
-    jump    z, __L18669
+    jump    z, __L18673
     add     r0, sf, -127
     push    r0
     load    r1, sf[-128]
@@ -186302,9 +186369,9 @@ __L18663:
     move    r0, 48
     pop     r1
     store   r0, r1[0]
-__L18669:
-__L18664:
-.source "src/cg_expr.c", 1302
+__L18673:
+__L18668:
+.source "src/cg_expr.c", 1304
     add     r0, sf, -127
     load    r1, sf[-128]
     add     r0, r1
@@ -186312,10 +186379,10 @@ __L18664:
     move    r0, 0
     pop     r1
     store   r0, r1[0]
-.source "src/cg_expr.c", 1303
+.source "src/cg_expr.c", 1305
     add     r0, sf, -127
     push    r0
-    move    r0, __W2315+1
+    move    r0, __W2320+1
     push    r0
     call    __F1237_S
     add     sp, 2
@@ -186326,9 +186393,9 @@ __L18664:
 
 // ge_str_value
 __F1328_ge_str_value:
-.source "src/cg_expr.c", 1306
+.source "src/cg_expr.c", 1308
     add     sp, -1
-.source "src/cg_expr.c", 1307
+.source "src/cg_expr.c", 1309
     load    r0, sf[4]
     push    r0
     load    r0, sf[3]
@@ -186336,17 +186403,17 @@ __F1328_ge_str_value:
     call    __F1122_cg_str_literal
     add     sp, 2
     store   r0, sf[0]
-.source "src/cg_expr.c", 1308
+.source "src/cg_expr.c", 1310
     load    r0, sf[4]
     push    r0
-    move    r0, __W2317+1
+    move    r0, __W2322+1
     push    r0
     call    __F1237_S
     add     sp, 2
     push    r0
     load    r0, sf[0]
     push    r0
-    move    r0, __W2316+1
+    move    r0, __W2321+1
     push    r0
     call    __F1237_S
     add     sp, 2
@@ -186360,9 +186427,9 @@ __F1328_ge_str_value:
 
 // ge_path_self
 __F1330_ge_path_self:
-.source "src/cg_expr.c", 1314
-    add     sp, -1
 .source "src/cg_expr.c", 1316
+    add     sp, -1
+.source "src/cg_expr.c", 1318
     load    r0, sf[3]
     add     r0, 22
     load    r0, r0[0]
@@ -186374,7 +186441,7 @@ __F1330_ge_path_self:
     pop     r0
     and     r0, r1
     test    r0
-    jump    z, __L18671
+    jump    z, __L18675
     load    r0, sf[3]
     add     r0, 5
     load    r0, r0[0]
@@ -186385,26 +186452,26 @@ __F1330_ge_path_self:
     call    __F1240_gm
     add     sp, 1
     return
-__L18671:
-.source "src/cg_expr.c", 1317
+__L18675:
+.source "src/cg_expr.c", 1319
     load    r0, sf[3]
     add     r0, 9
     add     r0, 1
     load    r0, r0[0]
     move    r1, 2
     cmp     r0, r1
-    jump    o, __L18675
+    jump    o, __L18679
     move    lt, r0, 1, 0
-    jump    __L18676
-__L18675:
+    jump    __L18680
+__L18679:
     move    lt, r0, 0, 1
-__L18676:
+__L18680:
     test    r0
-    jump    z, __L18673
+    jump    z, __L18677
     move    r0, 0
     return
-__L18673:
-.source "src/cg_expr.c", 1318
+__L18677:
+.source "src/cg_expr.c", 1320
     load    r0, sf[3]
     add     r0, 9
     load    r0, r0[0]
@@ -186414,23 +186481,23 @@ __L18673:
     add     r0, 26
     load    r0, r0[0]
     store   r0, sf[0]
-.source "src/cg_expr.c", 1319
+.source "src/cg_expr.c", 1321
     load    r0, sf[0]
     test    r0
     move    z, r0, 1, 0
     test    r0
-    jump    z, __L18677
+    jump    z, __L18681
     move    r0, 0
     return
-__L18677:
-.source "src/cg_expr.c", 1320
+__L18681:
+.source "src/cg_expr.c", 1322
     load    r0, sf[0]
     load    r0, r0[0]
     move    r1, 14
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L18679
+    jump    z, __L18683
     load    r0, sf[0]
     push    r0
     call    __F111_ty_param
@@ -186439,52 +186506,22 @@ __L18677:
     call    __F1240_gm
     add     sp, 1
     return
-__L18679:
-.source "src/cg_expr.c", 1321
+__L18683:
+.source "src/cg_expr.c", 1323
     load    r0, sf[0]
     load    r0, r0[0]
     move    r1, 19
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L18681
-.source "src/cg_expr.c", 1322
-    load    r0, __G1106_cg_subst+1
-    test    r0
     jump    z, __L18685
+.source "src/cg_expr.c", 1324
     load    r0, __G1106_cg_subst+1
-    add     r0, 3
-    load    r0, r0[0]
-    test    r0
-    jump    z, __L18685
-    move    r0, 1
-    jump    __L18686
-__L18685:
-    move    r0, 0
-__L18686:
-    test    r0
-    jump    z, __L18683
-    load    r0, __G1106_cg_subst+1
-    add     r0, 3
-    load    r0, r0[0]
-    push    r0
-    call    __F1240_gm
-    add     sp, 1
-    return
-__L18683:
-.source "src/cg_expr.c", 1323
-    load    r0, sf[0]
-    add     r0, 3
-    load    r0, r0[0]
     test    r0
     jump    z, __L18689
-    load    r0, sf[0]
+    load    r0, __G1106_cg_subst+1
     add     r0, 3
     load    r0, r0[0]
-    load    r0, r0[0]
-    move    r1, 13
-    cmp     r0, r1
-    move    eq, r0, 1, 0
     test    r0
     jump    z, __L18689
     move    r0, 1
@@ -186494,6 +186531,36 @@ __L18689:
 __L18690:
     test    r0
     jump    z, __L18687
+    load    r0, __G1106_cg_subst+1
+    add     r0, 3
+    load    r0, r0[0]
+    push    r0
+    call    __F1240_gm
+    add     sp, 1
+    return
+__L18687:
+.source "src/cg_expr.c", 1325
+    load    r0, sf[0]
+    add     r0, 3
+    load    r0, r0[0]
+    test    r0
+    jump    z, __L18693
+    load    r0, sf[0]
+    add     r0, 3
+    load    r0, r0[0]
+    load    r0, r0[0]
+    move    r1, 13
+    cmp     r0, r1
+    move    eq, r0, 1, 0
+    test    r0
+    jump    z, __L18693
+    move    r0, 1
+    jump    __L18694
+__L18693:
+    move    r0, 0
+__L18694:
+    test    r0
+    jump    z, __L18691
     load    r0, sf[0]
     add     r0, 3
     load    r0, r0[0]
@@ -186503,12 +186570,12 @@ __L18690:
     call    __F1240_gm
     add     sp, 1
     return
-__L18687:
-.source "src/cg_expr.c", 1324
+__L18691:
+.source "src/cg_expr.c", 1326
     move    r0, 0
     return
-__L18681:
-.source "src/cg_expr.c", 1326
+__L18685:
+.source "src/cg_expr.c", 1328
     load    r0, sf[3]
     add     r0, 9
     add     r0, 1
@@ -186530,38 +186597,38 @@ __L18681:
 
 // ge_assoc_const
 __F1331_ge_assoc_const:
-.source "src/cg_expr.c", 1329
+.source "src/cg_expr.c", 1331
     add     sp, -9
-.source "src/cg_expr.c", 1330
+.source "src/cg_expr.c", 1332
     load    r0, sf[4]
     add     r0, 3
     load    r0, r0[0]
     store   r0, sf[0]
-.source "src/cg_expr.c", 1331
+.source "src/cg_expr.c", 1333
     load    r0, sf[3]
     push    r0
     call    __F1241_gnt
     add     sp, 1
     store   r0, sf[-1]
-.source "src/cg_expr.c", 1332
+.source "src/cg_expr.c", 1334
     load    r0, sf[0]
     test    r0
-    jump    z, __L18693
+    jump    z, __L18697
     load    r0, sf[0]
     load    r0, r0[0]
     move    r1, 7
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L18693
+    jump    z, __L18697
     move    r0, 1
-    jump    __L18694
-__L18693:
+    jump    __L18698
+__L18697:
     move    r0, 0
-__L18694:
+__L18698:
     test    r0
-    jump    z, __L18691
-.source "src/cg_expr.c", 1333
+    jump    z, __L18695
+.source "src/cg_expr.c", 1335
     load    r0, sf[3]
     add     r0, 5
     load    r0, r0[0]
@@ -186569,11 +186636,11 @@ __L18694:
     call    __F1330_ge_path_self
     add     sp, 1
     store   r0, sf[-2]
-.source "src/cg_expr.c", 1336
+.source "src/cg_expr.c", 1338
     load    r0, sf[-2]
     test    r0
-    jump    z, __L18695
-.source "src/cg_expr.c", 1337
+    jump    z, __L18699
+.source "src/cg_expr.c", 1339
     move    r0, 4
     push    r0
     move    r0, 0
@@ -186582,7 +186649,7 @@ __L18694:
     push    r0
     call    __crt_memset
     add     sp, 3
-.source "src/cg_expr.c", 1338
+.source "src/cg_expr.c", 1340
     add     r0, sf, -6
     push    r0
     move    r0, 0
@@ -186596,11 +186663,11 @@ __L18694:
     call    __F134_find_impl
     add     sp, 5
     store   r0, sf[-7]
-.source "src/cg_expr.c", 1339
+.source "src/cg_expr.c", 1341
     load    r0, sf[-7]
     test    r0
-    jump    z, __L18697
-.source "src/cg_expr.c", 1340
+    jump    z, __L18701
+.source "src/cg_expr.c", 1342
     load    r0, sf[4]
     add     r0, 1
     load    r0, r0[0]
@@ -186612,88 +186679,15 @@ __L18694:
     call    __F137_assoc_item
     add     sp, 3
     store   r0, sf[-8]
-.source "src/cg_expr.c", 1341
+.source "src/cg_expr.c", 1343
     load    r0, sf[-8]
     test    r0
-    jump    z, __L18705
+    jump    z, __L18709
     load    r0, sf[-8]
     load    r0, r0[0]
     move    r1, 9
     cmp     r0, r1
     move    eq, r0, 1, 0
-    test    r0
-    jump    z, __L18705
-    move    r0, 1
-    jump    __L18706
-__L18705:
-    move    r0, 0
-__L18706:
-    test    r0
-    jump    z, __L18703
-    load    r0, sf[-8]
-    add     r0, 2
-    load    r0, r0[0]
-    test    r0
-    jump    z, __L18703
-    move    r0, 1
-    jump    __L18704
-__L18703:
-    move    r0, 0
-__L18704:
-    test    r0
-    jump    z, __L18701
-    load    r0, sf[-8]
-    add     r0, 2
-    load    r0, r0[0]
-    add     r0, 6
-    load    r0, r0[0]
-    test    r0
-    jump    z, __L18701
-    move    r0, 1
-    jump    __L18702
-__L18701:
-    move    r0, 0
-__L18702:
-    test    r0
-    jump    z, __L18699
-    load    r0, sf[-1]
-    push    r0
-    add     r0, sf, -6
-    push    r0
-    load    r0, sf[-8]
-    push    r0
-    call    __F1329_ge_const_expr
-    add     sp, 3
-    return
-__L18699:
-__L18697:
-.source "src/cg_expr.c", 1344
-    move    r0, 4
-    push    r0
-    move    r0, 0
-    push    r0
-    add     r0, sf, -6
-    push    r0
-    call    __crt_memset
-    add     sp, 3
-.source "src/cg_expr.c", 1345
-    add     r0, sf, -6
-    add     r0, 3
-    push    r0
-    load    r0, sf[-2]
-    pop     r1
-    store   r0, r1[0]
-.source "src/cg_expr.c", 1346
-    load    r0, sf[4]
-    add     r0, 2
-    load    r0, r0[0]
-    test    r0
-    jump    z, __L18709
-    load    r0, sf[4]
-    add     r0, 2
-    load    r0, r0[0]
-    add     r0, 6
-    load    r0, r0[0]
     test    r0
     jump    z, __L18709
     move    r0, 1
@@ -186703,34 +186697,70 @@ __L18709:
 __L18710:
     test    r0
     jump    z, __L18707
+    load    r0, sf[-8]
+    add     r0, 2
+    load    r0, r0[0]
+    test    r0
+    jump    z, __L18707
+    move    r0, 1
+    jump    __L18708
+__L18707:
+    move    r0, 0
+__L18708:
+    test    r0
+    jump    z, __L18705
+    load    r0, sf[-8]
+    add     r0, 2
+    load    r0, r0[0]
+    add     r0, 6
+    load    r0, r0[0]
+    test    r0
+    jump    z, __L18705
+    move    r0, 1
+    jump    __L18706
+__L18705:
+    move    r0, 0
+__L18706:
+    test    r0
+    jump    z, __L18703
     load    r0, sf[-1]
     push    r0
     add     r0, sf, -6
     push    r0
-    load    r0, sf[4]
+    load    r0, sf[-8]
     push    r0
     call    __F1329_ge_const_expr
     add     sp, 3
     return
-__L18707:
-__L18695:
+__L18703:
+__L18701:
+.source "src/cg_expr.c", 1346
+    move    r0, 4
+    push    r0
+    move    r0, 0
+    push    r0
+    add     r0, sf, -6
+    push    r0
+    call    __crt_memset
+    add     sp, 3
+.source "src/cg_expr.c", 1347
+    add     r0, sf, -6
+    add     r0, 3
+    push    r0
+    load    r0, sf[-2]
+    pop     r1
+    store   r0, r1[0]
 .source "src/cg_expr.c", 1348
-    move    r0, __W2318+1
-    push    r0
-    call    __F2_fatal
-    add     sp, 1
-__L18691:
-.source "src/cg_expr.c", 1350
-    load    r0, sf[-1]
-    push    r0
-    load    r0, sf[0]
+    load    r0, sf[4]
+    add     r0, 2
+    load    r0, r0[0]
     test    r0
     jump    z, __L18713
-    load    r0, sf[0]
+    load    r0, sf[4]
+    add     r0, 2
     load    r0, r0[0]
-    move    r1, 13
-    cmp     r0, r1
-    move    eq, r0, 1, 0
+    add     r0, 6
+    load    r0, r0[0]
     test    r0
     jump    z, __L18713
     move    r0, 1
@@ -186740,11 +186770,48 @@ __L18713:
 __L18714:
     test    r0
     jump    z, __L18711
-    load    r0, __G1106_cg_subst+1
-    jump    __L18712
+    load    r0, sf[-1]
+    push    r0
+    add     r0, sf, -6
+    push    r0
+    load    r0, sf[4]
+    push    r0
+    call    __F1329_ge_const_expr
+    add     sp, 3
+    return
 __L18711:
+__L18699:
+.source "src/cg_expr.c", 1350
+    move    r0, __W2323+1
+    push    r0
+    call    __F2_fatal
+    add     sp, 1
+__L18695:
+.source "src/cg_expr.c", 1352
+    load    r0, sf[-1]
+    push    r0
+    load    r0, sf[0]
+    test    r0
+    jump    z, __L18717
+    load    r0, sf[0]
+    load    r0, r0[0]
+    move    r1, 13
+    cmp     r0, r1
+    move    eq, r0, 1, 0
+    test    r0
+    jump    z, __L18717
+    move    r0, 1
+    jump    __L18718
+__L18717:
     move    r0, 0
-__L18712:
+__L18718:
+    test    r0
+    jump    z, __L18715
+    load    r0, __G1106_cg_subst+1
+    jump    __L18716
+__L18715:
+    move    r0, 0
+__L18716:
     push    r0
     load    r0, sf[4]
     push    r0
@@ -186757,64 +186824,64 @@ __L18712:
 
 // ge_const_expr
 __F1329_ge_const_expr:
-.source "src/cg_expr.c", 1356
+.source "src/cg_expr.c", 1358
     add     sp, -3
-.source "src/cg_expr.c", 1357
+.source "src/cg_expr.c", 1359
     load    r0, __G1106_cg_subst+1
     store   r0, sf[0]
-.source "src/cg_expr.c", 1359
+.source "src/cg_expr.c", 1361
     load    r0, sf[3]
     add     r0, 2
     load    r0, r0[0]
     test    r0
-    jump    z, __L18715
+    jump    z, __L18719
     load    r0, sf[3]
     add     r0, 2
     load    r0, r0[0]
     add     r0, 6
     load    r0, r0[0]
-    jump    __L18716
-__L18715:
+    jump    __L18720
+__L18719:
     move    r0, 0
-__L18716:
+__L18720:
     store   r0, sf[-2]
-.source "src/cg_expr.c", 1360
+.source "src/cg_expr.c", 1362
     load    r0, sf[-2]
     test    r0
     move    z, r0, 1, 0
     test    r0
-    jump    z, __L18717
-    move    r0, __W2319+1
+    jump    z, __L18721
+    move    r0, __W2324+1
     push    r0
     call    __F2_fatal
     add     sp, 1
-__L18717:
-.source "src/cg_expr.c", 1361
+__L18721:
+.source "src/cg_expr.c", 1363
     move    r0, 64
     load    r1, __G1332_ge_const_depth+1
     cmp     r0, r1
-    jump    o, __L18721
+    jump    o, __L18725
     move    lt, r0, 1, 0
-    jump    __L18722
-__L18721:
+    jump    __L18726
+__L18725:
     move    lt, r0, 0, 1
-__L18722:
+__L18726:
     test    r0
-    jump    z, __L18719
-    move    r0, __W2320+1
+    jump    z, __L18723
+    move    r0, __W2325+1
     push    r0
     call    __F2_fatal
     add     sp, 1
-__L18719:
-.source "src/cg_expr.c", 1362
+__L18723:
+.source "src/cg_expr.c", 1364
     load    r1, __G1332_ge_const_depth+1
     add     r2, r1, 1
     store   r2, __G1332_ge_const_depth+1
     move    r0, r1
-.source "src/cg_expr.c", 1363
+.source "src/cg_expr.c", 1365
     load    r0, sf[4]
     store   r0, __G1106_cg_subst+1
-.source "src/cg_expr.c", 1364
+.source "src/cg_expr.c", 1366
     load    r0, sf[5]
     push    r0
     load    r0, sf[-2]
@@ -186822,15 +186889,15 @@ __L18719:
     call    __F1280_ex_to
     add     sp, 2
     store   r0, sf[-1]
-.source "src/cg_expr.c", 1365
+.source "src/cg_expr.c", 1367
     load    r0, sf[0]
     store   r0, __G1106_cg_subst+1
-.source "src/cg_expr.c", 1366
+.source "src/cg_expr.c", 1368
     load    r1, __G1332_ge_const_depth+1
     add     r2, r1, -1
     store   r2, __G1332_ge_const_depth+1
     move    r0, r1
-.source "src/cg_expr.c", 1367
+.source "src/cg_expr.c", 1369
     load    r0, sf[-1]
     return
     move    r0, 0
@@ -186839,45 +186906,45 @@ __L18719:
 
 // ge_new_adt
 __F1333_ge_new_adt:
-.source "src/cg_expr.c", 1372
+.source "src/cg_expr.c", 1374
     add     sp, -4
-.source "src/cg_expr.c", 1375
+.source "src/cg_expr.c", 1377
     load    r0, sf[4]
     test    r0
-    jump    z, __L18723
+    jump    z, __L18727
     load    r0, sf[4]
     load    r0, r0[0]
     move    r1, 5
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L18723
+    jump    z, __L18727
     move    r0, 1
-    jump    __L18724
-__L18723:
+    jump    __L18728
+__L18727:
     move    r0, 0
-__L18724:
+__L18728:
     store   r0, sf[-2]
-.source "src/cg_expr.c", 1376
+.source "src/cg_expr.c", 1378
     load    r0, sf[3]
     push    r0
     call    __F1110_cg_is_zst
     add     sp, 1
     test    r0
-    jump    z, __L18725
-    move    r0, __W2321+1
+    jump    z, __L18729
+    move    r0, __W2326+1
     return
-__L18725:
-.source "src/cg_expr.c", 1377
+__L18729:
+.source "src/cg_expr.c", 1379
     load    r0, sf[3]
     push    r0
     call    __F1243_ge_tmp_ty
     add     sp, 1
     store   r0, sf[0]
-.source "src/cg_expr.c", 1378
+.source "src/cg_expr.c", 1380
     load    r0, sf[-2]
     test    r0
-    jump    z, __L18727
+    jump    z, __L18731
     load    r0, sf[4]
     push    r0
     call    __F1120_cg_variant_index
@@ -186885,27 +186952,27 @@ __L18725:
     push    r0
     load    r0, sf[0]
     push    r0
-    move    r0, __W2322+1
+    move    r0, __W2327+1
     push    r0
     call    __F1236_E
     add     sp, 3
-__L18727:
-.source "src/cg_expr.c", 1379
+__L18731:
+.source "src/cg_expr.c", 1381
     move    r0, 0
     store   r0, sf[-1]
-__L18729:
+__L18733:
     load    r0, sf[-1]
     load    r1, sf[7]
     cmp     r0, r1
-    jump    o, __L18732
+    jump    o, __L18736
     move    lt, r0, 1, 0
-    jump    __L18733
-__L18732:
+    jump    __L18737
+__L18736:
     move    lt, r0, 0, 1
-__L18733:
+__L18737:
     test    r0
-    jump    z, __L18731
-.source "src/cg_expr.c", 1381
+    jump    z, __L18735
+.source "src/cg_expr.c", 1383
     load    r0, sf[6]
     load    r1, sf[-1]
     add     r0, r1
@@ -186917,18 +186984,18 @@ __L18733:
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L18734
-    jump    __L18730
-__L18734:
-.source "src/cg_expr.c", 1382
+    jump    z, __L18738
+    jump    __L18734
+__L18738:
+.source "src/cg_expr.c", 1384
     move    r0, 0
     store   r0, sf[-3]
-.source "src/cg_expr.c", 1383
+.source "src/cg_expr.c", 1385
     load    r0, sf[-3]
-.source "src/cg_expr.c", 1384
+.source "src/cg_expr.c", 1386
     load    r0, sf[-2]
     test    r0
-    jump    z, __L18736
+    jump    z, __L18740
     load    r0, sf[6]
     load    r1, sf[-1]
     add     r0, r1
@@ -186949,13 +187016,13 @@ __L18734:
     push    r0
     load    r0, sf[0]
     push    r0
-    move    r0, __W2323+1
+    move    r0, __W2328+1
     push    r0
     call    __F1236_E
     add     sp, 5
-    jump    __L18737
-__L18736:
-.source "src/cg_expr.c", 1385
+    jump    __L18741
+__L18740:
+.source "src/cg_expr.c", 1387
     load    r0, sf[6]
     load    r1, sf[-1]
     add     r0, r1
@@ -186971,20 +187038,20 @@ __L18736:
     push    r0
     load    r0, sf[0]
     push    r0
-    move    r0, __W2324+1
+    move    r0, __W2329+1
     push    r0
     call    __F1236_E
     add     sp, 4
-__L18737:
-__L18730:
-.source "src/cg_expr.c", 1379
+__L18741:
+__L18734:
+.source "src/cg_expr.c", 1381
     load    r1, sf[-1]
     add     r2, r1, 1
     store   r2, sf[-1]
     move    r0, r1
-    jump    __L18729
-__L18731:
-.source "src/cg_expr.c", 1387
+    jump    __L18733
+__L18735:
+.source "src/cg_expr.c", 1389
     load    r0, sf[0]
     return
     move    r0, 0
@@ -186993,8 +187060,8 @@ __L18731:
 
 // ge_unit_value
 __F1334_ge_unit_value:
-.source "src/cg_expr.c", 1391
-.source "src/cg_expr.c", 1392
+.source "src/cg_expr.c", 1393
+.source "src/cg_expr.c", 1394
     move    r0, 0
     push    r0
     move    r0, 0
@@ -187014,85 +187081,75 @@ __F1334_ge_unit_value:
 
 // ge_simple
 __F1335_ge_simple:
-.source "src/cg_expr.c", 1395
+.source "src/cg_expr.c", 1397
     add     sp, -1
-.source "src/cg_expr.c", 1396
+.source "src/cg_expr.c", 1398
     load    r0, sf[3]
     test    r0
     move    z, r0, 1, 0
     test    r0
-    jump    z, __L18738
+    jump    z, __L18742
     move    r0, 1
     return
-__L18738:
-.source "src/cg_expr.c", 1397
+__L18742:
+.source "src/cg_expr.c", 1399
     load    r0, sf[3]
     load    r0, r0[0]
     cmp     r0, 64
-    jump    eq, __L18741
-    cmp     r0, 65
-    jump    eq, __L18742
-    cmp     r0, 66
-    jump    eq, __L18743
-    cmp     r0, 67
-    jump    eq, __L18744
-    cmp     r0, 68
     jump    eq, __L18745
-    cmp     r0, 69
+    cmp     r0, 65
     jump    eq, __L18746
-    cmp     r0, 70
+    cmp     r0, 66
     jump    eq, __L18747
-    cmp     r0, 71
+    cmp     r0, 67
     jump    eq, __L18748
-    cmp     r0, 73
+    cmp     r0, 68
     jump    eq, __L18749
-    cmp     r0, 84
+    cmp     r0, 69
     jump    eq, __L18750
-    cmp     r0, 85
+    cmp     r0, 70
     jump    eq, __L18751
-    cmp     r0, 75
+    cmp     r0, 71
     jump    eq, __L18752
-    cmp     r0, 76
+    cmp     r0, 73
     jump    eq, __L18753
-    cmp     r0, 81
+    cmp     r0, 84
     jump    eq, __L18754
-    cmp     r0, 74
+    cmp     r0, 85
     jump    eq, __L18755
-    cmp     r0, 78
+    cmp     r0, 75
     jump    eq, __L18756
-    cmp     r0, 103
+    cmp     r0, 76
     jump    eq, __L18757
-    jump    __L18740
-.source "src/cg_expr.c", 1398
-__L18741:
-__L18742:
-__L18743:
-__L18744:
+    cmp     r0, 81
+    jump    eq, __L18758
+    cmp     r0, 74
+    jump    eq, __L18759
+    cmp     r0, 78
+    jump    eq, __L18760
+    cmp     r0, 103
+    jump    eq, __L18761
+    jump    __L18744
+.source "src/cg_expr.c", 1400
 __L18745:
-.source "src/cg_expr.c", 1399
 __L18746:
 __L18747:
 __L18748:
-.source "src/cg_expr.c", 1400
-    move    r0, 1
-    return
-.source "src/cg_expr.c", 1401
 __L18749:
+.source "src/cg_expr.c", 1401
 __L18750:
 __L18751:
 __L18752:
-__L18753:
-__L18754:
 .source "src/cg_expr.c", 1402
-    load    r0, sf[3]
-    add     r0, 5
-    load    r0, r0[0]
-    push    r0
-    call    __F1335_ge_simple
-    add     sp, 1
+    move    r0, 1
     return
 .source "src/cg_expr.c", 1403
+__L18753:
+__L18754:
 __L18755:
+__L18756:
+__L18757:
+__L18758:
 .source "src/cg_expr.c", 1404
     load    r0, sf[3]
     add     r0, 5
@@ -187102,7 +187159,7 @@ __L18755:
     add     sp, 1
     return
 .source "src/cg_expr.c", 1405
-__L18756:
+__L18759:
 .source "src/cg_expr.c", 1406
     load    r0, sf[3]
     add     r0, 5
@@ -187110,8 +187167,18 @@ __L18756:
     push    r0
     call    __F1335_ge_simple
     add     sp, 1
+    return
+.source "src/cg_expr.c", 1407
+__L18760:
+.source "src/cg_expr.c", 1408
+    load    r0, sf[3]
+    add     r0, 5
+    load    r0, r0[0]
+    push    r0
+    call    __F1335_ge_simple
+    add     sp, 1
     test    r0
-    jump    z, __L18758
+    jump    z, __L18762
     load    r0, sf[3]
     add     r0, 6
     load    r0, r0[0]
@@ -187119,19 +187186,19 @@ __L18756:
     call    __F1335_ge_simple
     add     sp, 1
     test    r0
-    jump    z, __L18758
+    jump    z, __L18762
     move    r0, 1
-    jump    __L18759
-__L18758:
+    jump    __L18763
+__L18762:
     move    r0, 0
-__L18759:
+__L18763:
     return
-.source "src/cg_expr.c", 1407
-__L18757:
-.source "src/cg_expr.c", 1410
+.source "src/cg_expr.c", 1409
+__L18761:
+.source "src/cg_expr.c", 1412
     move    r0, 0
     store   r0, sf[0]
-__L18760:
+__L18764:
     load    r0, sf[0]
     push    r0
     load    r0, sf[3]
@@ -187141,15 +187208,15 @@ __L18760:
     move    r1, r0
     pop     r0
     cmp     r0, r1
-    jump    o, __L18763
+    jump    o, __L18767
     move    lt, r0, 1, 0
-    jump    __L18764
-__L18763:
+    jump    __L18768
+__L18767:
     move    lt, r0, 0, 1
-__L18764:
+__L18768:
     test    r0
-    jump    z, __L18762
-.source "src/cg_expr.c", 1411
+    jump    z, __L18766
+.source "src/cg_expr.c", 1413
     load    r0, sf[3]
     add     r0, 9
     load    r0, r0[0]
@@ -187162,23 +187229,23 @@ __L18764:
     test    r0
     move    z, r0, 1, 0
     test    r0
-    jump    z, __L18765
+    jump    z, __L18769
     move    r0, 0
     return
+__L18769:
 __L18765:
-__L18761:
-.source "src/cg_expr.c", 1410
+.source "src/cg_expr.c", 1412
     load    r1, sf[0]
     add     r2, r1, 1
     store   r2, sf[0]
     move    r0, r1
-    jump    __L18760
-__L18762:
-.source "src/cg_expr.c", 1413
+    jump    __L18764
+__L18766:
+.source "src/cg_expr.c", 1415
     move    r0, 1
     return
-__L18740:
-.source "src/cg_expr.c", 1415
+__L18744:
+.source "src/cg_expr.c", 1417
     move    r0, 0
     return
     move    r0, 0
@@ -187187,37 +187254,37 @@ __L18740:
 
 // ge_eval_list
 __F1336_ge_eval_list:
-.source "src/cg_expr.c", 1420
-    add     sp, -5
 .source "src/cg_expr.c", 1422
+    add     sp, -5
+.source "src/cg_expr.c", 1424
     move    r0, 0
     store   r0, sf[0]
-__L18767:
+__L18771:
     load    r0, sf[0]
     load    r1, sf[4]
     cmp     r0, r1
-    jump    o, __L18770
+    jump    o, __L18774
     move    lt, r0, 1, 0
-    jump    __L18771
-__L18770:
+    jump    __L18775
+__L18774:
     move    lt, r0, 0, 1
-__L18771:
+__L18775:
     test    r0
-    jump    z, __L18769
-.source "src/cg_expr.c", 1423
+    jump    z, __L18773
+.source "src/cg_expr.c", 1425
     load    r0, sf[5]
     test    r0
-    jump    z, __L18772
+    jump    z, __L18776
     load    r0, sf[5]
     load    r1, sf[0]
     add     r0, r1
     load    r0, r0[0]
-    jump    __L18773
-__L18772:
+    jump    __L18777
+__L18776:
     move    r0, 0
-__L18773:
+__L18777:
     store   r0, sf[-2]
-.source "src/cg_expr.c", 1424
+.source "src/cg_expr.c", 1426
     load    r0, sf[-2]
     push    r0
     load    r0, sf[3]
@@ -187228,27 +187295,27 @@ __L18773:
     call    __F1280_ex_to
     add     sp, 2
     store   r0, sf[-3]
-.source "src/cg_expr.c", 1425
+.source "src/cg_expr.c", 1427
     move    r0, 0
     store   r0, sf[-4]
-.source "src/cg_expr.c", 1426
+.source "src/cg_expr.c", 1428
     load    r0, sf[0]
     move    r1, 1
     add     r0, r1
     store   r0, sf[-1]
-__L18774:
+__L18778:
     load    r0, sf[-1]
     load    r1, sf[4]
     cmp     r0, r1
-    jump    o, __L18777
+    jump    o, __L18781
     move    lt, r0, 1, 0
-    jump    __L18778
-__L18777:
+    jump    __L18782
+__L18781:
     move    lt, r0, 0, 1
-__L18778:
+__L18782:
     test    r0
-    jump    z, __L18776
-.source "src/cg_expr.c", 1427
+    jump    z, __L18780
+.source "src/cg_expr.c", 1429
     load    r0, sf[3]
     load    r1, sf[-1]
     add     r0, r1
@@ -187259,22 +187326,22 @@ __L18778:
     test    r0
     move    z, r0, 1, 0
     test    r0
-    jump    z, __L18779
+    jump    z, __L18783
     move    r0, 1
     store   r0, sf[-4]
+__L18783:
 __L18779:
-__L18775:
-.source "src/cg_expr.c", 1426
+.source "src/cg_expr.c", 1428
     load    r1, sf[-1]
     add     r2, r1, 1
     store   r2, sf[-1]
     move    r0, r1
-    jump    __L18774
-__L18776:
-.source "src/cg_expr.c", 1428
+    jump    __L18778
+__L18780:
+.source "src/cg_expr.c", 1430
     load    r0, sf[-4]
     test    r0
-    jump    z, __L18783
+    jump    z, __L18787
     load    r0, sf[-3]
     push    r0
     move    r0, __G1235_ge_never_s+1
@@ -187283,22 +187350,22 @@ __L18776:
     cmp     r0, r1
     move    ne, r0, 1, 0
     test    r0
-    jump    z, __L18783
+    jump    z, __L18787
     move    r0, 1
-    jump    __L18784
-__L18783:
+    jump    __L18788
+__L18787:
     move    r0, 0
-__L18784:
+__L18788:
     test    r0
-    jump    z, __L18781
+    jump    z, __L18785
     load    r0, sf[-3]
     push    r0
     load    r0, sf[-2]
     test    r0
-    jump    z, __L18785
+    jump    z, __L18789
     load    r0, sf[-2]
-    jump    __L18786
-__L18785:
+    jump    __L18790
+__L18789:
     load    r0, sf[3]
     load    r1, sf[0]
     add     r0, r1
@@ -187306,13 +187373,13 @@ __L18785:
     push    r0
     call    __F1241_gnt
     add     sp, 1
-__L18786:
+__L18790:
     push    r0
     call    __F1247_ge_snap
     add     sp, 2
     store   r0, sf[-3]
-__L18781:
-.source "src/cg_expr.c", 1429
+__L18785:
+.source "src/cg_expr.c", 1431
     load    r0, sf[6]
     load    r1, sf[0]
     add     r0, r1
@@ -187320,71 +187387,71 @@ __L18781:
     load    r0, sf[-3]
     pop     r1
     store   r0, r1[0]
-__L18768:
-.source "src/cg_expr.c", 1422
+__L18772:
+.source "src/cg_expr.c", 1424
     load    r1, sf[0]
     add     r2, r1, 1
     store   r2, sf[0]
     move    r0, r1
-    jump    __L18767
-__L18769:
+    jump    __L18771
+__L18773:
     move    r0, 0
     return
 .source_end
 
 // ge_pointee
 __F1337_ge_pointee:
-.source "src/cg_expr.c", 1435
-.source "src/cg_expr.c", 1436
+.source "src/cg_expr.c", 1437
+.source "src/cg_expr.c", 1438
     load    r0, sf[3]
     test    r0
     move    z, r0, 1, 0
     test    r0
-    jump    z, __L18787
+    jump    z, __L18791
     move    r0, 0
     return
-__L18787:
-.source "src/cg_expr.c", 1437
+__L18791:
+.source "src/cg_expr.c", 1439
     load    r0, sf[3]
     load    r0, r0[0]
     move    r1, 11
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    nz, __L18791
+    jump    nz, __L18795
     load    r0, sf[3]
     load    r0, r0[0]
     move    r1, 12
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    nz, __L18791
+    jump    nz, __L18795
     move    r0, 0
-    jump    __L18792
-__L18791:
+    jump    __L18796
+__L18795:
     move    r0, 1
-__L18792:
+__L18796:
     test    r0
-    jump    z, __L18789
+    jump    z, __L18793
     load    r0, sf[3]
     add     r0, 5
     load    r0, r0[0]
     return
-__L18789:
-.source "src/cg_expr.c", 1438
+__L18793:
+.source "src/cg_expr.c", 1440
     load    r0, sf[3]
     push    r0
     call    __F1116_cg_is_box
     add     sp, 1
     test    r0
-    jump    z, __L18793
+    jump    z, __L18797
     load    r0, sf[3]
     push    r0
     call    __F1117_cg_box_inner
     add     sp, 1
     return
-__L18793:
-.source "src/cg_expr.c", 1439
+__L18797:
+.source "src/cg_expr.c", 1441
     move    r0, 0
     return
     move    r0, 0
@@ -187393,9 +187460,9 @@ __L18793:
 
 // ge_unsize
 __F1338_ge_unsize:
-.source "src/cg_expr.c", 1442
+.source "src/cg_expr.c", 1444
     add     sp, -3
-.source "src/cg_expr.c", 1443
+.source "src/cg_expr.c", 1445
     load    r0, sf[5]
     push    r0
     call    __F1337_ge_pointee
@@ -187403,62 +187470,62 @@ __F1338_ge_unsize:
     store   r0, sf[0]
     load    r0, sf[6]
     test    r0
-    jump    z, __L18795
+    jump    z, __L18799
     load    r0, sf[6]
     push    r0
     call    __F1337_ge_pointee
     add     sp, 1
-    jump    __L18796
-__L18795:
+    jump    __L18800
+__L18799:
     move    r0, 0
-__L18796:
+__L18800:
     store   r0, sf[-1]
-.source "src/cg_expr.c", 1444
+.source "src/cg_expr.c", 1446
     load    r0, sf[3]
-.source "src/cg_expr.c", 1445
+.source "src/cg_expr.c", 1447
     load    r0, sf[0]
     test    r0
     move    z, r0, 1, 0
     test    r0
-    jump    z, __L18797
+    jump    z, __L18801
     load    r0, sf[4]
     return
-__L18797:
-.source "src/cg_expr.c", 1446
+__L18801:
+.source "src/cg_expr.c", 1448
     load    r0, sf[0]
     load    r0, r0[0]
     move    r1, 9
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L18801
+    jump    z, __L18805
     load    r0, sf[-1]
     test    r0
     move    z, r0, 1, 0
     test    r0
-    jump    nz, __L18803
+    jump    nz, __L18807
     load    r0, sf[-1]
     load    r0, r0[0]
     move    r1, 10
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    nz, __L18803
+    jump    nz, __L18807
     move    r0, 0
-    jump    __L18804
-__L18803:
+    jump    __L18808
+__L18807:
     move    r0, 1
-__L18804:
+__L18808:
     test    r0
-    jump    z, __L18801
+    jump    z, __L18805
     move    r0, 1
-    jump    __L18802
-__L18801:
+    jump    __L18806
+__L18805:
     move    r0, 0
-__L18802:
+__L18806:
     test    r0
-    jump    z, __L18799
-.source "src/cg_expr.c", 1447
+    jump    z, __L18803
+.source "src/cg_expr.c", 1449
     load    r0, sf[0]
     add     r0, 5
     load    r0, r0[0]
@@ -187466,25 +187533,25 @@ __L18802:
     call    __F1111_cg_is_u8
     add     sp, 1
     test    r0
-    jump    z, __L18805
+    jump    z, __L18809
     load    r0, sf[4]
     push    r0
-    move    r0, __W2325+1
+    move    r0, __W2330+1
     push    r0
     call    __F1237_S
     add     sp, 2
-    jump    __L18806
-__L18805:
+    jump    __L18810
+__L18809:
     load    r0, sf[4]
-__L18806:
+__L18810:
     store   r0, sf[-2]
-.source "src/cg_expr.c", 1448
+.source "src/cg_expr.c", 1450
     load    r0, sf[0]
     push    r0
     call    __F1305_ge_array_len
     add     sp, 1
     push    r0
-    move    r0, __W2326+1
+    move    r0, __W2331+1
     push    r0
     call    __F1237_S
     add     sp, 2
@@ -187494,39 +187561,39 @@ __L18806:
     call    __F1287_ge_mk_slice
     add     sp, 2
     return
-__L18799:
-.source "src/cg_expr.c", 1450
+__L18803:
+.source "src/cg_expr.c", 1452
     load    r0, sf[-1]
     test    r0
-    jump    z, __L18811
+    jump    z, __L18815
     load    r0, sf[-1]
     load    r0, r0[0]
     move    r1, 18
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L18811
+    jump    z, __L18815
     move    r0, 1
-    jump    __L18812
-__L18811:
+    jump    __L18816
+__L18815:
     move    r0, 0
-__L18812:
+__L18816:
     test    r0
-    jump    z, __L18809
+    jump    z, __L18813
     load    r0, sf[0]
     load    r0, r0[0]
     move    r1, 18
     cmp     r0, r1
     move    ne, r0, 1, 0
     test    r0
-    jump    z, __L18809
+    jump    z, __L18813
     move    r0, 1
-    jump    __L18810
-__L18809:
+    jump    __L18814
+__L18813:
     move    r0, 0
-__L18810:
+__L18814:
     test    r0
-    jump    z, __L18807
+    jump    z, __L18811
     load    r0, sf[-1]
     push    r0
     load    r0, sf[0]
@@ -187534,7 +187601,7 @@ __L18810:
     call    __F1127_cg_vtable
     add     sp, 2
     push    r0
-    move    r0, __W2327+1
+    move    r0, __W2332+1
     push    r0
     call    __F1237_S
     add     sp, 2
@@ -187544,8 +187611,8 @@ __L18810:
     call    __F1288_ge_mk_dyn
     add     sp, 2
     return
-__L18807:
-.source "src/cg_expr.c", 1451
+__L18811:
+.source "src/cg_expr.c", 1453
     load    r0, sf[4]
     return
     move    r0, 0
@@ -187554,15 +187621,15 @@ __L18807:
 
 // ge_closure_shim
 __F1339_ge_closure_shim:
-.source "src/cg_expr.c", 1455
-    add     sp, -7
 .source "src/cg_expr.c", 1457
+    add     sp, -7
+.source "src/cg_expr.c", 1459
     load    r0, sf[3]
     push    r0
     call    __F1194_cg_closure_fn
     add     sp, 1
     store   r0, sf[-3]
-.source "src/cg_expr.c", 1459
+.source "src/cg_expr.c", 1461
     load    r0, sf[3]
     add     r0, 10
     load    r0, r0[0]
@@ -187570,20 +187637,20 @@ __F1339_ge_closure_shim:
     call    __F1240_gm
     add     sp, 1
     store   r0, sf[-6]
-.source "src/cg_expr.c", 1460
+.source "src/cg_expr.c", 1462
     call    __F1105_cg_new_id
     push    r0
-    move    r0, __W2328+1
+    move    r0, __W2333+1
     push    r0
     call    __F1237_S
     add     sp, 2
     store   r0, sf[-4]
-.source "src/cg_expr.c", 1461
+.source "src/cg_expr.c", 1463
     add     r0, sf, -2
     push    r0
     call    __F8_sb_init
     add     sp, 1
-.source "src/cg_expr.c", 1462
+.source "src/cg_expr.c", 1464
     load    r0, sf[-6]
     push    r0
     call    __F1242_ge_ct
@@ -187593,31 +187660,31 @@ __F1339_ge_closure_shim:
     push    r0
     call    __F11_sb_puts
     add     sp, 2
-.source "src/cg_expr.c", 1463
+.source "src/cg_expr.c", 1465
     move    r0, 32
     push    r0
     add     r0, sf, -2
     push    r0
     call    __F9_sb_putc
     add     sp, 2
-.source "src/cg_expr.c", 1464
+.source "src/cg_expr.c", 1466
     load    r0, sf[-4]
     push    r0
     add     r0, sf, -2
     push    r0
     call    __F11_sb_puts
     add     sp, 2
-.source "src/cg_expr.c", 1465
+.source "src/cg_expr.c", 1467
     move    r0, 40
     push    r0
     add     r0, sf, -2
     push    r0
     call    __F9_sb_putc
     add     sp, 2
-.source "src/cg_expr.c", 1466
+.source "src/cg_expr.c", 1468
     move    r0, 0
     store   r0, sf[-5]
-__L18813:
+__L18817:
     load    r0, sf[-5]
     push    r0
     load    r0, sf[3]
@@ -187626,26 +187693,26 @@ __L18813:
     move    r1, r0
     pop     r0
     cmp     r0, r1
-    jump    o, __L18816
+    jump    o, __L18820
     move    lt, r0, 1, 0
-    jump    __L18817
-__L18816:
+    jump    __L18821
+__L18820:
     move    lt, r0, 0, 1
-__L18817:
+__L18821:
     test    r0
-    jump    z, __L18815
-.source "src/cg_expr.c", 1467
+    jump    z, __L18819
+.source "src/cg_expr.c", 1469
     load    r0, sf[-5]
     test    r0
-    jump    z, __L18818
-    move    r0, __W2329+1
+    jump    z, __L18822
+    move    r0, __W2334+1
     push    r0
     add     r0, sf, -2
     push    r0
     call    __F11_sb_puts
     add     sp, 2
-__L18818:
-.source "src/cg_expr.c", 1468
+__L18822:
+.source "src/cg_expr.c", 1470
     load    r0, sf[3]
     add     r0, 8
     load    r0, r0[0]
@@ -187663,10 +187730,10 @@ __L18818:
     push    r0
     call    __F11_sb_puts
     add     sp, 2
-.source "src/cg_expr.c", 1469
+.source "src/cg_expr.c", 1471
     load    r0, sf[-5]
     push    r0
-    move    r0, __W2330+1
+    move    r0, __W2335+1
     push    r0
     call    __F1237_S
     add     sp, 2
@@ -187675,62 +187742,62 @@ __L18818:
     push    r0
     call    __F11_sb_puts
     add     sp, 2
-__L18814:
-.source "src/cg_expr.c", 1466
+__L18818:
+.source "src/cg_expr.c", 1468
     load    r1, sf[-5]
     add     r2, r1, 1
     store   r2, sf[-5]
     move    r0, r1
-    jump    __L18813
-__L18815:
-.source "src/cg_expr.c", 1471
+    jump    __L18817
+__L18819:
+.source "src/cg_expr.c", 1473
     load    r0, sf[3]
     add     r0, 9
     load    r0, r0[0]
     test    r0
     move    z, r0, 1, 0
     test    r0
-    jump    z, __L18820
-    move    r0, __W2331+1
+    jump    z, __L18824
+    move    r0, __W2336+1
     push    r0
     add     r0, sf, -2
     push    r0
     call    __F11_sb_puts
     add     sp, 2
-__L18820:
-.source "src/cg_expr.c", 1472
+__L18824:
+.source "src/cg_expr.c", 1474
     move    r0, 41
     push    r0
     add     r0, sf, -2
     push    r0
     call    __F9_sb_putc
     add     sp, 2
-.source "src/cg_expr.c", 1473
+.source "src/cg_expr.c", 1475
     add     r0, sf, -2
     load    r0, r0[0]
     push    r0
-    move    r0, __W2332+1
+    move    r0, __W2337+1
     push    r0
     move    r0, 2
     push    r0
     call    __F1102_cg_printf
     add     sp, 3
-.source "src/cg_expr.c", 1474
+.source "src/cg_expr.c", 1476
     load    r0, sf[-3]
     push    r0
     add     r0, sf, -2
     load    r0, r0[0]
     push    r0
-    move    r0, __W2333+1
+    move    r0, __W2338+1
     push    r0
     move    r0, 4
     push    r0
     call    __F1102_cg_printf
     add     sp, 4
-.source "src/cg_expr.c", 1475
+.source "src/cg_expr.c", 1477
     move    r0, 0
     store   r0, sf[-5]
-__L18822:
+__L18826:
     load    r0, sf[-5]
     push    r0
     load    r0, sf[3]
@@ -187739,37 +187806,37 @@ __L18822:
     move    r1, r0
     pop     r0
     cmp     r0, r1
-    jump    o, __L18825
+    jump    o, __L18829
     move    lt, r0, 1, 0
-    jump    __L18826
-__L18825:
+    jump    __L18830
+__L18829:
     move    lt, r0, 0, 1
-__L18826:
+__L18830:
     test    r0
-    jump    z, __L18824
+    jump    z, __L18828
     load    r0, sf[-5]
     push    r0
-    move    r0, __W2334+1
+    move    r0, __W2339+1
     push    r0
     move    r0, 4
     push    r0
     call    __F1102_cg_printf
     add     sp, 3
-__L18823:
+__L18827:
     load    r1, sf[-5]
     add     r2, r1, 1
     store   r2, sf[-5]
     move    r0, r1
-    jump    __L18822
-__L18824:
-.source "src/cg_expr.c", 1476
-    move    r0, __W2335+1
+    jump    __L18826
+__L18828:
+.source "src/cg_expr.c", 1478
+    move    r0, __W2340+1
     push    r0
     move    r0, 4
     push    r0
     call    __F1102_cg_printf
     add     sp, 2
-.source "src/cg_expr.c", 1477
+.source "src/cg_expr.c", 1479
     load    r0, sf[-4]
     return
     move    r0, 0
@@ -187778,29 +187845,29 @@ __L18824:
 
 // ge_to_fnptr
 __F1340_ge_to_fnptr:
-.source "src/cg_expr.c", 1480
-    add     sp, -4
-.source "src/cg_expr.c", 1481
-    load    r0, sf[5]
 .source "src/cg_expr.c", 1482
-    load    r0, sf[3]
+    add     sp, -4
 .source "src/cg_expr.c", 1483
+    load    r0, sf[5]
+.source "src/cg_expr.c", 1484
+    load    r0, sf[3]
+.source "src/cg_expr.c", 1485
     load    r0, sf[4]
     load    r0, r0[0]
     move    r1, 14
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L18827
-.source "src/cg_expr.c", 1484
+    jump    z, __L18831
+.source "src/cg_expr.c", 1486
     move    r0, 0
     store   r0, sf[0]
     move    r0, 0
     store   r0, sf[-1]
-.source "src/cg_expr.c", 1485
+.source "src/cg_expr.c", 1487
     move    r0, 0
     store   r0, sf[-2]
-.source "src/cg_expr.c", 1486
+.source "src/cg_expr.c", 1488
     add     r0, sf, -1
     push    r0
     add     r0, sf, -2
@@ -187812,7 +187879,7 @@ __F1340_ge_to_fnptr:
     call    __F1125_cg_resolve_fn_type
     add     sp, 4
     store   r0, sf[-3]
-.source "src/cg_expr.c", 1487
+.source "src/cg_expr.c", 1489
     move    r0, 0
     push    r0
     load    r0, sf[-2]
@@ -187824,32 +187891,32 @@ __F1340_ge_to_fnptr:
     call    __F1123_cg_fn_instance
     add     sp, 4
     push    r0
-    move    r0, __W2336+1
+    move    r0, __W2341+1
     push    r0
     call    __F1237_S
     add     sp, 2
     return
-__L18827:
-.source "src/cg_expr.c", 1489
+__L18831:
+.source "src/cg_expr.c", 1491
     load    r0, sf[4]
     load    r0, r0[0]
     move    r1, 16
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L18829
+    jump    z, __L18833
     load    r0, sf[4]
     push    r0
     call    __F1339_ge_closure_shim
     add     sp, 1
     push    r0
-    move    r0, __W2337+1
+    move    r0, __W2342+1
     push    r0
     call    __F1237_S
     add     sp, 2
     return
-__L18829:
-.source "src/cg_expr.c", 1490
+__L18833:
+.source "src/cg_expr.c", 1492
     load    r0, sf[5]
     return
     move    r0, 0
@@ -187858,20 +187925,20 @@ __L18829:
 
 // ex_to
 __F1280_ex_to:
-.source "src/cg_expr.c", 1495
+.source "src/cg_expr.c", 1497
     add     sp, -14
-.source "src/cg_expr.c", 1496
+.source "src/cg_expr.c", 1498
     load    r0, sf[3]
     add     r0, 27
     load    r0, r0[0]
     store   r0, sf[0]
-.source "src/cg_expr.c", 1497
+.source "src/cg_expr.c", 1499
     load    r0, sf[3]
     push    r0
     call    __F1241_gnt
     add     sp, 1
     store   r0, sf[-1]
-.source "src/cg_expr.c", 1499
+.source "src/cg_expr.c", 1501
     load    r0, sf[0]
     push    r0
     move    r0, 255
@@ -187883,8 +187950,8 @@ __F1280_ex_to:
     pop     r0
     and     r0, r1
     test    r0
-    jump    z, __L18831
-.source "src/cg_expr.c", 1500
+    jump    z, __L18835
+.source "src/cg_expr.c", 1502
     load    r0, sf[0]
     move    r1, 512
     and     r0, r1
@@ -187892,7 +187959,7 @@ __F1280_ex_to:
     cmp     r0, r1
     move    ne, r0, 1, 0
     store   r0, sf[-3]
-.source "src/cg_expr.c", 1501
+.source "src/cg_expr.c", 1503
     store   0, sf[-13]
     store   0, sf[-12]
     store   0, sf[-11]
@@ -187921,7 +187988,7 @@ __F1280_ex_to:
     load    r2, r0[4]
     store   r2, r1[4]
     move    r0, r1
-.source "src/cg_expr.c", 1502
+.source "src/cg_expr.c", 1504
     load    r0, sf[0]
     push    r0
     move    r0, 256
@@ -187931,8 +187998,8 @@ __F1280_ex_to:
     pop     r0
     and     r0, r1
     test    r0
-    jump    z, __L18833
-.source "src/cg_expr.c", 1503
+    jump    z, __L18837
+.source "src/cg_expr.c", 1505
     add     r0, sf, -13
     load    r1, r0[4]
     push    r1
@@ -187947,7 +188014,7 @@ __F1280_ex_to:
     call    __F1294_ge_addr
     add     sp, 5
     store   r0, sf[-2]
-.source "src/cg_expr.c", 1504
+.source "src/cg_expr.c", 1506
     load    r0, sf[-3]
     push    r0
     add     r0, sf, -13
@@ -187957,9 +188024,9 @@ __F1280_ex_to:
     call    __F106_ty_ref
     add     sp, 2
     store   r0, sf[-1]
-    jump    __L18834
-__L18833:
-.source "src/cg_expr.c", 1506
+    jump    __L18838
+__L18837:
+.source "src/cg_expr.c", 1508
     add     r0, sf, -13
     load    r1, r0[4]
     push    r1
@@ -187974,15 +188041,15 @@ __L18833:
     call    __F1292_ge_take
     add     sp, 5
     store   r0, sf[-2]
-.source "src/cg_expr.c", 1507
+.source "src/cg_expr.c", 1509
     add     r0, sf, -13
     add     r0, 2
     load    r0, r0[0]
     store   r0, sf[-1]
-__L18834:
-    jump    __L18832
-__L18831:
-.source "src/cg_expr.c", 1510
+__L18838:
+    jump    __L18836
+__L18835:
+.source "src/cg_expr.c", 1512
     load    r0, sf[4]
     push    r0
     load    r0, sf[3]
@@ -187990,8 +188057,8 @@ __L18831:
     call    __F1279_ex0
     add     sp, 2
     store   r0, sf[-2]
-__L18832:
-.source "src/cg_expr.c", 1512
+__L18836:
+.source "src/cg_expr.c", 1514
     load    r0, sf[-2]
     push    r0
     move    r0, __G1235_ge_never_s+1
@@ -188000,30 +188067,30 @@ __L18832:
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    nz, __L18837
+    jump    nz, __L18841
     load    r0, sf[-1]
     push    r0
     call    __F1244_ge_is_never
     add     sp, 1
     test    r0
-    jump    nz, __L18837
+    jump    nz, __L18841
     move    r0, 0
-    jump    __L18838
-__L18837:
+    jump    __L18842
+__L18841:
     move    r0, 1
-__L18838:
+__L18842:
     test    r0
-    jump    z, __L18835
+    jump    z, __L18839
     move    r0, __G1235_ge_never_s+1
     return
-__L18835:
-.source "src/cg_expr.c", 1513
+__L18839:
+.source "src/cg_expr.c", 1515
     load    r0, sf[0]
     move    r1, 1024
     and     r0, r1
     test    r0
-    jump    z, __L18839
-.source "src/cg_expr.c", 1514
+    jump    z, __L18843
+.source "src/cg_expr.c", 1516
     load    r0, sf[4]
     push    r0
     load    r0, sf[-1]
@@ -188035,45 +188102,45 @@ __L18835:
     call    __F1338_ge_unsize
     add     sp, 4
     store   r0, sf[-2]
-.source "src/cg_expr.c", 1515
-    load    r0, sf[4]
-    test    r0
-    jump    z, __L18841
-    load    r0, sf[4]
-    store   r0, sf[-1]
-__L18841:
-__L18839:
 .source "src/cg_expr.c", 1517
     load    r0, sf[4]
     test    r0
-    jump    z, __L18847
+    jump    z, __L18845
+    load    r0, sf[4]
+    store   r0, sf[-1]
+__L18845:
+__L18843:
+.source "src/cg_expr.c", 1519
+    load    r0, sf[4]
+    test    r0
+    jump    z, __L18851
     load    r0, sf[-1]
     push    r0
     call    __F1319_ge_is_callable_ty
     add     sp, 1
     test    r0
-    jump    z, __L18847
+    jump    z, __L18851
     move    r0, 1
-    jump    __L18848
-__L18847:
+    jump    __L18852
+__L18851:
     move    r0, 0
-__L18848:
+__L18852:
     test    r0
-    jump    z, __L18845
+    jump    z, __L18849
     load    r0, sf[4]
     load    r0, r0[0]
     move    r1, 15
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L18845
+    jump    z, __L18849
     move    r0, 1
-    jump    __L18846
-__L18845:
+    jump    __L18850
+__L18849:
     move    r0, 0
-__L18846:
+__L18850:
     test    r0
-    jump    z, __L18843
+    jump    z, __L18847
     load    r0, sf[-2]
     push    r0
     load    r0, sf[-1]
@@ -188083,8 +188150,8 @@ __L18846:
     call    __F1340_ge_to_fnptr
     add     sp, 3
     store   r0, sf[-2]
-__L18843:
-.source "src/cg_expr.c", 1518
+__L18847:
+.source "src/cg_expr.c", 1520
     load    r0, sf[-2]
     return
     move    r0, 0
@@ -188093,8 +188160,8 @@ __L18843:
 
 // ex
 __F1281_ex:
-.source "src/cg_expr.c", 1521
-.source "src/cg_expr.c", 1522
+.source "src/cg_expr.c", 1523
+.source "src/cg_expr.c", 1524
     move    r0, 0
     push    r0
     load    r0, sf[3]
@@ -188108,21 +188175,49 @@ __F1281_ex:
 
 // ge_scalar
 __F1341_ge_scalar:
-.source "src/cg_expr.c", 1527
-.source "src/cg_expr.c", 1528
+.source "src/cg_expr.c", 1529
+.source "src/cg_expr.c", 1530
     load    r0, sf[3]
     test    r0
-    jump    z, __L18849
+    jump    z, __L18853
     load    r0, sf[3]
     load    r0, r0[0]
     move    r1, 4
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    nz, __L18855
+    jump    nz, __L18859
     load    r0, sf[3]
     load    r0, r0[0]
     move    r1, 5
+    cmp     r0, r1
+    move    eq, r0, 1, 0
+    test    r0
+    jump    nz, __L18859
+    move    r0, 0
+    jump    __L18860
+__L18859:
+    move    r0, 1
+__L18860:
+    test    r0
+    jump    nz, __L18857
+    load    r0, sf[3]
+    load    r0, r0[0]
+    move    r1, 2
+    cmp     r0, r1
+    move    eq, r0, 1, 0
+    test    r0
+    jump    nz, __L18857
+    move    r0, 0
+    jump    __L18858
+__L18857:
+    move    r0, 1
+__L18858:
+    test    r0
+    jump    nz, __L18855
+    load    r0, sf[3]
+    load    r0, r0[0]
+    move    r1, 3
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
@@ -188133,40 +188228,12 @@ __L18855:
     move    r0, 1
 __L18856:
     test    r0
-    jump    nz, __L18853
-    load    r0, sf[3]
-    load    r0, r0[0]
-    move    r1, 2
-    cmp     r0, r1
-    move    eq, r0, 1, 0
-    test    r0
-    jump    nz, __L18853
-    move    r0, 0
+    jump    z, __L18853
+    move    r0, 1
     jump    __L18854
 __L18853:
-    move    r0, 1
+    move    r0, 0
 __L18854:
-    test    r0
-    jump    nz, __L18851
-    load    r0, sf[3]
-    load    r0, r0[0]
-    move    r1, 3
-    cmp     r0, r1
-    move    eq, r0, 1, 0
-    test    r0
-    jump    nz, __L18851
-    move    r0, 0
-    jump    __L18852
-__L18851:
-    move    r0, 1
-__L18852:
-    test    r0
-    jump    z, __L18849
-    move    r0, 1
-    jump    __L18850
-__L18849:
-    move    r0, 0
-__L18850:
     return
     move    r0, 0
     return
@@ -188174,25 +188241,25 @@ __L18850:
 
 // ge_is_unit_ty
 __F1342_ge_is_unit_ty:
-.source "src/cg_expr.c", 1531
-.source "src/cg_expr.c", 1532
+.source "src/cg_expr.c", 1533
+.source "src/cg_expr.c", 1534
     load    r0, sf[3]
     test    r0
-    jump    z, __L18859
+    jump    z, __L18863
     load    r0, sf[3]
     load    r0, r0[0]
     move    r1, 8
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L18859
+    jump    z, __L18863
     move    r0, 1
-    jump    __L18860
-__L18859:
+    jump    __L18864
+__L18863:
     move    r0, 0
-__L18860:
+__L18864:
     test    r0
-    jump    z, __L18857
+    jump    z, __L18861
     load    r0, sf[3]
     add     r0, 7
     load    r0, r0[0]
@@ -188200,12 +188267,12 @@ __L18860:
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L18857
+    jump    z, __L18861
     move    r0, 1
-    jump    __L18858
-__L18857:
+    jump    __L18862
+__L18861:
     move    r0, 0
-__L18858:
+__L18862:
     return
     move    r0, 0
     return
@@ -188213,14 +188280,14 @@ __L18858:
 
 // ge_binary
 __F1343_ge_binary:
-.source "src/cg_expr.c", 1535
+.source "src/cg_expr.c", 1537
     add     sp, -32
-.source "src/cg_expr.c", 1536
+.source "src/cg_expr.c", 1538
     load    r0, sf[3]
     add     r0, 1
     load    r0, r0[0]
     store   r0, sf[0]
-.source "src/cg_expr.c", 1537
+.source "src/cg_expr.c", 1539
     load    r0, sf[3]
     add     r0, 5
     load    r0, r0[0]
@@ -188235,35 +188302,35 @@ __F1343_ge_binary:
     call    __F1241_gnt
     add     sp, 1
     store   r0, sf[-2]
-.source "src/cg_expr.c", 1538
+.source "src/cg_expr.c", 1540
     load    r0, sf[4]
-.source "src/cg_expr.c", 1539
+.source "src/cg_expr.c", 1541
     load    r0, sf[0]
     move    r1, 19
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    nz, __L18863
+    jump    nz, __L18867
     load    r0, sf[0]
     move    r1, 20
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    nz, __L18863
+    jump    nz, __L18867
     move    r0, 0
-    jump    __L18864
-__L18863:
+    jump    __L18868
+__L18867:
     move    r0, 1
-__L18864:
+__L18868:
     test    r0
-    jump    z, __L18861
-.source "src/cg_expr.c", 1540
-    move    r0, __W2338+1
+    jump    z, __L18865
+.source "src/cg_expr.c", 1542
+    move    r0, __W2343+1
     push    r0
     call    __F1239_ge_tmp
     add     sp, 1
     store   r0, sf[-3]
-.source "src/cg_expr.c", 1541
+.source "src/cg_expr.c", 1543
     load    r0, sf[3]
     add     r0, 5
     load    r0, r0[0]
@@ -188271,16 +188338,16 @@ __L18864:
     call    __F1281_ex
     add     sp, 1
     store   r0, sf[-4]
-.source "src/cg_expr.c", 1542
+.source "src/cg_expr.c", 1544
     load    r0, sf[-4]
     push    r0
     load    r0, sf[-3]
     push    r0
-    move    r0, __W2339+1
+    move    r0, __W2344+1
     push    r0
     call    __F1236_E
     add     sp, 3
-.source "src/cg_expr.c", 1543
+.source "src/cg_expr.c", 1545
     load    r0, sf[-3]
     push    r0
     load    r0, sf[0]
@@ -188288,18 +188355,18 @@ __L18864:
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L18865
-    move    r0, __W2341+1
-    jump    __L18866
-__L18865:
-    move    r0, __W2342+1
-__L18866:
+    jump    z, __L18869
+    move    r0, __W2346+1
+    jump    __L18870
+__L18869:
+    move    r0, __W2347+1
+__L18870:
     push    r0
-    move    r0, __W2340+1
+    move    r0, __W2345+1
     push    r0
     call    __F1236_E
     add     sp, 3
-.source "src/cg_expr.c", 1544
+.source "src/cg_expr.c", 1546
     load    r0, sf[3]
     add     r0, 6
     load    r0, r0[0]
@@ -188307,7 +188374,7 @@ __L18866:
     call    __F1281_ex
     add     sp, 1
     store   r0, sf[-5]
-.source "src/cg_expr.c", 1545
+.source "src/cg_expr.c", 1547
     load    r0, sf[-5]
     push    r0
     move    r0, __G1235_ge_never_s+1
@@ -188316,46 +188383,46 @@ __L18866:
     cmp     r0, r1
     move    ne, r0, 1, 0
     test    r0
-    jump    z, __L18867
+    jump    z, __L18871
     load    r0, sf[-5]
     push    r0
     load    r0, sf[-3]
     push    r0
-    move    r0, __W2343+1
+    move    r0, __W2348+1
     push    r0
     call    __F1236_E
     add     sp, 3
-__L18867:
-.source "src/cg_expr.c", 1546
-    move    r0, __W2344+1
+__L18871:
+.source "src/cg_expr.c", 1548
+    move    r0, __W2349+1
     push    r0
     call    __F1236_E
     add     sp, 1
-.source "src/cg_expr.c", 1547
+.source "src/cg_expr.c", 1549
     load    r0, sf[-3]
     return
-__L18861:
-.source "src/cg_expr.c", 1549
+__L18865:
+.source "src/cg_expr.c", 1551
     load    r0, sf[-1]
     push    r0
     call    __F1341_ge_scalar
     add     sp, 1
     test    r0
-    jump    z, __L18871
+    jump    z, __L18875
     load    r0, sf[-2]
     push    r0
     call    __F1341_ge_scalar
     add     sp, 1
     test    r0
-    jump    z, __L18871
+    jump    z, __L18875
     move    r0, 1
-    jump    __L18872
-__L18871:
+    jump    __L18876
+__L18875:
     move    r0, 0
-__L18872:
+__L18876:
     test    r0
-    jump    z, __L18869
-.source "src/cg_expr.c", 1551
+    jump    z, __L18873
+.source "src/cg_expr.c", 1553
     load    r0, sf[3]
     add     r0, 6
     load    r0, r0[0]
@@ -188363,8 +188430,8 @@ __L18872:
     call    __F1335_ge_simple
     add     sp, 1
     test    r0
-    jump    z, __L18873
-.source "src/cg_expr.c", 1552
+    jump    z, __L18877
+.source "src/cg_expr.c", 1554
     load    r0, sf[3]
     add     r0, 5
     load    r0, r0[0]
@@ -188372,7 +188439,7 @@ __L18872:
     call    __F1281_ex
     add     sp, 1
     store   r0, sf[-6]
-.source "src/cg_expr.c", 1553
+.source "src/cg_expr.c", 1555
     load    r0, sf[3]
     add     r0, 6
     load    r0, r0[0]
@@ -188380,9 +188447,9 @@ __L18872:
     call    __F1281_ex
     add     sp, 1
     store   r0, sf[-7]
-    jump    __L18874
-__L18873:
-.source "src/cg_expr.c", 1555
+    jump    __L18878
+__L18877:
+.source "src/cg_expr.c", 1557
     load    r0, sf[3]
     add     r0, 5
     load    r0, r0[0]
@@ -188395,7 +188462,7 @@ __L18873:
     call    __F1247_ge_snap
     add     sp, 2
     store   r0, sf[-6]
-.source "src/cg_expr.c", 1556
+.source "src/cg_expr.c", 1558
     load    r0, sf[3]
     add     r0, 6
     load    r0, r0[0]
@@ -188403,8 +188470,8 @@ __L18873:
     call    __F1281_ex
     add     sp, 1
     store   r0, sf[-7]
-__L18874:
-.source "src/cg_expr.c", 1558
+__L18878:
+.source "src/cg_expr.c", 1560
     load    r0, sf[-1]
     push    r0
     load    r0, sf[-6]
@@ -188412,7 +188479,7 @@ __L18874:
     call    __F1246_ge_fix
     add     sp, 2
     store   r0, sf[-6]
-.source "src/cg_expr.c", 1559
+.source "src/cg_expr.c", 1561
     load    r0, sf[-2]
     push    r0
     load    r0, sf[-7]
@@ -188420,36 +188487,36 @@ __L18874:
     call    __F1246_ge_fix
     add     sp, 2
     store   r0, sf[-7]
-.source "src/cg_expr.c", 1560
+.source "src/cg_expr.c", 1562
     move    r0, 13
     load    r1, sf[0]
     cmp     r0, r1
-    jump    o, __L18879
+    jump    o, __L18883
     move    le, r0, 1, 0
-    jump    __L18880
-__L18879:
+    jump    __L18884
+__L18883:
     move    lt, r0, 0, 1
-__L18880:
+__L18884:
     test    r0
-    jump    z, __L18877
+    jump    z, __L18881
     load    r0, sf[0]
     move    r1, 18
     cmp     r0, r1
-    jump    o, __L18881
+    jump    o, __L18885
     move    le, r0, 1, 0
+    jump    __L18886
+__L18885:
+    move    lt, r0, 0, 1
+__L18886:
+    test    r0
+    jump    z, __L18881
+    move    r0, 1
     jump    __L18882
 __L18881:
-    move    lt, r0, 0, 1
+    move    r0, 0
 __L18882:
     test    r0
-    jump    z, __L18877
-    move    r0, 1
-    jump    __L18878
-__L18877:
-    move    r0, 0
-__L18878:
-    test    r0
-    jump    z, __L18875
+    jump    z, __L18879
     load    r0, sf[-7]
     push    r0
     load    r0, sf[-6]
@@ -188461,8 +188528,8 @@ __L18878:
     call    __F1274_ge_cmp
     add     sp, 4
     return
-__L18875:
-.source "src/cg_expr.c", 1561
+__L18879:
+.source "src/cg_expr.c", 1563
     load    r0, sf[-2]
     push    r0
     load    r0, sf[-7]
@@ -188488,105 +188555,105 @@ __L18875:
     call    __F1273_ge_binop
     add     sp, 6
     return
-__L18869:
-.source "src/cg_expr.c", 1563
+__L18873:
+.source "src/cg_expr.c", 1565
     load    r0, sf[-1]
     push    r0
     call    __F1342_ge_is_unit_ty
     add     sp, 1
     test    r0
-    jump    z, __L18887
+    jump    z, __L18891
     move    r0, 13
     load    r1, sf[0]
     cmp     r0, r1
-    jump    o, __L18889
+    jump    o, __L18893
     move    le, r0, 1, 0
-    jump    __L18890
-__L18889:
+    jump    __L18894
+__L18893:
     move    lt, r0, 0, 1
-__L18890:
+__L18894:
     test    r0
-    jump    z, __L18887
+    jump    z, __L18891
     move    r0, 1
-    jump    __L18888
-__L18887:
+    jump    __L18892
+__L18891:
     move    r0, 0
-__L18888:
+__L18892:
     test    r0
-    jump    z, __L18885
+    jump    z, __L18889
     load    r0, sf[0]
     move    r1, 18
     cmp     r0, r1
-    jump    o, __L18891
+    jump    o, __L18895
     move    le, r0, 1, 0
-    jump    __L18892
-__L18891:
+    jump    __L18896
+__L18895:
     move    lt, r0, 0, 1
-__L18892:
+__L18896:
     test    r0
-    jump    z, __L18885
+    jump    z, __L18889
     move    r0, 1
-    jump    __L18886
-__L18885:
+    jump    __L18890
+__L18889:
     move    r0, 0
-__L18886:
+__L18890:
     test    r0
-    jump    z, __L18883
-.source "src/cg_expr.c", 1564
+    jump    z, __L18887
+.source "src/cg_expr.c", 1566
     load    r0, sf[3]
     add     r0, 5
     load    r0, r0[0]
     push    r0
     call    __F1281_ex
     add     sp, 1
-.source "src/cg_expr.c", 1565
+.source "src/cg_expr.c", 1567
     load    r0, sf[3]
     add     r0, 6
     load    r0, r0[0]
     push    r0
     call    __F1281_ex
     add     sp, 1
-.source "src/cg_expr.c", 1566
+.source "src/cg_expr.c", 1568
     load    r0, sf[0]
     move    r1, 13
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    nz, __L18897
+    jump    nz, __L18901
     load    r0, sf[0]
     move    r1, 16
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    nz, __L18897
+    jump    nz, __L18901
     move    r0, 0
-    jump    __L18898
-__L18897:
+    jump    __L18902
+__L18901:
     move    r0, 1
-__L18898:
+__L18902:
     test    r0
-    jump    nz, __L18895
+    jump    nz, __L18899
     load    r0, sf[0]
     move    r1, 18
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    nz, __L18895
+    jump    nz, __L18899
     move    r0, 0
-    jump    __L18896
-__L18895:
+    jump    __L18900
+__L18899:
     move    r0, 1
-__L18896:
+__L18900:
     test    r0
-    jump    z, __L18893
-    move    r0, __W2345+1
-    jump    __L18894
-__L18893:
-    move    r0, __W2346+1
-__L18894:
+    jump    z, __L18897
+    move    r0, __W2350+1
+    jump    __L18898
+__L18897:
+    move    r0, __W2351+1
+__L18898:
     return
-__L18883:
-.source "src/cg_expr.c", 1569
+__L18887:
+.source "src/cg_expr.c", 1571
     move    r0, 0
     push    r0
     load    r0, sf[3]
@@ -188594,48 +188661,48 @@ __L18883:
     call    __F730_check_callee
     add     sp, 2
     store   r0, sf[-8]
-.source "src/cg_expr.c", 1571
+.source "src/cg_expr.c", 1573
     load    r0, sf[-8]
     test    r0
     move    z, r0, 1, 0
     test    r0
-    jump    z, __L18899
-    move    r0, __W2347+1
+    jump    z, __L18903
+    move    r0, __W2352+1
     push    r0
     call    __F2_fatal
     add     sp, 1
-__L18899:
-.source "src/cg_expr.c", 1572
+__L18903:
+.source "src/cg_expr.c", 1574
     move    r0, 13
     load    r1, sf[0]
     cmp     r0, r1
-    jump    o, __L18905
+    jump    o, __L18909
     move    le, r0, 1, 0
-    jump    __L18906
-__L18905:
+    jump    __L18910
+__L18909:
     move    lt, r0, 0, 1
-__L18906:
+__L18910:
     test    r0
-    jump    z, __L18903
+    jump    z, __L18907
     load    r0, sf[0]
     move    r1, 18
     cmp     r0, r1
-    jump    o, __L18907
+    jump    o, __L18911
     move    le, r0, 1, 0
+    jump    __L18912
+__L18911:
+    move    lt, r0, 0, 1
+__L18912:
+    test    r0
+    jump    z, __L18907
+    move    r0, 1
     jump    __L18908
 __L18907:
-    move    lt, r0, 0, 1
+    move    r0, 0
 __L18908:
     test    r0
-    jump    z, __L18903
-    move    r0, 1
-    jump    __L18904
-__L18903:
-    move    r0, 0
-__L18904:
-    test    r0
-    jump    z, __L18901
-.source "src/cg_expr.c", 1573
+    jump    z, __L18905
+.source "src/cg_expr.c", 1575
     store   0, sf[-20]
     store   0, sf[-19]
     store   0, sf[-18]
@@ -188666,7 +188733,7 @@ __L18904:
     load    r2, r0[4]
     store   r2, r1[4]
     move    r0, r1
-.source "src/cg_expr.c", 1574
+.source "src/cg_expr.c", 1576
     add     r0, sf, -20
     load    r1, r0[4]
     push    r1
@@ -188693,7 +188760,7 @@ __L18904:
     call    __F1247_ge_snap
     add     sp, 2
     store   r0, sf[-26]
-.source "src/cg_expr.c", 1575
+.source "src/cg_expr.c", 1577
     add     r0, sf, -25
     push    r0
     move    r0, 0
@@ -188719,7 +188786,7 @@ __L18904:
     load    r2, r0[4]
     store   r2, r1[4]
     move    r0, r1
-.source "src/cg_expr.c", 1576
+.source "src/cg_expr.c", 1578
     add     r0, sf, -10
     move    r1, 0
     add     r0, r1
@@ -188727,7 +188794,7 @@ __L18904:
     load    r0, sf[-26]
     pop     r1
     store   r0, r1[0]
-.source "src/cg_expr.c", 1577
+.source "src/cg_expr.c", 1579
     add     r0, sf, -10
     move    r1, 1
     add     r0, r1
@@ -188747,9 +188814,9 @@ __L18904:
     add     sp, 5
     pop     r1
     store   r0, r1[0]
-    jump    __L18902
-__L18901:
-.source "src/cg_expr.c", 1579
+    jump    __L18906
+__L18905:
+.source "src/cg_expr.c", 1581
     add     r0, sf, -10
     move    r1, 0
     add     r0, r1
@@ -188767,7 +188834,7 @@ __L18901:
     add     sp, 2
     pop     r1
     store   r0, r1[0]
-.source "src/cg_expr.c", 1580
+.source "src/cg_expr.c", 1582
     add     r0, sf, -10
     move    r1, 1
     add     r0, r1
@@ -188782,8 +188849,8 @@ __L18901:
     add     sp, 2
     pop     r1
     store   r0, r1[0]
-__L18902:
-.source "src/cg_expr.c", 1582
+__L18906:
+.source "src/cg_expr.c", 1584
     move    r0, 2
     push    r0
     add     r0, sf, -10
@@ -188801,9 +188868,9 @@ __L18902:
 
 // ge_unary
 __F1344_ge_unary:
-.source "src/cg_expr.c", 1586
+.source "src/cg_expr.c", 1588
     add     sp, -4
-.source "src/cg_expr.c", 1587
+.source "src/cg_expr.c", 1589
     load    r0, sf[3]
     add     r0, 5
     load    r0, r0[0]
@@ -188811,7 +188878,7 @@ __F1344_ge_unary:
     call    __F1241_gnt
     add     sp, 1
     store   r0, sf[0]
-.source "src/cg_expr.c", 1588
+.source "src/cg_expr.c", 1590
     load    r0, sf[3]
     add     r0, 1
     load    r0, r0[0]
@@ -188819,7 +188886,7 @@ __F1344_ge_unary:
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L18911
+    jump    z, __L18915
     load    r0, sf[3]
     add     r0, 5
     load    r0, r0[0]
@@ -188828,21 +188895,21 @@ __F1344_ge_unary:
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L18911
+    jump    z, __L18915
     move    r0, 1
-    jump    __L18912
-__L18911:
+    jump    __L18916
+__L18915:
     move    r0, 0
-__L18912:
+__L18916:
     test    r0
-    jump    z, __L18909
-.source "src/cg_expr.c", 1589
+    jump    z, __L18913
+.source "src/cg_expr.c", 1591
     load    r0, sf[0]
     push    r0
     call    __F1263_ge_is_float
     add     sp, 1
     test    r0
-    jump    z, __L18913
+    jump    z, __L18917
     load    r0, sf[3]
     add     r0, 5
     load    r0, r0[0]
@@ -188850,13 +188917,13 @@ __L18912:
     call    __F1327_ge_float_lit
     add     sp, 1
     push    r0
-    move    r0, __W2348+1
+    move    r0, __W2353+1
     push    r0
     call    __F1237_S
     add     sp, 2
     return
-__L18913:
-.source "src/cg_expr.c", 1590
+__L18917:
+.source "src/cg_expr.c", 1592
     load    r0, sf[3]
     add     r0, 5
     load    r0, r0[0]
@@ -188867,8 +188934,8 @@ __L18913:
     call    __F1326_ge_int_lit
     add     sp, 1
     return
-__L18909:
-.source "src/cg_expr.c", 1592
+__L18913:
+.source "src/cg_expr.c", 1594
     load    r0, sf[3]
     add     r0, 1
     load    r0, r0[0]
@@ -188876,7 +188943,7 @@ __L18909:
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L18917
+    jump    z, __L18921
     load    r0, sf[3]
     add     r0, 5
     load    r0, r0[0]
@@ -188885,14 +188952,14 @@ __L18909:
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L18917
+    jump    z, __L18921
     move    r0, 1
-    jump    __L18918
-__L18917:
+    jump    __L18922
+__L18921:
     move    r0, 0
-__L18918:
+__L18922:
     test    r0
-    jump    z, __L18915
+    jump    z, __L18919
     load    r0, sf[3]
     add     r0, 5
     load    r0, r0[0]
@@ -188900,20 +188967,20 @@ __L18918:
     call    __F1327_ge_float_lit
     add     sp, 1
     push    r0
-    move    r0, __W2349+1
+    move    r0, __W2354+1
     push    r0
     call    __F1237_S
     add     sp, 2
     return
-__L18915:
-.source "src/cg_expr.c", 1593
+__L18919:
+.source "src/cg_expr.c", 1595
     load    r0, sf[0]
     push    r0
     call    __F1341_ge_scalar
     add     sp, 1
     test    r0
-    jump    z, __L18919
-.source "src/cg_expr.c", 1594
+    jump    z, __L18923
+.source "src/cg_expr.c", 1596
     load    r0, sf[0]
     push    r0
     load    r0, sf[3]
@@ -188926,7 +188993,7 @@ __L18915:
     call    __F1246_ge_fix
     add     sp, 2
     store   r0, sf[-1]
-.source "src/cg_expr.c", 1595
+.source "src/cg_expr.c", 1597
     load    r0, sf[3]
     add     r0, 1
     load    r0, r0[0]
@@ -188934,7 +189001,7 @@ __L18915:
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L18921
+    jump    z, __L18925
     load    r0, sf[-1]
     push    r0
     load    r0, sf[0]
@@ -188948,18 +189015,18 @@ __L18915:
     push    r0
     call    __F1275_ge_neg
     add     sp, 3
-    jump    __L18922
-__L18921:
+    jump    __L18926
+__L18925:
     load    r0, sf[-1]
     push    r0
     load    r0, sf[0]
     push    r0
     call    __F1276_ge_not
     add     sp, 2
-__L18922:
+__L18926:
     return
-__L18919:
-.source "src/cg_expr.c", 1598
+__L18923:
+.source "src/cg_expr.c", 1600
     move    r0, 0
     push    r0
     load    r0, sf[3]
@@ -188967,18 +189034,18 @@ __L18919:
     call    __F730_check_callee
     add     sp, 2
     store   r0, sf[-2]
-.source "src/cg_expr.c", 1600
+.source "src/cg_expr.c", 1602
     load    r0, sf[-2]
     test    r0
     move    z, r0, 1, 0
     test    r0
-    jump    z, __L18923
-    move    r0, __W2350+1
+    jump    z, __L18927
+    move    r0, __W2355+1
     push    r0
     call    __F2_fatal
     add     sp, 1
-__L18923:
-.source "src/cg_expr.c", 1601
+__L18927:
+.source "src/cg_expr.c", 1603
     add     r0, sf, -3
     move    r1, 0
     add     r0, r1
@@ -188991,7 +189058,7 @@ __L18923:
     add     sp, 1
     pop     r1
     store   r0, r1[0]
-.source "src/cg_expr.c", 1602
+.source "src/cg_expr.c", 1604
     move    r0, 1
     push    r0
     add     r0, sf, -3
@@ -189009,88 +189076,62 @@ __L18923:
 
 // ge_assign_place
 __F1345_ge_assign_place:
-.source "src/cg_expr.c", 1607
+.source "src/cg_expr.c", 1609
     add     sp, -2
-.source "src/cg_expr.c", 1608
+.source "src/cg_expr.c", 1610
     add     r0, sf, 3
     add     r0, 2
     load    r0, r0[0]
     store   r0, sf[0]
-.source "src/cg_expr.c", 1609
+.source "src/cg_expr.c", 1611
     load    r0, sf[0]
     push    r0
     call    __F1115_cg_needs_drop
     add     sp, 1
     test    r0
-    jump    z, __L18927
+    jump    z, __L18931
     add     r0, sf, 3
     load    r0, r0[0]
     move    r1, 1
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L18927
+    jump    z, __L18931
     move    r0, 1
-    jump    __L18928
-__L18927:
+    jump    __L18932
+__L18931:
     move    r0, 0
-__L18928:
+__L18932:
     test    r0
-    jump    z, __L18925
-.source "src/cg_expr.c", 1610
+    jump    z, __L18929
+.source "src/cg_expr.c", 1612
     load    r0, sf[0]
     push    r0
     call    __F1129_cg_drop_glue
     add     sp, 1
     store   r0, sf[-1]
-.source "src/cg_expr.c", 1611
-    load    r0, sf[-1]
-    test    r0
-    jump    z, __L18929
-.source "src/cg_expr.c", 1612
-    add     r0, sf, 3
-    add     r0, 3
-    load    r0, r0[0]
-    test    r0
-    jump    z, __L18933
-    add     r0, sf, 3
-    add     r0, 3
-    load    r0, r0[0]
-    add     r0, 6
-    load    r0, r0[0]
-    test    r0
-    jump    z, __L18933
-    move    r0, 1
-    jump    __L18934
-__L18933:
-    move    r0, 0
-__L18934:
-    test    r0
-    jump    z, __L18931
-    add     r0, sf, 3
-    add     r0, 1
-    load    r0, r0[0]
-    push    r0
-    load    r0, sf[-1]
-    push    r0
-    add     r0, sf, 3
-    add     r0, 3
-    load    r0, r0[0]
-    add     r0, 6
-    load    r0, r0[0]
-    push    r0
-    move    r0, __W2351+1
-    push    r0
-    call    __F1236_E
-    add     sp, 4
-    jump    __L18932
-__L18931:
 .source "src/cg_expr.c", 1613
+    load    r0, sf[-1]
+    test    r0
+    jump    z, __L18933
+.source "src/cg_expr.c", 1614
     add     r0, sf, 3
     add     r0, 3
     load    r0, r0[0]
     test    r0
-    move    z, r0, 1, 0
+    jump    z, __L18937
+    add     r0, sf, 3
+    add     r0, 3
+    load    r0, r0[0]
+    add     r0, 6
+    load    r0, r0[0]
+    test    r0
+    jump    z, __L18937
+    move    r0, 1
+    jump    __L18938
+__L18937:
+    move    r0, 0
+__L18938:
     test    r0
     jump    z, __L18935
     add     r0, sf, 3
@@ -189099,15 +189140,41 @@ __L18931:
     push    r0
     load    r0, sf[-1]
     push    r0
-    move    r0, __W2352+1
+    add     r0, sf, 3
+    add     r0, 3
+    load    r0, r0[0]
+    add     r0, 6
+    load    r0, r0[0]
+    push    r0
+    move    r0, __W2356+1
+    push    r0
+    call    __F1236_E
+    add     sp, 4
+    jump    __L18936
+__L18935:
+.source "src/cg_expr.c", 1615
+    add     r0, sf, 3
+    add     r0, 3
+    load    r0, r0[0]
+    test    r0
+    move    z, r0, 1, 0
+    test    r0
+    jump    z, __L18939
+    add     r0, sf, 3
+    add     r0, 1
+    load    r0, r0[0]
+    push    r0
+    load    r0, sf[-1]
+    push    r0
+    move    r0, __W2357+1
     push    r0
     call    __F1236_E
     add     sp, 3
-__L18935:
-__L18932:
+__L18939:
+__L18936:
+__L18933:
 __L18929:
-__L18925:
-.source "src/cg_expr.c", 1616
+.source "src/cg_expr.c", 1618
     load    r0, sf[8]
     push    r0
     add     r0, sf, 3
@@ -189123,26 +189190,26 @@ __L18925:
     push    r1
     call    __F1293_ge_store
     add     sp, 6
-.source "src/cg_expr.c", 1617
+.source "src/cg_expr.c", 1619
     add     r0, sf, 3
     add     r0, 3
     load    r0, r0[0]
     test    r0
-    jump    z, __L18943
+    jump    z, __L18947
     add     r0, sf, 3
     add     r0, 3
     load    r0, r0[0]
     add     r0, 6
     load    r0, r0[0]
     test    r0
-    jump    z, __L18943
+    jump    z, __L18947
     move    r0, 1
-    jump    __L18944
-__L18943:
+    jump    __L18948
+__L18947:
     move    r0, 0
-__L18944:
+__L18948:
     test    r0
-    jump    z, __L18941
+    jump    z, __L18945
     add     r0, sf, 3
     add     r0, 3
     load    r0, r0[0]
@@ -189152,14 +189219,14 @@ __L18944:
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L18941
+    jump    z, __L18945
     move    r0, 1
-    jump    __L18942
-__L18941:
+    jump    __L18946
+__L18945:
     move    r0, 0
-__L18942:
+__L18946:
     test    r0
-    jump    z, __L18939
+    jump    z, __L18943
     add     r0, sf, 3
     add     r0, 1
     load    r0, r0[0]
@@ -189174,69 +189241,69 @@ __L18942:
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L18939
+    jump    z, __L18943
     move    r0, 1
-    jump    __L18940
-__L18939:
+    jump    __L18944
+__L18943:
     move    r0, 0
-__L18940:
+__L18944:
     test    r0
-    jump    z, __L18937
+    jump    z, __L18941
     add     r0, sf, 3
     add     r0, 3
     load    r0, r0[0]
     add     r0, 6
     load    r0, r0[0]
     push    r0
-    move    r0, __W2353+1
+    move    r0, __W2358+1
     push    r0
     call    __F1236_E
     add     sp, 2
-__L18937:
+__L18941:
     move    r0, 0
     return
 .source_end
 
 // ge_assign
 __F1346_ge_assign:
-.source "src/cg_expr.c", 1620
+.source "src/cg_expr.c", 1622
     add     sp, -27
-.source "src/cg_expr.c", 1621
+.source "src/cg_expr.c", 1623
     load    r0, sf[3]
     add     r0, 5
     load    r0, r0[0]
     store   r0, sf[0]
-.source "src/cg_expr.c", 1622
+.source "src/cg_expr.c", 1624
     load    r0, sf[0]
     push    r0
     call    __F1241_gnt
     add     sp, 1
     store   r0, sf[-1]
-.source "src/cg_expr.c", 1624
-__L18945:
+.source "src/cg_expr.c", 1626
+__L18949:
     load    r0, sf[0]
     load    r0, r0[0]
     move    r1, 73
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L18947
+    jump    z, __L18951
     load    r0, sf[0]
     add     r0, 5
     load    r0, r0[0]
     store   r0, sf[0]
-__L18946:
-    jump    __L18945
-__L18947:
-.source "src/cg_expr.c", 1625
+__L18950:
+    jump    __L18949
+__L18951:
+.source "src/cg_expr.c", 1627
     load    r0, sf[0]
     load    r0, r0[0]
     move    r1, 72
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L18948
-.source "src/cg_expr.c", 1626
+    jump    z, __L18952
+.source "src/cg_expr.c", 1628
     load    r0, sf[3]
     add     r0, 6
     load    r0, r0[0]
@@ -189244,19 +189311,19 @@ __L18947:
     call    __F1281_ex
     add     sp, 1
     store   r0, sf[-2]
-.source "src/cg_expr.c", 1627
-    move    r0, __W2354+1
-    return
-__L18948:
 .source "src/cg_expr.c", 1629
+    move    r0, __W2359+1
+    return
+__L18952:
+.source "src/cg_expr.c", 1631
     load    r0, sf[0]
     load    r0, r0[0]
     move    r1, 103
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L18950
-.source "src/cg_expr.c", 1631
+    jump    z, __L18954
+.source "src/cg_expr.c", 1633
     load    r0, sf[3]
     add     r0, 6
     load    r0, r0[0]
@@ -189264,7 +189331,7 @@ __L18948:
     call    __F1241_gnt
     add     sp, 1
     store   r0, sf[-3]
-.source "src/cg_expr.c", 1633
+.source "src/cg_expr.c", 1635
     load    r0, sf[3]
     add     r0, 6
     load    r0, r0[0]
@@ -189277,10 +189344,10 @@ __L18948:
     call    __F1247_ge_snap
     add     sp, 2
     store   r0, sf[-5]
-.source "src/cg_expr.c", 1634
+.source "src/cg_expr.c", 1636
     move    r0, 0
     store   r0, sf[-4]
-__L18952:
+__L18956:
     load    r0, sf[-4]
     push    r0
     load    r0, sf[0]
@@ -189290,15 +189357,15 @@ __L18952:
     move    r1, r0
     pop     r0
     cmp     r0, r1
-    jump    o, __L18955
+    jump    o, __L18959
     move    lt, r0, 1, 0
-    jump    __L18956
-__L18955:
+    jump    __L18960
+__L18959:
     move    lt, r0, 0, 1
-__L18956:
+__L18960:
     test    r0
-    jump    z, __L18954
-.source "src/cg_expr.c", 1635
+    jump    z, __L18958
+.source "src/cg_expr.c", 1637
     load    r0, sf[0]
     add     r0, 9
     load    r0, r0[0]
@@ -189306,17 +189373,17 @@ __L18956:
     add     r0, r1
     load    r0, r0[0]
     store   r0, sf[-6]
-.source "src/cg_expr.c", 1637
+.source "src/cg_expr.c", 1639
     load    r0, sf[-6]
     load    r0, r0[0]
     move    r1, 72
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L18957
-    jump    __L18953
-__L18957:
-.source "src/cg_expr.c", 1638
+    jump    z, __L18961
+    jump    __L18957
+__L18961:
+.source "src/cg_expr.c", 1640
     add     r0, sf, -11
     push    r0
     move    r0, 1
@@ -189340,12 +189407,12 @@ __L18957:
     load    r2, r0[4]
     store   r2, r1[4]
     move    r0, r1
-.source "src/cg_expr.c", 1639
+.source "src/cg_expr.c", 1641
     load    r0, sf[-4]
     push    r0
     load    r0, sf[-5]
     push    r0
-    move    r0, __W2355+1
+    move    r0, __W2360+1
     push    r0
     call    __F1237_S
     add     sp, 3
@@ -189363,19 +189430,19 @@ __L18957:
     push    r1
     call    __F1345_ge_assign_place
     add     sp, 6
-__L18953:
-.source "src/cg_expr.c", 1634
+__L18957:
+.source "src/cg_expr.c", 1636
     load    r1, sf[-4]
     add     r2, r1, 1
     store   r2, sf[-4]
     move    r0, r1
-    jump    __L18952
-__L18954:
-.source "src/cg_expr.c", 1641
-    move    r0, __W2356+1
-    return
-__L18950:
+    jump    __L18956
+__L18958:
 .source "src/cg_expr.c", 1643
+    move    r0, __W2361+1
+    return
+__L18954:
+.source "src/cg_expr.c", 1645
     load    r0, sf[-1]
     push    r0
     load    r0, sf[3]
@@ -189385,7 +189452,7 @@ __L18950:
     call    __F1280_ex_to
     add     sp, 2
     store   r0, sf[-2]
-.source "src/cg_expr.c", 1644
+.source "src/cg_expr.c", 1646
     load    r0, sf[-1]
     push    r0
     load    r0, sf[-2]
@@ -189393,7 +189460,7 @@ __L18950:
     call    __F1246_ge_fix
     add     sp, 2
     store   r0, sf[-2]
-.source "src/cg_expr.c", 1645
+.source "src/cg_expr.c", 1647
     load    r0, sf[-2]
     push    r0
     call    __F1245_ge_stable
@@ -189401,7 +189468,7 @@ __L18950:
     test    r0
     move    z, r0, 1, 0
     test    r0
-    jump    z, __L18961
+    jump    z, __L18965
     load    r0, sf[0]
     push    r0
     call    __F1335_ge_simple
@@ -189409,14 +189476,14 @@ __L18950:
     test    r0
     move    z, r0, 1, 0
     test    r0
-    jump    z, __L18961
+    jump    z, __L18965
     move    r0, 1
-    jump    __L18962
-__L18961:
+    jump    __L18966
+__L18965:
     move    r0, 0
-__L18962:
+__L18966:
     test    r0
-    jump    z, __L18959
+    jump    z, __L18963
     load    r0, sf[-2]
     push    r0
     load    r0, sf[-1]
@@ -189424,8 +189491,8 @@ __L18962:
     call    __F1247_ge_snap
     add     sp, 2
     store   r0, sf[-2]
-__L18959:
-.source "src/cg_expr.c", 1647
+__L18963:
+.source "src/cg_expr.c", 1649
     store   0, sf[-26]
     store   0, sf[-25]
     store   0, sf[-24]
@@ -189454,7 +189521,7 @@ __L18959:
     load    r2, r0[4]
     store   r2, r1[4]
     move    r0, r1
-.source "src/cg_expr.c", 1648
+.source "src/cg_expr.c", 1650
     load    r0, sf[-2]
     push    r0
     add     r0, sf, -26
@@ -189470,8 +189537,8 @@ __L18959:
     push    r1
     call    __F1345_ge_assign_place
     add     sp, 6
-.source "src/cg_expr.c", 1650
-    move    r0, __W2357+1
+.source "src/cg_expr.c", 1652
+    move    r0, __W2362+1
     return
     move    r0, 0
     return
@@ -189479,9 +189546,9 @@ __L18959:
 
 // ge_assign_op
 __F1347_ge_assign_op:
-.source "src/cg_expr.c", 1653
+.source "src/cg_expr.c", 1655
     add     sp, -29
-.source "src/cg_expr.c", 1654
+.source "src/cg_expr.c", 1656
     load    r0, sf[3]
     add     r0, 5
     load    r0, r0[0]
@@ -189496,32 +189563,32 @@ __F1347_ge_assign_op:
     call    __F1241_gnt
     add     sp, 1
     store   r0, sf[-1]
-.source "src/cg_expr.c", 1655
+.source "src/cg_expr.c", 1657
     load    r0, sf[3]
     add     r0, 1
     load    r0, r0[0]
     store   r0, sf[-2]
-.source "src/cg_expr.c", 1656
+.source "src/cg_expr.c", 1658
     load    r0, sf[0]
     push    r0
     call    __F1341_ge_scalar
     add     sp, 1
     test    r0
-    jump    z, __L18965
+    jump    z, __L18969
     load    r0, sf[-1]
     push    r0
     call    __F1341_ge_scalar
     add     sp, 1
     test    r0
-    jump    z, __L18965
+    jump    z, __L18969
     move    r0, 1
-    jump    __L18966
-__L18965:
+    jump    __L18970
+__L18969:
     move    r0, 0
-__L18966:
+__L18970:
     test    r0
-    jump    z, __L18963
-.source "src/cg_expr.c", 1657
+    jump    z, __L18967
+.source "src/cg_expr.c", 1659
     load    r0, sf[-1]
     push    r0
     load    r0, sf[3]
@@ -189539,7 +189606,7 @@ __L18966:
     call    __F1247_ge_snap
     add     sp, 2
     store   r0, sf[-3]
-.source "src/cg_expr.c", 1658
+.source "src/cg_expr.c", 1660
     store   0, sf[-15]
     store   0, sf[-14]
     store   0, sf[-13]
@@ -189570,7 +189637,7 @@ __L18966:
     load    r2, r0[4]
     store   r2, r1[4]
     move    r0, r1
-.source "src/cg_expr.c", 1659
+.source "src/cg_expr.c", 1661
     add     r0, sf, -15
     load    r1, r0[4]
     push    r1
@@ -189590,7 +189657,7 @@ __L18966:
     call    __F1247_ge_snap
     add     sp, 2
     store   r0, sf[-4]
-.source "src/cg_expr.c", 1660
+.source "src/cg_expr.c", 1662
     load    r0, sf[-1]
     push    r0
     load    r0, sf[-3]
@@ -189606,7 +189673,7 @@ __L18966:
     call    __F1273_ge_binop
     add     sp, 6
     store   r0, sf[-5]
-.source "src/cg_expr.c", 1661
+.source "src/cg_expr.c", 1663
     load    r0, sf[-5]
     push    r0
     add     r0, sf, -15
@@ -189622,11 +189689,11 @@ __L18966:
     push    r1
     call    __F1293_ge_store
     add     sp, 6
-.source "src/cg_expr.c", 1662
-    move    r0, __W2358+1
+.source "src/cg_expr.c", 1664
+    move    r0, __W2363+1
     return
-__L18963:
-.source "src/cg_expr.c", 1665
+__L18967:
+.source "src/cg_expr.c", 1667
     move    r0, 0
     push    r0
     load    r0, sf[3]
@@ -189634,18 +189701,18 @@ __L18963:
     call    __F730_check_callee
     add     sp, 2
     store   r0, sf[-16]
-.source "src/cg_expr.c", 1668
+.source "src/cg_expr.c", 1670
     load    r0, sf[-16]
     test    r0
     move    z, r0, 1, 0
     test    r0
-    jump    z, __L18967
-    move    r0, __W2359+1
+    jump    z, __L18971
+    move    r0, __W2364+1
     push    r0
     call    __F2_fatal
     add     sp, 1
-__L18967:
-.source "src/cg_expr.c", 1669
+__L18971:
+.source "src/cg_expr.c", 1671
     add     r0, sf, -23
     push    r0
     move    r0, 1
@@ -189671,7 +189738,7 @@ __L18967:
     load    r2, r0[4]
     store   r2, r1[4]
     move    r0, r1
-.source "src/cg_expr.c", 1670
+.source "src/cg_expr.c", 1672
     add     r0, sf, -18
     move    r1, 0
     add     r0, r1
@@ -189699,7 +189766,7 @@ __L18967:
     add     sp, 2
     pop     r1
     store   r0, r1[0]
-.source "src/cg_expr.c", 1671
+.source "src/cg_expr.c", 1673
     add     r0, sf, -18
     move    r1, 1
     add     r0, r1
@@ -189714,7 +189781,7 @@ __L18967:
     add     sp, 2
     pop     r1
     store   r0, r1[0]
-.source "src/cg_expr.c", 1672
+.source "src/cg_expr.c", 1674
     move    r0, 2
     push    r0
     add     r0, sf, -18
@@ -189725,8 +189792,8 @@ __L18967:
     push    r0
     call    __F1285_ge_call_callee
     add     sp, 4
-.source "src/cg_expr.c", 1673
-    move    r0, __W2360+1
+.source "src/cg_expr.c", 1675
+    move    r0, __W2365+1
     return
     move    r0, 0
     return
@@ -189734,9 +189801,9 @@ __L18967:
 
 // ge_cast_expr
 __F1348_ge_cast_expr:
-.source "src/cg_expr.c", 1677
+.source "src/cg_expr.c", 1679
     add     sp, -3
-.source "src/cg_expr.c", 1678
+.source "src/cg_expr.c", 1680
     load    r0, sf[3]
     push    r0
     call    __F1241_gnt
@@ -189749,18 +189816,18 @@ __F1348_ge_cast_expr:
     call    __F1241_gnt
     add     sp, 1
     store   r0, sf[-1]
-.source "src/cg_expr.c", 1680
+.source "src/cg_expr.c", 1682
     load    r0, sf[3]
     add     r0, 5
     load    r0, r0[0]
     add     r0, 27
     load    r0, r0[0]
     test    r0
-    jump    z, __L18969
+    jump    z, __L18973
     load    r0, sf[0]
     store   r0, sf[-1]
-__L18969:
-.source "src/cg_expr.c", 1681
+__L18973:
+.source "src/cg_expr.c", 1683
     load    r0, sf[0]
     push    r0
     load    r0, sf[3]
@@ -189770,7 +189837,7 @@ __L18969:
     call    __F1280_ex_to
     add     sp, 2
     store   r0, sf[-2]
-.source "src/cg_expr.c", 1682
+.source "src/cg_expr.c", 1684
     load    r0, sf[-1]
     push    r0
     load    r0, sf[-2]
@@ -189778,86 +189845,86 @@ __L18969:
     call    __F1246_ge_fix
     add     sp, 2
     store   r0, sf[-2]
-.source "src/cg_expr.c", 1683
+.source "src/cg_expr.c", 1685
     load    r0, sf[-1]
     push    r0
     call    __F1319_ge_is_callable_ty
     add     sp, 1
     test    r0
-    jump    z, __L18971
-.source "src/cg_expr.c", 1684
-    load    r0, sf[0]
-    load    r0, r0[0]
-    move    r1, 15
-    cmp     r0, r1
-    move    eq, r0, 1, 0
-    test    r0
-    jump    z, __L18973
-    load    r0, sf[-2]
-    push    r0
-    load    r0, sf[-1]
-    push    r0
-    load    r0, sf[3]
-    push    r0
-    call    __F1340_ge_to_fnptr
-    add     sp, 3
-    return
-__L18973:
-.source "src/cg_expr.c", 1685
-    load    r0, sf[0]
-    load    r0, r0[0]
-    move    r1, 4
-    cmp     r0, r1
-    move    eq, r0, 1, 0
-    test    r0
     jump    z, __L18975
-    load    r0, sf[-2]
-    push    r0
-    load    r0, sf[-1]
-    push    r0
-    load    r0, sf[3]
-    push    r0
-    call    __F1340_ge_to_fnptr
-    add     sp, 3
-    push    r0
+.source "src/cg_expr.c", 1686
     load    r0, sf[0]
-    push    r0
-    call    __F1266_ge_norm
-    add     sp, 2
-    return
-__L18975:
-__L18971:
-.source "src/cg_expr.c", 1687
-    load    r0, sf[-1]
     load    r0, r0[0]
     move    r1, 15
     cmp     r0, r1
     move    eq, r0, 1, 0
-    test    r0
-    jump    z, __L18979
-    load    r0, sf[0]
-    load    r0, r0[0]
-    move    r1, 4
-    cmp     r0, r1
-    move    eq, r0, 1, 0
-    test    r0
-    jump    z, __L18979
-    move    r0, 1
-    jump    __L18980
-__L18979:
-    move    r0, 0
-__L18980:
     test    r0
     jump    z, __L18977
     load    r0, sf[-2]
     push    r0
+    load    r0, sf[-1]
+    push    r0
+    load    r0, sf[3]
+    push    r0
+    call    __F1340_ge_to_fnptr
+    add     sp, 3
+    return
+__L18977:
+.source "src/cg_expr.c", 1687
+    load    r0, sf[0]
+    load    r0, r0[0]
+    move    r1, 4
+    cmp     r0, r1
+    move    eq, r0, 1, 0
+    test    r0
+    jump    z, __L18979
+    load    r0, sf[-2]
+    push    r0
+    load    r0, sf[-1]
+    push    r0
+    load    r0, sf[3]
+    push    r0
+    call    __F1340_ge_to_fnptr
+    add     sp, 3
+    push    r0
     load    r0, sf[0]
     push    r0
     call    __F1266_ge_norm
     add     sp, 2
     return
-__L18977:
-.source "src/cg_expr.c", 1688
+__L18979:
+__L18975:
+.source "src/cg_expr.c", 1689
+    load    r0, sf[-1]
+    load    r0, r0[0]
+    move    r1, 15
+    cmp     r0, r1
+    move    eq, r0, 1, 0
+    test    r0
+    jump    z, __L18983
+    load    r0, sf[0]
+    load    r0, r0[0]
+    move    r1, 4
+    cmp     r0, r1
+    move    eq, r0, 1, 0
+    test    r0
+    jump    z, __L18983
+    move    r0, 1
+    jump    __L18984
+__L18983:
+    move    r0, 0
+__L18984:
+    test    r0
+    jump    z, __L18981
+    load    r0, sf[-2]
+    push    r0
+    load    r0, sf[0]
+    push    r0
+    call    __F1266_ge_norm
+    add     sp, 2
+    return
+__L18981:
+.source "src/cg_expr.c", 1690
     load    r0, sf[-2]
     push    r0
     load    r0, sf[0]
@@ -189875,15 +189942,15 @@ __L18977:
 
 // ge_ctor_call
 __F1349_ge_ctor_call:
-.source "src/cg_expr.c", 1693
+.source "src/cg_expr.c", 1695
     add     sp, -4
-.source "src/cg_expr.c", 1694
+.source "src/cg_expr.c", 1696
     load    r0, sf[3]
     add     r0, 9
     add     r0, 1
     load    r0, r0[0]
     store   r0, sf[0]
-.source "src/cg_expr.c", 1695
+.source "src/cg_expr.c", 1697
     move    r0, 1
     push    r0
     load    r0, sf[0]
@@ -189896,7 +189963,7 @@ __F1349_ge_ctor_call:
     call    __F3_xalloc
     add     sp, 1
     store   r0, sf[-2]
-.source "src/cg_expr.c", 1696
+.source "src/cg_expr.c", 1698
     move    r0, 1
     push    r0
     load    r0, sf[0]
@@ -189909,9 +189976,9 @@ __F1349_ge_ctor_call:
     call    __F3_xalloc
     add     sp, 1
     store   r0, sf[-3]
-.source "src/cg_expr.c", 1697
+.source "src/cg_expr.c", 1699
     load    r0, sf[7]
-.source "src/cg_expr.c", 1698
+.source "src/cg_expr.c", 1700
     load    r0, sf[-2]
     push    r0
     load    r0, sf[6]
@@ -189924,22 +189991,22 @@ __F1349_ge_ctor_call:
     push    r0
     call    __F1336_ge_eval_list
     add     sp, 4
-.source "src/cg_expr.c", 1699
+.source "src/cg_expr.c", 1701
     move    r0, 0
     store   r0, sf[-1]
-__L18981:
+__L18985:
     load    r0, sf[-1]
     load    r1, sf[0]
     cmp     r0, r1
-    jump    o, __L18984
+    jump    o, __L18988
     move    lt, r0, 1, 0
-    jump    __L18985
-__L18984:
+    jump    __L18989
+__L18988:
     move    lt, r0, 0, 1
-__L18985:
+__L18989:
     test    r0
-    jump    z, __L18983
-.source "src/cg_expr.c", 1700
+    jump    z, __L18987
+.source "src/cg_expr.c", 1702
     load    r0, sf[-3]
     load    r1, sf[-1]
     add     r0, r1
@@ -189954,22 +190021,22 @@ __L18985:
     add     sp, 3
     pop     r1
     store   r0, r1[0]
-.source "src/cg_expr.c", 1701
+.source "src/cg_expr.c", 1703
     load    r0, sf[-2]
     load    r1, sf[-1]
     add     r0, r1
     push    r0
     load    r0, sf[6]
     test    r0
-    jump    z, __L18986
+    jump    z, __L18990
     load    r0, sf[6]
     load    r1, sf[-1]
     add     r0, r1
     load    r0, r0[0]
-    jump    __L18987
-__L18986:
+    jump    __L18991
+__L18990:
     move    r0, 0
-__L18987:
+__L18991:
     push    r0
     load    r0, sf[-2]
     load    r1, sf[-1]
@@ -189980,15 +190047,15 @@ __L18987:
     add     sp, 2
     pop     r1
     store   r0, r1[0]
-__L18982:
-.source "src/cg_expr.c", 1699
+__L18986:
+.source "src/cg_expr.c", 1701
     load    r1, sf[-1]
     add     r2, r1, 1
     store   r2, sf[-1]
     move    r0, r1
-    jump    __L18981
-__L18983:
-.source "src/cg_expr.c", 1703
+    jump    __L18985
+__L18987:
+.source "src/cg_expr.c", 1705
     load    r0, sf[0]
     push    r0
     load    r0, sf[-2]
@@ -190008,38 +190075,38 @@ __L18983:
 
 // ge_strip_paren
 __F1350_ge_strip_paren:
-.source "src/cg_expr.c", 1706
-.source "src/cg_expr.c", 1707
-__L18988:
+.source "src/cg_expr.c", 1708
+.source "src/cg_expr.c", 1709
+__L18992:
     load    r0, sf[3]
     load    r0, r0[0]
     move    r1, 73
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L18991
+    jump    z, __L18995
     load    r0, sf[3]
     add     r0, 27
     load    r0, r0[0]
     test    r0
     move    z, r0, 1, 0
     test    r0
-    jump    z, __L18991
+    jump    z, __L18995
     move    r0, 1
-    jump    __L18992
-__L18991:
+    jump    __L18996
+__L18995:
     move    r0, 0
-__L18992:
+__L18996:
     test    r0
-    jump    z, __L18990
+    jump    z, __L18994
     load    r0, sf[3]
     add     r0, 5
     load    r0, r0[0]
     store   r0, sf[3]
-__L18989:
-    jump    __L18988
-__L18990:
-.source "src/cg_expr.c", 1708
+__L18993:
+    jump    __L18992
+__L18994:
+.source "src/cg_expr.c", 1710
     load    r0, sf[3]
     return
     move    r0, 0
@@ -190048,9 +190115,9 @@ __L18990:
 
 // ge_call_expr
 __F1351_ge_call_expr:
-.source "src/cg_expr.c", 1711
+.source "src/cg_expr.c", 1713
     add     sp, -34
-.source "src/cg_expr.c", 1712
+.source "src/cg_expr.c", 1714
     load    r0, sf[3]
     add     r0, 5
     load    r0, r0[0]
@@ -190058,19 +190125,19 @@ __F1351_ge_call_expr:
     call    __F1350_ge_strip_paren
     add     sp, 1
     store   r0, sf[0]
-.source "src/cg_expr.c", 1713
+.source "src/cg_expr.c", 1715
     load    r0, sf[0]
     push    r0
     call    __F1241_gnt
     add     sp, 1
     store   r0, sf[-1]
-.source "src/cg_expr.c", 1714
+.source "src/cg_expr.c", 1716
     load    r0, sf[3]
     add     r0, 9
     add     r0, 1
     load    r0, r0[0]
     store   r0, sf[-2]
-.source "src/cg_expr.c", 1715
+.source "src/cg_expr.c", 1717
     move    r0, 1
     push    r0
     load    r0, sf[-2]
@@ -190083,17 +190150,63 @@ __F1351_ge_call_expr:
     call    __F3_xalloc
     add     sp, 1
     store   r0, sf[-3]
-.source "src/cg_expr.c", 1716
+.source "src/cg_expr.c", 1718
     load    r0, sf[0]
     load    r0, r0[0]
     move    r1, 71
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L18999
+    jump    z, __L19003
     load    r0, sf[0]
     add     r0, 26
     load    r0, r0[0]
+    test    r0
+    jump    z, __L19003
+    move    r0, 1
+    jump    __L19004
+__L19003:
+    move    r0, 0
+__L19004:
+    test    r0
+    jump    z, __L19001
+    load    r0, sf[0]
+    add     r0, 26
+    load    r0, r0[0]
+    load    r0, r0[0]
+    move    r1, 5
+    cmp     r0, r1
+    move    eq, r0, 1, 0
+    test    r0
+    jump    nz, __L19005
+    load    r0, sf[0]
+    add     r0, 26
+    load    r0, r0[0]
+    load    r0, r0[0]
+    move    r1, 2
+    cmp     r0, r1
+    move    eq, r0, 1, 0
+    test    r0
+    jump    nz, __L19005
+    move    r0, 0
+    jump    __L19006
+__L19005:
+    move    r0, 1
+__L19006:
+    test    r0
+    jump    z, __L19001
+    move    r0, 1
+    jump    __L19002
+__L19001:
+    move    r0, 0
+__L19002:
+    test    r0
+    jump    z, __L18999
+    load    r0, sf[-1]
+    load    r0, r0[0]
+    move    r1, 14
+    cmp     r0, r1
+    move    eq, r0, 1, 0
     test    r0
     jump    z, __L18999
     move    r0, 1
@@ -190103,53 +190216,7 @@ __L18999:
 __L19000:
     test    r0
     jump    z, __L18997
-    load    r0, sf[0]
-    add     r0, 26
-    load    r0, r0[0]
-    load    r0, r0[0]
-    move    r1, 5
-    cmp     r0, r1
-    move    eq, r0, 1, 0
-    test    r0
-    jump    nz, __L19001
-    load    r0, sf[0]
-    add     r0, 26
-    load    r0, r0[0]
-    load    r0, r0[0]
-    move    r1, 2
-    cmp     r0, r1
-    move    eq, r0, 1, 0
-    test    r0
-    jump    nz, __L19001
-    move    r0, 0
-    jump    __L19002
-__L19001:
-    move    r0, 1
-__L19002:
-    test    r0
-    jump    z, __L18997
-    move    r0, 1
-    jump    __L18998
-__L18997:
-    move    r0, 0
-__L18998:
-    test    r0
-    jump    z, __L18995
-    load    r0, sf[-1]
-    load    r0, r0[0]
-    move    r1, 14
-    cmp     r0, r1
-    move    eq, r0, 1, 0
-    test    r0
-    jump    z, __L18995
-    move    r0, 1
-    jump    __L18996
-__L18995:
-    move    r0, 0
-__L18996:
-    test    r0
-    jump    z, __L18993
-.source "src/cg_expr.c", 1718
+.source "src/cg_expr.c", 1720
     load    r0, sf[-1]
     add     r0, 9
     load    r0, r0[0]
@@ -190172,55 +190239,55 @@ __L18996:
     call    __F1349_ge_ctor_call
     add     sp, 5
     return
-__L18993:
-.source "src/cg_expr.c", 1720
+__L18997:
+.source "src/cg_expr.c", 1722
     load    r0, sf[-1]
     load    r0, r0[0]
     move    r1, 14
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L19005
+    jump    z, __L19009
     load    r0, sf[0]
     add     r0, 27
     load    r0, r0[0]
     test    r0
     move    z, r0, 1, 0
     test    r0
-    jump    z, __L19005
+    jump    z, __L19009
     move    r0, 1
-    jump    __L19006
-__L19005:
+    jump    __L19010
+__L19009:
     move    r0, 0
-__L19006:
+__L19010:
     test    r0
-    jump    z, __L19003
-.source "src/cg_expr.c", 1721
+    jump    z, __L19007
+.source "src/cg_expr.c", 1723
     load    r0, sf[0]
     load    r0, r0[0]
     move    r1, 71
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L19007
+    jump    z, __L19011
     move    r0, 0
     push    r0
     load    r0, sf[0]
     push    r0
     call    __F730_check_callee
     add     sp, 2
-    jump    __L19008
-__L19007:
+    jump    __L19012
+__L19011:
     move    r0, 0
-__L19008:
+__L19012:
     store   r0, sf[-4]
-.source "src/cg_expr.c", 1723
+.source "src/cg_expr.c", 1725
     load    r0, sf[-4]
     test    r0
     move    z, r0, 1, 0
     test    r0
-    jump    z, __L19009
-.source "src/cg_expr.c", 1724
+    jump    z, __L19013
+.source "src/cg_expr.c", 1726
     move    r0, 6
     push    r0
     move    r0, 0
@@ -190229,13 +190296,13 @@ __L19008:
     push    r0
     call    __crt_memset
     add     sp, 3
-.source "src/cg_expr.c", 1725
+.source "src/cg_expr.c", 1727
     add     r0, sf, -10
     push    r0
     load    r0, sf[0]
     pop     r1
     store   r0, r1[0]
-.source "src/cg_expr.c", 1726
+.source "src/cg_expr.c", 1728
     add     r0, sf, -10
     add     r0, 2
     push    r0
@@ -190244,18 +190311,18 @@ __L19008:
     load    r0, r0[0]
     pop     r1
     store   r0, r1[0]
-.source "src/cg_expr.c", 1727
+.source "src/cg_expr.c", 1729
     add     r0, sf, -10
     add     r0, 3
     push    r0
     load    r0, sf[-1]
     pop     r1
     store   r0, r1[0]
-.source "src/cg_expr.c", 1728
+.source "src/cg_expr.c", 1730
     add     r0, sf, -10
     store   r0, sf[-4]
-__L19009:
-.source "src/cg_expr.c", 1730
+__L19013:
+.source "src/cg_expr.c", 1732
     load    r0, sf[-4]
     add     r0, 3
     load    r0, r0[0]
@@ -190265,20 +190332,20 @@ __L19009:
     add     r0, 8
     load    r0, r0[0]
     store   r0, sf[-11]
-.source "src/cg_expr.c", 1731
+.source "src/cg_expr.c", 1733
     load    r0, sf[0]
     load    r0, r0[0]
     move    r1, 71
     cmp     r0, r1
     move    ne, r0, 1, 0
     test    r0
-    jump    z, __L19011
+    jump    z, __L19015
     load    r0, sf[0]
     push    r0
     call    __F1281_ex
     add     sp, 1
-__L19011:
-.source "src/cg_expr.c", 1732
+__L19015:
+.source "src/cg_expr.c", 1734
     load    r0, sf[-3]
     push    r0
     load    r0, sf[-11]
@@ -190291,7 +190358,7 @@ __L19011:
     push    r0
     call    __F1336_ge_eval_list
     add     sp, 4
-.source "src/cg_expr.c", 1733
+.source "src/cg_expr.c", 1735
     load    r0, sf[-2]
     push    r0
     load    r0, sf[-3]
@@ -190303,30 +190370,30 @@ __L19011:
     call    __F1285_ge_call_callee
     add     sp, 4
     return
-__L19003:
-.source "src/cg_expr.c", 1735
+__L19007:
+.source "src/cg_expr.c", 1737
     load    r0, sf[-1]
     load    r0, r0[0]
     move    r1, 15
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L19015
+    jump    z, __L19019
     load    r0, sf[0]
     add     r0, 27
     load    r0, r0[0]
     test    r0
     move    z, r0, 1, 0
     test    r0
-    jump    z, __L19015
+    jump    z, __L19019
     move    r0, 1
-    jump    __L19016
-__L19015:
+    jump    __L19020
+__L19019:
     move    r0, 0
-__L19016:
+__L19020:
     test    r0
-    jump    z, __L19013
-.source "src/cg_expr.c", 1736
+    jump    z, __L19017
+.source "src/cg_expr.c", 1738
     load    r0, sf[0]
     push    r0
     call    __F1281_ex
@@ -190340,7 +190407,7 @@ __L19016:
     call    __F1247_ge_snap
     add     sp, 2
     store   r0, sf[-12]
-.source "src/cg_expr.c", 1737
+.source "src/cg_expr.c", 1739
     load    r0, sf[-3]
     push    r0
     load    r0, sf[-1]
@@ -190355,7 +190422,7 @@ __L19016:
     push    r0
     call    __F1336_ge_eval_list
     add     sp, 4
-.source "src/cg_expr.c", 1738
+.source "src/cg_expr.c", 1740
     load    r0, sf[-1]
     add     r0, 10
     load    r0, r0[0]
@@ -190389,7 +190456,7 @@ __L19016:
     call    __F1317_ge_fnptr_type
     add     sp, 4
     push    r0
-    move    r0, __W2361+1
+    move    r0, __W2366+1
     push    r0
     call    __F1237_S
     add     sp, 3
@@ -190397,8 +190464,8 @@ __L19016:
     call    __F1316_ge_emit_call
     add     sp, 4
     return
-__L19013:
-.source "src/cg_expr.c", 1741
+__L19017:
+.source "src/cg_expr.c", 1743
     move    r0, 0
     push    r0
     load    r0, sf[3]
@@ -190406,18 +190473,18 @@ __L19013:
     call    __F730_check_callee
     add     sp, 2
     store   r0, sf[-13]
-.source "src/cg_expr.c", 1745
+.source "src/cg_expr.c", 1747
     load    r0, sf[-13]
     test    r0
     move    z, r0, 1, 0
     test    r0
-    jump    z, __L19017
-    move    r0, __W2362+1
+    jump    z, __L19021
+    move    r0, __W2367+1
     push    r0
     call    __F2_fatal
     add     sp, 1
-__L19017:
-.source "src/cg_expr.c", 1746
+__L19021:
+.source "src/cg_expr.c", 1748
     load    r0, sf[-13]
     add     r0, 4
     load    r0, r0[0]
@@ -190425,12 +190492,12 @@ __L19017:
     call    __F1240_gm
     add     sp, 1
     store   r0, sf[-19]
-.source "src/cg_expr.c", 1747
+.source "src/cg_expr.c", 1749
     load    r0, sf[-13]
     add     r0, 2
     load    r0, r0[0]
     test    r0
-    jump    z, __L19019
+    jump    z, __L19023
     load    r0, sf[-13]
     add     r0, 2
     load    r0, r0[0]
@@ -190440,14 +190507,14 @@ __L19017:
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L19019
+    jump    z, __L19023
     move    r0, 1
-    jump    __L19020
-__L19019:
+    jump    __L19024
+__L19023:
     move    r0, 0
-__L19020:
+__L19024:
     store   r0, sf[-23]
-.source "src/cg_expr.c", 1748
+.source "src/cg_expr.c", 1750
     add     r0, sf, -18
     push    r0
     move    r0, 0
@@ -190471,17 +190538,17 @@ __L19020:
     load    r2, r0[4]
     store   r2, r1[4]
     move    r0, r1
-.source "src/cg_expr.c", 1749
+.source "src/cg_expr.c", 1751
     add     r0, sf, -18
     add     r0, 2
     load    r0, r0[0]
     store   r0, sf[-19]
-.source "src/cg_expr.c", 1750
+.source "src/cg_expr.c", 1752
     load    r0, sf[-13]
     add     r0, 3
     load    r0, r0[0]
     test    r0
-    jump    z, __L19023
+    jump    z, __L19027
     move    r0, 1
     push    r0
     load    r0, sf[-13]
@@ -190492,21 +190559,21 @@ __L19020:
     move    r1, r0
     pop     r0
     cmp     r0, r1
-    jump    o, __L19025
+    jump    o, __L19029
     move    lt, r0, 1, 0
-    jump    __L19026
-__L19025:
+    jump    __L19030
+__L19029:
     move    lt, r0, 0, 1
-__L19026:
+__L19030:
     test    r0
-    jump    z, __L19023
+    jump    z, __L19027
     move    r0, 1
-    jump    __L19024
-__L19023:
+    jump    __L19028
+__L19027:
     move    r0, 0
-__L19024:
+__L19028:
     test    r0
-    jump    z, __L19021
+    jump    z, __L19025
     load    r0, sf[-13]
     add     r0, 3
     load    r0, r0[0]
@@ -190518,38 +190585,38 @@ __L19024:
     push    r0
     call    __F1240_gm
     add     sp, 1
-    jump    __L19022
-__L19021:
+    jump    __L19026
+__L19025:
     move    r0, 0
-__L19022:
+__L19026:
     store   r0, sf[-20]
-.source "src/cg_expr.c", 1751
+.source "src/cg_expr.c", 1753
     load    r0, sf[-20]
     test    r0
-    jump    z, __L19029
+    jump    z, __L19033
     load    r0, sf[-20]
     load    r0, r0[0]
     move    r1, 8
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L19029
+    jump    z, __L19033
     move    r0, 1
-    jump    __L19030
-__L19029:
+    jump    __L19034
+__L19033:
     move    r0, 0
-__L19030:
+__L19034:
     test    r0
-    jump    z, __L19027
+    jump    z, __L19031
     load    r0, sf[-20]
     add     r0, 6
     load    r0, r0[0]
-    jump    __L19028
-__L19027:
+    jump    __L19032
+__L19031:
     move    r0, 0
-__L19028:
+__L19032:
     store   r0, sf[-21]
-.source "src/cg_expr.c", 1752
+.source "src/cg_expr.c", 1754
     load    r0, sf[-13]
     add     r0, 3
     load    r0, r0[0]
@@ -190559,7 +190626,7 @@ __L19028:
     call    __F1240_gm
     add     sp, 1
     store   r0, sf[-22]
-.source "src/cg_expr.c", 1753
+.source "src/cg_expr.c", 1755
     load    r0, sf[-3]
     push    r0
     load    r0, sf[-21]
@@ -190572,15 +190639,15 @@ __L19028:
     push    r0
     call    __F1336_ge_eval_list
     add     sp, 4
-.source "src/cg_expr.c", 1754
+.source "src/cg_expr.c", 1756
     load    r0, sf[-19]
     load    r0, r0[0]
     move    r1, 18
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L19031
-.source "src/cg_expr.c", 1755
+    jump    z, __L19035
+.source "src/cg_expr.c", 1757
     store   0, sf[-33]
     store   0, sf[-32]
     store   0, sf[-31]
@@ -190601,48 +190668,48 @@ __L19028:
     load    r2, r0[4]
     store   r2, r1[4]
     move    r0, r1
-.source "src/cg_expr.c", 1756
+.source "src/cg_expr.c", 1758
     load    r0, sf[-23]
     test    r0
-    jump    z, __L19037
+    jump    z, __L19041
     add     r0, sf, -18
     add     r0, 3
     load    r0, r0[0]
     test    r0
-    jump    z, __L19037
+    jump    z, __L19041
     move    r0, 1
-    jump    __L19038
-__L19037:
+    jump    __L19042
+__L19041:
     move    r0, 0
-__L19038:
+__L19042:
     test    r0
-    jump    z, __L19035
+    jump    z, __L19039
     add     r0, sf, -18
     add     r0, 3
     load    r0, r0[0]
     add     r0, 6
     load    r0, r0[0]
     test    r0
-    jump    z, __L19035
+    jump    z, __L19039
     move    r0, 1
-    jump    __L19036
-__L19035:
+    jump    __L19040
+__L19039:
     move    r0, 0
-__L19036:
+__L19040:
     test    r0
-    jump    z, __L19033
+    jump    z, __L19037
     add     r0, sf, -18
     add     r0, 3
     load    r0, r0[0]
     add     r0, 6
     load    r0, r0[0]
     push    r0
-    move    r0, __W2363+1
+    move    r0, __W2368+1
     push    r0
     call    __F1236_E
     add     sp, 2
-__L19033:
-.source "src/cg_expr.c", 1757
+__L19037:
+.source "src/cg_expr.c", 1759
     load    r0, sf[-2]
     push    r0
     load    r0, sf[-3]
@@ -190673,15 +190740,15 @@ __L19033:
     call    __F1325_ge_call_dyn
     add     sp, 12
     return
-__L19031:
-.source "src/cg_expr.c", 1759
+__L19035:
+.source "src/cg_expr.c", 1761
     load    r0, sf[-19]
     load    r0, r0[0]
     move    r1, 14
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L19041
+    jump    z, __L19045
     load    r0, sf[-19]
     add     r0, 11
     load    r0, r0[0]
@@ -190690,15 +190757,15 @@ __L19031:
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L19041
+    jump    z, __L19045
     move    r0, 1
-    jump    __L19042
-__L19041:
+    jump    __L19046
+__L19045:
     move    r0, 0
-__L19042:
+__L19046:
     test    r0
-    jump    z, __L19039
-.source "src/cg_expr.c", 1761
+    jump    z, __L19043
+.source "src/cg_expr.c", 1763
     load    r0, sf[-2]
     push    r0
     load    r0, sf[-3]
@@ -190723,8 +190790,8 @@ __L19042:
     call    __F1324_ge_call_callable
     add     sp, 10
     return
-__L19039:
-.source "src/cg_expr.c", 1763
+__L19043:
+.source "src/cg_expr.c", 1765
     load    r0, sf[-2]
     push    r0
     load    r0, sf[-3]
@@ -190755,9 +190822,9 @@ __L19039:
 
 // ge_method_call
 __F1352_ge_method_call:
-.source "src/cg_expr.c", 1767
+.source "src/cg_expr.c", 1769
     add     sp, -7
-.source "src/cg_expr.c", 1768
+.source "src/cg_expr.c", 1770
     move    r0, 0
     push    r0
     load    r0, sf[3]
@@ -190765,38 +190832,12 @@ __F1352_ge_method_call:
     call    __F730_check_callee
     add     sp, 2
     store   r0, sf[0]
-.source "src/cg_expr.c", 1769
+.source "src/cg_expr.c", 1771
     load    r0, sf[3]
     add     r0, 9
     add     r0, 1
     load    r0, r0[0]
     store   r0, sf[-1]
-.source "src/cg_expr.c", 1770
-    move    r0, 1
-    push    r0
-    load    r0, sf[-1]
-    move    r1, 2
-    add     r0, r1
-    move    r1, r0
-    pop     r0
-    mult    r0, r1
-    push    r0
-    call    __F3_xalloc
-    add     sp, 1
-    store   r0, sf[-3]
-.source "src/cg_expr.c", 1771
-    move    r0, 1
-    push    r0
-    load    r0, sf[-1]
-    move    r1, 2
-    add     r0, r1
-    move    r1, r0
-    pop     r0
-    mult    r0, r1
-    push    r0
-    call    __F3_xalloc
-    add     sp, 1
-    store   r0, sf[-4]
 .source "src/cg_expr.c", 1772
     move    r0, 1
     push    r0
@@ -190809,19 +190850,45 @@ __F1352_ge_method_call:
     push    r0
     call    __F3_xalloc
     add     sp, 1
-    store   r0, sf[-6]
+    store   r0, sf[-3]
 .source "src/cg_expr.c", 1773
+    move    r0, 1
+    push    r0
+    load    r0, sf[-1]
+    move    r1, 2
+    add     r0, r1
+    move    r1, r0
+    pop     r0
+    mult    r0, r1
+    push    r0
+    call    __F3_xalloc
+    add     sp, 1
+    store   r0, sf[-4]
+.source "src/cg_expr.c", 1774
+    move    r0, 1
+    push    r0
+    load    r0, sf[-1]
+    move    r1, 2
+    add     r0, r1
+    move    r1, r0
+    pop     r0
+    mult    r0, r1
+    push    r0
+    call    __F3_xalloc
+    add     sp, 1
+    store   r0, sf[-6]
+.source "src/cg_expr.c", 1775
     load    r0, sf[0]
     test    r0
     move    z, r0, 1, 0
     test    r0
-    jump    z, __L19043
-    move    r0, __W2364+1
+    jump    z, __L19047
+    move    r0, __W2369+1
     push    r0
     call    __F2_fatal
     add     sp, 1
-__L19043:
-.source "src/cg_expr.c", 1774
+__L19047:
+.source "src/cg_expr.c", 1776
     load    r0, sf[0]
     add     r0, 3
     load    r0, r0[0]
@@ -190829,7 +190896,7 @@ __L19043:
     call    __F1240_gm
     add     sp, 1
     store   r0, sf[-5]
-.source "src/cg_expr.c", 1775
+.source "src/cg_expr.c", 1777
     load    r0, sf[-6]
     move    r1, 0
     add     r0, r1
@@ -190839,7 +190906,7 @@ __L19043:
     load    r0, r0[0]
     pop     r1
     store   r0, r1[0]
-.source "src/cg_expr.c", 1776
+.source "src/cg_expr.c", 1778
     load    r0, sf[-4]
     move    r1, 0
     add     r0, r1
@@ -190852,42 +190919,42 @@ __L19043:
     move    r1, r0
     pop     r0
     cmp     r0, r1
-    jump    o, __L19047
+    jump    o, __L19051
     move    lt, r0, 1, 0
-    jump    __L19048
-__L19047:
+    jump    __L19052
+__L19051:
     move    lt, r0, 0, 1
-__L19048:
+__L19052:
     test    r0
-    jump    z, __L19045
+    jump    z, __L19049
     load    r0, sf[-5]
     add     r0, 8
     load    r0, r0[0]
     move    r1, 0
     add     r0, r1
     load    r0, r0[0]
-    jump    __L19046
-__L19045:
+    jump    __L19050
+__L19049:
     move    r0, 0
-__L19046:
+__L19050:
     pop     r1
     store   r0, r1[0]
-.source "src/cg_expr.c", 1777
+.source "src/cg_expr.c", 1779
     move    r0, 0
     store   r0, sf[-2]
-__L19049:
+__L19053:
     load    r0, sf[-2]
     load    r1, sf[-1]
     cmp     r0, r1
-    jump    o, __L19052
+    jump    o, __L19056
     move    lt, r0, 1, 0
-    jump    __L19053
-__L19052:
+    jump    __L19057
+__L19056:
     move    lt, r0, 0, 1
-__L19053:
+__L19057:
     test    r0
-    jump    z, __L19051
-.source "src/cg_expr.c", 1778
+    jump    z, __L19055
+.source "src/cg_expr.c", 1780
     load    r0, sf[-6]
     push    r0
     load    r0, sf[-2]
@@ -190905,7 +190972,7 @@ __L19053:
     load    r0, r0[0]
     pop     r1
     store   r0, r1[0]
-.source "src/cg_expr.c", 1779
+.source "src/cg_expr.c", 1781
     load    r0, sf[-4]
     push    r0
     load    r0, sf[-2]
@@ -190925,14 +190992,14 @@ __L19053:
     move    r1, r0
     pop     r0
     cmp     r0, r1
-    jump    o, __L19056
+    jump    o, __L19060
     move    lt, r0, 1, 0
-    jump    __L19057
-__L19056:
+    jump    __L19061
+__L19060:
     move    lt, r0, 0, 1
-__L19057:
+__L19061:
     test    r0
-    jump    z, __L19054
+    jump    z, __L19058
     load    r0, sf[-5]
     add     r0, 8
     load    r0, r0[0]
@@ -190944,21 +191011,21 @@ __L19057:
     pop     r0
     add     r0, r1
     load    r0, r0[0]
-    jump    __L19055
-__L19054:
+    jump    __L19059
+__L19058:
     move    r0, 0
-__L19055:
+__L19059:
     pop     r1
     store   r0, r1[0]
-__L19050:
-.source "src/cg_expr.c", 1777
+__L19054:
+.source "src/cg_expr.c", 1779
     load    r1, sf[-2]
     add     r2, r1, 1
     store   r2, sf[-2]
     move    r0, r1
-    jump    __L19049
-__L19051:
-.source "src/cg_expr.c", 1781
+    jump    __L19053
+__L19055:
+.source "src/cg_expr.c", 1783
     load    r0, sf[-3]
     push    r0
     load    r0, sf[-4]
@@ -190971,7 +191038,7 @@ __L19051:
     push    r0
     call    __F1336_ge_eval_list
     add     sp, 4
-.source "src/cg_expr.c", 1782
+.source "src/cg_expr.c", 1784
     load    r0, sf[-1]
     move    r1, 1
     add     r0, r1
@@ -190991,28 +191058,28 @@ __L19051:
 
 // ge_commit_add
 __F1356_ge_commit_add:
-.source "src/cg_expr.c", 1795
-    add     sp, -1
 .source "src/cg_expr.c", 1797
+    add     sp, -1
+.source "src/cg_expr.c", 1799
     load    r0, sf[4]
     test    r0
-    jump    z, __L19058
-.source "src/cg_expr.c", 1798
+    jump    z, __L19062
+.source "src/cg_expr.c", 1800
     move    r0, 0
     store   r0, sf[0]
-__L19060:
+__L19064:
     load    r0, sf[0]
     load    r1, __G1354_ge_ncommits+1
     cmp     r0, r1
-    jump    o, __L19063
+    jump    o, __L19067
     move    lt, r0, 1, 0
-    jump    __L19064
-__L19063:
+    jump    __L19068
+__L19067:
     move    lt, r0, 0, 1
-__L19064:
+__L19068:
     test    r0
-    jump    z, __L19062
-.source "src/cg_expr.c", 1799
+    jump    z, __L19066
+.source "src/cg_expr.c", 1801
     load    r0, __G1353_ge_commits+1
     push    r0
     load    r0, sf[0]
@@ -191027,43 +191094,43 @@ __L19064:
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L19065
+    jump    z, __L19069
     return
+__L19069:
 __L19065:
-__L19061:
-.source "src/cg_expr.c", 1798
+.source "src/cg_expr.c", 1800
     load    r1, sf[0]
     add     r2, r1, 1
     store   r2, sf[0]
     move    r0, r1
-    jump    __L19060
+    jump    __L19064
+__L19066:
 __L19062:
-__L19058:
-.source "src/cg_expr.c", 1800
+.source "src/cg_expr.c", 1802
     load    r0, __G1355_ge_ccommits+1
     load    r1, __G1354_ge_ncommits+1
     cmp     r0, r1
-    jump    o, __L19069
+    jump    o, __L19073
     move    le, r0, 1, 0
-    jump    __L19070
-__L19069:
+    jump    __L19074
+__L19073:
     move    lt, r0, 0, 1
-__L19070:
-    test    r0
-    jump    z, __L19067
-.source "src/cg_expr.c", 1801
-    load    r0, __G1355_ge_ccommits+1
+__L19074:
     test    r0
     jump    z, __L19071
+.source "src/cg_expr.c", 1803
+    load    r0, __G1355_ge_ccommits+1
+    test    r0
+    jump    z, __L19075
     load    r0, __G1355_ge_ccommits+1
     move    r1, 2
     mult    r0, r1
-    jump    __L19072
-__L19071:
+    jump    __L19076
+__L19075:
     move    r0, 16
-__L19072:
+__L19076:
     store   r0, __G1355_ge_ccommits+1
-.source "src/cg_expr.c", 1802
+.source "src/cg_expr.c", 1804
     move    r0, 2
     push    r0
     load    r0, __G1355_ge_ccommits+1
@@ -191076,8 +191143,8 @@ __L19072:
     call    __F4_xrealloc
     add     sp, 2
     store   r0, __G1353_ge_commits+1
-__L19067:
-.source "src/cg_expr.c", 1804
+__L19071:
+.source "src/cg_expr.c", 1806
     load    r0, __G1353_ge_commits+1
     push    r0
     load    r0, __G1354_ge_ncommits+1
@@ -191090,7 +191157,7 @@ __L19067:
     load    r0, sf[3]
     pop     r1
     store   r0, r1[0]
-.source "src/cg_expr.c", 1805
+.source "src/cg_expr.c", 1807
     load    r0, __G1353_ge_commits+1
     push    r0
     load    r0, __G1354_ge_ncommits+1
@@ -191104,7 +191171,7 @@ __L19067:
     load    r0, sf[4]
     pop     r1
     store   r0, r1[0]
-.source "src/cg_expr.c", 1806
+.source "src/cg_expr.c", 1808
     load    r1, __G1354_ge_ncommits+1
     add     r2, r1, 1
     store   r2, __G1354_ge_ncommits+1
@@ -191115,24 +191182,24 @@ __L19067:
 
 // ge_commit
 __F1357_ge_commit:
-.source "src/cg_expr.c", 1809
-    add     sp, -1
 .source "src/cg_expr.c", 1811
+    add     sp, -1
+.source "src/cg_expr.c", 1813
     move    r0, 0
     store   r0, sf[0]
-__L19073:
+__L19077:
     load    r0, sf[0]
     load    r1, __G1354_ge_ncommits+1
     cmp     r0, r1
-    jump    o, __L19076
+    jump    o, __L19080
     move    lt, r0, 1, 0
-    jump    __L19077
-__L19076:
+    jump    __L19081
+__L19080:
     move    lt, r0, 0, 1
-__L19077:
+__L19081:
     test    r0
-    jump    z, __L19075
-.source "src/cg_expr.c", 1812
+    jump    z, __L19079
+.source "src/cg_expr.c", 1814
     load    r0, __G1353_ge_commits+1
     push    r0
     load    r0, sf[0]
@@ -191144,7 +191211,7 @@ __L19077:
     add     r0, 1
     load    r0, r0[0]
     test    r0
-    jump    z, __L19078
+    jump    z, __L19082
     load    r0, __G1353_ge_commits+1
     push    r0
     load    r0, sf[0]
@@ -191156,47 +191223,47 @@ __L19077:
     add     r0, 1
     load    r0, r0[0]
     push    r0
-    move    r0, __W2365+1
+    move    r0, __W2370+1
     push    r0
     call    __F1236_E
     add     sp, 2
+__L19082:
+.source "src/cg_expr.c", 1815
+    load    r0, __G1353_ge_commits+1
+    push    r0
+    load    r0, sf[0]
+    move    r1, 2
+    mult    r0, r1
+    move    r1, r0
+    pop     r0
+    add     r0, r1
+    load    r0, r0[0]
+    test    r0
+    jump    z, __L19084
+    load    r0, __G1353_ge_commits+1
+    push    r0
+    load    r0, sf[0]
+    move    r1, 2
+    mult    r0, r1
+    move    r1, r0
+    pop     r0
+    add     r0, r1
+    load    r0, r0[0]
+    push    r0
+    move    r0, __W2371+1
+    push    r0
+    call    __F1236_E
+    add     sp, 2
+__L19084:
 __L19078:
 .source "src/cg_expr.c", 1813
-    load    r0, __G1353_ge_commits+1
-    push    r0
-    load    r0, sf[0]
-    move    r1, 2
-    mult    r0, r1
-    move    r1, r0
-    pop     r0
-    add     r0, r1
-    load    r0, r0[0]
-    test    r0
-    jump    z, __L19080
-    load    r0, __G1353_ge_commits+1
-    push    r0
-    load    r0, sf[0]
-    move    r1, 2
-    mult    r0, r1
-    move    r1, r0
-    pop     r0
-    add     r0, r1
-    load    r0, r0[0]
-    push    r0
-    move    r0, __W2366+1
-    push    r0
-    call    __F1236_E
-    add     sp, 2
-__L19080:
-__L19074:
-.source "src/cg_expr.c", 1811
     load    r1, sf[0]
     add     r2, r1, 1
     store   r2, sf[0]
     move    r0, r1
-    jump    __L19073
-__L19075:
-.source "src/cg_expr.c", 1815
+    jump    __L19077
+__L19079:
+.source "src/cg_expr.c", 1817
     move    r0, 0
     store   r0, __G1354_ge_ncommits+1
     move    r0, 0
@@ -191205,17 +191272,17 @@ __L19075:
 
 // ge_peel
 __F1358_ge_peel:
-.source "src/cg_expr.c", 1818
+.source "src/cg_expr.c", 1820
     add     sp, -6
-.source "src/cg_expr.c", 1819
+.source "src/cg_expr.c", 1821
     load    r0, sf[4]
     add     r0, 27
     load    r0, r0[0]
     move    r1, 255
     and     r0, r1
     store   r0, sf[0]
-.source "src/cg_expr.c", 1820
-__L19082:
+.source "src/cg_expr.c", 1822
+__L19086:
     move    r0, 0
     push    r0
     load    r1, sf[0]
@@ -191225,14 +191292,14 @@ __L19082:
     move    r1, r0
     pop     r0
     cmp     r0, r1
-    jump    o, __L19085
+    jump    o, __L19089
     move    lt, r0, 1, 0
-    jump    __L19086
-__L19085:
+    jump    __L19090
+__L19089:
     move    lt, r0, 0, 1
-__L19086:
+__L19090:
     test    r0
-    jump    z, __L19084
+    jump    z, __L19088
     add     r0, sf, 5
     push    r0
     move    r0, 0
@@ -191267,10 +191334,10 @@ __L19086:
     load    r2, r0[4]
     store   r2, r1[4]
     move    r0, r1
-__L19083:
-    jump    __L19082
-__L19084:
-.source "src/cg_expr.c", 1821
+__L19087:
+    jump    __L19086
+__L19088:
+.source "src/cg_expr.c", 1823
     add     r0, sf, 5
     load    r1, sf[3]
     load    r2, r0[0]
@@ -191291,31 +191358,31 @@ __L19084:
 
 // ge_and
 __F1359_ge_and:
-.source "src/cg_expr.c", 1824
-.source "src/cg_expr.c", 1825
-    load    r0, sf[3]
-    test    r0
-    move    z, r0, 1, 0
-    test    r0
-    jump    z, __L19087
-    load    r0, sf[4]
-    return
-__L19087:
 .source "src/cg_expr.c", 1826
+.source "src/cg_expr.c", 1827
+    load    r0, sf[3]
+    test    r0
+    move    z, r0, 1, 0
+    test    r0
+    jump    z, __L19091
+    load    r0, sf[4]
+    return
+__L19091:
+.source "src/cg_expr.c", 1828
     load    r0, sf[4]
     test    r0
     move    z, r0, 1, 0
     test    r0
-    jump    z, __L19089
+    jump    z, __L19093
     load    r0, sf[3]
     return
-__L19089:
-.source "src/cg_expr.c", 1827
+__L19093:
+.source "src/cg_expr.c", 1829
     load    r0, sf[4]
     push    r0
     load    r0, sf[3]
     push    r0
-    move    r0, __W2367+1
+    move    r0, __W2372+1
     push    r0
     call    __F1237_S
     add     sp, 3
@@ -191326,72 +191393,72 @@ __L19089:
 
 // ge_pat_binds
 __F1360_ge_pat_binds:
-.source "src/cg_expr.c", 1830
-    add     sp, -2
 .source "src/cg_expr.c", 1832
+    add     sp, -2
+.source "src/cg_expr.c", 1834
     load    r0, sf[3]
     test    r0
     move    z, r0, 1, 0
     test    r0
-    jump    z, __L19091
+    jump    z, __L19095
     move    r0, 0
     return
-__L19091:
-.source "src/cg_expr.c", 1833
+__L19095:
+.source "src/cg_expr.c", 1835
     load    r0, sf[3]
     load    r0, r0[0]
     cmp     r0, 53
-    jump    eq, __L19094
-    cmp     r0, 62
-    jump    eq, __L19095
-    cmp     r0, 56
-    jump    eq, __L19096
-    cmp     r0, 57
-    jump    eq, __L19097
-    cmp     r0, 58
     jump    eq, __L19098
-    cmp     r0, 60
+    cmp     r0, 62
     jump    eq, __L19099
-    cmp     r0, 61
+    cmp     r0, 56
     jump    eq, __L19100
-    cmp     r0, 63
+    cmp     r0, 57
     jump    eq, __L19101
-    jump    __L19093
-.source "src/cg_expr.c", 1834
-__L19094:
-.source "src/cg_expr.c", 1835
+    cmp     r0, 58
+    jump    eq, __L19102
+    cmp     r0, 60
+    jump    eq, __L19103
+    cmp     r0, 61
+    jump    eq, __L19104
+    cmp     r0, 63
+    jump    eq, __L19105
+    jump    __L19097
+.source "src/cg_expr.c", 1836
+__L19098:
+.source "src/cg_expr.c", 1837
     load    r0, sf[3]
     add     r0, 26
     load    r0, r0[0]
     store   r0, sf[-1]
-.source "src/cg_expr.c", 1836
+.source "src/cg_expr.c", 1838
     load    r0, sf[-1]
     test    r0
-    jump    z, __L19104
+    jump    z, __L19108
     load    r0, sf[-1]
     load    r0, r0[0]
     move    r1, 16
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L19104
+    jump    z, __L19108
     move    r0, 1
-    jump    __L19105
-__L19104:
+    jump    __L19109
+__L19108:
     move    r0, 0
-__L19105:
+__L19109:
     test    r0
-    jump    z, __L19102
+    jump    z, __L19106
     move    r0, 1
     return
-__L19102:
-.source "src/cg_expr.c", 1837
+__L19106:
+.source "src/cg_expr.c", 1839
     move    r0, 0
     return
-.source "src/cg_expr.c", 1839
-__L19095:
-__L19096:
-.source "src/cg_expr.c", 1840
+.source "src/cg_expr.c", 1841
+__L19099:
+__L19100:
+.source "src/cg_expr.c", 1842
     load    r0, sf[3]
     add     r0, 5
     load    r0, r0[0]
@@ -191399,16 +191466,16 @@ __L19096:
     call    __F1360_ge_pat_binds
     add     sp, 1
     return
-.source "src/cg_expr.c", 1841
-__L19097:
-__L19098:
-__L19099:
-__L19100:
+.source "src/cg_expr.c", 1843
 __L19101:
-.source "src/cg_expr.c", 1842
+__L19102:
+__L19103:
+__L19104:
+__L19105:
+.source "src/cg_expr.c", 1844
     move    r0, 0
     store   r0, sf[0]
-__L19106:
+__L19110:
     load    r0, sf[0]
     push    r0
     load    r0, sf[3]
@@ -191418,15 +191485,15 @@ __L19106:
     move    r1, r0
     pop     r0
     cmp     r0, r1
-    jump    o, __L19109
+    jump    o, __L19113
     move    lt, r0, 1, 0
-    jump    __L19110
-__L19109:
+    jump    __L19114
+__L19113:
     move    lt, r0, 0, 1
-__L19110:
+__L19114:
     test    r0
-    jump    z, __L19108
-.source "src/cg_expr.c", 1843
+    jump    z, __L19112
+.source "src/cg_expr.c", 1845
     load    r0, sf[3]
     add     r0, 9
     load    r0, r0[0]
@@ -191437,23 +191504,23 @@ __L19110:
     call    __F1360_ge_pat_binds
     add     sp, 1
     test    r0
-    jump    z, __L19111
+    jump    z, __L19115
     move    r0, 1
     return
+__L19115:
 __L19111:
-__L19107:
-.source "src/cg_expr.c", 1842
+.source "src/cg_expr.c", 1844
     load    r1, sf[0]
     add     r2, r1, 1
     store   r2, sf[0]
     move    r0, r1
-    jump    __L19106
-__L19108:
-.source "src/cg_expr.c", 1844
+    jump    __L19110
+__L19112:
+.source "src/cg_expr.c", 1846
     move    r0, 0
     return
-__L19093:
-.source "src/cg_expr.c", 1846
+__L19097:
+.source "src/cg_expr.c", 1848
     move    r0, 0
     return
     move    r0, 0
@@ -191462,86 +191529,86 @@ __L19093:
 
 // ge_pat_ctor
 __F1361_ge_pat_ctor:
-.source "src/cg_expr.c", 1850
+.source "src/cg_expr.c", 1852
     add     sp, -3
-.source "src/cg_expr.c", 1851
+.source "src/cg_expr.c", 1853
     load    r0, sf[3]
     add     r0, 26
     load    r0, r0[0]
     store   r0, sf[0]
     move    r0, 0
     store   r0, sf[-1]
-.source "src/cg_expr.c", 1852
+.source "src/cg_expr.c", 1854
     move    r0, 0
     store   r0, sf[-2]
-.source "src/cg_expr.c", 1853
+.source "src/cg_expr.c", 1855
     load    r0, sf[3]
     load    r0, r0[0]
     move    r1, 60
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    nz, __L19115
+    jump    nz, __L19119
     load    r0, sf[3]
     load    r0, r0[0]
     move    r1, 61
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    nz, __L19115
+    jump    nz, __L19119
     move    r0, 0
-    jump    __L19116
-__L19115:
-    move    r0, 1
-__L19116:
-    test    r0
-    jump    z, __L19113
-    load    r0, sf[0]
-    return
-__L19113:
-.source "src/cg_expr.c", 1854
-    load    r0, sf[0]
-    test    r0
-    jump    z, __L19119
-    load    r0, sf[0]
-    load    r0, r0[0]
-    move    r1, 5
-    cmp     r0, r1
-    move    eq, r0, 1, 0
-    test    r0
-    jump    nz, __L19121
-    load    r0, sf[0]
-    load    r0, r0[0]
-    move    r1, 2
-    cmp     r0, r1
-    move    eq, r0, 1, 0
-    test    r0
-    jump    nz, __L19121
-    move    r0, 0
-    jump    __L19122
-__L19121:
-    move    r0, 1
-__L19122:
-    test    r0
-    jump    z, __L19119
-    move    r0, 1
     jump    __L19120
 __L19119:
-    move    r0, 0
+    move    r0, 1
 __L19120:
     test    r0
     jump    z, __L19117
     load    r0, sf[0]
     return
 __L19117:
-.source "src/cg_expr.c", 1855
+.source "src/cg_expr.c", 1856
+    load    r0, sf[0]
+    test    r0
+    jump    z, __L19123
+    load    r0, sf[0]
+    load    r0, r0[0]
+    move    r1, 5
+    cmp     r0, r1
+    move    eq, r0, 1, 0
+    test    r0
+    jump    nz, __L19125
+    load    r0, sf[0]
+    load    r0, r0[0]
+    move    r1, 2
+    cmp     r0, r1
+    move    eq, r0, 1, 0
+    test    r0
+    jump    nz, __L19125
+    move    r0, 0
+    jump    __L19126
+__L19125:
+    move    r0, 1
+__L19126:
+    test    r0
+    jump    z, __L19123
+    move    r0, 1
+    jump    __L19124
+__L19123:
+    move    r0, 0
+__L19124:
+    test    r0
+    jump    z, __L19121
+    load    r0, sf[0]
+    return
+__L19121:
+.source "src/cg_expr.c", 1857
     load    r0, sf[3]
     load    r0, r0[0]
     move    r1, 59
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L19125
+    jump    z, __L19129
     add     r0, sf, -2
     push    r0
     add     r0, sf, -1
@@ -191553,18 +191620,18 @@ __L19117:
     call    __F911_resolve_ctor
     add     sp, 3
     test    r0
-    jump    z, __L19125
+    jump    z, __L19129
     move    r0, 1
-    jump    __L19126
-__L19125:
+    jump    __L19130
+__L19129:
     move    r0, 0
-__L19126:
+__L19130:
     test    r0
-    jump    z, __L19123
+    jump    z, __L19127
     load    r0, sf[-1]
     return
-__L19123:
-.source "src/cg_expr.c", 1856
+__L19127:
+.source "src/cg_expr.c", 1858
     move    r0, 0
     return
     move    r0, 0
@@ -191573,15 +191640,15 @@ __L19123:
 
 // ge_member
 __F1362_ge_member:
-.source "src/cg_expr.c", 1859
-.source "src/cg_expr.c", 1860
+.source "src/cg_expr.c", 1861
+.source "src/cg_expr.c", 1862
     load    r0, sf[3]
     load    r0, r0[0]
     move    r1, 5
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L19127
+    jump    z, __L19131
     load    r0, sf[9]
     push    r0
     call    __F1303_ge_field_member
@@ -191596,13 +191663,13 @@ __F1362_ge_member:
     add     r0, 1
     load    r0, r0[0]
     push    r0
-    move    r0, __W2368+1
+    move    r0, __W2373+1
     push    r0
     call    __F1237_S
     add     sp, 4
     return
-__L19127:
-.source "src/cg_expr.c", 1861
+__L19131:
+.source "src/cg_expr.c", 1863
     load    r0, sf[9]
     push    r0
     call    __F1303_ge_field_member
@@ -191612,7 +191679,7 @@ __L19127:
     add     r0, 1
     load    r0, r0[0]
     push    r0
-    move    r0, __W2369+1
+    move    r0, __W2374+1
     push    r0
     call    __F1237_S
     add     sp, 3
@@ -191623,9 +191690,9 @@ __L19127:
 
 // ge_sub_place
 __F1363_ge_sub_place:
-.source "src/cg_expr.c", 1864
+.source "src/cg_expr.c", 1866
     add     sp, -6
-.source "src/cg_expr.c", 1865
+.source "src/cg_expr.c", 1867
     add     r0, sf, 5
     add     r0, 2
     load    r0, r0[0]
@@ -191638,7 +191705,7 @@ __F1363_ge_sub_place:
     call    __F1240_gm
     add     sp, 1
     store   r0, sf[0]
-.source "src/cg_expr.c", 1866
+.source "src/cg_expr.c", 1868
     add     r0, sf, 5
     add     r0, 3
     load    r0, r0[0]
@@ -191689,14 +191756,14 @@ __F1363_ge_sub_place:
 
 // ge_pat_lit_value
 __F1364_ge_pat_lit_value:
-.source "src/cg_expr.c", 1869
+.source "src/cg_expr.c", 1871
     add     sp, -2
-.source "src/cg_expr.c", 1870
+.source "src/cg_expr.c", 1872
     load    r0, sf[3]
     add     r0, 5
     load    r0, r0[0]
     store   r0, sf[0]
-.source "src/cg_expr.c", 1871
+.source "src/cg_expr.c", 1873
     load    r0, sf[3]
     add     r0, 22
     load    r0, r0[0]
@@ -191711,68 +191778,68 @@ __F1364_ge_pat_lit_value:
     cmp     r0, r1
     move    ne, r0, 1, 0
     store   r0, sf[-1]
-.source "src/cg_expr.c", 1872
+.source "src/cg_expr.c", 1874
     load    r0, sf[0]
     load    r0, r0[0]
     cmp     r0, 64
-    jump    eq, __L19130
-    cmp     r0, 65
-    jump    eq, __L19131
-    cmp     r0, 68
-    jump    eq, __L19132
-    cmp     r0, 69
-    jump    eq, __L19133
-    cmp     r0, 70
     jump    eq, __L19134
-    jump    __L19129
-.source "src/cg_expr.c", 1873
-__L19130:
-.source "src/cg_expr.c", 1874
+    cmp     r0, 65
+    jump    eq, __L19135
+    cmp     r0, 68
+    jump    eq, __L19136
+    cmp     r0, 69
+    jump    eq, __L19137
+    cmp     r0, 70
+    jump    eq, __L19138
+    jump    __L19133
+.source "src/cg_expr.c", 1875
+__L19134:
+.source "src/cg_expr.c", 1876
     load    r0, sf[4]
     push    r0
     call    __F1263_ge_is_float
     add     sp, 1
     test    r0
-    jump    z, __L19135
-    load    r0, sf[0]
-    add     r0, 20
-    load    r0, r0[0]
-    push    r0
-    load    r0, sf[-1]
-    test    r0
-    jump    z, __L19137
-    move    r0, __W2371+1
-    jump    __L19138
-__L19137:
-    move    r0, __W2372+1
-__L19138:
-    push    r0
-    move    r0, __W2370+1
-    push    r0
-    call    __F1237_S
-    add     sp, 3
-    return
-__L19135:
-.source "src/cg_expr.c", 1875
-    load    r0, sf[-1]
-    test    r0
     jump    z, __L19139
     load    r0, sf[0]
     add     r0, 20
     load    r0, r0[0]
-    neg     r0
-    jump    __L19140
+    push    r0
+    load    r0, sf[-1]
+    test    r0
+    jump    z, __L19141
+    move    r0, __W2376+1
+    jump    __L19142
+__L19141:
+    move    r0, __W2377+1
+__L19142:
+    push    r0
+    move    r0, __W2375+1
+    push    r0
+    call    __F1237_S
+    add     sp, 3
+    return
 __L19139:
+.source "src/cg_expr.c", 1877
+    load    r0, sf[-1]
+    test    r0
+    jump    z, __L19143
     load    r0, sf[0]
     add     r0, 20
     load    r0, r0[0]
-__L19140:
+    neg     r0
+    jump    __L19144
+__L19143:
+    load    r0, sf[0]
+    add     r0, 20
+    load    r0, r0[0]
+__L19144:
     push    r0
     call    __F1326_ge_int_lit
     add     sp, 1
     return
-.source "src/cg_expr.c", 1876
-__L19131:
+.source "src/cg_expr.c", 1878
+__L19135:
     load    r0, sf[0]
     push    r0
     call    __F1327_ge_float_lit
@@ -191780,34 +191847,34 @@ __L19131:
     push    r0
     load    r0, sf[-1]
     test    r0
-    jump    z, __L19141
-    move    r0, __W2374+1
-    jump    __L19142
-__L19141:
-    move    r0, __W2375+1
-__L19142:
+    jump    z, __L19145
+    move    r0, __W2379+1
+    jump    __L19146
+__L19145:
+    move    r0, __W2380+1
+__L19146:
     push    r0
-    move    r0, __W2373+1
+    move    r0, __W2378+1
     push    r0
     call    __F1237_S
     add     sp, 3
     return
-.source "src/cg_expr.c", 1877
-__L19132:
-__L19133:
-__L19134:
+.source "src/cg_expr.c", 1879
+__L19136:
+__L19137:
+__L19138:
     load    r0, sf[0]
     add     r0, 20
     load    r0, r0[0]
     push    r0
-    move    r0, __W2376+1
+    move    r0, __W2381+1
     push    r0
     call    __F1237_S
     add     sp, 2
     return
-__L19129:
-.source "src/cg_expr.c", 1879
-    move    r0, __W2377+1
+__L19133:
+.source "src/cg_expr.c", 1881
+    move    r0, __W2382+1
     return
     move    r0, 0
     return
@@ -191815,16 +191882,16 @@ __L19129:
 
 // ge_range_bound
 __F1365_ge_range_bound:
-.source "src/cg_expr.c", 1882
+.source "src/cg_expr.c", 1884
     add     sp, -1
-.source "src/cg_expr.c", 1883
+.source "src/cg_expr.c", 1885
     load    r0, sf[3]
     load    r0, r0[0]
     move    r1, 54
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L19143
+    jump    z, __L19147
     load    r0, sf[4]
     push    r0
     load    r0, sf[3]
@@ -191832,42 +191899,19 @@ __F1365_ge_range_bound:
     call    __F1364_ge_pat_lit_value
     add     sp, 2
     return
-__L19143:
-.source "src/cg_expr.c", 1885
+__L19147:
+.source "src/cg_expr.c", 1887
     load    r0, sf[3]
     add     r0, 26
     load    r0, r0[0]
     store   r0, sf[0]
-.source "src/cg_expr.c", 1886
+.source "src/cg_expr.c", 1888
     load    r0, sf[0]
-    test    r0
-    jump    z, __L19147
-    load    r0, sf[0]
-    load    r0, r0[0]
-    move    r1, 9
-    cmp     r0, r1
-    move    eq, r0, 1, 0
-    test    r0
-    jump    z, __L19147
-    move    r0, 1
-    jump    __L19148
-__L19147:
-    move    r0, 0
-__L19148:
-    test    r0
-    jump    z, __L19145
-    load    r0, sf[4]
-    push    r0
-    load    r0, sf[0]
-    add     r0, 3
-    load    r0, r0[0]
     test    r0
     jump    z, __L19151
     load    r0, sf[0]
-    add     r0, 3
     load    r0, r0[0]
-    load    r0, r0[0]
-    move    r1, 13
+    move    r1, 9
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
@@ -191879,11 +191923,34 @@ __L19151:
 __L19152:
     test    r0
     jump    z, __L19149
-    load    r0, __G1106_cg_subst+1
-    jump    __L19150
-__L19149:
+    load    r0, sf[4]
+    push    r0
+    load    r0, sf[0]
+    add     r0, 3
+    load    r0, r0[0]
+    test    r0
+    jump    z, __L19155
+    load    r0, sf[0]
+    add     r0, 3
+    load    r0, r0[0]
+    load    r0, r0[0]
+    move    r1, 13
+    cmp     r0, r1
+    move    eq, r0, 1, 0
+    test    r0
+    jump    z, __L19155
+    move    r0, 1
+    jump    __L19156
+__L19155:
     move    r0, 0
-__L19150:
+__L19156:
+    test    r0
+    jump    z, __L19153
+    load    r0, __G1106_cg_subst+1
+    jump    __L19154
+__L19153:
+    move    r0, 0
+__L19154:
     push    r0
     load    r0, sf[0]
     push    r0
@@ -191895,9 +191962,9 @@ __L19150:
     call    __F1247_ge_snap
     add     sp, 2
     return
-__L19145:
-.source "src/cg_expr.c", 1888
-    move    r0, __W2378+1
+__L19149:
+.source "src/cg_expr.c", 1890
+    move    r0, __W2383+1
     return
     move    r0, 0
     return
@@ -191905,8 +191972,8 @@ __L19145:
 
 // ge_str_eq
 __F1366_ge_str_eq:
-.source "src/cg_expr.c", 1891
-.source "src/cg_expr.c", 1892
+.source "src/cg_expr.c", 1893
+.source "src/cg_expr.c", 1894
     load    r0, sf[5]
     push    r0
     load    r0, sf[5]
@@ -191922,7 +191989,7 @@ __F1366_ge_str_eq:
     push    r0
     load    r0, sf[3]
     push    r0
-    move    r0, __W2379+1
+    move    r0, __W2384+1
     push    r0
     call    __F1237_S
     add     sp, 6
@@ -191933,22 +192000,22 @@ __F1366_ge_str_eq:
 
 // ge_slice_parts
 __F1367_ge_slice_parts:
-.source "src/cg_expr.c", 1895
+.source "src/cg_expr.c", 1897
     add     sp, -1
-.source "src/cg_expr.c", 1896
+.source "src/cg_expr.c", 1898
     add     r0, sf, 3
     add     r0, 2
     load    r0, r0[0]
     store   r0, sf[0]
-.source "src/cg_expr.c", 1897
+.source "src/cg_expr.c", 1899
     load    r0, sf[0]
     load    r0, r0[0]
     move    r1, 9
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L19153
-.source "src/cg_expr.c", 1898
+    jump    z, __L19157
+.source "src/cg_expr.c", 1900
     load    r0, sf[8]
     push    r0
     load    r0, sf[0]
@@ -191968,7 +192035,7 @@ __F1367_ge_slice_parts:
     add     sp, 6
     pop     r1
     store   r0, r1[0]
-.source "src/cg_expr.c", 1899
+.source "src/cg_expr.c", 1901
     load    r0, sf[9]
     push    r0
     load    r0, sf[0]
@@ -191976,42 +192043,42 @@ __F1367_ge_slice_parts:
     call    __F1305_ge_array_len
     add     sp, 1
     push    r0
-    move    r0, __W2380+1
+    move    r0, __W2385+1
     push    r0
     call    __F1237_S
     add     sp, 2
     pop     r1
     store   r0, r1[0]
-    jump    __L19154
-__L19153:
-.source "src/cg_expr.c", 1901
+    jump    __L19158
+__L19157:
+.source "src/cg_expr.c", 1903
     load    r0, sf[8]
     push    r0
     add     r0, sf, 3
     add     r0, 1
     load    r0, r0[0]
     push    r0
-    move    r0, __W2381+1
+    move    r0, __W2386+1
     push    r0
     call    __F1237_S
     add     sp, 2
     pop     r1
     store   r0, r1[0]
-.source "src/cg_expr.c", 1902
+.source "src/cg_expr.c", 1904
     load    r0, sf[9]
     push    r0
     add     r0, sf, 3
     add     r0, 1
     load    r0, r0[0]
     push    r0
-    move    r0, __W2382+1
+    move    r0, __W2387+1
     push    r0
     call    __F1237_S
     add     sp, 2
     pop     r1
     store   r0, r1[0]
-__L19154:
-.source "src/cg_expr.c", 1904
+__L19158:
+.source "src/cg_expr.c", 1906
     move    r0, 0
     return
     move    r0, 0
@@ -192020,12 +192087,12 @@ __L19154:
 
 // ge_rest_pos
 __F1368_ge_rest_pos:
-.source "src/cg_expr.c", 1907
-    add     sp, -2
 .source "src/cg_expr.c", 1909
+    add     sp, -2
+.source "src/cg_expr.c", 1911
     move    r0, 0
     store   r0, sf[0]
-__L19155:
+__L19159:
     load    r0, sf[0]
     push    r0
     load    r0, sf[3]
@@ -192035,15 +192102,15 @@ __L19155:
     move    r1, r0
     pop     r0
     cmp     r0, r1
-    jump    o, __L19158
+    jump    o, __L19162
     move    lt, r0, 1, 0
-    jump    __L19159
-__L19158:
+    jump    __L19163
+__L19162:
     move    lt, r0, 0, 1
-__L19159:
+__L19163:
     test    r0
-    jump    z, __L19157
-.source "src/cg_expr.c", 1910
+    jump    z, __L19161
+.source "src/cg_expr.c", 1912
     load    r0, sf[3]
     add     r0, 9
     load    r0, r0[0]
@@ -192051,33 +192118,33 @@ __L19159:
     add     r0, r1
     load    r0, r0[0]
     store   r0, sf[-1]
-.source "src/cg_expr.c", 1911
+.source "src/cg_expr.c", 1913
     load    r0, sf[-1]
     load    r0, r0[0]
     move    r1, 52
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    nz, __L19162
+    jump    nz, __L19166
     load    r0, sf[-1]
     load    r0, r0[0]
     move    r1, 53
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L19166
+    jump    z, __L19170
     load    r0, sf[-1]
     add     r0, 5
     load    r0, r0[0]
     test    r0
-    jump    z, __L19166
+    jump    z, __L19170
     move    r0, 1
-    jump    __L19167
-__L19166:
+    jump    __L19171
+__L19170:
     move    r0, 0
-__L19167:
+__L19171:
     test    r0
-    jump    z, __L19164
+    jump    z, __L19168
     load    r0, sf[-1]
     add     r0, 5
     load    r0, r0[0]
@@ -192086,33 +192153,33 @@ __L19167:
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
+    jump    z, __L19168
+    move    r0, 1
+    jump    __L19169
+__L19168:
+    move    r0, 0
+__L19169:
+    test    r0
+    jump    nz, __L19166
+    move    r0, 0
+    jump    __L19167
+__L19166:
+    move    r0, 1
+__L19167:
+    test    r0
     jump    z, __L19164
-    move    r0, 1
-    jump    __L19165
-__L19164:
-    move    r0, 0
-__L19165:
-    test    r0
-    jump    nz, __L19162
-    move    r0, 0
-    jump    __L19163
-__L19162:
-    move    r0, 1
-__L19163:
-    test    r0
-    jump    z, __L19160
     load    r0, sf[0]
     return
+__L19164:
 __L19160:
-__L19156:
-.source "src/cg_expr.c", 1909
+.source "src/cg_expr.c", 1911
     load    r1, sf[0]
     add     r2, r1, 1
     store   r2, sf[0]
     move    r0, r1
-    jump    __L19155
-__L19157:
-.source "src/cg_expr.c", 1913
+    jump    __L19159
+__L19161:
+.source "src/cg_expr.c", 1915
     move    r0, -1
     return
     move    r0, 0
@@ -192121,9 +192188,9 @@ __L19157:
 
 // ge_slice_elem
 __F1369_ge_slice_elem:
-.source "src/cg_expr.c", 1917
+.source "src/cg_expr.c", 1919
     add     sp, -24
-.source "src/cg_expr.c", 1918
+.source "src/cg_expr.c", 1920
     add     r0, sf, 4
     add     r0, 2
     load    r0, r0[0]
@@ -192132,52 +192199,52 @@ __F1369_ge_slice_elem:
     add     r0, 5
     load    r0, r0[0]
     store   r0, sf[-1]
-.source "src/cg_expr.c", 1920
+.source "src/cg_expr.c", 1922
     load    r0, sf[0]
     load    r0, r0[0]
     move    r1, 9
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L19168
-.source "src/cg_expr.c", 1921
+    jump    z, __L19172
+.source "src/cg_expr.c", 1923
     load    r0, sf[0]
     push    r0
     call    __F1305_ge_array_len
     add     sp, 1
     store   r0, sf[-3]
-.source "src/cg_expr.c", 1922
+.source "src/cg_expr.c", 1924
     move    r0, 0
     load    r1, sf[9]
     cmp     r0, r1
-    jump    o, __L19172
+    jump    o, __L19176
     move    le, r0, 1, 0
-    jump    __L19173
-__L19172:
+    jump    __L19177
+__L19176:
     move    lt, r0, 0, 1
-__L19173:
+__L19177:
     test    r0
-    jump    z, __L19170
+    jump    z, __L19174
     load    r0, sf[9]
-    jump    __L19171
-__L19170:
+    jump    __L19175
+__L19174:
     load    r0, sf[-3]
     load    r1, sf[10]
     sub     r0, r1
-__L19171:
+__L19175:
     push    r0
-    move    r0, __W2383+1
+    move    r0, __W2388+1
     push    r0
     call    __F1237_S
     add     sp, 2
     store   r0, sf[-2]
-.source "src/cg_expr.c", 1923
+.source "src/cg_expr.c", 1925
     load    r0, sf[-1]
     push    r0
     call    __F1111_cg_is_u8
     add     sp, 1
     test    r0
-    jump    z, __L19174
+    jump    z, __L19178
     move    r0, 0
     push    r0
     load    r0, sf[-1]
@@ -192188,7 +192255,7 @@ __L19171:
     add     r0, 1
     load    r0, r0[0]
     push    r0
-    move    r0, __W2384+1
+    move    r0, __W2389+1
     push    r0
     call    __F1237_S
     add     sp, 3
@@ -192213,8 +192280,8 @@ __L19171:
     store   r2, r1[4]
     move    r0, r1
     return
-__L19174:
-.source "src/cg_expr.c", 1924
+__L19178:
+.source "src/cg_expr.c", 1926
     add     r0, sf, 4
     add     r0, 3
     load    r0, r0[0]
@@ -192227,7 +192294,7 @@ __L19174:
     add     r0, 1
     load    r0, r0[0]
     push    r0
-    move    r0, __W2385+1
+    move    r0, __W2390+1
     push    r0
     call    __F1237_S
     add     sp, 3
@@ -192252,46 +192319,46 @@ __L19174:
     store   r2, r1[4]
     move    r0, r1
     return
-__L19168:
-.source "src/cg_expr.c", 1926
+__L19172:
+.source "src/cg_expr.c", 1928
     move    r0, 0
     load    r1, sf[9]
     cmp     r0, r1
-    jump    o, __L19178
+    jump    o, __L19182
     move    le, r0, 1, 0
-    jump    __L19179
-__L19178:
+    jump    __L19183
+__L19182:
     move    lt, r0, 0, 1
-__L19179:
+__L19183:
     test    r0
-    jump    z, __L19176
+    jump    z, __L19180
     load    r0, sf[9]
     push    r0
-    move    r0, __W2386+1
+    move    r0, __W2391+1
     push    r0
     call    __F1237_S
     add     sp, 2
-    jump    __L19177
-__L19176:
+    jump    __L19181
+__L19180:
     load    r0, sf[10]
     push    r0
     add     r0, sf, 4
     add     r0, 1
     load    r0, r0[0]
     push    r0
-    move    r0, __W2387+1
+    move    r0, __W2392+1
     push    r0
     call    __F1237_S
     add     sp, 3
-__L19177:
+__L19181:
     store   r0, sf[-2]
-.source "src/cg_expr.c", 1927
+.source "src/cg_expr.c", 1929
     load    r0, sf[-1]
     push    r0
     call    __F1111_cg_is_u8
     add     sp, 1
     test    r0
-    jump    z, __L19180
+    jump    z, __L19184
     move    r0, 0
     push    r0
     load    r0, sf[-1]
@@ -192302,7 +192369,7 @@ __L19177:
     add     r0, 1
     load    r0, r0[0]
     push    r0
-    move    r0, __W2388+1
+    move    r0, __W2393+1
     push    r0
     call    __F1237_S
     add     sp, 3
@@ -192327,8 +192394,8 @@ __L19177:
     store   r2, r1[4]
     move    r0, r1
     return
-__L19180:
-.source "src/cg_expr.c", 1928
+__L19184:
+.source "src/cg_expr.c", 1930
     move    r0, 0
     push    r0
     load    r0, sf[-1]
@@ -192344,7 +192411,7 @@ __L19180:
     call    __F1242_ge_ct
     add     sp, 1
     push    r0
-    move    r0, __W2389+1
+    move    r0, __W2394+1
     push    r0
     call    __F1237_S
     add     sp, 4
@@ -192375,12 +192442,12 @@ __L19180:
 
 // ge_pat_cond
 __F1370_ge_pat_cond:
-.source "src/cg_expr.c", 1931
+.source "src/cg_expr.c", 1933
     add     sp, -81
-.source "src/cg_expr.c", 1932
+.source "src/cg_expr.c", 1934
     move    r0, 0
     store   r0, sf[0]
-.source "src/cg_expr.c", 1934
+.source "src/cg_expr.c", 1936
     add     r0, sf, 4
     push    r0
     add     r0, sf, 4
@@ -192413,71 +192480,50 @@ __F1370_ge_pat_cond:
     load    r2, r0[4]
     store   r2, r1[4]
     move    r0, r1
-.source "src/cg_expr.c", 1935
+.source "src/cg_expr.c", 1937
     load    r0, sf[3]
     load    r0, r0[0]
     cmp     r0, 51
-    jump    eq, __L19183
-    cmp     r0, 52
-    jump    eq, __L19184
-    cmp     r0, 53
-    jump    eq, __L19185
-    cmp     r0, 54
-    jump    eq, __L19186
-    cmp     r0, 55
     jump    eq, __L19187
-    cmp     r0, 56
+    cmp     r0, 52
     jump    eq, __L19188
-    cmp     r0, 57
+    cmp     r0, 53
     jump    eq, __L19189
-    cmp     r0, 58
+    cmp     r0, 54
     jump    eq, __L19190
-    cmp     r0, 63
+    cmp     r0, 55
     jump    eq, __L19191
-    jump    __L19182
-.source "src/cg_expr.c", 1936
-__L19183:
-__L19184:
-.source "src/cg_expr.c", 1937
+    cmp     r0, 56
+    jump    eq, __L19192
+    cmp     r0, 57
+    jump    eq, __L19193
+    cmp     r0, 58
+    jump    eq, __L19194
+    cmp     r0, 63
+    jump    eq, __L19195
+    jump    __L19186
+.source "src/cg_expr.c", 1938
+__L19187:
+__L19188:
+.source "src/cg_expr.c", 1939
     move    r0, 0
     return
-.source "src/cg_expr.c", 1938
-__L19185:
-.source "src/cg_expr.c", 1939
+.source "src/cg_expr.c", 1940
+__L19189:
+.source "src/cg_expr.c", 1941
     load    r0, sf[3]
     add     r0, 26
     load    r0, r0[0]
     store   r0, sf[-7]
-.source "src/cg_expr.c", 1940
+.source "src/cg_expr.c", 1942
     load    r0, sf[-7]
     test    r0
-    jump    z, __L19194
+    jump    z, __L19198
     load    r0, sf[-7]
     load    r0, r0[0]
     move    r1, 16
     cmp     r0, r1
     move    eq, r0, 1, 0
-    test    r0
-    jump    z, __L19194
-    move    r0, 1
-    jump    __L19195
-__L19194:
-    move    r0, 0
-__L19195:
-    test    r0
-    jump    z, __L19192
-    load    r0, sf[3]
-    add     r0, 5
-    load    r0, r0[0]
-    test    r0
-    jump    z, __L19198
-    load    r0, sf[3]
-    add     r0, 5
-    load    r0, r0[0]
-    load    r0, r0[0]
-    move    r1, 52
-    cmp     r0, r1
-    move    ne, r0, 1, 0
     test    r0
     jump    z, __L19198
     move    r0, 1
@@ -192487,6 +192533,27 @@ __L19198:
 __L19199:
     test    r0
     jump    z, __L19196
+    load    r0, sf[3]
+    add     r0, 5
+    load    r0, r0[0]
+    test    r0
+    jump    z, __L19202
+    load    r0, sf[3]
+    add     r0, 5
+    load    r0, r0[0]
+    load    r0, r0[0]
+    move    r1, 52
+    cmp     r0, r1
+    move    ne, r0, 1, 0
+    test    r0
+    jump    z, __L19202
+    move    r0, 1
+    jump    __L19203
+__L19202:
+    move    r0, 0
+__L19203:
+    test    r0
+    jump    z, __L19200
     add     r0, sf, 4
     load    r1, r0[4]
     push    r1
@@ -192504,22 +192571,22 @@ __L19199:
     push    r0
     call    __F1370_ge_pat_cond
     add     sp, 6
-    jump    __L19197
-__L19196:
+    jump    __L19201
+__L19200:
     move    r0, 0
-__L19197:
+__L19201:
     return
-__L19192:
-.source "src/cg_expr.c", 1941
-    jump    __L19182
+__L19196:
 .source "src/cg_expr.c", 1943
-__L19186:
-.source "src/cg_expr.c", 1944
+    jump    __L19186
+.source "src/cg_expr.c", 1945
+__L19190:
+.source "src/cg_expr.c", 1946
     add     r0, sf, 4
     add     r0, 2
     load    r0, r0[0]
     store   r0, sf[-8]
-.source "src/cg_expr.c", 1945
+.source "src/cg_expr.c", 1947
     add     r0, sf, 4
     load    r1, r0[4]
     push    r1
@@ -192534,7 +192601,7 @@ __L19186:
     call    __F1291_ge_load
     add     sp, 5
     store   r0, sf[-9]
-.source "src/cg_expr.c", 1946
+.source "src/cg_expr.c", 1948
     load    r0, sf[3]
     add     r0, 5
     load    r0, r0[0]
@@ -192543,8 +192610,8 @@ __L19186:
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L19200
-.source "src/cg_expr.c", 1947
+    jump    z, __L19204
+.source "src/cg_expr.c", 1949
     load    r0, sf[-9]
     push    r0
     load    r0, sf[-8]
@@ -192552,7 +192619,7 @@ __L19186:
     call    __F1247_ge_snap
     add     sp, 2
     store   r0, sf[-9]
-.source "src/cg_expr.c", 1948
+.source "src/cg_expr.c", 1950
     load    r0, sf[3]
     add     r0, 5
     load    r0, r0[0]
@@ -192570,8 +192637,8 @@ __L19186:
     call    __F1366_ge_str_eq
     add     sp, 3
     return
-__L19200:
-.source "src/cg_expr.c", 1950
+__L19204:
+.source "src/cg_expr.c", 1952
     load    r0, sf[-8]
     push    r0
     load    r0, sf[3]
@@ -192581,19 +192648,19 @@ __L19200:
     push    r0
     load    r0, sf[-9]
     push    r0
-    move    r0, __W2390+1
+    move    r0, __W2395+1
     push    r0
     call    __F1237_S
     add     sp, 3
     return
-.source "src/cg_expr.c", 1952
-__L19187:
-.source "src/cg_expr.c", 1953
+.source "src/cg_expr.c", 1954
+__L19191:
+.source "src/cg_expr.c", 1955
     add     r0, sf, 4
     add     r0, 2
     load    r0, r0[0]
     store   r0, sf[-10]
-.source "src/cg_expr.c", 1954
+.source "src/cg_expr.c", 1956
     add     r0, sf, 4
     load    r1, r0[4]
     push    r1
@@ -192617,12 +192684,12 @@ __L19187:
     store   r0, sf[-12]
     move    r0, 0
     store   r0, sf[-13]
-.source "src/cg_expr.c", 1955
+.source "src/cg_expr.c", 1957
     load    r0, sf[3]
     add     r0, 5
     load    r0, r0[0]
     test    r0
-    jump    z, __L19202
+    jump    z, __L19206
     load    r0, sf[-10]
     push    r0
     load    r0, sf[3]
@@ -192632,13 +192699,13 @@ __L19187:
     call    __F1365_ge_range_bound
     add     sp, 2
     store   r0, sf[-12]
-__L19202:
-.source "src/cg_expr.c", 1956
+__L19206:
+.source "src/cg_expr.c", 1958
     load    r0, sf[3]
     add     r0, 6
     load    r0, r0[0]
     test    r0
-    jump    z, __L19204
+    jump    z, __L19208
     load    r0, sf[-10]
     push    r0
     load    r0, sf[3]
@@ -192648,11 +192715,11 @@ __L19202:
     call    __F1365_ge_range_bound
     add     sp, 2
     store   r0, sf[-13]
-__L19204:
-.source "src/cg_expr.c", 1957
+__L19208:
+.source "src/cg_expr.c", 1959
     load    r0, sf[-12]
     test    r0
-    jump    z, __L19206
+    jump    z, __L19210
     load    r0, sf[-12]
     push    r0
     load    r0, sf[-11]
@@ -192664,11 +192731,11 @@ __L19204:
     call    __F1274_ge_cmp
     add     sp, 4
     store   r0, sf[0]
-__L19206:
-.source "src/cg_expr.c", 1958
+__L19210:
+.source "src/cg_expr.c", 1960
     load    r0, sf[-13]
     test    r0
-    jump    z, __L19208
+    jump    z, __L19212
     load    r0, sf[-13]
     push    r0
     load    r0, sf[-11]
@@ -192686,12 +192753,12 @@ __L19206:
     pop     r0
     and     r0, r1
     test    r0
-    jump    z, __L19210
+    jump    z, __L19214
     move    r0, 16
-    jump    __L19211
-__L19210:
+    jump    __L19215
+__L19214:
     move    r0, 15
-__L19211:
+__L19215:
     push    r0
     call    __F1274_ge_cmp
     add     sp, 4
@@ -192701,18 +192768,18 @@ __L19211:
     call    __F1359_ge_and
     add     sp, 2
     store   r0, sf[0]
-__L19208:
-.source "src/cg_expr.c", 1959
+__L19212:
+.source "src/cg_expr.c", 1961
     load    r0, sf[0]
     return
-.source "src/cg_expr.c", 1961
-__L19188:
-.source "src/cg_expr.c", 1962
+.source "src/cg_expr.c", 1963
+__L19192:
+.source "src/cg_expr.c", 1964
     add     r0, sf, 4
     add     r0, 2
     load    r0, r0[0]
     store   r0, sf[-14]
-.source "src/cg_expr.c", 1963
+.source "src/cg_expr.c", 1965
     store   0, sf[-24]
     store   0, sf[-23]
     store   0, sf[-22]
@@ -192757,7 +192824,7 @@ __L19188:
     load    r2, r0[4]
     store   r2, r1[4]
     move    r0, r1
-.source "src/cg_expr.c", 1964
+.source "src/cg_expr.c", 1966
     add     r0, sf, -24
     load    r1, r0[4]
     push    r1
@@ -192776,14 +192843,14 @@ __L19188:
     call    __F1370_ge_pat_cond
     add     sp, 6
     return
-.source "src/cg_expr.c", 1966
-__L19189:
-.source "src/cg_expr.c", 1967
+.source "src/cg_expr.c", 1968
+__L19193:
+.source "src/cg_expr.c", 1969
     add     r0, sf, 4
     add     r0, 2
     load    r0, r0[0]
     store   r0, sf[-25]
-.source "src/cg_expr.c", 1968
+.source "src/cg_expr.c", 1970
     load    r0, sf[3]
     add     r0, 9
     add     r0, 1
@@ -192791,22 +192858,22 @@ __L19189:
     store   r0, sf[-26]
     move    r0, -1
     store   r0, sf[-27]
-.source "src/cg_expr.c", 1969
+.source "src/cg_expr.c", 1971
     move    r0, 0
     store   r0, sf[-28]
-__L19212:
+__L19216:
     load    r0, sf[-28]
     load    r1, sf[-26]
     cmp     r0, r1
-    jump    o, __L19215
+    jump    o, __L19219
     move    lt, r0, 1, 0
-    jump    __L19216
-__L19215:
+    jump    __L19220
+__L19219:
     move    lt, r0, 0, 1
-__L19216:
+__L19220:
     test    r0
-    jump    z, __L19214
-.source "src/cg_expr.c", 1970
+    jump    z, __L19218
+.source "src/cg_expr.c", 1972
     load    r0, sf[3]
     add     r0, 9
     load    r0, r0[0]
@@ -192818,72 +192885,72 @@ __L19216:
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L19217
+    jump    z, __L19221
     load    r0, sf[-28]
     store   r0, sf[-27]
+__L19221:
 __L19217:
-__L19213:
-.source "src/cg_expr.c", 1969
+.source "src/cg_expr.c", 1971
     load    r1, sf[-28]
     add     r2, r1, 1
     store   r2, sf[-28]
     move    r0, r1
-    jump    __L19212
-__L19214:
-.source "src/cg_expr.c", 1971
+    jump    __L19216
+__L19218:
+.source "src/cg_expr.c", 1973
     move    r0, 0
     store   r0, sf[-28]
-__L19219:
+__L19223:
     load    r0, sf[-28]
     load    r1, sf[-26]
     cmp     r0, r1
-    jump    o, __L19222
+    jump    o, __L19226
     move    lt, r0, 1, 0
-    jump    __L19223
-__L19222:
+    jump    __L19227
+__L19226:
     move    lt, r0, 0, 1
-__L19223:
+__L19227:
     test    r0
-    jump    z, __L19221
-.source "src/cg_expr.c", 1973
+    jump    z, __L19225
+.source "src/cg_expr.c", 1975
     load    r0, sf[-28]
     load    r1, sf[-27]
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L19224
-    jump    __L19220
-__L19224:
-.source "src/cg_expr.c", 1974
+    jump    z, __L19228
+    jump    __L19224
+__L19228:
+.source "src/cg_expr.c", 1976
     move    r0, 0
     load    r1, sf[-27]
     cmp     r0, r1
-    jump    o, __L19230
+    jump    o, __L19234
     move    le, r0, 1, 0
-    jump    __L19231
-__L19230:
+    jump    __L19235
+__L19234:
     move    lt, r0, 0, 1
-__L19231:
+__L19235:
     test    r0
-    jump    z, __L19228
+    jump    z, __L19232
     load    r0, sf[-27]
     load    r1, sf[-28]
     cmp     r0, r1
-    jump    o, __L19232
+    jump    o, __L19236
     move    lt, r0, 1, 0
+    jump    __L19237
+__L19236:
+    move    lt, r0, 0, 1
+__L19237:
+    test    r0
+    jump    z, __L19232
+    move    r0, 1
     jump    __L19233
 __L19232:
-    move    lt, r0, 0, 1
+    move    r0, 0
 __L19233:
     test    r0
-    jump    z, __L19228
-    move    r0, 1
-    jump    __L19229
-__L19228:
-    move    r0, 0
-__L19229:
-    test    r0
-    jump    z, __L19226
+    jump    z, __L19230
     load    r0, sf[-25]
     add     r0, 7
     load    r0, r0[0]
@@ -192894,12 +192961,12 @@ __L19229:
     move    r1, r0
     pop     r0
     sub     r0, r1
-    jump    __L19227
-__L19226:
+    jump    __L19231
+__L19230:
     load    r0, sf[-28]
-__L19227:
+__L19231:
     store   r0, sf[-29]
-.source "src/cg_expr.c", 1975
+.source "src/cg_expr.c", 1977
     add     r0, sf, 4
     add     r0, 3
     load    r0, r0[0]
@@ -192917,7 +192984,7 @@ __L19227:
     add     r0, 1
     load    r0, r0[0]
     push    r0
-    move    r0, __W2391+1
+    move    r0, __W2396+1
     push    r0
     call    __F1237_S
     add     sp, 3
@@ -192954,25 +193021,25 @@ __L19227:
     call    __F1359_ge_and
     add     sp, 2
     store   r0, sf[0]
-__L19220:
-.source "src/cg_expr.c", 1971
+__L19224:
+.source "src/cg_expr.c", 1973
     load    r1, sf[-28]
     add     r2, r1, 1
     store   r2, sf[-28]
     move    r0, r1
-    jump    __L19219
-__L19221:
-.source "src/cg_expr.c", 1977
+    jump    __L19223
+__L19225:
+.source "src/cg_expr.c", 1979
     load    r0, sf[0]
     return
-.source "src/cg_expr.c", 1979
-__L19190:
-.source "src/cg_expr.c", 1980
+.source "src/cg_expr.c", 1981
+__L19194:
+.source "src/cg_expr.c", 1982
     add     r0, sf, 4
     add     r0, 2
     load    r0, r0[0]
     store   r0, sf[-35]
-.source "src/cg_expr.c", 1981
+.source "src/cg_expr.c", 1983
     load    r0, sf[3]
     add     r0, 9
     add     r0, 1
@@ -192986,23 +193053,23 @@ __L19190:
     move    r0, 0
     load    r1, sf[-37]
     cmp     r0, r1
-    jump    o, __L19236
+    jump    o, __L19240
     move    le, r0, 1, 0
-    jump    __L19237
-__L19236:
+    jump    __L19241
+__L19240:
     move    lt, r0, 0, 1
-__L19237:
+__L19241:
     test    r0
-    jump    z, __L19234
+    jump    z, __L19238
     load    r0, sf[-36]
     move    r1, 1
     sub     r0, r1
-    jump    __L19235
-__L19234:
+    jump    __L19239
+__L19238:
     load    r0, sf[-36]
-__L19235:
+__L19239:
     store   r0, sf[-39]
-.source "src/cg_expr.c", 1983
+.source "src/cg_expr.c", 1985
     add     r0, sf, -41
     push    r0
     add     r0, sf, -40
@@ -193020,97 +193087,97 @@ __L19235:
     push    r1
     call    __F1367_ge_slice_parts
     add     sp, 7
-.source "src/cg_expr.c", 1984
+.source "src/cg_expr.c", 1986
     load    r0, sf[-35]
     load    r0, r0[0]
     move    r1, 10
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L19238
+    jump    z, __L19242
     load    r0, sf[-39]
     push    r0
     move    r0, 0
     load    r1, sf[-37]
     cmp     r0, r1
-    jump    o, __L19242
+    jump    o, __L19246
     move    le, r0, 1, 0
-    jump    __L19243
-__L19242:
+    jump    __L19247
+__L19246:
     move    lt, r0, 0, 1
-__L19243:
+__L19247:
     test    r0
-    jump    z, __L19240
-    move    r0, __W2393+1
-    jump    __L19241
-__L19240:
-    move    r0, __W2394+1
-__L19241:
+    jump    z, __L19244
+    move    r0, __W2398+1
+    jump    __L19245
+__L19244:
+    move    r0, __W2399+1
+__L19245:
     push    r0
     load    r0, sf[-41]
     push    r0
-    move    r0, __W2392+1
+    move    r0, __W2397+1
     push    r0
     call    __F1237_S
     add     sp, 4
     store   r0, sf[0]
-__L19238:
-.source "src/cg_expr.c", 1985
+__L19242:
+.source "src/cg_expr.c", 1987
     move    r0, 0
     store   r0, sf[-38]
-__L19244:
+__L19248:
     load    r0, sf[-38]
     load    r1, sf[-36]
     cmp     r0, r1
-    jump    o, __L19247
+    jump    o, __L19251
     move    lt, r0, 1, 0
-    jump    __L19248
-__L19247:
+    jump    __L19252
+__L19251:
     move    lt, r0, 0, 1
-__L19248:
+__L19252:
     test    r0
-    jump    z, __L19246
-.source "src/cg_expr.c", 1987
+    jump    z, __L19250
+.source "src/cg_expr.c", 1989
     load    r0, sf[-38]
     load    r1, sf[-37]
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L19249
-    jump    __L19245
-__L19249:
-.source "src/cg_expr.c", 1988
+    jump    z, __L19253
+    jump    __L19249
+__L19253:
+.source "src/cg_expr.c", 1990
     add     r0, sf, -46
     push    r0
     move    r0, 0
     load    r1, sf[-37]
     cmp     r0, r1
-    jump    o, __L19255
+    jump    o, __L19259
     move    le, r0, 1, 0
-    jump    __L19256
-__L19255:
+    jump    __L19260
+__L19259:
     move    lt, r0, 0, 1
-__L19256:
+__L19260:
     test    r0
-    jump    z, __L19253
+    jump    z, __L19257
     load    r0, sf[-37]
     load    r1, sf[-38]
     cmp     r0, r1
-    jump    o, __L19257
+    jump    o, __L19261
     move    lt, r0, 1, 0
+    jump    __L19262
+__L19261:
+    move    lt, r0, 0, 1
+__L19262:
+    test    r0
+    jump    z, __L19257
+    move    r0, 1
     jump    __L19258
 __L19257:
-    move    lt, r0, 0, 1
+    move    r0, 0
 __L19258:
     test    r0
-    jump    z, __L19253
-    move    r0, 1
-    jump    __L19254
-__L19253:
-    move    r0, 0
-__L19254:
-    test    r0
-    jump    z, __L19251
+    jump    z, __L19255
     load    r0, sf[-36]
     load    r1, sf[-38]
     sub     r0, r1
@@ -193133,8 +193200,8 @@ __L19254:
     call    __F1369_ge_slice_elem
     add     sp, 8
     add     r0, sf, -51
-    jump    __L19252
-__L19251:
+    jump    __L19256
+__L19255:
     move    r0, 0
     push    r0
     load    r0, sf[-38]
@@ -193155,7 +193222,7 @@ __L19251:
     call    __F1369_ge_slice_elem
     add     sp, 8
     add     r0, sf, -56
-__L19252:
+__L19256:
     pop     r1
     load    r2, r0[0]
     store   r2, r1[0]
@@ -193168,7 +193235,7 @@ __L19252:
     load    r2, r0[4]
     store   r2, r1[4]
     move    r0, r1
-.source "src/cg_expr.c", 1989
+.source "src/cg_expr.c", 1991
     add     r0, sf, -46
     load    r1, r0[4]
     push    r1
@@ -193195,29 +193262,29 @@ __L19252:
     call    __F1359_ge_and
     add     sp, 2
     store   r0, sf[0]
-__L19245:
-.source "src/cg_expr.c", 1985
+__L19249:
+.source "src/cg_expr.c", 1987
     load    r1, sf[-38]
     add     r2, r1, 1
     store   r2, sf[-38]
     move    r0, r1
-    jump    __L19244
-__L19246:
-.source "src/cg_expr.c", 1991
+    jump    __L19248
+__L19250:
+.source "src/cg_expr.c", 1993
     load    r0, sf[0]
     return
-.source "src/cg_expr.c", 1993
-__L19191:
-.source "src/cg_expr.c", 1994
-    move    r0, 0
-    store   r0, sf[-57]
 .source "src/cg_expr.c", 1995
-    move    r0, 0
-    store   r0, sf[-58]
+__L19195:
 .source "src/cg_expr.c", 1996
     move    r0, 0
+    store   r0, sf[-57]
+.source "src/cg_expr.c", 1997
+    move    r0, 0
+    store   r0, sf[-58]
+.source "src/cg_expr.c", 1998
+    move    r0, 0
     store   r0, sf[-1]
-__L19259:
+__L19263:
     load    r0, sf[-1]
     push    r0
     load    r0, sf[3]
@@ -193227,15 +193294,15 @@ __L19259:
     move    r1, r0
     pop     r0
     cmp     r0, r1
-    jump    o, __L19262
+    jump    o, __L19266
     move    lt, r0, 1, 0
-    jump    __L19263
-__L19262:
+    jump    __L19267
+__L19266:
     move    lt, r0, 0, 1
-__L19263:
+__L19267:
     test    r0
-    jump    z, __L19261
-.source "src/cg_expr.c", 1997
+    jump    z, __L19265
+.source "src/cg_expr.c", 1999
     add     r0, sf, 4
     load    r1, r0[4]
     push    r1
@@ -193257,54 +193324,54 @@ __L19263:
     call    __F1370_ge_pat_cond
     add     sp, 6
     store   r0, sf[-59]
-.source "src/cg_expr.c", 1998
+.source "src/cg_expr.c", 2000
     load    r0, sf[-59]
     test    r0
     move    z, r0, 1, 0
     test    r0
-    jump    z, __L19264
+    jump    z, __L19268
     move    r0, 1
     store   r0, sf[-58]
-    jump    __L19265
-__L19264:
-.source "src/cg_expr.c", 1999
+    jump    __L19269
+__L19268:
+.source "src/cg_expr.c", 2001
     load    r0, sf[-57]
     test    r0
-    jump    z, __L19266
+    jump    z, __L19270
     load    r0, sf[-59]
     push    r0
     load    r0, sf[-57]
     push    r0
-    move    r0, __W2395+1
+    move    r0, __W2400+1
     push    r0
     call    __F1237_S
     add     sp, 3
-    jump    __L19267
-__L19266:
+    jump    __L19271
+__L19270:
     load    r0, sf[-59]
-__L19267:
+__L19271:
     store   r0, sf[-57]
-__L19265:
-__L19260:
-.source "src/cg_expr.c", 1996
+__L19269:
+__L19264:
+.source "src/cg_expr.c", 1998
     load    r1, sf[-1]
     add     r2, r1, 1
     store   r2, sf[-1]
     move    r0, r1
-    jump    __L19259
-__L19261:
-.source "src/cg_expr.c", 2001
+    jump    __L19263
+__L19265:
+.source "src/cg_expr.c", 2003
     load    r0, sf[-58]
     test    r0
-    jump    z, __L19268
+    jump    z, __L19272
     move    r0, 0
-    jump    __L19269
-__L19268:
+    jump    __L19273
+__L19272:
     load    r0, sf[-57]
-__L19269:
+__L19273:
     return
-__L19182:
-.source "src/cg_expr.c", 2006
+__L19186:
+.source "src/cg_expr.c", 2008
     load    r0, sf[3]
     add     r0, 26
     load    r0, r0[0]
@@ -193314,17 +193381,41 @@ __L19182:
     call    __F1361_ge_pat_ctor
     add     sp, 1
     store   r0, sf[-61]
-.source "src/cg_expr.c", 2007
+.source "src/cg_expr.c", 2009
     load    r0, sf[-61]
     test    r0
     move    z, r0, 1, 0
     test    r0
-    jump    z, __L19278
+    jump    z, __L19282
     load    r0, sf[3]
     load    r0, r0[0]
     move    r1, 60
     cmp     r0, r1
     move    ne, r0, 1, 0
+    test    r0
+    jump    z, __L19282
+    move    r0, 1
+    jump    __L19283
+__L19282:
+    move    r0, 0
+__L19283:
+    test    r0
+    jump    z, __L19280
+    load    r0, sf[3]
+    load    r0, r0[0]
+    move    r1, 61
+    cmp     r0, r1
+    move    ne, r0, 1, 0
+    test    r0
+    jump    z, __L19280
+    move    r0, 1
+    jump    __L19281
+__L19280:
+    move    r0, 0
+__L19281:
+    test    r0
+    jump    z, __L19278
+    load    r0, sf[-60]
     test    r0
     jump    z, __L19278
     move    r0, 1
@@ -193334,11 +193425,25 @@ __L19278:
 __L19279:
     test    r0
     jump    z, __L19276
-    load    r0, sf[3]
+    load    r0, sf[-60]
     load    r0, r0[0]
-    move    r1, 61
+    move    r1, 9
     cmp     r0, r1
-    move    ne, r0, 1, 0
+    move    eq, r0, 1, 0
+    test    r0
+    jump    nz, __L19284
+    load    r0, sf[-60]
+    load    r0, r0[0]
+    move    r1, 10
+    cmp     r0, r1
+    move    eq, r0, 1, 0
+    test    r0
+    jump    nz, __L19284
+    move    r0, 0
+    jump    __L19285
+__L19284:
+    move    r0, 1
+__L19285:
     test    r0
     jump    z, __L19276
     move    r0, 1
@@ -193348,116 +193453,37 @@ __L19276:
 __L19277:
     test    r0
     jump    z, __L19274
-    load    r0, sf[-60]
-    test    r0
-    jump    z, __L19274
-    move    r0, 1
-    jump    __L19275
-__L19274:
-    move    r0, 0
-__L19275:
-    test    r0
-    jump    z, __L19272
-    load    r0, sf[-60]
-    load    r0, r0[0]
-    move    r1, 9
-    cmp     r0, r1
-    move    eq, r0, 1, 0
-    test    r0
-    jump    nz, __L19280
-    load    r0, sf[-60]
-    load    r0, r0[0]
-    move    r1, 10
-    cmp     r0, r1
-    move    eq, r0, 1, 0
-    test    r0
-    jump    nz, __L19280
-    move    r0, 0
-    jump    __L19281
-__L19280:
-    move    r0, 1
-__L19281:
-    test    r0
-    jump    z, __L19272
-    move    r0, 1
-    jump    __L19273
-__L19272:
-    move    r0, 0
-__L19273:
-    test    r0
-    jump    z, __L19270
-.source "src/cg_expr.c", 2008
+.source "src/cg_expr.c", 2010
     add     r0, sf, 4
     add     r0, 2
     load    r0, r0[0]
     store   r0, sf[-62]
-.source "src/cg_expr.c", 2009
+.source "src/cg_expr.c", 2011
     load    r0, sf[-60]
     load    r0, r0[0]
     move    r1, 10
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L19282
+    jump    z, __L19286
     load    r0, sf[-60]
     push    r0
     call    __F1130_cg_static
     add     sp, 1
-    jump    __L19283
-__L19282:
+    jump    __L19287
+__L19286:
     load    r0, sf[-62]
     push    r0
     load    r0, sf[-60]
     add     r0, 3
     load    r0, r0[0]
     test    r0
-    jump    z, __L19286
+    jump    z, __L19290
     load    r0, sf[-60]
     add     r0, 3
     load    r0, r0[0]
     load    r0, r0[0]
     move    r1, 13
-    cmp     r0, r1
-    move    eq, r0, 1, 0
-    test    r0
-    jump    z, __L19286
-    move    r0, 1
-    jump    __L19287
-__L19286:
-    move    r0, 0
-__L19287:
-    test    r0
-    jump    z, __L19284
-    load    r0, __G1106_cg_subst+1
-    jump    __L19285
-__L19284:
-    move    r0, 0
-__L19285:
-    push    r0
-    load    r0, sf[-60]
-    push    r0
-    call    __F1329_ge_const_expr
-    add     sp, 3
-__L19283:
-    push    r0
-    load    r0, sf[-62]
-    push    r0
-    call    __F1247_ge_snap
-    add     sp, 2
-    store   r0, sf[-63]
-.source "src/cg_expr.c", 2010
-    load    r0, sf[-62]
-    load    r0, r0[0]
-    move    r1, 11
-    cmp     r0, r1
-    move    eq, r0, 1, 0
-    test    r0
-    jump    z, __L19290
-    load    r0, sf[-62]
-    add     r0, 5
-    load    r0, r0[0]
-    load    r0, r0[0]
-    move    r1, 6
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
@@ -193469,7 +193495,48 @@ __L19290:
 __L19291:
     test    r0
     jump    z, __L19288
-.source "src/cg_expr.c", 2011
+    load    r0, __G1106_cg_subst+1
+    jump    __L19289
+__L19288:
+    move    r0, 0
+__L19289:
+    push    r0
+    load    r0, sf[-60]
+    push    r0
+    call    __F1329_ge_const_expr
+    add     sp, 3
+__L19287:
+    push    r0
+    load    r0, sf[-62]
+    push    r0
+    call    __F1247_ge_snap
+    add     sp, 2
+    store   r0, sf[-63]
+.source "src/cg_expr.c", 2012
+    load    r0, sf[-62]
+    load    r0, r0[0]
+    move    r1, 11
+    cmp     r0, r1
+    move    eq, r0, 1, 0
+    test    r0
+    jump    z, __L19294
+    load    r0, sf[-62]
+    add     r0, 5
+    load    r0, r0[0]
+    load    r0, r0[0]
+    move    r1, 6
+    cmp     r0, r1
+    move    eq, r0, 1, 0
+    test    r0
+    jump    z, __L19294
+    move    r0, 1
+    jump    __L19295
+__L19294:
+    move    r0, 0
+__L19295:
+    test    r0
+    jump    z, __L19292
+.source "src/cg_expr.c", 2013
     add     r0, sf, 4
     load    r1, r0[4]
     push    r1
@@ -193489,7 +193556,7 @@ __L19291:
     call    __F1247_ge_snap
     add     sp, 2
     store   r0, sf[-64]
-.source "src/cg_expr.c", 2012
+.source "src/cg_expr.c", 2014
     load    r0, sf[-64]
     push    r0
     load    r0, sf[-63]
@@ -193500,13 +193567,13 @@ __L19291:
     push    r0
     load    r0, sf[-64]
     push    r0
-    move    r0, __W2396+1
+    move    r0, __W2401+1
     push    r0
     call    __F1237_S
     add     sp, 6
     return
-__L19288:
-.source "src/cg_expr.c", 2014
+__L19292:
+.source "src/cg_expr.c", 2016
     load    r0, sf[-63]
     push    r0
     add     r0, sf, 4
@@ -193523,21 +193590,45 @@ __L19288:
     call    __F1291_ge_load
     add     sp, 5
     push    r0
-    move    r0, __W2397+1
+    move    r0, __W2402+1
     push    r0
     call    __F1237_S
     add     sp, 3
     return
-__L19270:
-.source "src/cg_expr.c", 2016
+__L19274:
+.source "src/cg_expr.c", 2018
     load    r0, sf[-61]
     test    r0
     move    z, r0, 1, 0
     test    r0
-    jump    z, __L19298
+    jump    z, __L19302
     load    r0, sf[3]
     load    r0, r0[0]
     move    r1, 59
+    cmp     r0, r1
+    move    eq, r0, 1, 0
+    test    r0
+    jump    z, __L19302
+    move    r0, 1
+    jump    __L19303
+__L19302:
+    move    r0, 0
+__L19303:
+    test    r0
+    jump    z, __L19300
+    load    r0, sf[-60]
+    test    r0
+    jump    z, __L19300
+    move    r0, 1
+    jump    __L19301
+__L19300:
+    move    r0, 0
+__L19301:
+    test    r0
+    jump    z, __L19298
+    load    r0, sf[-60]
+    load    r0, r0[0]
+    move    r1, 9
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
@@ -193549,51 +193640,27 @@ __L19298:
 __L19299:
     test    r0
     jump    z, __L19296
-    load    r0, sf[-60]
-    test    r0
-    jump    z, __L19296
-    move    r0, 1
-    jump    __L19297
-__L19296:
-    move    r0, 0
-__L19297:
-    test    r0
-    jump    z, __L19294
-    load    r0, sf[-60]
-    load    r0, r0[0]
-    move    r1, 9
-    cmp     r0, r1
-    move    eq, r0, 1, 0
-    test    r0
-    jump    z, __L19294
-    move    r0, 1
-    jump    __L19295
-__L19294:
-    move    r0, 0
-__L19295:
-    test    r0
-    jump    z, __L19292
     move    r0, 0
     return
-__L19292:
-.source "src/cg_expr.c", 2017
+__L19296:
+.source "src/cg_expr.c", 2019
     load    r0, sf[-61]
     test    r0
     move    z, r0, 1, 0
     test    r0
-    jump    z, __L19300
+    jump    z, __L19304
     move    r0, 0
     return
-__L19300:
-.source "src/cg_expr.c", 2018
+__L19304:
+.source "src/cg_expr.c", 2020
     load    r0, sf[-61]
     load    r0, r0[0]
     move    r1, 5
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L19302
-.source "src/cg_expr.c", 2019
+    jump    z, __L19306
+.source "src/cg_expr.c", 2021
     move    r0, 1
     push    r0
     load    r0, sf[-61]
@@ -193605,14 +193672,14 @@ __L19300:
     move    r1, r0
     pop     r0
     cmp     r0, r1
-    jump    o, __L19306
+    jump    o, __L19310
     move    lt, r0, 1, 0
-    jump    __L19307
-__L19306:
+    jump    __L19311
+__L19310:
     move    lt, r0, 0, 1
-__L19307:
+__L19311:
     test    r0
-    jump    z, __L19304
+    jump    z, __L19308
     load    r0, sf[-61]
     push    r0
     call    __F1120_cg_variant_index
@@ -193622,22 +193689,22 @@ __L19307:
     add     r0, 1
     load    r0, r0[0]
     push    r0
-    move    r0, __W2398+1
+    move    r0, __W2403+1
     push    r0
     call    __F1237_S
     add     sp, 3
     store   r0, sf[0]
-__L19304:
-__L19302:
-.source "src/cg_expr.c", 2021
+__L19308:
+__L19306:
+.source "src/cg_expr.c", 2023
     load    r0, sf[3]
     load    r0, r0[0]
     move    r1, 60
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L19308
-.source "src/cg_expr.c", 2022
+    jump    z, __L19312
+.source "src/cg_expr.c", 2024
     load    r0, sf[3]
     add     r0, 9
     add     r0, 1
@@ -193650,22 +193717,22 @@ __L19302:
     store   r0, sf[-66]
     move    r0, -1
     store   r0, sf[-67]
-.source "src/cg_expr.c", 2023
+.source "src/cg_expr.c", 2025
     move    r0, 0
     store   r0, sf[-68]
-__L19310:
+__L19314:
     load    r0, sf[-68]
     load    r1, sf[-65]
     cmp     r0, r1
-    jump    o, __L19313
+    jump    o, __L19317
     move    lt, r0, 1, 0
-    jump    __L19314
-__L19313:
+    jump    __L19318
+__L19317:
     move    lt, r0, 0, 1
-__L19314:
+__L19318:
     test    r0
-    jump    z, __L19312
-.source "src/cg_expr.c", 2024
+    jump    z, __L19316
+.source "src/cg_expr.c", 2026
     load    r0, sf[3]
     add     r0, 9
     load    r0, r0[0]
@@ -193677,72 +193744,72 @@ __L19314:
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L19315
+    jump    z, __L19319
     load    r0, sf[-68]
     store   r0, sf[-67]
+__L19319:
 __L19315:
-__L19311:
-.source "src/cg_expr.c", 2023
+.source "src/cg_expr.c", 2025
     load    r1, sf[-68]
     add     r2, r1, 1
     store   r2, sf[-68]
     move    r0, r1
-    jump    __L19310
-__L19312:
-.source "src/cg_expr.c", 2025
+    jump    __L19314
+__L19316:
+.source "src/cg_expr.c", 2027
     move    r0, 0
     store   r0, sf[-68]
-__L19317:
+__L19321:
     load    r0, sf[-68]
     load    r1, sf[-65]
     cmp     r0, r1
-    jump    o, __L19320
+    jump    o, __L19324
     move    lt, r0, 1, 0
-    jump    __L19321
-__L19320:
+    jump    __L19325
+__L19324:
     move    lt, r0, 0, 1
-__L19321:
+__L19325:
     test    r0
-    jump    z, __L19319
-.source "src/cg_expr.c", 2027
+    jump    z, __L19323
+.source "src/cg_expr.c", 2029
     load    r0, sf[-68]
     load    r1, sf[-67]
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L19322
-    jump    __L19318
-__L19322:
-.source "src/cg_expr.c", 2028
+    jump    z, __L19326
+    jump    __L19322
+__L19326:
+.source "src/cg_expr.c", 2030
     move    r0, 0
     load    r1, sf[-67]
     cmp     r0, r1
-    jump    o, __L19328
+    jump    o, __L19332
     move    le, r0, 1, 0
-    jump    __L19329
-__L19328:
+    jump    __L19333
+__L19332:
     move    lt, r0, 0, 1
-__L19329:
+__L19333:
     test    r0
-    jump    z, __L19326
+    jump    z, __L19330
     load    r0, sf[-67]
     load    r1, sf[-68]
     cmp     r0, r1
-    jump    o, __L19330
+    jump    o, __L19334
     move    lt, r0, 1, 0
+    jump    __L19335
+__L19334:
+    move    lt, r0, 0, 1
+__L19335:
+    test    r0
+    jump    z, __L19330
+    move    r0, 1
     jump    __L19331
 __L19330:
-    move    lt, r0, 0, 1
+    move    r0, 0
 __L19331:
     test    r0
-    jump    z, __L19326
-    move    r0, 1
-    jump    __L19327
-__L19326:
-    move    r0, 0
-__L19327:
-    test    r0
-    jump    z, __L19324
+    jump    z, __L19328
     load    r0, sf[-66]
     push    r0
     load    r0, sf[-65]
@@ -193751,12 +193818,12 @@ __L19327:
     move    r1, r0
     pop     r0
     sub     r0, r1
-    jump    __L19325
-__L19324:
+    jump    __L19329
+__L19328:
     load    r0, sf[-68]
-__L19325:
+__L19329:
     store   r0, sf[-69]
-.source "src/cg_expr.c", 2029
+.source "src/cg_expr.c", 2031
     load    r0, sf[-69]
     push    r0
     move    r0, 0
@@ -193809,28 +193876,28 @@ __L19325:
     call    __F1359_ge_and
     add     sp, 2
     store   r0, sf[0]
-__L19318:
-.source "src/cg_expr.c", 2025
+__L19322:
+.source "src/cg_expr.c", 2027
     load    r1, sf[-68]
     add     r2, r1, 1
     store   r2, sf[-68]
     move    r0, r1
-    jump    __L19317
-__L19319:
-    jump    __L19309
-__L19308:
-.source "src/cg_expr.c", 2031
+    jump    __L19321
+__L19323:
+    jump    __L19313
+__L19312:
+.source "src/cg_expr.c", 2033
     load    r0, sf[3]
     load    r0, r0[0]
     move    r1, 61
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L19332
-.source "src/cg_expr.c", 2032
+    jump    z, __L19336
+.source "src/cg_expr.c", 2034
     move    r0, 0
     store   r0, sf[-1]
-__L19334:
+__L19338:
     load    r0, sf[-1]
     push    r0
     load    r0, sf[3]
@@ -193840,15 +193907,15 @@ __L19334:
     move    r1, r0
     pop     r0
     cmp     r0, r1
-    jump    o, __L19337
+    jump    o, __L19341
     move    lt, r0, 1, 0
-    jump    __L19338
-__L19337:
+    jump    __L19342
+__L19341:
     move    lt, r0, 0, 1
-__L19338:
+__L19342:
     test    r0
-    jump    z, __L19336
-.source "src/cg_expr.c", 2033
+    jump    z, __L19340
+.source "src/cg_expr.c", 2035
     load    r0, sf[3]
     add     r0, 9
     load    r0, r0[0]
@@ -193856,7 +193923,7 @@ __L19338:
     add     r0, r1
     load    r0, r0[0]
     store   r0, sf[-75]
-.source "src/cg_expr.c", 2034
+.source "src/cg_expr.c", 2036
     load    r0, sf[-75]
     add     r0, 26
     load    r0, r0[0]
@@ -193901,17 +193968,17 @@ __L19338:
     call    __F1359_ge_and
     add     sp, 2
     store   r0, sf[0]
-__L19335:
-.source "src/cg_expr.c", 2032
+__L19339:
+.source "src/cg_expr.c", 2034
     load    r1, sf[-1]
     add     r2, r1, 1
     store   r2, sf[-1]
     move    r0, r1
-    jump    __L19334
+    jump    __L19338
+__L19340:
 __L19336:
-__L19332:
-__L19309:
-.source "src/cg_expr.c", 2037
+__L19313:
+.source "src/cg_expr.c", 2039
     load    r0, sf[0]
     return
     move    r0, 0
@@ -193920,22 +193987,22 @@ __L19309:
 
 // ge_binding
 __F1371_ge_binding:
-.source "src/cg_expr.c", 2042
+.source "src/cg_expr.c", 2044
     add     sp, -1
-.source "src/cg_expr.c", 2043
+.source "src/cg_expr.c", 2045
     load    r0, sf[3]
     push    r0
     call    __F1250_ge_local_find
     add     sp, 1
     store   r0, sf[0]
-.source "src/cg_expr.c", 2044
+.source "src/cg_expr.c", 2046
     load    r0, sf[0]
     test    r0
-    jump    z, __L19339
+    jump    z, __L19343
     load    r0, sf[0]
     return
-__L19339:
-.source "src/cg_expr.c", 2045
+__L19343:
+.source "src/cg_expr.c", 2047
     load    r0, sf[4]
     push    r0
     load    r0, sf[3]
@@ -193949,9 +194016,9 @@ __L19339:
 
 // ge_pat_bind
 __F1372_ge_pat_bind:
-.source "src/cg_expr.c", 2048
-    add     sp, -72
 .source "src/cg_expr.c", 2050
+    add     sp, -72
+.source "src/cg_expr.c", 2052
     load    r0, sf[3]
     push    r0
     call    __F1360_ge_pat_binds
@@ -193959,10 +194026,10 @@ __F1372_ge_pat_bind:
     test    r0
     move    z, r0, 1, 0
     test    r0
-    jump    z, __L19341
+    jump    z, __L19345
     return
-__L19341:
-.source "src/cg_expr.c", 2051
+__L19345:
+.source "src/cg_expr.c", 2053
     add     r0, sf, 4
     push    r0
     add     r0, sf, 4
@@ -193995,28 +194062,28 @@ __L19341:
     load    r2, r0[4]
     store   r2, r1[4]
     move    r0, r1
-.source "src/cg_expr.c", 2052
+.source "src/cg_expr.c", 2054
     load    r0, sf[3]
     load    r0, r0[0]
     cmp     r0, 53
-    jump    eq, __L19344
-    cmp     r0, 56
-    jump    eq, __L19345
-    cmp     r0, 57
-    jump    eq, __L19346
-    cmp     r0, 58
-    jump    eq, __L19347
-    cmp     r0, 63
     jump    eq, __L19348
-    jump    __L19343
-.source "src/cg_expr.c", 2053
-__L19344:
-.source "src/cg_expr.c", 2054
+    cmp     r0, 56
+    jump    eq, __L19349
+    cmp     r0, 57
+    jump    eq, __L19350
+    cmp     r0, 58
+    jump    eq, __L19351
+    cmp     r0, 63
+    jump    eq, __L19352
+    jump    __L19347
+.source "src/cg_expr.c", 2055
+__L19348:
+.source "src/cg_expr.c", 2056
     load    r0, sf[3]
     add     r0, 26
     load    r0, r0[0]
     store   r0, sf[-6]
-.source "src/cg_expr.c", 2055
+.source "src/cg_expr.c", 2057
     load    r0, sf[-6]
     add     r0, 9
     load    r0, r0[0]
@@ -194024,7 +194091,7 @@ __L19344:
     call    __F1240_gm
     add     sp, 1
     store   r0, sf[-7]
-.source "src/cg_expr.c", 2056
+.source "src/cg_expr.c", 2058
     load    r0, sf[-7]
     push    r0
     load    r0, sf[-6]
@@ -194032,10 +194099,10 @@ __L19344:
     call    __F1371_ge_binding
     add     sp, 2
     store   r0, sf[-8]
-.source "src/cg_expr.c", 2058
+.source "src/cg_expr.c", 2060
     move    r0, 0
     store   r0, sf[-10]
-.source "src/cg_expr.c", 2059
+.source "src/cg_expr.c", 2061
     load    r0, sf[3]
     add     r0, 27
     load    r0, r0[0]
@@ -194047,8 +194114,8 @@ __L19344:
     pop     r0
     and     r0, r1
     test    r0
-    jump    z, __L19349
-.source "src/cg_expr.c", 2060
+    jump    z, __L19353
+.source "src/cg_expr.c", 2062
     add     r0, sf, 4
     load    r1, r0[4]
     push    r1
@@ -194063,9 +194130,9 @@ __L19344:
     call    __F1294_ge_addr
     add     sp, 5
     store   r0, sf[-9]
-    jump    __L19350
-__L19349:
-.source "src/cg_expr.c", 2062
+    jump    __L19354
+__L19353:
+.source "src/cg_expr.c", 2064
     add     r0, sf, 4
     load    r1, r0[4]
     push    r1
@@ -194080,7 +194147,7 @@ __L19349:
     call    __F1291_ge_load
     add     sp, 5
     store   r0, sf[-9]
-.source "src/cg_expr.c", 2063
+.source "src/cg_expr.c", 2065
     add     r0, sf, 4
     add     r0, 2
     load    r0, r0[0]
@@ -194088,8 +194155,8 @@ __L19349:
     call    __F1115_cg_needs_drop
     add     sp, 1
     store   r0, sf[-10]
-__L19350:
-.source "src/cg_expr.c", 2065
+__L19354:
+.source "src/cg_expr.c", 2067
     load    r0, sf[-7]
     push    r0
     call    __F1110_cg_is_zst
@@ -194097,7 +194164,7 @@ __L19350:
     test    r0
     move    z, r0, 1, 0
     test    r0
-    jump    z, __L19353
+    jump    z, __L19357
     load    r0, sf[-9]
     push    r0
     move    r0, __G1235_ge_never_s+1
@@ -194106,68 +194173,31 @@ __L19350:
     cmp     r0, r1
     move    ne, r0, 1, 0
     test    r0
-    jump    z, __L19353
+    jump    z, __L19357
     move    r0, 1
-    jump    __L19354
-__L19353:
+    jump    __L19358
+__L19357:
     move    r0, 0
-__L19354:
+__L19358:
     test    r0
-    jump    z, __L19351
+    jump    z, __L19355
     load    r0, sf[-9]
     push    r0
     load    r0, sf[-8]
     add     r0, 2
     load    r0, r0[0]
     push    r0
-    move    r0, __W2399+1
+    move    r0, __W2404+1
     push    r0
     call    __F1236_E
     add     sp, 3
-__L19351:
-.source "src/cg_expr.c", 2066
+__L19355:
+.source "src/cg_expr.c", 2068
     load    r0, sf[-8]
     add     r0, 6
     load    r0, r0[0]
     test    r0
-    jump    nz, __L19357
-    load    r0, sf[-10]
-    test    r0
-    jump    z, __L19361
-    add     r0, sf, 4
-    add     r0, 3
-    load    r0, r0[0]
-    test    r0
-    jump    z, __L19361
-    move    r0, 1
-    jump    __L19362
-__L19361:
-    move    r0, 0
-__L19362:
-    test    r0
-    jump    z, __L19359
-    add     r0, sf, 4
-    add     r0, 3
-    load    r0, r0[0]
-    add     r0, 6
-    load    r0, r0[0]
-    test    r0
-    jump    z, __L19359
-    move    r0, 1
-    jump    __L19360
-__L19359:
-    move    r0, 0
-__L19360:
-    test    r0
-    jump    nz, __L19357
-    move    r0, 0
-    jump    __L19358
-__L19357:
-    move    r0, 1
-__L19358:
-    test    r0
-    jump    z, __L19355
-.source "src/cg_expr.c", 2067
+    jump    nz, __L19361
     load    r0, sf[-10]
     test    r0
     jump    z, __L19365
@@ -194188,31 +194218,29 @@ __L19366:
     load    r0, r0[0]
     add     r0, 6
     load    r0, r0[0]
+    test    r0
+    jump    z, __L19363
+    move    r0, 1
     jump    __L19364
 __L19363:
     move    r0, 0
 __L19364:
-    push    r0
-    load    r0, sf[-8]
-    add     r0, 6
-    load    r0, r0[0]
-    push    r0
-    call    __F1356_ge_commit_add
-    add     sp, 2
-__L19355:
-.source "src/cg_expr.c", 2068
-    load    r0, sf[3]
-    add     r0, 5
-    load    r0, r0[0]
+    test    r0
+    jump    nz, __L19361
+    move    r0, 0
+    jump    __L19362
+__L19361:
+    move    r0, 1
+__L19362:
+    test    r0
+    jump    z, __L19359
+.source "src/cg_expr.c", 2069
+    load    r0, sf[-10]
     test    r0
     jump    z, __L19369
-    load    r0, sf[3]
-    add     r0, 5
+    add     r0, sf, 4
+    add     r0, 3
     load    r0, r0[0]
-    load    r0, r0[0]
-    move    r1, 52
-    cmp     r0, r1
-    move    ne, r0, 1, 0
     test    r0
     jump    z, __L19369
     move    r0, 1
@@ -194222,6 +194250,45 @@ __L19369:
 __L19370:
     test    r0
     jump    z, __L19367
+    add     r0, sf, 4
+    add     r0, 3
+    load    r0, r0[0]
+    add     r0, 6
+    load    r0, r0[0]
+    jump    __L19368
+__L19367:
+    move    r0, 0
+__L19368:
+    push    r0
+    load    r0, sf[-8]
+    add     r0, 6
+    load    r0, r0[0]
+    push    r0
+    call    __F1356_ge_commit_add
+    add     sp, 2
+__L19359:
+.source "src/cg_expr.c", 2070
+    load    r0, sf[3]
+    add     r0, 5
+    load    r0, r0[0]
+    test    r0
+    jump    z, __L19373
+    load    r0, sf[3]
+    add     r0, 5
+    load    r0, r0[0]
+    load    r0, r0[0]
+    move    r1, 52
+    cmp     r0, r1
+    move    ne, r0, 1, 0
+    test    r0
+    jump    z, __L19373
+    move    r0, 1
+    jump    __L19374
+__L19373:
+    move    r0, 0
+__L19374:
+    test    r0
+    jump    z, __L19371
     add     r0, sf, 4
     load    r1, r0[4]
     push    r1
@@ -194239,12 +194306,12 @@ __L19370:
     push    r0
     call    __F1372_ge_pat_bind
     add     sp, 6
-__L19367:
-.source "src/cg_expr.c", 2069
-    return
+__L19371:
 .source "src/cg_expr.c", 2071
-__L19345:
-.source "src/cg_expr.c", 2072
+    return
+.source "src/cg_expr.c", 2073
+__L19349:
+.source "src/cg_expr.c", 2074
     store   0, sf[-20]
     store   0, sf[-19]
     store   0, sf[-18]
@@ -194291,7 +194358,7 @@ __L19345:
     load    r2, r0[4]
     store   r2, r1[4]
     move    r0, r1
-.source "src/cg_expr.c", 2073
+.source "src/cg_expr.c", 2075
     add     r0, sf, -20
     load    r1, r0[4]
     push    r1
@@ -194309,16 +194376,16 @@ __L19345:
     push    r0
     call    __F1372_ge_pat_bind
     add     sp, 6
-.source "src/cg_expr.c", 2074
-    return
 .source "src/cg_expr.c", 2076
-__L19346:
-.source "src/cg_expr.c", 2077
+    return
+.source "src/cg_expr.c", 2078
+__L19350:
+.source "src/cg_expr.c", 2079
     add     r0, sf, 4
     add     r0, 2
     load    r0, r0[0]
     store   r0, sf[-21]
-.source "src/cg_expr.c", 2078
+.source "src/cg_expr.c", 2080
     load    r0, sf[3]
     add     r0, 9
     add     r0, 1
@@ -194326,22 +194393,22 @@ __L19346:
     store   r0, sf[-22]
     move    r0, -1
     store   r0, sf[-23]
-.source "src/cg_expr.c", 2079
+.source "src/cg_expr.c", 2081
     move    r0, 0
     store   r0, sf[-24]
-__L19371:
+__L19375:
     load    r0, sf[-24]
     load    r1, sf[-22]
     cmp     r0, r1
-    jump    o, __L19374
+    jump    o, __L19378
     move    lt, r0, 1, 0
-    jump    __L19375
-__L19374:
+    jump    __L19379
+__L19378:
     move    lt, r0, 0, 1
-__L19375:
+__L19379:
     test    r0
-    jump    z, __L19373
-.source "src/cg_expr.c", 2080
+    jump    z, __L19377
+.source "src/cg_expr.c", 2082
     load    r0, sf[3]
     add     r0, 9
     load    r0, r0[0]
@@ -194353,72 +194420,72 @@ __L19375:
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L19376
+    jump    z, __L19380
     load    r0, sf[-24]
     store   r0, sf[-23]
+__L19380:
 __L19376:
-__L19372:
-.source "src/cg_expr.c", 2079
+.source "src/cg_expr.c", 2081
     load    r1, sf[-24]
     add     r2, r1, 1
     store   r2, sf[-24]
     move    r0, r1
-    jump    __L19371
-__L19373:
-.source "src/cg_expr.c", 2081
+    jump    __L19375
+__L19377:
+.source "src/cg_expr.c", 2083
     move    r0, 0
     store   r0, sf[-24]
-__L19378:
+__L19382:
     load    r0, sf[-24]
     load    r1, sf[-22]
     cmp     r0, r1
-    jump    o, __L19381
+    jump    o, __L19385
     move    lt, r0, 1, 0
-    jump    __L19382
-__L19381:
+    jump    __L19386
+__L19385:
     move    lt, r0, 0, 1
-__L19382:
+__L19386:
     test    r0
-    jump    z, __L19380
-.source "src/cg_expr.c", 2083
+    jump    z, __L19384
+.source "src/cg_expr.c", 2085
     load    r0, sf[-24]
     load    r1, sf[-23]
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L19383
-    jump    __L19379
-__L19383:
-.source "src/cg_expr.c", 2084
+    jump    z, __L19387
+    jump    __L19383
+__L19387:
+.source "src/cg_expr.c", 2086
     move    r0, 0
     load    r1, sf[-23]
     cmp     r0, r1
-    jump    o, __L19389
+    jump    o, __L19393
     move    le, r0, 1, 0
-    jump    __L19390
-__L19389:
+    jump    __L19394
+__L19393:
     move    lt, r0, 0, 1
-__L19390:
+__L19394:
     test    r0
-    jump    z, __L19387
+    jump    z, __L19391
     load    r0, sf[-23]
     load    r1, sf[-24]
     cmp     r0, r1
-    jump    o, __L19391
+    jump    o, __L19395
     move    lt, r0, 1, 0
+    jump    __L19396
+__L19395:
+    move    lt, r0, 0, 1
+__L19396:
+    test    r0
+    jump    z, __L19391
+    move    r0, 1
     jump    __L19392
 __L19391:
-    move    lt, r0, 0, 1
+    move    r0, 0
 __L19392:
     test    r0
-    jump    z, __L19387
-    move    r0, 1
-    jump    __L19388
-__L19387:
-    move    r0, 0
-__L19388:
-    test    r0
-    jump    z, __L19385
+    jump    z, __L19389
     load    r0, sf[-21]
     add     r0, 7
     load    r0, r0[0]
@@ -194429,12 +194496,12 @@ __L19388:
     move    r1, r0
     pop     r0
     sub     r0, r1
-    jump    __L19386
-__L19385:
+    jump    __L19390
+__L19389:
     load    r0, sf[-24]
-__L19386:
+__L19390:
     store   r0, sf[-25]
-.source "src/cg_expr.c", 2085
+.source "src/cg_expr.c", 2087
     add     r0, sf, 4
     add     r0, 3
     load    r0, r0[0]
@@ -194452,7 +194519,7 @@ __L19386:
     add     r0, 1
     load    r0, r0[0]
     push    r0
-    move    r0, __W2400+1
+    move    r0, __W2405+1
     push    r0
     call    __F1237_S
     add     sp, 3
@@ -194483,24 +194550,24 @@ __L19386:
     push    r0
     call    __F1372_ge_pat_bind
     add     sp, 6
-__L19379:
-.source "src/cg_expr.c", 2081
+__L19383:
+.source "src/cg_expr.c", 2083
     load    r1, sf[-24]
     add     r2, r1, 1
     store   r2, sf[-24]
     move    r0, r1
-    jump    __L19378
-__L19380:
-.source "src/cg_expr.c", 2087
-    return
+    jump    __L19382
+__L19384:
 .source "src/cg_expr.c", 2089
-__L19347:
-.source "src/cg_expr.c", 2090
+    return
+.source "src/cg_expr.c", 2091
+__L19351:
+.source "src/cg_expr.c", 2092
     add     r0, sf, 4
     add     r0, 2
     load    r0, r0[0]
     store   r0, sf[-31]
-.source "src/cg_expr.c", 2091
+.source "src/cg_expr.c", 2093
     load    r0, sf[3]
     add     r0, 9
     add     r0, 1
@@ -194511,22 +194578,22 @@ __L19347:
     call    __F1368_ge_rest_pos
     add     sp, 1
     store   r0, sf[-33]
-.source "src/cg_expr.c", 2092
+.source "src/cg_expr.c", 2094
     move    r0, 0
     store   r0, sf[-34]
-__L19393:
+__L19397:
     load    r0, sf[-34]
     load    r1, sf[-32]
     cmp     r0, r1
-    jump    o, __L19396
+    jump    o, __L19400
     move    lt, r0, 1, 0
-    jump    __L19397
-__L19396:
+    jump    __L19401
+__L19400:
     move    lt, r0, 0, 1
-__L19397:
+__L19401:
     test    r0
-    jump    z, __L19395
-.source "src/cg_expr.c", 2093
+    jump    z, __L19399
+.source "src/cg_expr.c", 2095
     load    r0, sf[3]
     add     r0, 9
     load    r0, r0[0]
@@ -194534,27 +194601,27 @@ __L19397:
     add     r0, r1
     load    r0, r0[0]
     store   r0, sf[-35]
-.source "src/cg_expr.c", 2094
+.source "src/cg_expr.c", 2096
     load    r0, sf[-34]
     load    r1, sf[-33]
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L19398
-.source "src/cg_expr.c", 2095
+    jump    z, __L19402
+.source "src/cg_expr.c", 2097
     load    r0, sf[-35]
     load    r0, r0[0]
     move    r1, 53
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L19400
-.source "src/cg_expr.c", 2097
+    jump    z, __L19404
+.source "src/cg_expr.c", 2099
     load    r0, sf[-35]
     add     r0, 26
     load    r0, r0[0]
     store   r0, sf[-36]
-.source "src/cg_expr.c", 2098
+.source "src/cg_expr.c", 2100
     load    r0, sf[-36]
     add     r0, 9
     load    r0, r0[0]
@@ -194562,7 +194629,7 @@ __L19397:
     call    __F1240_gm
     add     sp, 1
     store   r0, sf[-37]
-.source "src/cg_expr.c", 2099
+.source "src/cg_expr.c", 2101
     load    r0, sf[-37]
     push    r0
     load    r0, sf[-36]
@@ -194570,7 +194637,7 @@ __L19397:
     call    __F1371_ge_binding
     add     sp, 2
     store   r0, sf[-38]
-.source "src/cg_expr.c", 2101
+.source "src/cg_expr.c", 2103
     add     r0, sf, -40
     push    r0
     add     r0, sf, -39
@@ -194588,7 +194655,7 @@ __L19397:
     push    r1
     call    __F1367_ge_slice_parts
     add     sp, 7
-.source "src/cg_expr.c", 2102
+.source "src/cg_expr.c", 2104
     load    r0, sf[-31]
     add     r0, 5
     load    r0, r0[0]
@@ -194596,15 +194663,15 @@ __L19397:
     call    __F1111_cg_is_u8
     add     sp, 1
     test    r0
-    jump    z, __L19402
-.source "src/cg_expr.c", 2103
+    jump    z, __L19406
+.source "src/cg_expr.c", 2105
     load    r0, sf[-32]
     move    r1, 1
     sub     r0, r1
     push    r0
     load    r0, sf[-40]
     push    r0
-    move    r0, __W2402+1
+    move    r0, __W2407+1
     push    r0
     call    __F1237_S
     add     sp, 3
@@ -194613,7 +194680,7 @@ __L19397:
     push    r0
     load    r0, sf[-39]
     push    r0
-    move    r0, __W2401+1
+    move    r0, __W2406+1
     push    r0
     call    __F1237_S
     add     sp, 3
@@ -194621,16 +194688,16 @@ __L19397:
     call    __F1287_ge_mk_slice
     add     sp, 2
     store   r0, sf[-41]
-    jump    __L19403
-__L19402:
-.source "src/cg_expr.c", 2105
+    jump    __L19407
+__L19406:
+.source "src/cg_expr.c", 2107
     load    r0, sf[-32]
     move    r1, 1
     sub     r0, r1
     push    r0
     load    r0, sf[-40]
     push    r0
-    move    r0, __W2404+1
+    move    r0, __W2409+1
     push    r0
     call    __F1237_S
     add     sp, 3
@@ -194646,7 +194713,7 @@ __L19402:
     call    __F1242_ge_ct
     add     sp, 1
     push    r0
-    move    r0, __W2403+1
+    move    r0, __W2408+1
     push    r0
     call    __F1237_S
     add     sp, 4
@@ -194654,24 +194721,24 @@ __L19402:
     call    __F1287_ge_mk_slice
     add     sp, 2
     store   r0, sf[-41]
-__L19403:
-.source "src/cg_expr.c", 2106
+__L19407:
+.source "src/cg_expr.c", 2108
     load    r0, sf[-41]
     push    r0
     load    r0, sf[-38]
     add     r0, 2
     load    r0, r0[0]
     push    r0
-    move    r0, __W2405+1
+    move    r0, __W2410+1
     push    r0
     call    __F1236_E
     add     sp, 3
-.source "src/cg_expr.c", 2107
+.source "src/cg_expr.c", 2109
     load    r0, sf[-38]
     add     r0, 6
     load    r0, r0[0]
     test    r0
-    jump    z, __L19404
+    jump    z, __L19408
     move    r0, 0
     push    r0
     load    r0, sf[-38]
@@ -194680,41 +194747,41 @@ __L19403:
     push    r0
     call    __F1356_ge_commit_add
     add     sp, 2
+__L19408:
 __L19404:
-__L19400:
-.source "src/cg_expr.c", 2109
-    jump    __L19394
-__L19398:
 .source "src/cg_expr.c", 2111
+    jump    __L19398
+__L19402:
+.source "src/cg_expr.c", 2113
     move    r0, 0
     load    r1, sf[-33]
     cmp     r0, r1
-    jump    o, __L19410
+    jump    o, __L19414
     move    le, r0, 1, 0
-    jump    __L19411
-__L19410:
+    jump    __L19415
+__L19414:
     move    lt, r0, 0, 1
-__L19411:
+__L19415:
     test    r0
-    jump    z, __L19408
+    jump    z, __L19412
     load    r0, sf[-33]
     load    r1, sf[-34]
     cmp     r0, r1
-    jump    o, __L19412
+    jump    o, __L19416
     move    lt, r0, 1, 0
+    jump    __L19417
+__L19416:
+    move    lt, r0, 0, 1
+__L19417:
+    test    r0
+    jump    z, __L19412
+    move    r0, 1
     jump    __L19413
 __L19412:
-    move    lt, r0, 0, 1
+    move    r0, 0
 __L19413:
     test    r0
-    jump    z, __L19408
-    move    r0, 1
-    jump    __L19409
-__L19408:
-    move    r0, 0
-__L19409:
-    test    r0
-    jump    z, __L19406
+    jump    z, __L19410
     load    r0, sf[-32]
     load    r1, sf[-34]
     sub     r0, r1
@@ -194737,8 +194804,8 @@ __L19409:
     call    __F1369_ge_slice_elem
     add     sp, 8
     add     r0, sf, -46
-    jump    __L19407
-__L19406:
+    jump    __L19411
+__L19410:
     move    r0, 0
     push    r0
     load    r0, sf[-34]
@@ -194759,7 +194826,7 @@ __L19406:
     call    __F1369_ge_slice_elem
     add     sp, 8
     add     r0, sf, -51
-__L19407:
+__L19411:
     load    r1, r0[4]
     push    r1
     load    r1, r0[3]
@@ -194774,25 +194841,25 @@ __L19407:
     push    r0
     call    __F1372_ge_pat_bind
     add     sp, 6
-__L19394:
-.source "src/cg_expr.c", 2092
+__L19398:
+.source "src/cg_expr.c", 2094
     load    r1, sf[-34]
     add     r2, r1, 1
     store   r2, sf[-34]
     move    r0, r1
-    jump    __L19393
-__L19395:
-.source "src/cg_expr.c", 2113
-    return
+    jump    __L19397
+__L19399:
 .source "src/cg_expr.c", 2115
-__L19348:
-.source "src/cg_expr.c", 2116
+    return
+.source "src/cg_expr.c", 2117
+__L19352:
+.source "src/cg_expr.c", 2118
     move    r0, 1
     store   r0, sf[-52]
-.source "src/cg_expr.c", 2117
+.source "src/cg_expr.c", 2119
     move    r0, 0
     store   r0, sf[0]
-__L19414:
+__L19418:
     load    r0, sf[0]
     push    r0
     load    r0, sf[3]
@@ -194802,15 +194869,15 @@ __L19414:
     move    r1, r0
     pop     r0
     cmp     r0, r1
-    jump    o, __L19417
+    jump    o, __L19421
     move    lt, r0, 1, 0
-    jump    __L19418
-__L19417:
+    jump    __L19422
+__L19421:
     move    lt, r0, 0, 1
-__L19418:
+__L19422:
     test    r0
-    jump    z, __L19416
-.source "src/cg_expr.c", 2118
+    jump    z, __L19420
+.source "src/cg_expr.c", 2120
     load    r0, sf[3]
     add     r0, 9
     load    r0, r0[0]
@@ -194818,7 +194885,7 @@ __L19418:
     add     r0, r1
     load    r0, r0[0]
     store   r0, sf[-53]
-.source "src/cg_expr.c", 2119
+.source "src/cg_expr.c", 2121
     add     r0, sf, 4
     load    r1, r0[4]
     push    r1
@@ -194835,7 +194902,7 @@ __L19418:
     call    __F1370_ge_pat_cond
     add     sp, 6
     store   r0, sf[-54]
-.source "src/cg_expr.c", 2120
+.source "src/cg_expr.c", 2122
     load    r0, sf[0]
     push    r0
     load    r0, sf[3]
@@ -194849,53 +194916,53 @@ __L19418:
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L19421
+    jump    z, __L19425
     load    r0, sf[-52]
     test    r0
     move    z, r0, 1, 0
     test    r0
-    jump    z, __L19421
+    jump    z, __L19425
     move    r0, 1
-    jump    __L19422
-__L19421:
+    jump    __L19426
+__L19425:
     move    r0, 0
-__L19422:
+__L19426:
     test    r0
-    jump    z, __L19419
-    move    r0, __W2406+1
+    jump    z, __L19423
+    move    r0, __W2411+1
     push    r0
     call    __F1236_E
     add     sp, 1
-    jump    __L19420
-__L19419:
-.source "src/cg_expr.c", 2121
-    load    r0, sf[-54]
-    test    r0
-    jump    z, __L19423
-    load    r0, sf[-54]
     jump    __L19424
 __L19423:
-    move    r0, __W2410+1
-__L19424:
+.source "src/cg_expr.c", 2123
+    load    r0, sf[-54]
+    test    r0
+    jump    z, __L19427
+    load    r0, sf[-54]
+    jump    __L19428
+__L19427:
+    move    r0, __W2415+1
+__L19428:
     push    r0
     load    r0, sf[-52]
     test    r0
-    jump    z, __L19425
-    move    r0, __W2408+1
-    jump    __L19426
-__L19425:
-    move    r0, __W2409+1
-__L19426:
+    jump    z, __L19429
+    move    r0, __W2413+1
+    jump    __L19430
+__L19429:
+    move    r0, __W2414+1
+__L19430:
     push    r0
-    move    r0, __W2407+1
+    move    r0, __W2412+1
     push    r0
     call    __F1236_E
     add     sp, 3
-__L19420:
-.source "src/cg_expr.c", 2122
+__L19424:
+.source "src/cg_expr.c", 2124
     move    r0, 0
     store   r0, sf[-52]
-.source "src/cg_expr.c", 2123
+.source "src/cg_expr.c", 2125
     add     r0, sf, 4
     load    r1, r0[4]
     push    r1
@@ -194911,45 +194978,45 @@ __L19420:
     push    r0
     call    __F1372_ge_pat_bind
     add     sp, 6
-.source "src/cg_expr.c", 2124
-    move    r0, __W2411+1
+.source "src/cg_expr.c", 2126
+    move    r0, __W2416+1
     push    r0
     call    __F1236_E
     add     sp, 1
-__L19415:
-.source "src/cg_expr.c", 2117
+__L19419:
+.source "src/cg_expr.c", 2119
     load    r1, sf[0]
     add     r2, r1, 1
     store   r2, sf[0]
     move    r0, r1
-    jump    __L19414
-__L19416:
-.source "src/cg_expr.c", 2126
+    jump    __L19418
+__L19420:
+.source "src/cg_expr.c", 2128
     return
-__L19343:
-.source "src/cg_expr.c", 2130
+__L19347:
+.source "src/cg_expr.c", 2132
     load    r0, sf[3]
     push    r0
     call    __F1361_ge_pat_ctor
     add     sp, 1
     store   r0, sf[-55]
-.source "src/cg_expr.c", 2131
+.source "src/cg_expr.c", 2133
     load    r0, sf[-55]
     test    r0
     move    z, r0, 1, 0
     test    r0
-    jump    z, __L19427
+    jump    z, __L19431
     return
-__L19427:
-.source "src/cg_expr.c", 2132
+__L19431:
+.source "src/cg_expr.c", 2134
     load    r0, sf[3]
     load    r0, r0[0]
     move    r1, 60
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L19429
-.source "src/cg_expr.c", 2133
+    jump    z, __L19433
+.source "src/cg_expr.c", 2135
     load    r0, sf[3]
     add     r0, 9
     add     r0, 1
@@ -194962,22 +195029,22 @@ __L19427:
     store   r0, sf[-57]
     move    r0, -1
     store   r0, sf[-58]
-.source "src/cg_expr.c", 2134
+.source "src/cg_expr.c", 2136
     move    r0, 0
     store   r0, sf[-59]
-__L19431:
+__L19435:
     load    r0, sf[-59]
     load    r1, sf[-56]
     cmp     r0, r1
-    jump    o, __L19434
+    jump    o, __L19438
     move    lt, r0, 1, 0
-    jump    __L19435
-__L19434:
+    jump    __L19439
+__L19438:
     move    lt, r0, 0, 1
-__L19435:
+__L19439:
     test    r0
-    jump    z, __L19433
-.source "src/cg_expr.c", 2135
+    jump    z, __L19437
+.source "src/cg_expr.c", 2137
     load    r0, sf[3]
     add     r0, 9
     load    r0, r0[0]
@@ -194989,72 +195056,72 @@ __L19435:
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L19436
+    jump    z, __L19440
     load    r0, sf[-59]
     store   r0, sf[-58]
+__L19440:
 __L19436:
-__L19432:
-.source "src/cg_expr.c", 2134
+.source "src/cg_expr.c", 2136
     load    r1, sf[-59]
     add     r2, r1, 1
     store   r2, sf[-59]
     move    r0, r1
-    jump    __L19431
-__L19433:
-.source "src/cg_expr.c", 2136
+    jump    __L19435
+__L19437:
+.source "src/cg_expr.c", 2138
     move    r0, 0
     store   r0, sf[-59]
-__L19438:
+__L19442:
     load    r0, sf[-59]
     load    r1, sf[-56]
     cmp     r0, r1
-    jump    o, __L19441
+    jump    o, __L19445
     move    lt, r0, 1, 0
-    jump    __L19442
-__L19441:
+    jump    __L19446
+__L19445:
     move    lt, r0, 0, 1
-__L19442:
+__L19446:
     test    r0
-    jump    z, __L19440
-.source "src/cg_expr.c", 2138
+    jump    z, __L19444
+.source "src/cg_expr.c", 2140
     load    r0, sf[-59]
     load    r1, sf[-58]
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L19443
-    jump    __L19439
-__L19443:
-.source "src/cg_expr.c", 2139
+    jump    z, __L19447
+    jump    __L19443
+__L19447:
+.source "src/cg_expr.c", 2141
     move    r0, 0
     load    r1, sf[-58]
     cmp     r0, r1
-    jump    o, __L19449
+    jump    o, __L19453
     move    le, r0, 1, 0
-    jump    __L19450
-__L19449:
+    jump    __L19454
+__L19453:
     move    lt, r0, 0, 1
-__L19450:
+__L19454:
     test    r0
-    jump    z, __L19447
+    jump    z, __L19451
     load    r0, sf[-58]
     load    r1, sf[-59]
     cmp     r0, r1
-    jump    o, __L19451
+    jump    o, __L19455
     move    lt, r0, 1, 0
+    jump    __L19456
+__L19455:
+    move    lt, r0, 0, 1
+__L19456:
+    test    r0
+    jump    z, __L19451
+    move    r0, 1
     jump    __L19452
 __L19451:
-    move    lt, r0, 0, 1
+    move    r0, 0
 __L19452:
     test    r0
-    jump    z, __L19447
-    move    r0, 1
-    jump    __L19448
-__L19447:
-    move    r0, 0
-__L19448:
-    test    r0
-    jump    z, __L19445
+    jump    z, __L19449
     load    r0, sf[-57]
     push    r0
     load    r0, sf[-56]
@@ -195063,12 +195130,12 @@ __L19448:
     move    r1, r0
     pop     r0
     sub     r0, r1
-    jump    __L19446
-__L19445:
+    jump    __L19450
+__L19449:
     load    r0, sf[-59]
-__L19446:
+__L19450:
     store   r0, sf[-60]
-.source "src/cg_expr.c", 2140
+.source "src/cg_expr.c", 2142
     load    r0, sf[-60]
     push    r0
     move    r0, 0
@@ -195115,28 +195182,28 @@ __L19446:
     push    r0
     call    __F1372_ge_pat_bind
     add     sp, 6
-__L19439:
-.source "src/cg_expr.c", 2136
+__L19443:
+.source "src/cg_expr.c", 2138
     load    r1, sf[-59]
     add     r2, r1, 1
     store   r2, sf[-59]
     move    r0, r1
-    jump    __L19438
-__L19440:
-    jump    __L19430
-__L19429:
-.source "src/cg_expr.c", 2142
+    jump    __L19442
+__L19444:
+    jump    __L19434
+__L19433:
+.source "src/cg_expr.c", 2144
     load    r0, sf[3]
     load    r0, r0[0]
     move    r1, 61
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L19453
-.source "src/cg_expr.c", 2143
+    jump    z, __L19457
+.source "src/cg_expr.c", 2145
     move    r0, 0
     store   r0, sf[0]
-__L19455:
+__L19459:
     load    r0, sf[0]
     push    r0
     load    r0, sf[3]
@@ -195146,15 +195213,15 @@ __L19455:
     move    r1, r0
     pop     r0
     cmp     r0, r1
-    jump    o, __L19458
+    jump    o, __L19462
     move    lt, r0, 1, 0
-    jump    __L19459
-__L19458:
+    jump    __L19463
+__L19462:
     move    lt, r0, 0, 1
-__L19459:
+__L19463:
     test    r0
-    jump    z, __L19457
-.source "src/cg_expr.c", 2144
+    jump    z, __L19461
+.source "src/cg_expr.c", 2146
     load    r0, sf[3]
     add     r0, 9
     load    r0, r0[0]
@@ -195162,7 +195229,7 @@ __L19459:
     add     r0, r1
     load    r0, r0[0]
     store   r0, sf[-66]
-.source "src/cg_expr.c", 2145
+.source "src/cg_expr.c", 2147
     load    r0, sf[-66]
     add     r0, 26
     load    r0, r0[0]
@@ -195201,52 +195268,52 @@ __L19459:
     push    r0
     call    __F1372_ge_pat_bind
     add     sp, 6
-__L19456:
-.source "src/cg_expr.c", 2143
+__L19460:
+.source "src/cg_expr.c", 2145
     load    r1, sf[0]
     add     r2, r1, 1
     store   r2, sf[0]
     move    r0, r1
-    jump    __L19455
+    jump    __L19459
+__L19461:
 __L19457:
-__L19453:
-__L19430:
+__L19434:
     move    r0, 0
     return
 .source_end
 
 // ge_pat_declare
 __F1373_ge_pat_declare:
-.source "src/cg_expr.c", 2152
-    add     sp, -2
 .source "src/cg_expr.c", 2154
+    add     sp, -2
+.source "src/cg_expr.c", 2156
     load    r0, sf[3]
     test    r0
     move    z, r0, 1, 0
     test    r0
-    jump    z, __L19460
+    jump    z, __L19464
     return
-__L19460:
-.source "src/cg_expr.c", 2155
+__L19464:
+.source "src/cg_expr.c", 2157
     load    r0, sf[3]
     load    r0, r0[0]
     move    r1, 53
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L19466
+    jump    z, __L19470
     load    r0, sf[3]
     add     r0, 26
     load    r0, r0[0]
     test    r0
-    jump    z, __L19466
+    jump    z, __L19470
     move    r0, 1
-    jump    __L19467
-__L19466:
+    jump    __L19471
+__L19470:
     move    r0, 0
-__L19467:
+__L19471:
     test    r0
-    jump    z, __L19464
+    jump    z, __L19468
     load    r0, sf[3]
     add     r0, 26
     load    r0, r0[0]
@@ -195255,20 +195322,20 @@ __L19467:
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L19464
+    jump    z, __L19468
     move    r0, 1
-    jump    __L19465
-__L19464:
+    jump    __L19469
+__L19468:
     move    r0, 0
-__L19465:
+__L19469:
     test    r0
-    jump    z, __L19462
-.source "src/cg_expr.c", 2156
+    jump    z, __L19466
+.source "src/cg_expr.c", 2158
     load    r0, sf[3]
     add     r0, 26
     load    r0, r0[0]
     store   r0, sf[-1]
-.source "src/cg_expr.c", 2157
+.source "src/cg_expr.c", 2159
     load    r0, sf[-1]
     add     r0, 9
     load    r0, r0[0]
@@ -195280,18 +195347,18 @@ __L19465:
     push    r0
     call    __F1371_ge_binding
     add     sp, 2
-__L19462:
-.source "src/cg_expr.c", 2159
+__L19466:
+.source "src/cg_expr.c", 2161
     load    r0, sf[3]
     add     r0, 5
     load    r0, r0[0]
     push    r0
     call    __F1373_ge_pat_declare
     add     sp, 1
-.source "src/cg_expr.c", 2160
+.source "src/cg_expr.c", 2162
     move    r0, 0
     store   r0, sf[0]
-__L19468:
+__L19472:
     load    r0, sf[0]
     push    r0
     load    r0, sf[3]
@@ -195301,14 +195368,14 @@ __L19468:
     move    r1, r0
     pop     r0
     cmp     r0, r1
-    jump    o, __L19471
+    jump    o, __L19475
     move    lt, r0, 1, 0
-    jump    __L19472
-__L19471:
+    jump    __L19476
+__L19475:
     move    lt, r0, 0, 1
-__L19472:
+__L19476:
     test    r0
-    jump    z, __L19470
+    jump    z, __L19474
     load    r0, sf[3]
     add     r0, 9
     load    r0, r0[0]
@@ -195318,22 +195385,22 @@ __L19472:
     push    r0
     call    __F1373_ge_pat_declare
     add     sp, 1
-__L19469:
+__L19473:
     load    r1, sf[0]
     add     r2, r1, 1
     store   r2, sf[0]
     move    r0, r1
-    jump    __L19468
-__L19470:
+    jump    __L19472
+__L19474:
     move    r0, 0
     return
 .source_end
 
 // ge_line
 __F1374_ge_line:
-.source "src/cg_expr.c", 2165
+.source "src/cg_expr.c", 2167
     add     sp, -3
-.source "src/cg_expr.c", 2166
+.source "src/cg_expr.c", 2168
     store   0, sf[-2]
     store   0, sf[-1]
     store   0, sf[0]
@@ -195350,31 +195417,12 @@ __F1374_ge_line:
     load    r2, r0[2]
     store   r2, r1[2]
     move    r0, r1
-.source "src/cg_expr.c", 2167
-    move    r0, __G1101_cg_sect+1
-    move    r1, 12
-    add     r0, r1
-    push    r0
-    load    r0, __G1216_ge_out+1
-    pop     r1
-    load    r2, r0[0]
-    store   r2, r1[0]
-    load    r2, r0[1]
-    store   r2, r1[1]
-    load    r2, r0[2]
-    store   r2, r1[2]
-    move    r0, r1
-.source "src/cg_expr.c", 2168
-    load    r0, sf[3]
-    push    r0
-    call    __F1103_cg_line
-    add     sp, 1
 .source "src/cg_expr.c", 2169
-    load    r0, __G1216_ge_out+1
-    push    r0
     move    r0, __G1101_cg_sect+1
     move    r1, 12
     add     r0, r1
+    push    r0
+    load    r0, __G1216_ge_out+1
     pop     r1
     load    r2, r0[0]
     store   r2, r1[0]
@@ -195384,6 +195432,25 @@ __F1374_ge_line:
     store   r2, r1[2]
     move    r0, r1
 .source "src/cg_expr.c", 2170
+    load    r0, sf[3]
+    push    r0
+    call    __F1103_cg_line
+    add     sp, 1
+.source "src/cg_expr.c", 2171
+    load    r0, __G1216_ge_out+1
+    push    r0
+    move    r0, __G1101_cg_sect+1
+    move    r1, 12
+    add     r0, r1
+    pop     r1
+    load    r2, r0[0]
+    store   r2, r1[0]
+    load    r2, r0[1]
+    store   r2, r1[1]
+    load    r2, r0[2]
+    store   r2, r1[2]
+    move    r0, r1
+.source "src/cg_expr.c", 2172
     move    r0, __G1101_cg_sect+1
     move    r1, 12
     add     r0, r1
@@ -195403,61 +195470,61 @@ __F1374_ge_line:
 
 // ge_has_let
 __F1375_ge_has_let:
-.source "src/cg_expr.c", 2173
-.source "src/cg_expr.c", 2174
-__L19473:
+.source "src/cg_expr.c", 2175
+.source "src/cg_expr.c", 2176
+__L19477:
     load    r0, sf[3]
     test    r0
-    jump    z, __L19476
+    jump    z, __L19480
     load    r0, sf[3]
     load    r0, r0[0]
     move    r1, 73
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L19476
+    jump    z, __L19480
     move    r0, 1
-    jump    __L19477
-__L19476:
+    jump    __L19481
+__L19480:
     move    r0, 0
-__L19477:
+__L19481:
     test    r0
-    jump    z, __L19475
+    jump    z, __L19479
     load    r0, sf[3]
     add     r0, 5
     load    r0, r0[0]
     store   r0, sf[3]
-__L19474:
-    jump    __L19473
-__L19475:
-.source "src/cg_expr.c", 2175
+__L19478:
+    jump    __L19477
+__L19479:
+.source "src/cg_expr.c", 2177
     load    r0, sf[3]
     test    r0
     move    z, r0, 1, 0
     test    r0
-    jump    z, __L19478
+    jump    z, __L19482
     move    r0, 0
     return
-__L19478:
-.source "src/cg_expr.c", 2176
+__L19482:
+.source "src/cg_expr.c", 2178
     load    r0, sf[3]
     load    r0, r0[0]
     move    r1, 91
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L19480
+    jump    z, __L19484
     move    r0, 1
     return
-__L19480:
-.source "src/cg_expr.c", 2177
+__L19484:
+.source "src/cg_expr.c", 2179
     load    r0, sf[3]
     load    r0, r0[0]
     move    r1, 78
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L19484
+    jump    z, __L19488
     load    r0, sf[3]
     add     r0, 1
     load    r0, r0[0]
@@ -195465,14 +195532,14 @@ __L19480:
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L19484
+    jump    z, __L19488
     move    r0, 1
-    jump    __L19485
-__L19484:
+    jump    __L19489
+__L19488:
     move    r0, 0
-__L19485:
+__L19489:
     test    r0
-    jump    z, __L19482
+    jump    z, __L19486
     load    r0, sf[3]
     add     r0, 5
     load    r0, r0[0]
@@ -195480,7 +195547,7 @@ __L19485:
     call    __F1375_ge_has_let
     add     sp, 1
     test    r0
-    jump    nz, __L19486
+    jump    nz, __L19490
     load    r0, sf[3]
     add     r0, 6
     load    r0, r0[0]
@@ -195488,15 +195555,15 @@ __L19485:
     call    __F1375_ge_has_let
     add     sp, 1
     test    r0
-    jump    nz, __L19486
+    jump    nz, __L19490
     move    r0, 0
-    jump    __L19487
-__L19486:
+    jump    __L19491
+__L19490:
     move    r0, 1
-__L19487:
+__L19491:
     return
-__L19482:
-.source "src/cg_expr.c", 2178
+__L19486:
+.source "src/cg_expr.c", 2180
     move    r0, 0
     return
     move    r0, 0
@@ -195505,32 +195572,32 @@ __L19482:
 
 // ge_cond_false
 __F1376_ge_cond_false:
-.source "src/cg_expr.c", 2182
+.source "src/cg_expr.c", 2184
     add     sp, -12
-.source "src/cg_expr.c", 2183
-__L19488:
+.source "src/cg_expr.c", 2185
+__L19492:
     load    r0, sf[3]
     load    r0, r0[0]
     move    r1, 73
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L19490
+    jump    z, __L19494
     load    r0, sf[3]
     add     r0, 5
     load    r0, r0[0]
     store   r0, sf[3]
-__L19489:
-    jump    __L19488
-__L19490:
-.source "src/cg_expr.c", 2184
+__L19493:
+    jump    __L19492
+__L19494:
+.source "src/cg_expr.c", 2186
     load    r0, sf[3]
     load    r0, r0[0]
     move    r1, 78
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L19495
+    jump    z, __L19499
     load    r0, sf[3]
     add     r0, 1
     load    r0, r0[0]
@@ -195538,28 +195605,28 @@ __L19490:
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L19495
+    jump    z, __L19499
     move    r0, 1
-    jump    __L19496
-__L19495:
+    jump    __L19500
+__L19499:
     move    r0, 0
-__L19496:
+__L19500:
     test    r0
-    jump    z, __L19493
+    jump    z, __L19497
     load    r0, sf[3]
     push    r0
     call    __F1375_ge_has_let
     add     sp, 1
     test    r0
-    jump    z, __L19493
+    jump    z, __L19497
     move    r0, 1
-    jump    __L19494
-__L19493:
+    jump    __L19498
+__L19497:
     move    r0, 0
-__L19494:
+__L19498:
     test    r0
-    jump    z, __L19491
-.source "src/cg_expr.c", 2185
+    jump    z, __L19495
+.source "src/cg_expr.c", 2187
     load    r0, sf[5]
     push    r0
     load    r0, sf[4]
@@ -195570,7 +195637,7 @@ __L19494:
     push    r0
     call    __F1376_ge_cond_false
     add     sp, 3
-.source "src/cg_expr.c", 2186
+.source "src/cg_expr.c", 2188
     load    r0, sf[5]
     push    r0
     load    r0, sf[4]
@@ -195581,18 +195648,18 @@ __L19494:
     push    r0
     call    __F1376_ge_cond_false
     add     sp, 3
-.source "src/cg_expr.c", 2187
-    return
-__L19491:
 .source "src/cg_expr.c", 2189
+    return
+__L19495:
+.source "src/cg_expr.c", 2191
     load    r0, sf[3]
     load    r0, r0[0]
     move    r1, 91
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L19497
-.source "src/cg_expr.c", 2190
+    jump    z, __L19501
+.source "src/cg_expr.c", 2192
     store   0, sf[-9]
     store   0, sf[-8]
     store   0, sf[-7]
@@ -195623,7 +195690,7 @@ __L19491:
     load    r2, r0[4]
     store   r2, r1[4]
     move    r0, r1
-.source "src/cg_expr.c", 2191
+.source "src/cg_expr.c", 2193
     add     r0, sf, -9
     load    r1, r0[4]
     push    r1
@@ -195642,31 +195709,31 @@ __L19491:
     call    __F1370_ge_pat_cond
     add     sp, 6
     store   r0, sf[-10]
-.source "src/cg_expr.c", 2192
+.source "src/cg_expr.c", 2194
     load    r0, sf[-10]
     test    r0
-    jump    z, __L19499
-.source "src/cg_expr.c", 2193
+    jump    z, __L19503
+.source "src/cg_expr.c", 2195
     load    r0, sf[-10]
     push    r0
-    move    r0, __W2412+1
+    move    r0, __W2417+1
     push    r0
     call    __F1236_E
     add     sp, 2
-.source "src/cg_expr.c", 2194
+.source "src/cg_expr.c", 2196
     load    r0, sf[5]
     push    r0
     call    __F1256_ge_drops_to
     add     sp, 1
-.source "src/cg_expr.c", 2195
+.source "src/cg_expr.c", 2197
     load    r0, sf[4]
     push    r0
-    move    r0, __W2413+1
+    move    r0, __W2418+1
     push    r0
     call    __F1236_E
     add     sp, 2
-__L19499:
-.source "src/cg_expr.c", 2197
+__L19503:
+.source "src/cg_expr.c", 2199
     add     r0, sf, -9
     load    r1, r0[4]
     push    r1
@@ -195684,12 +195751,12 @@ __L19499:
     push    r0
     call    __F1372_ge_pat_bind
     add     sp, 6
-.source "src/cg_expr.c", 2198
+.source "src/cg_expr.c", 2200
     call    __F1357_ge_commit
-.source "src/cg_expr.c", 2199
+.source "src/cg_expr.c", 2201
     return
-__L19497:
-.source "src/cg_expr.c", 2202
+__L19501:
+.source "src/cg_expr.c", 2204
     move    r0, 2
     push    r0
     call    __F101_ty_prim
@@ -195703,22 +195770,22 @@ __L19497:
     call    __F1246_ge_fix
     add     sp, 2
     store   r0, sf[-11]
-.source "src/cg_expr.c", 2203
+.source "src/cg_expr.c", 2205
     load    r0, sf[-11]
     push    r0
-    move    r0, __W2414+1
+    move    r0, __W2419+1
     push    r0
     call    __F1236_E
     add     sp, 2
-.source "src/cg_expr.c", 2204
+.source "src/cg_expr.c", 2206
     load    r0, sf[5]
     push    r0
     call    __F1256_ge_drops_to
     add     sp, 1
-.source "src/cg_expr.c", 2205
+.source "src/cg_expr.c", 2207
     load    r0, sf[4]
     push    r0
-    move    r0, __W2415+1
+    move    r0, __W2420+1
     push    r0
     call    __F1236_E
     add     sp, 2
@@ -195728,33 +195795,33 @@ __L19497:
 
 // ge_loop_push
 __F1377_ge_loop_push:
-.source "src/cg_expr.c", 2209
-    add     sp, -1
 .source "src/cg_expr.c", 2211
+    add     sp, -1
+.source "src/cg_expr.c", 2213
     load    r0, __G1227_ge_cloops+1
     load    r1, __G1226_ge_nloops+1
     cmp     r0, r1
-    jump    o, __L19503
+    jump    o, __L19507
     move    le, r0, 1, 0
-    jump    __L19504
-__L19503:
+    jump    __L19508
+__L19507:
     move    lt, r0, 0, 1
-__L19504:
-    test    r0
-    jump    z, __L19501
-.source "src/cg_expr.c", 2212
-    load    r0, __G1227_ge_cloops+1
+__L19508:
     test    r0
     jump    z, __L19505
+.source "src/cg_expr.c", 2214
+    load    r0, __G1227_ge_cloops+1
+    test    r0
+    jump    z, __L19509
     load    r0, __G1227_ge_cloops+1
     move    r1, 2
     mult    r0, r1
-    jump    __L19506
-__L19505:
+    jump    __L19510
+__L19509:
     move    r0, 16
-__L19506:
+__L19510:
     store   r0, __G1227_ge_cloops+1
-.source "src/cg_expr.c", 2213
+.source "src/cg_expr.c", 2215
     move    r0, 7
     push    r0
     load    r0, __G1227_ge_cloops+1
@@ -195767,8 +195834,8 @@ __L19506:
     call    __F4_xrealloc
     add     sp, 2
     store   r0, __G1225_ge_loops+1
-__L19501:
-.source "src/cg_expr.c", 2215
+__L19505:
+.source "src/cg_expr.c", 2217
     load    r0, __G1225_ge_loops+1
     push    r0
     load    r1, __G1226_ge_nloops+1
@@ -195781,55 +195848,55 @@ __L19501:
     pop     r0
     add     r0, r1
     store   r0, sf[0]
-.source "src/cg_expr.c", 2216
+.source "src/cg_expr.c", 2218
     load    r0, sf[0]
     push    r0
     load    r0, sf[3]
     pop     r1
     store   r0, r1[0]
-.source "src/cg_expr.c", 2217
+.source "src/cg_expr.c", 2219
     load    r0, sf[0]
     add     r0, 1
     push    r0
     call    __F1105_cg_new_id
     pop     r1
     store   r0, r1[0]
-.source "src/cg_expr.c", 2218
+.source "src/cg_expr.c", 2220
     load    r0, sf[0]
     add     r0, 2
     push    r0
     load    r0, __G1223_ge_nsc+1
     pop     r1
     store   r0, r1[0]
-.source "src/cg_expr.c", 2219
+.source "src/cg_expr.c", 2221
     load    r0, sf[0]
     add     r0, 3
     push    r0
     load    r0, sf[6]
     pop     r1
     store   r0, r1[0]
-.source "src/cg_expr.c", 2220
+.source "src/cg_expr.c", 2222
     load    r0, sf[0]
     add     r0, 4
     push    r0
     load    r0, sf[7]
     pop     r1
     store   r0, r1[0]
-.source "src/cg_expr.c", 2221
+.source "src/cg_expr.c", 2223
     load    r0, sf[0]
     add     r0, 5
     push    r0
     load    r0, sf[4]
     pop     r1
     store   r0, r1[0]
-.source "src/cg_expr.c", 2222
+.source "src/cg_expr.c", 2224
     load    r0, sf[0]
     add     r0, 6
     push    r0
     load    r0, sf[5]
     pop     r1
     store   r0, r1[0]
-.source "src/cg_expr.c", 2223
+.source "src/cg_expr.c", 2225
     load    r0, sf[0]
     return
     move    r0, 0
@@ -195838,30 +195905,30 @@ __L19501:
 
 // ge_loop_find
 __F1378_ge_loop_find:
-.source "src/cg_expr.c", 2226
-    add     sp, -1
 .source "src/cg_expr.c", 2228
+    add     sp, -1
+.source "src/cg_expr.c", 2230
     load    r0, __G1226_ge_nloops+1
     move    r1, 1
     sub     r0, r1
     store   r0, sf[0]
-__L19507:
+__L19511:
     move    r0, 0
     load    r1, sf[0]
     cmp     r0, r1
-    jump    o, __L19510
+    jump    o, __L19514
     move    le, r0, 1, 0
-    jump    __L19511
-__L19510:
+    jump    __L19515
+__L19514:
     move    lt, r0, 0, 1
-__L19511:
+__L19515:
     test    r0
-    jump    z, __L19509
-.source "src/cg_expr.c", 2229
+    jump    z, __L19513
+.source "src/cg_expr.c", 2231
     load    r0, sf[3]
     test    r0
-    jump    z, __L19512
-.source "src/cg_expr.c", 2230
+    jump    z, __L19516
+.source "src/cg_expr.c", 2232
     load    r0, __G1225_ge_loops+1
     push    r0
     load    r0, sf[0]
@@ -195875,7 +195942,7 @@ __L19511:
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L19514
+    jump    z, __L19518
     load    r0, __G1225_ge_loops+1
     push    r0
     load    r0, sf[0]
@@ -195885,10 +195952,10 @@ __L19511:
     pop     r0
     add     r0, r1
     return
-__L19514:
-    jump    __L19513
-__L19512:
-.source "src/cg_expr.c", 2231
+__L19518:
+    jump    __L19517
+__L19516:
+.source "src/cg_expr.c", 2233
     load    r0, __G1225_ge_loops+1
     push    r0
     load    r0, sf[0]
@@ -195900,7 +195967,7 @@ __L19512:
     add     r0, 5
     load    r0, r0[0]
     test    r0
-    jump    nz, __L19518
+    jump    nz, __L19522
     load    r0, __G1225_ge_loops+1
     push    r0
     load    r0, sf[0]
@@ -195912,15 +195979,15 @@ __L19512:
     add     r0, 6
     load    r0, r0[0]
     test    r0
-    jump    nz, __L19518
+    jump    nz, __L19522
     move    r0, 0
-    jump    __L19519
-__L19518:
+    jump    __L19523
+__L19522:
     move    r0, 1
-__L19519:
+__L19523:
     test    r0
-    jump    z, __L19516
-.source "src/cg_expr.c", 2232
+    jump    z, __L19520
+.source "src/cg_expr.c", 2234
     load    r0, __G1225_ge_loops+1
     push    r0
     load    r0, sf[0]
@@ -195930,24 +195997,24 @@ __L19519:
     pop     r0
     add     r0, r1
     return
-__L19516:
-__L19513:
-__L19508:
-.source "src/cg_expr.c", 2228
+__L19520:
+__L19517:
+__L19512:
+.source "src/cg_expr.c", 2230
     load    r1, sf[0]
     add     r2, r1, -1
     store   r2, sf[0]
     move    r0, r1
-    jump    __L19507
-__L19509:
-.source "src/cg_expr.c", 2235
+    jump    __L19511
+__L19513:
+.source "src/cg_expr.c", 2237
     load    r0, sf[4]
-.source "src/cg_expr.c", 2236
-    move    r0, __W2416+1
+.source "src/cg_expr.c", 2238
+    move    r0, __W2421+1
     push    r0
     call    __F2_fatal
     add     sp, 1
-.source "src/cg_expr.c", 2237
+.source "src/cg_expr.c", 2239
     move    r0, 0
     return
     move    r0, 0
@@ -195956,41 +196023,41 @@ __L19509:
 
 // ge_assign_result
 __F1379_ge_assign_result:
-.source "src/cg_expr.c", 2240
-.source "src/cg_expr.c", 2241
+.source "src/cg_expr.c", 2242
+.source "src/cg_expr.c", 2243
     load    r0, sf[3]
     test    r0
     move    z, r0, 1, 0
     test    r0
-    jump    nz, __L19524
+    jump    nz, __L19528
     load    r0, sf[4]
     test    r0
     move    z, r0, 1, 0
     test    r0
-    jump    nz, __L19524
+    jump    nz, __L19528
     move    r0, 0
-    jump    __L19525
-__L19524:
+    jump    __L19529
+__L19528:
     move    r0, 1
-__L19525:
+__L19529:
     test    r0
-    jump    nz, __L19522
+    jump    nz, __L19526
     load    r0, sf[4]
     push    r0
     call    __F1110_cg_is_zst
     add     sp, 1
     test    r0
-    jump    nz, __L19522
+    jump    nz, __L19526
     move    r0, 0
-    jump    __L19523
-__L19522:
+    jump    __L19527
+__L19526:
     move    r0, 1
-__L19523:
+__L19527:
     test    r0
-    jump    z, __L19520
+    jump    z, __L19524
     return
-__L19520:
-.source "src/cg_expr.c", 2242
+__L19524:
+.source "src/cg_expr.c", 2244
     load    r0, sf[5]
     push    r0
     move    r0, __G1235_ge_never_s+1
@@ -195999,15 +196066,15 @@ __L19520:
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L19526
+    jump    z, __L19530
     return
-__L19526:
-.source "src/cg_expr.c", 2243
+__L19530:
+.source "src/cg_expr.c", 2245
     load    r0, sf[5]
     push    r0
     load    r0, sf[3]
     push    r0
-    move    r0, __W2417+1
+    move    r0, __W2422+1
     push    r0
     call    __F1236_E
     add     sp, 3
@@ -196017,69 +196084,17 @@ __L19526:
 
 // ge_value_type
 __F1380_ge_value_type:
-.source "src/cg_expr.c", 2246
-.source "src/cg_expr.c", 2247
+.source "src/cg_expr.c", 2248
+.source "src/cg_expr.c", 2249
     load    r0, sf[3]
     test    r0
-    jump    z, __L19530
+    jump    z, __L19534
     load    r0, sf[3]
     push    r0
     call    __F1110_cg_is_zst
     add     sp, 1
     test    r0
     move    z, r0, 1, 0
-    test    r0
-    jump    z, __L19530
-    move    r0, 1
-    jump    __L19531
-__L19530:
-    move    r0, 0
-__L19531:
-    test    r0
-    jump    z, __L19528
-    load    r0, sf[3]
-    push    r0
-    call    __F1244_ge_is_never
-    add     sp, 1
-    test    r0
-    move    z, r0, 1, 0
-    test    r0
-    jump    z, __L19528
-    move    r0, 1
-    jump    __L19529
-__L19528:
-    move    r0, 0
-__L19529:
-    return
-    move    r0, 0
-    return
-.source_end
-
-// ge_if
-__F1381_ge_if:
-.source "src/cg_expr.c", 2250
-    add     sp, -5
-.source "src/cg_expr.c", 2251
-    load    r0, sf[3]
-    push    r0
-    call    __F1241_gnt
-    add     sp, 1
-    store   r0, sf[0]
-.source "src/cg_expr.c", 2252
-    move    r0, 0
-    store   r0, sf[-1]
-.source "src/cg_expr.c", 2254
-    load    r0, sf[4]
-.source "src/cg_expr.c", 2255
-    load    r0, sf[3]
-    add     r0, 7
-    load    r0, r0[0]
-    test    r0
-    jump    z, __L19534
-    load    r0, sf[0]
-    push    r0
-    call    __F1380_ge_value_type
-    add     sp, 1
     test    r0
     jump    z, __L19534
     move    r0, 1
@@ -196089,16 +196104,68 @@ __L19534:
 __L19535:
     test    r0
     jump    z, __L19532
+    load    r0, sf[3]
+    push    r0
+    call    __F1244_ge_is_never
+    add     sp, 1
+    test    r0
+    move    z, r0, 1, 0
+    test    r0
+    jump    z, __L19532
+    move    r0, 1
+    jump    __L19533
+__L19532:
+    move    r0, 0
+__L19533:
+    return
+    move    r0, 0
+    return
+.source_end
+
+// ge_if
+__F1381_ge_if:
+.source "src/cg_expr.c", 2252
+    add     sp, -5
+.source "src/cg_expr.c", 2253
+    load    r0, sf[3]
+    push    r0
+    call    __F1241_gnt
+    add     sp, 1
+    store   r0, sf[0]
+.source "src/cg_expr.c", 2254
+    move    r0, 0
+    store   r0, sf[-1]
+.source "src/cg_expr.c", 2256
+    load    r0, sf[4]
+.source "src/cg_expr.c", 2257
+    load    r0, sf[3]
+    add     r0, 7
+    load    r0, r0[0]
+    test    r0
+    jump    z, __L19538
+    load    r0, sf[0]
+    push    r0
+    call    __F1380_ge_value_type
+    add     sp, 1
+    test    r0
+    jump    z, __L19538
+    move    r0, 1
+    jump    __L19539
+__L19538:
+    move    r0, 0
+__L19539:
+    test    r0
+    jump    z, __L19536
     load    r0, sf[0]
     push    r0
     call    __F1243_ge_tmp_ty
     add     sp, 1
     store   r0, sf[-1]
-__L19532:
-.source "src/cg_expr.c", 2256
+__L19536:
+.source "src/cg_expr.c", 2258
     call    __F1105_cg_new_id
     store   r0, sf[-2]
-.source "src/cg_expr.c", 2257
+.source "src/cg_expr.c", 2259
     load    r0, sf[3]
     add     r0, 5
     load    r0, r0[0]
@@ -196108,13 +196175,13 @@ __L19532:
     test    r0
     move    z, r0, 1, 0
     test    r0
-    jump    z, __L19536
-.source "src/cg_expr.c", 2259
+    jump    z, __L19540
+.source "src/cg_expr.c", 2261
     move    r0, 3
     push    r0
     call    __F1253_ge_push_scope
     add     sp, 1
-.source "src/cg_expr.c", 2260
+.source "src/cg_expr.c", 2262
     move    r0, 2
     push    r0
     call    __F101_ty_prim
@@ -196138,19 +196205,19 @@ __L19532:
     call    __F1247_ge_snap
     add     sp, 2
     store   r0, sf[-4]
-.source "src/cg_expr.c", 2261
+.source "src/cg_expr.c", 2263
     move    r0, 1
     push    r0
     call    __F1257_ge_pop_scope
     add     sp, 1
-.source "src/cg_expr.c", 2262
+.source "src/cg_expr.c", 2264
     load    r0, sf[-4]
     push    r0
-    move    r0, __W2418+1
+    move    r0, __W2423+1
     push    r0
     call    __F1236_E
     add     sp, 2
-.source "src/cg_expr.c", 2263
+.source "src/cg_expr.c", 2265
     load    r0, sf[0]
     push    r0
     load    r0, sf[3]
@@ -196166,18 +196233,18 @@ __L19532:
     push    r0
     call    __F1379_ge_assign_result
     add     sp, 3
-.source "src/cg_expr.c", 2264
+.source "src/cg_expr.c", 2266
     load    r0, sf[3]
     add     r0, 7
     load    r0, r0[0]
     test    r0
-    jump    z, __L19538
-.source "src/cg_expr.c", 2265
-    move    r0, __W2419+1
+    jump    z, __L19542
+.source "src/cg_expr.c", 2267
+    move    r0, __W2424+1
     push    r0
     call    __F1236_E
     add     sp, 1
-.source "src/cg_expr.c", 2266
+.source "src/cg_expr.c", 2268
     load    r0, sf[0]
     push    r0
     load    r0, sf[3]
@@ -196193,33 +196260,33 @@ __L19532:
     push    r0
     call    __F1379_ge_assign_result
     add     sp, 3
-__L19538:
-.source "src/cg_expr.c", 2268
-    move    r0, __W2420+1
+__L19542:
+.source "src/cg_expr.c", 2270
+    move    r0, __W2425+1
     push    r0
     call    __F1236_E
     add     sp, 1
-    jump    __L19537
-__L19536:
-.source "src/cg_expr.c", 2270
+    jump    __L19541
+__L19540:
+.source "src/cg_expr.c", 2272
     move    r0, 3
     push    r0
     call    __F1253_ge_push_scope
     add     sp, 1
-.source "src/cg_expr.c", 2271
+.source "src/cg_expr.c", 2273
     load    r0, __G1223_ge_nsc+1
     store   r0, sf[-3]
-.source "src/cg_expr.c", 2272
+.source "src/cg_expr.c", 2274
     move    r0, 2
     push    r0
     call    __F1253_ge_push_scope
     add     sp, 1
-.source "src/cg_expr.c", 2273
+.source "src/cg_expr.c", 2275
     load    r0, sf[-3]
     push    r0
     load    r0, sf[-2]
     push    r0
-    move    r0, __W2421+1
+    move    r0, __W2426+1
     push    r0
     call    __F1237_S
     add     sp, 2
@@ -196230,7 +196297,7 @@ __L19536:
     push    r0
     call    __F1376_ge_cond_false
     add     sp, 3
-.source "src/cg_expr.c", 2274
+.source "src/cg_expr.c", 2276
     load    r0, sf[0]
     push    r0
     load    r0, sf[3]
@@ -196246,26 +196313,26 @@ __L19536:
     push    r0
     call    __F1379_ge_assign_result
     add     sp, 3
-.source "src/cg_expr.c", 2275
+.source "src/cg_expr.c", 2277
     move    r0, 1
     push    r0
     call    __F1257_ge_pop_scope
     add     sp, 1
-.source "src/cg_expr.c", 2276
+.source "src/cg_expr.c", 2278
     load    r0, sf[-2]
     push    r0
     load    r0, sf[-2]
     push    r0
-    move    r0, __W2422+1
+    move    r0, __W2427+1
     push    r0
     call    __F1236_E
     add     sp, 3
-.source "src/cg_expr.c", 2277
+.source "src/cg_expr.c", 2279
     load    r0, sf[3]
     add     r0, 7
     load    r0, r0[0]
     test    r0
-    jump    z, __L19540
+    jump    z, __L19544
     load    r0, sf[0]
     push    r0
     load    r0, sf[3]
@@ -196281,39 +196348,39 @@ __L19536:
     push    r0
     call    __F1379_ge_assign_result
     add     sp, 3
-__L19540:
-.source "src/cg_expr.c", 2278
+__L19544:
+.source "src/cg_expr.c", 2280
     load    r0, sf[-2]
     push    r0
-    move    r0, __W2423+1
+    move    r0, __W2428+1
     push    r0
     call    __F1236_E
     add     sp, 2
-.source "src/cg_expr.c", 2279
+.source "src/cg_expr.c", 2281
     move    r0, 1
     push    r0
     call    __F1257_ge_pop_scope
     add     sp, 1
-__L19537:
-.source "src/cg_expr.c", 2281
+__L19541:
+.source "src/cg_expr.c", 2283
     load    r0, sf[0]
     push    r0
     call    __F1244_ge_is_never
     add     sp, 1
     test    r0
-    jump    z, __L19542
+    jump    z, __L19546
     move    r0, __G1235_ge_never_s+1
     return
-__L19542:
-.source "src/cg_expr.c", 2282
+__L19546:
+.source "src/cg_expr.c", 2284
     load    r0, sf[-1]
     test    r0
-    jump    z, __L19544
+    jump    z, __L19548
     load    r0, sf[-1]
-    jump    __L19545
-__L19544:
-    move    r0, __W2424+1
-__L19545:
+    jump    __L19549
+__L19548:
+    move    r0, __W2429+1
+__L19549:
     return
     move    r0, 0
     return
@@ -196321,44 +196388,44 @@ __L19545:
 
 // ge_match
 __F1382_ge_match:
-.source "src/cg_expr.c", 2285
+.source "src/cg_expr.c", 2287
     add     sp, -17
-.source "src/cg_expr.c", 2286
+.source "src/cg_expr.c", 2288
     load    r0, sf[3]
     push    r0
     call    __F1241_gnt
     add     sp, 1
     store   r0, sf[0]
-.source "src/cg_expr.c", 2287
+.source "src/cg_expr.c", 2289
     load    r0, sf[0]
     push    r0
     call    __F1380_ge_value_type
     add     sp, 1
     test    r0
-    jump    z, __L19546
+    jump    z, __L19550
     load    r0, sf[0]
     push    r0
     call    __F1243_ge_tmp_ty
     add     sp, 1
-    jump    __L19547
-__L19546:
+    jump    __L19551
+__L19550:
     move    r0, 0
-__L19547:
+__L19551:
     store   r0, sf[-1]
-.source "src/cg_expr.c", 2288
+.source "src/cg_expr.c", 2290
     call    __F1105_cg_new_id
     store   r0, sf[-2]
-.source "src/cg_expr.c", 2290
+.source "src/cg_expr.c", 2292
     load    r0, sf[4]
-.source "src/cg_expr.c", 2291
+.source "src/cg_expr.c", 2293
     move    r0, 3
     push    r0
     call    __F1253_ge_push_scope
     add     sp, 1
-.source "src/cg_expr.c", 2292
+.source "src/cg_expr.c", 2294
     load    r0, __G1223_ge_nsc+1
     store   r0, sf[-4]
-.source "src/cg_expr.c", 2293
+.source "src/cg_expr.c", 2295
     add     r0, sf, -9
     push    r0
     move    r0, 0
@@ -196384,10 +196451,10 @@ __L19547:
     load    r2, r0[4]
     store   r2, r1[4]
     move    r0, r1
-.source "src/cg_expr.c", 2294
+.source "src/cg_expr.c", 2296
     move    r0, 0
     store   r0, sf[-3]
-__L19548:
+__L19552:
     load    r0, sf[-3]
     push    r0
     load    r0, sf[3]
@@ -196397,15 +196464,15 @@ __L19548:
     move    r1, r0
     pop     r0
     cmp     r0, r1
-    jump    o, __L19551
+    jump    o, __L19555
     move    lt, r0, 1, 0
-    jump    __L19552
-__L19551:
+    jump    __L19556
+__L19555:
     move    lt, r0, 0, 1
-__L19552:
+__L19556:
     test    r0
-    jump    z, __L19550
-.source "src/cg_expr.c", 2295
+    jump    z, __L19554
+.source "src/cg_expr.c", 2297
     load    r0, sf[3]
     add     r0, 9
     load    r0, r0[0]
@@ -196413,12 +196480,12 @@ __L19552:
     add     r0, r1
     load    r0, r0[0]
     store   r0, sf[-15]
-.source "src/cg_expr.c", 2297
+.source "src/cg_expr.c", 2299
     move    r0, 2
     push    r0
     call    __F1253_ge_push_scope
     add     sp, 1
-.source "src/cg_expr.c", 2298
+.source "src/cg_expr.c", 2300
     add     r0, sf, -9
     load    r1, r0[4]
     push    r1
@@ -196437,24 +196504,24 @@ __L19552:
     call    __F1370_ge_pat_cond
     add     sp, 6
     store   r0, sf[-16]
-.source "src/cg_expr.c", 2299
+.source "src/cg_expr.c", 2301
     load    r0, sf[-16]
     test    r0
-    jump    z, __L19553
+    jump    z, __L19557
     load    r0, sf[-16]
-    jump    __L19554
-__L19553:
-    move    r0, __W2426+1
-__L19554:
+    jump    __L19558
+__L19557:
+    move    r0, __W2431+1
+__L19558:
     push    r0
-    move    r0, __W2425+1
+    move    r0, __W2430+1
     push    r0
     call    __F1236_E
     add     sp, 2
-.source "src/cg_expr.c", 2300
+.source "src/cg_expr.c", 2302
     move    r0, 0
     store   r0, __G1354_ge_ncommits+1
-.source "src/cg_expr.c", 2301
+.source "src/cg_expr.c", 2303
     add     r0, sf, -9
     load    r1, r0[4]
     push    r1
@@ -196472,20 +196539,20 @@ __L19554:
     push    r0
     call    __F1372_ge_pat_bind
     add     sp, 6
-.source "src/cg_expr.c", 2302
+.source "src/cg_expr.c", 2304
     load    r0, sf[-15]
     add     r0, 6
     load    r0, r0[0]
     test    r0
-    jump    z, __L19555
-.source "src/cg_expr.c", 2303
+    jump    z, __L19559
+.source "src/cg_expr.c", 2305
     load    r0, sf[-4]
     push    r0
     load    r0, sf[-3]
     push    r0
     load    r0, sf[-2]
     push    r0
-    move    r0, __W2427+1
+    move    r0, __W2432+1
     push    r0
     call    __F1237_S
     add     sp, 3
@@ -196496,30 +196563,30 @@ __L19554:
     push    r0
     call    __F1376_ge_cond_false
     add     sp, 3
-    jump    __L19556
-__L19555:
-.source "src/cg_expr.c", 2305
-    call    __F1357_ge_commit
-__L19556:
+    jump    __L19560
+__L19559:
 .source "src/cg_expr.c", 2307
+    call    __F1357_ge_commit
+__L19560:
+.source "src/cg_expr.c", 2309
     load    r0, sf[-15]
     add     r0, 6
     load    r0, r0[0]
     test    r0
-    jump    z, __L19559
+    jump    z, __L19563
     load    r0, __G1354_ge_ncommits+1
     test    r0
-    jump    z, __L19559
+    jump    z, __L19563
     move    r0, 1
-    jump    __L19560
-__L19559:
+    jump    __L19564
+__L19563:
     move    r0, 0
-__L19560:
+__L19564:
     test    r0
-    jump    z, __L19557
+    jump    z, __L19561
     call    __F1357_ge_commit
-__L19557:
-.source "src/cg_expr.c", 2308
+__L19561:
+.source "src/cg_expr.c", 2310
     load    r0, sf[0]
     push    r0
     load    r0, sf[-15]
@@ -196535,72 +196602,72 @@ __L19557:
     push    r0
     call    __F1379_ge_assign_result
     add     sp, 3
-.source "src/cg_expr.c", 2309
+.source "src/cg_expr.c", 2311
     move    r0, 1
     push    r0
     call    __F1257_ge_pop_scope
     add     sp, 1
-.source "src/cg_expr.c", 2310
+.source "src/cg_expr.c", 2312
     load    r0, sf[-2]
     push    r0
-    move    r0, __W2428+1
+    move    r0, __W2433+1
     push    r0
     call    __F1236_E
     add     sp, 2
-.source "src/cg_expr.c", 2311
+.source "src/cg_expr.c", 2313
     load    r0, sf[-15]
     add     r0, 6
     load    r0, r0[0]
     test    r0
-    jump    z, __L19561
+    jump    z, __L19565
     load    r0, sf[-3]
     push    r0
     load    r0, sf[-2]
     push    r0
-    move    r0, __W2429+1
+    move    r0, __W2434+1
     push    r0
     call    __F1236_E
     add     sp, 3
-__L19561:
-__L19549:
-.source "src/cg_expr.c", 2294
+__L19565:
+__L19553:
+.source "src/cg_expr.c", 2296
     load    r1, sf[-3]
     add     r2, r1, 1
     store   r2, sf[-3]
     move    r0, r1
-    jump    __L19548
-__L19550:
-.source "src/cg_expr.c", 2313
+    jump    __L19552
+__L19554:
+.source "src/cg_expr.c", 2315
     load    r0, sf[-2]
     push    r0
-    move    r0, __W2430+1
+    move    r0, __W2435+1
     push    r0
     call    __F1236_E
     add     sp, 2
-.source "src/cg_expr.c", 2314
+.source "src/cg_expr.c", 2316
     move    r0, 1
     push    r0
     call    __F1257_ge_pop_scope
     add     sp, 1
-.source "src/cg_expr.c", 2315
+.source "src/cg_expr.c", 2317
     load    r0, sf[0]
     push    r0
     call    __F1244_ge_is_never
     add     sp, 1
     test    r0
-    jump    z, __L19563
+    jump    z, __L19567
     move    r0, __G1235_ge_never_s+1
     return
-__L19563:
-.source "src/cg_expr.c", 2316
+__L19567:
+.source "src/cg_expr.c", 2318
     load    r0, sf[-1]
     test    r0
-    jump    z, __L19565
+    jump    z, __L19569
     load    r0, sf[-1]
-    jump    __L19566
-__L19565:
-    move    r0, __W2431+1
-__L19566:
+    jump    __L19570
+__L19569:
+    move    r0, __W2436+1
+__L19570:
     return
     move    r0, 0
     return
@@ -196608,9 +196675,9 @@ __L19566:
 
 // ge_while
 __F1383_ge_while:
-.source "src/cg_expr.c", 2319
+.source "src/cg_expr.c", 2321
     add     sp, -3
-.source "src/cg_expr.c", 2322
+.source "src/cg_expr.c", 2324
     move    r0, 0
     push    r0
     move    r0, 0
@@ -196625,7 +196692,7 @@ __F1383_ge_while:
     push    r0
     call    __F1377_ge_loop_push
     add     sp, 5
-.source "src/cg_expr.c", 2323
+.source "src/cg_expr.c", 2325
     load    r0, __G1225_ge_loops+1
     push    r0
     load    r0, __G1226_ge_nloops+1
@@ -196637,37 +196704,37 @@ __F1383_ge_while:
     pop     r0
     add     r0, r1
     store   r0, sf[0]
-.source "src/cg_expr.c", 2324
+.source "src/cg_expr.c", 2326
     load    r0, sf[0]
     add     r0, 1
     load    r0, r0[0]
     store   r0, sf[-1]
-.source "src/cg_expr.c", 2325
+.source "src/cg_expr.c", 2327
     load    r0, sf[0]
     add     r0, 2
     load    r0, r0[0]
     store   r0, sf[-2]
-.source "src/cg_expr.c", 2326
-    move    r0, __W2432+1
+.source "src/cg_expr.c", 2328
+    move    r0, __W2437+1
     push    r0
     call    __F1236_E
     add     sp, 1
-.source "src/cg_expr.c", 2327
+.source "src/cg_expr.c", 2329
     move    r0, 3
     push    r0
     call    __F1253_ge_push_scope
     add     sp, 1
-.source "src/cg_expr.c", 2328
+.source "src/cg_expr.c", 2330
     move    r0, 2
     push    r0
     call    __F1253_ge_push_scope
     add     sp, 1
-.source "src/cg_expr.c", 2329
+.source "src/cg_expr.c", 2331
     load    r0, sf[-2]
     push    r0
     load    r0, sf[-1]
     push    r0
-    move    r0, __W2433+1
+    move    r0, __W2438+1
     push    r0
     call    __F1237_S
     add     sp, 2
@@ -196678,7 +196745,7 @@ __F1383_ge_while:
     push    r0
     call    __F1376_ge_cond_false
     add     sp, 3
-.source "src/cg_expr.c", 2330
+.source "src/cg_expr.c", 2332
     call    __F104_ty_unit
     push    r0
     load    r0, sf[3]
@@ -196687,32 +196754,32 @@ __F1383_ge_while:
     push    r0
     call    __F1284_ge_block_value
     add     sp, 2
-.source "src/cg_expr.c", 2331
-    move    r0, 1
-    push    r0
-    call    __F1257_ge_pop_scope
-    add     sp, 1
-.source "src/cg_expr.c", 2332
-    move    r0, 1
-    push    r0
-    call    __F1257_ge_pop_scope
-    add     sp, 1
 .source "src/cg_expr.c", 2333
+    move    r0, 1
+    push    r0
+    call    __F1257_ge_pop_scope
+    add     sp, 1
+.source "src/cg_expr.c", 2334
+    move    r0, 1
+    push    r0
+    call    __F1257_ge_pop_scope
+    add     sp, 1
+.source "src/cg_expr.c", 2335
     load    r0, sf[-1]
     push    r0
     load    r0, sf[-1]
     push    r0
-    move    r0, __W2434+1
+    move    r0, __W2439+1
     push    r0
     call    __F1236_E
     add     sp, 3
-.source "src/cg_expr.c", 2334
+.source "src/cg_expr.c", 2336
     load    r1, __G1226_ge_nloops+1
     add     r2, r1, -1
     store   r2, __G1226_ge_nloops+1
     move    r0, r1
-.source "src/cg_expr.c", 2335
-    move    r0, __W2435+1
+.source "src/cg_expr.c", 2337
+    move    r0, __W2440+1
     return
     move    r0, 0
     return
@@ -196720,31 +196787,31 @@ __F1383_ge_while:
 
 // ge_loop
 __F1384_ge_loop:
-.source "src/cg_expr.c", 2338
+.source "src/cg_expr.c", 2340
     add     sp, -4
-.source "src/cg_expr.c", 2339
+.source "src/cg_expr.c", 2341
     load    r0, sf[3]
     push    r0
     call    __F1241_gnt
     add     sp, 1
     store   r0, sf[0]
-.source "src/cg_expr.c", 2340
+.source "src/cg_expr.c", 2342
     load    r0, sf[0]
     push    r0
     call    __F1380_ge_value_type
     add     sp, 1
     test    r0
-    jump    z, __L19567
+    jump    z, __L19571
     load    r0, sf[0]
     push    r0
     call    __F1243_ge_tmp_ty
     add     sp, 1
-    jump    __L19568
-__L19567:
+    jump    __L19572
+__L19571:
     move    r0, 0
-__L19568:
+__L19572:
     store   r0, sf[-1]
-.source "src/cg_expr.c", 2341
+.source "src/cg_expr.c", 2343
     load    r0, sf[0]
     push    r0
     load    r0, sf[-1]
@@ -196760,17 +196827,17 @@ __L19568:
     call    __F1377_ge_loop_push
     add     sp, 5
     store   r0, sf[-2]
-.source "src/cg_expr.c", 2342
+.source "src/cg_expr.c", 2344
     load    r0, sf[-2]
     add     r0, 1
     load    r0, r0[0]
     store   r0, sf[-3]
-.source "src/cg_expr.c", 2343
-    move    r0, __W2436+1
+.source "src/cg_expr.c", 2345
+    move    r0, __W2441+1
     push    r0
     call    __F1236_E
     add     sp, 1
-.source "src/cg_expr.c", 2344
+.source "src/cg_expr.c", 2346
     call    __F104_ty_unit
     push    r0
     load    r0, sf[3]
@@ -196779,39 +196846,39 @@ __L19568:
     push    r0
     call    __F1284_ge_block_value
     add     sp, 2
-.source "src/cg_expr.c", 2345
+.source "src/cg_expr.c", 2347
     load    r0, sf[-3]
     push    r0
     load    r0, sf[-3]
     push    r0
-    move    r0, __W2437+1
+    move    r0, __W2442+1
     push    r0
     call    __F1236_E
     add     sp, 3
-.source "src/cg_expr.c", 2346
+.source "src/cg_expr.c", 2348
     load    r1, __G1226_ge_nloops+1
     add     r2, r1, -1
     store   r2, __G1226_ge_nloops+1
     move    r0, r1
-.source "src/cg_expr.c", 2347
+.source "src/cg_expr.c", 2349
     load    r0, sf[0]
     push    r0
     call    __F1244_ge_is_never
     add     sp, 1
     test    r0
-    jump    z, __L19569
+    jump    z, __L19573
     move    r0, __G1235_ge_never_s+1
     return
-__L19569:
-.source "src/cg_expr.c", 2348
+__L19573:
+.source "src/cg_expr.c", 2350
     load    r0, sf[-1]
     test    r0
-    jump    z, __L19571
+    jump    z, __L19575
     load    r0, sf[-1]
-    jump    __L19572
-__L19571:
-    move    r0, __W2438+1
-__L19572:
+    jump    __L19576
+__L19575:
+    move    r0, __W2443+1
+__L19576:
     return
     move    r0, 0
     return
@@ -196819,9 +196886,9 @@ __L19572:
 
 // ge_for
 __F1385_ge_for:
-.source "src/cg_expr.c", 2351
+.source "src/cg_expr.c", 2353
     add     sp, -19
-.source "src/cg_expr.c", 2352
+.source "src/cg_expr.c", 2354
     move    r0, 0
     push    r0
     load    r0, sf[3]
@@ -196836,30 +196903,30 @@ __F1385_ge_for:
     call    __F730_check_callee
     add     sp, 2
     store   r0, sf[-1]
-.source "src/cg_expr.c", 2359
+.source "src/cg_expr.c", 2361
     load    r0, sf[0]
     test    r0
     move    z, r0, 1, 0
     test    r0
-    jump    nz, __L19575
+    jump    nz, __L19579
     load    r0, sf[-1]
     test    r0
     move    z, r0, 1, 0
     test    r0
-    jump    nz, __L19575
+    jump    nz, __L19579
     move    r0, 0
-    jump    __L19576
-__L19575:
+    jump    __L19580
+__L19579:
     move    r0, 1
-__L19576:
+__L19580:
     test    r0
-    jump    z, __L19573
-    move    r0, __W2439+1
+    jump    z, __L19577
+    move    r0, __W2444+1
     push    r0
     call    __F2_fatal
     add     sp, 1
-__L19573:
-.source "src/cg_expr.c", 2360
+__L19577:
+.source "src/cg_expr.c", 2362
     load    r0, sf[-1]
     add     r0, 4
     load    r0, r0[0]
@@ -196867,7 +196934,7 @@ __L19573:
     call    __F1240_gm
     add     sp, 1
     store   r0, sf[-2]
-.source "src/cg_expr.c", 2361
+.source "src/cg_expr.c", 2363
     load    r0, sf[-1]
     add     r0, 3
     load    r0, r0[0]
@@ -196877,7 +196944,7 @@ __L19573:
     call    __F1240_gm
     add     sp, 1
     store   r0, sf[-3]
-.source "src/cg_expr.c", 2362
+.source "src/cg_expr.c", 2364
     load    r0, sf[-3]
     add     r0, 6
     load    r0, r0[0]
@@ -196885,12 +196952,12 @@ __L19573:
     add     r0, r1
     load    r0, r0[0]
     store   r0, sf[-4]
-.source "src/cg_expr.c", 2363
+.source "src/cg_expr.c", 2365
     move    r0, 2
     push    r0
     call    __F1253_ge_push_scope
     add     sp, 1
-.source "src/cg_expr.c", 2364
+.source "src/cg_expr.c", 2366
     add     r0, sf, -8
     move    r1, 0
     add     r0, r1
@@ -196915,7 +196982,7 @@ __L19573:
     add     sp, 2
     pop     r1
     store   r0, r1[0]
-.source "src/cg_expr.c", 2365
+.source "src/cg_expr.c", 2367
     move    r0, 1
     push    r0
     add     r0, sf, -8
@@ -196927,13 +196994,13 @@ __L19573:
     call    __F1285_ge_call_callee
     add     sp, 4
     store   r0, sf[-5]
-.source "src/cg_expr.c", 2366
+.source "src/cg_expr.c", 2368
     load    r0, sf[-2]
     push    r0
     call    __F1243_ge_tmp_ty
     add     sp, 1
     store   r0, sf[-6]
-.source "src/cg_expr.c", 2367
+.source "src/cg_expr.c", 2369
     load    r0, sf[-2]
     push    r0
     call    __F1110_cg_is_zst
@@ -196941,7 +197008,7 @@ __L19573:
     test    r0
     move    z, r0, 1, 0
     test    r0
-    jump    z, __L19577
+    jump    z, __L19581
     load    r0, sf[-2]
     push    r0
     load    r0, sf[-5]
@@ -196951,12 +197018,12 @@ __L19573:
     push    r0
     load    r0, sf[-6]
     push    r0
-    move    r0, __W2440+1
+    move    r0, __W2445+1
     push    r0
     call    __F1236_E
     add     sp, 3
-__L19577:
-.source "src/cg_expr.c", 2368
+__L19581:
+.source "src/cg_expr.c", 2370
     load    r0, __G1223_ge_nsc+1
     move    r1, 1
     sub     r0, r1
@@ -196968,12 +197035,12 @@ __L19577:
     call    __F1297_ge_temp_local
     add     sp, 3
     store   r0, sf[-12]
-.source "src/cg_expr.c", 2369
+.source "src/cg_expr.c", 2371
     load    r0, sf[-12]
     push    r0
     call    __F1298_ge_set_init
     add     sp, 1
-.source "src/cg_expr.c", 2370
+.source "src/cg_expr.c", 2372
     move    r0, 0
     push    r0
     move    r0, 0
@@ -196989,40 +197056,40 @@ __L19577:
     call    __F1377_ge_loop_push
     add     sp, 5
     store   r0, sf[-9]
-.source "src/cg_expr.c", 2371
+.source "src/cg_expr.c", 2373
     load    r0, sf[-9]
     add     r0, 1
     load    r0, r0[0]
     store   r0, sf[-10]
-.source "src/cg_expr.c", 2372
+.source "src/cg_expr.c", 2374
     load    r0, sf[-9]
     add     r0, 2
     load    r0, r0[0]
     store   r0, sf[-11]
-.source "src/cg_expr.c", 2373
-    move    r0, __W2441+1
+.source "src/cg_expr.c", 2375
+    move    r0, __W2446+1
     push    r0
     call    __F1236_E
     add     sp, 1
-.source "src/cg_expr.c", 2374
+.source "src/cg_expr.c", 2376
     move    r0, 2
     push    r0
     call    __F1253_ge_push_scope
     add     sp, 1
-.source "src/cg_expr.c", 2375
+.source "src/cg_expr.c", 2377
     add     r0, sf, -8
     move    r1, 0
     add     r0, r1
     push    r0
     load    r0, sf[-6]
     push    r0
-    move    r0, __W2442+1
+    move    r0, __W2447+1
     push    r0
     call    __F1237_S
     add     sp, 2
     pop     r1
     store   r0, r1[0]
-.source "src/cg_expr.c", 2376
+.source "src/cg_expr.c", 2378
     move    r0, 1
     push    r0
     add     r0, sf, -8
@@ -197034,7 +197101,7 @@ __L19577:
     call    __F1285_ge_call_callee
     add     sp, 4
     store   r0, sf[-7]
-.source "src/cg_expr.c", 2377
+.source "src/cg_expr.c", 2379
     load    r0, sf[-3]
     push    r0
     load    r0, sf[-7]
@@ -197047,7 +197114,7 @@ __L19577:
     call    __F1247_ge_snap
     add     sp, 2
     store   r0, sf[-7]
-.source "src/cg_expr.c", 2378
+.source "src/cg_expr.c", 2380
     move    r0, 1
     push    r0
     load    r0, __G780_L_option+1
@@ -197055,29 +197122,29 @@ __L19577:
     call    __F976_variant_at
     add     sp, 2
     store   r0, sf[-13]
-.source "src/cg_expr.c", 2379
+.source "src/cg_expr.c", 2381
     load    r0, sf[-7]
     push    r0
-    move    r0, __W2443+1
-    push    r0
-    call    __F1236_E
-    add     sp, 2
-.source "src/cg_expr.c", 2380
-    load    r0, sf[-11]
-    push    r0
-    call    __F1256_ge_drops_to
-    add     sp, 1
-.source "src/cg_expr.c", 2381
-    load    r0, sf[-10]
-    push    r0
-    move    r0, __W2444+1
+    move    r0, __W2448+1
     push    r0
     call    __F1236_E
     add     sp, 2
 .source "src/cg_expr.c", 2382
+    load    r0, sf[-11]
+    push    r0
+    call    __F1256_ge_drops_to
+    add     sp, 1
+.source "src/cg_expr.c", 2383
+    load    r0, sf[-10]
+    push    r0
+    move    r0, __W2449+1
+    push    r0
+    call    __F1236_E
+    add     sp, 2
+.source "src/cg_expr.c", 2384
     move    r0, 0
     store   r0, __G1354_ge_ncommits+1
-.source "src/cg_expr.c", 2383
+.source "src/cg_expr.c", 2385
     move    r0, 0
     push    r0
     load    r0, sf[-4]
@@ -197101,7 +197168,7 @@ __L19577:
     push    r0
     load    r0, sf[-7]
     push    r0
-    move    r0, __W2445+1
+    move    r0, __W2450+1
     push    r0
     call    __F1237_S
     add     sp, 4
@@ -197129,9 +197196,9 @@ __L19577:
     push    r0
     call    __F1372_ge_pat_bind
     add     sp, 6
-.source "src/cg_expr.c", 2384
+.source "src/cg_expr.c", 2386
     call    __F1357_ge_commit
-.source "src/cg_expr.c", 2385
+.source "src/cg_expr.c", 2387
     call    __F104_ty_unit
     push    r0
     load    r0, sf[3]
@@ -197140,32 +197207,32 @@ __L19577:
     push    r0
     call    __F1284_ge_block_value
     add     sp, 2
-.source "src/cg_expr.c", 2386
+.source "src/cg_expr.c", 2388
     move    r0, 1
     push    r0
     call    __F1257_ge_pop_scope
     add     sp, 1
-.source "src/cg_expr.c", 2387
+.source "src/cg_expr.c", 2389
     load    r0, sf[-10]
     push    r0
     load    r0, sf[-10]
     push    r0
-    move    r0, __W2446+1
+    move    r0, __W2451+1
     push    r0
     call    __F1236_E
     add     sp, 3
-.source "src/cg_expr.c", 2388
+.source "src/cg_expr.c", 2390
     load    r1, __G1226_ge_nloops+1
     add     r2, r1, -1
     store   r2, __G1226_ge_nloops+1
     move    r0, r1
-.source "src/cg_expr.c", 2389
+.source "src/cg_expr.c", 2391
     move    r0, 1
     push    r0
     call    __F1257_ge_pop_scope
     add     sp, 1
-.source "src/cg_expr.c", 2390
-    move    r0, __W2447+1
+.source "src/cg_expr.c", 2392
+    move    r0, __W2452+1
     return
     move    r0, 0
     return
@@ -197173,9 +197240,9 @@ __L19577:
 
 // ge_break
 __F1386_ge_break:
-.source "src/cg_expr.c", 2393
+.source "src/cg_expr.c", 2395
     add     sp, -2
-.source "src/cg_expr.c", 2394
+.source "src/cg_expr.c", 2396
     move    r0, 0
     push    r0
     load    r0, sf[3]
@@ -197185,13 +197252,13 @@ __F1386_ge_break:
     call    __F1378_ge_loop_find
     add     sp, 2
     store   r0, sf[0]
-.source "src/cg_expr.c", 2395
+.source "src/cg_expr.c", 2397
     load    r0, sf[3]
     add     r0, 5
     load    r0, r0[0]
     test    r0
-    jump    z, __L19579
-.source "src/cg_expr.c", 2396
+    jump    z, __L19583
+.source "src/cg_expr.c", 2398
     load    r0, sf[0]
     add     r0, 4
     load    r0, r0[0]
@@ -197203,7 +197270,7 @@ __F1386_ge_break:
     call    __F1280_ex_to
     add     sp, 2
     store   r0, sf[-1]
-.source "src/cg_expr.c", 2397
+.source "src/cg_expr.c", 2399
     load    r0, sf[-1]
     push    r0
     load    r0, sf[0]
@@ -197216,24 +197283,24 @@ __F1386_ge_break:
     push    r0
     call    __F1379_ge_assign_result
     add     sp, 3
-__L19579:
-.source "src/cg_expr.c", 2399
+__L19583:
+.source "src/cg_expr.c", 2401
     load    r0, sf[0]
     add     r0, 2
     load    r0, r0[0]
     push    r0
     call    __F1256_ge_drops_to
     add     sp, 1
-.source "src/cg_expr.c", 2400
+.source "src/cg_expr.c", 2402
     load    r0, sf[0]
     add     r0, 1
     load    r0, r0[0]
     push    r0
-    move    r0, __W2448+1
+    move    r0, __W2453+1
     push    r0
     call    __F1236_E
     add     sp, 2
-.source "src/cg_expr.c", 2401
+.source "src/cg_expr.c", 2403
     move    r0, __G1235_ge_never_s+1
     return
     move    r0, 0
@@ -197242,9 +197309,9 @@ __L19579:
 
 // ge_continue
 __F1387_ge_continue:
-.source "src/cg_expr.c", 2404
+.source "src/cg_expr.c", 2406
     add     sp, -1
-.source "src/cg_expr.c", 2405
+.source "src/cg_expr.c", 2407
     move    r0, 1
     push    r0
     load    r0, sf[3]
@@ -197254,23 +197321,23 @@ __F1387_ge_continue:
     call    __F1378_ge_loop_find
     add     sp, 2
     store   r0, sf[0]
-.source "src/cg_expr.c", 2406
+.source "src/cg_expr.c", 2408
     load    r0, sf[0]
     add     r0, 2
     load    r0, r0[0]
     push    r0
     call    __F1256_ge_drops_to
     add     sp, 1
-.source "src/cg_expr.c", 2407
+.source "src/cg_expr.c", 2409
     load    r0, sf[0]
     add     r0, 1
     load    r0, r0[0]
     push    r0
-    move    r0, __W2449+1
+    move    r0, __W2454+1
     push    r0
     call    __F1236_E
     add     sp, 2
-.source "src/cg_expr.c", 2408
+.source "src/cg_expr.c", 2410
     move    r0, __G1235_ge_never_s+1
     return
     move    r0, 0
@@ -197279,112 +197346,60 @@ __F1387_ge_continue:
 
 // ge_return_value
 __F1388_ge_return_value:
-.source "src/cg_expr.c", 2411
+.source "src/cg_expr.c", 2413
     add     sp, -1
-.source "src/cg_expr.c", 2412
+.source "src/cg_expr.c", 2414
     load    r0, __G1231_ge_ret+1
     store   r0, sf[0]
-.source "src/cg_expr.c", 2413
+.source "src/cg_expr.c", 2415
     load    r0, sf[0]
     push    r0
     call    __F1110_cg_is_zst
     add     sp, 1
     test    r0
-    jump    nz, __L19585
+    jump    nz, __L19589
     load    r0, sf[0]
     push    r0
     call    __F1244_ge_is_never
     add     sp, 1
     test    r0
-    jump    nz, __L19585
+    jump    nz, __L19589
     move    r0, 0
-    jump    __L19586
-__L19585:
-    move    r0, 1
-__L19586:
-    test    r0
-    jump    nz, __L19583
-    load    r0, sf[3]
-    push    r0
-    move    r0, __G1235_ge_never_s+1
-    move    r1, r0
-    pop     r0
-    cmp     r0, r1
-    move    eq, r0, 1, 0
-    test    r0
-    jump    nz, __L19583
-    move    r0, 0
-    jump    __L19584
-__L19583:
-    move    r0, 1
-__L19584:
-    test    r0
-    jump    z, __L19581
-.source "src/cg_expr.c", 2414
-    load    r0, sf[3]
-    push    r0
-    move    r0, __G1235_ge_never_s+1
-    move    r1, r0
-    pop     r0
-    cmp     r0, r1
-    move    eq, r0, 1, 0
-    test    r0
-    jump    z, __L19591
-    load    r0, sf[0]
-    push    r0
-    call    __F1110_cg_is_zst
-    add     sp, 1
-    test    r0
-    move    z, r0, 1, 0
-    test    r0
-    jump    z, __L19591
-    move    r0, 1
-    jump    __L19592
-__L19591:
-    move    r0, 0
-__L19592:
-    test    r0
-    jump    z, __L19589
-    load    r0, sf[0]
-    push    r0
-    call    __F1244_ge_is_never
-    add     sp, 1
-    test    r0
-    move    z, r0, 1, 0
-    test    r0
-    jump    z, __L19589
-    move    r0, 1
     jump    __L19590
 __L19589:
-    move    r0, 0
+    move    r0, 1
 __L19590:
     test    r0
-    jump    z, __L19587
-    load    r0, sf[0]
-    push    r0
+    jump    nz, __L19587
     load    r0, sf[3]
     push    r0
-    call    __F1246_ge_fix
-    add     sp, 2
-    store   r0, sf[3]
+    move    r0, __G1235_ge_never_s+1
+    move    r1, r0
+    pop     r0
+    cmp     r0, r1
+    move    eq, r0, 1, 0
+    test    r0
+    jump    nz, __L19587
+    move    r0, 0
     jump    __L19588
 __L19587:
-.source "src/cg_expr.c", 2415
-    move    r0, __W2450+1
-    store   r0, sf[3]
+    move    r0, 1
 __L19588:
-.source "src/cg_expr.c", 2416
-    load    r0, sf[0]
-    push    r0
-    call    __F1110_cg_is_zst
-    add     sp, 1
     test    r0
-    move    z, r0, 1, 0
+    jump    z, __L19585
+.source "src/cg_expr.c", 2416
+    load    r0, sf[3]
+    push    r0
+    move    r0, __G1235_ge_never_s+1
+    move    r1, r0
+    pop     r0
+    cmp     r0, r1
+    move    eq, r0, 1, 0
     test    r0
     jump    z, __L19595
     load    r0, sf[0]
     push    r0
-    call    __F1244_ge_is_never
+    call    __F1110_cg_is_zst
     add     sp, 1
     test    r0
     move    z, r0, 1, 0
@@ -197397,35 +197412,87 @@ __L19595:
 __L19596:
     test    r0
     jump    z, __L19593
+    load    r0, sf[0]
+    push    r0
+    call    __F1244_ge_is_never
+    add     sp, 1
+    test    r0
+    move    z, r0, 1, 0
+    test    r0
+    jump    z, __L19593
+    move    r0, 1
+    jump    __L19594
+__L19593:
+    move    r0, 0
+__L19594:
+    test    r0
+    jump    z, __L19591
+    load    r0, sf[0]
+    push    r0
+    load    r0, sf[3]
+    push    r0
+    call    __F1246_ge_fix
+    add     sp, 2
+    store   r0, sf[3]
+    jump    __L19592
+__L19591:
 .source "src/cg_expr.c", 2417
+    move    r0, __W2455+1
+    store   r0, sf[3]
+__L19592:
+.source "src/cg_expr.c", 2418
+    load    r0, sf[0]
+    push    r0
+    call    __F1110_cg_is_zst
+    add     sp, 1
+    test    r0
+    move    z, r0, 1, 0
+    test    r0
+    jump    z, __L19599
+    load    r0, sf[0]
+    push    r0
+    call    __F1244_ge_is_never
+    add     sp, 1
+    test    r0
+    move    z, r0, 1, 0
+    test    r0
+    jump    z, __L19599
+    move    r0, 1
+    jump    __L19600
+__L19599:
+    move    r0, 0
+__L19600:
+    test    r0
+    jump    z, __L19597
+.source "src/cg_expr.c", 2419
     move    r0, 0
     push    r0
     call    __F1256_ge_drops_to
     add     sp, 1
-.source "src/cg_expr.c", 2418
+.source "src/cg_expr.c", 2420
     load    r0, sf[3]
     push    r0
-    move    r0, __W2451+1
+    move    r0, __W2456+1
     push    r0
     call    __F1236_E
     add     sp, 2
-.source "src/cg_expr.c", 2419
-    return
-__L19593:
 .source "src/cg_expr.c", 2421
+    return
+__L19597:
+.source "src/cg_expr.c", 2423
     move    r0, 0
     push    r0
     call    __F1256_ge_drops_to
     add     sp, 1
-.source "src/cg_expr.c", 2422
-    move    r0, __W2452+1
+.source "src/cg_expr.c", 2424
+    move    r0, __W2457+1
     push    r0
     call    __F1236_E
     add     sp, 1
-.source "src/cg_expr.c", 2423
-    return
-__L19581:
 .source "src/cg_expr.c", 2425
+    return
+__L19585:
+.source "src/cg_expr.c", 2427
     load    r0, sf[3]
     push    r0
     load    r0, sf[0]
@@ -197433,15 +197500,15 @@ __L19581:
     call    __F1247_ge_snap
     add     sp, 2
     store   r0, sf[3]
-.source "src/cg_expr.c", 2426
+.source "src/cg_expr.c", 2428
     move    r0, 0
     push    r0
     call    __F1256_ge_drops_to
     add     sp, 1
-.source "src/cg_expr.c", 2427
+.source "src/cg_expr.c", 2429
     load    r0, sf[3]
     push    r0
-    move    r0, __W2453+1
+    move    r0, __W2458+1
     push    r0
     call    __F1236_E
     add     sp, 2
@@ -197451,17 +197518,17 @@ __L19581:
 
 // ge_return
 __F1389_ge_return:
-.source "src/cg_expr.c", 2430
-    add     sp, -1
-.source "src/cg_expr.c", 2431
-    move    r0, __W2454+1
-    store   r0, sf[0]
 .source "src/cg_expr.c", 2432
+    add     sp, -1
+.source "src/cg_expr.c", 2433
+    move    r0, __W2459+1
+    store   r0, sf[0]
+.source "src/cg_expr.c", 2434
     load    r0, sf[3]
     add     r0, 5
     load    r0, r0[0]
     test    r0
-    jump    z, __L19597
+    jump    z, __L19601
     load    r0, __G1231_ge_ret+1
     push    r0
     load    r0, sf[3]
@@ -197471,13 +197538,13 @@ __F1389_ge_return:
     call    __F1280_ex_to
     add     sp, 2
     store   r0, sf[0]
-__L19597:
-.source "src/cg_expr.c", 2433
+__L19601:
+.source "src/cg_expr.c", 2435
     load    r0, sf[0]
     push    r0
     call    __F1388_ge_return_value
     add     sp, 1
-.source "src/cg_expr.c", 2434
+.source "src/cg_expr.c", 2436
     move    r0, __G1235_ge_never_s+1
     return
     move    r0, 0
@@ -197486,9 +197553,9 @@ __L19597:
 
 // ge_try
 __F1390_ge_try:
-.source "src/cg_expr.c", 2437
+.source "src/cg_expr.c", 2439
     add     sp, -13
-.source "src/cg_expr.c", 2438
+.source "src/cg_expr.c", 2440
     load    r0, sf[3]
     add     r0, 5
     load    r0, r0[0]
@@ -197498,7 +197565,7 @@ __F1390_ge_try:
     store   r0, sf[0]
     load    r0, __G1231_ge_ret+1
     store   r0, sf[-1]
-.source "src/cg_expr.c", 2439
+.source "src/cg_expr.c", 2441
     load    r0, sf[0]
     push    r0
     load    r0, sf[3]
@@ -197516,7 +197583,7 @@ __F1390_ge_try:
     call    __F1247_ge_snap
     add     sp, 2
     store   r0, sf[-2]
-.source "src/cg_expr.c", 2440
+.source "src/cg_expr.c", 2442
     load    r0, sf[0]
     add     r0, 11
     load    r0, r0[0]
@@ -197524,8 +197591,8 @@ __F1390_ge_try:
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L19599
-.source "src/cg_expr.c", 2441
+    jump    z, __L19603
+.source "src/cg_expr.c", 2443
     move    r0, 0
     push    r0
     load    r0, sf[3]
@@ -197533,7 +197600,7 @@ __F1390_ge_try:
     call    __F730_check_callee
     add     sp, 2
     store   r0, sf[-4]
-.source "src/cg_expr.c", 2442
+.source "src/cg_expr.c", 2444
     move    r0, 1
     push    r0
     load    r0, __G781_L_result+1
@@ -197548,7 +197615,7 @@ __F1390_ge_try:
     call    __F976_variant_at
     add     sp, 2
     store   r0, sf[-6]
-.source "src/cg_expr.c", 2443
+.source "src/cg_expr.c", 2445
     load    r0, sf[0]
     add     r0, 6
     load    r0, r0[0]
@@ -197556,7 +197623,7 @@ __F1390_ge_try:
     add     r0, r1
     load    r0, r0[0]
     store   r0, sf[-7]
-.source "src/cg_expr.c", 2444
+.source "src/cg_expr.c", 2446
     move    r0, 0
     push    r0
     move    r0, 0
@@ -197576,14 +197643,14 @@ __F1390_ge_try:
     push    r0
     load    r0, sf[-2]
     push    r0
-    move    r0, __W2455+1
+    move    r0, __W2460+1
     push    r0
     call    __F1237_S
     add     sp, 4
     store   r0, sf[-8]
     load    r0, sf[-8]
     store   r0, sf[-9]
-.source "src/cg_expr.c", 2445
+.source "src/cg_expr.c", 2447
     move    r0, 1
     push    r0
     load    r0, sf[-1]
@@ -197593,18 +197660,18 @@ __F1390_ge_try:
     call    __F976_variant_at
     add     sp, 2
     store   r0, sf[-10]
-.source "src/cg_expr.c", 2446
+.source "src/cg_expr.c", 2448
     load    r0, sf[-2]
     push    r0
-    move    r0, __W2456+1
+    move    r0, __W2461+1
     push    r0
     call    __F1236_E
     add     sp, 2
-.source "src/cg_expr.c", 2447
+.source "src/cg_expr.c", 2449
     load    r0, sf[-4]
     test    r0
-    jump    z, __L19601
-.source "src/cg_expr.c", 2449
+    jump    z, __L19605
+.source "src/cg_expr.c", 2451
     add     r0, sf, -11
     move    r1, 0
     add     r0, r1
@@ -197617,7 +197684,7 @@ __F1390_ge_try:
     add     sp, 2
     pop     r1
     store   r0, r1[0]
-.source "src/cg_expr.c", 2450
+.source "src/cg_expr.c", 2452
     move    r0, 1
     push    r0
     add     r0, sf, -11
@@ -197629,21 +197696,21 @@ __F1390_ge_try:
     call    __F1285_ge_call_callee
     add     sp, 4
     store   r0, sf[-9]
-__L19601:
-.source "src/cg_expr.c", 2452
+__L19605:
+.source "src/cg_expr.c", 2454
     load    r0, sf[-1]
     push    r0
     call    __F1243_ge_tmp_ty
     add     sp, 1
     store   r0, sf[-3]
-.source "src/cg_expr.c", 2453
+.source "src/cg_expr.c", 2455
     load    r0, sf[-3]
     push    r0
-    move    r0, __W2457+1
+    move    r0, __W2462+1
     push    r0
     call    __F1236_E
     add     sp, 2
-.source "src/cg_expr.c", 2454
+.source "src/cg_expr.c", 2456
     load    r0, sf[-1]
     push    r0
     move    r0, 0
@@ -197666,7 +197733,7 @@ __L19601:
     test    r0
     move    z, r0, 1, 0
     test    r0
-    jump    z, __L19603
+    jump    z, __L19607
     load    r0, sf[-9]
     push    r0
     move    r0, 0
@@ -197688,22 +197755,22 @@ __L19601:
     push    r0
     load    r0, sf[-3]
     push    r0
-    move    r0, __W2458+1
+    move    r0, __W2463+1
     push    r0
     call    __F1236_E
     add     sp, 5
-__L19603:
-.source "src/cg_expr.c", 2455
+__L19607:
+.source "src/cg_expr.c", 2457
     load    r0, sf[-3]
     push    r0
     call    __F1388_ge_return_value
     add     sp, 1
-.source "src/cg_expr.c", 2456
-    move    r0, __W2459+1
+.source "src/cg_expr.c", 2458
+    move    r0, __W2464+1
     push    r0
     call    __F1236_E
     add     sp, 1
-.source "src/cg_expr.c", 2457
+.source "src/cg_expr.c", 2459
     move    r0, 0
     push    r0
     move    r0, 0
@@ -197723,13 +197790,13 @@ __L19603:
     push    r0
     load    r0, sf[-2]
     push    r0
-    move    r0, __W2460+1
+    move    r0, __W2465+1
     push    r0
     call    __F1237_S
     add     sp, 4
     return
-__L19599:
-.source "src/cg_expr.c", 2460
+__L19603:
+.source "src/cg_expr.c", 2462
     move    r0, 1
     push    r0
     load    r0, __G780_L_option+1
@@ -197737,37 +197804,37 @@ __L19599:
     call    __F976_variant_at
     add     sp, 2
     store   r0, sf[-12]
-.source "src/cg_expr.c", 2461
+.source "src/cg_expr.c", 2463
     load    r0, sf[-2]
     push    r0
-    move    r0, __W2461+1
+    move    r0, __W2466+1
     push    r0
     call    __F1236_E
     add     sp, 2
-.source "src/cg_expr.c", 2462
+.source "src/cg_expr.c", 2464
     load    r0, sf[-1]
     push    r0
     call    __F1243_ge_tmp_ty
     add     sp, 1
     store   r0, sf[-3]
-.source "src/cg_expr.c", 2463
+.source "src/cg_expr.c", 2465
     load    r0, sf[-3]
     push    r0
-    move    r0, __W2462+1
+    move    r0, __W2467+1
     push    r0
     call    __F1236_E
     add     sp, 2
-.source "src/cg_expr.c", 2464
+.source "src/cg_expr.c", 2466
     load    r0, sf[-3]
     push    r0
     call    __F1388_ge_return_value
     add     sp, 1
-.source "src/cg_expr.c", 2465
-    move    r0, __W2463+1
+.source "src/cg_expr.c", 2467
+    move    r0, __W2468+1
     push    r0
     call    __F1236_E
     add     sp, 1
-.source "src/cg_expr.c", 2466
+.source "src/cg_expr.c", 2468
     move    r0, 0
     push    r0
     move    r0, 0
@@ -197787,7 +197854,7 @@ __L19599:
     push    r0
     load    r0, sf[-2]
     push    r0
-    move    r0, __W2464+1
+    move    r0, __W2469+1
     push    r0
     call    __F1237_S
     add     sp, 4
@@ -197798,8 +197865,8 @@ __L19599:
 
 // ge_scope_has_drops
 __F1391_ge_scope_has_drops:
-.source "src/cg_expr.c", 2472
-.source "src/cg_expr.c", 2473
+.source "src/cg_expr.c", 2474
+.source "src/cg_expr.c", 2475
     move    r0, 0
     push    r0
     load    r0, __G1222_ge_sc+1
@@ -197815,12 +197882,12 @@ __F1391_ge_scope_has_drops:
     move    r1, r0
     pop     r0
     cmp     r0, r1
-    jump    o, __L19605
+    jump    o, __L19609
     move    lt, r0, 1, 0
-    jump    __L19606
-__L19605:
+    jump    __L19610
+__L19609:
     move    lt, r0, 0, 1
-__L19606:
+__L19610:
     return
     move    r0, 0
     return
@@ -197828,9 +197895,9 @@ __L19606:
 
 // ge_let
 __F1392_ge_let:
-.source "src/cg_expr.c", 2476
+.source "src/cg_expr.c", 2478
     add     sp, -27
-.source "src/cg_expr.c", 2477
+.source "src/cg_expr.c", 2479
     load    r0, sf[3]
     add     r0, 5
     load    r0, r0[0]
@@ -197839,29 +197906,29 @@ __F1392_ge_let:
     add     r0, 7
     load    r0, r0[0]
     store   r0, sf[-1]
-.source "src/cg_expr.c", 2478
+.source "src/cg_expr.c", 2480
     move    r0, 0
     store   r0, sf[-2]
-.source "src/cg_expr.c", 2479
+.source "src/cg_expr.c", 2481
     load    r0, sf[-1]
     test    r0
     move    z, r0, 1, 0
     test    r0
-    jump    z, __L19607
-.source "src/cg_expr.c", 2480
+    jump    z, __L19611
+.source "src/cg_expr.c", 2482
     load    r0, sf[0]
     push    r0
     call    __F1373_ge_pat_declare
     add     sp, 1
-.source "src/cg_expr.c", 2481
-    return
-__L19607:
 .source "src/cg_expr.c", 2483
+    return
+__L19611:
+.source "src/cg_expr.c", 2485
     load    r0, sf[3]
     add     r0, 6
     load    r0, r0[0]
     test    r0
-    jump    z, __L19609
+    jump    z, __L19613
     load    r0, sf[3]
     add     r0, 6
     load    r0, r0[0]
@@ -197872,72 +197939,100 @@ __L19607:
     call    __F1240_gm
     add     sp, 1
     store   r0, sf[-2]
-__L19609:
-.source "src/cg_expr.c", 2485
+__L19613:
+.source "src/cg_expr.c", 2487
     load    r0, sf[-1]
     store   r0, sf[-3]
-.source "src/cg_expr.c", 2486
-__L19611:
+.source "src/cg_expr.c", 2488
+__L19615:
     load    r0, sf[-3]
     load    r0, r0[0]
     move    r1, 73
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L19613
+    jump    z, __L19617
     load    r0, sf[-3]
     add     r0, 5
     load    r0, r0[0]
     store   r0, sf[-3]
-__L19612:
-    jump    __L19611
-__L19613:
-.source "src/cg_expr.c", 2487
+__L19616:
+    jump    __L19615
+__L19617:
+.source "src/cg_expr.c", 2489
     load    r0, sf[-3]
     load    r0, r0[0]
     move    r1, 76
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L19614
-.source "src/cg_expr.c", 2488
+    jump    z, __L19618
+.source "src/cg_expr.c", 2490
     load    r0, sf[-3]
     add     r0, 5
     load    r0, r0[0]
     store   r0, sf[-4]
-.source "src/cg_expr.c", 2489
-__L19616:
+.source "src/cg_expr.c", 2491
+__L19620:
     load    r0, sf[-4]
     load    r0, r0[0]
     move    r1, 73
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L19618
+    jump    z, __L19622
     load    r0, sf[-4]
     add     r0, 5
     load    r0, r0[0]
     store   r0, sf[-4]
-__L19617:
-    jump    __L19616
-__L19618:
-.source "src/cg_expr.c", 2490
+__L19621:
+    jump    __L19620
+__L19622:
+.source "src/cg_expr.c", 2492
     load    r0, sf[-4]
     store   r0, __G1234_ge_extend+1
-__L19614:
-.source "src/cg_expr.c", 2493
+__L19618:
+.source "src/cg_expr.c", 2495
     load    r0, sf[0]
     load    r0, r0[0]
     move    r1, 53
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L19629
+    jump    z, __L19633
     load    r0, sf[0]
     add     r0, 5
     load    r0, r0[0]
     test    r0
     move    z, r0, 1, 0
+    test    r0
+    jump    z, __L19633
+    move    r0, 1
+    jump    __L19634
+__L19633:
+    move    r0, 0
+__L19634:
+    test    r0
+    jump    z, __L19631
+    load    r0, sf[0]
+    add     r0, 26
+    load    r0, r0[0]
+    test    r0
+    jump    z, __L19631
+    move    r0, 1
+    jump    __L19632
+__L19631:
+    move    r0, 0
+__L19632:
+    test    r0
+    jump    z, __L19629
+    load    r0, sf[0]
+    add     r0, 26
+    load    r0, r0[0]
+    load    r0, r0[0]
+    move    r1, 16
+    cmp     r0, r1
+    move    eq, r0, 1, 0
     test    r0
     jump    z, __L19629
     move    r0, 1
@@ -197947,34 +198042,6 @@ __L19629:
 __L19630:
     test    r0
     jump    z, __L19627
-    load    r0, sf[0]
-    add     r0, 26
-    load    r0, r0[0]
-    test    r0
-    jump    z, __L19627
-    move    r0, 1
-    jump    __L19628
-__L19627:
-    move    r0, 0
-__L19628:
-    test    r0
-    jump    z, __L19625
-    load    r0, sf[0]
-    add     r0, 26
-    load    r0, r0[0]
-    load    r0, r0[0]
-    move    r1, 16
-    cmp     r0, r1
-    move    eq, r0, 1, 0
-    test    r0
-    jump    z, __L19625
-    move    r0, 1
-    jump    __L19626
-__L19625:
-    move    r0, 0
-__L19626:
-    test    r0
-    jump    z, __L19623
     load    r0, sf[0]
     add     r0, 27
     load    r0, r0[0]
@@ -197988,34 +198055,34 @@ __L19626:
     test    r0
     move    z, r0, 1, 0
     test    r0
-    jump    z, __L19623
+    jump    z, __L19627
     move    r0, 1
-    jump    __L19624
-__L19623:
+    jump    __L19628
+__L19627:
     move    r0, 0
-__L19624:
+__L19628:
     test    r0
-    jump    z, __L19621
+    jump    z, __L19625
     load    r0, sf[3]
     add     r0, 8
     load    r0, r0[0]
     test    r0
     move    z, r0, 1, 0
     test    r0
-    jump    z, __L19621
+    jump    z, __L19625
     move    r0, 1
-    jump    __L19622
-__L19621:
+    jump    __L19626
+__L19625:
     move    r0, 0
-__L19622:
+__L19626:
     test    r0
-    jump    z, __L19619
-.source "src/cg_expr.c", 2495
+    jump    z, __L19623
+.source "src/cg_expr.c", 2497
     load    r0, sf[0]
     add     r0, 26
     load    r0, r0[0]
     store   r0, sf[-5]
-.source "src/cg_expr.c", 2496
+.source "src/cg_expr.c", 2498
     load    r0, sf[-5]
     add     r0, 9
     load    r0, r0[0]
@@ -198023,7 +198090,7 @@ __L19622:
     call    __F1240_gm
     add     sp, 1
     store   r0, sf[-6]
-.source "src/cg_expr.c", 2497
+.source "src/cg_expr.c", 2499
     load    r0, sf[-6]
     push    r0
     load    r0, sf[-1]
@@ -198031,7 +198098,7 @@ __L19622:
     call    __F1280_ex_to
     add     sp, 2
     store   r0, sf[-7]
-.source "src/cg_expr.c", 2498
+.source "src/cg_expr.c", 2500
     load    r0, sf[-6]
     push    r0
     load    r0, sf[-5]
@@ -198039,10 +198106,10 @@ __L19622:
     call    __F1371_ge_binding
     add     sp, 2
     store   r0, sf[-8]
-.source "src/cg_expr.c", 2499
+.source "src/cg_expr.c", 2501
     move    r0, 0
     store   r0, __G1234_ge_extend+1
-.source "src/cg_expr.c", 2500
+.source "src/cg_expr.c", 2502
     load    r0, sf[-7]
     push    r0
     move    r0, __G1235_ge_never_s+1
@@ -198051,7 +198118,7 @@ __L19622:
     cmp     r0, r1
     move    ne, r0, 1, 0
     test    r0
-    jump    z, __L19633
+    jump    z, __L19637
     load    r0, sf[-6]
     push    r0
     call    __F1110_cg_is_zst
@@ -198059,63 +198126,63 @@ __L19622:
     test    r0
     move    z, r0, 1, 0
     test    r0
-    jump    z, __L19633
+    jump    z, __L19637
     move    r0, 1
-    jump    __L19634
-__L19633:
+    jump    __L19638
+__L19637:
     move    r0, 0
-__L19634:
+__L19638:
     test    r0
-    jump    z, __L19631
+    jump    z, __L19635
     load    r0, sf[-7]
     push    r0
     load    r0, sf[-8]
     add     r0, 2
     load    r0, r0[0]
     push    r0
-    move    r0, __W2465+1
+    move    r0, __W2470+1
     push    r0
     call    __F1236_E
     add     sp, 3
-__L19631:
-.source "src/cg_expr.c", 2501
+__L19635:
+.source "src/cg_expr.c", 2503
     load    r0, sf[-8]
     push    r0
     call    __F1298_ge_set_init
     add     sp, 1
-.source "src/cg_expr.c", 2502
+.source "src/cg_expr.c", 2504
     return
-__L19619:
-.source "src/cg_expr.c", 2505
+__L19623:
+.source "src/cg_expr.c", 2507
     load    r0, sf[-2]
     test    r0
-    jump    z, __L19635
+    jump    z, __L19639
     load    r0, sf[-2]
-    jump    __L19636
-__L19635:
+    jump    __L19640
+__L19639:
     load    r0, sf[-1]
     push    r0
     call    __F1241_gnt
     add     sp, 1
-__L19636:
+__L19640:
     store   r0, sf[-9]
-.source "src/cg_expr.c", 2507
+.source "src/cg_expr.c", 2509
     load    r0, sf[-1]
     add     r0, 27
     load    r0, r0[0]
     test    r0
-    jump    nz, __L19639
+    jump    nz, __L19643
     load    r0, sf[-2]
     test    r0
-    jump    nz, __L19639
+    jump    nz, __L19643
     move    r0, 0
-    jump    __L19640
-__L19639:
+    jump    __L19644
+__L19643:
     move    r0, 1
-__L19640:
+__L19644:
     test    r0
-    jump    z, __L19637
-.source "src/cg_expr.c", 2508
+    jump    z, __L19641
+.source "src/cg_expr.c", 2510
     load    r0, sf[-2]
     push    r0
     load    r0, sf[-1]
@@ -198123,7 +198190,7 @@ __L19640:
     call    __F1280_ex_to
     add     sp, 2
     store   r0, sf[-15]
-.source "src/cg_expr.c", 2509
+.source "src/cg_expr.c", 2511
     add     r0, sf, -14
     push    r0
     load    r0, sf[-15]
@@ -198149,9 +198216,9 @@ __L19640:
     load    r2, r0[4]
     store   r2, r1[4]
     move    r0, r1
-    jump    __L19638
-__L19637:
-.source "src/cg_expr.c", 2511
+    jump    __L19642
+__L19641:
+.source "src/cg_expr.c", 2513
     add     r0, sf, -14
     push    r0
     move    r0, 0
@@ -198175,17 +198242,17 @@ __L19637:
     load    r2, r0[4]
     store   r2, r1[4]
     move    r0, r1
-__L19638:
-.source "src/cg_expr.c", 2513
+__L19642:
+.source "src/cg_expr.c", 2515
     move    r0, 0
     store   r0, __G1234_ge_extend+1
-.source "src/cg_expr.c", 2514
+.source "src/cg_expr.c", 2516
     load    r0, sf[3]
     add     r0, 8
     load    r0, r0[0]
     test    r0
-    jump    z, __L19641
-.source "src/cg_expr.c", 2515
+    jump    z, __L19645
+.source "src/cg_expr.c", 2517
     add     r0, sf, -14
     load    r1, r0[4]
     push    r1
@@ -198202,18 +198269,18 @@ __L19638:
     call    __F1370_ge_pat_cond
     add     sp, 6
     store   r0, sf[-26]
-.source "src/cg_expr.c", 2516
+.source "src/cg_expr.c", 2518
     load    r0, sf[-26]
     test    r0
-    jump    z, __L19643
-.source "src/cg_expr.c", 2517
+    jump    z, __L19647
+.source "src/cg_expr.c", 2519
     load    r0, sf[-26]
     push    r0
-    move    r0, __W2466+1
+    move    r0, __W2471+1
     push    r0
     call    __F1236_E
     add     sp, 2
-.source "src/cg_expr.c", 2518
+.source "src/cg_expr.c", 2520
     move    r0, 0
     push    r0
     load    r0, sf[3]
@@ -198222,17 +198289,17 @@ __L19638:
     push    r0
     call    __F1284_ge_block_value
     add     sp, 2
-.source "src/cg_expr.c", 2519
-    move    r0, __W2467+1
+.source "src/cg_expr.c", 2521
+    move    r0, __W2472+1
     push    r0
     call    __F1236_E
     add     sp, 1
-__L19643:
-__L19641:
-.source "src/cg_expr.c", 2522
+__L19647:
+__L19645:
+.source "src/cg_expr.c", 2524
     move    r0, 0
     store   r0, __G1354_ge_ncommits+1
-.source "src/cg_expr.c", 2523
+.source "src/cg_expr.c", 2525
     add     r0, sf, -14
     load    r1, r0[4]
     push    r1
@@ -198248,7 +198315,7 @@ __L19641:
     push    r0
     call    __F1372_ge_pat_bind
     add     sp, 6
-.source "src/cg_expr.c", 2524
+.source "src/cg_expr.c", 2526
     call    __F1357_ge_commit
     move    r0, 0
     return
@@ -198256,53 +198323,53 @@ __L19641:
 
 // ge_stmt
 __F1393_ge_stmt:
-.source "src/cg_expr.c", 2528
+.source "src/cg_expr.c", 2530
     add     sp, -7
-.source "src/cg_expr.c", 2529
+.source "src/cg_expr.c", 2531
     load    r0, sf[3]
     load    r0, r0[0]
     cmp     r0, 106
-    jump    eq, __L19646
+    jump    eq, __L19650
     cmp     r0, 107
-    jump    eq, __L19647
-    jump    __L19648
-.source "src/cg_expr.c", 2530
-__L19646:
-.source "src/cg_expr.c", 2531
+    jump    eq, __L19651
+    jump    __L19652
+.source "src/cg_expr.c", 2532
+__L19650:
+.source "src/cg_expr.c", 2533
     load    r0, sf[3]
     push    r0
     call    __F1374_ge_line
     add     sp, 1
-.source "src/cg_expr.c", 2532
+.source "src/cg_expr.c", 2534
     move    r0, 3
     push    r0
     call    __F1253_ge_push_scope
     add     sp, 1
-.source "src/cg_expr.c", 2533
+.source "src/cg_expr.c", 2535
     load    r0, sf[3]
     push    r0
     call    __F1392_ge_let
     add     sp, 1
-.source "src/cg_expr.c", 2534
+.source "src/cg_expr.c", 2536
     move    r0, 1
     push    r0
     call    __F1257_ge_pop_scope
     add     sp, 1
-.source "src/cg_expr.c", 2535
-    jump    __L19645
-.source "src/cg_expr.c", 2536
-__L19647:
-.source "src/cg_expr.c", 2539
+.source "src/cg_expr.c", 2537
+    jump    __L19649
+.source "src/cg_expr.c", 2538
+__L19651:
+.source "src/cg_expr.c", 2541
     load    r0, sf[3]
     push    r0
     call    __F1374_ge_line
     add     sp, 1
-.source "src/cg_expr.c", 2540
+.source "src/cg_expr.c", 2542
     move    r0, 3
     push    r0
     call    __F1253_ge_push_scope
     add     sp, 1
-.source "src/cg_expr.c", 2541
+.source "src/cg_expr.c", 2543
     load    r0, sf[3]
     add     r0, 5
     load    r0, r0[0]
@@ -198310,7 +198377,7 @@ __L19647:
     call    __F1241_gnt
     add     sp, 1
     store   r0, sf[0]
-.source "src/cg_expr.c", 2542
+.source "src/cg_expr.c", 2544
     load    r0, sf[3]
     add     r0, 5
     load    r0, r0[0]
@@ -198318,7 +198385,7 @@ __L19647:
     call    __F1281_ex
     add     sp, 1
     store   r0, sf[-1]
-.source "src/cg_expr.c", 2543
+.source "src/cg_expr.c", 2545
     load    r0, sf[-1]
     push    r0
     move    r0, __G1235_ge_never_s+1
@@ -198327,20 +198394,20 @@ __L19647:
     cmp     r0, r1
     move    ne, r0, 1, 0
     test    r0
-    jump    z, __L19651
+    jump    z, __L19655
     load    r0, sf[0]
     push    r0
     call    __F1115_cg_needs_drop
     add     sp, 1
     test    r0
-    jump    z, __L19651
+    jump    z, __L19655
     move    r0, 1
-    jump    __L19652
-__L19651:
+    jump    __L19656
+__L19655:
     move    r0, 0
-__L19652:
+__L19656:
     test    r0
-    jump    z, __L19649
+    jump    z, __L19653
     load    r0, sf[-1]
     push    r0
     load    r0, sf[0]
@@ -198352,89 +198419,89 @@ __L19652:
     call    __F1314_ge_rvalue_place
     add     sp, 4
     add     r0, sf, -6
-__L19649:
-.source "src/cg_expr.c", 2544
+__L19653:
+.source "src/cg_expr.c", 2546
     move    r0, 1
     push    r0
     call    __F1257_ge_pop_scope
     add     sp, 1
-.source "src/cg_expr.c", 2545
-    jump    __L19645
 .source "src/cg_expr.c", 2547
-__L19648:
-.source "src/cg_expr.c", 2548
-    jump    __L19645
-__L19645:
+    jump    __L19649
+.source "src/cg_expr.c", 2549
+__L19652:
+.source "src/cg_expr.c", 2550
+    jump    __L19649
+__L19649:
     move    r0, 0
     return
 .source_end
 
 // ge_block_value
 __F1284_ge_block_value:
-.source "src/cg_expr.c", 2552
+.source "src/cg_expr.c", 2554
     add     sp, -9
-.source "src/cg_expr.c", 2553
+.source "src/cg_expr.c", 2555
     load    r0, sf[4]
     test    r0
-    jump    z, __L19653
+    jump    z, __L19657
     load    r0, sf[4]
-    jump    __L19654
-__L19653:
+    jump    __L19658
+__L19657:
     load    r0, sf[3]
     push    r0
     call    __F1241_gnt
     add     sp, 1
-__L19654:
+__L19658:
     store   r0, sf[0]
-.source "src/cg_expr.c", 2554
+.source "src/cg_expr.c", 2556
     load    r0, sf[3]
     push    r0
     call    __F1241_gnt
     add     sp, 1
     store   r0, sf[-1]
-.source "src/cg_expr.c", 2555
-    move    r0, __W2468+1
+.source "src/cg_expr.c", 2557
+    move    r0, __W2473+1
     store   r0, sf[-2]
     move    r0, 0
     store   r0, sf[-3]
-.source "src/cg_expr.c", 2557
+.source "src/cg_expr.c", 2559
     move    r0, 0
     store   r0, sf[-5]
-.source "src/cg_expr.c", 2558
+.source "src/cg_expr.c", 2560
     move    r0, 0
     store   r0, sf[-6]
-.source "src/cg_expr.c", 2559
+.source "src/cg_expr.c", 2561
     load    r0, sf[-1]
     test    r0
     move    z, r0, 1, 0
     test    r0
-    jump    z, __L19655
+    jump    z, __L19659
     load    r0, sf[0]
     store   r0, sf[-1]
-__L19655:
-.source "src/cg_expr.c", 2560
+__L19659:
+.source "src/cg_expr.c", 2562
     load    r0, sf[3]
     add     r0, 16
     load    r0, r0[0]
     test    r0
-    jump    z, __L19657
-.source "src/cg_expr.c", 2561
+    jump    z, __L19661
+.source "src/cg_expr.c", 2563
     load    r0, sf[-1]
     push    r0
     call    __F1380_ge_value_type
     add     sp, 1
     test    r0
-    jump    z, __L19659
+    jump    z, __L19663
     load    r0, sf[-1]
     push    r0
     call    __F1243_ge_tmp_ty
     add     sp, 1
-    jump    __L19660
-__L19659:
+    jump    __L19664
+__L19663:
     move    r0, 0
-__L19660:
+__L19664:
     store   r0, sf[-3]
-.source "src/cg_expr.c", 2562
+.source "src/cg_expr.c", 2564
     load    r0, sf[-1]
     push    r0
     load    r0, sf[-3]
@@ -198450,26 +198517,26 @@ __L19660:
     call    __F1377_ge_loop_push
     add     sp, 5
     store   r0, sf[-5]
-.source "src/cg_expr.c", 2563
+.source "src/cg_expr.c", 2565
     load    r0, sf[-5]
     add     r0, 1
     load    r0, r0[0]
     store   r0, sf[-6]
-__L19657:
-.source "src/cg_expr.c", 2565
+__L19661:
+.source "src/cg_expr.c", 2567
     move    r0, 2
     push    r0
     call    __F1253_ge_push_scope
     add     sp, 1
-.source "src/cg_expr.c", 2566
+.source "src/cg_expr.c", 2568
     load    r0, __G1223_ge_nsc+1
     move    r1, 1
     sub     r0, r1
     store   r0, sf[-7]
-.source "src/cg_expr.c", 2567
+.source "src/cg_expr.c", 2569
     move    r0, 0
     store   r0, sf[-4]
-__L19661:
+__L19665:
     load    r0, sf[-4]
     push    r0
     load    r0, sf[3]
@@ -198479,14 +198546,14 @@ __L19661:
     move    r1, r0
     pop     r0
     cmp     r0, r1
-    jump    o, __L19664
+    jump    o, __L19668
     move    lt, r0, 1, 0
-    jump    __L19665
-__L19664:
+    jump    __L19669
+__L19668:
     move    lt, r0, 0, 1
-__L19665:
+__L19669:
     test    r0
-    jump    z, __L19663
+    jump    z, __L19667
     load    r0, sf[3]
     add     r0, 9
     load    r0, r0[0]
@@ -198496,20 +198563,20 @@ __L19665:
     push    r0
     call    __F1393_ge_stmt
     add     sp, 1
-__L19662:
+__L19666:
     load    r1, sf[-4]
     add     r2, r1, 1
     store   r2, sf[-4]
     move    r0, r1
-    jump    __L19661
-__L19663:
-.source "src/cg_expr.c", 2568
+    jump    __L19665
+__L19667:
+.source "src/cg_expr.c", 2570
     load    r0, sf[3]
     add     r0, 5
     load    r0, r0[0]
     test    r0
-    jump    z, __L19666
-.source "src/cg_expr.c", 2569
+    jump    z, __L19670
+.source "src/cg_expr.c", 2571
     load    r0, sf[3]
     add     r0, 5
     load    r0, r0[0]
@@ -198517,19 +198584,19 @@ __L19663:
     call    __F1241_gnt
     add     sp, 1
     store   r0, sf[-8]
-.source "src/cg_expr.c", 2570
+.source "src/cg_expr.c", 2572
     load    r0, sf[3]
     add     r0, 5
     load    r0, r0[0]
     push    r0
     call    __F1374_ge_line
     add     sp, 1
-.source "src/cg_expr.c", 2571
+.source "src/cg_expr.c", 2573
     move    r0, 3
     push    r0
     call    __F1253_ge_push_scope
     add     sp, 1
-.source "src/cg_expr.c", 2572
+.source "src/cg_expr.c", 2574
     load    r0, sf[0]
     push    r0
     load    r0, sf[3]
@@ -198539,7 +198606,7 @@ __L19663:
     call    __F1280_ex_to
     add     sp, 2
     store   r0, sf[-2]
-.source "src/cg_expr.c", 2573
+.source "src/cg_expr.c", 2575
     load    r0, sf[-2]
     push    r0
     move    r0, __G1235_ge_never_s+1
@@ -198548,13 +198615,56 @@ __L19663:
     cmp     r0, r1
     move    ne, r0, 1, 0
     test    r0
-    jump    z, __L19674
+    jump    z, __L19678
     load    r0, sf[-8]
     push    r0
     call    __F1110_cg_is_zst
     add     sp, 1
     test    r0
     move    z, r0, 1, 0
+    test    r0
+    jump    z, __L19678
+    move    r0, 1
+    jump    __L19679
+__L19678:
+    move    r0, 0
+__L19679:
+    test    r0
+    jump    z, __L19676
+    load    r0, sf[-2]
+    push    r0
+    call    __F1245_ge_stable
+    add     sp, 1
+    test    r0
+    move    z, r0, 1, 0
+    test    r0
+    jump    z, __L19676
+    move    r0, 1
+    jump    __L19677
+__L19676:
+    move    r0, 0
+__L19677:
+    test    r0
+    jump    z, __L19674
+    load    r0, __G1223_ge_nsc+1
+    move    r1, 1
+    sub     r0, r1
+    push    r0
+    call    __F1391_ge_scope_has_drops
+    add     sp, 1
+    test    r0
+    jump    nz, __L19680
+    load    r0, sf[-7]
+    push    r0
+    call    __F1391_ge_scope_has_drops
+    add     sp, 1
+    test    r0
+    jump    nz, __L19680
+    move    r0, 0
+    jump    __L19681
+__L19680:
+    move    r0, 1
+__L19681:
     test    r0
     jump    z, __L19674
     move    r0, 1
@@ -198564,50 +198674,7 @@ __L19674:
 __L19675:
     test    r0
     jump    z, __L19672
-    load    r0, sf[-2]
-    push    r0
-    call    __F1245_ge_stable
-    add     sp, 1
-    test    r0
-    move    z, r0, 1, 0
-    test    r0
-    jump    z, __L19672
-    move    r0, 1
-    jump    __L19673
-__L19672:
-    move    r0, 0
-__L19673:
-    test    r0
-    jump    z, __L19670
-    load    r0, __G1223_ge_nsc+1
-    move    r1, 1
-    sub     r0, r1
-    push    r0
-    call    __F1391_ge_scope_has_drops
-    add     sp, 1
-    test    r0
-    jump    nz, __L19676
-    load    r0, sf[-7]
-    push    r0
-    call    __F1391_ge_scope_has_drops
-    add     sp, 1
-    test    r0
-    jump    nz, __L19676
-    move    r0, 0
-    jump    __L19677
-__L19676:
-    move    r0, 1
-__L19677:
-    test    r0
-    jump    z, __L19670
-    move    r0, 1
-    jump    __L19671
-__L19670:
-    move    r0, 0
-__L19671:
-    test    r0
-    jump    z, __L19668
-.source "src/cg_expr.c", 2574
+.source "src/cg_expr.c", 2576
     load    r0, sf[-2]
     push    r0
     load    r0, sf[0]
@@ -198615,41 +198682,41 @@ __L19671:
     call    __F1244_ge_is_never
     add     sp, 1
     test    r0
-    jump    z, __L19678
+    jump    z, __L19682
     load    r0, sf[-8]
-    jump    __L19679
-__L19678:
+    jump    __L19683
+__L19682:
     load    r0, sf[3]
     add     r0, 5
     load    r0, r0[0]
     add     r0, 27
     load    r0, r0[0]
     test    r0
-    jump    z, __L19680
+    jump    z, __L19684
     load    r0, sf[0]
-    jump    __L19681
-__L19680:
+    jump    __L19685
+__L19684:
     load    r0, sf[-8]
-__L19681:
-__L19679:
+__L19685:
+__L19683:
     push    r0
     call    __F1247_ge_snap
     add     sp, 2
     store   r0, sf[-2]
-__L19668:
-.source "src/cg_expr.c", 2575
+__L19672:
+.source "src/cg_expr.c", 2577
     move    r0, 1
     push    r0
     call    __F1257_ge_pop_scope
     add     sp, 1
-__L19666:
-.source "src/cg_expr.c", 2577
+__L19670:
+.source "src/cg_expr.c", 2579
     load    r0, sf[-7]
     push    r0
     call    __F1391_ge_scope_has_drops
     add     sp, 1
     test    r0
-    jump    z, __L19688
+    jump    z, __L19692
     load    r0, sf[-2]
     push    r0
     move    r0, __G1235_ge_never_s+1
@@ -198657,6 +198724,34 @@ __L19666:
     pop     r0
     cmp     r0, r1
     move    ne, r0, 1, 0
+    test    r0
+    jump    z, __L19692
+    move    r0, 1
+    jump    __L19693
+__L19692:
+    move    r0, 0
+__L19693:
+    test    r0
+    jump    z, __L19690
+    load    r0, sf[-2]
+    push    r0
+    call    __F1245_ge_stable
+    add     sp, 1
+    test    r0
+    move    z, r0, 1, 0
+    test    r0
+    jump    z, __L19690
+    move    r0, 1
+    jump    __L19691
+__L19690:
+    move    r0, 0
+__L19691:
+    test    r0
+    jump    z, __L19688
+    load    r0, sf[0]
+    push    r0
+    call    __F1380_ge_value_type
+    add     sp, 1
     test    r0
     jump    z, __L19688
     move    r0, 1
@@ -198668,50 +198763,22 @@ __L19689:
     jump    z, __L19686
     load    r0, sf[-2]
     push    r0
-    call    __F1245_ge_stable
-    add     sp, 1
-    test    r0
-    move    z, r0, 1, 0
-    test    r0
-    jump    z, __L19686
-    move    r0, 1
-    jump    __L19687
-__L19686:
-    move    r0, 0
-__L19687:
-    test    r0
-    jump    z, __L19684
-    load    r0, sf[0]
-    push    r0
-    call    __F1380_ge_value_type
-    add     sp, 1
-    test    r0
-    jump    z, __L19684
-    move    r0, 1
-    jump    __L19685
-__L19684:
-    move    r0, 0
-__L19685:
-    test    r0
-    jump    z, __L19682
-    load    r0, sf[-2]
-    push    r0
     load    r0, sf[0]
     push    r0
     call    __F1247_ge_snap
     add     sp, 2
     store   r0, sf[-2]
-__L19682:
-.source "src/cg_expr.c", 2578
+__L19686:
+.source "src/cg_expr.c", 2580
     move    r0, 1
     push    r0
     call    __F1257_ge_pop_scope
     add     sp, 1
-.source "src/cg_expr.c", 2579
+.source "src/cg_expr.c", 2581
     load    r0, sf[-5]
     test    r0
-    jump    z, __L19690
-.source "src/cg_expr.c", 2580
+    jump    z, __L19694
+.source "src/cg_expr.c", 2582
     load    r0, sf[-2]
     push    r0
     load    r0, sf[-1]
@@ -198720,40 +198787,40 @@ __L19682:
     push    r0
     call    __F1379_ge_assign_result
     add     sp, 3
-.source "src/cg_expr.c", 2581
+.source "src/cg_expr.c", 2583
     load    r0, sf[-6]
     push    r0
-    move    r0, __W2469+1
+    move    r0, __W2474+1
     push    r0
     call    __F1236_E
     add     sp, 2
-.source "src/cg_expr.c", 2582
+.source "src/cg_expr.c", 2584
     load    r1, __G1226_ge_nloops+1
     add     r2, r1, -1
     store   r2, __G1226_ge_nloops+1
     move    r0, r1
-.source "src/cg_expr.c", 2583
+.source "src/cg_expr.c", 2585
     load    r0, sf[-1]
     push    r0
     call    __F1244_ge_is_never
     add     sp, 1
     test    r0
-    jump    z, __L19692
+    jump    z, __L19696
     move    r0, __G1235_ge_never_s+1
     return
-__L19692:
-.source "src/cg_expr.c", 2584
+__L19696:
+.source "src/cg_expr.c", 2586
     load    r0, sf[-3]
     test    r0
-    jump    z, __L19694
+    jump    z, __L19698
     load    r0, sf[-3]
-    jump    __L19695
-__L19694:
-    move    r0, __W2470+1
-__L19695:
+    jump    __L19699
+__L19698:
+    move    r0, __W2475+1
+__L19699:
     return
-__L19690:
-.source "src/cg_expr.c", 2586
+__L19694:
+.source "src/cg_expr.c", 2588
     load    r0, sf[-2]
     return
     move    r0, 0
@@ -198762,18 +198829,18 @@ __L19690:
 
 // ge_closure_value
 __F1394_ge_closure_value:
-.source "src/cg_expr.c", 2591
+.source "src/cg_expr.c", 2593
     add     sp, -17
-.source "src/cg_expr.c", 2592
+.source "src/cg_expr.c", 2594
     load    r0, sf[3]
     push    r0
     call    __F1241_gnt
     add     sp, 1
     store   r0, sf[0]
-.source "src/cg_expr.c", 2593
+.source "src/cg_expr.c", 2595
     move    r0, 0
     store   r0, sf[-1]
-.source "src/cg_expr.c", 2594
+.source "src/cg_expr.c", 2596
     add     r0, sf, -1
     push    r0
     load    r0, sf[3]
@@ -198781,43 +198848,43 @@ __F1394_ge_closure_value:
     call    __F731_closure_captures
     add     sp, 2
     store   r0, sf[-2]
-.source "src/cg_expr.c", 2596
+.source "src/cg_expr.c", 2598
     load    r0, sf[3]
     push    r0
     call    __F1126_cg_closure_instance
     add     sp, 1
-.source "src/cg_expr.c", 2597
+.source "src/cg_expr.c", 2599
     load    r0, sf[-2]
     move    r1, 0
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L19696
-    move    r0, __W2471+1
+    jump    z, __L19700
+    move    r0, __W2476+1
     return
-__L19696:
-.source "src/cg_expr.c", 2598
+__L19700:
+.source "src/cg_expr.c", 2600
     load    r0, sf[0]
     push    r0
     call    __F1243_ge_tmp_ty
     add     sp, 1
     store   r0, sf[-4]
-.source "src/cg_expr.c", 2599
+.source "src/cg_expr.c", 2601
     move    r0, 0
     store   r0, sf[-3]
-__L19698:
+__L19702:
     load    r0, sf[-3]
     load    r1, sf[-2]
     cmp     r0, r1
-    jump    o, __L19701
+    jump    o, __L19705
     move    lt, r0, 1, 0
-    jump    __L19702
-__L19701:
+    jump    __L19706
+__L19705:
     move    lt, r0, 0, 1
-__L19702:
+__L19706:
     test    r0
-    jump    z, __L19700
-.source "src/cg_expr.c", 2600
+    jump    z, __L19704
+.source "src/cg_expr.c", 2602
     load    r0, sf[-1]
     push    r0
     load    r0, sf[-3]
@@ -198831,18 +198898,18 @@ __L19702:
     call    __F1250_ge_local_find
     add     sp, 1
     store   r0, sf[-5]
-.source "src/cg_expr.c", 2603
+.source "src/cg_expr.c", 2605
     load    r0, sf[-5]
     test    r0
     move    z, r0, 1, 0
     test    r0
-    jump    z, __L19703
-    move    r0, __W2472+1
+    jump    z, __L19707
+    move    r0, __W2477+1
     push    r0
     call    __F2_fatal
     add     sp, 1
-__L19703:
-.source "src/cg_expr.c", 2604
+__L19707:
+.source "src/cg_expr.c", 2606
     add     r0, sf, -10
     push    r0
     load    r0, sf[-5]
@@ -198864,7 +198931,7 @@ __L19703:
     load    r2, r0[4]
     store   r2, r1[4]
     move    r0, r1
-.source "src/cg_expr.c", 2605
+.source "src/cg_expr.c", 2607
     load    r0, sf[-1]
     push    r0
     load    r0, sf[-3]
@@ -198879,7 +198946,7 @@ __L19703:
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L19705
+    jump    z, __L19709
     add     r0, sf, -10
     load    r1, r0[4]
     push    r1
@@ -198894,9 +198961,9 @@ __L19703:
     call    __F1292_ge_take
     add     sp, 5
     store   r0, sf[-11]
-    jump    __L19706
-__L19705:
-.source "src/cg_expr.c", 2606
+    jump    __L19710
+__L19709:
+.source "src/cg_expr.c", 2608
     add     r0, sf, -10
     load    r1, r0[4]
     push    r1
@@ -198911,27 +198978,27 @@ __L19705:
     call    __F1294_ge_addr
     add     sp, 5
     store   r0, sf[-11]
-__L19706:
-.source "src/cg_expr.c", 2607
+__L19710:
+.source "src/cg_expr.c", 2609
     load    r0, sf[-11]
     push    r0
     load    r0, sf[-3]
     push    r0
     load    r0, sf[-4]
     push    r0
-    move    r0, __W2473+1
+    move    r0, __W2478+1
     push    r0
     call    __F1236_E
     add     sp, 4
-__L19699:
-.source "src/cg_expr.c", 2599
+__L19703:
+.source "src/cg_expr.c", 2601
     load    r1, sf[-3]
     add     r2, r1, 1
     store   r2, sf[-3]
     move    r0, r1
-    jump    __L19698
-__L19700:
-.source "src/cg_expr.c", 2609
+    jump    __L19702
+__L19704:
+.source "src/cg_expr.c", 2611
     load    r0, sf[-4]
     return
     move    r0, 0
@@ -198940,68 +199007,68 @@ __L19700:
 
 // ge_path_value
 __F1395_ge_path_value:
-.source "src/cg_expr.c", 2614
+.source "src/cg_expr.c", 2616
     add     sp, -13
-.source "src/cg_expr.c", 2615
+.source "src/cg_expr.c", 2617
     load    r0, sf[3]
     add     r0, 26
     load    r0, r0[0]
     store   r0, sf[0]
-.source "src/cg_expr.c", 2616
+.source "src/cg_expr.c", 2618
     load    r0, sf[3]
     push    r0
     call    __F1241_gnt
     add     sp, 1
     store   r0, sf[-1]
-.source "src/cg_expr.c", 2617
+.source "src/cg_expr.c", 2619
     load    r0, sf[0]
     test    r0
     move    z, r0, 1, 0
     test    r0
-    jump    z, __L19707
-    move    r0, __W2474+1
+    jump    z, __L19711
+    move    r0, __W2479+1
     push    r0
     call    __F2_fatal
     add     sp, 1
-__L19707:
-.source "src/cg_expr.c", 2618
+__L19711:
+.source "src/cg_expr.c", 2620
     load    r0, sf[0]
     load    r0, r0[0]
     cmp     r0, 16
-    jump    eq, __L19710
-    cmp     r0, 10
-    jump    eq, __L19711
-    cmp     r0, 9
-    jump    eq, __L19712
-    cmp     r0, 15
-    jump    eq, __L19713
-    cmp     r0, 8
     jump    eq, __L19714
-    cmp     r0, 5
+    cmp     r0, 10
     jump    eq, __L19715
-    cmp     r0, 2
+    cmp     r0, 9
     jump    eq, __L19716
-    jump    __L19709
-.source "src/cg_expr.c", 2619
-__L19710:
-.source "src/cg_expr.c", 2620
+    cmp     r0, 15
+    jump    eq, __L19717
+    cmp     r0, 8
+    jump    eq, __L19718
+    cmp     r0, 5
+    jump    eq, __L19719
+    cmp     r0, 2
+    jump    eq, __L19720
+    jump    __L19713
+.source "src/cg_expr.c", 2621
+__L19714:
+.source "src/cg_expr.c", 2622
     load    r0, sf[0]
     push    r0
     call    __F1250_ge_local_find
     add     sp, 1
     store   r0, sf[-2]
-.source "src/cg_expr.c", 2621
+.source "src/cg_expr.c", 2623
     load    r0, sf[-2]
     test    r0
     move    z, r0, 1, 0
     test    r0
-    jump    z, __L19717
-    move    r0, __W2475+1
+    jump    z, __L19721
+    move    r0, __W2480+1
     push    r0
     call    __F2_fatal
     add     sp, 1
-__L19717:
-.source "src/cg_expr.c", 2622
+__L19721:
+.source "src/cg_expr.c", 2624
     load    r0, sf[-2]
     push    r0
     add     r0, sf, -7
@@ -199022,9 +199089,9 @@ __L19717:
     call    __F1292_ge_take
     add     sp, 5
     return
-.source "src/cg_expr.c", 2624
-__L19711:
-.source "src/cg_expr.c", 2625
+.source "src/cg_expr.c", 2626
+__L19715:
+.source "src/cg_expr.c", 2627
     move    r0, 0
     push    r0
     load    r0, sf[-1]
@@ -199054,14 +199121,14 @@ __L19711:
     call    __F1292_ge_take
     add     sp, 5
     return
-.source "src/cg_expr.c", 2626
-__L19712:
-.source "src/cg_expr.c", 2627
+.source "src/cg_expr.c", 2628
+__L19716:
+.source "src/cg_expr.c", 2629
     load    r0, sf[0]
     add     r0, 3
     load    r0, r0[0]
     test    r0
-    jump    z, __L19721
+    jump    z, __L19725
     load    r0, sf[0]
     add     r0, 3
     load    r0, r0[0]
@@ -199070,7 +199137,7 @@ __L19712:
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    nz, __L19723
+    jump    nz, __L19727
     load    r0, sf[0]
     add     r0, 3
     load    r0, r0[0]
@@ -199079,21 +199146,21 @@ __L19712:
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    nz, __L19723
+    jump    nz, __L19727
     move    r0, 0
-    jump    __L19724
-__L19723:
+    jump    __L19728
+__L19727:
     move    r0, 1
-__L19724:
+__L19728:
     test    r0
-    jump    z, __L19721
+    jump    z, __L19725
     move    r0, 1
-    jump    __L19722
-__L19721:
+    jump    __L19726
+__L19725:
     move    r0, 0
-__L19722:
+__L19726:
     test    r0
-    jump    z, __L19719
+    jump    z, __L19723
     load    r0, sf[0]
     push    r0
     load    r0, sf[3]
@@ -199101,8 +199168,8 @@ __L19722:
     call    __F1331_ge_assoc_const
     add     sp, 2
     return
-__L19719:
-.source "src/cg_expr.c", 2628
+__L19723:
+.source "src/cg_expr.c", 2630
     load    r0, sf[-1]
     push    r0
     move    r0, 0
@@ -199112,39 +199179,39 @@ __L19719:
     call    __F1329_ge_const_expr
     add     sp, 3
     return
-.source "src/cg_expr.c", 2629
-__L19713:
-.source "src/cg_expr.c", 2630
+.source "src/cg_expr.c", 2631
+__L19717:
+.source "src/cg_expr.c", 2632
     load    r0, sf[0]
     push    r0
     call    __F1306_ge_const_generic
     add     sp, 1
     push    r0
-    move    r0, __W2476+1
+    move    r0, __W2481+1
     push    r0
     call    __F1237_S
     add     sp, 2
     return
-.source "src/cg_expr.c", 2631
-__L19714:
-.source "src/cg_expr.c", 2632
-    move    r0, __W2477+1
-    return
 .source "src/cg_expr.c", 2633
-__L19715:
-__L19716:
+__L19718:
 .source "src/cg_expr.c", 2634
+    move    r0, __W2482+1
+    return
+.source "src/cg_expr.c", 2635
+__L19719:
+__L19720:
+.source "src/cg_expr.c", 2636
     load    r0, sf[-1]
     load    r0, r0[0]
     move    r1, 14
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L19725
-    move    r0, __W2478+1
+    jump    z, __L19729
+    move    r0, __W2483+1
     return
-__L19725:
-.source "src/cg_expr.c", 2635
+__L19729:
+.source "src/cg_expr.c", 2637
     load    r0, sf[-1]
     push    r0
     load    r0, sf[0]
@@ -199152,14 +199219,14 @@ __L19725:
     call    __F1334_ge_unit_value
     add     sp, 2
     return
-__L19709:
-.source "src/cg_expr.c", 2637
-    move    r0, __W2479+1
+__L19713:
+.source "src/cg_expr.c", 2639
+    move    r0, __W2484+1
     push    r0
     call    __F2_fatal
     add     sp, 1
-.source "src/cg_expr.c", 2638
-    move    r0, __W2480+1
+.source "src/cg_expr.c", 2640
+    move    r0, __W2485+1
     return
     move    r0, 0
     return
@@ -199167,31 +199234,31 @@ __L19709:
 
 // ge_tuple
 __F1396_ge_tuple:
-.source "src/cg_expr.c", 2641
+.source "src/cg_expr.c", 2643
     add     sp, -5
-.source "src/cg_expr.c", 2642
+.source "src/cg_expr.c", 2644
     load    r0, sf[3]
     push    r0
     call    __F1241_gnt
     add     sp, 1
     store   r0, sf[0]
-.source "src/cg_expr.c", 2643
+.source "src/cg_expr.c", 2645
     load    r0, sf[3]
     add     r0, 9
     add     r0, 1
     load    r0, r0[0]
     store   r0, sf[-1]
-.source "src/cg_expr.c", 2646
+.source "src/cg_expr.c", 2648
     load    r0, sf[-1]
     move    r1, 0
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L19727
-    move    r0, __W2481+1
+    jump    z, __L19731
+    move    r0, __W2486+1
     return
-__L19727:
-.source "src/cg_expr.c", 2647
+__L19731:
+.source "src/cg_expr.c", 2649
     move    r0, 1
     push    r0
     load    r0, sf[-1]
@@ -199202,7 +199269,7 @@ __L19727:
     call    __F3_xalloc
     add     sp, 1
     store   r0, sf[-3]
-.source "src/cg_expr.c", 2648
+.source "src/cg_expr.c", 2650
     load    r0, sf[-3]
     push    r0
     load    r0, sf[0]
@@ -199217,38 +199284,38 @@ __L19727:
     push    r0
     call    __F1336_ge_eval_list
     add     sp, 4
-.source "src/cg_expr.c", 2649
+.source "src/cg_expr.c", 2651
     load    r0, sf[0]
     push    r0
     call    __F1110_cg_is_zst
     add     sp, 1
     test    r0
-    jump    z, __L19729
-    move    r0, __W2482+1
+    jump    z, __L19733
+    move    r0, __W2487+1
     return
-__L19729:
-.source "src/cg_expr.c", 2650
+__L19733:
+.source "src/cg_expr.c", 2652
     load    r0, sf[0]
     push    r0
     call    __F1243_ge_tmp_ty
     add     sp, 1
     store   r0, sf[-4]
-.source "src/cg_expr.c", 2651
+.source "src/cg_expr.c", 2653
     move    r0, 0
     store   r0, sf[-2]
-__L19731:
+__L19735:
     load    r0, sf[-2]
     load    r1, sf[-1]
     cmp     r0, r1
-    jump    o, __L19734
+    jump    o, __L19738
     move    lt, r0, 1, 0
-    jump    __L19735
-__L19734:
+    jump    __L19739
+__L19738:
     move    lt, r0, 0, 1
-__L19735:
+__L19739:
     test    r0
-    jump    z, __L19733
-.source "src/cg_expr.c", 2652
+    jump    z, __L19737
+.source "src/cg_expr.c", 2654
     load    r0, sf[0]
     add     r0, 6
     load    r0, r0[0]
@@ -199261,7 +199328,7 @@ __L19735:
     test    r0
     move    z, r0, 1, 0
     test    r0
-    jump    z, __L19736
+    jump    z, __L19740
     load    r0, sf[0]
     add     r0, 6
     load    r0, r0[0]
@@ -199281,20 +199348,20 @@ __L19735:
     push    r0
     load    r0, sf[-4]
     push    r0
-    move    r0, __W2483+1
+    move    r0, __W2488+1
     push    r0
     call    __F1236_E
     add     sp, 4
+__L19740:
 __L19736:
-__L19732:
-.source "src/cg_expr.c", 2651
+.source "src/cg_expr.c", 2653
     load    r1, sf[-2]
     add     r2, r1, 1
     store   r2, sf[-2]
     move    r0, r1
-    jump    __L19731
-__L19733:
-.source "src/cg_expr.c", 2653
+    jump    __L19735
+__L19737:
+.source "src/cg_expr.c", 2655
     load    r0, sf[-4]
     return
     move    r0, 0
@@ -199303,56 +199370,56 @@ __L19733:
 
 // ge_array_store
 __F1397_ge_array_store:
-.source "src/cg_expr.c", 2656
-.source "src/cg_expr.c", 2657
+.source "src/cg_expr.c", 2658
+.source "src/cg_expr.c", 2659
     load    r0, sf[3]
     push    r0
     call    __F1110_cg_is_zst
     add     sp, 1
     test    r0
-    jump    z, __L19738
+    jump    z, __L19742
     return
-__L19738:
-.source "src/cg_expr.c", 2658
+__L19742:
+.source "src/cg_expr.c", 2660
     load    r0, sf[3]
     push    r0
     call    __F1111_cg_is_u8
     add     sp, 1
     test    r0
-    jump    z, __L19740
+    jump    z, __L19744
     load    r0, sf[6]
     push    r0
     load    r0, sf[5]
     push    r0
     load    r0, sf[4]
     push    r0
-    move    r0, __W2484+1
+    move    r0, __W2489+1
     push    r0
     call    __F1236_E
     add     sp, 4
-    jump    __L19741
-__L19740:
-.source "src/cg_expr.c", 2659
+    jump    __L19745
+__L19744:
+.source "src/cg_expr.c", 2661
     load    r0, sf[6]
     push    r0
     load    r0, sf[5]
     push    r0
     load    r0, sf[4]
     push    r0
-    move    r0, __W2485+1
+    move    r0, __W2490+1
     push    r0
     call    __F1236_E
     add     sp, 4
-__L19741:
+__L19745:
     move    r0, 0
     return
 .source_end
 
 // ge_array
 __F1398_ge_array:
-.source "src/cg_expr.c", 2662
+.source "src/cg_expr.c", 2664
     add     sp, -7
-.source "src/cg_expr.c", 2663
+.source "src/cg_expr.c", 2665
     load    r0, sf[3]
     push    r0
     call    __F1241_gnt
@@ -199362,13 +199429,13 @@ __F1398_ge_array:
     add     r0, 5
     load    r0, r0[0]
     store   r0, sf[-1]
-.source "src/cg_expr.c", 2664
+.source "src/cg_expr.c", 2666
     load    r0, sf[3]
     add     r0, 9
     add     r0, 1
     load    r0, r0[0]
     store   r0, sf[-2]
-.source "src/cg_expr.c", 2665
+.source "src/cg_expr.c", 2667
     move    r0, 1
     push    r0
     load    r0, sf[-2]
@@ -199381,7 +199448,7 @@ __F1398_ge_array:
     call    __F3_xalloc
     add     sp, 1
     store   r0, sf[-4]
-.source "src/cg_expr.c", 2666
+.source "src/cg_expr.c", 2668
     move    r0, 1
     push    r0
     load    r0, sf[-2]
@@ -199394,21 +199461,21 @@ __F1398_ge_array:
     call    __F3_xalloc
     add     sp, 1
     store   r0, sf[-5]
-.source "src/cg_expr.c", 2668
+.source "src/cg_expr.c", 2670
     move    r0, 0
     store   r0, sf[-3]
-__L19742:
+__L19746:
     load    r0, sf[-3]
     load    r1, sf[-2]
     cmp     r0, r1
-    jump    o, __L19745
+    jump    o, __L19749
     move    lt, r0, 1, 0
-    jump    __L19746
-__L19745:
+    jump    __L19750
+__L19749:
     move    lt, r0, 0, 1
-__L19746:
+__L19750:
     test    r0
-    jump    z, __L19744
+    jump    z, __L19748
     load    r0, sf[-5]
     load    r1, sf[-3]
     add     r0, r1
@@ -199416,14 +199483,14 @@ __L19746:
     load    r0, sf[-1]
     pop     r1
     store   r0, r1[0]
-__L19743:
+__L19747:
     load    r1, sf[-3]
     add     r2, r1, 1
     store   r2, sf[-3]
     move    r0, r1
-    jump    __L19742
-__L19744:
-.source "src/cg_expr.c", 2669
+    jump    __L19746
+__L19748:
+.source "src/cg_expr.c", 2671
     load    r0, sf[-4]
     push    r0
     load    r0, sf[-5]
@@ -199436,27 +199503,27 @@ __L19744:
     push    r0
     call    __F1336_ge_eval_list
     add     sp, 4
-.source "src/cg_expr.c", 2670
+.source "src/cg_expr.c", 2672
     load    r0, sf[0]
     push    r0
     call    __F1243_ge_tmp_ty
     add     sp, 1
     store   r0, sf[-6]
-.source "src/cg_expr.c", 2671
+.source "src/cg_expr.c", 2673
     move    r0, 0
     store   r0, sf[-3]
-__L19747:
+__L19751:
     load    r0, sf[-3]
     load    r1, sf[-2]
     cmp     r0, r1
-    jump    o, __L19750
+    jump    o, __L19754
     move    lt, r0, 1, 0
-    jump    __L19751
-__L19750:
+    jump    __L19755
+__L19754:
     move    lt, r0, 0, 1
-__L19751:
+__L19755:
     test    r0
-    jump    z, __L19749
+    jump    z, __L19753
     load    r0, sf[-1]
     push    r0
     load    r0, sf[-4]
@@ -199469,7 +199536,7 @@ __L19751:
     push    r0
     load    r0, sf[-3]
     push    r0
-    move    r0, __W2486+1
+    move    r0, __W2491+1
     push    r0
     call    __F1237_S
     add     sp, 2
@@ -199480,14 +199547,14 @@ __L19751:
     push    r0
     call    __F1397_ge_array_store
     add     sp, 4
-__L19748:
+__L19752:
     load    r1, sf[-3]
     add     r2, r1, 1
     store   r2, sf[-3]
     move    r0, r1
-    jump    __L19747
-__L19749:
-.source "src/cg_expr.c", 2672
+    jump    __L19751
+__L19753:
+.source "src/cg_expr.c", 2674
     load    r0, sf[-6]
     return
     move    r0, 0
@@ -199496,9 +199563,9 @@ __L19749:
 
 // ge_repeat
 __F1399_ge_repeat:
-.source "src/cg_expr.c", 2675
+.source "src/cg_expr.c", 2677
     add     sp, -6
-.source "src/cg_expr.c", 2676
+.source "src/cg_expr.c", 2678
     load    r0, sf[3]
     push    r0
     call    __F1241_gnt
@@ -199508,13 +199575,13 @@ __F1399_ge_repeat:
     add     r0, 5
     load    r0, r0[0]
     store   r0, sf[-1]
-.source "src/cg_expr.c", 2677
+.source "src/cg_expr.c", 2679
     load    r0, sf[0]
     push    r0
     call    __F1305_ge_array_len
     add     sp, 1
     store   r0, sf[-2]
-.source "src/cg_expr.c", 2678
+.source "src/cg_expr.c", 2680
     load    r0, sf[-1]
     push    r0
     load    r0, sf[-1]
@@ -199539,68 +199606,47 @@ __F1399_ge_repeat:
     call    __F1243_ge_tmp_ty
     add     sp, 1
     store   r0, sf[-4]
-.source "src/cg_expr.c", 2679
+.source "src/cg_expr.c", 2681
     load    r0, sf[-2]
     move    r1, 0
     cmp     r0, r1
-    jump    o, __L19756
+    jump    o, __L19760
     move    le, r0, 1, 0
-    jump    __L19757
-__L19756:
+    jump    __L19761
+__L19760:
     move    lt, r0, 0, 1
-__L19757:
+__L19761:
     test    r0
-    jump    nz, __L19754
+    jump    nz, __L19758
     load    r0, sf[-1]
     push    r0
     call    __F1110_cg_is_zst
     add     sp, 1
     test    r0
-    jump    nz, __L19754
+    jump    nz, __L19758
     move    r0, 0
-    jump    __L19755
-__L19754:
+    jump    __L19759
+__L19758:
     move    r0, 1
-__L19755:
+__L19759:
     test    r0
-    jump    z, __L19752
+    jump    z, __L19756
     load    r0, sf[-4]
     return
-__L19752:
-.source "src/cg_expr.c", 2680
-    move    r0, __W2487+1
+__L19756:
+.source "src/cg_expr.c", 2682
+    move    r0, __W2492+1
     push    r0
     call    __F1239_ge_tmp
     add     sp, 1
     store   r0, sf[-5]
-.source "src/cg_expr.c", 2681
+.source "src/cg_expr.c", 2683
     load    r0, sf[-1]
     push    r0
     call    __F1111_cg_is_u8
     add     sp, 1
     test    r0
-    jump    z, __L19758
-.source "src/cg_expr.c", 2682
-    load    r0, sf[-3]
-    push    r0
-    load    r0, sf[-5]
-    push    r0
-    load    r0, sf[-4]
-    push    r0
-    load    r0, sf[-5]
-    push    r0
-    load    r0, sf[-2]
-    push    r0
-    load    r0, sf[-5]
-    push    r0
-    load    r0, sf[-5]
-    push    r0
-    move    r0, __W2488+1
-    push    r0
-    call    __F1236_E
-    add     sp, 8
-    jump    __L19759
-__L19758:
+    jump    z, __L19762
 .source "src/cg_expr.c", 2684
     load    r0, sf[-3]
     push    r0
@@ -199616,12 +199662,33 @@ __L19758:
     push    r0
     load    r0, sf[-5]
     push    r0
-    move    r0, __W2489+1
+    move    r0, __W2493+1
     push    r0
     call    __F1236_E
     add     sp, 8
-__L19759:
+    jump    __L19763
+__L19762:
 .source "src/cg_expr.c", 2686
+    load    r0, sf[-3]
+    push    r0
+    load    r0, sf[-5]
+    push    r0
+    load    r0, sf[-4]
+    push    r0
+    load    r0, sf[-5]
+    push    r0
+    load    r0, sf[-2]
+    push    r0
+    load    r0, sf[-5]
+    push    r0
+    load    r0, sf[-5]
+    push    r0
+    move    r0, __W2494+1
+    push    r0
+    call    __F1236_E
+    add     sp, 8
+__L19763:
+.source "src/cg_expr.c", 2688
     load    r0, sf[-4]
     return
     move    r0, 0
@@ -199630,51 +199697,25 @@ __L19759:
 
 // ge_struct_lit
 __F1400_ge_struct_lit:
-.source "src/cg_expr.c", 2689
+.source "src/cg_expr.c", 2691
     add     sp, -11
-.source "src/cg_expr.c", 2690
+.source "src/cg_expr.c", 2692
     load    r0, sf[3]
     push    r0
     call    __F1241_gnt
     add     sp, 1
     store   r0, sf[0]
-.source "src/cg_expr.c", 2691
+.source "src/cg_expr.c", 2693
     load    r0, sf[3]
     add     r0, 26
     load    r0, r0[0]
     store   r0, sf[-1]
-.source "src/cg_expr.c", 2692
+.source "src/cg_expr.c", 2694
     load    r0, sf[3]
     add     r0, 9
     add     r0, 1
     load    r0, r0[0]
     store   r0, sf[-2]
-.source "src/cg_expr.c", 2693
-    move    r0, 1
-    push    r0
-    load    r0, sf[-2]
-    move    r1, 1
-    add     r0, r1
-    move    r1, r0
-    pop     r0
-    mult    r0, r1
-    push    r0
-    call    __F3_xalloc
-    add     sp, 1
-    store   r0, sf[-4]
-.source "src/cg_expr.c", 2694
-    move    r0, 1
-    push    r0
-    load    r0, sf[-2]
-    move    r1, 1
-    add     r0, r1
-    move    r1, r0
-    pop     r0
-    mult    r0, r1
-    push    r0
-    call    __F3_xalloc
-    add     sp, 1
-    store   r0, sf[-5]
 .source "src/cg_expr.c", 2695
     move    r0, 1
     push    r0
@@ -199687,7 +199728,7 @@ __F1400_ge_struct_lit:
     push    r0
     call    __F3_xalloc
     add     sp, 1
-    store   r0, sf[-6]
+    store   r0, sf[-4]
 .source "src/cg_expr.c", 2696
     move    r0, 1
     push    r0
@@ -199700,23 +199741,49 @@ __F1400_ge_struct_lit:
     push    r0
     call    __F3_xalloc
     add     sp, 1
-    store   r0, sf[-7]
+    store   r0, sf[-5]
+.source "src/cg_expr.c", 2697
+    move    r0, 1
+    push    r0
+    load    r0, sf[-2]
+    move    r1, 1
+    add     r0, r1
+    move    r1, r0
+    pop     r0
+    mult    r0, r1
+    push    r0
+    call    __F3_xalloc
+    add     sp, 1
+    store   r0, sf[-6]
 .source "src/cg_expr.c", 2698
+    move    r0, 1
+    push    r0
+    load    r0, sf[-2]
+    move    r1, 1
+    add     r0, r1
+    move    r1, r0
+    pop     r0
+    mult    r0, r1
+    push    r0
+    call    __F3_xalloc
+    add     sp, 1
+    store   r0, sf[-7]
+.source "src/cg_expr.c", 2700
     move    r0, 0
     store   r0, sf[-3]
-__L19760:
+__L19764:
     load    r0, sf[-3]
     load    r1, sf[-2]
     cmp     r0, r1
-    jump    o, __L19763
+    jump    o, __L19767
     move    lt, r0, 1, 0
-    jump    __L19764
-__L19763:
+    jump    __L19768
+__L19767:
     move    lt, r0, 0, 1
-__L19764:
+__L19768:
     test    r0
-    jump    z, __L19762
-.source "src/cg_expr.c", 2699
+    jump    z, __L19766
+.source "src/cg_expr.c", 2701
     load    r0, sf[3]
     add     r0, 9
     load    r0, r0[0]
@@ -199724,7 +199791,7 @@ __L19764:
     add     r0, r1
     load    r0, r0[0]
     store   r0, sf[-9]
-.source "src/cg_expr.c", 2700
+.source "src/cg_expr.c", 2702
     load    r0, sf[-5]
     load    r1, sf[-3]
     add     r0, r1
@@ -199734,7 +199801,7 @@ __L19764:
     load    r0, r0[0]
     pop     r1
     store   r0, r1[0]
-.source "src/cg_expr.c", 2701
+.source "src/cg_expr.c", 2703
     load    r0, sf[-7]
     load    r1, sf[-3]
     add     r0, r1
@@ -199744,7 +199811,7 @@ __L19764:
     load    r0, r0[0]
     pop     r1
     store   r0, r1[0]
-.source "src/cg_expr.c", 2702
+.source "src/cg_expr.c", 2704
     load    r0, sf[-6]
     load    r1, sf[-3]
     add     r0, r1
@@ -199763,15 +199830,15 @@ __L19764:
     add     sp, 1
     pop     r1
     store   r0, r1[0]
-__L19761:
-.source "src/cg_expr.c", 2698
+__L19765:
+.source "src/cg_expr.c", 2700
     load    r1, sf[-3]
     add     r2, r1, 1
     store   r2, sf[-3]
     move    r0, r1
-    jump    __L19760
-__L19762:
-.source "src/cg_expr.c", 2704
+    jump    __L19764
+__L19766:
+.source "src/cg_expr.c", 2706
     load    r0, sf[-4]
     push    r0
     load    r0, sf[-6]
@@ -199782,21 +199849,21 @@ __L19762:
     push    r0
     call    __F1336_ge_eval_list
     add     sp, 4
-.source "src/cg_expr.c", 2705
+.source "src/cg_expr.c", 2707
     move    r0, 0
     store   r0, sf[-3]
-__L19765:
+__L19769:
     load    r0, sf[-3]
     load    r1, sf[-2]
     cmp     r0, r1
-    jump    o, __L19768
+    jump    o, __L19772
     move    lt, r0, 1, 0
-    jump    __L19769
-__L19768:
+    jump    __L19773
+__L19772:
     move    lt, r0, 0, 1
-__L19769:
+__L19773:
     test    r0
-    jump    z, __L19767
+    jump    z, __L19771
     load    r0, sf[-4]
     load    r1, sf[-3]
     add     r0, r1
@@ -199815,20 +199882,20 @@ __L19769:
     add     sp, 2
     pop     r1
     store   r0, r1[0]
-__L19766:
+__L19770:
     load    r1, sf[-3]
     add     r2, r1, 1
     store   r2, sf[-3]
     move    r0, r1
-    jump    __L19765
-__L19767:
-.source "src/cg_expr.c", 2706
+    jump    __L19769
+__L19771:
+.source "src/cg_expr.c", 2708
     load    r0, sf[3]
     add     r0, 6
     load    r0, r0[0]
     test    r0
-    jump    z, __L19770
-.source "src/cg_expr.c", 2708
+    jump    z, __L19774
+.source "src/cg_expr.c", 2710
     load    r0, sf[0]
     push    r0
     load    r0, sf[0]
@@ -199848,36 +199915,36 @@ __L19767:
     call    __F1247_ge_snap
     add     sp, 2
     store   r0, sf[-10]
-.source "src/cg_expr.c", 2709
+.source "src/cg_expr.c", 2711
     load    r0, sf[0]
     push    r0
     call    __F1243_ge_tmp_ty
     add     sp, 1
     store   r0, sf[-8]
-.source "src/cg_expr.c", 2710
+.source "src/cg_expr.c", 2712
     load    r0, sf[-10]
     push    r0
     load    r0, sf[-8]
     push    r0
-    move    r0, __W2490+1
+    move    r0, __W2495+1
     push    r0
     call    __F1236_E
     add     sp, 3
-.source "src/cg_expr.c", 2711
+.source "src/cg_expr.c", 2713
     move    r0, 0
     store   r0, sf[-3]
-__L19772:
+__L19776:
     load    r0, sf[-3]
     load    r1, sf[-2]
     cmp     r0, r1
-    jump    o, __L19775
+    jump    o, __L19779
     move    lt, r0, 1, 0
-    jump    __L19776
-__L19775:
+    jump    __L19780
+__L19779:
     move    lt, r0, 0, 1
-__L19776:
+__L19780:
     test    r0
-    jump    z, __L19774
+    jump    z, __L19778
     load    r0, sf[-4]
     load    r1, sf[-3]
     add     r0, r1
@@ -199893,22 +199960,22 @@ __L19776:
     push    r0
     load    r0, sf[-8]
     push    r0
-    move    r0, __W2491+1
+    move    r0, __W2496+1
     push    r0
     call    __F1236_E
     add     sp, 4
-__L19773:
+__L19777:
     load    r1, sf[-3]
     add     r2, r1, 1
     store   r2, sf[-3]
     move    r0, r1
-    jump    __L19772
-__L19774:
-.source "src/cg_expr.c", 2712
+    jump    __L19776
+__L19778:
+.source "src/cg_expr.c", 2714
     load    r0, sf[-8]
     return
-__L19770:
-.source "src/cg_expr.c", 2714
+__L19774:
+.source "src/cg_expr.c", 2716
     load    r0, sf[-2]
     push    r0
     load    r0, sf[-4]
@@ -199928,20 +199995,20 @@ __L19770:
 
 // ge_range
 __F1401_ge_range:
-.source "src/cg_expr.c", 2717
+.source "src/cg_expr.c", 2719
     add     sp, -19
-.source "src/cg_expr.c", 2718
+.source "src/cg_expr.c", 2720
     load    r0, sf[3]
     push    r0
     call    __F1241_gnt
     add     sp, 1
     store   r0, sf[0]
-.source "src/cg_expr.c", 2719
+.source "src/cg_expr.c", 2721
     load    r0, sf[0]
     add     r0, 11
     load    r0, r0[0]
     store   r0, sf[-1]
-.source "src/cg_expr.c", 2720
+.source "src/cg_expr.c", 2722
     move    r0, 0
     push    r0
     load    r0, sf[0]
@@ -199950,43 +200017,43 @@ __F1401_ge_range:
     move    r1, r0
     pop     r0
     cmp     r0, r1
-    jump    o, __L19779
+    jump    o, __L19783
     move    lt, r0, 1, 0
-    jump    __L19780
-__L19779:
+    jump    __L19784
+__L19783:
     move    lt, r0, 0, 1
-__L19780:
+__L19784:
     test    r0
-    jump    z, __L19777
+    jump    z, __L19781
     load    r0, sf[0]
     add     r0, 6
     load    r0, r0[0]
     move    r1, 0
     add     r0, r1
     load    r0, r0[0]
-    jump    __L19778
-__L19777:
+    jump    __L19782
+__L19781:
     move    r0, 0
-__L19778:
+__L19782:
     store   r0, sf[-2]
-.source "src/cg_expr.c", 2721
+.source "src/cg_expr.c", 2723
     load    r0, sf[3]
     add     r0, 5
     load    r0, r0[0]
     test    r0
-    jump    z, __L19785
+    jump    z, __L19789
     load    r0, sf[3]
     add     r0, 6
     load    r0, r0[0]
     test    r0
-    jump    z, __L19785
+    jump    z, __L19789
     move    r0, 1
-    jump    __L19786
-__L19785:
+    jump    __L19790
+__L19789:
     move    r0, 0
-__L19786:
+__L19790:
     test    r0
-    jump    z, __L19783
+    jump    z, __L19787
     load    r0, sf[3]
     add     r0, 22
     load    r0, r0[0]
@@ -199998,15 +200065,15 @@ __L19786:
     pop     r0
     and     r0, r1
     test    r0
-    jump    z, __L19783
+    jump    z, __L19787
     move    r0, 1
-    jump    __L19784
-__L19783:
+    jump    __L19788
+__L19787:
     move    r0, 0
-__L19784:
+__L19788:
     test    r0
-    jump    z, __L19781
-.source "src/cg_expr.c", 2722
+    jump    z, __L19785
+.source "src/cg_expr.c", 2724
     move    r0, 0
     push    r0
     load    r0, sf[3]
@@ -200014,7 +200081,7 @@ __L19784:
     call    __F730_check_callee
     add     sp, 2
     store   r0, sf[-3]
-.source "src/cg_expr.c", 2726
+.source "src/cg_expr.c", 2728
     add     r0, sf, -7
     move    r1, 0
     add     r0, r1
@@ -200024,7 +200091,7 @@ __L19784:
     load    r0, r0[0]
     pop     r1
     store   r0, r1[0]
-.source "src/cg_expr.c", 2727
+.source "src/cg_expr.c", 2729
     add     r0, sf, -7
     move    r1, 1
     add     r0, r1
@@ -200034,7 +200101,7 @@ __L19784:
     load    r0, r0[0]
     pop     r1
     store   r0, r1[0]
-.source "src/cg_expr.c", 2728
+.source "src/cg_expr.c", 2730
     add     r0, sf, -9
     move    r1, 0
     add     r0, r1
@@ -200048,7 +200115,7 @@ __L19784:
     store   r0, r1[0]
     pop     r1
     store   r0, r1[0]
-.source "src/cg_expr.c", 2729
+.source "src/cg_expr.c", 2731
     add     r0, sf, -5
     push    r0
     add     r0, sf, -9
@@ -200059,7 +200126,7 @@ __L19784:
     push    r0
     call    __F1336_ge_eval_list
     add     sp, 4
-.source "src/cg_expr.c", 2730
+.source "src/cg_expr.c", 2732
     move    r0, 2
     push    r0
     add     r0, sf, -5
@@ -200071,80 +200138,80 @@ __L19784:
     call    __F1285_ge_call_callee
     add     sp, 4
     return
-__L19781:
-.source "src/cg_expr.c", 2732
+__L19785:
+.source "src/cg_expr.c", 2734
     load    r0, sf[3]
     add     r0, 5
     load    r0, r0[0]
     test    r0
     move    z, r0, 1, 0
-    test    r0
-    jump    z, __L19789
-    load    r0, sf[3]
-    add     r0, 6
-    load    r0, r0[0]
-    test    r0
-    move    z, r0, 1, 0
-    test    r0
-    jump    z, __L19789
-    move    r0, 1
-    jump    __L19790
-__L19789:
-    move    r0, 0
-__L19790:
-    test    r0
-    jump    z, __L19787
-    move    r0, __W2492+1
-    return
-__L19787:
-.source "src/cg_expr.c", 2738
-    move    r0, 0
-    store   r0, sf[-18]
-.source "src/cg_expr.c", 2739
-    load    r0, sf[3]
-    add     r0, 5
-    load    r0, r0[0]
-    test    r0
-    jump    z, __L19791
-    add     r0, sf, -15
-    load    r1, sf[-18]
-    add     r0, r1
-    push    r0
-    load    r0, sf[3]
-    add     r0, 5
-    load    r0, r0[0]
-    pop     r1
-    store   r0, r1[0]
-    add     r0, sf, -17
-    load    r1, sf[-18]
-    add     r0, r1
-    push    r0
-    load    r0, sf[-2]
-    pop     r1
-    store   r0, r1[0]
-    add     r0, sf, -11
-    load    r1, sf[-18]
-    add     r0, r1
-    push    r0
-    move    r0, __W2493+1
-    push    r0
-    load    r0, sf[-1]
-    push    r0
-    call    __F1304_ge_find_named
-    add     sp, 2
-    pop     r1
-    store   r0, r1[0]
-    load    r1, sf[-18]
-    add     r2, r1, 1
-    store   r2, sf[-18]
-    move    r0, r1
-__L19791:
-.source "src/cg_expr.c", 2740
-    load    r0, sf[3]
-    add     r0, 6
-    load    r0, r0[0]
     test    r0
     jump    z, __L19793
+    load    r0, sf[3]
+    add     r0, 6
+    load    r0, r0[0]
+    test    r0
+    move    z, r0, 1, 0
+    test    r0
+    jump    z, __L19793
+    move    r0, 1
+    jump    __L19794
+__L19793:
+    move    r0, 0
+__L19794:
+    test    r0
+    jump    z, __L19791
+    move    r0, __W2497+1
+    return
+__L19791:
+.source "src/cg_expr.c", 2740
+    move    r0, 0
+    store   r0, sf[-18]
+.source "src/cg_expr.c", 2741
+    load    r0, sf[3]
+    add     r0, 5
+    load    r0, r0[0]
+    test    r0
+    jump    z, __L19795
+    add     r0, sf, -15
+    load    r1, sf[-18]
+    add     r0, r1
+    push    r0
+    load    r0, sf[3]
+    add     r0, 5
+    load    r0, r0[0]
+    pop     r1
+    store   r0, r1[0]
+    add     r0, sf, -17
+    load    r1, sf[-18]
+    add     r0, r1
+    push    r0
+    load    r0, sf[-2]
+    pop     r1
+    store   r0, r1[0]
+    add     r0, sf, -11
+    load    r1, sf[-18]
+    add     r0, r1
+    push    r0
+    move    r0, __W2498+1
+    push    r0
+    load    r0, sf[-1]
+    push    r0
+    call    __F1304_ge_find_named
+    add     sp, 2
+    pop     r1
+    store   r0, r1[0]
+    load    r1, sf[-18]
+    add     r2, r1, 1
+    store   r2, sf[-18]
+    move    r0, r1
+__L19795:
+.source "src/cg_expr.c", 2742
+    load    r0, sf[3]
+    add     r0, 6
+    load    r0, r0[0]
+    test    r0
+    jump    z, __L19797
     add     r0, sf, -15
     load    r1, sf[-18]
     add     r0, r1
@@ -200165,7 +200232,7 @@ __L19791:
     load    r1, sf[-18]
     add     r0, r1
     push    r0
-    move    r0, __W2494+1
+    move    r0, __W2499+1
     push    r0
     load    r0, sf[-1]
     push    r0
@@ -200177,8 +200244,8 @@ __L19791:
     add     r2, r1, 1
     store   r2, sf[-18]
     move    r0, r1
-__L19793:
-.source "src/cg_expr.c", 2741
+__L19797:
+.source "src/cg_expr.c", 2743
     add     r0, sf, -13
     push    r0
     add     r0, sf, -17
@@ -200189,7 +200256,7 @@ __L19793:
     push    r0
     call    __F1336_ge_eval_list
     add     sp, 4
-.source "src/cg_expr.c", 2742
+.source "src/cg_expr.c", 2744
     load    r0, sf[-18]
     push    r0
     add     r0, sf, -13
@@ -200209,9 +200276,9 @@ __L19793:
 
 // ge_ref_expr
 __F1402_ge_ref_expr:
-.source "src/cg_expr.c", 2746
+.source "src/cg_expr.c", 2748
     add     sp, -24
-.source "src/cg_expr.c", 2747
+.source "src/cg_expr.c", 2749
     load    r0, sf[3]
     add     r0, 22
     load    r0, r0[0]
@@ -200226,47 +200293,75 @@ __F1402_ge_ref_expr:
     cmp     r0, r1
     move    ne, r0, 1, 0
     store   r0, sf[0]
-.source "src/cg_expr.c", 2749
+.source "src/cg_expr.c", 2751
     load    r0, sf[3]
     add     r0, 5
     load    r0, r0[0]
     store   r0, sf[-6]
-.source "src/cg_expr.c", 2750
+.source "src/cg_expr.c", 2752
     load    r0, sf[0]
     test    r0
     move    z, r0, 1, 0
     test    r0
-    jump    z, __L19795
-.source "src/cg_expr.c", 2752
+    jump    z, __L19799
+.source "src/cg_expr.c", 2754
     load    r0, sf[-6]
     store   r0, sf[-7]
-.source "src/cg_expr.c", 2753
-__L19797:
+.source "src/cg_expr.c", 2755
+__L19801:
     load    r0, sf[-7]
     load    r0, r0[0]
     move    r1, 73
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L19799
+    jump    z, __L19803
     load    r0, sf[-7]
     add     r0, 5
     load    r0, r0[0]
     store   r0, sf[-7]
-__L19798:
-    jump    __L19797
-__L19799:
-.source "src/cg_expr.c", 2754
+__L19802:
+    jump    __L19801
+__L19803:
+.source "src/cg_expr.c", 2756
     load    r0, sf[-7]
     load    r0, r0[0]
     move    r1, 104
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    nz, __L19810
+    jump    nz, __L19814
     load    r0, sf[-7]
     load    r0, r0[0]
     move    r1, 64
+    cmp     r0, r1
+    move    eq, r0, 1, 0
+    test    r0
+    jump    nz, __L19814
+    move    r0, 0
+    jump    __L19815
+__L19814:
+    move    r0, 1
+__L19815:
+    test    r0
+    jump    nz, __L19812
+    load    r0, sf[-7]
+    load    r0, r0[0]
+    move    r1, 65
+    cmp     r0, r1
+    move    eq, r0, 1, 0
+    test    r0
+    jump    nz, __L19812
+    move    r0, 0
+    jump    __L19813
+__L19812:
+    move    r0, 1
+__L19813:
+    test    r0
+    jump    nz, __L19810
+    load    r0, sf[-7]
+    load    r0, r0[0]
+    move    r1, 70
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
@@ -200280,7 +200375,7 @@ __L19811:
     jump    nz, __L19808
     load    r0, sf[-7]
     load    r0, r0[0]
-    move    r1, 65
+    move    r1, 68
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
@@ -200294,7 +200389,7 @@ __L19809:
     jump    nz, __L19806
     load    r0, sf[-7]
     load    r0, r0[0]
-    move    r1, 70
+    move    r1, 66
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
@@ -200305,50 +200400,22 @@ __L19806:
     move    r0, 1
 __L19807:
     test    r0
-    jump    nz, __L19804
-    load    r0, sf[-7]
-    load    r0, r0[0]
-    move    r1, 68
-    cmp     r0, r1
-    move    eq, r0, 1, 0
-    test    r0
-    jump    nz, __L19804
-    move    r0, 0
-    jump    __L19805
-__L19804:
-    move    r0, 1
-__L19805:
-    test    r0
-    jump    nz, __L19802
-    load    r0, sf[-7]
-    load    r0, r0[0]
-    move    r1, 66
-    cmp     r0, r1
-    move    eq, r0, 1, 0
-    test    r0
-    jump    nz, __L19802
-    move    r0, 0
-    jump    __L19803
-__L19802:
-    move    r0, 1
-__L19803:
-    test    r0
-    jump    z, __L19800
-.source "src/cg_expr.c", 2756
+    jump    z, __L19804
+.source "src/cg_expr.c", 2758
     move    r0, 1
     store   r0, sf[-8]
-.source "src/cg_expr.c", 2758
+.source "src/cg_expr.c", 2760
     load    r0, sf[-7]
     load    r0, r0[0]
     move    r1, 104
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L19812
-.source "src/cg_expr.c", 2759
+    jump    z, __L19816
+.source "src/cg_expr.c", 2761
     move    r0, 0
     store   r0, sf[-9]
-__L19814:
+__L19818:
     load    r0, sf[-9]
     push    r0
     load    r0, sf[-7]
@@ -200358,15 +200425,15 @@ __L19814:
     move    r1, r0
     pop     r0
     cmp     r0, r1
-    jump    o, __L19817
+    jump    o, __L19821
     move    lt, r0, 1, 0
-    jump    __L19818
-__L19817:
+    jump    __L19822
+__L19821:
     move    lt, r0, 0, 1
-__L19818:
+__L19822:
     test    r0
-    jump    z, __L19816
-.source "src/cg_expr.c", 2760
+    jump    z, __L19820
+.source "src/cg_expr.c", 2762
     load    r0, sf[-7]
     add     r0, 9
     load    r0, r0[0]
@@ -200375,15 +200442,41 @@ __L19818:
     load    r0, r0[0]
     load    r0, r0[0]
     store   r0, sf[-10]
-.source "src/cg_expr.c", 2761
+.source "src/cg_expr.c", 2763
     load    r0, sf[-10]
     move    r1, 64
     cmp     r0, r1
     move    ne, r0, 1, 0
     test    r0
-    jump    z, __L19825
+    jump    z, __L19829
     load    r0, sf[-10]
     move    r1, 65
+    cmp     r0, r1
+    move    ne, r0, 1, 0
+    test    r0
+    jump    z, __L19829
+    move    r0, 1
+    jump    __L19830
+__L19829:
+    move    r0, 0
+__L19830:
+    test    r0
+    jump    z, __L19827
+    load    r0, sf[-10]
+    move    r1, 70
+    cmp     r0, r1
+    move    ne, r0, 1, 0
+    test    r0
+    jump    z, __L19827
+    move    r0, 1
+    jump    __L19828
+__L19827:
+    move    r0, 0
+__L19828:
+    test    r0
+    jump    z, __L19825
+    load    r0, sf[-10]
+    move    r1, 68
     cmp     r0, r1
     move    ne, r0, 1, 0
     test    r0
@@ -200395,69 +200488,43 @@ __L19825:
 __L19826:
     test    r0
     jump    z, __L19823
-    load    r0, sf[-10]
-    move    r1, 70
-    cmp     r0, r1
-    move    ne, r0, 1, 0
-    test    r0
-    jump    z, __L19823
-    move    r0, 1
-    jump    __L19824
-__L19823:
-    move    r0, 0
-__L19824:
-    test    r0
-    jump    z, __L19821
-    load    r0, sf[-10]
-    move    r1, 68
-    cmp     r0, r1
-    move    ne, r0, 1, 0
-    test    r0
-    jump    z, __L19821
-    move    r0, 1
-    jump    __L19822
-__L19821:
-    move    r0, 0
-__L19822:
-    test    r0
-    jump    z, __L19819
     move    r0, 0
     store   r0, sf[-8]
+__L19823:
 __L19819:
-__L19815:
-.source "src/cg_expr.c", 2759
+.source "src/cg_expr.c", 2761
     load    r1, sf[-9]
     add     r2, r1, 1
     store   r2, sf[-9]
     move    r0, r1
-    jump    __L19814
+    jump    __L19818
+__L19820:
 __L19816:
-__L19812:
-.source "src/cg_expr.c", 2763
+.source "src/cg_expr.c", 2765
     load    r0, sf[-8]
     test    r0
-    jump    z, __L19829
+    jump    z, __L19833
     load    r0, sf[-6]
     add     r0, 27
     load    r0, r0[0]
     test    r0
     move    z, r0, 1, 0
     test    r0
-    jump    z, __L19829
+    jump    z, __L19833
     move    r0, 1
-    jump    __L19830
-__L19829:
+    jump    __L19834
+__L19833:
     move    r0, 0
-__L19830:
+__L19834:
     test    r0
-    jump    z, __L19827
-.source "src/cg_expr.c", 2764
+    jump    z, __L19831
+.source "src/cg_expr.c", 2766
     load    r0, sf[-6]
     push    r0
     call    __F1241_gnt
     add     sp, 1
     store   r0, sf[-11]
-.source "src/cg_expr.c", 2765
+.source "src/cg_expr.c", 2767
     load    r0, sf[-11]
     push    r0
     load    r0, sf[-6]
@@ -200467,12 +200534,12 @@ __L19830:
     store   r0, sf[-12]
     call    __F1105_cg_new_id
     push    r0
-    move    r0, __W2495+1
+    move    r0, __W2500+1
     push    r0
     call    __F1237_S
     add     sp, 2
     store   r0, sf[-13]
-.source "src/cg_expr.c", 2766
+.source "src/cg_expr.c", 2768
     load    r0, sf[-12]
     push    r0
     move    r0, __G1235_ge_never_s+1
@@ -200481,11 +200548,11 @@ __L19830:
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L19831
-    move    r0, __W2496+1
+    jump    z, __L19835
+    move    r0, __W2501+1
     return
-__L19831:
-.source "src/cg_expr.c", 2767
+__L19835:
+.source "src/cg_expr.c", 2769
     move    r0, 0
     push    r0
     load    r0, sf[-13]
@@ -200495,14 +200562,14 @@ __L19831:
     call    __F1242_ge_ct
     add     sp, 1
     push    r0
-    move    r0, __W2497+1
+    move    r0, __W2502+1
     push    r0
     call    __F1237_S
     add     sp, 2
     push    r0
     call    __F1238_ge_decl_line
     add     sp, 3
-.source "src/cg_expr.c", 2768
+.source "src/cg_expr.c", 2770
     load    r0, sf[-11]
     push    r0
     call    __F1110_cg_is_zst
@@ -200510,17 +200577,17 @@ __L19831:
     test    r0
     move    z, r0, 1, 0
     test    r0
-    jump    z, __L19833
+    jump    z, __L19837
     load    r0, sf[-12]
     push    r0
     load    r0, sf[-13]
     push    r0
-    move    r0, __W2498+1
+    move    r0, __W2503+1
     push    r0
     call    __F1236_E
     add     sp, 3
-__L19833:
-.source "src/cg_expr.c", 2769
+__L19837:
+.source "src/cg_expr.c", 2771
     move    r0, 0
     push    r0
     load    r0, sf[-11]
@@ -200547,10 +200614,10 @@ __L19833:
     call    __F1294_ge_addr
     add     sp, 5
     return
-__L19827:
-__L19800:
-__L19795:
-.source "src/cg_expr.c", 2773
+__L19831:
+__L19804:
+__L19799:
+.source "src/cg_expr.c", 2775
     add     r0, sf, -5
     push    r0
     load    r0, sf[0]
@@ -200574,7 +200641,7 @@ __L19795:
     load    r2, r0[4]
     store   r2, r1[4]
     move    r0, r1
-.source "src/cg_expr.c", 2774
+.source "src/cg_expr.c", 2776
     add     r0, sf, -5
     load    r1, r0[4]
     push    r1
@@ -200595,114 +200662,114 @@ __L19795:
 
 // ex0
 __F1279_ex0:
-.source "src/cg_expr.c", 2777
+.source "src/cg_expr.c", 2779
     add     sp, -6
-.source "src/cg_expr.c", 2778
+.source "src/cg_expr.c", 2780
     load    r0, sf[3]
     push    r0
     call    __F1241_gnt
     add     sp, 1
     store   r0, sf[0]
-.source "src/cg_expr.c", 2779
+.source "src/cg_expr.c", 2781
     load    r0, sf[3]
     load    r0, r0[0]
     cmp     r0, 64
-    jump    eq, __L19836
-    cmp     r0, 65
-    jump    eq, __L19837
-    cmp     r0, 66
-    jump    eq, __L19838
-    cmp     r0, 67
-    jump    eq, __L19839
-    cmp     r0, 68
     jump    eq, __L19840
-    cmp     r0, 69
+    cmp     r0, 65
     jump    eq, __L19841
-    cmp     r0, 70
+    cmp     r0, 66
     jump    eq, __L19842
-    cmp     r0, 71
+    cmp     r0, 67
     jump    eq, __L19843
-    cmp     r0, 73
+    cmp     r0, 68
     jump    eq, __L19844
-    cmp     r0, 74
+    cmp     r0, 69
     jump    eq, __L19845
-    cmp     r0, 75
+    cmp     r0, 70
     jump    eq, __L19846
-    cmp     r0, 84
+    cmp     r0, 71
     jump    eq, __L19847
-    cmp     r0, 85
+    cmp     r0, 73
     jump    eq, __L19848
-    cmp     r0, 86
+    cmp     r0, 74
     jump    eq, __L19849
-    cmp     r0, 76
+    cmp     r0, 75
     jump    eq, __L19850
-    cmp     r0, 77
+    cmp     r0, 84
     jump    eq, __L19851
-    cmp     r0, 78
+    cmp     r0, 85
     jump    eq, __L19852
-    cmp     r0, 79
+    cmp     r0, 86
     jump    eq, __L19853
-    cmp     r0, 80
+    cmp     r0, 76
     jump    eq, __L19854
-    cmp     r0, 81
+    cmp     r0, 77
     jump    eq, __L19855
-    cmp     r0, 82
+    cmp     r0, 78
     jump    eq, __L19856
-    cmp     r0, 83
+    cmp     r0, 79
     jump    eq, __L19857
-    cmp     r0, 87
+    cmp     r0, 80
     jump    eq, __L19858
-    cmp     r0, 89
+    cmp     r0, 81
     jump    eq, __L19859
-    cmp     r0, 90
+    cmp     r0, 82
     jump    eq, __L19860
-    cmp     r0, 92
+    cmp     r0, 83
     jump    eq, __L19861
-    cmp     r0, 94
+    cmp     r0, 87
     jump    eq, __L19862
-    cmp     r0, 95
+    cmp     r0, 89
     jump    eq, __L19863
-    cmp     r0, 96
+    cmp     r0, 90
     jump    eq, __L19864
-    cmp     r0, 97
+    cmp     r0, 92
     jump    eq, __L19865
-    cmp     r0, 98
+    cmp     r0, 94
     jump    eq, __L19866
-    cmp     r0, 99
+    cmp     r0, 95
     jump    eq, __L19867
-    cmp     r0, 100
+    cmp     r0, 96
     jump    eq, __L19868
-    cmp     r0, 101
+    cmp     r0, 97
     jump    eq, __L19869
-    cmp     r0, 103
+    cmp     r0, 98
     jump    eq, __L19870
-    cmp     r0, 104
+    cmp     r0, 99
     jump    eq, __L19871
-    cmp     r0, 105
+    cmp     r0, 100
     jump    eq, __L19872
-    cmp     r0, 72
+    cmp     r0, 101
     jump    eq, __L19873
-    jump    __L19835
-.source "src/cg_expr.c", 2780
-__L19836:
-.source "src/cg_expr.c", 2781
+    cmp     r0, 103
+    jump    eq, __L19874
+    cmp     r0, 104
+    jump    eq, __L19875
+    cmp     r0, 105
+    jump    eq, __L19876
+    cmp     r0, 72
+    jump    eq, __L19877
+    jump    __L19839
+.source "src/cg_expr.c", 2782
+__L19840:
+.source "src/cg_expr.c", 2783
     load    r0, sf[0]
     push    r0
     call    __F1263_ge_is_float
     add     sp, 1
     test    r0
-    jump    z, __L19874
+    jump    z, __L19878
     load    r0, sf[3]
     add     r0, 20
     load    r0, r0[0]
     push    r0
-    move    r0, __W2499+1
+    move    r0, __W2504+1
     push    r0
     call    __F1237_S
     add     sp, 2
     return
-__L19874:
-.source "src/cg_expr.c", 2782
+__L19878:
+.source "src/cg_expr.c", 2784
     load    r0, sf[3]
     add     r0, 20
     load    r0, r0[0]
@@ -200710,22 +200777,22 @@ __L19874:
     call    __F1326_ge_int_lit
     add     sp, 1
     return
-.source "src/cg_expr.c", 2783
-__L19837:
-.source "src/cg_expr.c", 2784
+.source "src/cg_expr.c", 2785
+__L19841:
+.source "src/cg_expr.c", 2786
     load    r0, sf[3]
     push    r0
     call    __F1327_ge_float_lit
     add     sp, 1
     push    r0
-    move    r0, __W2500+1
+    move    r0, __W2505+1
     push    r0
     call    __F1237_S
     add     sp, 2
     return
-.source "src/cg_expr.c", 2785
-__L19838:
-.source "src/cg_expr.c", 2786
+.source "src/cg_expr.c", 2787
+__L19842:
+.source "src/cg_expr.c", 2788
     load    r0, sf[3]
     add     r0, 19
     load    r0, r0[0]
@@ -200737,9 +200804,9 @@ __L19838:
     call    __F1328_ge_str_value
     add     sp, 2
     return
-.source "src/cg_expr.c", 2787
-__L19839:
-.source "src/cg_expr.c", 2788
+.source "src/cg_expr.c", 2789
+__L19843:
+.source "src/cg_expr.c", 2790
     load    r0, sf[3]
     add     r0, 19
     load    r0, r0[0]
@@ -200751,36 +200818,36 @@ __L19839:
     call    __F1122_cg_str_literal
     add     sp, 2
     push    r0
-    move    r0, __W2501+1
-    push    r0
-    call    __F1237_S
-    add     sp, 2
-    return
-.source "src/cg_expr.c", 2789
-__L19840:
-__L19841:
-__L19842:
-.source "src/cg_expr.c", 2790
-    load    r0, sf[3]
-    add     r0, 20
-    load    r0, r0[0]
-    push    r0
-    move    r0, __W2502+1
+    move    r0, __W2506+1
     push    r0
     call    __F1237_S
     add     sp, 2
     return
 .source "src/cg_expr.c", 2791
-__L19843:
+__L19844:
+__L19845:
+__L19846:
 .source "src/cg_expr.c", 2792
+    load    r0, sf[3]
+    add     r0, 20
+    load    r0, r0[0]
+    push    r0
+    move    r0, __W2507+1
+    push    r0
+    call    __F1237_S
+    add     sp, 2
+    return
+.source "src/cg_expr.c", 2793
+__L19847:
+.source "src/cg_expr.c", 2794
     load    r0, sf[3]
     push    r0
     call    __F1395_ge_path_value
     add     sp, 1
     return
-.source "src/cg_expr.c", 2793
-__L19844:
-.source "src/cg_expr.c", 2794
+.source "src/cg_expr.c", 2795
+__L19848:
+.source "src/cg_expr.c", 2796
     load    r0, sf[4]
     push    r0
     load    r0, sf[3]
@@ -200790,20 +200857,20 @@ __L19844:
     call    __F1280_ex_to
     add     sp, 2
     return
-.source "src/cg_expr.c", 2795
-__L19845:
-.source "src/cg_expr.c", 2796
+.source "src/cg_expr.c", 2797
+__L19849:
+.source "src/cg_expr.c", 2798
     load    r0, sf[3]
     push    r0
     call    __F1344_ge_unary
     add     sp, 1
     return
-.source "src/cg_expr.c", 2797
-__L19846:
-__L19847:
-__L19848:
-__L19849:
-.source "src/cg_expr.c", 2798
+.source "src/cg_expr.c", 2799
+__L19850:
+__L19851:
+__L19852:
+__L19853:
+.source "src/cg_expr.c", 2800
     move    r0, 0
     push    r0
     load    r0, sf[3]
@@ -200826,25 +200893,25 @@ __L19849:
     call    __F1292_ge_take
     add     sp, 5
     return
-.source "src/cg_expr.c", 2799
-__L19850:
-.source "src/cg_expr.c", 2800
+.source "src/cg_expr.c", 2801
+__L19854:
+.source "src/cg_expr.c", 2802
     load    r0, sf[3]
     push    r0
     call    __F1402_ge_ref_expr
     add     sp, 1
     return
-.source "src/cg_expr.c", 2801
-__L19851:
-.source "src/cg_expr.c", 2802
+.source "src/cg_expr.c", 2803
+__L19855:
+.source "src/cg_expr.c", 2804
     load    r0, sf[3]
     push    r0
     call    __F1390_ge_try
     add     sp, 1
     return
-.source "src/cg_expr.c", 2803
-__L19852:
-.source "src/cg_expr.c", 2804
+.source "src/cg_expr.c", 2805
+__L19856:
+.source "src/cg_expr.c", 2806
     load    r0, sf[4]
     push    r0
     load    r0, sf[3]
@@ -200852,57 +200919,57 @@ __L19852:
     call    __F1343_ge_binary
     add     sp, 2
     return
-.source "src/cg_expr.c", 2805
-__L19853:
-.source "src/cg_expr.c", 2806
+.source "src/cg_expr.c", 2807
+__L19857:
+.source "src/cg_expr.c", 2808
     load    r0, sf[3]
     push    r0
     call    __F1346_ge_assign
     add     sp, 1
     return
-.source "src/cg_expr.c", 2807
-__L19854:
-.source "src/cg_expr.c", 2808
+.source "src/cg_expr.c", 2809
+__L19858:
+.source "src/cg_expr.c", 2810
     load    r0, sf[3]
     push    r0
     call    __F1347_ge_assign_op
     add     sp, 1
     return
-.source "src/cg_expr.c", 2809
-__L19855:
-.source "src/cg_expr.c", 2810
+.source "src/cg_expr.c", 2811
+__L19859:
+.source "src/cg_expr.c", 2812
     load    r0, sf[3]
     push    r0
     call    __F1348_ge_cast_expr
     add     sp, 1
     return
-.source "src/cg_expr.c", 2811
-__L19856:
-.source "src/cg_expr.c", 2812
+.source "src/cg_expr.c", 2813
+__L19860:
+.source "src/cg_expr.c", 2814
     load    r0, sf[3]
     push    r0
     call    __F1351_ge_call_expr
     add     sp, 1
     return
-.source "src/cg_expr.c", 2813
-__L19857:
-.source "src/cg_expr.c", 2814
+.source "src/cg_expr.c", 2815
+__L19861:
+.source "src/cg_expr.c", 2816
     load    r0, sf[3]
     push    r0
     call    __F1352_ge_method_call
     add     sp, 1
     return
-.source "src/cg_expr.c", 2815
-__L19858:
-.source "src/cg_expr.c", 2816
+.source "src/cg_expr.c", 2817
+__L19862:
+.source "src/cg_expr.c", 2818
     load    r0, sf[3]
     push    r0
     call    __F1401_ge_range
     add     sp, 1
     return
-.source "src/cg_expr.c", 2817
-__L19859:
-.source "src/cg_expr.c", 2818
+.source "src/cg_expr.c", 2819
+__L19863:
+.source "src/cg_expr.c", 2820
     load    r0, sf[0]
     push    r0
     load    r0, sf[3]
@@ -200910,9 +200977,9 @@ __L19859:
     call    __F1284_ge_block_value
     add     sp, 2
     return
-.source "src/cg_expr.c", 2819
-__L19860:
-.source "src/cg_expr.c", 2820
+.source "src/cg_expr.c", 2821
+__L19864:
+.source "src/cg_expr.c", 2822
     load    r0, sf[4]
     push    r0
     load    r0, sf[3]
@@ -200920,9 +200987,9 @@ __L19860:
     call    __F1381_ge_if
     add     sp, 2
     return
-.source "src/cg_expr.c", 2821
-__L19861:
-.source "src/cg_expr.c", 2822
+.source "src/cg_expr.c", 2823
+__L19865:
+.source "src/cg_expr.c", 2824
     load    r0, sf[4]
     push    r0
     load    r0, sf[3]
@@ -200930,116 +200997,116 @@ __L19861:
     call    __F1382_ge_match
     add     sp, 2
     return
-.source "src/cg_expr.c", 2823
-__L19862:
-.source "src/cg_expr.c", 2824
+.source "src/cg_expr.c", 2825
+__L19866:
+.source "src/cg_expr.c", 2826
     load    r0, sf[3]
     push    r0
     call    __F1383_ge_while
     add     sp, 1
     return
-.source "src/cg_expr.c", 2825
-__L19863:
-.source "src/cg_expr.c", 2826
+.source "src/cg_expr.c", 2827
+__L19867:
+.source "src/cg_expr.c", 2828
     load    r0, sf[3]
     push    r0
     call    __F1384_ge_loop
     add     sp, 1
     return
-.source "src/cg_expr.c", 2827
-__L19864:
-.source "src/cg_expr.c", 2828
+.source "src/cg_expr.c", 2829
+__L19868:
+.source "src/cg_expr.c", 2830
     load    r0, sf[3]
     push    r0
     call    __F1385_ge_for
     add     sp, 1
     return
-.source "src/cg_expr.c", 2829
-__L19865:
-.source "src/cg_expr.c", 2830
+.source "src/cg_expr.c", 2831
+__L19869:
+.source "src/cg_expr.c", 2832
     load    r0, sf[3]
     push    r0
     call    __F1386_ge_break
     add     sp, 1
     return
-.source "src/cg_expr.c", 2831
-__L19866:
-.source "src/cg_expr.c", 2832
+.source "src/cg_expr.c", 2833
+__L19870:
+.source "src/cg_expr.c", 2834
     load    r0, sf[3]
     push    r0
     call    __F1387_ge_continue
     add     sp, 1
     return
-.source "src/cg_expr.c", 2833
-__L19867:
-.source "src/cg_expr.c", 2834
+.source "src/cg_expr.c", 2835
+__L19871:
+.source "src/cg_expr.c", 2836
     load    r0, sf[3]
     push    r0
     call    __F1389_ge_return
     add     sp, 1
     return
-.source "src/cg_expr.c", 2835
-__L19868:
-.source "src/cg_expr.c", 2836
+.source "src/cg_expr.c", 2837
+__L19872:
+.source "src/cg_expr.c", 2838
     load    r0, sf[3]
     push    r0
     call    __F1394_ge_closure_value
     add     sp, 1
     return
-.source "src/cg_expr.c", 2837
-__L19869:
-.source "src/cg_expr.c", 2838
+.source "src/cg_expr.c", 2839
+__L19873:
+.source "src/cg_expr.c", 2840
     load    r0, sf[3]
     push    r0
     call    __F1400_ge_struct_lit
     add     sp, 1
     return
-.source "src/cg_expr.c", 2839
-__L19870:
-.source "src/cg_expr.c", 2840
+.source "src/cg_expr.c", 2841
+__L19874:
+.source "src/cg_expr.c", 2842
     load    r0, sf[3]
     push    r0
     call    __F1396_ge_tuple
     add     sp, 1
     return
-.source "src/cg_expr.c", 2841
-__L19871:
-.source "src/cg_expr.c", 2842
+.source "src/cg_expr.c", 2843
+__L19875:
+.source "src/cg_expr.c", 2844
     load    r0, sf[3]
     push    r0
     call    __F1398_ge_array
     add     sp, 1
     return
-.source "src/cg_expr.c", 2843
-__L19872:
-.source "src/cg_expr.c", 2844
+.source "src/cg_expr.c", 2845
+__L19876:
+.source "src/cg_expr.c", 2846
     load    r0, sf[3]
     push    r0
     call    __F1399_ge_repeat
     add     sp, 1
     return
-.source "src/cg_expr.c", 2845
-__L19873:
-.source "src/cg_expr.c", 2846
-    move    r0, __W2503+1
-    return
-__L19835:
+.source "src/cg_expr.c", 2847
+__L19877:
 .source "src/cg_expr.c", 2848
+    move    r0, __W2508+1
+    return
+__L19839:
+.source "src/cg_expr.c", 2850
     load    r0, sf[3]
     load    r0, r0[0]
     push    r0
     call    __F22_node_kind_name
     add     sp, 1
     push    r0
-    move    r0, __W2504+1
+    move    r0, __W2509+1
     push    r0
     call    __F1237_S
     add     sp, 2
     push    r0
     call    __F2_fatal
     add     sp, 1
-.source "src/cg_expr.c", 2849
-    move    r0, __W2505+1
+.source "src/cg_expr.c", 2851
+    move    r0, __W2510+1
     return
     move    r0, 0
     return
@@ -201047,21 +201114,21 @@ __L19835:
 
 // ge_begin
 __F1404_ge_begin:
-.source "src/cg_expr.c", 2872
+.source "src/cg_expr.c", 2874
     add     sp, -2
-.source "src/cg_expr.c", 2873
+.source "src/cg_expr.c", 2875
     move    r0, 275
     push    r0
     call    __F3_xalloc
     add     sp, 1
     store   r0, sf[0]
-.source "src/cg_expr.c", 2875
+.source "src/cg_expr.c", 2877
     load    r0, sf[0]
     push    r0
     load    r0, __G1216_ge_out+1
     pop     r1
     store   r0, r1[0]
-.source "src/cg_expr.c", 2876
+.source "src/cg_expr.c", 2878
     load    r0, sf[0]
     add     r0, 1
     push    r0
@@ -201074,7 +201141,7 @@ __F1404_ge_begin:
     load    r2, r0[2]
     store   r2, r1[2]
     move    r0, r1
-.source "src/cg_expr.c", 2877
+.source "src/cg_expr.c", 2879
     load    r0, sf[0]
     add     r0, 4
     push    r0
@@ -201087,98 +201154,98 @@ __F1404_ge_begin:
     load    r2, r0[2]
     store   r2, r1[2]
     move    r0, r1
-.source "src/cg_expr.c", 2878
+.source "src/cg_expr.c", 2880
     load    r0, sf[0]
     add     r0, 7
     push    r0
     load    r0, __G1222_ge_sc+1
     pop     r1
     store   r0, r1[0]
-.source "src/cg_expr.c", 2879
+.source "src/cg_expr.c", 2881
     load    r0, sf[0]
     add     r0, 8
     push    r0
     load    r0, __G1223_ge_nsc+1
     pop     r1
     store   r0, r1[0]
-.source "src/cg_expr.c", 2880
+.source "src/cg_expr.c", 2882
     load    r0, sf[0]
     add     r0, 9
     push    r0
     load    r0, __G1224_ge_csc+1
     pop     r1
     store   r0, r1[0]
-.source "src/cg_expr.c", 2881
+.source "src/cg_expr.c", 2883
     load    r0, sf[0]
     add     r0, 10
     push    r0
     load    r0, __G1225_ge_loops+1
     pop     r1
     store   r0, r1[0]
-.source "src/cg_expr.c", 2882
+.source "src/cg_expr.c", 2884
     load    r0, sf[0]
     add     r0, 11
     push    r0
     load    r0, __G1226_ge_nloops+1
     pop     r1
     store   r0, r1[0]
-.source "src/cg_expr.c", 2883
+.source "src/cg_expr.c", 2885
     load    r0, sf[0]
     add     r0, 12
     push    r0
     load    r0, __G1227_ge_cloops+1
     pop     r1
     store   r0, r1[0]
-.source "src/cg_expr.c", 2884
+.source "src/cg_expr.c", 2886
     load    r0, sf[0]
     add     r0, 13
     push    r0
     load    r0, __G1228_ge_closure+1
     pop     r1
     store   r0, r1[0]
-.source "src/cg_expr.c", 2885
+.source "src/cg_expr.c", 2887
     load    r0, sf[0]
     add     r0, 14
     push    r0
     load    r0, __G1231_ge_ret+1
     pop     r1
     store   r0, r1[0]
-.source "src/cg_expr.c", 2886
+.source "src/cg_expr.c", 2888
     load    r0, sf[0]
     add     r0, 15
     push    r0
     load    r0, __G1233_ge_envtype+1
     pop     r1
     store   r0, r1[0]
-.source "src/cg_expr.c", 2887
+.source "src/cg_expr.c", 2889
     load    r0, sf[0]
     add     r0, 16
     push    r0
     load    r0, __G1234_ge_extend+1
     pop     r1
     store   r0, r1[0]
-.source "src/cg_expr.c", 2888
+.source "src/cg_expr.c", 2890
     load    r0, sf[0]
     add     r0, 273
     push    r0
     load    r0, __G1354_ge_ncommits+1
     pop     r1
     store   r0, r1[0]
-.source "src/cg_expr.c", 2889
+.source "src/cg_expr.c", 2891
     move    r0, 0
     store   r0, sf[-1]
-__L19876:
+__L19880:
     load    r0, sf[-1]
     move    r1, 256
     cmp     r0, r1
-    jump    o, __L19879
+    jump    o, __L19883
     move    lt, r0, 1, 0
-    jump    __L19880
-__L19879:
+    jump    __L19884
+__L19883:
     move    lt, r0, 0, 1
-__L19880:
+__L19884:
     test    r0
-    jump    z, __L19878
+    jump    z, __L19882
     load    r0, sf[0]
     add     r0, 17
     load    r1, sf[-1]
@@ -201190,73 +201257,73 @@ __L19880:
     load    r0, r0[0]
     pop     r1
     store   r0, r1[0]
-__L19877:
+__L19881:
     load    r1, sf[-1]
     add     r2, r1, 1
     store   r2, sf[-1]
     move    r0, r1
-    jump    __L19876
-__L19878:
-.source "src/cg_expr.c", 2890
+    jump    __L19880
+__L19882:
+.source "src/cg_expr.c", 2892
     load    r0, sf[0]
     add     r0, 274
     push    r0
     load    r0, __G1403_ge_saved+1
     pop     r1
     store   r0, r1[0]
-.source "src/cg_expr.c", 2891
+.source "src/cg_expr.c", 2893
     load    r0, sf[0]
     store   r0, __G1403_ge_saved+1
-.source "src/cg_expr.c", 2892
+.source "src/cg_expr.c", 2894
     call    __F1252_ge_locals_reset
-.source "src/cg_expr.c", 2893
+.source "src/cg_expr.c", 2895
     move    r0, __G1217_ge_body+1
     push    r0
     call    __F8_sb_init
     add     sp, 1
-.source "src/cg_expr.c", 2894
+.source "src/cg_expr.c", 2896
     move    r0, __G1218_ge_decl+1
     push    r0
     call    __F8_sb_init
     add     sp, 1
-.source "src/cg_expr.c", 2895
+.source "src/cg_expr.c", 2897
     move    r0, __G1217_ge_body+1
     store   r0, __G1216_ge_out+1
-.source "src/cg_expr.c", 2896
+.source "src/cg_expr.c", 2898
     move    r0, 0
     store   r0, __G1222_ge_sc+1
-.source "src/cg_expr.c", 2897
+.source "src/cg_expr.c", 2899
     move    r0, 0
     store   r0, __G1224_ge_csc+1
     store   r0, __G1223_ge_nsc+1
-.source "src/cg_expr.c", 2898
+.source "src/cg_expr.c", 2900
     move    r0, 0
     store   r0, __G1225_ge_loops+1
-.source "src/cg_expr.c", 2899
+.source "src/cg_expr.c", 2901
     move    r0, 0
     store   r0, __G1227_ge_cloops+1
     store   r0, __G1226_ge_nloops+1
-.source "src/cg_expr.c", 2900
+.source "src/cg_expr.c", 2902
     load    r0, sf[4]
     store   r0, __G1228_ge_closure+1
-.source "src/cg_expr.c", 2901
+.source "src/cg_expr.c", 2903
     load    r0, sf[3]
     store   r0, __G1231_ge_ret+1
-.source "src/cg_expr.c", 2902
-    move    r0, 0
-    store   r0, __G1233_ge_envtype+1
-.source "src/cg_expr.c", 2903
-    move    r0, 0
-    store   r0, __G1234_ge_extend+1
 .source "src/cg_expr.c", 2904
     move    r0, 0
-    store   r0, __G1354_ge_ncommits+1
+    store   r0, __G1233_ge_envtype+1
 .source "src/cg_expr.c", 2905
+    move    r0, 0
+    store   r0, __G1234_ge_extend+1
+.source "src/cg_expr.c", 2906
+    move    r0, 0
+    store   r0, __G1354_ge_ncommits+1
+.source "src/cg_expr.c", 2907
     load    r1, __G1220_ge_gen+1
     add     r2, r1, 1
     store   r2, __G1220_ge_gen+1
     move    r0, r1
-.source "src/cg_expr.c", 2906
+.source "src/cg_expr.c", 2908
     move    r0, 1
     push    r0
     call    __F1253_ge_push_scope
@@ -201267,16 +201334,16 @@ __L19878:
 
 // ge_end
 __F1405_ge_end:
-.source "src/cg_expr.c", 2909
+.source "src/cg_expr.c", 2911
     add     sp, -2
-.source "src/cg_expr.c", 2910
+.source "src/cg_expr.c", 2912
     load    r0, __G1403_ge_saved+1
     store   r0, sf[0]
-.source "src/cg_expr.c", 2912
+.source "src/cg_expr.c", 2914
     load    r0, sf[0]
     load    r0, r0[0]
     store   r0, __G1216_ge_out+1
-.source "src/cg_expr.c", 2913
+.source "src/cg_expr.c", 2915
     move    r0, __G1217_ge_body+1
     push    r0
     load    r0, sf[0]
@@ -201289,7 +201356,7 @@ __F1405_ge_end:
     load    r2, r0[2]
     store   r2, r1[2]
     move    r0, r1
-.source "src/cg_expr.c", 2914
+.source "src/cg_expr.c", 2916
     move    r0, __G1218_ge_decl+1
     push    r0
     load    r0, sf[0]
@@ -201302,76 +201369,76 @@ __F1405_ge_end:
     load    r2, r0[2]
     store   r2, r1[2]
     move    r0, r1
-.source "src/cg_expr.c", 2915
+.source "src/cg_expr.c", 2917
     load    r0, sf[0]
     add     r0, 7
     load    r0, r0[0]
     store   r0, __G1222_ge_sc+1
-.source "src/cg_expr.c", 2916
+.source "src/cg_expr.c", 2918
     load    r0, sf[0]
     add     r0, 8
     load    r0, r0[0]
     store   r0, __G1223_ge_nsc+1
-.source "src/cg_expr.c", 2917
+.source "src/cg_expr.c", 2919
     load    r0, sf[0]
     add     r0, 9
     load    r0, r0[0]
     store   r0, __G1224_ge_csc+1
-.source "src/cg_expr.c", 2918
+.source "src/cg_expr.c", 2920
     load    r0, sf[0]
     add     r0, 10
     load    r0, r0[0]
     store   r0, __G1225_ge_loops+1
-.source "src/cg_expr.c", 2919
+.source "src/cg_expr.c", 2921
     load    r0, sf[0]
     add     r0, 11
     load    r0, r0[0]
     store   r0, __G1226_ge_nloops+1
-.source "src/cg_expr.c", 2920
+.source "src/cg_expr.c", 2922
     load    r0, sf[0]
     add     r0, 12
     load    r0, r0[0]
     store   r0, __G1227_ge_cloops+1
-.source "src/cg_expr.c", 2921
+.source "src/cg_expr.c", 2923
     load    r0, sf[0]
     add     r0, 13
     load    r0, r0[0]
     store   r0, __G1228_ge_closure+1
-.source "src/cg_expr.c", 2922
+.source "src/cg_expr.c", 2924
     load    r0, sf[0]
     add     r0, 14
     load    r0, r0[0]
     store   r0, __G1231_ge_ret+1
-.source "src/cg_expr.c", 2923
+.source "src/cg_expr.c", 2925
     load    r0, sf[0]
     add     r0, 15
     load    r0, r0[0]
     store   r0, __G1233_ge_envtype+1
-.source "src/cg_expr.c", 2924
+.source "src/cg_expr.c", 2926
     load    r0, sf[0]
     add     r0, 16
     load    r0, r0[0]
     store   r0, __G1234_ge_extend+1
-.source "src/cg_expr.c", 2925
+.source "src/cg_expr.c", 2927
     load    r0, sf[0]
     add     r0, 273
     load    r0, r0[0]
     store   r0, __G1354_ge_ncommits+1
-.source "src/cg_expr.c", 2926
+.source "src/cg_expr.c", 2928
     move    r0, 0
     store   r0, sf[-1]
-__L19881:
+__L19885:
     load    r0, sf[-1]
     move    r1, 256
     cmp     r0, r1
-    jump    o, __L19884
+    jump    o, __L19888
     move    lt, r0, 1, 0
-    jump    __L19885
-__L19884:
+    jump    __L19889
+__L19888:
     move    lt, r0, 0, 1
-__L19885:
+__L19889:
     test    r0
-    jump    z, __L19883
+    jump    z, __L19887
     move    r0, __G1221_ge_locals+1
     load    r1, sf[-1]
     add     r0, r1
@@ -201383,14 +201450,14 @@ __L19885:
     load    r0, r0[0]
     pop     r1
     store   r0, r1[0]
-__L19882:
+__L19886:
     load    r1, sf[-1]
     add     r2, r1, 1
     store   r2, sf[-1]
     move    r0, r1
-    jump    __L19881
-__L19883:
-.source "src/cg_expr.c", 2927
+    jump    __L19885
+__L19887:
+.source "src/cg_expr.c", 2929
     load    r0, sf[0]
     add     r0, 274
     load    r0, r0[0]
@@ -201401,46 +201468,46 @@ __L19883:
 
 // ge_param
 __F1406_ge_param:
-.source "src/cg_expr.c", 2931
+.source "src/cg_expr.c", 2933
     add     sp, -15
-.source "src/cg_expr.c", 2932
+.source "src/cg_expr.c", 2934
     load    r0, sf[3]
     load    r0, r0[0]
     move    r1, 19
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L19886
+    jump    z, __L19890
     load    r0, sf[3]
     add     r0, 5
     load    r0, r0[0]
-    jump    __L19887
-__L19886:
+    jump    __L19891
+__L19890:
     move    r0, 0
-__L19887:
+__L19891:
     store   r0, sf[0]
-.source "src/cg_expr.c", 2933
+.source "src/cg_expr.c", 2935
     load    r0, sf[3]
     load    r0, r0[0]
     move    r1, 20
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L19888
-.source "src/cg_expr.c", 2934
+    jump    z, __L19892
+.source "src/cg_expr.c", 2936
     load    r0, sf[3]
     add     r0, 26
     load    r0, r0[0]
     store   r0, sf[-1]
-.source "src/cg_expr.c", 2936
+.source "src/cg_expr.c", 2938
     load    r0, sf[-1]
     test    r0
     move    z, r0, 1, 0
     test    r0
-    jump    z, __L19890
+    jump    z, __L19894
     return
-__L19890:
-.source "src/cg_expr.c", 2937
+__L19894:
+.source "src/cg_expr.c", 2939
     move    r0, 1
     push    r0
     load    r0, sf[4]
@@ -201450,28 +201517,28 @@ __L19890:
     call    __F1251_ge_local_new
     add     sp, 3
     store   r0, sf[-2]
-.source "src/cg_expr.c", 2938
+.source "src/cg_expr.c", 2940
     load    r0, sf[-2]
     add     r0, 2
     push    r0
     load    r0, sf[5]
     pop     r1
     store   r0, r1[0]
-.source "src/cg_expr.c", 2939
+.source "src/cg_expr.c", 2941
     load    r0, sf[4]
     push    r0
     call    __F1115_cg_needs_drop
     add     sp, 1
     test    r0
-    jump    z, __L19892
-.source "src/cg_expr.c", 2940
+    jump    z, __L19896
+.source "src/cg_expr.c", 2942
     load    r0, sf[-2]
     add     r0, 6
     push    r0
     call    __F1259_ge_new_flag
     pop     r1
     store   r0, r1[0]
-.source "src/cg_expr.c", 2941
+.source "src/cg_expr.c", 2943
     load    r0, sf[-2]
     add     r0, 6
     load    r0, r0[0]
@@ -201484,40 +201551,68 @@ __L19890:
     push    r0
     call    __F1254_ge_scope_add
     add     sp, 4
-.source "src/cg_expr.c", 2942
+.source "src/cg_expr.c", 2944
     load    r0, sf[-2]
     add     r0, 6
     load    r0, r0[0]
     push    r0
-    move    r0, __W2506+1
+    move    r0, __W2511+1
     push    r0
     call    __F1236_E
     add     sp, 2
-__L19892:
-.source "src/cg_expr.c", 2944
-    return
-__L19888:
+__L19896:
 .source "src/cg_expr.c", 2946
+    return
+__L19892:
+.source "src/cg_expr.c", 2948
     load    r0, sf[0]
     test    r0
     move    z, r0, 1, 0
     test    r0
-    jump    z, __L19894
+    jump    z, __L19898
     return
-__L19894:
-.source "src/cg_expr.c", 2947
+__L19898:
+.source "src/cg_expr.c", 2949
     load    r0, sf[0]
     load    r0, r0[0]
     move    r1, 53
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L19904
+    jump    z, __L19908
     load    r0, sf[0]
     add     r0, 5
     load    r0, r0[0]
     test    r0
     move    z, r0, 1, 0
+    test    r0
+    jump    z, __L19908
+    move    r0, 1
+    jump    __L19909
+__L19908:
+    move    r0, 0
+__L19909:
+    test    r0
+    jump    z, __L19906
+    load    r0, sf[0]
+    add     r0, 26
+    load    r0, r0[0]
+    test    r0
+    jump    z, __L19906
+    move    r0, 1
+    jump    __L19907
+__L19906:
+    move    r0, 0
+__L19907:
+    test    r0
+    jump    z, __L19904
+    load    r0, sf[0]
+    add     r0, 26
+    load    r0, r0[0]
+    load    r0, r0[0]
+    move    r1, 16
+    cmp     r0, r1
+    move    eq, r0, 1, 0
     test    r0
     jump    z, __L19904
     move    r0, 1
@@ -201527,34 +201622,6 @@ __L19904:
 __L19905:
     test    r0
     jump    z, __L19902
-    load    r0, sf[0]
-    add     r0, 26
-    load    r0, r0[0]
-    test    r0
-    jump    z, __L19902
-    move    r0, 1
-    jump    __L19903
-__L19902:
-    move    r0, 0
-__L19903:
-    test    r0
-    jump    z, __L19900
-    load    r0, sf[0]
-    add     r0, 26
-    load    r0, r0[0]
-    load    r0, r0[0]
-    move    r1, 16
-    cmp     r0, r1
-    move    eq, r0, 1, 0
-    test    r0
-    jump    z, __L19900
-    move    r0, 1
-    jump    __L19901
-__L19900:
-    move    r0, 0
-__L19901:
-    test    r0
-    jump    z, __L19898
     load    r0, sf[0]
     add     r0, 27
     load    r0, r0[0]
@@ -201568,15 +201635,15 @@ __L19901:
     test    r0
     move    z, r0, 1, 0
     test    r0
-    jump    z, __L19898
+    jump    z, __L19902
     move    r0, 1
-    jump    __L19899
-__L19898:
+    jump    __L19903
+__L19902:
     move    r0, 0
-__L19899:
+__L19903:
     test    r0
-    jump    z, __L19896
-.source "src/cg_expr.c", 2949
+    jump    z, __L19900
+.source "src/cg_expr.c", 2951
     move    r0, 1
     push    r0
     load    r0, sf[4]
@@ -201588,28 +201655,28 @@ __L19899:
     call    __F1251_ge_local_new
     add     sp, 3
     store   r0, sf[-3]
-.source "src/cg_expr.c", 2950
+.source "src/cg_expr.c", 2952
     load    r0, sf[-3]
     add     r0, 2
     push    r0
     load    r0, sf[5]
     pop     r1
     store   r0, r1[0]
-.source "src/cg_expr.c", 2951
+.source "src/cg_expr.c", 2953
     load    r0, sf[4]
     push    r0
     call    __F1115_cg_needs_drop
     add     sp, 1
     test    r0
-    jump    z, __L19906
-.source "src/cg_expr.c", 2952
+    jump    z, __L19910
+.source "src/cg_expr.c", 2954
     load    r0, sf[-3]
     add     r0, 6
     push    r0
     call    __F1259_ge_new_flag
     pop     r1
     store   r0, r1[0]
-.source "src/cg_expr.c", 2953
+.source "src/cg_expr.c", 2955
     load    r0, sf[-3]
     add     r0, 6
     load    r0, r0[0]
@@ -201622,20 +201689,20 @@ __L19899:
     push    r0
     call    __F1254_ge_scope_add
     add     sp, 4
-.source "src/cg_expr.c", 2954
+.source "src/cg_expr.c", 2956
     load    r0, sf[-3]
     add     r0, 6
     load    r0, r0[0]
     push    r0
-    move    r0, __W2507+1
+    move    r0, __W2512+1
     push    r0
     call    __F1236_E
     add     sp, 2
-__L19906:
-.source "src/cg_expr.c", 2956
+__L19910:
+.source "src/cg_expr.c", 2958
     return
-__L19896:
-.source "src/cg_expr.c", 2959
+__L19900:
+.source "src/cg_expr.c", 2961
     move    r0, 0
     push    r0
     load    r0, sf[4]
@@ -201645,7 +201712,7 @@ __L19896:
     call    __F1297_ge_temp_local
     add     sp, 3
     store   r0, sf[-4]
-.source "src/cg_expr.c", 2960
+.source "src/cg_expr.c", 2962
     store   0, sf[-14]
     store   0, sf[-13]
     store   0, sf[-12]
@@ -201678,15 +201745,15 @@ __L19896:
     load    r2, r0[4]
     store   r2, r1[4]
     move    r0, r1
-.source "src/cg_expr.c", 2961
+.source "src/cg_expr.c", 2963
     load    r0, sf[-4]
     push    r0
     call    __F1298_ge_set_init
     add     sp, 1
-.source "src/cg_expr.c", 2962
+.source "src/cg_expr.c", 2964
     move    r0, 0
     store   r0, __G1354_ge_ncommits+1
-.source "src/cg_expr.c", 2963
+.source "src/cg_expr.c", 2965
     add     r0, sf, -14
     load    r1, r0[4]
     push    r1
@@ -201702,7 +201769,7 @@ __L19896:
     push    r0
     call    __F1372_ge_pat_bind
     add     sp, 6
-.source "src/cg_expr.c", 2964
+.source "src/cg_expr.c", 2966
     call    __F1357_ge_commit
     move    r0, 0
     return
@@ -201710,31 +201777,31 @@ __L19896:
 
 // ge_finish_value
 __F1407_ge_finish_value:
-.source "src/cg_expr.c", 2968
-.source "src/cg_expr.c", 2969
+.source "src/cg_expr.c", 2970
+.source "src/cg_expr.c", 2971
     load    r0, sf[4]
     push    r0
     call    __F1110_cg_is_zst
     add     sp, 1
     test    r0
-    jump    nz, __L19910
+    jump    nz, __L19914
     load    r0, sf[4]
     push    r0
     call    __F1244_ge_is_never
     add     sp, 1
     test    r0
-    jump    nz, __L19910
+    jump    nz, __L19914
     move    r0, 0
-    jump    __L19911
-__L19910:
+    jump    __L19915
+__L19914:
     move    r0, 1
-__L19911:
+__L19915:
     test    r0
-    jump    z, __L19908
-    move    r0, __W2508+1
+    jump    z, __L19912
+    move    r0, __W2513+1
     return
-__L19908:
-.source "src/cg_expr.c", 2970
+__L19912:
+.source "src/cg_expr.c", 2972
     load    r0, sf[4]
     push    r0
     load    r0, sf[3]
@@ -201742,7 +201809,7 @@ __L19908:
     call    __F1246_ge_fix
     add     sp, 2
     store   r0, sf[3]
-.source "src/cg_expr.c", 2971
+.source "src/cg_expr.c", 2973
     move    r0, 0
     push    r0
     load    r0, __G1222_ge_sc+1
@@ -201753,14 +201820,14 @@ __L19908:
     move    r1, r0
     pop     r0
     cmp     r0, r1
-    jump    o, __L19916
+    jump    o, __L19920
     move    lt, r0, 1, 0
-    jump    __L19917
-__L19916:
+    jump    __L19921
+__L19920:
     move    lt, r0, 0, 1
-__L19917:
+__L19921:
     test    r0
-    jump    z, __L19914
+    jump    z, __L19918
     load    r0, sf[3]
     push    r0
     call    __F1245_ge_stable
@@ -201768,14 +201835,14 @@ __L19917:
     test    r0
     move    z, r0, 1, 0
     test    r0
-    jump    z, __L19914
+    jump    z, __L19918
     move    r0, 1
-    jump    __L19915
-__L19914:
+    jump    __L19919
+__L19918:
     move    r0, 0
-__L19915:
+__L19919:
     test    r0
-    jump    z, __L19912
+    jump    z, __L19916
     load    r0, sf[3]
     push    r0
     load    r0, sf[4]
@@ -201783,8 +201850,8 @@ __L19915:
     call    __F1247_ge_snap
     add     sp, 2
     store   r0, sf[3]
-__L19912:
-.source "src/cg_expr.c", 2972
+__L19916:
+.source "src/cg_expr.c", 2974
     load    r0, sf[3]
     return
     move    r0, 0
@@ -201793,15 +201860,15 @@ __L19912:
 
 // ge_flush
 __F1408_ge_flush:
-.source "src/cg_expr.c", 2975
-.source "src/cg_expr.c", 2976
+.source "src/cg_expr.c", 2977
+.source "src/cg_expr.c", 2978
     load    r0, sf[3]
     push    r0
     load    r0, sf[4]
     push    r0
     call    __F11_sb_puts
     add     sp, 2
-.source "src/cg_expr.c", 2977
+.source "src/cg_expr.c", 2979
     move    r0, __G1218_ge_decl+1
     load    r0, r0[0]
     push    r0
@@ -201809,7 +201876,7 @@ __F1408_ge_flush:
     push    r0
     call    __F11_sb_puts
     add     sp, 2
-.source "src/cg_expr.c", 2978
+.source "src/cg_expr.c", 2980
     move    r0, __G1217_ge_body+1
     load    r0, r0[0]
     push    r0
@@ -201817,8 +201884,8 @@ __F1408_ge_flush:
     push    r0
     call    __F11_sb_puts
     add     sp, 2
-.source "src/cg_expr.c", 2979
-    move    r0, __W2509+1
+.source "src/cg_expr.c", 2981
+    move    r0, __W2514+1
     push    r0
     load    r0, sf[4]
     push    r0
@@ -201830,14 +201897,14 @@ __F1408_ge_flush:
 
 // cg_fn_body
 __F1131_cg_fn_body:
-.source "src/cg_expr.c", 2982
+.source "src/cg_expr.c", 2984
     add     sp, -15
-.source "src/cg_expr.c", 2983
+.source "src/cg_expr.c", 2985
     load    r0, sf[3]
     add     r0, 2
     load    r0, r0[0]
     store   r0, sf[0]
-.source "src/cg_expr.c", 2984
+.source "src/cg_expr.c", 2986
     load    r0, sf[3]
     add     r0, 9
     load    r0, r0[0]
@@ -201845,35 +201912,35 @@ __F1131_cg_fn_body:
     call    __F1240_gm
     add     sp, 1
     store   r0, sf[-1]
-.source "src/cg_expr.c", 2986
+.source "src/cg_expr.c", 2988
     move    r0, 0
     store   r0, sf[-10]
-.source "src/cg_expr.c", 2988
+.source "src/cg_expr.c", 2990
     load    r0, sf[0]
     test    r0
     move    z, r0, 1, 0
     test    r0
-    jump    nz, __L19920
+    jump    nz, __L19924
     load    r0, sf[0]
     add     r0, 7
     load    r0, r0[0]
     test    r0
     move    z, r0, 1, 0
     test    r0
-    jump    nz, __L19920
+    jump    nz, __L19924
     move    r0, 0
-    jump    __L19921
-__L19920:
+    jump    __L19925
+__L19924:
     move    r0, 1
-__L19921:
+__L19925:
     test    r0
-    jump    z, __L19918
-    move    r0, __W2510+1
+    jump    z, __L19922
+    move    r0, __W2515+1
     push    r0
     call    __F2_fatal
     add     sp, 1
-__L19918:
-.source "src/cg_expr.c", 2989
+__L19922:
+.source "src/cg_expr.c", 2991
     load    r0, sf[-1]
     add     r0, 10
     load    r0, r0[0]
@@ -201881,38 +201948,38 @@ __L19918:
     call    __F1240_gm
     add     sp, 1
     store   r0, sf[-2]
-.source "src/cg_expr.c", 2990
+.source "src/cg_expr.c", 2992
     move    r0, 0
     push    r0
     load    r0, sf[-2]
     push    r0
     call    __F1404_ge_begin
     add     sp, 2
-.source "src/cg_expr.c", 2991
+.source "src/cg_expr.c", 2993
     add     r0, sf, -5
     push    r0
     call    __F8_sb_init
     add     sp, 1
-.source "src/cg_expr.c", 2992
+.source "src/cg_expr.c", 2994
     add     r0, sf, -8
     push    r0
     call    __F8_sb_init
     add     sp, 1
-.source "src/cg_expr.c", 2993
+.source "src/cg_expr.c", 2995
     add     r0, sf, -8
     push    r0
     load    r0, sf[3]
     push    r0
     call    __F93_sym_path
     add     sp, 2
-.source "src/cg_expr.c", 2994
-    move    r0, __W2511+1
+.source "src/cg_expr.c", 2996
+    move    r0, __W2516+1
     push    r0
     add     r0, sf, -5
     push    r0
     call    __F11_sb_puts
     add     sp, 2
-.source "src/cg_expr.c", 2995
+.source "src/cg_expr.c", 2997
     add     r0, sf, -8
     load    r0, r0[0]
     push    r0
@@ -201920,14 +201987,14 @@ __L19918:
     push    r0
     call    __F11_sb_puts
     add     sp, 2
-.source "src/cg_expr.c", 2996
-    move    r0, __W2512+1
+.source "src/cg_expr.c", 2998
+    move    r0, __W2517+1
     push    r0
     add     r0, sf, -5
     push    r0
     call    __F11_sb_puts
     add     sp, 2
-.source "src/cg_expr.c", 2997
+.source "src/cg_expr.c", 2999
     load    r0, sf[-2]
     push    r0
     call    __F1242_ge_ct
@@ -201937,31 +202004,31 @@ __L19918:
     push    r0
     call    __F11_sb_puts
     add     sp, 2
-.source "src/cg_expr.c", 2998
+.source "src/cg_expr.c", 3000
     move    r0, 32
     push    r0
     add     r0, sf, -5
     push    r0
     call    __F9_sb_putc
     add     sp, 2
-.source "src/cg_expr.c", 2999
+.source "src/cg_expr.c", 3001
     load    r0, sf[4]
     push    r0
     add     r0, sf, -5
     push    r0
     call    __F11_sb_puts
     add     sp, 2
-.source "src/cg_expr.c", 3000
+.source "src/cg_expr.c", 3002
     move    r0, 40
     push    r0
     add     r0, sf, -5
     push    r0
     call    __F9_sb_putc
     add     sp, 2
-.source "src/cg_expr.c", 3001
+.source "src/cg_expr.c", 3003
     move    r0, 0
     store   r0, sf[-9]
-__L19922:
+__L19926:
     load    r0, sf[-9]
     push    r0
     load    r0, sf[0]
@@ -201971,15 +202038,15 @@ __L19922:
     move    r1, r0
     pop     r0
     cmp     r0, r1
-    jump    o, __L19925
+    jump    o, __L19929
     move    lt, r0, 1, 0
-    jump    __L19926
-__L19925:
+    jump    __L19930
+__L19929:
     move    lt, r0, 0, 1
-__L19926:
+__L19930:
     test    r0
-    jump    z, __L19924
-.source "src/cg_expr.c", 3002
+    jump    z, __L19928
+.source "src/cg_expr.c", 3004
     load    r0, sf[0]
     add     r0, 9
     load    r0, r0[0]
@@ -201987,23 +202054,23 @@ __L19926:
     add     r0, r1
     load    r0, r0[0]
     store   r0, sf[-12]
-.source "src/cg_expr.c", 3005
+.source "src/cg_expr.c", 3007
     load    r0, sf[-1]
     add     r0, 9
     load    r0, r0[0]
     load    r1, sf[-10]
     cmp     r0, r1
-    jump    o, __L19929
+    jump    o, __L19933
     move    le, r0, 1, 0
-    jump    __L19930
-__L19929:
+    jump    __L19934
+__L19933:
     move    lt, r0, 0, 1
-__L19930:
+__L19934:
     test    r0
-    jump    z, __L19927
-    jump    __L19924
-__L19927:
-.source "src/cg_expr.c", 3006
+    jump    z, __L19931
+    jump    __L19928
+__L19931:
+.source "src/cg_expr.c", 3008
     load    r0, sf[-1]
     add     r0, 8
     load    r0, r0[0]
@@ -202014,26 +202081,26 @@ __L19927:
     call    __F1240_gm
     add     sp, 1
     store   r0, sf[-13]
-.source "src/cg_expr.c", 3007
+.source "src/cg_expr.c", 3009
     load    r0, sf[-10]
     push    r0
-    move    r0, __W2513+1
+    move    r0, __W2518+1
     push    r0
     call    __F1237_S
     add     sp, 2
     store   r0, sf[-14]
-.source "src/cg_expr.c", 3008
+.source "src/cg_expr.c", 3010
     load    r0, sf[-10]
     test    r0
-    jump    z, __L19931
-    move    r0, __W2514+1
+    jump    z, __L19935
+    move    r0, __W2519+1
     push    r0
     add     r0, sf, -5
     push    r0
     call    __F11_sb_puts
     add     sp, 2
-__L19931:
-.source "src/cg_expr.c", 3009
+__L19935:
+.source "src/cg_expr.c", 3011
     load    r0, sf[-13]
     push    r0
     call    __F1242_ge_ct
@@ -202043,21 +202110,21 @@ __L19931:
     push    r0
     call    __F11_sb_puts
     add     sp, 2
-.source "src/cg_expr.c", 3010
+.source "src/cg_expr.c", 3012
     move    r0, 32
     push    r0
     add     r0, sf, -5
     push    r0
     call    __F9_sb_putc
     add     sp, 2
-.source "src/cg_expr.c", 3011
+.source "src/cg_expr.c", 3013
     load    r0, sf[-14]
     push    r0
     add     r0, sf, -5
     push    r0
     call    __F11_sb_puts
     add     sp, 2
-.source "src/cg_expr.c", 3012
+.source "src/cg_expr.c", 3014
     load    r0, sf[-14]
     push    r0
     load    r0, sf[-13]
@@ -202066,47 +202133,47 @@ __L19931:
     push    r0
     call    __F1406_ge_param
     add     sp, 3
-.source "src/cg_expr.c", 3013
+.source "src/cg_expr.c", 3015
     load    r1, sf[-10]
     add     r2, r1, 1
     store   r2, sf[-10]
     move    r0, r1
-__L19923:
-.source "src/cg_expr.c", 3001
+__L19927:
+.source "src/cg_expr.c", 3003
     load    r1, sf[-9]
     add     r2, r1, 1
     store   r2, sf[-9]
     move    r0, r1
-    jump    __L19922
-__L19924:
-.source "src/cg_expr.c", 3015
+    jump    __L19926
+__L19928:
+.source "src/cg_expr.c", 3017
     load    r0, sf[-10]
     test    r0
     move    z, r0, 1, 0
     test    r0
-    jump    z, __L19933
-    move    r0, __W2515+1
+    jump    z, __L19937
+    move    r0, __W2520+1
     push    r0
     add     r0, sf, -5
     push    r0
     call    __F11_sb_puts
     add     sp, 2
-__L19933:
-.source "src/cg_expr.c", 3016
-    move    r0, __W2516+1
+__L19937:
+.source "src/cg_expr.c", 3018
+    move    r0, __W2521+1
     push    r0
     add     r0, sf, -5
     push    r0
     call    __F11_sb_puts
     add     sp, 2
-.source "src/cg_expr.c", 3017
+.source "src/cg_expr.c", 3019
     load    r0, sf[0]
     add     r0, 7
     load    r0, r0[0]
     push    r0
     call    __F1374_ge_line
     add     sp, 1
-.source "src/cg_expr.c", 3018
+.source "src/cg_expr.c", 3020
     load    r0, sf[-2]
     push    r0
     load    r0, sf[0]
@@ -202116,7 +202183,7 @@ __L19933:
     call    __F1284_ge_block_value
     add     sp, 2
     store   r0, sf[-11]
-.source "src/cg_expr.c", 3019
+.source "src/cg_expr.c", 3021
     load    r0, sf[-2]
     push    r0
     load    r0, sf[-11]
@@ -202124,19 +202191,19 @@ __L19933:
     call    __F1407_ge_finish_value
     add     sp, 2
     store   r0, sf[-11]
-.source "src/cg_expr.c", 3020
+.source "src/cg_expr.c", 3022
     move    r0, 1
     push    r0
     call    __F1257_ge_pop_scope
     add     sp, 1
-.source "src/cg_expr.c", 3021
+.source "src/cg_expr.c", 3023
     load    r0, sf[-11]
     push    r0
-    move    r0, __W2517+1
+    move    r0, __W2522+1
     push    r0
     call    __F1236_E
     add     sp, 2
-.source "src/cg_expr.c", 3022
+.source "src/cg_expr.c", 3024
     move    r0, __G1101_cg_sect+1
     move    r1, 12
     add     r0, r1
@@ -202146,7 +202213,7 @@ __L19933:
     push    r0
     call    __F1408_ge_flush
     add     sp, 2
-.source "src/cg_expr.c", 3023
+.source "src/cg_expr.c", 3025
     call    __F1405_ge_end
     move    r0, 0
     return
@@ -202154,9 +202221,9 @@ __L19933:
 
 // cg_closure_body
 __F1132_cg_closure_body:
-.source "src/cg_expr.c", 3026
+.source "src/cg_expr.c", 3028
     add     sp, -13
-.source "src/cg_expr.c", 3027
+.source "src/cg_expr.c", 3029
     load    r0, sf[3]
     add     r0, 25
     load    r0, r0[0]
@@ -202164,10 +202231,10 @@ __F1132_cg_closure_body:
     call    __F1240_gm
     add     sp, 1
     store   r0, sf[0]
-.source "src/cg_expr.c", 3028
+.source "src/cg_expr.c", 3030
     move    r0, 0
     store   r0, sf[-2]
-.source "src/cg_expr.c", 3029
+.source "src/cg_expr.c", 3031
     add     r0, sf, -2
     push    r0
     load    r0, sf[3]
@@ -202175,7 +202242,7 @@ __F1132_cg_closure_body:
     call    __F731_closure_captures
     add     sp, 2
     store   r0, sf[-3]
-.source "src/cg_expr.c", 3032
+.source "src/cg_expr.c", 3034
     load    r0, sf[0]
     add     r0, 10
     load    r0, r0[0]
@@ -202183,32 +202250,32 @@ __F1132_cg_closure_body:
     call    __F1240_gm
     add     sp, 1
     store   r0, sf[-1]
-.source "src/cg_expr.c", 3033
+.source "src/cg_expr.c", 3035
     load    r0, sf[3]
     push    r0
     load    r0, sf[-1]
     push    r0
     call    __F1404_ge_begin
     add     sp, 2
-.source "src/cg_expr.c", 3034
+.source "src/cg_expr.c", 3036
     load    r0, sf[0]
     push    r0
     call    __F1242_ge_ct
     add     sp, 1
     store   r0, __G1233_ge_envtype+1
-.source "src/cg_expr.c", 3035
+.source "src/cg_expr.c", 3037
     add     r0, sf, -7
     push    r0
     call    __F8_sb_init
     add     sp, 1
-.source "src/cg_expr.c", 3036
-    move    r0, __W2518+1
+.source "src/cg_expr.c", 3038
+    move    r0, __W2523+1
     push    r0
     add     r0, sf, -7
     push    r0
     call    __F11_sb_puts
     add     sp, 2
-.source "src/cg_expr.c", 3037
+.source "src/cg_expr.c", 3039
     load    r0, sf[-1]
     push    r0
     call    __F1242_ge_ct
@@ -202218,43 +202285,43 @@ __F1132_cg_closure_body:
     push    r0
     call    __F11_sb_puts
     add     sp, 2
-.source "src/cg_expr.c", 3038
+.source "src/cg_expr.c", 3040
     move    r0, 32
     push    r0
     add     r0, sf, -7
     push    r0
     call    __F9_sb_putc
     add     sp, 2
-.source "src/cg_expr.c", 3039
+.source "src/cg_expr.c", 3041
     load    r0, sf[4]
     push    r0
     add     r0, sf, -7
     push    r0
     call    __F11_sb_puts
     add     sp, 2
-.source "src/cg_expr.c", 3040
-    move    r0, __W2519+1
+.source "src/cg_expr.c", 3042
+    move    r0, __W2524+1
     push    r0
     add     r0, sf, -7
     push    r0
     call    __F11_sb_puts
     add     sp, 2
-.source "src/cg_expr.c", 3041
+.source "src/cg_expr.c", 3043
     move    r0, 0
     store   r0, sf[-4]
-__L19935:
+__L19939:
     load    r0, sf[-4]
     load    r1, sf[-3]
     cmp     r0, r1
-    jump    o, __L19938
+    jump    o, __L19942
     move    lt, r0, 1, 0
-    jump    __L19939
-__L19938:
+    jump    __L19943
+__L19942:
     move    lt, r0, 0, 1
-__L19939:
+__L19943:
     test    r0
-    jump    z, __L19937
-.source "src/cg_expr.c", 3042
+    jump    z, __L19941
+.source "src/cg_expr.c", 3044
     load    r0, sf[-2]
     push    r0
     load    r0, sf[-4]
@@ -202269,12 +202336,12 @@ __L19939:
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L19940
+    jump    z, __L19944
     move    r0, 3
-    jump    __L19941
-__L19940:
+    jump    __L19945
+__L19944:
     move    r0, 2
-__L19941:
+__L19945:
     push    r0
     load    r0, sf[-2]
     push    r0
@@ -202304,30 +202371,30 @@ __L19941:
     call    __F1251_ge_local_new
     add     sp, 3
     store   r0, sf[-9]
-.source "src/cg_expr.c", 3043
+.source "src/cg_expr.c", 3045
     load    r0, sf[-9]
     add     r0, 5
     push    r0
     load    r0, sf[-4]
     push    r0
-    move    r0, __W2520+1
+    move    r0, __W2525+1
     push    r0
     call    __F1237_S
     add     sp, 2
     pop     r1
     store   r0, r1[0]
-__L19936:
-.source "src/cg_expr.c", 3041
+__L19940:
+.source "src/cg_expr.c", 3043
     load    r1, sf[-4]
     add     r2, r1, 1
     store   r2, sf[-4]
     move    r0, r1
-    jump    __L19935
-__L19937:
-.source "src/cg_expr.c", 3045
+    jump    __L19939
+__L19941:
+.source "src/cg_expr.c", 3047
     move    r0, 0
     store   r0, sf[-4]
-__L19942:
+__L19946:
     load    r0, sf[-4]
     push    r0
     load    r0, sf[3]
@@ -202337,15 +202404,15 @@ __L19942:
     move    r1, r0
     pop     r0
     cmp     r0, r1
-    jump    o, __L19945
+    jump    o, __L19949
     move    lt, r0, 1, 0
-    jump    __L19946
-__L19945:
+    jump    __L19950
+__L19949:
     move    lt, r0, 0, 1
-__L19946:
+__L19950:
     test    r0
-    jump    z, __L19944
-.source "src/cg_expr.c", 3046
+    jump    z, __L19948
+.source "src/cg_expr.c", 3048
     load    r0, sf[3]
     add     r0, 9
     load    r0, r0[0]
@@ -202353,7 +202420,7 @@ __L19946:
     add     r0, r1
     load    r0, r0[0]
     store   r0, sf[-10]
-.source "src/cg_expr.c", 3047
+.source "src/cg_expr.c", 3049
     load    r0, sf[0]
     add     r0, 8
     load    r0, r0[0]
@@ -202364,22 +202431,22 @@ __L19946:
     call    __F1240_gm
     add     sp, 1
     store   r0, sf[-11]
-.source "src/cg_expr.c", 3048
+.source "src/cg_expr.c", 3050
     load    r0, sf[-4]
     push    r0
-    move    r0, __W2521+1
+    move    r0, __W2526+1
     push    r0
     call    __F1237_S
     add     sp, 2
     store   r0, sf[-12]
-.source "src/cg_expr.c", 3049
-    move    r0, __W2522+1
+.source "src/cg_expr.c", 3051
+    move    r0, __W2527+1
     push    r0
     add     r0, sf, -7
     push    r0
     call    __F11_sb_puts
     add     sp, 2
-.source "src/cg_expr.c", 3050
+.source "src/cg_expr.c", 3052
     load    r0, sf[-11]
     push    r0
     call    __F1242_ge_ct
@@ -202389,21 +202456,21 @@ __L19946:
     push    r0
     call    __F11_sb_puts
     add     sp, 2
-.source "src/cg_expr.c", 3051
+.source "src/cg_expr.c", 3053
     move    r0, 32
     push    r0
     add     r0, sf, -7
     push    r0
     call    __F9_sb_putc
     add     sp, 2
-.source "src/cg_expr.c", 3052
+.source "src/cg_expr.c", 3054
     load    r0, sf[-12]
     push    r0
     add     r0, sf, -7
     push    r0
     call    __F11_sb_puts
     add     sp, 2
-.source "src/cg_expr.c", 3053
+.source "src/cg_expr.c", 3055
     load    r0, sf[-12]
     push    r0
     load    r0, sf[-11]
@@ -202412,29 +202479,29 @@ __L19946:
     push    r0
     call    __F1406_ge_param
     add     sp, 3
-__L19943:
-.source "src/cg_expr.c", 3045
+__L19947:
+.source "src/cg_expr.c", 3047
     load    r1, sf[-4]
     add     r2, r1, 1
     store   r2, sf[-4]
     move    r0, r1
-    jump    __L19942
-__L19944:
-.source "src/cg_expr.c", 3055
-    move    r0, __W2523+1
+    jump    __L19946
+__L19948:
+.source "src/cg_expr.c", 3057
+    move    r0, __W2528+1
     push    r0
     add     r0, sf, -7
     push    r0
     call    __F11_sb_puts
     add     sp, 2
-.source "src/cg_expr.c", 3056
+.source "src/cg_expr.c", 3058
     load    r0, sf[3]
     add     r0, 6
     load    r0, r0[0]
     push    r0
     call    __F1374_ge_line
     add     sp, 1
-.source "src/cg_expr.c", 3057
+.source "src/cg_expr.c", 3059
     load    r0, sf[-1]
     push    r0
     load    r0, sf[3]
@@ -202444,7 +202511,7 @@ __L19944:
     call    __F1280_ex_to
     add     sp, 2
     store   r0, sf[-8]
-.source "src/cg_expr.c", 3058
+.source "src/cg_expr.c", 3060
     load    r0, sf[-1]
     push    r0
     load    r0, sf[-8]
@@ -202452,19 +202519,19 @@ __L19944:
     call    __F1407_ge_finish_value
     add     sp, 2
     store   r0, sf[-8]
-.source "src/cg_expr.c", 3059
+.source "src/cg_expr.c", 3061
     move    r0, 1
     push    r0
     call    __F1257_ge_pop_scope
     add     sp, 1
-.source "src/cg_expr.c", 3060
+.source "src/cg_expr.c", 3062
     load    r0, sf[-8]
     push    r0
-    move    r0, __W2524+1
+    move    r0, __W2529+1
     push    r0
     call    __F1236_E
     add     sp, 2
-.source "src/cg_expr.c", 3061
+.source "src/cg_expr.c", 3063
     move    r0, __G1101_cg_sect+1
     move    r1, 12
     add     r0, r1
@@ -202474,7 +202541,7 @@ __L19944:
     push    r0
     call    __F1408_ge_flush
     add     sp, 2
-.source "src/cg_expr.c", 3062
+.source "src/cg_expr.c", 3064
     call    __F1405_ge_end
     move    r0, 0
     return
@@ -202482,9 +202549,9 @@ __L19944:
 
 // cg_static_init
 __F1133_cg_static_init:
-.source "src/cg_expr.c", 3065
+.source "src/cg_expr.c", 3067
     add     sp, -3
-.source "src/cg_expr.c", 3066
+.source "src/cg_expr.c", 3068
     load    r0, sf[3]
     add     r0, 9
     load    r0, r0[0]
@@ -202492,43 +202559,43 @@ __F1133_cg_static_init:
     call    __F1240_gm
     add     sp, 1
     store   r0, sf[0]
-.source "src/cg_expr.c", 3067
+.source "src/cg_expr.c", 3069
     load    r0, sf[3]
     add     r0, 2
     load    r0, r0[0]
     test    r0
-    jump    z, __L19947
+    jump    z, __L19951
     load    r0, sf[3]
     add     r0, 2
     load    r0, r0[0]
     add     r0, 6
     load    r0, r0[0]
-    jump    __L19948
-__L19947:
+    jump    __L19952
+__L19951:
     move    r0, 0
-__L19948:
+__L19952:
     store   r0, sf[-1]
-.source "src/cg_expr.c", 3069
+.source "src/cg_expr.c", 3071
     load    r0, sf[-1]
     test    r0
     move    z, r0, 1, 0
     test    r0
-    jump    z, __L19949
+    jump    z, __L19953
     return
-__L19949:
-.source "src/cg_expr.c", 3070
+__L19953:
+.source "src/cg_expr.c", 3072
     move    r0, 0
     push    r0
     call    __F104_ty_unit
     push    r0
     call    __F1404_ge_begin
     add     sp, 2
-.source "src/cg_expr.c", 3071
+.source "src/cg_expr.c", 3073
     load    r0, sf[-1]
     push    r0
     call    __F1374_ge_line
     add     sp, 1
-.source "src/cg_expr.c", 3072
+.source "src/cg_expr.c", 3074
     load    r0, sf[0]
     push    r0
     load    r0, sf[-1]
@@ -202536,7 +202603,7 @@ __L19949:
     call    __F1280_ex_to
     add     sp, 2
     store   r0, sf[-2]
-.source "src/cg_expr.c", 3073
+.source "src/cg_expr.c", 3075
     load    r0, sf[-2]
     push    r0
     move    r0, __G1235_ge_never_s+1
@@ -202545,7 +202612,7 @@ __L19949:
     cmp     r0, r1
     move    ne, r0, 1, 0
     test    r0
-    jump    z, __L19953
+    jump    z, __L19957
     load    r0, sf[0]
     push    r0
     call    __F1110_cg_is_zst
@@ -202553,29 +202620,29 @@ __L19949:
     test    r0
     move    z, r0, 1, 0
     test    r0
-    jump    z, __L19953
+    jump    z, __L19957
     move    r0, 1
-    jump    __L19954
-__L19953:
+    jump    __L19958
+__L19957:
     move    r0, 0
-__L19954:
+__L19958:
     test    r0
-    jump    z, __L19951
+    jump    z, __L19955
     load    r0, sf[-2]
     push    r0
     load    r0, sf[4]
     push    r0
-    move    r0, __W2525+1
+    move    r0, __W2530+1
     push    r0
     call    __F1236_E
     add     sp, 3
-__L19951:
-.source "src/cg_expr.c", 3074
+__L19955:
+.source "src/cg_expr.c", 3076
     move    r0, 1
     push    r0
     call    __F1257_ge_pop_scope
     add     sp, 1
-.source "src/cg_expr.c", 3075
+.source "src/cg_expr.c", 3077
     move    r0, __G1218_ge_decl+1
     load    r0, r0[0]
     push    r0
@@ -202585,7 +202652,7 @@ __L19951:
     push    r0
     call    __F11_sb_puts
     add     sp, 2
-.source "src/cg_expr.c", 3076
+.source "src/cg_expr.c", 3078
     move    r0, __G1217_ge_body+1
     load    r0, r0[0]
     push    r0
@@ -202595,7 +202662,7 @@ __L19951:
     push    r0
     call    __F11_sb_puts
     add     sp, 2
-.source "src/cg_expr.c", 3077
+.source "src/cg_expr.c", 3079
     call    __F1405_ge_end
     move    r0, 0
     return
@@ -202606,7 +202673,7 @@ __F1410_find_lib:
 .source "src/rustc.c", 51
     add     sp, -4
 .source "src/rustc.c", 52
-    move    r0, __W2526+1
+    move    r0, __W2531+1
     push    r0
     call    __crt_getenv
     add     sp, 1
@@ -202619,15 +202686,15 @@ __F1410_find_lib:
     push    r0
     load    r0, sf[0]
     test    r0
-    jump    z, __L19955
+    jump    z, __L19959
     load    r0, sf[0]
     push    r0
     call    __crt_strlen
     add     sp, 1
-    jump    __L19956
-__L19955:
+    jump    __L19960
+__L19959:
     move    r0, 0
-__L19956:
+__L19960:
     move    r1, r0
     pop     r0
     add     r0, r1
@@ -202652,17 +202719,17 @@ __L19956:
     cmp     r0, r1
     move    ne, r0, 1, 0
     test    r0
-    jump    z, __L19959
+    jump    z, __L19963
     load    r0, sf[0]
     test    r0
-    jump    z, __L19959
+    jump    z, __L19963
     move    r0, 1
-    jump    __L19960
-__L19959:
+    jump    __L19964
+__L19963:
     move    r0, 0
-__L19960:
+__L19964:
     test    r0
-    jump    z, __L19957
+    jump    z, __L19961
 .source "src/rustc.c", 56
     load    r0, sf[0]
     push    r0
@@ -202671,13 +202738,13 @@ __L19960:
     call    __crt_strcpy
     add     sp, 2
 .source "src/rustc.c", 57
-    move    r0, __W2527+1
+    move    r0, __W2532+1
     push    r0
     load    r0, sf[-3]
     push    r0
     call    __crt_strcat
     add     sp, 2
-__L19957:
+__L19961:
 .source "src/rustc.c", 59
     load    r0, sf[3]
     push    r0
@@ -202691,7 +202758,7 @@ __L19957:
     call    __crt_strlen
     add     sp, 1
     store   r0, sf[-2]
-__L19961:
+__L19965:
     move    r0, 0
     load    r1, sf[-2]
     move    r2, 1
@@ -202699,14 +202766,14 @@ __L19961:
     xor     r0, r2
     xor     r1, r2
     cmp     r0, r1
-    jump    o, __L19966
+    jump    o, __L19970
     move    lt, r0, 1, 0
-    jump    __L19967
-__L19966:
+    jump    __L19971
+__L19970:
     move    lt, r0, 0, 1
-__L19967:
+__L19971:
     test    r0
-    jump    z, __L19964
+    jump    z, __L19968
     load    r0, sf[-3]
     push    r0
     load    r0, sf[-2]
@@ -202723,21 +202790,21 @@ __L19967:
     cmp     r0, r1
     move    ne, r0, 1, 0
     test    r0
-    jump    z, __L19964
+    jump    z, __L19968
     move    r0, 1
-    jump    __L19965
-__L19964:
+    jump    __L19969
+__L19968:
     move    r0, 0
-__L19965:
+__L19969:
     test    r0
-    jump    z, __L19963
-__L19962:
+    jump    z, __L19967
+__L19966:
     load    r1, sf[-2]
     add     r2, r1, -1
     store   r2, sf[-2]
     move    r0, r1
-    jump    __L19961
-__L19963:
+    jump    __L19965
+__L19967:
 .source "src/rustc.c", 61
     load    r0, sf[-3]
     push    r0
@@ -202757,15 +202824,15 @@ __L19963:
     xor     r0, r2
     xor     r1, r2
     cmp     r0, r1
-    jump    o, __L19972
+    jump    o, __L19976
     move    le, r0, 1, 0
-    jump    __L19973
-__L19972:
+    jump    __L19977
+__L19976:
     move    lt, r0, 0, 1
-__L19973:
+__L19977:
     test    r0
-    jump    z, __L19970
-    move    r0, __W2528+1
+    jump    z, __L19974
+    move    r0, __W2533+1
     push    r0
     load    r0, sf[-3]
     push    r0
@@ -202782,14 +202849,14 @@ __L19973:
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L19970
+    jump    z, __L19974
     move    r0, 1
-    jump    __L19971
-__L19970:
+    jump    __L19975
+__L19974:
     move    r0, 0
-__L19971:
+__L19975:
     test    r0
-    jump    z, __L19968
+    jump    z, __L19972
     load    r0, sf[-3]
     push    r0
     load    r0, sf[-2]
@@ -202805,8 +202872,8 @@ __L19971:
     move    r0, 0
     pop     r1
     store   r0, r1[0]
-    jump    __L19969
-__L19968:
+    jump    __L19973
+__L19972:
 .source "src/rustc.c", 63
     load    r0, sf[-2]
     push    r0
@@ -202816,8 +202883,8 @@ __L19968:
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L19976
-    move    r0, __W2529+1
+    jump    z, __L19980
+    move    r0, __W2534+1
     push    r0
     load    r0, sf[-3]
     push    r0
@@ -202827,14 +202894,14 @@ __L19968:
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L19976
+    jump    z, __L19980
     move    r0, 1
-    jump    __L19977
-__L19976:
+    jump    __L19981
+__L19980:
     move    r0, 0
-__L19977:
+__L19981:
     test    r0
-    jump    z, __L19974
+    jump    z, __L19978
     load    r0, sf[-3]
     move    r1, 0
     add     r0, r1
@@ -202842,10 +202909,10 @@ __L19977:
     move    r0, 0
     pop     r1
     store   r0, r1[0]
-__L19974:
-__L19969:
+__L19978:
+__L19973:
 .source "src/rustc.c", 64
-    move    r0, __W2530+1
+    move    r0, __W2535+1
     push    r0
     load    r0, sf[-3]
     push    r0
@@ -202862,7 +202929,7 @@ __L19969:
 __F1411_usage:
 .source "src/rustc.c", 68
 .source "src/rustc.c", 69
-    move    r0, __W2531+1
+    move    r0, __W2536+1
     push    r0
     move    r0, __G1___sio_std+1
     move    r1, 14
@@ -202879,52 +202946,52 @@ __F1412_banner:
 .source "src/rustc.c", 72
     add     sp, -1
 .source "src/rustc.c", 74
-    move    r0, __W2532+1
-    push    r0
-    call    __crt_printf
-    add     sp, 1
-.source "src/rustc.c", 75
-    move    r0, __W2534+1
-    push    r0
-    move    r0, __W2533+1
-    push    r0
-    call    __crt_printf
-    add     sp, 2
-.source "src/rustc.c", 76
-    move    r0, __W2535+1
-    push    r0
-    call    __crt_printf
-    add     sp, 1
-.source "src/rustc.c", 77
-    move    r0, __W2536+1
-    push    r0
-    call    __crt_printf
-    add     sp, 1
-.source "src/rustc.c", 78
     move    r0, __W2537+1
     push    r0
     call    __crt_printf
     add     sp, 1
-.source "src/rustc.c", 79
+.source "src/rustc.c", 75
+    move    r0, __W2539+1
+    push    r0
     move    r0, __W2538+1
+    push    r0
+    call    __crt_printf
+    add     sp, 2
+.source "src/rustc.c", 76
+    move    r0, __W2540+1
+    push    r0
+    call    __crt_printf
+    add     sp, 1
+.source "src/rustc.c", 77
+    move    r0, __W2541+1
+    push    r0
+    call    __crt_printf
+    add     sp, 1
+.source "src/rustc.c", 78
+    move    r0, __W2542+1
+    push    r0
+    call    __crt_printf
+    add     sp, 1
+.source "src/rustc.c", 79
+    move    r0, __W2543+1
     push    r0
     call    __crt_printf
     add     sp, 1
 .source "src/rustc.c", 80
     move    r0, 1
     store   r0, sf[0]
-__L19978:
+__L19982:
     load    r0, sf[0]
     load    r1, sf[3]
     cmp     r0, r1
-    jump    o, __L19981
+    jump    o, __L19985
     move    lt, r0, 1, 0
-    jump    __L19982
-__L19981:
+    jump    __L19986
+__L19985:
     move    lt, r0, 0, 1
-__L19982:
+__L19986:
     test    r0
-    jump    z, __L19980
+    jump    z, __L19984
 .source "src/rustc.c", 81
     load    r0, sf[4]
     load    r1, sf[0]
@@ -202937,13 +203004,13 @@ __L19982:
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L19983
+    jump    z, __L19987
     load    r0, sf[4]
     load    r1, sf[0]
     add     r0, r1
     load    r0, r0[0]
-    jump    __L19984
-__L19983:
+    jump    __L19988
+__L19987:
     load    r0, sf[4]
     load    r1, sf[0]
     add     r0, r1
@@ -202951,22 +203018,22 @@ __L19983:
     push    r0
     call    __F7_display_path
     add     sp, 1
-__L19984:
+__L19988:
     push    r0
-    move    r0, __W2539+1
+    move    r0, __W2544+1
     push    r0
     call    __crt_printf
     add     sp, 2
-__L19979:
+__L19983:
 .source "src/rustc.c", 80
     load    r1, sf[0]
     add     r2, r1, 1
     store   r2, sf[0]
     move    r0, r1
-    jump    __L19978
-__L19980:
+    jump    __L19982
+__L19984:
 .source "src/rustc.c", 82
-    move    r0, __W2540+1
+    move    r0, __W2545+1
     push    r0
     call    __crt_printf
     add     sp, 1
@@ -202993,70 +203060,20 @@ __F1414_main:
 .source "src/rustc.c", 92
     move    r0, 1
     store   r0, sf[0]
-__L19985:
+__L19989:
     load    r0, sf[0]
     load    r1, sf[3]
     cmp     r0, r1
-    jump    o, __L19988
+    jump    o, __L19992
     move    lt, r0, 1, 0
-    jump    __L19989
-__L19988:
-    move    lt, r0, 0, 1
-__L19989:
-    test    r0
-    jump    z, __L19987
-.source "src/rustc.c", 93
-    move    r0, __W2541+1
-    push    r0
-    load    r0, sf[4]
-    load    r1, sf[0]
-    add     r0, r1
-    load    r0, r0[0]
-    push    r0
-    call    __crt_strcmp
-    add     sp, 2
-    move    r1, 0
-    cmp     r0, r1
-    move    eq, r0, 1, 0
-    test    r0
-    jump    z, __L19990
-    move    r0, 1
-    push    r0
-    add     r0, sf, -2
-    pop     r1
-    load    r2, r0[0]
-    or      r2, r1
-    store   r2, r0[0]
-    move    r0, r2
-    jump    __L19991
-__L19990:
-.source "src/rustc.c", 94
-    move    r0, __W2542+1
-    push    r0
-    load    r0, sf[4]
-    load    r1, sf[0]
-    add     r0, r1
-    load    r0, r0[0]
-    push    r0
-    call    __crt_strcmp
-    add     sp, 2
-    move    r1, 0
-    cmp     r0, r1
-    move    eq, r0, 1, 0
-    test    r0
-    jump    z, __L19992
-    move    r0, 3
-    push    r0
-    add     r0, sf, -2
-    pop     r1
-    load    r2, r0[0]
-    or      r2, r1
-    store   r2, r0[0]
-    move    r0, r2
     jump    __L19993
 __L19992:
-.source "src/rustc.c", 95
-    move    r0, __W2543+1
+    move    lt, r0, 0, 1
+__L19993:
+    test    r0
+    jump    z, __L19991
+.source "src/rustc.c", 93
+    move    r0, __W2546+1
     push    r0
     load    r0, sf[4]
     load    r1, sf[0]
@@ -203071,67 +203088,16 @@ __L19992:
     test    r0
     jump    z, __L19994
     move    r0, 1
-    store   r0, sf[-3]
+    push    r0
+    add     r0, sf, -2
+    pop     r1
+    load    r2, r0[0]
+    or      r2, r1
+    store   r2, r0[0]
+    move    r0, r2
     jump    __L19995
 __L19994:
-.source "src/rustc.c", 96
-    move    r0, __W2544+1
-    push    r0
-    load    r0, sf[4]
-    load    r1, sf[0]
-    add     r0, r1
-    load    r0, r0[0]
-    push    r0
-    call    __crt_strcmp
-    add     sp, 2
-    move    r1, 0
-    cmp     r0, r1
-    move    eq, r0, 1, 0
-    test    r0
-    jump    z, __L19996
-    move    r0, 1
-    store   r0, sf[-4]
-    jump    __L19997
-__L19996:
-.source "src/rustc.c", 97
-    move    r0, __W2545+1
-    push    r0
-    load    r0, sf[4]
-    load    r1, sf[0]
-    add     r0, r1
-    load    r0, r0[0]
-    push    r0
-    call    __crt_strcmp
-    add     sp, 2
-    move    r1, 0
-    cmp     r0, r1
-    move    eq, r0, 1, 0
-    test    r0
-    jump    z, __L19998
-    move    r0, 2
-    store   r0, sf[-4]
-    jump    __L19999
-__L19998:
-.source "src/rustc.c", 98
-    move    r0, __W2546+1
-    push    r0
-    load    r0, sf[4]
-    load    r1, sf[0]
-    add     r0, r1
-    load    r0, r0[0]
-    push    r0
-    call    __crt_strcmp
-    add     sp, 2
-    move    r1, 0
-    cmp     r0, r1
-    move    eq, r0, 1, 0
-    test    r0
-    jump    z, __L20000
-    move    r0, 3
-    store   r0, sf[-4]
-    jump    __L20001
-__L20000:
-.source "src/rustc.c", 99
+.source "src/rustc.c", 94
     move    r0, __W2547+1
     push    r0
     load    r0, sf[4]
@@ -203145,15 +203111,116 @@ __L20000:
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L20002
+    jump    z, __L19996
+    move    r0, 3
+    push    r0
+    add     r0, sf, -2
+    pop     r1
+    load    r2, r0[0]
+    or      r2, r1
+    store   r2, r0[0]
+    move    r0, r2
+    jump    __L19997
+__L19996:
+.source "src/rustc.c", 95
+    move    r0, __W2548+1
+    push    r0
+    load    r0, sf[4]
+    load    r1, sf[0]
+    add     r0, r1
+    load    r0, r0[0]
+    push    r0
+    call    __crt_strcmp
+    add     sp, 2
+    move    r1, 0
+    cmp     r0, r1
+    move    eq, r0, 1, 0
+    test    r0
+    jump    z, __L19998
     move    r0, 1
-    store   r0, sf[-5]
+    store   r0, sf[-3]
+    jump    __L19999
+__L19998:
+.source "src/rustc.c", 96
+    move    r0, __W2549+1
+    push    r0
+    load    r0, sf[4]
+    load    r1, sf[0]
+    add     r0, r1
+    load    r0, r0[0]
+    push    r0
+    call    __crt_strcmp
+    add     sp, 2
+    move    r1, 0
+    cmp     r0, r1
+    move    eq, r0, 1, 0
+    test    r0
+    jump    z, __L20000
+    move    r0, 1
+    store   r0, sf[-4]
+    jump    __L20001
+__L20000:
+.source "src/rustc.c", 97
+    move    r0, __W2550+1
+    push    r0
+    load    r0, sf[4]
+    load    r1, sf[0]
+    add     r0, r1
+    load    r0, r0[0]
+    push    r0
+    call    __crt_strcmp
+    add     sp, 2
+    move    r1, 0
+    cmp     r0, r1
+    move    eq, r0, 1, 0
+    test    r0
+    jump    z, __L20002
+    move    r0, 2
+    store   r0, sf[-4]
     jump    __L20003
 __L20002:
+.source "src/rustc.c", 98
+    move    r0, __W2551+1
+    push    r0
+    load    r0, sf[4]
+    load    r1, sf[0]
+    add     r0, r1
+    load    r0, r0[0]
+    push    r0
+    call    __crt_strcmp
+    add     sp, 2
+    move    r1, 0
+    cmp     r0, r1
+    move    eq, r0, 1, 0
+    test    r0
+    jump    z, __L20004
+    move    r0, 3
+    store   r0, sf[-4]
+    jump    __L20005
+__L20004:
+.source "src/rustc.c", 99
+    move    r0, __W2552+1
+    push    r0
+    load    r0, sf[4]
+    load    r1, sf[0]
+    add     r0, r1
+    load    r0, r0[0]
+    push    r0
+    call    __crt_strcmp
+    add     sp, 2
+    move    r1, 0
+    cmp     r0, r1
+    move    eq, r0, 1, 0
+    test    r0
+    jump    z, __L20006
+    move    r0, 1
+    store   r0, sf[-5]
+    jump    __L20007
+__L20006:
 .source "src/rustc.c", 100
     move    r0, 6
     push    r0
-    move    r0, __W2548+1
+    move    r0, __W2553+1
     push    r0
     load    r0, sf[4]
     load    r1, sf[0]
@@ -203166,7 +203233,7 @@ __L20002:
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L20004
+    jump    z, __L20008
     load    r0, sf[4]
     load    r1, sf[0]
     add     r0, r1
@@ -203174,8 +203241,8 @@ __L20002:
     move    r1, 6
     add     r0, r1
     store   r0, __G1409_lib_dir+1
-    jump    __L20005
-__L20004:
+    jump    __L20009
+__L20008:
 .source "src/rustc.c", 101
     load    r0, sf[4]
     load    r1, sf[0]
@@ -203188,14 +203255,14 @@ __L20004:
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L20006
+    jump    z, __L20010
 .source "src/rustc.c", 102
     load    r0, sf[4]
     load    r1, sf[0]
     add     r0, r1
     load    r0, r0[0]
     push    r0
-    move    r0, __W2549+1
+    move    r0, __W2554+1
     push    r0
     move    r0, __G1___sio_std+1
     move    r1, 14
@@ -203206,23 +203273,23 @@ __L20004:
 .source "src/rustc.c", 103
     move    r0, 2
     return
-    jump    __L20007
-__L20006:
+    jump    __L20011
+__L20010:
 .source "src/rustc.c", 104
     load    r0, sf[-6]
     test    r0
     move    z, r0, 1, 0
     test    r0
-    jump    z, __L20008
+    jump    z, __L20012
     load    r0, sf[4]
     load    r1, sf[0]
     add     r0, r1
     load    r0, r0[0]
     store   r0, sf[-6]
-    jump    __L20009
-__L20008:
+    jump    __L20013
+__L20012:
 .source "src/rustc.c", 106
-    move    r0, __W2550+1
+    move    r0, __W2555+1
     push    r0
     move    r0, __G1___sio_std+1
     move    r1, 14
@@ -203233,6 +203300,8 @@ __L20008:
 .source "src/rustc.c", 107
     move    r0, 2
     return
+__L20013:
+__L20011:
 __L20009:
 __L20007:
 __L20005:
@@ -203241,16 +203310,14 @@ __L20001:
 __L19999:
 __L19997:
 __L19995:
-__L19993:
-__L19991:
-__L19986:
+__L19990:
 .source "src/rustc.c", 92
     load    r1, sf[0]
     add     r2, r1, 1
     store   r2, sf[0]
     move    r0, r1
-    jump    __L19985
-__L19987:
+    jump    __L19989
+__L19991:
 .source "src/rustc.c", 110
     load    r0, sf[4]
     push    r0
@@ -203263,13 +203330,13 @@ __L19987:
     test    r0
     move    z, r0, 1, 0
     test    r0
-    jump    z, __L20010
+    jump    z, __L20014
 .source "src/rustc.c", 112
     call    __F1411_usage
 .source "src/rustc.c", 113
     move    r0, 2
     return
-__L20010:
+__L20014:
 .source "src/rustc.c", 115
     load    r0, sf[-6]
     push    r0
@@ -203277,21 +203344,21 @@ __L20010:
     add     sp, 1
     move    r1, 0
     cmp     r0, r1
-    jump    o, __L20014
+    jump    o, __L20018
     move    lt, r0, 1, 0
-    jump    __L20015
-__L20014:
+    jump    __L20019
+__L20018:
     move    lt, r0, 0, 1
-__L20015:
+__L20019:
     test    r0
-    jump    z, __L20012
+    jump    z, __L20016
 .source "src/rustc.c", 116
     load    r0, sf[-6]
     push    r0
     call    __F7_display_path
     add     sp, 1
     push    r0
-    move    r0, __W2551+1
+    move    r0, __W2556+1
     push    r0
     move    r0, __G1___sio_std+1
     move    r1, 14
@@ -203302,7 +203369,7 @@ __L20015:
 .source "src/rustc.c", 117
     move    r0, 2
     return
-__L20012:
+__L20016:
 .source "src/rustc.c", 119
     move    r0, __F38_tok_text_list
     store   r0, __G29_ast_tok_text+1
@@ -203317,32 +203384,32 @@ __L20012:
 .source "src/rustc.c", 121
     load    r0, sf[-2]
     test    r0
-    jump    z, __L20016
+    jump    z, __L20020
 .source "src/rustc.c", 122
     move    r0, 0
     store   r0, sf[0]
-__L20018:
+__L20022:
     load    r0, sf[0]
     load    r1, sf[-1]
     cmp     r0, r1
-    jump    o, __L20021
+    jump    o, __L20025
     move    lt, r0, 1, 0
-    jump    __L20022
-__L20021:
+    jump    __L20026
+__L20025:
     move    lt, r0, 0, 1
-__L20022:
+__L20026:
     test    r0
-    jump    z, __L20020
+    jump    z, __L20024
     load    r0, sf[-2]
     move    r1, 2
     and     r0, r1
     test    r0
-    jump    z, __L20023
+    jump    z, __L20027
     move    r0, 1
-    jump    __L20024
-__L20023:
+    jump    __L20028
+__L20027:
     move    r0, 0
-__L20024:
+__L20028:
     push    r0
     load    r0, __G1413_sl_toks+1
     push    r0
@@ -203359,17 +203426,17 @@ __L20024:
     push    r0
     call    __F36_tok_print_line
     add     sp, 3
-__L20019:
+__L20023:
     load    r1, sf[0]
     add     r2, r1, 1
     store   r2, sf[0]
     move    r0, r1
-    jump    __L20018
-__L20020:
+    jump    __L20022
+__L20024:
 .source "src/rustc.c", 123
     move    r0, 0
     return
-__L20016:
+__L20020:
 .source "src/rustc.c", 128
     move    r0, 17
     push    r0
@@ -203413,7 +203480,7 @@ __L20016:
 .source "src/rustc.c", 133
     load    r0, sf[-3]
     test    r0
-    jump    z, __L20025
+    jump    z, __L20029
 .source "src/rustc.c", 134
     load    r0, sf[-10]
     push    r0
@@ -203426,13 +203493,13 @@ __L20016:
 .source "src/rustc.c", 135
     move    r0, 0
     return
-__L20025:
+__L20029:
 .source "src/rustc.c", 137
     load    r0, sf[-5]
     test    r0
     move    z, r0, 1, 0
     test    r0
-    jump    z, __L20027
+    jump    z, __L20031
 .source "src/rustc.c", 143
     move    r0, 0
     store   r0, sf[-16]
@@ -203446,41 +203513,41 @@ __L20025:
     test    r0
     move    z, r0, 1, 0
     test    r0
-    jump    z, __L20029
+    jump    z, __L20033
     move    r0, 0
     load    r1, sf[3]
     cmp     r0, r1
-    jump    o, __L20033
+    jump    o, __L20037
     move    lt, r0, 1, 0
-    jump    __L20034
-__L20033:
+    jump    __L20038
+__L20037:
     move    lt, r0, 0, 1
-__L20034:
+__L20038:
     test    r0
-    jump    z, __L20031
+    jump    z, __L20035
     load    r0, sf[4]
     move    r1, 0
     add     r0, r1
     load    r0, r0[0]
-    jump    __L20032
-__L20031:
-    move    r0, __W2555+1
-__L20032:
+    jump    __L20036
+__L20035:
+    move    r0, __W2560+1
+__L20036:
     push    r0
     call    __F1410_find_lib
     add     sp, 1
     store   r0, __G1409_lib_dir+1
-__L20029:
+__L20033:
 .source "src/rustc.c", 146
     move    r0, 0
     store   r0, sf[-15]
-__L20035:
+__L20039:
     move    r0, __S1415_core_files+1
     load    r1, sf[-15]
     add     r0, r1
     load    r0, r0[0]
     test    r0
-    jump    z, __L20037
+    jump    z, __L20041
 .source "src/rustc.c", 147
     load    r0, __G1409_lib_dir+1
     push    r0
@@ -203514,7 +203581,7 @@ __L20035:
     call    __crt_strcpy
     add     sp, 2
 .source "src/rustc.c", 149
-    move    r0, __W2556+1
+    move    r0, __W2561+1
     push    r0
     load    r0, sf[-12]
     push    r0
@@ -203534,16 +203601,16 @@ __L20035:
     move    r0, 0
     load    r1, sf[-15]
     cmp     r0, r1
-    jump    o, __L20040
+    jump    o, __L20044
     move    lt, r0, 1, 0
-    jump    __L20041
-__L20040:
+    jump    __L20045
+__L20044:
     move    lt, r0, 0, 1
-__L20041:
+__L20045:
     test    r0
-    jump    z, __L20038
+    jump    z, __L20042
 .source "src/rustc.c", 152
-    move    r0, __W2557+1
+    move    r0, __W2562+1
     push    r0
     load    r0, sf[-12]
     push    r0
@@ -203555,15 +203622,15 @@ __L20041:
     test    r0
     move    z, r0, 1, 0
     test    r0
-    jump    z, __L20042
-    jump    __L20036
-__L20042:
+    jump    z, __L20046
+    jump    __L20040
+__L20046:
 .source "src/rustc.c", 154
     load    r0, sf[-20]
     push    r0
     call    __crt_fclose
     add     sp, 1
-__L20038:
+__L20042:
 .source "src/rustc.c", 156
     load    r0, sf[-12]
     push    r0
@@ -203574,21 +203641,21 @@ __L20038:
     load    r0, sf[-13]
     move    r1, 0
     cmp     r0, r1
-    jump    o, __L20046
+    jump    o, __L20050
     move    lt, r0, 1, 0
-    jump    __L20047
-__L20046:
+    jump    __L20051
+__L20050:
     move    lt, r0, 0, 1
-__L20047:
+__L20051:
     test    r0
-    jump    z, __L20044
+    jump    z, __L20048
 .source "src/rustc.c", 158
     load    r0, sf[-12]
     push    r0
     call    __F7_display_path
     add     sp, 1
     push    r0
-    move    r0, __W2558+1
+    move    r0, __W2563+1
     push    r0
     move    r0, __G1___sio_std+1
     move    r1, 14
@@ -203599,7 +203666,7 @@ __L20047:
 .source "src/rustc.c", 159
     move    r0, 2
     return
-__L20044:
+__L20048:
 .source "src/rustc.c", 161
     add     r0, sf, -14
     push    r0
@@ -203617,14 +203684,14 @@ __L20044:
     move    r1, r0
     pop     r0
     cmp     r0, r1
-    jump    o, __L20050
+    jump    o, __L20054
     move    lt, r0, 1, 0
-    jump    __L20051
-__L20050:
+    jump    __L20055
+__L20054:
     move    lt, r0, 0, 1
-__L20051:
+__L20055:
     test    r0
-    jump    z, __L20048
+    jump    z, __L20052
 .source "src/rustc.c", 163
     load    r0, sf[-16]
     load    r1, sf[-14]
@@ -203645,24 +203712,24 @@ __L20051:
     call    __F4_xrealloc
     add     sp, 2
     store   r0, sf[-19]
-__L20048:
+__L20052:
 .source "src/rustc.c", 166
     move    r0, 0
     load    r1, sf[-16]
     cmp     r0, r1
-    jump    o, __L20054
+    jump    o, __L20058
     move    lt, r0, 1, 0
-    jump    __L20055
-__L20054:
+    jump    __L20059
+__L20058:
     move    lt, r0, 0, 1
-__L20055:
+__L20059:
     test    r0
-    jump    z, __L20052
+    jump    z, __L20056
     load    r1, sf[-16]
     add     r2, r1, -1
     store   r2, sf[-16]
     move    r0, r1
-__L20052:
+__L20056:
 .source "src/rustc.c", 167
     move    r0, 17
     push    r0
@@ -203693,14 +203760,14 @@ __L20052:
     add     r2, r1
     store   r2, r0[0]
     move    r0, r2
-__L20036:
+__L20040:
 .source "src/rustc.c", 146
     load    r1, sf[-15]
     add     r2, r1, 1
     store   r2, sf[-15]
     move    r0, r1
-    jump    __L20035
-__L20037:
+    jump    __L20039
+__L20041:
 .source "src/rustc.c", 170
     load    r0, sf[-19]
     move    r1, 0
@@ -203722,7 +203789,7 @@ __L20037:
     push    r0
     call    __F129_expand_crate
     add     sp, 1
-__L20027:
+__L20031:
 .source "src/rustc.c", 174
     load    r0, sf[-10]
     push    r0
@@ -203734,7 +203801,7 @@ __L20027:
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L20056
+    jump    z, __L20060
 .source "src/rustc.c", 176
     load    r0, sf[-10]
     push    r0
@@ -203747,7 +203814,7 @@ __L20027:
 .source "src/rustc.c", 177
     move    r0, 0
     return
-__L20056:
+__L20060:
 .source "src/rustc.c", 179
     load    r0, sf[-11]
     push    r0
@@ -203761,7 +203828,7 @@ __L20056:
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L20058
+    jump    z, __L20062
 .source "src/rustc.c", 181
     move    r0, __F139_sema_dump_hook
     store   r0, __G30_ast_node_hook+1
@@ -203777,7 +203844,7 @@ __L20056:
 .source "src/rustc.c", 183
     move    r0, 0
     return
-__L20058:
+__L20062:
 .source "src/rustc.c", 185
     call    __F131_collect_crate
 .source "src/rustc.c", 186
@@ -203790,7 +203857,7 @@ __L20058:
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L20060
+    jump    z, __L20064
 .source "src/rustc.c", 189
     move    r0, __F139_sema_dump_hook
     store   r0, __G30_ast_node_hook+1
@@ -203806,37 +203873,37 @@ __L20058:
 .source "src/rustc.c", 191
     move    r0, 0
     return
-__L20060:
+__L20064:
 .source "src/rustc.c", 195
     load    r0, __G1409_lib_dir+1
     test    r0
     move    z, r0, 1, 0
     test    r0
-    jump    z, __L20062
+    jump    z, __L20066
     move    r0, 0
     load    r1, sf[3]
     cmp     r0, r1
-    jump    o, __L20066
+    jump    o, __L20070
     move    lt, r0, 1, 0
-    jump    __L20067
-__L20066:
+    jump    __L20071
+__L20070:
     move    lt, r0, 0, 1
-__L20067:
+__L20071:
     test    r0
-    jump    z, __L20064
+    jump    z, __L20068
     load    r0, sf[4]
     move    r1, 0
     add     r0, r1
     load    r0, r0[0]
-    jump    __L20065
-__L20064:
-    move    r0, __W2559+1
-__L20065:
+    jump    __L20069
+__L20068:
+    move    r0, __W2564+1
+__L20069:
     push    r0
     call    __F1410_find_lib
     add     sp, 1
     store   r0, __G1409_lib_dir+1
-__L20062:
+__L20066:
 .source "src/rustc.c", 196
     load    r0, __G1409_lib_dir+1
     push    r0
@@ -203859,7 +203926,7 @@ __L20062:
     call    __crt_strcpy
     add     sp, 2
 .source "src/rustc.c", 198
-    move    r0, __W2560+1
+    move    r0, __W2565+1
     push    r0
     load    r0, sf[-21]
     push    r0
@@ -203872,7 +203939,7 @@ __L20062:
     add     sp, 1
     store   r0, sf[-7]
 .source "src/rustc.c", 200
-    move    r0, __W2561+1
+    move    r0, __W2566+1
     push    r0
     load    r0, sf[-7]
     push    r0
@@ -203884,14 +203951,14 @@ __L20062:
     test    r0
     move    z, r0, 1, 0
     test    r0
-    jump    z, __L20068
+    jump    z, __L20072
 .source "src/rustc.c", 202
     load    r0, sf[-7]
     push    r0
     call    __F7_display_path
     add     sp, 1
     push    r0
-    move    r0, __W2562+1
+    move    r0, __W2567+1
     push    r0
     move    r0, __G1___sio_std+1
     move    r1, 14
@@ -203902,7 +203969,7 @@ __L20062:
 .source "src/rustc.c", 203
     move    r0, 2
     return
-__L20068:
+__L20072:
 .source "src/rustc.c", 205
     load    r0, sf[-21]
     push    r0
@@ -203923,7 +203990,7 @@ __L20068:
     call    __F7_display_path
     add     sp, 1
     push    r0
-    move    r0, __W2563+1
+    move    r0, __W2568+1
     push    r0
     call    __crt_printf
     add     sp, 2
@@ -203946,10 +204013,10 @@ __crt_fopen:
     test    r0
     move    z, r0, 1, 0
     test    r0
-    jump    z, __L20070
+    jump    z, __L20074
     move    r0, 0
     return
-__L20070:
+__L20074:
     load    r0, sf[0]
     push    r0
     move    r0, -1
@@ -203972,14 +204039,14 @@ __L20070:
     test    r0
     move    z, r0, 1, 0
     test    r0
-    jump    z, __L20072
+    jump    z, __L20076
     load    r0, sf[0]
     push    r0
     call    __crt_free
     add     sp, 1
     move    r0, 0
     return
-__L20072:
+__L20076:
     load    r0, sf[0]
     return
     move    r0, 0
@@ -203993,7 +204060,7 @@ __crt_fclose:
     move    r1, 64
     and     r0, r1
     test    r0
-    jump    z, __L20074
+    jump    z, __L20078
     move    r0, 2
     push    r0
     load    r0, sf[3]
@@ -204001,20 +204068,20 @@ __crt_fclose:
     move    r1, r0
     pop     r0
     cmp     r0, r1
-    jump    o, __L20078
+    jump    o, __L20082
     move    lt, r0, 1, 0
-    jump    __L20079
-__L20078:
+    jump    __L20083
+__L20082:
     move    lt, r0, 0, 1
-__L20079:
+__L20083:
     test    r0
-    jump    z, __L20076
+    jump    z, __L20080
     load    r0, sf[3]
     load    r0, r0[0]
     push    r0
     call    __crt___io_close
     add     sp, 1
-__L20076:
+__L20080:
     load    r0, sf[3]
     push    r0
     move    r0, -1
@@ -204028,7 +204095,7 @@ __L20076:
     store   r0, r1[0]
     move    r0, 0
     return
-__L20074:
+__L20078:
     load    r0, sf[3]
     push    r0
     call    __crt___sio_release
@@ -204186,27 +204253,27 @@ __crt_vfprintf:
     add     r0, 3
     load    r0, r0[0]
     test    r0
-    jump    z, __L20080
+    jump    z, __L20084
     add     r0, sf, -259
     load    r0, r0[0]
     push    r0
     call    __crt_free
     add     sp, 1
-__L20080:
+__L20084:
     load    r0, sf[-260]
     move    r1, 0
     cmp     r0, r1
-    jump    o, __L20084
+    jump    o, __L20088
     move    lt, r0, 1, 0
-    jump    __L20085
-__L20084:
+    jump    __L20089
+__L20088:
     move    lt, r0, 0, 1
-__L20085:
+__L20089:
     test    r0
-    jump    z, __L20082
+    jump    z, __L20086
     move    r0, -1
     return
-__L20082:
+__L20086:
     add     r0, sf, -259
     add     r0, 1
     load    r0, r0[0]
@@ -204255,14 +204322,14 @@ __crt_vsnprintf:
     xor     r0, r2
     xor     r1, r2
     cmp     r0, r1
-    jump    o, __L20088
+    jump    o, __L20092
     move    lt, r0, 1, 0
-    jump    __L20089
-__L20088:
+    jump    __L20093
+__L20092:
     move    lt, r0, 0, 1
-__L20089:
+__L20093:
     test    r0
-    jump    z, __L20086
+    jump    z, __L20090
     add     r0, sf, -259
     add     r0, 1
     load    r0, r0[0]
@@ -204282,14 +204349,14 @@ __L20089:
     xor     r0, r2
     xor     r1, r2
     cmp     r0, r1
-    jump    o, __L20092
+    jump    o, __L20096
     move    lt, r0, 1, 0
-    jump    __L20093
-__L20092:
+    jump    __L20097
+__L20096:
     move    lt, r0, 0, 1
-__L20093:
+__L20097:
     test    r0
-    jump    z, __L20090
+    jump    z, __L20094
     load    r0, sf[4]
     push    r0
     move    r0, 1
@@ -204297,21 +204364,21 @@ __L20093:
     pop     r0
     sub     r0, r1
     store   r0, sf[-261]
-__L20090:
+__L20094:
     move    r0, 0
     store   r0, sf[-260]
-__L20094:
+__L20098:
     load    r0, sf[-260]
     load    r1, sf[-261]
     cmp     r0, r1
-    jump    o, __L20097
+    jump    o, __L20101
     move    lt, r0, 1, 0
-    jump    __L20098
-__L20097:
+    jump    __L20102
+__L20101:
     move    lt, r0, 0, 1
-__L20098:
+__L20102:
     test    r0
-    jump    z, __L20096
+    jump    z, __L20100
     load    r0, sf[3]
     load    r1, sf[-260]
     add     r0, r1
@@ -204323,13 +204390,13 @@ __L20098:
     load    r0, r0[0]
     pop     r1
     store   r0, r1[0]
-__L20095:
+__L20099:
     load    r1, sf[-260]
     add     r2, r1, 1
     store   r2, sf[-260]
     move    r0, r1
-    jump    __L20094
-__L20096:
+    jump    __L20098
+__L20100:
     load    r0, sf[3]
     load    r1, sf[-261]
     add     r0, r1
@@ -204337,18 +204404,18 @@ __L20096:
     move    r0, 0
     pop     r1
     store   r0, r1[0]
-__L20086:
+__L20090:
     add     r0, sf, -259
     add     r0, 3
     load    r0, r0[0]
     test    r0
-    jump    z, __L20099
+    jump    z, __L20103
     add     r0, sf, -259
     load    r0, r0[0]
     push    r0
     call    __crt_free
     add     sp, 1
-__L20099:
+__L20103:
     add     r0, sf, -259
     add     r0, 1
     load    r0, r0[0]
@@ -204376,17 +204443,17 @@ __crt_fputc:
     add     sp, 3
     move    r1, 0
     cmp     r0, r1
-    jump    o, __L20103
+    jump    o, __L20107
     move    lt, r0, 1, 0
-    jump    __L20104
-__L20103:
+    jump    __L20108
+__L20107:
     move    lt, r0, 0, 1
-__L20104:
+__L20108:
     test    r0
-    jump    z, __L20101
+    jump    z, __L20105
     move    r0, -1
     return
-__L20101:
+__L20105:
     load    r0, sf[3]
     return
     move    r0, 0
@@ -204407,17 +204474,17 @@ __crt_fputs:
     add     sp, 3
     move    r1, 0
     cmp     r0, r1
-    jump    o, __L20107
+    jump    o, __L20111
     move    lt, r0, 1, 0
-    jump    __L20108
-__L20107:
+    jump    __L20112
+__L20111:
     move    lt, r0, 0, 1
-__L20108:
+__L20112:
     test    r0
-    jump    z, __L20105
+    jump    z, __L20109
     move    r0, -1
     return
-__L20105:
+__L20109:
     move    r0, 0
     return
     move    r0, 0
@@ -204440,13 +204507,13 @@ __crt_fread:
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L20109
+    jump    z, __L20113
     move    r0, 0
     return
-__L20109:
+__L20113:
     move    r0, 0
     store   r0, sf[-2]
-__L20111:
+__L20115:
     load    r0, sf[-2]
     load    r1, sf[-1]
     move    r2, 1
@@ -204454,14 +204521,14 @@ __L20111:
     xor     r0, r2
     xor     r1, r2
     cmp     r0, r1
-    jump    o, __L20114
+    jump    o, __L20118
     move    lt, r0, 1, 0
-    jump    __L20115
-__L20114:
+    jump    __L20119
+__L20118:
     move    lt, r0, 0, 1
-__L20115:
+__L20119:
     test    r0
-    jump    z, __L20113
+    jump    z, __L20117
     load    r0, sf[6]
     push    r0
     call    __crt_fgetc
@@ -204472,9 +204539,9 @@ __L20115:
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L20116
-    jump    __L20113
-__L20116:
+    jump    z, __L20120
+    jump    __L20117
+__L20120:
     load    r0, sf[0]
     push    r0
     load    r0, sf[-2]
@@ -204485,13 +204552,13 @@ __L20116:
     load    r0, sf[-3]
     pop     r1
     store   r0, r1[0]
-__L20112:
+__L20116:
     load    r1, sf[-2]
     add     r2, r1, 1
     store   r2, sf[-2]
     move    r0, r1
-    jump    __L20111
-__L20113:
+    jump    __L20115
+__L20117:
     load    r0, sf[-2]
     load    r1, sf[4]
     move    r2, r0
@@ -204504,18 +204571,18 @@ __L20113:
 
 // exit
 __crt_exit:
-__L20118:
+__L20122:
     move    r0, 0
     load    r1, __G1418___sl_atexit_cnt+1
     cmp     r0, r1
-    jump    o, __L20121
+    jump    o, __L20125
     move    lt, r0, 1, 0
-    jump    __L20122
-__L20121:
+    jump    __L20126
+__L20125:
     move    lt, r0, 0, 1
-__L20122:
+__L20126:
     test    r0
-    jump    z, __L20120
+    jump    z, __L20124
     load    r1, __G1418___sl_atexit_cnt+1
     add     r2, r1, -1
     store   r2, __G1418___sl_atexit_cnt+1
@@ -204525,9 +204592,9 @@ __L20122:
     add     r0, r1
     load    r0, r0[0]
     call    r0
-__L20119:
-    jump    __L20118
-__L20120:
+__L20123:
+    jump    __L20122
+__L20124:
     load    r0, sf[3]
     push    r0
     call    __crt__Exit
@@ -204548,24 +204615,24 @@ __crt_getenv:
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L20123
+    jump    z, __L20127
     move    r0, 0
     return
-__L20123:
+__L20127:
     move    r0, 0
     store   r0, sf[-1]
-__L20125:
+__L20129:
     load    r0, sf[-1]
     load    r1, __G1421___sl_env_cnt+1
     cmp     r0, r1
-    jump    o, __L20128
+    jump    o, __L20132
     move    lt, r0, 1, 0
-    jump    __L20129
-__L20128:
+    jump    __L20133
+__L20132:
     move    lt, r0, 0, 1
-__L20129:
+__L20133:
     test    r0
-    jump    z, __L20127
+    jump    z, __L20131
     move    r0, __G1419___sl_env_key+1
     load    r1, sf[-1]
     add     r0, r1
@@ -204574,20 +204641,20 @@ __L20129:
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L20130
+    jump    z, __L20134
     move    r0, __G1420___sl_env_val+1
     load    r1, sf[-1]
     add     r0, r1
     load    r0, r0[0]
     return
+__L20134:
 __L20130:
-__L20126:
     load    r1, sf[-1]
     add     r2, r1, 1
     store   r2, sf[-1]
     move    r0, r1
-    jump    __L20125
-__L20127:
+    jump    __L20129
+__L20131:
     load    r0, sf[0]
     push    r0
     call    __crt___getenv_p2c
@@ -204596,14 +204663,14 @@ __L20127:
     load    r0, __G1421___sl_env_cnt+1
     move    r1, 64
     cmp     r0, r1
-    jump    o, __L20134
+    jump    o, __L20138
     move    lt, r0, 1, 0
-    jump    __L20135
-__L20134:
+    jump    __L20139
+__L20138:
     move    lt, r0, 0, 1
-__L20135:
+__L20139:
     test    r0
-    jump    z, __L20132
+    jump    z, __L20136
     move    r0, __G1419___sl_env_key+1
     load    r1, __G1421___sl_env_cnt+1
     add     r0, r1
@@ -204624,7 +204691,7 @@ __L20135:
     load    r0, sf[-2]
     pop     r1
     store   r0, r1[0]
-__L20132:
+__L20136:
     load    r0, sf[-2]
     return
     move    r0, 0
@@ -204662,10 +204729,10 @@ __crt_strtol:
     store   r0, sf[-2]
     load    r0, sf[0]
     test    r0
-    jump    z, __L20136
+    jump    z, __L20140
     load    r0, sf[-1]
     test    r0
-    jump    nz, __L20140
+    jump    nz, __L20144
     load    r0, __K16
     push    r0
     move    r0, 1
@@ -204678,33 +204745,33 @@ __crt_strtol:
     xor     r0, r2
     xor     r1, r2
     cmp     r0, r1
-    jump    o, __L20142
+    jump    o, __L20146
     move    lt, r0, 1, 0
-    jump    __L20143
-__L20142:
+    jump    __L20147
+__L20146:
     move    lt, r0, 0, 1
-__L20143:
+__L20147:
     test    r0
-    jump    nz, __L20140
+    jump    nz, __L20144
     move    r0, 0
-    jump    __L20141
-__L20140:
+    jump    __L20145
+__L20144:
     move    r0, 1
-__L20141:
+__L20145:
     test    r0
-    jump    z, __L20138
+    jump    z, __L20142
     load    r0, __K17
     move    r1, 1
     sub     r0, r1
     return
-__L20138:
+__L20142:
     load    r0, sf[-2]
     neg     r0
     return
-__L20136:
+__L20140:
     load    r0, sf[-1]
     test    r0
-    jump    nz, __L20146
+    jump    nz, __L20150
     load    r0, __K18
     load    r1, sf[-2]
     move    r2, 1
@@ -204712,24 +204779,24 @@ __L20136:
     xor     r0, r2
     xor     r1, r2
     cmp     r0, r1
-    jump    o, __L20148
+    jump    o, __L20152
     move    lt, r0, 1, 0
-    jump    __L20149
-__L20148:
+    jump    __L20153
+__L20152:
     move    lt, r0, 0, 1
-__L20149:
+__L20153:
     test    r0
-    jump    nz, __L20146
+    jump    nz, __L20150
     move    r0, 0
-    jump    __L20147
-__L20146:
+    jump    __L20151
+__L20150:
     move    r0, 1
-__L20147:
+__L20151:
     test    r0
-    jump    z, __L20144
+    jump    z, __L20148
     load    r0, __K19
     return
-__L20144:
+__L20148:
     load    r0, sf[-2]
     return
     move    r0, 0
@@ -204746,42 +204813,42 @@ __crt_strtod:
     store   r0, sf[-66]
     load    r0, sf[3]
     store   r0, sf[-68]
-__L20150:
+__L20154:
     load    r0, sf[-68]
     load    r0, r0[0]
     push    r0
     call    __crt_isspace
     add     sp, 1
     test    r0
-    jump    z, __L20152
+    jump    z, __L20156
     load    r1, sf[-68]
     add     r2, r1, 1
     store   r2, sf[-68]
     move    r0, r1
-__L20151:
-    jump    __L20150
-__L20152:
+__L20155:
+    jump    __L20154
+__L20156:
     load    r0, sf[-68]
     load    r0, r0[0]
     move    r1, 43
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    nz, __L20155
+    jump    nz, __L20159
     load    r0, sf[-68]
     load    r0, r0[0]
     move    r1, 45
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    nz, __L20155
+    jump    nz, __L20159
     move    r0, 0
-    jump    __L20156
-__L20155:
+    jump    __L20160
+__L20159:
     move    r0, 1
-__L20156:
+__L20160:
     test    r0
-    jump    z, __L20153
+    jump    z, __L20157
     load    r0, sf[-68]
     load    r0, r0[0]
     move    r1, 45
@@ -204805,8 +204872,8 @@ __L20156:
     load    r0, r0[0]
     pop     r1
     store   r0, r1[0]
-__L20153:
-    move    r0, __W2564+1
+__L20157:
+    move    r0, __W2569+1
     push    r0
     load    r0, sf[-68]
     push    r0
@@ -204817,8 +204884,8 @@ __L20153:
     cmp     r0, r1
     move    ne, r0, 1, 0
     test    r0
-    jump    nz, __L20159
-    move    r0, __W2565+1
+    jump    nz, __L20163
+    move    r0, __W2570+1
     push    r0
     load    r0, sf[-68]
     push    r0
@@ -204829,40 +204896,40 @@ __L20153:
     cmp     r0, r1
     move    ne, r0, 1, 0
     test    r0
-    jump    nz, __L20159
+    jump    nz, __L20163
     move    r0, 0
-    jump    __L20160
-__L20159:
+    jump    __L20164
+__L20163:
     move    r0, 1
-__L20160:
-    test    r0
-    jump    z, __L20157
-    load    r0, sf[4]
+__L20164:
     test    r0
     jump    z, __L20161
     load    r0, sf[4]
+    test    r0
+    jump    z, __L20165
+    load    r0, sf[4]
     push    r0
     load    r0, sf[-68]
     load    r1, sf[-67]
     add     r0, r1
     pop     r1
     store   r0, r1[0]
-__L20161:
+__L20165:
     load    r0, sf[-66]
     test    r0
-    jump    z, __L20163
+    jump    z, __L20167
     load    f0, __K20
     load    f1, __K21
     div     f0, f1
-    jump    __L20164
-__L20163:
+    jump    __L20168
+__L20167:
     load    f0, __K22
     load    f1, __K23
     div     f0, f1
-__L20164:
+__L20168:
     return
-__L20157:
-    move    r0, __W2566+1
+__L20161:
+    move    r0, __W2571+1
     push    r0
     load    r0, sf[-68]
     push    r0
@@ -204873,10 +204940,10 @@ __L20157:
     cmp     r0, r1
     move    ne, r0, 1, 0
     test    r0
-    jump    z, __L20165
+    jump    z, __L20169
     load    r0, sf[4]
     test    r0
-    jump    z, __L20167
+    jump    z, __L20171
     load    r0, sf[4]
     push    r0
     load    r0, sf[-68]
@@ -204884,38 +204951,38 @@ __L20157:
     add     r0, r1
     pop     r1
     store   r0, r1[0]
-__L20167:
+__L20171:
     load    f0, __K24
     load    f1, __K25
     div     f0, f1
     return
-__L20165:
 __L20169:
+__L20173:
     load    r0, sf[-68]
     load    r0, r0[0]
     push    r0
     call    __crt_isdigit
     add     sp, 1
     test    r0
-    jump    z, __L20172
+    jump    z, __L20176
     load    r0, sf[-64]
     move    r1, 60
     cmp     r0, r1
-    jump    o, __L20174
+    jump    o, __L20178
     move    lt, r0, 1, 0
-    jump    __L20175
-__L20174:
+    jump    __L20179
+__L20178:
     move    lt, r0, 0, 1
-__L20175:
+__L20179:
     test    r0
-    jump    z, __L20172
+    jump    z, __L20176
     move    r0, 1
-    jump    __L20173
-__L20172:
+    jump    __L20177
+__L20176:
     move    r0, 0
-__L20173:
+__L20177:
     test    r0
-    jump    z, __L20171
+    jump    z, __L20175
     add     r0, sf, -63
     push    r0
     load    r1, sf[-64]
@@ -204935,57 +205002,14 @@ __L20173:
     store   r0, r1[0]
     move    r0, 1
     store   r0, sf[-65]
-__L20170:
-    jump    __L20169
-__L20171:
+__L20174:
+    jump    __L20173
+__L20175:
     load    r0, sf[-68]
     load    r0, r0[0]
     move    r1, 46
     cmp     r0, r1
     move    eq, r0, 1, 0
-    test    r0
-    jump    z, __L20176
-    add     r0, sf, -63
-    push    r0
-    load    r1, sf[-64]
-    add     r2, r1, 1
-    store   r2, sf[-64]
-    move    r0, r1
-    move    r1, r0
-    pop     r0
-    add     r0, r1
-    push    r0
-    load    r1, sf[-68]
-    add     r2, r1, 1
-    store   r2, sf[-68]
-    move    r0, r1
-    load    r0, r0[0]
-    pop     r1
-    store   r0, r1[0]
-__L20178:
-    load    r0, sf[-68]
-    load    r0, r0[0]
-    push    r0
-    call    __crt_isdigit
-    add     sp, 1
-    test    r0
-    jump    z, __L20181
-    load    r0, sf[-64]
-    move    r1, 60
-    cmp     r0, r1
-    jump    o, __L20183
-    move    lt, r0, 1, 0
-    jump    __L20184
-__L20183:
-    move    lt, r0, 0, 1
-__L20184:
-    test    r0
-    jump    z, __L20181
-    move    r0, 1
-    jump    __L20182
-__L20181:
-    move    r0, 0
-__L20182:
     test    r0
     jump    z, __L20180
     add     r0, sf, -63
@@ -205005,57 +205029,68 @@ __L20182:
     load    r0, r0[0]
     pop     r1
     store   r0, r1[0]
+__L20182:
+    load    r0, sf[-68]
+    load    r0, r0[0]
+    push    r0
+    call    __crt_isdigit
+    add     sp, 1
+    test    r0
+    jump    z, __L20185
+    load    r0, sf[-64]
+    move    r1, 60
+    cmp     r0, r1
+    jump    o, __L20187
+    move    lt, r0, 1, 0
+    jump    __L20188
+__L20187:
+    move    lt, r0, 0, 1
+__L20188:
+    test    r0
+    jump    z, __L20185
+    move    r0, 1
+    jump    __L20186
+__L20185:
+    move    r0, 0
+__L20186:
+    test    r0
+    jump    z, __L20184
+    add     r0, sf, -63
+    push    r0
+    load    r1, sf[-64]
+    add     r2, r1, 1
+    store   r2, sf[-64]
+    move    r0, r1
+    move    r1, r0
+    pop     r0
+    add     r0, r1
+    push    r0
+    load    r1, sf[-68]
+    add     r2, r1, 1
+    store   r2, sf[-68]
+    move    r0, r1
+    load    r0, r0[0]
+    pop     r1
+    store   r0, r1[0]
     move    r0, 1
     store   r0, sf[-65]
-__L20179:
-    jump    __L20178
+__L20183:
+    jump    __L20182
+__L20184:
 __L20180:
-__L20176:
     load    r0, sf[-65]
     test    r0
-    jump    z, __L20187
+    jump    z, __L20191
     load    r0, sf[-68]
     load    r0, r0[0]
     move    r1, 101
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    nz, __L20189
+    jump    nz, __L20193
     load    r0, sf[-68]
     load    r0, r0[0]
     move    r1, 69
-    cmp     r0, r1
-    move    eq, r0, 1, 0
-    test    r0
-    jump    nz, __L20189
-    move    r0, 0
-    jump    __L20190
-__L20189:
-    move    r0, 1
-__L20190:
-    test    r0
-    jump    z, __L20187
-    move    r0, 1
-    jump    __L20188
-__L20187:
-    move    r0, 0
-__L20188:
-    test    r0
-    jump    z, __L20185
-    load    r0, sf[-68]
-    move    r1, 1
-    add     r0, r1
-    store   r0, sf[-69]
-    load    r0, sf[-69]
-    load    r0, r0[0]
-    move    r1, 43
-    cmp     r0, r1
-    move    eq, r0, 1, 0
-    test    r0
-    jump    nz, __L20193
-    load    r0, sf[-69]
-    load    r0, r0[0]
-    move    r1, 45
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
@@ -205067,18 +205102,50 @@ __L20193:
 __L20194:
     test    r0
     jump    z, __L20191
+    move    r0, 1
+    jump    __L20192
+__L20191:
+    move    r0, 0
+__L20192:
+    test    r0
+    jump    z, __L20189
+    load    r0, sf[-68]
+    move    r1, 1
+    add     r0, r1
+    store   r0, sf[-69]
+    load    r0, sf[-69]
+    load    r0, r0[0]
+    move    r1, 43
+    cmp     r0, r1
+    move    eq, r0, 1, 0
+    test    r0
+    jump    nz, __L20197
+    load    r0, sf[-69]
+    load    r0, r0[0]
+    move    r1, 45
+    cmp     r0, r1
+    move    eq, r0, 1, 0
+    test    r0
+    jump    nz, __L20197
+    move    r0, 0
+    jump    __L20198
+__L20197:
+    move    r0, 1
+__L20198:
+    test    r0
+    jump    z, __L20195
     load    r1, sf[-69]
     add     r2, r1, 1
     store   r2, sf[-69]
     move    r0, r1
-__L20191:
+__L20195:
     load    r0, sf[-69]
     load    r0, r0[0]
     push    r0
     call    __crt_isdigit
     add     sp, 1
     test    r0
-    jump    z, __L20195
+    jump    z, __L20199
     add     r0, sf, -63
     push    r0
     load    r1, sf[-64]
@@ -205102,21 +205169,21 @@ __L20191:
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    nz, __L20199
+    jump    nz, __L20203
     load    r0, sf[-68]
     load    r0, r0[0]
     move    r1, 45
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    nz, __L20199
+    jump    nz, __L20203
     move    r0, 0
-    jump    __L20200
-__L20199:
+    jump    __L20204
+__L20203:
     move    r0, 1
-__L20200:
+__L20204:
     test    r0
-    jump    z, __L20197
+    jump    z, __L20201
     add     r0, sf, -63
     push    r0
     load    r1, sf[-64]
@@ -205134,33 +205201,33 @@ __L20200:
     load    r0, r0[0]
     pop     r1
     store   r0, r1[0]
-__L20197:
 __L20201:
+__L20205:
     load    r0, sf[-68]
     load    r0, r0[0]
     push    r0
     call    __crt_isdigit
     add     sp, 1
     test    r0
-    jump    z, __L20204
+    jump    z, __L20208
     load    r0, sf[-64]
     move    r1, 62
     cmp     r0, r1
-    jump    o, __L20206
+    jump    o, __L20210
     move    lt, r0, 1, 0
-    jump    __L20207
-__L20206:
+    jump    __L20211
+__L20210:
     move    lt, r0, 0, 1
-__L20207:
+__L20211:
     test    r0
-    jump    z, __L20204
+    jump    z, __L20208
     move    r0, 1
-    jump    __L20205
-__L20204:
+    jump    __L20209
+__L20208:
     move    r0, 0
-__L20205:
+__L20209:
     test    r0
-    jump    z, __L20203
+    jump    z, __L20207
     add     r0, sf, -63
     push    r0
     load    r1, sf[-64]
@@ -205178,11 +205245,11 @@ __L20205:
     load    r0, r0[0]
     pop     r1
     store   r0, r1[0]
-__L20202:
-    jump    __L20201
-__L20203:
-__L20195:
-__L20185:
+__L20206:
+    jump    __L20205
+__L20207:
+__L20199:
+__L20189:
     add     r0, sf, -63
     load    r1, sf[-64]
     add     r0, r1
@@ -205194,28 +205261,28 @@ __L20185:
     test    r0
     move    z, r0, 1, 0
     test    r0
-    jump    z, __L20208
+    jump    z, __L20212
     load    r0, sf[4]
     test    r0
-    jump    z, __L20210
+    jump    z, __L20214
     load    r0, sf[4]
     push    r0
     load    r0, sf[3]
     pop     r1
     store   r0, r1[0]
-__L20210:
+__L20214:
     load    f0, __K26
     return
-__L20208:
+__L20212:
     load    r0, sf[4]
     test    r0
-    jump    z, __L20212
+    jump    z, __L20216
     load    r0, sf[4]
     push    r0
     load    r0, sf[-68]
     pop     r1
     store   r0, r1[0]
-__L20212:
+__L20216:
     add     r0, sf, -63
     push    r0
     call    __crt___atof_exact
@@ -205231,13 +205298,13 @@ __crt_memcpy:
     store   r0, sf[0]
     load    r0, sf[4]
     store   r0, sf[-1]
-__L20214:
+__L20218:
     load    r1, sf[5]
     add     r2, r1, -1
     store   r2, sf[5]
     move    r0, r1
     test    r0
-    jump    z, __L20216
+    jump    z, __L20220
     load    r1, sf[0]
     add     r2, r1, 1
     store   r2, sf[0]
@@ -205250,9 +205317,9 @@ __L20214:
     load    r0, r0[0]
     pop     r1
     store   r0, r1[0]
-__L20215:
-    jump    __L20214
-__L20216:
+__L20219:
+    jump    __L20218
+__L20220:
     load    r0, sf[3]
     return
     move    r0, 0
@@ -205263,7 +205330,7 @@ __crt_strcpy:
     add     sp, -1
     load    r0, sf[3]
     store   r0, sf[0]
-__L20217:
+__L20221:
     load    r1, sf[3]
     add     r2, r1, 1
     store   r2, sf[3]
@@ -205280,10 +205347,10 @@ __L20217:
     cmp     r0, r1
     move    ne, r0, 1, 0
     test    r0
-    jump    z, __L20219
-__L20218:
-    jump    __L20217
-__L20219:
+    jump    z, __L20223
+__L20222:
+    jump    __L20221
+__L20223:
     load    r0, sf[0]
     return
     move    r0, 0
@@ -205317,10 +205384,10 @@ __crt_memcmp:
     store   r0, sf[0]
     load    r0, sf[4]
     store   r0, sf[-1]
-__L20220:
+__L20224:
     load    r0, sf[5]
     test    r0
-    jump    z, __L20222
+    jump    z, __L20226
     load    r0, sf[0]
     load    r0, r0[0]
     push    r0
@@ -205331,7 +205398,7 @@ __L20220:
     cmp     r0, r1
     move    ne, r0, 1, 0
     test    r0
-    jump    z, __L20223
+    jump    z, __L20227
     load    r0, sf[0]
     load    r0, r0[0]
     push    r0
@@ -205340,22 +205407,22 @@ __L20220:
     move    r1, r0
     pop     r0
     cmp     r0, r1
-    jump    o, __L20227
+    jump    o, __L20231
     move    lt, r0, 1, 0
-    jump    __L20228
-__L20227:
+    jump    __L20232
+__L20231:
     move    lt, r0, 0, 1
-__L20228:
+__L20232:
     test    r0
-    jump    z, __L20225
+    jump    z, __L20229
     move    r0, -1
-    jump    __L20226
-__L20225:
+    jump    __L20230
+__L20229:
     move    r0, 1
-__L20226:
+__L20230:
     return
-__L20223:
-__L20221:
+__L20227:
+__L20225:
     load    r1, sf[5]
     add     r2, r1, -1
     store   r2, sf[5]
@@ -205368,8 +205435,8 @@ __L20221:
     add     r2, r1, 1
     store   r2, sf[-1]
     move    r0, r1
-    jump    __L20220
-__L20222:
+    jump    __L20224
+__L20226:
     move    r0, 0
     return
     move    r0, 0
@@ -205377,11 +205444,11 @@ __L20222:
 
 // strcmp
 __crt_strcmp:
-__L20229:
+__L20233:
     load    r0, sf[3]
     load    r0, r0[0]
     test    r0
-    jump    z, __L20232
+    jump    z, __L20236
     load    r0, sf[3]
     load    r0, r0[0]
     push    r0
@@ -205392,14 +205459,14 @@ __L20229:
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L20232
+    jump    z, __L20236
     move    r0, 1
-    jump    __L20233
-__L20232:
+    jump    __L20237
+__L20236:
     move    r0, 0
-__L20233:
+__L20237:
     test    r0
-    jump    z, __L20231
+    jump    z, __L20235
     load    r1, sf[3]
     add     r2, r1, 1
     store   r2, sf[3]
@@ -205408,9 +205475,9 @@ __L20233:
     add     r2, r1, 1
     store   r2, sf[4]
     move    r0, r1
-__L20230:
-    jump    __L20229
-__L20231:
+__L20234:
+    jump    __L20233
+__L20235:
     load    r0, sf[3]
     load    r0, r0[0]
     push    r0
@@ -205421,10 +205488,10 @@ __L20231:
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L20234
+    jump    z, __L20238
     move    r0, 0
     return
-__L20234:
+__L20238:
     load    r0, sf[3]
     load    r0, r0[0]
     push    r0
@@ -205433,40 +205500,40 @@ __L20234:
     move    r1, r0
     pop     r0
     cmp     r0, r1
-    jump    o, __L20238
+    jump    o, __L20242
     move    lt, r0, 1, 0
-    jump    __L20239
-__L20238:
+    jump    __L20243
+__L20242:
     move    lt, r0, 0, 1
-__L20239:
+__L20243:
     test    r0
-    jump    z, __L20236
+    jump    z, __L20240
     move    r0, -1
-    jump    __L20237
-__L20236:
+    jump    __L20241
+__L20240:
     move    r0, 1
-__L20237:
+__L20241:
     return
     move    r0, 0
     return
 
 // strncmp
 __crt_strncmp:
-__L20240:
+__L20244:
     load    r0, sf[5]
     test    r0
-    jump    z, __L20245
+    jump    z, __L20249
     load    r0, sf[3]
     load    r0, r0[0]
     test    r0
-    jump    z, __L20245
+    jump    z, __L20249
     move    r0, 1
-    jump    __L20246
-__L20245:
+    jump    __L20250
+__L20249:
     move    r0, 0
-__L20246:
+__L20250:
     test    r0
-    jump    z, __L20243
+    jump    z, __L20247
     load    r0, sf[3]
     load    r0, r0[0]
     push    r0
@@ -205477,14 +205544,14 @@ __L20246:
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L20243
+    jump    z, __L20247
     move    r0, 1
-    jump    __L20244
-__L20243:
+    jump    __L20248
+__L20247:
     move    r0, 0
-__L20244:
+__L20248:
     test    r0
-    jump    z, __L20242
+    jump    z, __L20246
     load    r1, sf[3]
     add     r2, r1, 1
     store   r2, sf[3]
@@ -205497,9 +205564,9 @@ __L20244:
     add     r2, r1, -1
     store   r2, sf[5]
     move    r0, r1
-__L20241:
-    jump    __L20240
-__L20242:
+__L20245:
+    jump    __L20244
+__L20246:
     load    r0, sf[5]
     push    r0
     move    r0, 0
@@ -205508,7 +205575,7 @@ __L20242:
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    nz, __L20249
+    jump    nz, __L20253
     load    r0, sf[3]
     load    r0, r0[0]
     push    r0
@@ -205519,17 +205586,17 @@ __L20242:
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    nz, __L20249
+    jump    nz, __L20253
     move    r0, 0
-    jump    __L20250
-__L20249:
+    jump    __L20254
+__L20253:
     move    r0, 1
-__L20250:
+__L20254:
     test    r0
-    jump    z, __L20247
+    jump    z, __L20251
     move    r0, 0
     return
-__L20247:
+__L20251:
     load    r0, sf[3]
     load    r0, r0[0]
     push    r0
@@ -205538,52 +205605,52 @@ __L20247:
     move    r1, r0
     pop     r0
     cmp     r0, r1
-    jump    o, __L20253
+    jump    o, __L20257
     move    lt, r0, 1, 0
-    jump    __L20254
-__L20253:
+    jump    __L20258
+__L20257:
     move    lt, r0, 0, 1
-__L20254:
+__L20258:
     test    r0
-    jump    z, __L20251
+    jump    z, __L20255
     move    r0, -1
-    jump    __L20252
-__L20251:
+    jump    __L20256
+__L20255:
     move    r0, 1
-__L20252:
+__L20256:
     return
     move    r0, 0
     return
 
 // strchr
 __crt_strchr:
-__L20255:
+__L20259:
     load    r0, sf[3]
     load    r0, r0[0]
     load    r1, sf[4]
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L20258
+    jump    z, __L20262
     load    r0, sf[3]
     return
-__L20258:
+__L20262:
     load    r0, sf[3]
     load    r0, r0[0]
     test    r0
     move    z, r0, 1, 0
     test    r0
-    jump    z, __L20260
+    jump    z, __L20264
     move    r0, 0
     return
+__L20264:
 __L20260:
-__L20256:
     load    r1, sf[3]
     add     r2, r1, 1
     store   r2, sf[3]
     move    r0, r1
-    jump    __L20255
-__L20257:
+    jump    __L20259
+__L20261:
     move    r0, 0
     return
 
@@ -205592,13 +205659,13 @@ __crt_memset:
     add     sp, -1
     load    r0, sf[3]
     store   r0, sf[0]
-__L20262:
+__L20266:
     load    r1, sf[5]
     add     r2, r1, -1
     store   r2, sf[5]
     move    r0, r1
     test    r0
-    jump    z, __L20264
+    jump    z, __L20268
     load    r1, sf[0]
     add     r2, r1, 1
     store   r2, sf[0]
@@ -205607,9 +205674,9 @@ __L20262:
     load    r0, sf[4]
     pop     r1
     store   r0, r1[0]
-__L20263:
-    jump    __L20262
-__L20264:
+__L20267:
+    jump    __L20266
+__L20268:
     load    r0, sf[3]
     return
     move    r0, 0
@@ -205620,18 +205687,18 @@ __crt_strlen:
     add     sp, -1
     load    r0, sf[3]
     store   r0, sf[0]
-__L20265:
+__L20269:
     load    r0, sf[0]
     load    r0, r0[0]
     test    r0
-    jump    z, __L20267
+    jump    z, __L20271
     load    r1, sf[0]
     add     r2, r1, 1
     store   r2, sf[0]
     move    r0, r1
-__L20266:
-    jump    __L20265
-__L20267:
+__L20270:
+    jump    __L20269
+__L20271:
     load    r0, sf[0]
     load    r1, sf[3]
     sub     r0, r1
@@ -205644,20 +205711,20 @@ __crt___sio_strlen:
     add     sp, -1
     move    r0, 0
     store   r0, sf[0]
-__L20268:
+__L20272:
     load    r0, sf[3]
     load    r1, sf[0]
     add     r0, r1
     load    r0, r0[0]
     test    r0
-    jump    z, __L20270
+    jump    z, __L20274
     load    r1, sf[0]
     add     r2, r1, 1
     store   r2, sf[0]
     move    r0, r1
-__L20269:
-    jump    __L20268
-__L20270:
+__L20273:
+    jump    __L20272
+__L20274:
     load    r0, sf[0]
     return
     move    r0, 0
@@ -205675,44 +205742,23 @@ __crt___sio_open:
     test    r0
     move    z, r0, 1, 0
     test    r0
-    jump    z, __L20271
+    jump    z, __L20275
     move    r0, 0
     return
-__L20271:
+__L20275:
     load    r0, sf[5]
     load    r0, r0[0]
     move    r1, 114
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L20275
+    jump    z, __L20279
     load    r0, sf[4]
     push    r0
     call    __crt___io_exists
     add     sp, 1
     test    r0
     move    z, r0, 1, 0
-    test    r0
-    jump    z, __L20275
-    move    r0, 1
-    jump    __L20276
-__L20275:
-    move    r0, 0
-__L20276:
-    test    r0
-    jump    z, __L20273
-    move    r0, 0
-    return
-__L20273:
-    load    r0, sf[0]
-    move    r1, 128
-    and     r0, r1
-    test    r0
-    jump    z, __L20279
-    load    r0, sf[4]
-    push    r0
-    call    __crt___io_exists
-    add     sp, 1
     test    r0
     jump    z, __L20279
     move    r0, 1
@@ -205726,35 +205772,14 @@ __L20280:
     return
 __L20277:
     load    r0, sf[0]
-    move    r1, 256
+    move    r1, 128
     and     r0, r1
-    test    r0
-    jump    z, __L20285
-    load    r0, sf[4]
-    push    r0
-    call    __crt___io_exists
-    add     sp, 1
-    test    r0
-    jump    z, __L20285
-    move    r0, 1
-    jump    __L20286
-__L20285:
-    move    r0, 0
-__L20286:
     test    r0
     jump    z, __L20283
     load    r0, sf[4]
     push    r0
-    call    __crt___io_truncate
+    call    __crt___io_exists
     add     sp, 1
-    move    r1, 0
-    cmp     r0, r1
-    jump    o, __L20287
-    move    lt, r0, 1, 0
-    jump    __L20288
-__L20287:
-    move    lt, r0, 0, 1
-__L20288:
     test    r0
     jump    z, __L20283
     move    r0, 1
@@ -205767,12 +205792,28 @@ __L20284:
     move    r0, 0
     return
 __L20281:
+    load    r0, sf[0]
+    move    r1, 256
+    and     r0, r1
+    test    r0
+    jump    z, __L20289
     load    r0, sf[4]
     push    r0
-    call    __crt___io_open
+    call    __crt___io_exists
     add     sp, 1
-    store   r0, sf[-1]
-    load    r0, sf[-1]
+    test    r0
+    jump    z, __L20289
+    move    r0, 1
+    jump    __L20290
+__L20289:
+    move    r0, 0
+__L20290:
+    test    r0
+    jump    z, __L20287
+    load    r0, sf[4]
+    push    r0
+    call    __crt___io_truncate
+    add     sp, 1
     move    r1, 0
     cmp     r0, r1
     jump    o, __L20291
@@ -205782,10 +205823,36 @@ __L20291:
     move    lt, r0, 0, 1
 __L20292:
     test    r0
-    jump    z, __L20289
+    jump    z, __L20287
+    move    r0, 1
+    jump    __L20288
+__L20287:
+    move    r0, 0
+__L20288:
+    test    r0
+    jump    z, __L20285
     move    r0, 0
     return
-__L20289:
+__L20285:
+    load    r0, sf[4]
+    push    r0
+    call    __crt___io_open
+    add     sp, 1
+    store   r0, sf[-1]
+    load    r0, sf[-1]
+    move    r1, 0
+    cmp     r0, r1
+    jump    o, __L20295
+    move    lt, r0, 1, 0
+    jump    __L20296
+__L20295:
+    move    lt, r0, 0, 1
+__L20296:
+    test    r0
+    jump    z, __L20293
+    move    r0, 0
+    return
+__L20293:
     load    r0, sf[3]
     push    r0
     load    r0, sf[-1]
@@ -205852,20 +205919,20 @@ __crt___sio_release:
     move    r1, r0
     pop     r0
     cmp     r0, r1
-    jump    o, __L20295
+    jump    o, __L20299
     move    lt, r0, 1, 0
-    jump    __L20296
-__L20295:
+    jump    __L20300
+__L20299:
     move    lt, r0, 0, 1
-__L20296:
+__L20300:
     test    r0
-    jump    z, __L20293
+    jump    z, __L20297
     load    r0, sf[3]
     load    r0, r0[0]
     push    r0
     call    __crt___io_close
     add     sp, 1
-__L20293:
+__L20297:
     load    r0, sf[3]
     push    r0
     move    r0, -1
@@ -205875,21 +205942,21 @@ __L20293:
     add     r0, 6
     load    r0, r0[0]
     test    r0
-    jump    z, __L20297
+    jump    z, __L20301
     load    r0, sf[3]
     add     r0, 1
     load    r0, r0[0]
     move    r1, 32
     and     r0, r1
     test    r0
-    jump    z, __L20299
+    jump    z, __L20303
     load    r0, sf[3]
     add     r0, 6
     load    r0, r0[0]
     push    r0
     call    __crt___io_remove
     add     sp, 1
-__L20299:
+__L20303:
     load    r0, sf[3]
     add     r0, 6
     load    r0, r0[0]
@@ -205902,7 +205969,7 @@ __L20299:
     move    r0, 0
     pop     r1
     store   r0, r1[0]
-__L20297:
+__L20301:
     move    r0, 0
     return
 
@@ -205912,17 +205979,17 @@ __crt___sio_write:
     load    r0, sf[5]
     move    r1, 0
     cmp     r0, r1
-    jump    o, __L20303
+    jump    o, __L20307
     move    le, r0, 1, 0
-    jump    __L20304
-__L20303:
+    jump    __L20308
+__L20307:
     move    lt, r0, 0, 1
-__L20304:
+__L20308:
     test    r0
-    jump    z, __L20301
+    jump    z, __L20305
     move    r0, 0
     return
-__L20301:
+__L20305:
     load    r0, sf[3]
     push    r0
     call    __crt___sio_prepare_write
@@ -205930,31 +205997,31 @@ __L20301:
     test    r0
     move    z, r0, 1, 0
     test    r0
-    jump    z, __L20305
+    jump    z, __L20309
     move    r0, -1
     return
-__L20305:
+__L20309:
     load    r0, sf[3]
     add     r0, 1
     load    r0, r0[0]
     move    r1, 8
     and     r0, r1
     test    r0
-    jump    z, __L20307
+    jump    z, __L20311
     move    r0, 0
     store   r0, sf[0]
-__L20309:
+__L20313:
     load    r0, sf[0]
     load    r1, sf[5]
     cmp     r0, r1
-    jump    o, __L20312
+    jump    o, __L20316
     move    lt, r0, 1, 0
-    jump    __L20313
-__L20312:
+    jump    __L20317
+__L20316:
     move    lt, r0, 0, 1
-__L20313:
+__L20317:
     test    r0
-    jump    z, __L20311
+    jump    z, __L20315
     load    r0, sf[4]
     load    r1, sf[0]
     add     r0, r1
@@ -205967,21 +206034,21 @@ __L20313:
     push    r0
     call    __crt___io_putb
     add     sp, 2
-__L20310:
+__L20314:
     load    r1, sf[0]
     add     r2, r1, 1
     store   r2, sf[0]
     move    r0, r1
-    jump    __L20309
+    jump    __L20313
+__L20315:
+    jump    __L20312
 __L20311:
-    jump    __L20308
-__L20307:
     load    r0, sf[5]
     move    r1, 1
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L20314
+    jump    z, __L20318
     load    r0, sf[4]
     move    r1, 0
     add     r0, r1
@@ -205992,8 +206059,8 @@ __L20307:
     push    r0
     call    __crt___io_putc
     add     sp, 2
-    jump    __L20315
-__L20314:
+    jump    __L20319
+__L20318:
     load    r0, sf[5]
     push    r0
     load    r0, sf[4]
@@ -206003,8 +206070,8 @@ __L20314:
     push    r0
     call    __crt___io_write
     add     sp, 3
-__L20315:
-__L20308:
+__L20319:
+__L20312:
     load    r0, sf[5]
     return
     move    r0, 0
@@ -206013,18 +206080,18 @@ __L20308:
 // __sio_vformat
 __crt___sio_vformat:
     add     sp, -16
-__L20316:
+__L20320:
     load    r0, sf[4]
     load    r0, r0[0]
     test    r0
-    jump    z, __L20318
+    jump    z, __L20322
     load    r0, sf[4]
     load    r0, r0[0]
     move    r1, 37
     cmp     r0, r1
     move    ne, r0, 1, 0
     test    r0
-    jump    z, __L20319
+    jump    z, __L20323
     load    r0, sf[4]
     load    r0, r0[0]
     push    r0
@@ -206032,8 +206099,8 @@ __L20316:
     push    r0
     call    __crt___sio_put
     add     sp, 2
-    jump    __L20317
-__L20319:
+    jump    __L20321
+__L20323:
     load    r1, sf[4]
     add     r2, r1, 1
     store   r2, sf[4]
@@ -206044,15 +206111,15 @@ __L20319:
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L20321
+    jump    z, __L20325
     move    r0, 37
     push    r0
     load    r0, sf[3]
     push    r0
     call    __crt___sio_put
     add     sp, 2
-    jump    __L20317
-__L20321:
+    jump    __L20321
+__L20325:
     add     r0, sf, -8
     push    r0
     add     r0, sf, -8
@@ -206097,45 +206164,15 @@ __L20321:
     move    r0, 0
     pop     r1
     store   r0, r1[0]
-__L20323:
+__L20327:
     load    r0, sf[4]
     load    r0, r0[0]
     move    r1, 45
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L20326
-    add     r0, sf, -8
-    push    r0
-    move    r0, 1
-    pop     r1
-    store   r0, r1[0]
-    jump    __L20327
-__L20326:
-    load    r0, sf[4]
-    load    r0, r0[0]
-    move    r1, 43
-    cmp     r0, r1
-    move    eq, r0, 1, 0
-    test    r0
-    jump    z, __L20328
-    add     r0, sf, -8
-    add     r0, 1
-    push    r0
-    move    r0, 1
-    pop     r1
-    store   r0, r1[0]
-    jump    __L20329
-__L20328:
-    load    r0, sf[4]
-    load    r0, r0[0]
-    move    r1, 32
-    cmp     r0, r1
-    move    eq, r0, 1, 0
-    test    r0
     jump    z, __L20330
     add     r0, sf, -8
-    add     r0, 2
     push    r0
     move    r0, 1
     pop     r1
@@ -206144,13 +206181,13 @@ __L20328:
 __L20330:
     load    r0, sf[4]
     load    r0, r0[0]
-    move    r1, 48
+    move    r1, 43
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
     jump    z, __L20332
     add     r0, sf, -8
-    add     r0, 3
+    add     r0, 1
     push    r0
     move    r0, 1
     pop     r1
@@ -206159,39 +206196,69 @@ __L20330:
 __L20332:
     load    r0, sf[4]
     load    r0, r0[0]
-    move    r1, 35
+    move    r1, 32
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
     jump    z, __L20334
     add     r0, sf, -8
-    add     r0, 4
+    add     r0, 2
     push    r0
     move    r0, 1
     pop     r1
     store   r0, r1[0]
     jump    __L20335
 __L20334:
-    jump    __L20325
+    load    r0, sf[4]
+    load    r0, r0[0]
+    move    r1, 48
+    cmp     r0, r1
+    move    eq, r0, 1, 0
+    test    r0
+    jump    z, __L20336
+    add     r0, sf, -8
+    add     r0, 3
+    push    r0
+    move    r0, 1
+    pop     r1
+    store   r0, r1[0]
+    jump    __L20337
+__L20336:
+    load    r0, sf[4]
+    load    r0, r0[0]
+    move    r1, 35
+    cmp     r0, r1
+    move    eq, r0, 1, 0
+    test    r0
+    jump    z, __L20338
+    add     r0, sf, -8
+    add     r0, 4
+    push    r0
+    move    r0, 1
+    pop     r1
+    store   r0, r1[0]
+    jump    __L20339
+__L20338:
+    jump    __L20329
+__L20339:
+__L20337:
 __L20335:
 __L20333:
 __L20331:
-__L20329:
-__L20327:
-__L20324:
+__L20328:
     load    r1, sf[4]
     add     r2, r1, 1
     store   r2, sf[4]
     move    r0, r1
-    jump    __L20323
-__L20325:
+    jump    __L20327
+__L20329:
     load    r0, sf[4]
     load    r0, r0[0]
     move    r1, 42
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L20336
+    jump    z, __L20340
     add     r0, sf, -8
     add     r0, 5
     push    r0
@@ -206215,14 +206282,14 @@ __L20325:
     load    r0, r0[0]
     move    r1, 0
     cmp     r0, r1
-    jump    o, __L20340
+    jump    o, __L20344
     move    lt, r0, 1, 0
-    jump    __L20341
-__L20340:
+    jump    __L20345
+__L20344:
     move    lt, r0, 0, 1
-__L20341:
+__L20345:
     test    r0
-    jump    z, __L20338
+    jump    z, __L20342
     add     r0, sf, -8
     push    r0
     move    r0, 1
@@ -206237,14 +206304,14 @@ __L20341:
     neg     r0
     pop     r1
     store   r0, r1[0]
-__L20338:
+__L20342:
     load    r1, sf[4]
     add     r2, r1, 1
     store   r2, sf[4]
     move    r0, r1
-    jump    __L20337
-__L20336:
-__L20342:
+    jump    __L20341
+__L20340:
+__L20346:
     move    r0, 48
     push    r0
     load    r0, sf[4]
@@ -206252,33 +206319,33 @@ __L20342:
     move    r1, r0
     pop     r0
     cmp     r0, r1
-    jump    o, __L20347
+    jump    o, __L20351
     move    le, r0, 1, 0
-    jump    __L20348
-__L20347:
+    jump    __L20352
+__L20351:
     move    lt, r0, 0, 1
-__L20348:
+__L20352:
     test    r0
-    jump    z, __L20345
+    jump    z, __L20349
     load    r0, sf[4]
     load    r0, r0[0]
     move    r1, 57
     cmp     r0, r1
-    jump    o, __L20349
+    jump    o, __L20353
     move    le, r0, 1, 0
+    jump    __L20354
+__L20353:
+    move    lt, r0, 0, 1
+__L20354:
+    test    r0
+    jump    z, __L20349
+    move    r0, 1
     jump    __L20350
 __L20349:
-    move    lt, r0, 0, 1
+    move    r0, 0
 __L20350:
     test    r0
-    jump    z, __L20345
-    move    r0, 1
-    jump    __L20346
-__L20345:
-    move    r0, 0
-__L20346:
-    test    r0
-    jump    z, __L20344
+    jump    z, __L20348
     add     r0, sf, -8
     add     r0, 5
     push    r0
@@ -206300,17 +206367,17 @@ __L20346:
     add     r0, r1
     pop     r1
     store   r0, r1[0]
-__L20343:
-    jump    __L20342
-__L20344:
-__L20337:
+__L20347:
+    jump    __L20346
+__L20348:
+__L20341:
     load    r0, sf[4]
     load    r0, r0[0]
     move    r1, 46
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L20351
+    jump    z, __L20355
     load    r1, sf[4]
     add     r2, r1, 1
     store   r2, sf[4]
@@ -206327,7 +206394,7 @@ __L20337:
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L20353
+    jump    z, __L20357
     add     r0, sf, -8
     add     r0, 6
     push    r0
@@ -206351,28 +206418,28 @@ __L20337:
     load    r0, r0[0]
     move    r1, 0
     cmp     r0, r1
-    jump    o, __L20357
+    jump    o, __L20361
     move    lt, r0, 1, 0
-    jump    __L20358
-__L20357:
+    jump    __L20362
+__L20361:
     move    lt, r0, 0, 1
-__L20358:
+__L20362:
     test    r0
-    jump    z, __L20355
+    jump    z, __L20359
     add     r0, sf, -8
     add     r0, 6
     push    r0
     move    r0, -1
     pop     r1
     store   r0, r1[0]
-__L20355:
+__L20359:
     load    r1, sf[4]
     add     r2, r1, 1
     store   r2, sf[4]
     move    r0, r1
-    jump    __L20354
-__L20353:
-__L20359:
+    jump    __L20358
+__L20357:
+__L20363:
     move    r0, 48
     push    r0
     load    r0, sf[4]
@@ -206380,33 +206447,33 @@ __L20359:
     move    r1, r0
     pop     r0
     cmp     r0, r1
-    jump    o, __L20364
+    jump    o, __L20368
     move    le, r0, 1, 0
-    jump    __L20365
-__L20364:
+    jump    __L20369
+__L20368:
     move    lt, r0, 0, 1
-__L20365:
+__L20369:
     test    r0
-    jump    z, __L20362
+    jump    z, __L20366
     load    r0, sf[4]
     load    r0, r0[0]
     move    r1, 57
     cmp     r0, r1
-    jump    o, __L20366
+    jump    o, __L20370
     move    le, r0, 1, 0
+    jump    __L20371
+__L20370:
+    move    lt, r0, 0, 1
+__L20371:
+    test    r0
+    jump    z, __L20366
+    move    r0, 1
     jump    __L20367
 __L20366:
-    move    lt, r0, 0, 1
+    move    r0, 0
 __L20367:
     test    r0
-    jump    z, __L20362
-    move    r0, 1
-    jump    __L20363
-__L20362:
-    move    r0, 0
-__L20363:
-    test    r0
-    jump    z, __L20361
+    jump    z, __L20365
     add     r0, sf, -8
     add     r0, 6
     push    r0
@@ -206428,19 +206495,19 @@ __L20363:
     add     r0, r1
     pop     r1
     store   r0, r1[0]
-__L20360:
-    jump    __L20359
-__L20361:
-__L20354:
-__L20351:
-__L20368:
+__L20364:
+    jump    __L20363
+__L20365:
+__L20358:
+__L20355:
+__L20372:
     load    r0, sf[4]
     load    r0, r0[0]
     move    r1, 104
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L20371
+    jump    z, __L20375
     add     r0, sf, -8
     add     r0, 7
     push    r0
@@ -206451,26 +206518,54 @@ __L20368:
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L20373
+    jump    z, __L20377
     move    r0, 72
-    jump    __L20374
-__L20373:
+    jump    __L20378
+__L20377:
     move    r0, 104
-__L20374:
+__L20378:
     pop     r1
     store   r0, r1[0]
-    jump    __L20372
-__L20371:
+    jump    __L20376
+__L20375:
     load    r0, sf[4]
     load    r0, r0[0]
     move    r1, 108
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    nz, __L20385
+    jump    nz, __L20389
     load    r0, sf[4]
     load    r0, r0[0]
     move    r1, 76
+    cmp     r0, r1
+    move    eq, r0, 1, 0
+    test    r0
+    jump    nz, __L20389
+    move    r0, 0
+    jump    __L20390
+__L20389:
+    move    r0, 1
+__L20390:
+    test    r0
+    jump    nz, __L20387
+    load    r0, sf[4]
+    load    r0, r0[0]
+    move    r1, 113
+    cmp     r0, r1
+    move    eq, r0, 1, 0
+    test    r0
+    jump    nz, __L20387
+    move    r0, 0
+    jump    __L20388
+__L20387:
+    move    r0, 1
+__L20388:
+    test    r0
+    jump    nz, __L20385
+    load    r0, sf[4]
+    load    r0, r0[0]
+    move    r1, 106
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
@@ -206484,7 +206579,7 @@ __L20386:
     jump    nz, __L20383
     load    r0, sf[4]
     load    r0, r0[0]
-    move    r1, 113
+    move    r1, 122
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
@@ -206498,7 +206593,7 @@ __L20384:
     jump    nz, __L20381
     load    r0, sf[4]
     load    r0, r0[0]
-    move    r1, 106
+    move    r1, 116
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
@@ -206509,47 +206604,19 @@ __L20381:
     move    r0, 1
 __L20382:
     test    r0
-    jump    nz, __L20379
-    load    r0, sf[4]
-    load    r0, r0[0]
-    move    r1, 122
-    cmp     r0, r1
-    move    eq, r0, 1, 0
-    test    r0
-    jump    nz, __L20379
-    move    r0, 0
+    jump    z, __L20379
     jump    __L20380
 __L20379:
-    move    r0, 1
+    jump    __L20374
 __L20380:
-    test    r0
-    jump    nz, __L20377
-    load    r0, sf[4]
-    load    r0, r0[0]
-    move    r1, 116
-    cmp     r0, r1
-    move    eq, r0, 1, 0
-    test    r0
-    jump    nz, __L20377
-    move    r0, 0
-    jump    __L20378
-__L20377:
-    move    r0, 1
-__L20378:
-    test    r0
-    jump    z, __L20375
-    jump    __L20376
-__L20375:
-    jump    __L20370
 __L20376:
-__L20372:
-__L20369:
+__L20373:
     load    r1, sf[4]
     add     r2, r1, 1
     store   r2, sf[4]
     move    r0, r1
-    jump    __L20368
-__L20370:
+    jump    __L20372
+__L20374:
     load    r0, sf[4]
     load    r0, r0[0]
     store   r0, sf[-9]
@@ -206557,9 +206624,9 @@ __L20370:
     test    r0
     move    z, r0, 1, 0
     test    r0
-    jump    z, __L20387
-    jump    __L20318
-__L20387:
+    jump    z, __L20391
+    jump    __L20322
+__L20391:
     add     r0, sf, -8
     add     r0, 8
     push    r0
@@ -206571,20 +206638,20 @@ __L20387:
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    nz, __L20391
+    jump    nz, __L20395
     load    r0, sf[-9]
     move    r1, 105
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    nz, __L20391
+    jump    nz, __L20395
     move    r0, 0
-    jump    __L20392
-__L20391:
+    jump    __L20396
+__L20395:
     move    r0, 1
-__L20392:
+__L20396:
     test    r0
-    jump    z, __L20389
+    jump    z, __L20393
     load    r0, sf[5]
     push    r0
     move    r0, 1
@@ -206606,15 +206673,15 @@ __L20392:
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L20393
+    jump    z, __L20397
     load    r0, sf[-10]
     move    r1, 48
     lshift  r0, r1
     move    r1, 48
     arshift r0, r1
     store   r0, sf[-10]
-    jump    __L20394
-__L20393:
+    jump    __L20398
+__L20397:
     add     r0, sf, -8
     add     r0, 7
     load    r0, r0[0]
@@ -206622,26 +206689,26 @@ __L20393:
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L20395
+    jump    z, __L20399
     load    r0, sf[-10]
     move    r1, 56
     lshift  r0, r1
     move    r1, 56
     arshift r0, r1
     store   r0, sf[-10]
-__L20395:
-__L20394:
+__L20399:
+__L20398:
     load    r0, sf[-10]
     move    r1, 0
     cmp     r0, r1
-    jump    o, __L20399
+    jump    o, __L20403
     move    lt, r0, 1, 0
-    jump    __L20400
-__L20399:
+    jump    __L20404
+__L20403:
     move    lt, r0, 0, 1
-__L20400:
+__L20404:
     test    r0
-    jump    z, __L20397
+    jump    z, __L20401
     move    r0, 1
     push    r0
     load    r0, sf[-10]
@@ -206653,8 +206720,8 @@ __L20400:
     push    r0
     call    __crt___sio_fmt_int
     add     sp, 4
-    jump    __L20398
-__L20397:
+    jump    __L20402
+__L20401:
     move    r0, 0
     push    r0
     load    r0, sf[-10]
@@ -206665,17 +206732,43 @@ __L20397:
     push    r0
     call    __crt___sio_fmt_int
     add     sp, 4
-__L20398:
-    jump    __L20390
-__L20389:
+__L20402:
+    jump    __L20394
+__L20393:
     load    r0, sf[-9]
     move    r1, 117
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    nz, __L20407
+    jump    nz, __L20411
     load    r0, sf[-9]
     move    r1, 111
+    cmp     r0, r1
+    move    eq, r0, 1, 0
+    test    r0
+    jump    nz, __L20411
+    move    r0, 0
+    jump    __L20412
+__L20411:
+    move    r0, 1
+__L20412:
+    test    r0
+    jump    nz, __L20409
+    load    r0, sf[-9]
+    move    r1, 120
+    cmp     r0, r1
+    move    eq, r0, 1, 0
+    test    r0
+    jump    nz, __L20409
+    move    r0, 0
+    jump    __L20410
+__L20409:
+    move    r0, 1
+__L20410:
+    test    r0
+    jump    nz, __L20407
+    load    r0, sf[-9]
+    move    r1, 88
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
@@ -206686,33 +206779,7 @@ __L20407:
     move    r0, 1
 __L20408:
     test    r0
-    jump    nz, __L20405
-    load    r0, sf[-9]
-    move    r1, 120
-    cmp     r0, r1
-    move    eq, r0, 1, 0
-    test    r0
-    jump    nz, __L20405
-    move    r0, 0
-    jump    __L20406
-__L20405:
-    move    r0, 1
-__L20406:
-    test    r0
-    jump    nz, __L20403
-    load    r0, sf[-9]
-    move    r1, 88
-    cmp     r0, r1
-    move    eq, r0, 1, 0
-    test    r0
-    jump    nz, __L20403
-    move    r0, 0
-    jump    __L20404
-__L20403:
-    move    r0, 1
-__L20404:
-    test    r0
-    jump    z, __L20401
+    jump    z, __L20405
     load    r0, sf[5]
     push    r0
     move    r0, 1
@@ -206734,7 +206801,7 @@ __L20404:
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L20409
+    jump    z, __L20413
     load    r0, sf[-11]
     push    r0
     move    r0, 65535
@@ -206742,8 +206809,8 @@ __L20404:
     pop     r0
     and     r0, r1
     store   r0, sf[-11]
-    jump    __L20410
-__L20409:
+    jump    __L20414
+__L20413:
     add     r0, sf, -8
     add     r0, 7
     load    r0, r0[0]
@@ -206751,7 +206818,7 @@ __L20409:
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L20411
+    jump    z, __L20415
     load    r0, sf[-11]
     push    r0
     move    r0, 255
@@ -206759,8 +206826,8 @@ __L20409:
     pop     r0
     and     r0, r1
     store   r0, sf[-11]
-__L20411:
-__L20410:
+__L20415:
+__L20414:
     move    r0, 0
     push    r0
     load    r0, sf[-11]
@@ -206771,14 +206838,14 @@ __L20410:
     push    r0
     call    __crt___sio_fmt_int
     add     sp, 4
-    jump    __L20402
-__L20401:
+    jump    __L20406
+__L20405:
     load    r0, sf[-9]
     move    r1, 112
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L20413
+    jump    z, __L20417
     load    r0, sf[5]
     push    r0
     move    r0, 1
@@ -206809,14 +206876,14 @@ __L20401:
     push    r0
     call    __crt___sio_fmt_int
     add     sp, 4
-    jump    __L20414
-__L20413:
+    jump    __L20418
+__L20417:
     load    r0, sf[-9]
     move    r1, 99
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L20415
+    jump    z, __L20419
     add     r0, sf, -13
     move    r1, 0
     add     r0, r1
@@ -206844,7 +206911,7 @@ __L20413:
     push    r0
     move    r0, 0
     push    r0
-    move    r0, __W2567+1
+    move    r0, __W2572+1
     push    r0
     add     r0, sf, -8
     push    r0
@@ -206852,14 +206919,14 @@ __L20413:
     push    r0
     call    __crt___sio_field
     add     sp, 7
-    jump    __L20416
-__L20415:
+    jump    __L20420
+__L20419:
     load    r0, sf[-9]
     move    r1, 115
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L20417
+    jump    z, __L20421
     move    r0, 0
     store   r0, sf[-14]
     load    r0, sf[5]
@@ -206880,30 +206947,30 @@ __L20415:
     test    r0
     move    z, r0, 1, 0
     test    r0
-    jump    z, __L20419
-    move    r0, __W2568+1
+    jump    z, __L20423
+    move    r0, __W2573+1
     store   r0, sf[-12]
-__L20419:
-__L20421:
+__L20423:
+__L20425:
     load    r0, sf[-12]
     load    r1, sf[-14]
     add     r0, r1
     load    r0, r0[0]
     test    r0
-    jump    z, __L20424
+    jump    z, __L20428
     add     r0, sf, -8
     add     r0, 6
     load    r0, r0[0]
     move    r1, 0
     cmp     r0, r1
-    jump    o, __L20428
+    jump    o, __L20432
     move    lt, r0, 1, 0
-    jump    __L20429
-__L20428:
+    jump    __L20433
+__L20432:
     move    lt, r0, 0, 1
-__L20429:
+__L20433:
     test    r0
-    jump    nz, __L20426
+    jump    nz, __L20430
     load    r0, sf[-14]
     push    r0
     add     r0, sf, -8
@@ -206912,35 +206979,35 @@ __L20429:
     move    r1, r0
     pop     r0
     cmp     r0, r1
-    jump    o, __L20430
+    jump    o, __L20434
     move    lt, r0, 1, 0
+    jump    __L20435
+__L20434:
+    move    lt, r0, 0, 1
+__L20435:
+    test    r0
+    jump    nz, __L20430
+    move    r0, 0
     jump    __L20431
 __L20430:
-    move    lt, r0, 0, 1
+    move    r0, 1
 __L20431:
     test    r0
-    jump    nz, __L20426
-    move    r0, 0
-    jump    __L20427
-__L20426:
+    jump    z, __L20428
     move    r0, 1
-__L20427:
-    test    r0
-    jump    z, __L20424
-    move    r0, 1
-    jump    __L20425
-__L20424:
+    jump    __L20429
+__L20428:
     move    r0, 0
-__L20425:
+__L20429:
     test    r0
-    jump    z, __L20423
+    jump    z, __L20427
     load    r1, sf[-14]
     add     r2, r1, 1
     store   r2, sf[-14]
     move    r0, r1
-__L20422:
-    jump    __L20421
-__L20423:
+__L20426:
+    jump    __L20425
+__L20427:
     move    r0, 0
     push    r0
     load    r0, sf[-14]
@@ -206949,7 +207016,7 @@ __L20423:
     push    r0
     move    r0, 0
     push    r0
-    move    r0, __W2569+1
+    move    r0, __W2574+1
     push    r0
     add     r0, sf, -8
     push    r0
@@ -206957,14 +207024,14 @@ __L20423:
     push    r0
     call    __crt___sio_field
     add     sp, 7
-    jump    __L20418
-__L20417:
+    jump    __L20422
+__L20421:
     load    r0, sf[-9]
     move    r1, 110
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L20432
+    jump    z, __L20436
     load    r0, sf[5]
     push    r0
     move    r0, 1
@@ -206986,16 +207053,42 @@ __L20417:
     load    r0, r0[0]
     pop     r1
     store   r0, r1[0]
-    jump    __L20433
-__L20432:
+    jump    __L20437
+__L20436:
     load    r0, sf[-9]
     move    r1, 102
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    nz, __L20448
+    jump    nz, __L20452
     load    r0, sf[-9]
     move    r1, 70
+    cmp     r0, r1
+    move    eq, r0, 1, 0
+    test    r0
+    jump    nz, __L20452
+    move    r0, 0
+    jump    __L20453
+__L20452:
+    move    r0, 1
+__L20453:
+    test    r0
+    jump    nz, __L20450
+    load    r0, sf[-9]
+    move    r1, 101
+    cmp     r0, r1
+    move    eq, r0, 1, 0
+    test    r0
+    jump    nz, __L20450
+    move    r0, 0
+    jump    __L20451
+__L20450:
+    move    r0, 1
+__L20451:
+    test    r0
+    jump    nz, __L20448
+    load    r0, sf[-9]
+    move    r1, 69
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
@@ -207008,7 +207101,7 @@ __L20449:
     test    r0
     jump    nz, __L20446
     load    r0, sf[-9]
-    move    r1, 101
+    move    r1, 103
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
@@ -207021,7 +207114,7 @@ __L20447:
     test    r0
     jump    nz, __L20444
     load    r0, sf[-9]
-    move    r1, 69
+    move    r1, 71
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
@@ -207034,7 +207127,7 @@ __L20445:
     test    r0
     jump    nz, __L20442
     load    r0, sf[-9]
-    move    r1, 103
+    move    r1, 97
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
@@ -207047,7 +207140,7 @@ __L20443:
     test    r0
     jump    nz, __L20440
     load    r0, sf[-9]
-    move    r1, 71
+    move    r1, 65
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
@@ -207058,33 +207151,7 @@ __L20440:
     move    r0, 1
 __L20441:
     test    r0
-    jump    nz, __L20438
-    load    r0, sf[-9]
-    move    r1, 97
-    cmp     r0, r1
-    move    eq, r0, 1, 0
-    test    r0
-    jump    nz, __L20438
-    move    r0, 0
-    jump    __L20439
-__L20438:
-    move    r0, 1
-__L20439:
-    test    r0
-    jump    nz, __L20436
-    load    r0, sf[-9]
-    move    r1, 65
-    cmp     r0, r1
-    move    eq, r0, 1, 0
-    test    r0
-    jump    nz, __L20436
-    move    r0, 0
-    jump    __L20437
-__L20436:
-    move    r0, 1
-__L20437:
-    test    r0
-    jump    z, __L20434
+    jump    z, __L20438
     load    r0, sf[5]
     push    r0
     move    r0, 1
@@ -207105,23 +207172,23 @@ __L20437:
     push    r0
     call    __crt___sio_fmt_float
     add     sp, 3
-    jump    __L20435
-__L20434:
+    jump    __L20439
+__L20438:
     load    r0, sf[-9]
     move    r1, 37
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L20450
+    jump    z, __L20454
     move    r0, 0
     push    r0
     move    r0, 1
     push    r0
-    move    r0, __W2571+1
+    move    r0, __W2576+1
     push    r0
     move    r0, 0
     push    r0
-    move    r0, __W2570+1
+    move    r0, __W2575+1
     push    r0
     add     r0, sf, -8
     push    r0
@@ -207129,8 +207196,8 @@ __L20434:
     push    r0
     call    __crt___sio_field
     add     sp, 7
-    jump    __L20451
-__L20450:
+    jump    __L20455
+__L20454:
     move    r0, 37
     push    r0
     load    r0, sf[3]
@@ -207143,21 +207210,21 @@ __L20450:
     push    r0
     call    __crt___sio_put
     add     sp, 2
-__L20451:
-__L20435:
-__L20433:
+__L20455:
+__L20439:
+__L20437:
+__L20422:
+__L20420:
 __L20418:
-__L20416:
-__L20414:
-__L20402:
-__L20390:
-__L20317:
+__L20406:
+__L20394:
+__L20321:
     load    r1, sf[4]
     add     r2, r1, 1
     store   r2, sf[4]
     move    r0, r1
-    jump    __L20316
-__L20318:
+    jump    __L20320
+__L20322:
     move    r0, 0
     return
 
@@ -207166,30 +207233,30 @@ __crt_isdigit:
     move    r0, 48
     load    r1, sf[3]
     cmp     r0, r1
-    jump    o, __L20454
+    jump    o, __L20458
     move    le, r0, 1, 0
-    jump    __L20455
-__L20454:
+    jump    __L20459
+__L20458:
     move    lt, r0, 0, 1
-__L20455:
+__L20459:
     test    r0
-    jump    z, __L20452
+    jump    z, __L20456
     load    r0, sf[3]
     move    r1, 57
     cmp     r0, r1
-    jump    o, __L20456
+    jump    o, __L20460
     move    le, r0, 1, 0
+    jump    __L20461
+__L20460:
+    move    lt, r0, 0, 1
+__L20461:
+    test    r0
+    jump    z, __L20456
+    move    r0, 1
     jump    __L20457
 __L20456:
-    move    lt, r0, 0, 1
-__L20457:
-    test    r0
-    jump    z, __L20452
-    move    r0, 1
-    jump    __L20453
-__L20452:
     move    r0, 0
-__L20453:
+__L20457:
     return
     move    r0, 0
     return
@@ -207201,41 +207268,41 @@ __crt_isspace:
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    nz, __L20458
+    jump    nz, __L20462
     move    r0, 9
     load    r1, sf[3]
     cmp     r0, r1
-    jump    o, __L20462
+    jump    o, __L20466
     move    le, r0, 1, 0
-    jump    __L20463
-__L20462:
+    jump    __L20467
+__L20466:
     move    lt, r0, 0, 1
-__L20463:
+__L20467:
     test    r0
-    jump    z, __L20460
+    jump    z, __L20464
     load    r0, sf[3]
     move    r1, 13
     cmp     r0, r1
-    jump    o, __L20464
+    jump    o, __L20468
     move    le, r0, 1, 0
+    jump    __L20469
+__L20468:
+    move    lt, r0, 0, 1
+__L20469:
+    test    r0
+    jump    z, __L20464
+    move    r0, 1
     jump    __L20465
 __L20464:
-    move    lt, r0, 0, 1
+    move    r0, 0
 __L20465:
     test    r0
-    jump    z, __L20460
-    move    r0, 1
-    jump    __L20461
-__L20460:
+    jump    nz, __L20462
     move    r0, 0
-__L20461:
-    test    r0
-    jump    nz, __L20458
-    move    r0, 0
-    jump    __L20459
-__L20458:
+    jump    __L20463
+__L20462:
     move    r0, 1
-__L20459:
+__L20463:
     return
     move    r0, 0
     return
@@ -207259,28 +207326,28 @@ __crt___sl_strtoux:
     move    r0, 0
     pop     r1
     store   r0, r1[0]
-__L20466:
+__L20470:
     load    r0, sf[0]
     load    r0, r0[0]
     push    r0
     call    __crt_isspace
     add     sp, 1
     test    r0
-    jump    z, __L20468
+    jump    z, __L20472
     load    r1, sf[0]
     add     r2, r1, 1
     store   r2, sf[0]
     move    r0, r1
-__L20467:
-    jump    __L20466
-__L20468:
+__L20471:
+    jump    __L20470
+__L20472:
     load    r0, sf[0]
     load    r0, r0[0]
     move    r1, 45
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L20469
+    jump    z, __L20473
     load    r0, sf[6]
     push    r0
     move    r0, 1
@@ -207290,40 +207357,40 @@ __L20468:
     add     r2, r1, 1
     store   r2, sf[0]
     move    r0, r1
-    jump    __L20470
-__L20469:
+    jump    __L20474
+__L20473:
     load    r0, sf[0]
     load    r0, r0[0]
     move    r1, 43
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L20471
+    jump    z, __L20475
     load    r1, sf[0]
     add     r2, r1, 1
     store   r2, sf[0]
     move    r0, r1
-__L20471:
-__L20470:
+__L20475:
+__L20474:
     load    r0, sf[5]
     move    r1, 0
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    nz, __L20481
+    jump    nz, __L20485
     load    r0, sf[5]
     move    r1, 16
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    nz, __L20481
+    jump    nz, __L20485
     move    r0, 0
-    jump    __L20482
-__L20481:
+    jump    __L20486
+__L20485:
     move    r0, 1
-__L20482:
+__L20486:
     test    r0
-    jump    z, __L20479
+    jump    z, __L20483
     load    r0, sf[0]
     move    r1, 0
     add     r0, r1
@@ -207331,6 +207398,54 @@ __L20482:
     move    r1, 48
     cmp     r0, r1
     move    eq, r0, 1, 0
+    test    r0
+    jump    z, __L20483
+    move    r0, 1
+    jump    __L20484
+__L20483:
+    move    r0, 0
+__L20484:
+    test    r0
+    jump    z, __L20481
+    load    r0, sf[0]
+    move    r1, 1
+    add     r0, r1
+    load    r0, r0[0]
+    move    r1, 120
+    cmp     r0, r1
+    move    eq, r0, 1, 0
+    test    r0
+    jump    nz, __L20487
+    load    r0, sf[0]
+    move    r1, 1
+    add     r0, r1
+    load    r0, r0[0]
+    move    r1, 88
+    cmp     r0, r1
+    move    eq, r0, 1, 0
+    test    r0
+    jump    nz, __L20487
+    move    r0, 0
+    jump    __L20488
+__L20487:
+    move    r0, 1
+__L20488:
+    test    r0
+    jump    z, __L20481
+    move    r0, 1
+    jump    __L20482
+__L20481:
+    move    r0, 0
+__L20482:
+    test    r0
+    jump    z, __L20479
+    load    r0, sf[0]
+    move    r1, 2
+    add     r0, r1
+    load    r0, r0[0]
+    push    r0
+    call    __crt_isxdigit
+    add     sp, 1
     test    r0
     jump    z, __L20479
     move    r0, 1
@@ -207340,54 +207455,6 @@ __L20479:
 __L20480:
     test    r0
     jump    z, __L20477
-    load    r0, sf[0]
-    move    r1, 1
-    add     r0, r1
-    load    r0, r0[0]
-    move    r1, 120
-    cmp     r0, r1
-    move    eq, r0, 1, 0
-    test    r0
-    jump    nz, __L20483
-    load    r0, sf[0]
-    move    r1, 1
-    add     r0, r1
-    load    r0, r0[0]
-    move    r1, 88
-    cmp     r0, r1
-    move    eq, r0, 1, 0
-    test    r0
-    jump    nz, __L20483
-    move    r0, 0
-    jump    __L20484
-__L20483:
-    move    r0, 1
-__L20484:
-    test    r0
-    jump    z, __L20477
-    move    r0, 1
-    jump    __L20478
-__L20477:
-    move    r0, 0
-__L20478:
-    test    r0
-    jump    z, __L20475
-    load    r0, sf[0]
-    move    r1, 2
-    add     r0, r1
-    load    r0, r0[0]
-    push    r0
-    call    __crt_isxdigit
-    add     sp, 1
-    test    r0
-    jump    z, __L20475
-    move    r0, 1
-    jump    __L20476
-__L20475:
-    move    r0, 0
-__L20476:
-    test    r0
-    jump    z, __L20473
     move    r0, 2
     push    r0
     add     r0, sf, 0
@@ -207398,14 +207465,14 @@ __L20476:
     move    r0, r2
     move    r0, 16
     store   r0, sf[5]
-    jump    __L20474
-__L20473:
+    jump    __L20478
+__L20477:
     load    r0, sf[5]
     move    r1, 0
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L20485
+    jump    z, __L20489
     load    r0, sf[0]
     move    r1, 0
     add     r0, r1
@@ -207414,56 +207481,56 @@ __L20473:
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L20487
+    jump    z, __L20491
     move    r0, 8
-    jump    __L20488
-__L20487:
+    jump    __L20492
+__L20491:
     move    r0, 10
-__L20488:
+__L20492:
     store   r0, sf[5]
-__L20485:
-__L20474:
+__L20489:
+__L20478:
     load    r0, sf[5]
     move    r1, 2
     cmp     r0, r1
-    jump    o, __L20493
+    jump    o, __L20497
     move    lt, r0, 1, 0
-    jump    __L20494
-__L20493:
+    jump    __L20498
+__L20497:
     move    lt, r0, 0, 1
-__L20494:
+__L20498:
     test    r0
-    jump    nz, __L20491
+    jump    nz, __L20495
     move    r0, 36
     load    r1, sf[5]
     cmp     r0, r1
-    jump    o, __L20495
+    jump    o, __L20499
     move    lt, r0, 1, 0
+    jump    __L20500
+__L20499:
+    move    lt, r0, 0, 1
+__L20500:
+    test    r0
+    jump    nz, __L20495
+    move    r0, 0
     jump    __L20496
 __L20495:
-    move    lt, r0, 0, 1
+    move    r0, 1
 __L20496:
     test    r0
-    jump    nz, __L20491
-    move    r0, 0
-    jump    __L20492
-__L20491:
-    move    r0, 1
-__L20492:
-    test    r0
-    jump    z, __L20489
+    jump    z, __L20493
     load    r0, sf[4]
     test    r0
-    jump    z, __L20497
+    jump    z, __L20501
     load    r0, sf[4]
     push    r0
     load    r0, sf[3]
     pop     r1
     store   r0, r1[0]
-__L20497:
+__L20501:
     move    r0, 0
     return
-__L20489:
+__L20493:
     load    r0, __K27
     load    r1, sf[5]
     div     r0, r1
@@ -207497,7 +207564,7 @@ __L20489:
     div     r4, r3, r0, r1
     move    r0, r3
     store   r0, sf[-6]
-__L20499:
+__L20503:
     load    r0, sf[0]
     load    r0, r0[0]
     push    r0
@@ -207507,16 +207574,16 @@ __L20499:
     load    r0, sf[5]
     load    r1, sf[-7]
     cmp     r0, r1
-    jump    o, __L20504
+    jump    o, __L20508
     move    le, r0, 1, 0
-    jump    __L20505
-__L20504:
+    jump    __L20509
+__L20508:
     move    lt, r0, 0, 1
-__L20505:
+__L20509:
     test    r0
-    jump    z, __L20502
-    jump    __L20501
-__L20502:
+    jump    z, __L20506
+    jump    __L20505
+__L20506:
     move    r0, 1
     store   r0, sf[-2]
     load    r0, sf[-5]
@@ -207526,23 +207593,6 @@ __L20502:
     xor     r0, r2
     xor     r1, r2
     cmp     r0, r1
-    jump    o, __L20510
-    move    lt, r0, 1, 0
-    jump    __L20511
-__L20510:
-    move    lt, r0, 0, 1
-__L20511:
-    test    r0
-    jump    nz, __L20508
-    load    r0, sf[-1]
-    load    r1, sf[-5]
-    cmp     r0, r1
-    move    eq, r0, 1, 0
-    test    r0
-    jump    z, __L20512
-    load    r0, sf[-6]
-    load    r1, sf[-7]
-    cmp     r0, r1
     jump    o, __L20514
     move    lt, r0, 1, 0
     jump    __L20515
@@ -207550,27 +207600,44 @@ __L20514:
     move    lt, r0, 0, 1
 __L20515:
     test    r0
-    jump    z, __L20512
+    jump    nz, __L20512
+    load    r0, sf[-1]
+    load    r1, sf[-5]
+    cmp     r0, r1
+    move    eq, r0, 1, 0
+    test    r0
+    jump    z, __L20516
+    load    r0, sf[-6]
+    load    r1, sf[-7]
+    cmp     r0, r1
+    jump    o, __L20518
+    move    lt, r0, 1, 0
+    jump    __L20519
+__L20518:
+    move    lt, r0, 0, 1
+__L20519:
+    test    r0
+    jump    z, __L20516
     move    r0, 1
+    jump    __L20517
+__L20516:
+    move    r0, 0
+__L20517:
+    test    r0
+    jump    nz, __L20512
+    move    r0, 0
     jump    __L20513
 __L20512:
-    move    r0, 0
+    move    r0, 1
 __L20513:
     test    r0
-    jump    nz, __L20508
-    move    r0, 0
-    jump    __L20509
-__L20508:
-    move    r0, 1
-__L20509:
-    test    r0
-    jump    z, __L20506
+    jump    z, __L20510
     load    r0, sf[7]
     push    r0
     move    r0, 1
     pop     r1
     store   r0, r1[0]
-__L20506:
+__L20510:
     load    r0, sf[-1]
     push    r0
     load    r0, sf[5]
@@ -207587,25 +207654,25 @@ __L20506:
     add     r2, r1, 1
     store   r2, sf[0]
     move    r0, r1
-__L20500:
-    jump    __L20499
-__L20501:
+__L20504:
+    jump    __L20503
+__L20505:
     load    r0, sf[4]
     test    r0
-    jump    z, __L20516
+    jump    z, __L20520
     load    r0, sf[4]
     push    r0
     load    r0, sf[-2]
     test    r0
-    jump    z, __L20518
+    jump    z, __L20522
     load    r0, sf[0]
-    jump    __L20519
-__L20518:
+    jump    __L20523
+__L20522:
     load    r0, sf[3]
-__L20519:
+__L20523:
     pop     r1
     store   r0, r1[0]
-__L20516:
+__L20520:
     load    r0, sf[-1]
     return
     move    r0, 0
@@ -207616,13 +207683,13 @@ __crt___sl_word:
     add     sp, -1
     move    r0, 0
     store   r0, sf[0]
-__L20520:
+__L20524:
     load    r0, sf[4]
     load    r1, sf[0]
     add     r0, r1
     load    r0, r0[0]
     test    r0
-    jump    z, __L20522
+    jump    z, __L20526
     load    r0, sf[3]
     load    r1, sf[0]
     add     r0, r1
@@ -207640,17 +207707,17 @@ __L20520:
     cmp     r0, r1
     move    ne, r0, 1, 0
     test    r0
-    jump    z, __L20523
+    jump    z, __L20527
     move    r0, 0
     return
-__L20523:
+__L20527:
     load    r1, sf[0]
     add     r2, r1, 1
     store   r2, sf[0]
     move    r0, r1
-__L20521:
-    jump    __L20520
-__L20522:
+__L20525:
+    jump    __L20524
+__L20526:
     load    r0, sf[0]
     return
     move    r0, 0
@@ -207666,7 +207733,7 @@ __crt_fgetc:
     cmp     r0, r1
     move    ne, r0, 1, 0
     test    r0
-    jump    z, __L20525
+    jump    z, __L20529
     load    r0, sf[3]
     add     r0, 2
     load    r0, r0[0]
@@ -207679,19 +207746,19 @@ __crt_fgetc:
     store   r0, r1[0]
     load    r0, sf[0]
     return
-__L20525:
+__L20529:
     load    r0, sf[3]
     load    r0, r0[0]
     move    r1, 0
     cmp     r0, r1
-    jump    o, __L20531
+    jump    o, __L20535
     move    lt, r0, 1, 0
-    jump    __L20532
-__L20531:
+    jump    __L20536
+__L20535:
     move    lt, r0, 0, 1
-__L20532:
+__L20536:
     test    r0
-    jump    nz, __L20529
+    jump    nz, __L20533
     load    r0, sf[3]
     add     r0, 1
     load    r0, r0[0]
@@ -207700,14 +207767,14 @@ __L20532:
     test    r0
     move    z, r0, 1, 0
     test    r0
-    jump    nz, __L20529
+    jump    nz, __L20533
     move    r0, 0
-    jump    __L20530
-__L20529:
+    jump    __L20534
+__L20533:
     move    r0, 1
-__L20530:
+__L20534:
     test    r0
-    jump    z, __L20527
+    jump    z, __L20531
     load    r0, sf[3]
     add     r0, 4
     push    r0
@@ -207716,35 +207783,35 @@ __L20530:
     store   r0, r1[0]
     move    r0, -1
     return
-__L20527:
+__L20531:
     load    r0, sf[3]
     add     r0, 3
     load    r0, r0[0]
     test    r0
-    jump    z, __L20535
+    jump    z, __L20539
     load    r0, sf[3]
     add     r0, 1
     load    r0, r0[0]
     move    r1, 64
     and     r0, r1
     test    r0
-    jump    z, __L20535
+    jump    z, __L20539
     move    r0, 1
-    jump    __L20536
-__L20535:
+    jump    __L20540
+__L20539:
     move    r0, 0
-__L20536:
+__L20540:
     test    r0
-    jump    z, __L20533
+    jump    z, __L20537
     move    r0, -1
     return
-__L20533:
+__L20537:
     load    r0, sf[3]
     push    r0
     call    __crt___sio_isfile
     add     sp, 1
     test    r0
-    jump    z, __L20537
+    jump    z, __L20541
     load    r0, sf[3]
     add     r0, 5
     push    r0
@@ -207755,40 +207822,40 @@ __L20533:
     add     sp, 1
     pop     r1
     store   r0, r1[0]
-__L20537:
+__L20541:
     load    r0, sf[3]
     add     r0, 1
     load    r0, r0[0]
     move    r1, 8
     and     r0, r1
     test    r0
-    jump    z, __L20539
+    jump    z, __L20543
     load    r0, sf[3]
     load    r0, r0[0]
     push    r0
     call    __crt___io_getb
     add     sp, 1
     store   r0, sf[0]
-    jump    __L20540
-__L20539:
+    jump    __L20544
+__L20543:
     load    r0, sf[3]
     load    r0, r0[0]
     push    r0
     call    __crt___io_getc
     add     sp, 1
     store   r0, sf[0]
-__L20540:
+__L20544:
     load    r0, sf[0]
     move    r1, 0
     cmp     r0, r1
-    jump    o, __L20543
+    jump    o, __L20547
     move    lt, r0, 1, 0
-    jump    __L20544
-__L20543:
+    jump    __L20548
+__L20547:
     move    lt, r0, 0, 1
-__L20544:
+__L20548:
     test    r0
-    jump    z, __L20541
+    jump    z, __L20545
     load    r0, sf[3]
     add     r0, 3
     push    r0
@@ -207797,7 +207864,7 @@ __L20544:
     store   r0, r1[0]
     move    r0, -1
     return
-__L20541:
+__L20545:
     load    r0, sf[0]
     return
     move    r0, 0
@@ -207822,24 +207889,24 @@ __crt___sio_strdup:
     test    r0
     move    z, r0, 1, 0
     test    r0
-    jump    z, __L20545
+    jump    z, __L20549
     move    r0, 0
     return
-__L20545:
+__L20549:
     move    r0, 0
     store   r0, sf[-1]
-__L20547:
+__L20551:
     load    r0, sf[-1]
     load    r1, sf[0]
     cmp     r0, r1
-    jump    o, __L20550
+    jump    o, __L20554
     move    le, r0, 1, 0
-    jump    __L20551
-__L20550:
+    jump    __L20555
+__L20554:
     move    lt, r0, 0, 1
-__L20551:
+__L20555:
     test    r0
-    jump    z, __L20549
+    jump    z, __L20553
     load    r0, sf[-2]
     load    r1, sf[-1]
     add     r0, r1
@@ -207850,13 +207917,13 @@ __L20551:
     load    r0, r0[0]
     pop     r1
     store   r0, r1[0]
-__L20548:
+__L20552:
     load    r1, sf[-1]
     add     r2, r1, 1
     store   r2, sf[-1]
     move    r0, r1
-    jump    __L20547
-__L20549:
+    jump    __L20551
+__L20553:
     load    r0, sf[-2]
     return
     move    r0, 0
@@ -207871,114 +207938,114 @@ __crt___sio_mode:
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L20552
+    jump    z, __L20556
     move    r0, 1
     store   r0, sf[0]
-    jump    __L20553
-__L20552:
+    jump    __L20557
+__L20556:
     load    r0, sf[3]
     load    r0, r0[0]
     move    r1, 119
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L20554
+    jump    z, __L20558
     move    r0, 2
     move    r1, 256
     or      r0, r1
     store   r0, sf[0]
-    jump    __L20555
-__L20554:
+    jump    __L20559
+__L20558:
     load    r0, sf[3]
     load    r0, r0[0]
     move    r1, 97
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L20556
+    jump    z, __L20560
     move    r0, 2
     move    r1, 4
     or      r0, r1
     store   r0, sf[0]
-    jump    __L20557
-__L20556:
+    jump    __L20561
+__L20560:
     move    r0, 0
     return
+__L20561:
+__L20559:
 __L20557:
-__L20555:
-__L20553:
     load    r1, sf[3]
     add     r2, r1, 1
     store   r2, sf[3]
     move    r0, r1
-__L20558:
+__L20562:
     load    r0, sf[3]
     load    r0, r0[0]
     test    r0
-    jump    z, __L20560
+    jump    z, __L20564
     load    r0, sf[3]
     load    r0, r0[0]
     move    r1, 98
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L20561
-    load    r0, sf[0]
-    move    r1, 8
-    or      r0, r1
-    store   r0, sf[0]
-    jump    __L20562
-__L20561:
-    load    r0, sf[3]
-    load    r0, r0[0]
-    move    r1, 43
-    cmp     r0, r1
-    move    eq, r0, 1, 0
-    test    r0
-    jump    z, __L20563
-    load    r0, sf[0]
-    move    r1, 1
-    or      r0, r1
-    move    r1, 2
-    or      r0, r1
-    store   r0, sf[0]
-    jump    __L20564
-__L20563:
-    load    r0, sf[3]
-    load    r0, r0[0]
-    move    r1, 120
-    cmp     r0, r1
-    move    eq, r0, 1, 0
-    test    r0
     jump    z, __L20565
     load    r0, sf[0]
-    move    r1, 128
+    move    r1, 8
     or      r0, r1
     store   r0, sf[0]
     jump    __L20566
 __L20565:
     load    r0, sf[3]
     load    r0, r0[0]
-    move    r1, 116
+    move    r1, 43
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
     jump    z, __L20567
+    load    r0, sf[0]
+    move    r1, 1
+    or      r0, r1
+    move    r1, 2
+    or      r0, r1
+    store   r0, sf[0]
     jump    __L20568
 __L20567:
+    load    r0, sf[3]
+    load    r0, r0[0]
+    move    r1, 120
+    cmp     r0, r1
+    move    eq, r0, 1, 0
+    test    r0
+    jump    z, __L20569
+    load    r0, sf[0]
+    move    r1, 128
+    or      r0, r1
+    store   r0, sf[0]
+    jump    __L20570
+__L20569:
+    load    r0, sf[3]
+    load    r0, r0[0]
+    move    r1, 116
+    cmp     r0, r1
+    move    eq, r0, 1, 0
+    test    r0
+    jump    z, __L20571
+    jump    __L20572
+__L20571:
     move    r0, 0
     return
+__L20572:
+__L20570:
 __L20568:
 __L20566:
-__L20564:
-__L20562:
-__L20559:
+__L20563:
     load    r1, sf[3]
     add     r2, r1, 1
     store   r2, sf[3]
     move    r0, r1
-    jump    __L20558
-__L20560:
+    jump    __L20562
+__L20564:
     load    r0, sf[0]
     return
     move    r0, 0
@@ -207993,14 +208060,14 @@ __crt___sio_isfile:
     move    r1, r0
     pop     r0
     cmp     r0, r1
-    jump    o, __L20571
+    jump    o, __L20575
     move    le, r0, 1, 0
-    jump    __L20572
-__L20571:
+    jump    __L20576
+__L20575:
     move    lt, r0, 0, 1
-__L20572:
+__L20576:
     test    r0
-    jump    z, __L20569
+    jump    z, __L20573
     load    r0, sf[3]
     add     r0, 1
     load    r0, r0[0]
@@ -208009,12 +208076,12 @@ __L20572:
     test    r0
     move    z, r0, 1, 0
     test    r0
-    jump    z, __L20569
+    jump    z, __L20573
     move    r0, 1
-    jump    __L20570
-__L20569:
+    jump    __L20574
+__L20573:
     move    r0, 0
-__L20570:
+__L20574:
     return
     move    r0, 0
     return
@@ -208025,14 +208092,14 @@ __crt___sio_prepare_write:
     load    r0, r0[0]
     move    r1, 0
     cmp     r0, r1
-    jump    o, __L20577
+    jump    o, __L20581
     move    lt, r0, 1, 0
-    jump    __L20578
-__L20577:
+    jump    __L20582
+__L20581:
     move    lt, r0, 0, 1
-__L20578:
+__L20582:
     test    r0
-    jump    nz, __L20575
+    jump    nz, __L20579
     load    r0, sf[3]
     add     r0, 1
     load    r0, r0[0]
@@ -208041,14 +208108,14 @@ __L20578:
     test    r0
     move    z, r0, 1, 0
     test    r0
-    jump    nz, __L20575
+    jump    nz, __L20579
     move    r0, 0
-    jump    __L20576
-__L20575:
+    jump    __L20580
+__L20579:
     move    r0, 1
-__L20576:
+__L20580:
     test    r0
-    jump    z, __L20573
+    jump    z, __L20577
     load    r0, sf[3]
     add     r0, 4
     push    r0
@@ -208057,7 +208124,7 @@ __L20576:
     store   r0, r1[0]
     move    r0, 0
     return
-__L20573:
+__L20577:
     load    r0, sf[3]
     add     r0, 2
     push    r0
@@ -208070,20 +208137,20 @@ __L20573:
     move    r1, 4
     and     r0, r1
     test    r0
-    jump    z, __L20581
+    jump    z, __L20585
     load    r0, sf[3]
     push    r0
     call    __crt___sio_isfile
     add     sp, 1
     test    r0
-    jump    z, __L20581
+    jump    z, __L20585
     move    r0, 1
-    jump    __L20582
-__L20581:
+    jump    __L20586
+__L20585:
     move    r0, 0
-__L20582:
+__L20586:
     test    r0
-    jump    z, __L20579
+    jump    z, __L20583
     move    r0, 2199023255551
     push    r0
     load    r0, sf[3]
@@ -208091,7 +208158,7 @@ __L20582:
     push    r0
     call    __crt___io_seek
     add     sp, 2
-__L20579:
+__L20583:
     move    r0, 1
     return
     move    r0, 0
@@ -208099,28 +208166,6 @@ __L20579:
 
 // __sio_put
 __crt___sio_put:
-    load    r0, sf[3]
-    add     r0, 2
-    load    r0, r0[0]
-    push    r0
-    load    r0, sf[3]
-    add     r0, 1
-    load    r0, r0[0]
-    move    r1, r0
-    pop     r0
-    cmp     r0, r1
-    jump    o, __L20585
-    move    le, r0, 1, 0
-    jump    __L20586
-__L20585:
-    move    lt, r0, 0, 1
-__L20586:
-    test    r0
-    jump    z, __L20583
-    load    r0, sf[3]
-    push    r0
-    call    __crt___sio_grow
-    add     sp, 1
     load    r0, sf[3]
     add     r0, 2
     load    r0, r0[0]
@@ -208139,9 +208184,31 @@ __L20589:
 __L20590:
     test    r0
     jump    z, __L20587
+    load    r0, sf[3]
+    push    r0
+    call    __crt___sio_grow
+    add     sp, 1
+    load    r0, sf[3]
+    add     r0, 2
+    load    r0, r0[0]
+    push    r0
+    load    r0, sf[3]
+    add     r0, 1
+    load    r0, r0[0]
+    move    r1, r0
+    pop     r0
+    cmp     r0, r1
+    jump    o, __L20593
+    move    le, r0, 1, 0
+    jump    __L20594
+__L20593:
+    move    lt, r0, 0, 1
+__L20594:
+    test    r0
+    jump    z, __L20591
     return
+__L20591:
 __L20587:
-__L20583:
     load    r0, sf[3]
     load    r0, r0[0]
     push    r0
@@ -208175,21 +208242,21 @@ __crt___sio_field:
     load    r0, sf[0]
     move    r1, 0
     cmp     r0, r1
-    jump    o, __L20593
+    jump    o, __L20597
     move    lt, r0, 1, 0
-    jump    __L20594
-__L20593:
+    jump    __L20598
+__L20597:
     move    lt, r0, 0, 1
-__L20594:
+__L20598:
     test    r0
-    jump    z, __L20591
+    jump    z, __L20595
     move    r0, 0
     store   r0, sf[0]
-__L20591:
+__L20595:
     load    r0, sf[4]
     load    r0, r0[0]
     test    r0
-    jump    z, __L20595
+    jump    z, __L20599
     load    r0, sf[6]
     push    r0
     load    r0, sf[5]
@@ -208214,23 +208281,23 @@ __L20591:
     push    r0
     call    __crt___sio_rep
     add     sp, 3
-    jump    __L20596
-__L20595:
+    jump    __L20600
+__L20599:
     load    r0, sf[4]
     add     r0, 3
     load    r0, r0[0]
     test    r0
-    jump    z, __L20599
+    jump    z, __L20603
     load    r0, sf[9]
     test    r0
-    jump    z, __L20599
+    jump    z, __L20603
     move    r0, 1
-    jump    __L20600
-__L20599:
+    jump    __L20604
+__L20603:
     move    r0, 0
-__L20600:
+__L20604:
     test    r0
-    jump    z, __L20597
+    jump    z, __L20601
     load    r0, sf[6]
     push    r0
     load    r0, sf[5]
@@ -208255,8 +208322,8 @@ __L20600:
     push    r0
     call    __crt___sio_puts
     add     sp, 3
-    jump    __L20598
-__L20597:
+    jump    __L20602
+__L20601:
     load    r0, sf[0]
     push    r0
     move    r0, 32
@@ -208281,8 +208348,8 @@ __L20597:
     push    r0
     call    __crt___sio_puts
     add     sp, 3
-__L20598:
-__L20596:
+__L20602:
+__L20600:
     move    r0, 0
     return
 
@@ -208306,23 +208373,23 @@ __crt___sio_fmt_int:
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L20601
-    move    r0, __W2572+1
-    jump    __L20602
-__L20601:
-    move    r0, __W2573+1
-__L20602:
+    jump    z, __L20605
+    move    r0, __W2577+1
+    jump    __L20606
+__L20605:
+    move    r0, __W2578+1
+__L20606:
     store   r0, sf[-250]
     load    r0, sf[-248]
     move    r1, 111
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L20603
-__L20605:
+    jump    z, __L20607
+__L20609:
     load    r0, sf[-249]
     test    r0
-    jump    z, __L20607
+    jump    z, __L20611
     add     r0, sf, -79
     push    r0
     load    r1, sf[-244]
@@ -208350,47 +208417,47 @@ __L20605:
     move    r1, 3
     rshift  r0, r1
     store   r0, sf[-249]
-__L20606:
-    jump    __L20605
+__L20610:
+    jump    __L20609
+__L20611:
+    jump    __L20608
 __L20607:
-    jump    __L20604
-__L20603:
     load    r0, sf[-248]
     move    r1, 120
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    nz, __L20612
+    jump    nz, __L20616
     load    r0, sf[-248]
     move    r1, 88
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    nz, __L20612
+    jump    nz, __L20616
     move    r0, 0
-    jump    __L20613
-__L20612:
+    jump    __L20617
+__L20616:
     move    r0, 1
-__L20613:
+__L20617:
     test    r0
-    jump    nz, __L20610
+    jump    nz, __L20614
     load    r0, sf[-248]
     move    r1, 112
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    nz, __L20610
+    jump    nz, __L20614
     move    r0, 0
-    jump    __L20611
-__L20610:
-    move    r0, 1
-__L20611:
-    test    r0
-    jump    z, __L20608
+    jump    __L20615
 __L20614:
+    move    r0, 1
+__L20615:
+    test    r0
+    jump    z, __L20612
+__L20618:
     load    r0, sf[-249]
     test    r0
-    jump    z, __L20616
+    jump    z, __L20620
     add     r0, sf, -79
     push    r0
     load    r1, sf[-244]
@@ -208419,15 +208486,15 @@ __L20614:
     move    r1, 4
     rshift  r0, r1
     store   r0, sf[-249]
-__L20615:
-    jump    __L20614
-__L20616:
-    jump    __L20609
-__L20608:
-__L20617:
+__L20619:
+    jump    __L20618
+__L20620:
+    jump    __L20613
+__L20612:
+__L20621:
     load    r0, sf[-249]
     test    r0
-    jump    z, __L20619
+    jump    z, __L20623
     add     r0, sf, -79
     push    r0
     load    r1, sf[-244]
@@ -208464,79 +208531,28 @@ __L20617:
     call    __crt___udivmod
     move    r0, r2
     store   r0, sf[-249]
-__L20618:
-    jump    __L20617
-__L20619:
-__L20609:
-__L20604:
+__L20622:
+    jump    __L20621
+__L20623:
+__L20613:
+__L20608:
     load    r0, sf[4]
     add     r0, 6
     load    r0, r0[0]
     move    r1, 0
     cmp     r0, r1
-    jump    o, __L20622
+    jump    o, __L20626
     move    lt, r0, 1, 0
-    jump    __L20623
-__L20622:
+    jump    __L20627
+__L20626:
     move    lt, r0, 0, 1
-__L20623:
+__L20627:
     test    r0
-    jump    z, __L20620
+    jump    z, __L20624
     load    r0, sf[-244]
     move    r1, 0
     cmp     r0, r1
     move    eq, r0, 1, 0
-    test    r0
-    jump    z, __L20624
-    add     r0, sf, -79
-    push    r0
-    load    r1, sf[-244]
-    add     r2, r1, 1
-    store   r2, sf[-244]
-    move    r0, r1
-    move    r1, r0
-    pop     r0
-    add     r0, r1
-    push    r0
-    move    r0, 48
-    pop     r1
-    store   r0, r1[0]
-__L20624:
-    jump    __L20621
-__L20620:
-__L20626:
-    load    r0, sf[-244]
-    push    r0
-    load    r0, sf[4]
-    add     r0, 6
-    load    r0, r0[0]
-    move    r1, r0
-    pop     r0
-    cmp     r0, r1
-    jump    o, __L20631
-    move    lt, r0, 1, 0
-    jump    __L20632
-__L20631:
-    move    lt, r0, 0, 1
-__L20632:
-    test    r0
-    jump    z, __L20629
-    load    r0, sf[-244]
-    move    r1, 79
-    cmp     r0, r1
-    jump    o, __L20633
-    move    lt, r0, 1, 0
-    jump    __L20634
-__L20633:
-    move    lt, r0, 0, 1
-__L20634:
-    test    r0
-    jump    z, __L20629
-    move    r0, 1
-    jump    __L20630
-__L20629:
-    move    r0, 0
-__L20630:
     test    r0
     jump    z, __L20628
     add     r0, sf, -79
@@ -208552,62 +208568,44 @@ __L20630:
     move    r0, 48
     pop     r1
     store   r0, r1[0]
-__L20627:
-    jump    __L20626
 __L20628:
-__L20621:
-    load    r0, sf[-248]
-    move    r1, 111
-    cmp     r0, r1
-    move    eq, r0, 1, 0
-    test    r0
-    jump    z, __L20639
-    load    r0, sf[4]
-    add     r0, 4
-    load    r0, r0[0]
-    test    r0
-    jump    z, __L20639
-    move    r0, 1
-    jump    __L20640
-__L20639:
-    move    r0, 0
-__L20640:
-    test    r0
-    jump    z, __L20637
+    jump    __L20625
+__L20624:
+__L20630:
     load    r0, sf[-244]
-    move    r1, 0
-    cmp     r0, r1
-    move    eq, r0, 1, 0
-    test    r0
-    jump    nz, __L20641
-    add     r0, sf, -79
     push    r0
-    load    r0, sf[-244]
-    move    r1, 1
-    sub     r0, r1
+    load    r0, sf[4]
+    add     r0, 6
+    load    r0, r0[0]
     move    r1, r0
     pop     r0
-    add     r0, r1
-    load    r0, r0[0]
-    move    r1, 48
     cmp     r0, r1
-    move    ne, r0, 1, 0
+    jump    o, __L20635
+    move    lt, r0, 1, 0
+    jump    __L20636
+__L20635:
+    move    lt, r0, 0, 1
+__L20636:
     test    r0
-    jump    nz, __L20641
-    move    r0, 0
-    jump    __L20642
-__L20641:
-    move    r0, 1
-__L20642:
-    test    r0
-    jump    z, __L20637
-    move    r0, 1
+    jump    z, __L20633
+    load    r0, sf[-244]
+    move    r1, 79
+    cmp     r0, r1
+    jump    o, __L20637
+    move    lt, r0, 1, 0
     jump    __L20638
 __L20637:
-    move    r0, 0
+    move    lt, r0, 0, 1
 __L20638:
     test    r0
-    jump    z, __L20635
+    jump    z, __L20633
+    move    r0, 1
+    jump    __L20634
+__L20633:
+    move    r0, 0
+__L20634:
+    test    r0
+    jump    z, __L20632
     add     r0, sf, -79
     push    r0
     load    r1, sf[-244]
@@ -208621,17 +208619,46 @@ __L20638:
     move    r0, 48
     pop     r1
     store   r0, r1[0]
-__L20635:
+__L20631:
+    jump    __L20630
+__L20632:
+__L20625:
     load    r0, sf[-248]
-    move    r1, 100
+    move    r1, 111
+    cmp     r0, r1
+    move    eq, r0, 1, 0
+    test    r0
+    jump    z, __L20643
+    load    r0, sf[4]
+    add     r0, 4
+    load    r0, r0[0]
+    test    r0
+    jump    z, __L20643
+    move    r0, 1
+    jump    __L20644
+__L20643:
+    move    r0, 0
+__L20644:
+    test    r0
+    jump    z, __L20641
+    load    r0, sf[-244]
+    move    r1, 0
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
     jump    nz, __L20645
-    load    r0, sf[-248]
-    move    r1, 105
+    add     r0, sf, -79
+    push    r0
+    load    r0, sf[-244]
+    move    r1, 1
+    sub     r0, r1
+    move    r1, r0
+    pop     r0
+    add     r0, r1
+    load    r0, r0[0]
+    move    r1, 48
     cmp     r0, r1
-    move    eq, r0, 1, 0
+    move    ne, r0, 1, 0
     test    r0
     jump    nz, __L20645
     move    r0, 0
@@ -208640,10 +208667,50 @@ __L20645:
     move    r0, 1
 __L20646:
     test    r0
-    jump    z, __L20643
-    load    r0, sf[6]
+    jump    z, __L20641
+    move    r0, 1
+    jump    __L20642
+__L20641:
+    move    r0, 0
+__L20642:
+    test    r0
+    jump    z, __L20639
+    add     r0, sf, -79
+    push    r0
+    load    r1, sf[-244]
+    add     r2, r1, 1
+    store   r2, sf[-244]
+    move    r0, r1
+    move    r1, r0
+    pop     r0
+    add     r0, r1
+    push    r0
+    move    r0, 48
+    pop     r1
+    store   r0, r1[0]
+__L20639:
+    load    r0, sf[-248]
+    move    r1, 100
+    cmp     r0, r1
+    move    eq, r0, 1, 0
+    test    r0
+    jump    nz, __L20649
+    load    r0, sf[-248]
+    move    r1, 105
+    cmp     r0, r1
+    move    eq, r0, 1, 0
+    test    r0
+    jump    nz, __L20649
+    move    r0, 0
+    jump    __L20650
+__L20649:
+    move    r0, 1
+__L20650:
     test    r0
     jump    z, __L20647
+    load    r0, sf[6]
+    test    r0
+    jump    z, __L20651
     add     r0, sf, -83
     push    r0
     load    r1, sf[-245]
@@ -208657,13 +208724,13 @@ __L20646:
     move    r0, 45
     pop     r1
     store   r0, r1[0]
-    jump    __L20648
-__L20647:
+    jump    __L20652
+__L20651:
     load    r0, sf[4]
     add     r0, 1
     load    r0, r0[0]
     test    r0
-    jump    z, __L20649
+    jump    z, __L20653
     add     r0, sf, -83
     push    r0
     load    r1, sf[-245]
@@ -208677,13 +208744,13 @@ __L20647:
     move    r0, 43
     pop     r1
     store   r0, r1[0]
-    jump    __L20650
-__L20649:
+    jump    __L20654
+__L20653:
     load    r0, sf[4]
     add     r0, 2
     load    r0, r0[0]
     test    r0
-    jump    z, __L20651
+    jump    z, __L20655
     add     r0, sf, -83
     push    r0
     load    r1, sf[-245]
@@ -208697,41 +208764,41 @@ __L20649:
     move    r0, 32
     pop     r1
     store   r0, r1[0]
-__L20651:
-__L20650:
-__L20648:
-__L20643:
+__L20655:
+__L20654:
+__L20652:
+__L20647:
     load    r0, sf[-248]
     move    r1, 120
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    nz, __L20659
+    jump    nz, __L20663
     load    r0, sf[-248]
     move    r1, 88
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    nz, __L20659
+    jump    nz, __L20663
     move    r0, 0
-    jump    __L20660
-__L20659:
+    jump    __L20664
+__L20663:
     move    r0, 1
-__L20660:
+__L20664:
     test    r0
-    jump    z, __L20657
+    jump    z, __L20661
     load    r0, sf[4]
     add     r0, 4
     load    r0, r0[0]
     test    r0
-    jump    z, __L20657
+    jump    z, __L20661
     move    r0, 1
-    jump    __L20658
-__L20657:
+    jump    __L20662
+__L20661:
     move    r0, 0
-__L20658:
+__L20662:
     test    r0
-    jump    z, __L20655
+    jump    z, __L20659
     load    r0, sf[5]
     push    r0
     move    r0, 0
@@ -208740,14 +208807,14 @@ __L20658:
     cmp     r0, r1
     move    ne, r0, 1, 0
     test    r0
-    jump    z, __L20655
+    jump    z, __L20659
     move    r0, 1
-    jump    __L20656
-__L20655:
+    jump    __L20660
+__L20659:
     move    r0, 0
-__L20656:
+__L20660:
     test    r0
-    jump    z, __L20653
+    jump    z, __L20657
     add     r0, sf, -83
     push    r0
     load    r1, sf[-245]
@@ -208774,13 +208841,13 @@ __L20656:
     load    r0, sf[-248]
     pop     r1
     store   r0, r1[0]
-__L20653:
+__L20657:
     load    r0, sf[-248]
     move    r1, 112
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L20661
+    jump    z, __L20665
     add     r0, sf, -83
     push    r0
     load    r1, sf[-245]
@@ -208807,23 +208874,23 @@ __L20653:
     move    r0, 120
     pop     r1
     store   r0, r1[0]
-__L20661:
+__L20665:
     load    r0, sf[-244]
     move    r1, 1
     sub     r0, r1
     store   r0, sf[-247]
-__L20663:
+__L20667:
     move    r0, 0
     load    r1, sf[-247]
     cmp     r0, r1
-    jump    o, __L20666
+    jump    o, __L20670
     move    le, r0, 1, 0
-    jump    __L20667
-__L20666:
+    jump    __L20671
+__L20670:
     move    lt, r0, 0, 1
-__L20667:
+__L20671:
     test    r0
-    jump    z, __L20665
+    jump    z, __L20669
     add     r0, sf, -243
     push    r0
     load    r1, sf[-246]
@@ -208840,24 +208907,24 @@ __L20667:
     load    r0, r0[0]
     pop     r1
     store   r0, r1[0]
-__L20664:
+__L20668:
     load    r1, sf[-247]
     add     r2, r1, -1
     store   r2, sf[-247]
     move    r0, r1
-    jump    __L20663
-__L20665:
+    jump    __L20667
+__L20669:
     load    r0, sf[4]
     add     r0, 6
     load    r0, r0[0]
     move    r1, 0
     cmp     r0, r1
-    jump    o, __L20668
+    jump    o, __L20672
     move    lt, r0, 1, 0
-    jump    __L20669
-__L20668:
+    jump    __L20673
+__L20672:
     move    lt, r0, 0, 1
-__L20669:
+__L20673:
     push    r0
     load    r0, sf[-246]
     push    r0
@@ -208903,9 +208970,35 @@ __crt___sio_fmt_float:
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    nz, __L20674
+    jump    nz, __L20678
     load    r0, sf[-2]
     move    r1, 70
+    cmp     r0, r1
+    move    eq, r0, 1, 0
+    test    r0
+    jump    nz, __L20678
+    move    r0, 0
+    jump    __L20679
+__L20678:
+    move    r0, 1
+__L20679:
+    test    r0
+    jump    nz, __L20676
+    load    r0, sf[-2]
+    move    r1, 71
+    cmp     r0, r1
+    move    eq, r0, 1, 0
+    test    r0
+    jump    nz, __L20676
+    move    r0, 0
+    jump    __L20677
+__L20676:
+    move    r0, 1
+__L20677:
+    test    r0
+    jump    nz, __L20674
+    load    r0, sf[-2]
+    move    r1, 65
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
@@ -208915,32 +209008,6 @@ __crt___sio_fmt_float:
 __L20674:
     move    r0, 1
 __L20675:
-    test    r0
-    jump    nz, __L20672
-    load    r0, sf[-2]
-    move    r1, 71
-    cmp     r0, r1
-    move    eq, r0, 1, 0
-    test    r0
-    jump    nz, __L20672
-    move    r0, 0
-    jump    __L20673
-__L20672:
-    move    r0, 1
-__L20673:
-    test    r0
-    jump    nz, __L20670
-    load    r0, sf[-2]
-    move    r1, 65
-    cmp     r0, r1
-    move    eq, r0, 1, 0
-    test    r0
-    jump    nz, __L20670
-    move    r0, 0
-    jump    __L20671
-__L20670:
-    move    r0, 1
-__L20671:
     store   r0, sf[-3]
     load    r0, sf[4]
     add     r0, 6
@@ -208950,7 +209017,7 @@ __L20671:
     store   r0, sf[-73]
     load    r0, sf[-1]
     test    r0
-    jump    z, __L20676
+    jump    z, __L20680
     add     r0, sf, -8
     push    r0
     load    r1, sf[-73]
@@ -208964,13 +209031,13 @@ __L20671:
     move    r0, 45
     pop     r1
     store   r0, r1[0]
-    jump    __L20677
-__L20676:
+    jump    __L20681
+__L20680:
     load    r0, sf[4]
     add     r0, 1
     load    r0, r0[0]
     test    r0
-    jump    z, __L20678
+    jump    z, __L20682
     add     r0, sf, -8
     push    r0
     load    r1, sf[-73]
@@ -208984,13 +209051,13 @@ __L20676:
     move    r0, 43
     pop     r1
     store   r0, r1[0]
-    jump    __L20679
-__L20678:
+    jump    __L20683
+__L20682:
     load    r0, sf[4]
     add     r0, 2
     load    r0, r0[0]
     test    r0
-    jump    z, __L20680
+    jump    z, __L20684
     add     r0, sf, -8
     push    r0
     load    r1, sf[-73]
@@ -209004,9 +209071,9 @@ __L20678:
     move    r0, 32
     pop     r1
     store   r0, r1[0]
-__L20680:
-__L20679:
-__L20677:
+__L20684:
+__L20683:
+__L20681:
     load    r0, sf[0]
     push    r0
     load    r0, __K29
@@ -209020,7 +209087,7 @@ __L20677:
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L20682
+    jump    z, __L20686
     load    r0, sf[0]
     push    r0
     load    r0, __K31
@@ -209036,26 +209103,26 @@ __L20677:
     store   r0, sf[-880]
     load    r0, sf[-880]
     test    r0
-    jump    z, __L20684
-    load    r0, sf[-3]
-    test    r0
-    jump    z, __L20686
-    move    r0, __W2574+1
-    jump    __L20687
-__L20686:
-    move    r0, __W2575+1
-__L20687:
-    jump    __L20685
-__L20684:
-    load    r0, sf[-3]
-    test    r0
     jump    z, __L20688
-    move    r0, __W2576+1
+    load    r0, sf[-3]
+    test    r0
+    jump    z, __L20690
+    move    r0, __W2579+1
+    jump    __L20691
+__L20690:
+    move    r0, __W2580+1
+__L20691:
     jump    __L20689
 __L20688:
-    move    r0, __W2577+1
+    load    r0, sf[-3]
+    test    r0
+    jump    z, __L20692
+    move    r0, __W2581+1
+    jump    __L20693
+__L20692:
+    move    r0, __W2582+1
+__L20693:
 __L20689:
-__L20685:
     store   r0, sf[-881]
     move    r0, 0
     push    r0
@@ -209074,7 +209141,7 @@ __L20685:
     call    __crt___sio_field
     add     sp, 7
     return
-__L20682:
+__L20686:
     add     r0, sf, -77
     push    r0
     add     r0, sf, -72
@@ -209103,20 +209170,20 @@ __L20682:
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    nz, __L20692
+    jump    nz, __L20696
     load    r0, sf[-2]
     move    r1, 65
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    nz, __L20692
+    jump    nz, __L20696
     move    r0, 0
-    jump    __L20693
-__L20692:
+    jump    __L20697
+__L20696:
     move    r0, 1
-__L20693:
+__L20697:
     test    r0
-    jump    z, __L20690
+    jump    z, __L20694
     add     r0, sf, -8
     push    r0
     load    r1, sf[-73]
@@ -209142,12 +209209,12 @@ __L20693:
     push    r0
     load    r0, sf[-3]
     test    r0
-    jump    z, __L20694
+    jump    z, __L20698
     move    r0, 88
-    jump    __L20695
-__L20694:
+    jump    __L20699
+__L20698:
     move    r0, 120
-__L20695:
+__L20699:
     pop     r1
     store   r0, r1[0]
     load    r0, sf[-3]
@@ -209164,22 +209231,22 @@ __L20695:
     push    r0
     call    __crt___sio_body_a
     add     sp, 5
-    jump    __L20691
-__L20690:
+    jump    __L20695
+__L20694:
     load    r0, sf[-4]
     move    r1, 0
     cmp     r0, r1
-    jump    o, __L20698
+    jump    o, __L20702
     move    lt, r0, 1, 0
-    jump    __L20699
-__L20698:
+    jump    __L20703
+__L20702:
     move    lt, r0, 0, 1
-__L20699:
+__L20703:
     test    r0
-    jump    z, __L20696
+    jump    z, __L20700
     move    r0, 6
     store   r0, sf[-4]
-__L20696:
+__L20700:
     add     r0, sf, -879
     push    r0
     load    f0, sf[5]
@@ -209191,20 +209258,20 @@ __L20696:
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    nz, __L20702
+    jump    nz, __L20706
     load    r0, sf[-2]
     move    r1, 70
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    nz, __L20702
+    jump    nz, __L20706
     move    r0, 0
-    jump    __L20703
-__L20702:
+    jump    __L20707
+__L20706:
     move    r0, 1
-__L20703:
+__L20707:
     test    r0
-    jump    z, __L20700
+    jump    z, __L20704
     add     r0, sf, -879
     add     r0, 1
     load    r0, r0[0]
@@ -209227,27 +209294,27 @@ __L20703:
     push    r0
     call    __crt___sio_body_f
     add     sp, 4
-    jump    __L20701
-__L20700:
+    jump    __L20705
+__L20704:
     load    r0, sf[-2]
     move    r1, 101
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    nz, __L20706
+    jump    nz, __L20710
     load    r0, sf[-2]
     move    r1, 69
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    nz, __L20706
+    jump    nz, __L20710
     move    r0, 0
-    jump    __L20707
-__L20706:
+    jump    __L20711
+__L20710:
     move    r0, 1
-__L20707:
+__L20711:
     test    r0
-    jump    z, __L20704
+    jump    z, __L20708
     load    r0, sf[-4]
     move    r1, 1
     add     r0, r1
@@ -209270,19 +209337,19 @@ __L20707:
     push    r0
     call    __crt___sio_body_e
     add     sp, 5
-    jump    __L20705
-__L20704:
+    jump    __L20709
+__L20708:
     load    r0, sf[-4]
     move    r1, 0
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L20708
+    jump    z, __L20712
     move    r0, 1
-    jump    __L20709
-__L20708:
+    jump    __L20713
+__L20712:
     load    r0, sf[-4]
-__L20709:
+__L20713:
     store   r0, sf[-882]
     move    r0, -1
     store   r0, sf[-885]
@@ -209298,46 +209365,46 @@ __L20709:
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L20710
+    jump    z, __L20714
     move    r0, 0
-    jump    __L20711
-__L20710:
+    jump    __L20715
+__L20714:
     add     r0, sf, -879
     add     r0, 1
     load    r0, r0[0]
     move    r1, 1
     sub     r0, r1
-__L20711:
+__L20715:
     store   r0, sf[-883]
     load    r0, sf[-883]
     load    r1, sf[-882]
     cmp     r0, r1
-    jump    o, __L20716
+    jump    o, __L20720
     move    lt, r0, 1, 0
-    jump    __L20717
-__L20716:
+    jump    __L20721
+__L20720:
     move    lt, r0, 0, 1
-__L20717:
+__L20721:
     test    r0
-    jump    z, __L20714
+    jump    z, __L20718
     move    r0, -4
     load    r1, sf[-883]
     cmp     r0, r1
-    jump    o, __L20718
+    jump    o, __L20722
     move    le, r0, 1, 0
+    jump    __L20723
+__L20722:
+    move    lt, r0, 0, 1
+__L20723:
+    test    r0
+    jump    z, __L20718
+    move    r0, 1
     jump    __L20719
 __L20718:
-    move    lt, r0, 0, 1
+    move    r0, 0
 __L20719:
     test    r0
-    jump    z, __L20714
-    move    r0, 1
-    jump    __L20715
-__L20714:
-    move    r0, 0
-__L20715:
-    test    r0
-    jump    z, __L20712
+    jump    z, __L20716
     load    r0, sf[4]
     add     r0, 4
     load    r0, r0[0]
@@ -209354,8 +209421,8 @@ __L20715:
     push    r0
     call    __crt___sio_body_f
     add     sp, 4
-    jump    __L20713
-__L20712:
+    jump    __L20717
+__L20716:
     load    r0, sf[-3]
     push    r0
     load    r0, sf[4]
@@ -209372,21 +209439,21 @@ __L20712:
     push    r0
     call    __crt___sio_body_e
     add     sp, 5
-__L20713:
+__L20717:
     load    r0, sf[4]
     add     r0, 4
     load    r0, r0[0]
     test    r0
     move    z, r0, 1, 0
     test    r0
-    jump    z, __L20720
+    jump    z, __L20724
     add     r0, sf, -77
     add     r0, 1
     load    r0, r0[0]
     store   r0, sf[-886]
     move    r0, 0
     store   r0, sf[-884]
-__L20722:
+__L20726:
     load    r0, sf[-884]
     push    r0
     add     r0, sf, -77
@@ -209395,14 +209462,14 @@ __L20722:
     move    r1, r0
     pop     r0
     cmp     r0, r1
-    jump    o, __L20725
+    jump    o, __L20729
     move    lt, r0, 1, 0
-    jump    __L20726
-__L20725:
+    jump    __L20730
+__L20729:
     move    lt, r0, 0, 1
-__L20726:
+__L20730:
     test    r0
-    jump    z, __L20724
+    jump    z, __L20728
     add     r0, sf, -77
     load    r0, r0[0]
     load    r1, sf[-884]
@@ -209412,10 +209479,10 @@ __L20726:
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L20727
+    jump    z, __L20731
     load    r0, sf[-884]
     store   r0, sf[-885]
-__L20727:
+__L20731:
     add     r0, sf, -77
     load    r0, r0[0]
     load    r1, sf[-884]
@@ -209425,7 +209492,7 @@ __L20727:
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    nz, __L20731
+    jump    nz, __L20735
     add     r0, sf, -77
     load    r0, r0[0]
     load    r1, sf[-884]
@@ -209435,52 +209502,52 @@ __L20727:
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    nz, __L20731
+    jump    nz, __L20735
     move    r0, 0
-    jump    __L20732
-__L20731:
+    jump    __L20736
+__L20735:
     move    r0, 1
-__L20732:
+__L20736:
     test    r0
-    jump    z, __L20729
+    jump    z, __L20733
     load    r0, sf[-884]
     store   r0, sf[-886]
-    jump    __L20724
-__L20729:
-__L20723:
+    jump    __L20728
+__L20733:
+__L20727:
     load    r1, sf[-884]
     add     r2, r1, 1
     store   r2, sf[-884]
     move    r0, r1
-    jump    __L20722
-__L20724:
+    jump    __L20726
+__L20728:
     move    r0, 0
     load    r1, sf[-885]
     cmp     r0, r1
-    jump    o, __L20735
+    jump    o, __L20739
     move    le, r0, 1, 0
-    jump    __L20736
-__L20735:
+    jump    __L20740
+__L20739:
     move    lt, r0, 0, 1
-__L20736:
+__L20740:
     test    r0
-    jump    z, __L20733
+    jump    z, __L20737
     load    r0, sf[-886]
     store   r0, sf[-887]
-__L20737:
+__L20741:
     load    r0, sf[-885]
     move    r1, 1
     add     r0, r1
     load    r1, sf[-887]
     cmp     r0, r1
-    jump    o, __L20742
+    jump    o, __L20746
     move    lt, r0, 1, 0
-    jump    __L20743
-__L20742:
+    jump    __L20747
+__L20746:
     move    lt, r0, 0, 1
-__L20743:
+__L20747:
     test    r0
-    jump    z, __L20740
+    jump    z, __L20744
     add     r0, sf, -77
     load    r0, r0[0]
     push    r0
@@ -209495,21 +209562,21 @@ __L20743:
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L20740
+    jump    z, __L20744
     move    r0, 1
-    jump    __L20741
-__L20740:
+    jump    __L20745
+__L20744:
     move    r0, 0
-__L20741:
+__L20745:
     test    r0
-    jump    z, __L20739
+    jump    z, __L20743
     load    r1, sf[-887]
     add     r2, r1, -1
     store   r2, sf[-887]
     move    r0, r1
-__L20738:
-    jump    __L20737
-__L20739:
+__L20742:
+    jump    __L20741
+__L20743:
     load    r0, sf[-887]
     push    r0
     load    r0, sf[-885]
@@ -209520,28 +209587,28 @@ __L20739:
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L20744
+    jump    z, __L20748
     load    r0, sf[-885]
     store   r0, sf[-887]
-__L20744:
+__L20748:
     load    r0, sf[-887]
     load    r1, sf[-886]
     cmp     r0, r1
-    jump    o, __L20748
+    jump    o, __L20752
     move    lt, r0, 1, 0
-    jump    __L20749
-__L20748:
+    jump    __L20753
+__L20752:
     move    lt, r0, 0, 1
-__L20749:
+__L20753:
     test    r0
-    jump    z, __L20746
+    jump    z, __L20750
     load    r0, sf[-886]
     load    r1, sf[-887]
     sub     r0, r1
     store   r0, sf[-888]
     load    r0, sf[-886]
     store   r0, sf[-884]
-__L20750:
+__L20754:
     load    r0, sf[-884]
     push    r0
     add     r0, sf, -77
@@ -209550,14 +209617,14 @@ __L20750:
     move    r1, r0
     pop     r0
     cmp     r0, r1
-    jump    o, __L20753
+    jump    o, __L20757
     move    lt, r0, 1, 0
-    jump    __L20754
-__L20753:
+    jump    __L20758
+__L20757:
     move    lt, r0, 0, 1
-__L20754:
+__L20758:
     test    r0
-    jump    z, __L20752
+    jump    z, __L20756
     add     r0, sf, -77
     load    r0, r0[0]
     push    r0
@@ -209575,13 +209642,13 @@ __L20754:
     load    r0, r0[0]
     pop     r1
     store   r0, r1[0]
-__L20751:
+__L20755:
     load    r1, sf[-884]
     add     r2, r1, 1
     store   r2, sf[-884]
     move    r0, r1
-    jump    __L20750
-__L20752:
+    jump    __L20754
+__L20756:
     add     r0, sf, -77
     add     r0, 1
     push    r0
@@ -209592,12 +209659,12 @@ __L20752:
     sub     r0, r1
     pop     r1
     store   r0, r1[0]
-__L20746:
-__L20733:
-__L20720:
+__L20750:
+__L20737:
+__L20724:
+__L20709:
 __L20705:
-__L20701:
-__L20691:
+__L20695:
     move    r0, 1
     push    r0
     add     r0, sf, -77
@@ -209621,13 +209688,13 @@ __L20691:
     add     r0, 3
     load    r0, r0[0]
     test    r0
-    jump    z, __L20755
+    jump    z, __L20759
     add     r0, sf, -77
     load    r0, r0[0]
     push    r0
     call    __crt_free
     add     sp, 1
-__L20755:
+__L20759:
     move    r0, 0
     return
 
@@ -209638,45 +209705,20 @@ __crt_isxdigit:
     call    __crt_isdigit
     add     sp, 1
     test    r0
-    jump    nz, __L20759
+    jump    nz, __L20763
     move    r0, 97
     load    r1, sf[3]
     cmp     r0, r1
-    jump    o, __L20763
+    jump    o, __L20767
     move    le, r0, 1, 0
-    jump    __L20764
-__L20763:
+    jump    __L20768
+__L20767:
     move    lt, r0, 0, 1
-__L20764:
+__L20768:
     test    r0
-    jump    z, __L20761
+    jump    z, __L20765
     load    r0, sf[3]
     move    r1, 102
-    cmp     r0, r1
-    jump    o, __L20765
-    move    le, r0, 1, 0
-    jump    __L20766
-__L20765:
-    move    lt, r0, 0, 1
-__L20766:
-    test    r0
-    jump    z, __L20761
-    move    r0, 1
-    jump    __L20762
-__L20761:
-    move    r0, 0
-__L20762:
-    test    r0
-    jump    nz, __L20759
-    move    r0, 0
-    jump    __L20760
-__L20759:
-    move    r0, 1
-__L20760:
-    test    r0
-    jump    nz, __L20757
-    move    r0, 65
-    load    r1, sf[3]
     cmp     r0, r1
     jump    o, __L20769
     move    le, r0, 1, 0
@@ -209685,30 +209727,55 @@ __L20769:
     move    lt, r0, 0, 1
 __L20770:
     test    r0
-    jump    z, __L20767
+    jump    z, __L20765
+    move    r0, 1
+    jump    __L20766
+__L20765:
+    move    r0, 0
+__L20766:
+    test    r0
+    jump    nz, __L20763
+    move    r0, 0
+    jump    __L20764
+__L20763:
+    move    r0, 1
+__L20764:
+    test    r0
+    jump    nz, __L20761
+    move    r0, 65
+    load    r1, sf[3]
+    cmp     r0, r1
+    jump    o, __L20773
+    move    le, r0, 1, 0
+    jump    __L20774
+__L20773:
+    move    lt, r0, 0, 1
+__L20774:
+    test    r0
+    jump    z, __L20771
     load    r0, sf[3]
     move    r1, 70
     cmp     r0, r1
-    jump    o, __L20771
+    jump    o, __L20775
     move    le, r0, 1, 0
+    jump    __L20776
+__L20775:
+    move    lt, r0, 0, 1
+__L20776:
+    test    r0
+    jump    z, __L20771
+    move    r0, 1
     jump    __L20772
 __L20771:
-    move    lt, r0, 0, 1
+    move    r0, 0
 __L20772:
     test    r0
-    jump    z, __L20767
-    move    r0, 1
-    jump    __L20768
-__L20767:
+    jump    nz, __L20761
     move    r0, 0
-__L20768:
-    test    r0
-    jump    nz, __L20757
-    move    r0, 0
-    jump    __L20758
-__L20757:
+    jump    __L20762
+__L20761:
     move    r0, 1
-__L20758:
+__L20762:
     return
     move    r0, 0
     return
@@ -209720,14 +209787,14 @@ __crt_tolower:
     call    __crt_isupper
     add     sp, 1
     test    r0
-    jump    z, __L20773
+    jump    z, __L20777
     load    r0, sf[3]
     move    r1, 32
     add     r0, r1
-    jump    __L20774
-__L20773:
+    jump    __L20778
+__L20777:
     load    r0, sf[3]
-__L20774:
+__L20778:
     return
     move    r0, 0
     return
@@ -209737,109 +209804,109 @@ __crt___sl_digit:
     move    r0, 48
     load    r1, sf[3]
     cmp     r0, r1
-    jump    o, __L20779
+    jump    o, __L20783
     move    le, r0, 1, 0
-    jump    __L20780
-__L20779:
+    jump    __L20784
+__L20783:
     move    lt, r0, 0, 1
-__L20780:
+__L20784:
     test    r0
-    jump    z, __L20777
+    jump    z, __L20781
     load    r0, sf[3]
     move    r1, 57
     cmp     r0, r1
-    jump    o, __L20781
+    jump    o, __L20785
     move    le, r0, 1, 0
+    jump    __L20786
+__L20785:
+    move    lt, r0, 0, 1
+__L20786:
+    test    r0
+    jump    z, __L20781
+    move    r0, 1
     jump    __L20782
 __L20781:
-    move    lt, r0, 0, 1
+    move    r0, 0
 __L20782:
     test    r0
-    jump    z, __L20777
-    move    r0, 1
-    jump    __L20778
-__L20777:
-    move    r0, 0
-__L20778:
-    test    r0
-    jump    z, __L20775
+    jump    z, __L20779
     load    r0, sf[3]
     move    r1, 48
     sub     r0, r1
     return
-__L20775:
+__L20779:
     move    r0, 97
     load    r1, sf[3]
     cmp     r0, r1
-    jump    o, __L20787
+    jump    o, __L20791
     move    le, r0, 1, 0
-    jump    __L20788
-__L20787:
+    jump    __L20792
+__L20791:
     move    lt, r0, 0, 1
-__L20788:
+__L20792:
     test    r0
-    jump    z, __L20785
+    jump    z, __L20789
     load    r0, sf[3]
     move    r1, 122
     cmp     r0, r1
-    jump    o, __L20789
+    jump    o, __L20793
     move    le, r0, 1, 0
+    jump    __L20794
+__L20793:
+    move    lt, r0, 0, 1
+__L20794:
+    test    r0
+    jump    z, __L20789
+    move    r0, 1
     jump    __L20790
 __L20789:
-    move    lt, r0, 0, 1
+    move    r0, 0
 __L20790:
     test    r0
-    jump    z, __L20785
-    move    r0, 1
-    jump    __L20786
-__L20785:
-    move    r0, 0
-__L20786:
-    test    r0
-    jump    z, __L20783
+    jump    z, __L20787
     load    r0, sf[3]
     move    r1, 97
     sub     r0, r1
     move    r1, 10
     add     r0, r1
     return
-__L20783:
+__L20787:
     move    r0, 65
     load    r1, sf[3]
     cmp     r0, r1
-    jump    o, __L20795
+    jump    o, __L20799
     move    le, r0, 1, 0
-    jump    __L20796
-__L20795:
+    jump    __L20800
+__L20799:
     move    lt, r0, 0, 1
-__L20796:
+__L20800:
     test    r0
-    jump    z, __L20793
+    jump    z, __L20797
     load    r0, sf[3]
     move    r1, 90
     cmp     r0, r1
-    jump    o, __L20797
+    jump    o, __L20801
     move    le, r0, 1, 0
+    jump    __L20802
+__L20801:
+    move    lt, r0, 0, 1
+__L20802:
+    test    r0
+    jump    z, __L20797
+    move    r0, 1
     jump    __L20798
 __L20797:
-    move    lt, r0, 0, 1
+    move    r0, 0
 __L20798:
     test    r0
-    jump    z, __L20793
-    move    r0, 1
-    jump    __L20794
-__L20793:
-    move    r0, 0
-__L20794:
-    test    r0
-    jump    z, __L20791
+    jump    z, __L20795
     load    r0, sf[3]
     move    r1, 65
     sub     r0, r1
     move    r1, 10
     add     r0, r1
     return
-__L20791:
+__L20795:
     move    r0, 99
     return
     move    r0, 0
@@ -209860,7 +209927,7 @@ __crt___sio_grow:
     add     r0, 3
     load    r0, r0[0]
     test    r0
-    jump    z, __L20799
+    jump    z, __L20803
     load    r0, sf[0]
     push    r0
     load    r0, sf[3]
@@ -209869,8 +209936,8 @@ __crt___sio_grow:
     call    __crt_realloc
     add     sp, 2
     store   r0, sf[-2]
-    jump    __L20800
-__L20799:
+    jump    __L20804
+__L20803:
     load    r0, sf[0]
     push    r0
     call    __crt_malloc
@@ -209878,10 +209945,10 @@ __L20799:
     store   r0, sf[-2]
     load    r0, sf[-2]
     test    r0
-    jump    z, __L20801
+    jump    z, __L20805
     move    r0, 0
     store   r0, sf[-1]
-__L20803:
+__L20807:
     load    r0, sf[-1]
     push    r0
     load    r0, sf[3]
@@ -209890,14 +209957,14 @@ __L20803:
     move    r1, r0
     pop     r0
     cmp     r0, r1
-    jump    o, __L20806
+    jump    o, __L20810
     move    lt, r0, 1, 0
-    jump    __L20807
-__L20806:
+    jump    __L20811
+__L20810:
     move    lt, r0, 0, 1
-__L20807:
+__L20811:
     test    r0
-    jump    z, __L20805
+    jump    z, __L20809
     load    r0, sf[-2]
     load    r1, sf[-1]
     add     r0, r1
@@ -209909,22 +209976,22 @@ __L20807:
     load    r0, r0[0]
     pop     r1
     store   r0, r1[0]
-__L20804:
+__L20808:
     load    r1, sf[-1]
     add     r2, r1, 1
     store   r2, sf[-1]
     move    r0, r1
-    jump    __L20803
+    jump    __L20807
+__L20809:
 __L20805:
-__L20801:
-__L20800:
+__L20804:
     load    r0, sf[-2]
     test    r0
     move    z, r0, 1, 0
     test    r0
-    jump    z, __L20808
+    jump    z, __L20812
     return
-__L20808:
+__L20812:
     load    r0, sf[3]
     push    r0
     load    r0, sf[-2]
@@ -209950,18 +210017,18 @@ __crt___sio_puts:
     add     sp, -1
     move    r0, 0
     store   r0, sf[0]
-__L20810:
+__L20814:
     load    r0, sf[0]
     load    r1, sf[5]
     cmp     r0, r1
-    jump    o, __L20813
+    jump    o, __L20817
     move    lt, r0, 1, 0
-    jump    __L20814
-__L20813:
+    jump    __L20818
+__L20817:
     move    lt, r0, 0, 1
-__L20814:
+__L20818:
     test    r0
-    jump    z, __L20812
+    jump    z, __L20816
     load    r0, sf[4]
     load    r1, sf[0]
     add     r0, r1
@@ -209971,19 +210038,19 @@ __L20814:
     push    r0
     call    __crt___sio_put
     add     sp, 2
-__L20811:
+__L20815:
     load    r1, sf[0]
     add     r2, r1, 1
     store   r2, sf[0]
     move    r0, r1
-    jump    __L20810
-__L20812:
+    jump    __L20814
+__L20816:
     move    r0, 0
     return
 
 // __sio_rep
 __crt___sio_rep:
-__L20815:
+__L20819:
     move    r0, 0
     push    r0
     load    r1, sf[5]
@@ -209993,23 +210060,23 @@ __L20815:
     move    r1, r0
     pop     r0
     cmp     r0, r1
-    jump    o, __L20818
+    jump    o, __L20822
     move    lt, r0, 1, 0
-    jump    __L20819
-__L20818:
+    jump    __L20823
+__L20822:
     move    lt, r0, 0, 1
-__L20819:
+__L20823:
     test    r0
-    jump    z, __L20817
+    jump    z, __L20821
     load    r0, sf[4]
     push    r0
     load    r0, sf[3]
     push    r0
     call    __crt___sio_put
     add     sp, 2
-__L20816:
-    jump    __L20815
-__L20817:
+__L20820:
+    jump    __L20819
+__L20821:
     move    r0, 0
     return
 
@@ -210061,7 +210128,7 @@ __crt___sio_exact:
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L20820
+    jump    z, __L20824
     load    r0, sf[4]
     push    r0
     move    r0, 0
@@ -210074,17 +210141,17 @@ __crt___sio_exact:
     pop     r1
     store   r0, r1[0]
     return
-__L20820:
+__L20824:
     load    r0, sf[-1]
     move    r1, 0
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L20822
+    jump    z, __L20826
     move    r0, -1074
     store   r0, sf[-3]
-    jump    __L20823
-__L20822:
+    jump    __L20827
+__L20826:
     load    r0, sf[-2]
     push    r0
     load    r0, __K34
@@ -210096,8 +210163,8 @@ __L20822:
     move    r1, 1075
     sub     r0, r1
     store   r0, sf[-3]
-__L20823:
-__L20824:
+__L20827:
+__L20828:
     load    r0, sf[-2]
     move    r1, 1
     and     r0, r1
@@ -210105,7 +210172,7 @@ __L20824:
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L20826
+    jump    z, __L20830
     load    r0, sf[-2]
     move    r1, 1
     arshift r0, r1
@@ -210114,9 +210181,9 @@ __L20824:
     add     r2, r1, 1
     store   r2, sf[-3]
     move    r0, r1
-__L20825:
-    jump    __L20824
-__L20826:
+__L20829:
+    jump    __L20828
+__L20830:
     add     r0, sf, -110
     move    r1, 0
     add     r0, r1
@@ -210141,39 +210208,28 @@ __L20826:
     add     r0, r1
     load    r0, r0[0]
     test    r0
-    jump    z, __L20827
+    jump    z, __L20831
     move    r0, 2
-    jump    __L20828
-__L20827:
+    jump    __L20832
+__L20831:
     move    r0, 1
-__L20828:
+__L20832:
     store   r0, sf[-6]
     move    r0, 0
     load    r1, sf[-3]
     cmp     r0, r1
-    jump    o, __L20831
+    jump    o, __L20835
     move    lt, r0, 1, 0
-    jump    __L20832
-__L20831:
+    jump    __L20836
+__L20835:
     move    lt, r0, 0, 1
-__L20832:
+__L20836:
     test    r0
-    jump    z, __L20829
+    jump    z, __L20833
     load    r0, sf[-3]
     store   r0, sf[-4]
-__L20833:
-    move    r0, 0
-    load    r1, sf[-4]
-    cmp     r0, r1
-    jump    o, __L20836
-    move    lt, r0, 1, 0
-    jump    __L20837
-__L20836:
-    move    lt, r0, 0, 1
 __L20837:
-    test    r0
-    jump    z, __L20835
-    move    r0, 30
+    move    r0, 0
     load    r1, sf[-4]
     cmp     r0, r1
     jump    o, __L20840
@@ -210183,12 +210239,23 @@ __L20840:
     move    lt, r0, 0, 1
 __L20841:
     test    r0
-    jump    z, __L20838
+    jump    z, __L20839
     move    r0, 30
-    jump    __L20839
-__L20838:
+    load    r1, sf[-4]
+    cmp     r0, r1
+    jump    o, __L20844
+    move    lt, r0, 1, 0
+    jump    __L20845
+__L20844:
+    move    lt, r0, 0, 1
+__L20845:
+    test    r0
+    jump    z, __L20842
+    move    r0, 30
+    jump    __L20843
+__L20842:
     load    r0, sf[-4]
-__L20839:
+__L20843:
     store   r0, sf[-5]
     move    r0, 1
     load    r1, sf[-5]
@@ -210201,44 +210268,31 @@ __L20839:
     call    __crt___sio_mul
     add     sp, 3
     store   r0, sf[-6]
-__L20834:
+__L20838:
     load    r0, sf[-4]
     load    r1, sf[-5]
     sub     r0, r1
     store   r0, sf[-4]
-    jump    __L20833
-__L20835:
-    jump    __L20830
-__L20829:
+    jump    __L20837
+__L20839:
+    jump    __L20834
+__L20833:
     load    r0, sf[-3]
     move    r1, 0
     cmp     r0, r1
-    jump    o, __L20844
+    jump    o, __L20848
     move    lt, r0, 1, 0
-    jump    __L20845
-__L20844:
+    jump    __L20849
+__L20848:
     move    lt, r0, 0, 1
-__L20845:
+__L20849:
     test    r0
-    jump    z, __L20842
+    jump    z, __L20846
     load    r0, sf[-3]
     neg     r0
     store   r0, sf[-4]
-__L20846:
-    move    r0, 0
-    load    r1, sf[-4]
-    cmp     r0, r1
-    jump    o, __L20849
-    move    lt, r0, 1, 0
-    jump    __L20850
-__L20849:
-    move    lt, r0, 0, 1
 __L20850:
-    test    r0
-    jump    z, __L20848
-    move    r0, 1
-    store   r0, sf[-120]
-    move    r0, 13
+    move    r0, 0
     load    r1, sf[-4]
     cmp     r0, r1
     jump    o, __L20853
@@ -210248,38 +210302,51 @@ __L20853:
     move    lt, r0, 0, 1
 __L20854:
     test    r0
-    jump    z, __L20851
+    jump    z, __L20852
+    move    r0, 1
+    store   r0, sf[-120]
     move    r0, 13
-    jump    __L20852
-__L20851:
+    load    r1, sf[-4]
+    cmp     r0, r1
+    jump    o, __L20857
+    move    lt, r0, 1, 0
+    jump    __L20858
+__L20857:
+    move    lt, r0, 0, 1
+__L20858:
+    test    r0
+    jump    z, __L20855
+    move    r0, 13
+    jump    __L20856
+__L20855:
     load    r0, sf[-4]
-__L20852:
+__L20856:
     store   r0, sf[-5]
     move    r0, 0
     store   r0, sf[-8]
-__L20855:
+__L20859:
     load    r0, sf[-8]
     load    r1, sf[-5]
     cmp     r0, r1
-    jump    o, __L20858
+    jump    o, __L20862
     move    lt, r0, 1, 0
-    jump    __L20859
-__L20858:
+    jump    __L20863
+__L20862:
     move    lt, r0, 0, 1
-__L20859:
+__L20863:
     test    r0
-    jump    z, __L20857
+    jump    z, __L20861
     load    r0, sf[-120]
     move    r1, 5
     mult    r0, r1
     store   r0, sf[-120]
-__L20856:
+__L20860:
     load    r1, sf[-8]
     add     r2, r1, 1
     store   r2, sf[-8]
     move    r0, r1
-    jump    __L20855
-__L20857:
+    jump    __L20859
+__L20861:
     load    r0, sf[-120]
     push    r0
     load    r0, sf[-6]
@@ -210289,31 +210356,31 @@ __L20857:
     call    __crt___sio_mul
     add     sp, 3
     store   r0, sf[-6]
-__L20847:
+__L20851:
     load    r0, sf[-4]
     load    r1, sf[-5]
     sub     r0, r1
     store   r0, sf[-4]
-    jump    __L20846
-__L20848:
-__L20842:
-__L20830:
+    jump    __L20850
+__L20852:
+__L20846:
+__L20834:
     load    r0, sf[-6]
     move    r1, 1
     sub     r0, r1
     store   r0, sf[-7]
-__L20860:
+__L20864:
     move    r0, 0
     load    r1, sf[-7]
     cmp     r0, r1
-    jump    o, __L20863
+    jump    o, __L20867
     move    le, r0, 1, 0
-    jump    __L20864
-__L20863:
+    jump    __L20868
+__L20867:
     move    lt, r0, 0, 1
-__L20864:
+__L20868:
     test    r0
-    jump    z, __L20862
+    jump    z, __L20866
     add     r0, sf, -110
     load    r1, sf[-7]
     add     r0, r1
@@ -210321,18 +210388,18 @@ __L20864:
     store   r0, sf[-9]
     move    r0, 8
     store   r0, sf[-8]
-__L20865:
+__L20869:
     move    r0, 0
     load    r1, sf[-8]
     cmp     r0, r1
-    jump    o, __L20868
+    jump    o, __L20872
     move    le, r0, 1, 0
-    jump    __L20869
-__L20868:
+    jump    __L20873
+__L20872:
     move    lt, r0, 0, 1
-__L20869:
+__L20873:
     test    r0
-    jump    z, __L20867
+    jump    z, __L20871
     add     r0, sf, -119
     load    r1, sf[-8]
     add     r0, r1
@@ -210347,33 +210414,33 @@ __L20869:
     move    r1, 10
     div     r0, r1
     store   r0, sf[-9]
-__L20866:
+__L20870:
     load    r1, sf[-8]
     add     r2, r1, -1
     store   r2, sf[-8]
     move    r0, r1
-    jump    __L20865
-__L20867:
+    jump    __L20869
+__L20871:
     move    r0, 0
     store   r0, sf[-8]
-__L20870:
+__L20874:
     load    r0, sf[-8]
     move    r1, 9
     cmp     r0, r1
-    jump    o, __L20873
+    jump    o, __L20877
     move    lt, r0, 1, 0
-    jump    __L20874
-__L20873:
+    jump    __L20878
+__L20877:
     move    lt, r0, 0, 1
-__L20874:
+__L20878:
     test    r0
-    jump    z, __L20872
+    jump    z, __L20876
     load    r0, sf[-10]
     move    r1, 0
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L20877
+    jump    z, __L20881
     add     r0, sf, -119
     load    r1, sf[-8]
     add     r0, r1
@@ -210382,16 +210449,16 @@ __L20874:
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L20877
+    jump    z, __L20881
     move    r0, 1
-    jump    __L20878
-__L20877:
+    jump    __L20882
+__L20881:
     move    r0, 0
-__L20878:
+__L20882:
     test    r0
-    jump    z, __L20875
-    jump    __L20871
-__L20875:
+    jump    z, __L20879
+    jump    __L20875
+__L20879:
     load    r0, sf[4]
     add     r0, 2
     push    r0
@@ -210409,20 +210476,20 @@ __L20875:
     load    r0, r0[0]
     pop     r1
     store   r0, r1[0]
-__L20871:
+__L20875:
     load    r1, sf[-8]
     add     r2, r1, 1
     store   r2, sf[-8]
     move    r0, r1
-    jump    __L20870
-__L20872:
-__L20861:
+    jump    __L20874
+__L20876:
+__L20865:
     load    r1, sf[-7]
     add     r2, r1, -1
     store   r2, sf[-7]
     move    r0, r1
-    jump    __L20860
-__L20862:
+    jump    __L20864
+__L20866:
     load    r0, sf[4]
     add     r0, 1
     push    r0
@@ -210431,36 +210498,36 @@ __L20862:
     load    r0, sf[-3]
     move    r1, 0
     cmp     r0, r1
-    jump    o, __L20881
+    jump    o, __L20885
     move    lt, r0, 1, 0
-    jump    __L20882
-__L20881:
+    jump    __L20886
+__L20885:
     move    lt, r0, 0, 1
-__L20882:
+__L20886:
     test    r0
-    jump    z, __L20879
+    jump    z, __L20883
     load    r0, sf[-3]
-    jump    __L20880
-__L20879:
+    jump    __L20884
+__L20883:
     move    r0, 0
-__L20880:
+__L20884:
     move    r1, r0
     pop     r0
     add     r0, r1
     pop     r1
     store   r0, r1[0]
-__L20883:
+__L20887:
     move    r0, 0
     load    r1, sf[-10]
     cmp     r0, r1
-    jump    o, __L20888
+    jump    o, __L20892
     move    lt, r0, 1, 0
-    jump    __L20889
-__L20888:
+    jump    __L20893
+__L20892:
     move    lt, r0, 0, 1
-__L20889:
+__L20893:
     test    r0
-    jump    z, __L20886
+    jump    z, __L20890
     load    r0, sf[4]
     add     r0, 2
     push    r0
@@ -210475,21 +210542,21 @@ __L20889:
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L20886
+    jump    z, __L20890
     move    r0, 1
-    jump    __L20887
-__L20886:
+    jump    __L20891
+__L20890:
     move    r0, 0
-__L20887:
+__L20891:
     test    r0
-    jump    z, __L20885
+    jump    z, __L20889
     load    r1, sf[-10]
     add     r2, r1, -1
     store   r2, sf[-10]
     move    r0, r1
-__L20884:
-    jump    __L20883
-__L20885:
+__L20888:
+    jump    __L20887
+__L20889:
     load    r0, sf[4]
     push    r0
     load    r0, sf[-10]
@@ -210507,42 +210574,18 @@ __crt___sio_round:
     load    r0, sf[0]
     load    r1, sf[4]
     cmp     r0, r1
-    jump    o, __L20892
-    move    le, r0, 1, 0
-    jump    __L20893
-__L20892:
-    move    lt, r0, 0, 1
-__L20893:
-    test    r0
-    jump    z, __L20890
-    return
-__L20890:
-    load    r0, sf[4]
-    move    r1, 0
-    cmp     r0, r1
     jump    o, __L20896
-    move    lt, r0, 1, 0
+    move    le, r0, 1, 0
     jump    __L20897
 __L20896:
     move    lt, r0, 0, 1
 __L20897:
     test    r0
     jump    z, __L20894
-    load    r0, sf[3]
-    push    r0
-    move    r0, 0
-    pop     r1
-    store   r0, r1[0]
     return
 __L20894:
-    load    r0, sf[3]
-    add     r0, 2
-    load    r1, sf[4]
-    add     r0, r1
-    load    r0, r0[0]
-    store   r0, sf[-1]
-    move    r0, 0
-    load    r1, sf[4]
+    load    r0, sf[4]
+    move    r1, 0
     cmp     r0, r1
     jump    o, __L20900
     move    lt, r0, 1, 0
@@ -210553,6 +210596,30 @@ __L20901:
     test    r0
     jump    z, __L20898
     load    r0, sf[3]
+    push    r0
+    move    r0, 0
+    pop     r1
+    store   r0, r1[0]
+    return
+__L20898:
+    load    r0, sf[3]
+    add     r0, 2
+    load    r1, sf[4]
+    add     r0, r1
+    load    r0, r0[0]
+    store   r0, sf[-1]
+    move    r0, 0
+    load    r1, sf[4]
+    cmp     r0, r1
+    jump    o, __L20904
+    move    lt, r0, 1, 0
+    jump    __L20905
+__L20904:
+    move    lt, r0, 0, 1
+__L20905:
+    test    r0
+    jump    z, __L20902
+    load    r0, sf[3]
     add     r0, 2
     push    r0
     load    r0, sf[4]
@@ -210562,87 +210629,87 @@ __L20901:
     pop     r0
     add     r0, r1
     load    r0, r0[0]
-    jump    __L20899
-__L20898:
+    jump    __L20903
+__L20902:
     move    r0, 0
-__L20899:
+__L20903:
     store   r0, sf[-3]
     move    r0, 5
     load    r1, sf[-1]
     cmp     r0, r1
-    jump    o, __L20904
+    jump    o, __L20908
     move    lt, r0, 1, 0
-    jump    __L20905
-__L20904:
+    jump    __L20909
+__L20908:
     move    lt, r0, 0, 1
-__L20905:
+__L20909:
     test    r0
-    jump    nz, __L20902
+    jump    nz, __L20906
     load    r0, sf[-1]
     move    r1, 5
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L20906
+    jump    z, __L20910
     load    r0, sf[4]
     move    r1, 1
     add     r0, r1
     load    r1, sf[0]
     cmp     r0, r1
-    jump    o, __L20910
+    jump    o, __L20914
     move    lt, r0, 1, 0
-    jump    __L20911
-__L20910:
+    jump    __L20915
+__L20914:
     move    lt, r0, 0, 1
-__L20911:
+__L20915:
     test    r0
-    jump    nz, __L20908
+    jump    nz, __L20912
     load    r0, sf[-3]
     move    r1, 1
     and     r0, r1
     test    r0
-    jump    nz, __L20908
+    jump    nz, __L20912
     move    r0, 0
-    jump    __L20909
-__L20908:
+    jump    __L20913
+__L20912:
     move    r0, 1
-__L20909:
+__L20913:
     test    r0
-    jump    z, __L20906
+    jump    z, __L20910
     move    r0, 1
+    jump    __L20911
+__L20910:
+    move    r0, 0
+__L20911:
+    test    r0
+    jump    nz, __L20906
+    move    r0, 0
     jump    __L20907
 __L20906:
-    move    r0, 0
-__L20907:
-    test    r0
-    jump    nz, __L20902
-    move    r0, 0
-    jump    __L20903
-__L20902:
     move    r0, 1
-__L20903:
+__L20907:
     store   r0, sf[-2]
     load    r0, sf[4]
     store   r0, sf[0]
     load    r0, sf[-2]
     test    r0
-    jump    z, __L20912
+    jump    z, __L20916
     load    r0, sf[4]
     move    r1, 1
     sub     r0, r1
     store   r0, sf[-4]
-__L20914:
+__L20918:
     move    r0, 0
     load    r1, sf[-4]
     cmp     r0, r1
-    jump    o, __L20919
+    jump    o, __L20923
     move    le, r0, 1, 0
-    jump    __L20920
-__L20919:
+    jump    __L20924
+__L20923:
     move    lt, r0, 0, 1
-__L20920:
+__L20924:
     test    r0
-    jump    z, __L20917
+    jump    z, __L20921
     load    r0, sf[3]
     add     r0, 2
     load    r1, sf[-4]
@@ -210652,14 +210719,14 @@ __L20920:
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L20917
+    jump    z, __L20921
     move    r0, 1
-    jump    __L20918
-__L20917:
+    jump    __L20922
+__L20921:
     move    r0, 0
-__L20918:
+__L20922:
     test    r0
-    jump    z, __L20916
+    jump    z, __L20920
     load    r0, sf[3]
     add     r0, 2
     load    r1, sf[-4]
@@ -210672,20 +210739,20 @@ __L20918:
     add     r2, r1, -1
     store   r2, sf[-4]
     move    r0, r1
-__L20915:
-    jump    __L20914
-__L20916:
+__L20919:
+    jump    __L20918
+__L20920:
     load    r0, sf[-4]
     move    r1, 0
     cmp     r0, r1
-    jump    o, __L20923
+    jump    o, __L20927
     move    lt, r0, 1, 0
-    jump    __L20924
-__L20923:
+    jump    __L20928
+__L20927:
     move    lt, r0, 0, 1
-__L20924:
+__L20928:
     test    r0
-    jump    z, __L20921
+    jump    z, __L20925
     load    r0, sf[3]
     add     r0, 2
     move    r1, 0
@@ -210702,8 +210769,8 @@ __L20924:
     add     r2, r1, 1
     store   r2, r0[0]
     move    r0, r1
-    jump    __L20922
-__L20921:
+    jump    __L20926
+__L20925:
     load    r0, sf[3]
     add     r0, 2
     load    r1, sf[-4]
@@ -210712,20 +210779,20 @@ __L20921:
     add     r2, r1, 1
     store   r2, r0[0]
     move    r0, r1
-__L20922:
-__L20912:
-__L20925:
+__L20926:
+__L20916:
+__L20929:
     move    r0, 0
     load    r1, sf[0]
     cmp     r0, r1
-    jump    o, __L20930
+    jump    o, __L20934
     move    lt, r0, 1, 0
-    jump    __L20931
-__L20930:
+    jump    __L20935
+__L20934:
     move    lt, r0, 0, 1
-__L20931:
+__L20935:
     test    r0
-    jump    z, __L20928
+    jump    z, __L20932
     load    r0, sf[3]
     add     r0, 2
     push    r0
@@ -210740,21 +210807,21 @@ __L20931:
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L20928
+    jump    z, __L20932
     move    r0, 1
-    jump    __L20929
-__L20928:
+    jump    __L20933
+__L20932:
     move    r0, 0
-__L20929:
+__L20933:
     test    r0
-    jump    z, __L20927
+    jump    z, __L20931
     load    r1, sf[0]
     add     r2, r1, -1
     store   r2, sf[0]
     move    r0, r1
-__L20926:
-    jump    __L20925
-__L20927:
+__L20930:
+    jump    __L20929
+__L20931:
     load    r0, sf[3]
     push    r0
     load    r0, sf[0]
@@ -210772,48 +210839,48 @@ __crt___sio_body_f:
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L20932
+    jump    z, __L20936
     move    r0, 0
-    jump    __L20933
-__L20932:
+    jump    __L20937
+__L20936:
     load    r0, sf[4]
     add     r0, 1
     load    r0, r0[0]
-__L20933:
+__L20937:
     store   r0, sf[-1]
     load    r0, sf[-1]
     move    r1, 0
     cmp     r0, r1
-    jump    o, __L20936
+    jump    o, __L20940
     move    le, r0, 1, 0
-    jump    __L20937
-__L20936:
+    jump    __L20941
+__L20940:
     move    lt, r0, 0, 1
-__L20937:
+__L20941:
     test    r0
-    jump    z, __L20934
+    jump    z, __L20938
     move    r0, 48
     push    r0
     load    r0, sf[3]
     push    r0
     call    __crt___sio_put
     add     sp, 2
-    jump    __L20935
-__L20934:
+    jump    __L20939
+__L20938:
     move    r0, 0
     store   r0, sf[0]
-__L20938:
+__L20942:
     load    r0, sf[0]
     load    r1, sf[-1]
     cmp     r0, r1
-    jump    o, __L20941
+    jump    o, __L20945
     move    lt, r0, 1, 0
-    jump    __L20942
-__L20941:
+    jump    __L20946
+__L20945:
     move    lt, r0, 0, 1
-__L20942:
+__L20946:
     test    r0
-    jump    z, __L20940
+    jump    z, __L20944
     move    r0, 48
     push    r0
     load    r0, sf[0]
@@ -210825,50 +210892,50 @@ __L20942:
     move    r1, r0
     pop     r0
     add     r0, r1
-    push    r0
-    load    r0, sf[3]
-    push    r0
-    call    __crt___sio_put
-    add     sp, 2
-__L20939:
-    load    r1, sf[0]
-    add     r2, r1, 1
-    store   r2, sf[0]
-    move    r0, r1
-    jump    __L20938
-__L20940:
-__L20935:
-    move    r0, 0
-    load    r1, sf[5]
-    cmp     r0, r1
-    jump    o, __L20947
-    move    lt, r0, 1, 0
-    jump    __L20948
-__L20947:
-    move    lt, r0, 0, 1
-__L20948:
-    test    r0
-    jump    nz, __L20945
-    load    r0, sf[6]
-    test    r0
-    jump    nz, __L20945
-    move    r0, 0
-    jump    __L20946
-__L20945:
-    move    r0, 1
-__L20946:
-    test    r0
-    jump    z, __L20943
-    move    r0, 46
     push    r0
     load    r0, sf[3]
     push    r0
     call    __crt___sio_put
     add     sp, 2
 __L20943:
+    load    r1, sf[0]
+    add     r2, r1, 1
+    store   r2, sf[0]
+    move    r0, r1
+    jump    __L20942
+__L20944:
+__L20939:
+    move    r0, 0
+    load    r1, sf[5]
+    cmp     r0, r1
+    jump    o, __L20951
+    move    lt, r0, 1, 0
+    jump    __L20952
+__L20951:
+    move    lt, r0, 0, 1
+__L20952:
+    test    r0
+    jump    nz, __L20949
+    load    r0, sf[6]
+    test    r0
+    jump    nz, __L20949
+    move    r0, 0
+    jump    __L20950
+__L20949:
+    move    r0, 1
+__L20950:
+    test    r0
+    jump    z, __L20947
+    move    r0, 46
+    push    r0
+    load    r0, sf[3]
+    push    r0
+    call    __crt___sio_put
+    add     sp, 2
+__L20947:
     load    r0, sf[-1]
     store   r0, sf[0]
-__L20949:
+__L20953:
     load    r0, sf[0]
     push    r0
     load    r0, sf[-1]
@@ -210877,14 +210944,14 @@ __L20949:
     move    r1, r0
     pop     r0
     cmp     r0, r1
-    jump    o, __L20952
+    jump    o, __L20956
     move    lt, r0, 1, 0
-    jump    __L20953
-__L20952:
+    jump    __L20957
+__L20956:
     move    lt, r0, 0, 1
-__L20953:
+__L20957:
     test    r0
-    jump    z, __L20951
+    jump    z, __L20955
     move    r0, 48
     push    r0
     load    r0, sf[0]
@@ -210901,13 +210968,13 @@ __L20953:
     push    r0
     call    __crt___sio_put
     add     sp, 2
-__L20950:
+__L20954:
     load    r1, sf[0]
     add     r2, r1, 1
     store   r2, sf[0]
     move    r0, r1
-    jump    __L20949
-__L20951:
+    jump    __L20953
+__L20955:
     move    r0, 0
     return
 
@@ -210920,16 +210987,16 @@ __crt___sio_body_e:
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L20954
+    jump    z, __L20958
     move    r0, 0
-    jump    __L20955
-__L20954:
+    jump    __L20959
+__L20958:
     load    r0, sf[4]
     add     r0, 1
     load    r0, r0[0]
     move    r1, 1
     sub     r0, r1
-__L20955:
+__L20959:
     store   r0, sf[-1]
     move    r0, 0
     store   r0, sf[-10]
@@ -210952,45 +211019,45 @@ __L20955:
     move    r0, 0
     load    r1, sf[5]
     cmp     r0, r1
-    jump    o, __L20960
+    jump    o, __L20964
     move    lt, r0, 1, 0
-    jump    __L20961
-__L20960:
+    jump    __L20965
+__L20964:
     move    lt, r0, 0, 1
-__L20961:
+__L20965:
     test    r0
-    jump    nz, __L20958
+    jump    nz, __L20962
     load    r0, sf[6]
     test    r0
-    jump    nz, __L20958
+    jump    nz, __L20962
     move    r0, 0
-    jump    __L20959
-__L20958:
+    jump    __L20963
+__L20962:
     move    r0, 1
-__L20959:
+__L20963:
     test    r0
-    jump    z, __L20956
+    jump    z, __L20960
     move    r0, 46
     push    r0
     load    r0, sf[3]
     push    r0
     call    __crt___sio_put
     add     sp, 2
-__L20956:
+__L20960:
     move    r0, 1
     store   r0, sf[0]
-__L20962:
+__L20966:
     load    r0, sf[0]
     load    r1, sf[5]
     cmp     r0, r1
-    jump    o, __L20965
+    jump    o, __L20969
     move    le, r0, 1, 0
-    jump    __L20966
-__L20965:
+    jump    __L20970
+__L20969:
     move    lt, r0, 0, 1
-__L20966:
+__L20970:
     test    r0
-    jump    z, __L20964
+    jump    z, __L20968
     move    r0, 48
     push    r0
     load    r0, sf[0]
@@ -211007,42 +211074,21 @@ __L20966:
     push    r0
     call    __crt___sio_put
     add     sp, 2
-__L20963:
+__L20967:
     load    r1, sf[0]
     add     r2, r1, 1
     store   r2, sf[0]
     move    r0, r1
-    jump    __L20962
-__L20964:
+    jump    __L20966
+__L20968:
     load    r0, sf[7]
     test    r0
-    jump    z, __L20967
+    jump    z, __L20971
     move    r0, 69
-    jump    __L20968
-__L20967:
-    move    r0, 101
-__L20968:
-    push    r0
-    load    r0, sf[3]
-    push    r0
-    call    __crt___sio_put
-    add     sp, 2
-    load    r0, sf[-1]
-    move    r1, 0
-    cmp     r0, r1
-    jump    o, __L20971
-    move    lt, r0, 1, 0
     jump    __L20972
 __L20971:
-    move    lt, r0, 0, 1
+    move    r0, 101
 __L20972:
-    test    r0
-    jump    z, __L20969
-    move    r0, 45
-    jump    __L20970
-__L20969:
-    move    r0, 43
-__L20970:
     push    r0
     load    r0, sf[3]
     push    r0
@@ -211059,11 +211105,32 @@ __L20975:
 __L20976:
     test    r0
     jump    z, __L20973
+    move    r0, 45
+    jump    __L20974
+__L20973:
+    move    r0, 43
+__L20974:
+    push    r0
+    load    r0, sf[3]
+    push    r0
+    call    __crt___sio_put
+    add     sp, 2
+    load    r0, sf[-1]
+    move    r1, 0
+    cmp     r0, r1
+    jump    o, __L20979
+    move    lt, r0, 1, 0
+    jump    __L20980
+__L20979:
+    move    lt, r0, 0, 1
+__L20980:
+    test    r0
+    jump    z, __L20977
     load    r0, sf[-1]
     neg     r0
     store   r0, sf[-1]
-__L20973:
 __L20977:
+__L20981:
     add     r0, sf, -9
     push    r0
     load    r1, sf[-10]
@@ -211089,22 +211156,22 @@ __L20977:
     move    r1, 10
     div     r0, r1
     store   r0, sf[-1]
-__L20978:
+__L20982:
     load    r0, sf[-1]
     test    r0
-    jump    nz, __L20977
-__L20979:
+    jump    nz, __L20981
+__L20983:
     load    r0, sf[-10]
     move    r1, 2
     cmp     r0, r1
-    jump    o, __L20982
+    jump    o, __L20986
     move    lt, r0, 1, 0
-    jump    __L20983
-__L20982:
+    jump    __L20987
+__L20986:
     move    lt, r0, 0, 1
-__L20983:
+__L20987:
     test    r0
-    jump    z, __L20980
+    jump    z, __L20984
     add     r0, sf, -9
     push    r0
     load    r1, sf[-10]
@@ -211118,19 +211185,19 @@ __L20983:
     move    r0, 48
     pop     r1
     store   r0, r1[0]
-__L20980:
 __L20984:
+__L20988:
     move    r0, 0
     load    r1, sf[-10]
     cmp     r0, r1
-    jump    o, __L20987
+    jump    o, __L20991
     move    lt, r0, 1, 0
-    jump    __L20988
-__L20987:
+    jump    __L20992
+__L20991:
     move    lt, r0, 0, 1
-__L20988:
+__L20992:
     test    r0
-    jump    z, __L20986
+    jump    z, __L20990
     add     r0, sf, -9
     push    r0
     load    r1, sf[-10]
@@ -211146,9 +211213,9 @@ __L20988:
     push    r0
     call    __crt___sio_put
     add     sp, 2
-__L20985:
-    jump    __L20984
-__L20986:
+__L20989:
+    jump    __L20988
+__L20990:
     move    r0, 0
     return
 
@@ -211178,12 +211245,12 @@ __crt___sio_body_a:
     store   r0, sf[-7]
     load    r0, sf[7]
     test    r0
-    jump    z, __L20989
-    move    r0, __W2578+1
-    jump    __L20990
-__L20989:
-    move    r0, __W2579+1
-__L20990:
+    jump    z, __L20993
+    move    r0, __W2583+1
+    jump    __L20994
+__L20993:
+    move    r0, __W2584+1
+__L20994:
     store   r0, sf[-8]
     move    r0, 0
     store   r0, sf[-17]
@@ -211195,62 +211262,62 @@ __L20990:
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L20991
+    jump    z, __L20995
     move    r0, 0
     store   r0, sf[-5]
     move    r0, 0
     store   r0, sf[-2]
-    jump    __L20992
-__L20991:
+    jump    __L20996
+__L20995:
     load    r0, sf[-1]
     move    r1, 0
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L20993
+    jump    z, __L20997
     move    r0, 0
     store   r0, sf[-5]
     move    r0, -1022
     store   r0, sf[-2]
-    jump    __L20994
-__L20993:
+    jump    __L20998
+__L20997:
     move    r0, 1
     store   r0, sf[-5]
     load    r0, sf[-1]
     move    r1, 1023
     sub     r0, r1
     store   r0, sf[-2]
-__L20994:
-__L20992:
+__L20998:
+__L20996:
     move    r0, 0
     load    r1, sf[5]
     cmp     r0, r1
-    jump    o, __L20999
+    jump    o, __L21003
     move    le, r0, 1, 0
-    jump    __L21000
-__L20999:
+    jump    __L21004
+__L21003:
     move    lt, r0, 0, 1
-__L21000:
+__L21004:
     test    r0
-    jump    z, __L20997
+    jump    z, __L21001
     load    r0, sf[5]
     move    r1, 13
     cmp     r0, r1
-    jump    o, __L21001
+    jump    o, __L21005
     move    lt, r0, 1, 0
+    jump    __L21006
+__L21005:
+    move    lt, r0, 0, 1
+__L21006:
+    test    r0
+    jump    z, __L21001
+    move    r0, 1
     jump    __L21002
 __L21001:
-    move    lt, r0, 0, 1
+    move    r0, 0
 __L21002:
     test    r0
-    jump    z, __L20997
-    move    r0, 1
-    jump    __L20998
-__L20997:
-    move    r0, 0
-__L20998:
-    test    r0
-    jump    z, __L20995
+    jump    z, __L20999
     move    r0, 13
     load    r1, sf[5]
     sub     r0, r1
@@ -211291,20 +211358,20 @@ __L20998:
     xor     r0, r2
     xor     r1, r2
     cmp     r0, r1
-    jump    o, __L21007
+    jump    o, __L21011
     move    lt, r0, 1, 0
-    jump    __L21008
-__L21007:
+    jump    __L21012
+__L21011:
     move    lt, r0, 0, 1
-__L21008:
+__L21012:
     test    r0
-    jump    nz, __L21005
+    jump    nz, __L21009
     load    r0, sf[-19]
     load    r1, sf[-20]
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L21009
+    jump    z, __L21013
     load    r0, sf[-7]
     push    r0
     move    r0, 1
@@ -211312,21 +211379,21 @@ __L21008:
     pop     r0
     and     r0, r1
     test    r0
-    jump    z, __L21009
+    jump    z, __L21013
     move    r0, 1
+    jump    __L21014
+__L21013:
+    move    r0, 0
+__L21014:
+    test    r0
+    jump    nz, __L21009
+    move    r0, 0
     jump    __L21010
 __L21009:
-    move    r0, 0
+    move    r0, 1
 __L21010:
     test    r0
-    jump    nz, __L21005
-    move    r0, 0
-    jump    __L21006
-__L21005:
-    move    r0, 1
-__L21006:
-    test    r0
-    jump    z, __L21003
+    jump    z, __L21007
     load    r1, sf[-7]
     add     r2, r1, 1
     store   r2, sf[-7]
@@ -211340,7 +211407,7 @@ __L21006:
     pop     r0
     rshift  r0, r1
     test    r0
-    jump    z, __L21011
+    jump    z, __L21015
     load    r0, sf[-7]
     push    r0
     move    r0, 1
@@ -211364,37 +211431,18 @@ __L21006:
     add     r2, r1, 1
     store   r2, sf[-5]
     move    r0, r1
-__L21011:
-__L21003:
+__L21015:
+__L21007:
     load    r0, sf[5]
     store   r0, sf[-3]
     move    r0, 0
     store   r0, sf[-6]
-    jump    __L20996
-__L20995:
+    jump    __L21000
+__L20999:
     move    r0, 13
     store   r0, sf[-3]
     move    r0, 13
     load    r1, sf[5]
-    cmp     r0, r1
-    jump    o, __L21015
-    move    lt, r0, 1, 0
-    jump    __L21016
-__L21015:
-    move    lt, r0, 0, 1
-__L21016:
-    test    r0
-    jump    z, __L21013
-    load    r0, sf[5]
-    move    r1, 13
-    sub     r0, r1
-    jump    __L21014
-__L21013:
-    move    r0, 0
-__L21014:
-    store   r0, sf[-6]
-    load    r0, sf[5]
-    move    r1, 0
     cmp     r0, r1
     jump    o, __L21019
     move    lt, r0, 1, 0
@@ -211404,18 +211452,37 @@ __L21019:
 __L21020:
     test    r0
     jump    z, __L21017
-__L21021:
+    load    r0, sf[5]
+    move    r1, 13
+    sub     r0, r1
+    jump    __L21018
+__L21017:
+    move    r0, 0
+__L21018:
+    store   r0, sf[-6]
+    load    r0, sf[5]
+    move    r1, 0
+    cmp     r0, r1
+    jump    o, __L21023
+    move    lt, r0, 1, 0
+    jump    __L21024
+__L21023:
+    move    lt, r0, 0, 1
+__L21024:
+    test    r0
+    jump    z, __L21021
+__L21025:
     move    r0, 0
     load    r1, sf[-3]
     cmp     r0, r1
-    jump    o, __L21026
+    jump    o, __L21030
     move    lt, r0, 1, 0
-    jump    __L21027
-__L21026:
+    jump    __L21031
+__L21030:
     move    lt, r0, 0, 1
-__L21027:
+__L21031:
     test    r0
-    jump    z, __L21024
+    jump    z, __L21028
     load    r0, sf[-7]
     push    r0
     move    r0, 15
@@ -211429,14 +211496,14 @@ __L21027:
     cmp     r0, r1
     move    eq, r0, 1, 0
     test    r0
-    jump    z, __L21024
+    jump    z, __L21028
     move    r0, 1
-    jump    __L21025
-__L21024:
+    jump    __L21029
+__L21028:
     move    r0, 0
-__L21025:
+__L21029:
     test    r0
-    jump    z, __L21023
+    jump    z, __L21027
     load    r0, sf[-7]
     move    r1, 4
     rshift  r0, r1
@@ -211445,11 +211512,11 @@ __L21025:
     add     r2, r1, -1
     store   r2, sf[-3]
     move    r0, r1
-__L21022:
-    jump    __L21021
-__L21023:
-__L21017:
-__L20996:
+__L21026:
+    jump    __L21025
+__L21027:
+__L21021:
+__L21000:
     move    r0, 48
     load    r1, sf[-5]
     add     r0, r1
@@ -211461,65 +211528,65 @@ __L20996:
     move    r0, 0
     load    r1, sf[-3]
     cmp     r0, r1
-    jump    o, __L21034
+    jump    o, __L21038
     move    lt, r0, 1, 0
-    jump    __L21035
-__L21034:
+    jump    __L21039
+__L21038:
     move    lt, r0, 0, 1
-__L21035:
+__L21039:
     test    r0
-    jump    nz, __L21032
+    jump    nz, __L21036
     move    r0, 0
     load    r1, sf[-6]
     cmp     r0, r1
-    jump    o, __L21036
+    jump    o, __L21040
     move    lt, r0, 1, 0
+    jump    __L21041
+__L21040:
+    move    lt, r0, 0, 1
+__L21041:
+    test    r0
+    jump    nz, __L21036
+    move    r0, 0
     jump    __L21037
 __L21036:
-    move    lt, r0, 0, 1
+    move    r0, 1
 __L21037:
     test    r0
-    jump    nz, __L21032
-    move    r0, 0
-    jump    __L21033
-__L21032:
-    move    r0, 1
-__L21033:
-    test    r0
-    jump    nz, __L21030
+    jump    nz, __L21034
     load    r0, sf[6]
     test    r0
-    jump    nz, __L21030
+    jump    nz, __L21034
     move    r0, 0
-    jump    __L21031
-__L21030:
+    jump    __L21035
+__L21034:
     move    r0, 1
-__L21031:
+__L21035:
     test    r0
-    jump    z, __L21028
+    jump    z, __L21032
     move    r0, 46
     push    r0
     load    r0, sf[3]
     push    r0
     call    __crt___sio_put
     add     sp, 2
-__L21028:
+__L21032:
     load    r0, sf[-3]
     move    r1, 1
     sub     r0, r1
     store   r0, sf[-4]
-__L21038:
+__L21042:
     move    r0, 0
     load    r1, sf[-4]
     cmp     r0, r1
-    jump    o, __L21041
+    jump    o, __L21045
     move    le, r0, 1, 0
-    jump    __L21042
-__L21041:
+    jump    __L21046
+__L21045:
     move    lt, r0, 0, 1
-__L21042:
+__L21046:
     test    r0
-    jump    z, __L21040
+    jump    z, __L21044
     load    r0, sf[-8]
     push    r0
     load    r0, sf[-7]
@@ -211544,13 +211611,13 @@ __L21042:
     push    r0
     call    __crt___sio_put
     add     sp, 2
-__L21039:
+__L21043:
     load    r1, sf[-4]
     add     r2, r1, -1
     store   r2, sf[-4]
     move    r0, r1
-    jump    __L21038
-__L21040:
+    jump    __L21042
+__L21044:
     load    r0, sf[-6]
     push    r0
     move    r0, 48
@@ -211561,33 +211628,12 @@ __L21040:
     add     sp, 3
     load    r0, sf[7]
     test    r0
-    jump    z, __L21043
+    jump    z, __L21047
     move    r0, 80
-    jump    __L21044
-__L21043:
-    move    r0, 112
-__L21044:
-    push    r0
-    load    r0, sf[3]
-    push    r0
-    call    __crt___sio_put
-    add     sp, 2
-    load    r0, sf[-2]
-    move    r1, 0
-    cmp     r0, r1
-    jump    o, __L21047
-    move    lt, r0, 1, 0
     jump    __L21048
 __L21047:
-    move    lt, r0, 0, 1
+    move    r0, 112
 __L21048:
-    test    r0
-    jump    z, __L21045
-    move    r0, 45
-    jump    __L21046
-__L21045:
-    move    r0, 43
-__L21046:
     push    r0
     load    r0, sf[3]
     push    r0
@@ -211604,11 +211650,32 @@ __L21051:
 __L21052:
     test    r0
     jump    z, __L21049
+    move    r0, 45
+    jump    __L21050
+__L21049:
+    move    r0, 43
+__L21050:
+    push    r0
+    load    r0, sf[3]
+    push    r0
+    call    __crt___sio_put
+    add     sp, 2
+    load    r0, sf[-2]
+    move    r1, 0
+    cmp     r0, r1
+    jump    o, __L21055
+    move    lt, r0, 1, 0
+    jump    __L21056
+__L21055:
+    move    lt, r0, 0, 1
+__L21056:
+    test    r0
+    jump    z, __L21053
     load    r0, sf[-2]
     neg     r0
     store   r0, sf[-2]
-__L21049:
 __L21053:
+__L21057:
     add     r0, sf, -16
     push    r0
     load    r1, sf[-17]
@@ -211634,23 +211701,23 @@ __L21053:
     move    r1, 10
     div     r0, r1
     store   r0, sf[-2]
-__L21054:
+__L21058:
     load    r0, sf[-2]
     test    r0
-    jump    nz, __L21053
-__L21055:
-__L21056:
+    jump    nz, __L21057
+__L21059:
+__L21060:
     move    r0, 0
     load    r1, sf[-17]
     cmp     r0, r1
-    jump    o, __L21059
+    jump    o, __L21063
     move    lt, r0, 1, 0
-    jump    __L21060
-__L21059:
+    jump    __L21064
+__L21063:
     move    lt, r0, 0, 1
-__L21060:
+__L21064:
     test    r0
-    jump    z, __L21058
+    jump    z, __L21062
     add     r0, sf, -16
     push    r0
     load    r1, sf[-17]
@@ -211666,9 +211733,9 @@ __L21060:
     push    r0
     call    __crt___sio_put
     add     sp, 2
-__L21057:
-    jump    __L21056
-__L21058:
+__L21061:
+    jump    __L21060
+__L21062:
     move    r0, 0
     return
 
@@ -211677,30 +211744,30 @@ __crt_isupper:
     move    r0, 65
     load    r1, sf[3]
     cmp     r0, r1
-    jump    o, __L21063
+    jump    o, __L21067
     move    le, r0, 1, 0
-    jump    __L21064
-__L21063:
+    jump    __L21068
+__L21067:
     move    lt, r0, 0, 1
-__L21064:
+__L21068:
     test    r0
-    jump    z, __L21061
+    jump    z, __L21065
     load    r0, sf[3]
     move    r1, 90
     cmp     r0, r1
-    jump    o, __L21065
+    jump    o, __L21069
     move    le, r0, 1, 0
+    jump    __L21070
+__L21069:
+    move    lt, r0, 0, 1
+__L21070:
+    test    r0
+    jump    z, __L21065
+    move    r0, 1
     jump    __L21066
 __L21065:
-    move    lt, r0, 0, 1
-__L21066:
-    test    r0
-    jump    z, __L21061
-    move    r0, 1
-    jump    __L21062
-__L21061:
     move    r0, 0
-__L21062:
+__L21066:
     return
     move    r0, 0
     return
@@ -211712,18 +211779,18 @@ __crt___sio_mul:
     store   r0, sf[-2]
     move    r0, 0
     store   r0, sf[0]
-__L21067:
+__L21071:
     load    r0, sf[0]
     load    r1, sf[4]
     cmp     r0, r1
-    jump    o, __L21070
+    jump    o, __L21074
     move    lt, r0, 1, 0
-    jump    __L21071
-__L21070:
+    jump    __L21075
+__L21074:
     move    lt, r0, 0, 1
-__L21071:
+__L21075:
     test    r0
-    jump    z, __L21069
+    jump    z, __L21073
     load    r0, sf[3]
     load    r1, sf[0]
     add     r0, r1
@@ -211747,17 +211814,17 @@ __L21071:
     move    r1, 1000000000
     div     r0, r1
     store   r0, sf[-2]
-__L21068:
+__L21072:
     load    r1, sf[0]
     add     r2, r1, 1
     store   r2, sf[0]
     move    r0, r1
-    jump    __L21067
-__L21069:
-__L21072:
+    jump    __L21071
+__L21073:
+__L21076:
     load    r0, sf[-2]
     test    r0
-    jump    z, __L21074
+    jump    z, __L21078
     load    r0, sf[3]
     push    r0
     load    r1, sf[4]
@@ -211778,9 +211845,9 @@ __L21072:
     move    r1, 1000000000
     div     r0, r1
     store   r0, sf[-2]
-__L21073:
-    jump    __L21072
-__L21074:
+__L21077:
+    jump    __L21076
+__L21078:
     load    r0, sf[4]
     return
     move    r0, 0
@@ -211791,36 +211858,36 @@ __crt___sio_digit:
     load    r0, sf[4]
     move    r1, 0
     cmp     r0, r1
-    jump    o, __L21079
+    jump    o, __L21083
     move    lt, r0, 1, 0
-    jump    __L21080
-__L21079:
+    jump    __L21084
+__L21083:
     move    lt, r0, 0, 1
-__L21080:
+__L21084:
     test    r0
-    jump    nz, __L21077
+    jump    nz, __L21081
     load    r0, sf[3]
     load    r0, r0[0]
     load    r1, sf[4]
     cmp     r0, r1
-    jump    o, __L21081
+    jump    o, __L21085
     move    le, r0, 1, 0
+    jump    __L21086
+__L21085:
+    move    lt, r0, 0, 1
+__L21086:
+    test    r0
+    jump    nz, __L21081
+    move    r0, 0
     jump    __L21082
 __L21081:
-    move    lt, r0, 0, 1
+    move    r0, 1
 __L21082:
     test    r0
-    jump    nz, __L21077
-    move    r0, 0
-    jump    __L21078
-__L21077:
-    move    r0, 1
-__L21078:
-    test    r0
-    jump    z, __L21075
+    jump    z, __L21079
     move    r0, 0
     return
-__L21075:
+__L21079:
     load    r0, sf[3]
     add     r0, 2
     load    r1, sf[4]
@@ -213869,11 +213936,11 @@ __crt_ginit:
     store   r0, __S949_names+12
     move    r0, __W1769+1
     store   r0, __G1137_cgt_src+1
-    move    r0, __W2552+1
+    move    r0, __W2557+1
     store   r0, __S1415_core_files+1
-    move    r0, __W2553+1
+    move    r0, __W2558+1
     store   r0, __S1415_core_files+2
-    move    r0, __W2554+1
+    move    r0, __W2559+1
     store   r0, __S1415_core_files+3
     return
 
@@ -216178,609 +216245,614 @@ __W1972: .dcw "rustc: can't open %s\u{a}\u{0}"
 __W1973: .dcw "main\u{0}"
 __W1974: .dcw "`main` function not found in crate\u{0}"
 __W1975: .dcw "`main` has no body\u{0}"
-__W1976: .dcw "int main(void) {\u{a}\u{0}"
-__W1977: .dcw "    return 0;\u{a}}\u{a}\u{0}"
-__W1979: .dcw "code generator: output line too long\u{0}"
-__W1980: .dcw "#line \u{0}"
-__W1981: .dcw "code generator: expression too long\u{0}"
-__W1982: .dcw "    \u{0}"
-__W1983: .dcw " = \u{0}"
-__W1984: .dcw ";\u{a}\u{0}"
-__W1985: .dcw "t%d\u{0}"
-__W1986: .dcw "0\u{0}"
-__W1987: .dcw "long\u{0}"
-__W1988: .dcw "double\u{0}"
-__W1989: .dcw "0\u{0}"
+__W1976: .dcw "int main(int argc, char **argv) {\u{a}\u{0}"
+__W1977: .dcw "    rs_argc = argc;\u{a}    rs_argv = argv;\u{a}\u{0}"
+__W1978: .dcw "    return 0;\u{a}}\u{a}\u{0}"
+__W1980: .dcw "code generator: output line too long\u{0}"
+__W1981: .dcw "#line \u{0}"
+__W1982: .dcw "code generator: expression too long\u{0}"
+__W1983: .dcw "    \u{0}"
+__W1984: .dcw " = \u{0}"
+__W1985: .dcw ";\u{a}\u{0}"
+__W1986: .dcw "t%d\u{0}"
+__W1987: .dcw "0\u{0}"
+__W1988: .dcw "long\u{0}"
+__W1989: .dcw "double\u{0}"
 __W1990: .dcw "0\u{0}"
-__W1991: .dcw "%s = %s;\u{a}\u{0}"
-__W1992: .dcw "_\u{0}"
-__W1993: .dcw "l_%s_%d\u{0}"
-__W1994: .dcw "if (%s) { %s = 0; %s((long)&%s); }\u{a}\u{0}"
-__W1995: .dcw "%s((long)&%s);\u{a}\u{0}"
-__W1996: .dcw "df%d\u{0}"
-__W1997: .dcw "long\u{0}"
-__W1998: .dcw "0\u{0}"
+__W1991: .dcw "0\u{0}"
+__W1992: .dcw "%s = %s;\u{a}\u{0}"
+__W1993: .dcw "_\u{0}"
+__W1994: .dcw "l_%s_%d\u{0}"
+__W1995: .dcw "if (%s) { %s = 0; %s((long)&%s); }\u{a}\u{0}"
+__W1996: .dcw "%s((long)&%s);\u{a}\u{0}"
+__W1997: .dcw "df%d\u{0}"
+__W1998: .dcw "long\u{0}"
 __W1999: .dcw "0\u{0}"
-__W2000: .dcw "(-128)\u{0}"
-__W2001: .dcw "(-32768)\u{0}"
-__W2002: .dcw "(-2147483648)\u{0}"
-__W2003: .dcw "(-9223372036854775807-1)\u{0}"
-__W2004: .dcw "127\u{0}"
-__W2005: .dcw "255\u{0}"
-__W2006: .dcw "32767\u{0}"
-__W2007: .dcw "65535\u{0}"
-__W2008: .dcw "2147483647\u{0}"
-__W2009: .dcw "4294967295\u{0}"
-__W2010: .dcw "9223372036854775807\u{0}"
-__W2011: .dcw "(-1)\u{0}"
-__W2012: .dcw "((((%s) & 255) ^ 128) - 128)\u{0}"
-__W2013: .dcw "((((%s) & 65535) ^ 32768) - 32768)\u{0}"
-__W2014: .dcw "((((%s) & 4294967295) ^ 2147483648) - 2147483648)\u{0}"
-__W2015: .dcw "((%s) & 255)\u{0}"
-__W2016: .dcw "((%s) & 65535)\u{0}"
-__W2017: .dcw "((%s) & 4294967295)\u{0}"
-__W2018: .dcw "(long)%s * 8, %ld\u{0}"
-__W2019: .dcw "rs_panic(%s, %d, %d, %s);\u{a}\u{0}"
-__W2020: .dcw "if (%s) \u{0}"
-__W2021: .dcw "add\u{0}"
-__W2022: .dcw "subtract\u{0}"
-__W2023: .dcw "multiply\u{0}"
-__W2024: .dcw "?\u{0}"
-__W2025: .dcw "(%s + %s)\u{0}"
-__W2026: .dcw "(%s - %s)\u{0}"
-__W2027: .dcw "(%s * %s)\u{0}"
-__W2028: .dcw "(%s / %s)\u{0}"
-__W2029: .dcw "rs_fmod(%s, %s)\u{0}"
-__W2030: .dcw "0\u{0}"
-__W2031: .dcw "(%s & %s)\u{0}"
-__W2032: .dcw "(%s | %s)\u{0}"
-__W2033: .dcw "(%s ^ %s)\u{0}"
-__W2034: .dcw "0\u{0}"
-__W2035: .dcw "(%s & %s)\u{0}"
-__W2036: .dcw "(%s | %s)\u{0}"
-__W2037: .dcw "(%s ^ %s)\u{0}"
-__W2038: .dcw "long\u{0}"
-__W2039: .dcw "attempt to %s with overflow\u{0}"
-__W2040: .dcw "%s = %s + %s;\u{a}\u{0}"
-__W2041: .dcw "%s = (long)((unsigned long)%s + (unsigned long)%s);\u{a}\u{0}"
-__W2042: .dcw "((%s ^ %s) & (%s ^ %s)) < 0\u{0}"
-__W2043: .dcw "(unsigned long)%s < (unsigned long)%s\u{0}"
-__W2044: .dcw "%s = %s - %s;\u{a}\u{0}"
-__W2045: .dcw "%s = (long)((unsigned long)%s - (unsigned long)%s);\u{a}\u{0}"
-__W2046: .dcw "((%s ^ %s) & (%s ^ %s)) < 0\u{0}"
-__W2047: .dcw "(unsigned long)%s < (unsigned long)%s\u{0}"
-__W2048: .dcw "%s = %s - %s;\u{a}\u{0}"
-__W2049: .dcw "%s = rs_wmul(%s, %s);\u{a}\u{0}"
-__W2050: .dcw "rs_mul_ovf_%s(%s, %s)\u{0}"
-__W2051: .dcw "i64\u{0}"
-__W2052: .dcw "u64\u{0}"
-__W2053: .dcw "%s = %s * %s;\u{a}\u{0}"
-__W2054: .dcw "%s = (long)((unsigned long)%s * (unsigned long)%s);\u{a}\u{0}"
-__W2055: .dcw "%s < %s || %s > %s\u{0}"
-__W2056: .dcw "%s < 0\u{0}"
-__W2057: .dcw "(unsigned long)%s > %s\u{0}"
-__W2058: .dcw "long\u{0}"
-__W2059: .dcw "%s == 0\u{0}"
-__W2060: .dcw "attempt to divide by zero\u{0}"
-__W2061: .dcw "attempt to calculate the remainder with a divisor of zero\u{0}"
-__W2062: .dcw "%s == -1 && %s == %s\u{0}"
-__W2063: .dcw "attempt to divide with overflow\u{0}"
-__W2064: .dcw "attempt to calculate the remainder with overflow\u{0}"
-__W2065: .dcw "%s = (long)((unsigned long)%s %s (unsigned long)%s);\u{a}\u{0}"
-__W2066: .dcw "/\u{0}"
-__W2067: .dcw "%\u{0}"
-__W2068: .dcw "%s = %s %s %s;\u{a}\u{0}"
-__W2069: .dcw "/\u{0}"
-__W2070: .dcw "%\u{0}"
-__W2071: .dcw "long\u{0}"
-__W2072: .dcw "(unsigned long)%s >= %d\u{0}"
-__W2073: .dcw "attempt to shift left with overflow\u{0}"
-__W2074: .dcw "attempt to shift right with overflow\u{0}"
-__W2075: .dcw "%s = (long)((unsigned long)%s << %s);\u{a}\u{0}"
-__W2076: .dcw "%s = %s;\u{a}\u{0}"
-__W2077: .dcw "%s = (long)((unsigned long)%s >> %s);\u{a}\u{0}"
-__W2078: .dcw "%s = %s >> %s;\u{a}\u{0}"
-__W2079: .dcw "0\u{0}"
-__W2080: .dcw "==\u{0}"
-__W2081: .dcw "!=\u{0}"
-__W2082: .dcw "<\u{0}"
-__W2083: .dcw "<=\u{0}"
-__W2084: .dcw ">\u{0}"
-__W2085: .dcw ">=\u{0}"
-__W2086: .dcw "((unsigned long)%s %s (unsigned long)%s)\u{0}"
-__W2087: .dcw "(%s %s %s)\u{0}"
-__W2088: .dcw "(-%s)\u{0}"
-__W2089: .dcw "long\u{0}"
-__W2090: .dcw "%s == %s\u{0}"
-__W2091: .dcw "attempt to negate with overflow\u{0}"
-__W2092: .dcw "%s = -%s;\u{a}\u{0}"
-__W2093: .dcw "(%s ^ 1)\u{0}"
-__W2094: .dcw "(~%s)\u{0}"
-__W2095: .dcw "((~%s) & %s)\u{0}"
-__W2096: .dcw "%s.tag\u{0}"
-__W2097: .dcw "long\u{0}"
-__W2098: .dcw "%sif (%s.tag == %d) %s = %ld;\u{a}\u{0}"
-__W2099: .dcw "else \u{0}"
-__W2100: .dcw "\u{0}"
-__W2101: .dcw "rs_f64_to_int(%s, %d, %d)\u{0}"
-__W2102: .dcw "%s.base\u{0}"
-__W2103: .dcw "rs_u64_to_f64(%s)\u{0}"
-__W2104: .dcw "((double)%s)\u{0}"
-__W2105: .dcw "%s.%s\u{0}"
-__W2106: .dcw "data\u{0}"
-__W2107: .dcw "base\u{0}"
-__W2108: .dcw "struct rs_slice\u{0}"
-__W2109: .dcw "%s.base = %s; %s.len = %s;\u{a}\u{0}"
-__W2110: .dcw "struct rs_dyn\u{0}"
-__W2111: .dcw "%s.data = %s; %s.vt = %s;\u{a}\u{0}"
-__W2112: .dcw "(*(%s *)(%s))\u{0}"
-__W2113: .dcw "__ldb(%s)\u{0}"
-__W2114: .dcw "0\u{0}"
-__W2115: .dcw "%s = 0;\u{a}\u{0}"
-__W2116: .dcw "__stb(%s, %s);\u{a}\u{0}"
-__W2117: .dcw "%s = %s;\u{a}\u{0}"
-__W2118: .dcw "((long)&(%s) * 8 + 7)\u{0}"
-__W2119: .dcw "((long)&(%s))\u{0}"
-__W2120: .dcw "(*(%s *)env).%s\u{0}"
+__W2000: .dcw "0\u{0}"
+__W2001: .dcw "(-128)\u{0}"
+__W2002: .dcw "(-32768)\u{0}"
+__W2003: .dcw "(-2147483648)\u{0}"
+__W2004: .dcw "(-9223372036854775807-1)\u{0}"
+__W2005: .dcw "127\u{0}"
+__W2006: .dcw "255\u{0}"
+__W2007: .dcw "32767\u{0}"
+__W2008: .dcw "65535\u{0}"
+__W2009: .dcw "2147483647\u{0}"
+__W2010: .dcw "4294967295\u{0}"
+__W2011: .dcw "9223372036854775807\u{0}"
+__W2012: .dcw "(-1)\u{0}"
+__W2013: .dcw "((((%s) & 255) ^ 128) - 128)\u{0}"
+__W2014: .dcw "((((%s) & 65535) ^ 32768) - 32768)\u{0}"
+__W2015: .dcw "((((%s) & 4294967295) ^ 2147483648) - 2147483648)\u{0}"
+__W2016: .dcw "((%s) & 255)\u{0}"
+__W2017: .dcw "((%s) & 65535)\u{0}"
+__W2018: .dcw "((%s) & 4294967295)\u{0}"
+__W2019: .dcw "(long)%s * 8, %ld\u{0}"
+__W2020: .dcw "rs_panic(%s, %d, %d, %s);\u{a}\u{0}"
+__W2021: .dcw "if (%s) \u{0}"
+__W2022: .dcw "add\u{0}"
+__W2023: .dcw "subtract\u{0}"
+__W2024: .dcw "multiply\u{0}"
+__W2025: .dcw "?\u{0}"
+__W2026: .dcw "(%s + %s)\u{0}"
+__W2027: .dcw "(%s - %s)\u{0}"
+__W2028: .dcw "(%s * %s)\u{0}"
+__W2029: .dcw "(%s / %s)\u{0}"
+__W2030: .dcw "rs_fmod(%s, %s)\u{0}"
+__W2031: .dcw "0\u{0}"
+__W2032: .dcw "(%s & %s)\u{0}"
+__W2033: .dcw "(%s | %s)\u{0}"
+__W2034: .dcw "(%s ^ %s)\u{0}"
+__W2035: .dcw "0\u{0}"
+__W2036: .dcw "(%s & %s)\u{0}"
+__W2037: .dcw "(%s | %s)\u{0}"
+__W2038: .dcw "(%s ^ %s)\u{0}"
+__W2039: .dcw "long\u{0}"
+__W2040: .dcw "attempt to %s with overflow\u{0}"
+__W2041: .dcw "%s = %s + %s;\u{a}\u{0}"
+__W2042: .dcw "%s = (long)((unsigned long)%s + (unsigned long)%s);\u{a}\u{0}"
+__W2043: .dcw "((%s ^ %s) & (%s ^ %s)) < 0\u{0}"
+__W2044: .dcw "(unsigned long)%s < (unsigned long)%s\u{0}"
+__W2045: .dcw "%s = %s - %s;\u{a}\u{0}"
+__W2046: .dcw "%s = (long)((unsigned long)%s - (unsigned long)%s);\u{a}\u{0}"
+__W2047: .dcw "((%s ^ %s) & (%s ^ %s)) < 0\u{0}"
+__W2048: .dcw "(unsigned long)%s < (unsigned long)%s\u{0}"
+__W2049: .dcw "%s = %s - %s;\u{a}\u{0}"
+__W2050: .dcw "%s = rs_wmul(%s, %s);\u{a}\u{0}"
+__W2051: .dcw "rs_mul_ovf_%s(%s, %s)\u{0}"
+__W2052: .dcw "i64\u{0}"
+__W2053: .dcw "u64\u{0}"
+__W2054: .dcw "%s = %s * %s;\u{a}\u{0}"
+__W2055: .dcw "%s = (long)((unsigned long)%s * (unsigned long)%s);\u{a}\u{0}"
+__W2056: .dcw "%s < %s || %s > %s\u{0}"
+__W2057: .dcw "%s < 0\u{0}"
+__W2058: .dcw "(unsigned long)%s > %s\u{0}"
+__W2059: .dcw "long\u{0}"
+__W2060: .dcw "%s == 0\u{0}"
+__W2061: .dcw "attempt to divide by zero\u{0}"
+__W2062: .dcw "attempt to calculate the remainder with a divisor of zero\u{0}"
+__W2063: .dcw "%s == -1 && %s == %s\u{0}"
+__W2064: .dcw "attempt to divide with overflow\u{0}"
+__W2065: .dcw "attempt to calculate the remainder with overflow\u{0}"
+__W2066: .dcw "%s = (long)((unsigned long)%s %s (unsigned long)%s);\u{a}\u{0}"
+__W2067: .dcw "/\u{0}"
+__W2068: .dcw "%\u{0}"
+__W2069: .dcw "%s = %s %s %s;\u{a}\u{0}"
+__W2070: .dcw "/\u{0}"
+__W2071: .dcw "%\u{0}"
+__W2072: .dcw "long\u{0}"
+__W2073: .dcw "(unsigned long)%s >= %d\u{0}"
+__W2074: .dcw "attempt to shift left with overflow\u{0}"
+__W2075: .dcw "attempt to shift right with overflow\u{0}"
+__W2076: .dcw "%s = (long)((unsigned long)%s << %s);\u{a}\u{0}"
+__W2077: .dcw "%s = %s;\u{a}\u{0}"
+__W2078: .dcw "%s = (long)((unsigned long)%s >> %s);\u{a}\u{0}"
+__W2079: .dcw "%s = %s >> %s;\u{a}\u{0}"
+__W2080: .dcw "0\u{0}"
+__W2081: .dcw "==\u{0}"
+__W2082: .dcw "!=\u{0}"
+__W2083: .dcw "<\u{0}"
+__W2084: .dcw "<=\u{0}"
+__W2085: .dcw ">\u{0}"
+__W2086: .dcw ">=\u{0}"
+__W2087: .dcw "((unsigned long)%s %s (unsigned long)%s)\u{0}"
+__W2088: .dcw "(%s %s %s)\u{0}"
+__W2089: .dcw "(-%s)\u{0}"
+__W2090: .dcw "long\u{0}"
+__W2091: .dcw "%s == %s\u{0}"
+__W2092: .dcw "attempt to negate with overflow\u{0}"
+__W2093: .dcw "%s = -%s;\u{a}\u{0}"
+__W2094: .dcw "(%s ^ 1)\u{0}"
+__W2095: .dcw "(~%s)\u{0}"
+__W2096: .dcw "((~%s) & %s)\u{0}"
+__W2097: .dcw "%s.tag\u{0}"
+__W2098: .dcw "long\u{0}"
+__W2099: .dcw "%sif (%s.tag == %d) %s = %ld;\u{a}\u{0}"
+__W2100: .dcw "else \u{0}"
+__W2101: .dcw "\u{0}"
+__W2102: .dcw "rs_f64_to_int(%s, %d, %d)\u{0}"
+__W2103: .dcw "%s.base\u{0}"
+__W2104: .dcw "rs_u64_to_f64(%s)\u{0}"
+__W2105: .dcw "((double)%s)\u{0}"
+__W2106: .dcw "%s.%s\u{0}"
+__W2107: .dcw "data\u{0}"
+__W2108: .dcw "base\u{0}"
+__W2109: .dcw "struct rs_slice\u{0}"
+__W2110: .dcw "%s.base = %s; %s.len = %s;\u{a}\u{0}"
+__W2111: .dcw "struct rs_dyn\u{0}"
+__W2112: .dcw "%s.data = %s; %s.vt = %s;\u{a}\u{0}"
+__W2113: .dcw "(*(%s *)(%s))\u{0}"
+__W2114: .dcw "__ldb(%s)\u{0}"
+__W2115: .dcw "0\u{0}"
+__W2116: .dcw "%s = 0;\u{a}\u{0}"
+__W2117: .dcw "__stb(%s, %s);\u{a}\u{0}"
+__W2118: .dcw "%s = %s;\u{a}\u{0}"
+__W2119: .dcw "((long)&(%s) * 8 + 7)\u{0}"
+__W2120: .dcw "((long)&(%s))\u{0}"
 __W2121: .dcw "(*(%s *)env).%s\u{0}"
 __W2122: .dcw "(*(%s *)env).%s\u{0}"
-__W2123: .dcw "(*(%s *)(%s))\u{0}"
-__W2124: .dcw "%s = 1;\u{a}\u{0}"
-__W2125: .dcw "deref_mut\u{0}"
-__W2126: .dcw "deref\u{0}"
-__W2127: .dcw "deref_mut\u{0}"
-__W2128: .dcw "deref\u{0}"
-__W2129: .dcw "code generator: overloaded deref without a target type\u{0}"
-__W2130: .dcw "((long)&(%s).w[0] * 8)\u{0}"
-__W2131: .dcw "((long)&(%s).e[0])\u{0}"
-__W2132: .dcw "rs_panic_bounds(%s, %d, %d, %s, %s);\u{a}\u{0}"
-__W2133: .dcw "if ((unsigned long)%s >= %ld) \u{0}"
-__W2134: .dcw "%ld\u{0}"
-__W2135: .dcw "((long)&(%s).w[0] * 8 + %s)\u{0}"
-__W2136: .dcw "(%s).e[%s]\u{0}"
-__W2137: .dcw "if ((unsigned long)%s >= (unsigned long)%s.len) \u{0}"
-__W2138: .dcw "%s.len\u{0}"
-__W2139: .dcw "(%s.base + %s)\u{0}"
-__W2140: .dcw "((%s *)(%s.base))[%s]\u{0}"
-__W2141: .dcw "0\u{0}"
-__W2142: .dcw "%ld\u{0}"
-__W2143: .dcw "%s.len\u{0}"
-__W2144: .dcw "%s.base\u{0}"
-__W2145: .dcw "%s.%s\u{0}"
-__W2146: .dcw "start\u{0}"
-__W2147: .dcw "%s.%s\u{0}"
-__W2148: .dcw "end\u{0}"
-__W2149: .dcw "long\u{0}"
-__W2150: .dcw "%s == -1\u{0}"
-__W2151: .dcw "attempt to add with overflow\u{0}"
-__W2152: .dcw "%s = %s + 1;\u{a}\u{0}"
-__W2153: .dcw "rs_check_str_range(%s, %d, %d, %s, %s, %s, %s);\u{a}\u{0}"
-__W2154: .dcw "rs_check_range(%s, %d, %d, %s, %s, %s);\u{a}\u{0}"
-__W2155: .dcw "(%s + %s)\u{0}"
-__W2156: .dcw "(%s - %s)\u{0}"
-__W2157: .dcw "((long)((%s *)(%s) + %s))\u{0}"
-__W2158: .dcw "(%s - %s)\u{0}"
-__W2159: .dcw "index_mut\u{0}"
-__W2160: .dcw "index\u{0}"
-__W2161: .dcw "f%d\u{0}"
-__W2162: .dcw "(%s).%s\u{0}"
-__W2163: .dcw "%s = %s;\u{a}\u{0}"
-__W2164: .dcw "code generator: unknown local variable\u{0}"
-__W2165: .dcw ", \u{0}"
-__W2166: .dcw "%s(%s)\u{0}"
-__W2167: .dcw "%s;\u{a}\u{0}"
+__W2123: .dcw "(*(%s *)env).%s\u{0}"
+__W2124: .dcw "(*(%s *)(%s))\u{0}"
+__W2125: .dcw "%s = 1;\u{a}\u{0}"
+__W2126: .dcw "deref_mut\u{0}"
+__W2127: .dcw "deref\u{0}"
+__W2128: .dcw "deref_mut\u{0}"
+__W2129: .dcw "deref\u{0}"
+__W2130: .dcw "code generator: overloaded deref without a target type\u{0}"
+__W2131: .dcw "((long)&(%s).w[0] * 8)\u{0}"
+__W2132: .dcw "((long)&(%s).e[0])\u{0}"
+__W2133: .dcw "rs_panic_bounds(%s, %d, %d, %s, %s);\u{a}\u{0}"
+__W2134: .dcw "if ((unsigned long)%s >= %ld) \u{0}"
+__W2135: .dcw "%ld\u{0}"
+__W2136: .dcw "((long)&(%s).w[0] * 8 + %s)\u{0}"
+__W2137: .dcw "(%s).e[%s]\u{0}"
+__W2138: .dcw "if ((unsigned long)%s >= (unsigned long)%s.len) \u{0}"
+__W2139: .dcw "%s.len\u{0}"
+__W2140: .dcw "(%s.base + %s)\u{0}"
+__W2141: .dcw "((%s *)(%s.base))[%s]\u{0}"
+__W2142: .dcw "0\u{0}"
+__W2143: .dcw "%ld\u{0}"
+__W2144: .dcw "%s.len\u{0}"
+__W2145: .dcw "%s.base\u{0}"
+__W2146: .dcw "%s.%s\u{0}"
+__W2147: .dcw "start\u{0}"
+__W2148: .dcw "%s.%s\u{0}"
+__W2149: .dcw "end\u{0}"
+__W2150: .dcw "long\u{0}"
+__W2151: .dcw "%s == -1\u{0}"
+__W2152: .dcw "attempt to add with overflow\u{0}"
+__W2153: .dcw "%s = %s + 1;\u{a}\u{0}"
+__W2154: .dcw "rs_check_str_range(%s, %d, %d, %s, %s, %s, %s);\u{a}\u{0}"
+__W2155: .dcw "rs_check_range(%s, %d, %d, %s, %s, %s);\u{a}\u{0}"
+__W2156: .dcw "(%s + %s)\u{0}"
+__W2157: .dcw "(%s - %s)\u{0}"
+__W2158: .dcw "((long)((%s *)(%s) + %s))\u{0}"
+__W2159: .dcw "(%s - %s)\u{0}"
+__W2160: .dcw "index_mut\u{0}"
+__W2161: .dcw "index\u{0}"
+__W2162: .dcw "f%d\u{0}"
+__W2163: .dcw "(%s).%s\u{0}"
+__W2164: .dcw "%s = %s;\u{a}\u{0}"
+__W2165: .dcw "code generator: unknown local variable\u{0}"
+__W2166: .dcw ", \u{0}"
+__W2167: .dcw "%s(%s)\u{0}"
 __W2168: .dcw "%s;\u{a}\u{0}"
-__W2169: .dcw "0\u{0}"
-__W2170: .dcw "%s = %s;\u{a}\u{0}"
-__W2171: .dcw " (*)(\u{0}"
-__W2172: .dcw ", \u{0}"
-__W2173: .dcw "void\u{0}"
-__W2174: .dcw "(%s + %s)\u{0}"
-__W2175: .dcw "((long)((%s *)(%s) + %s))\u{0}"
-__W2176: .dcw "(%s + %s)\u{0}"
-__W2177: .dcw "(*((%s *)(%s) + %s))\u{0}"
-__W2178: .dcw "long\u{0}"
+__W2169: .dcw "%s;\u{a}\u{0}"
+__W2170: .dcw "0\u{0}"
+__W2171: .dcw "%s = %s;\u{a}\u{0}"
+__W2172: .dcw " (*)(\u{0}"
+__W2173: .dcw ", \u{0}"
+__W2174: .dcw "void\u{0}"
+__W2175: .dcw "(%s + %s)\u{0}"
+__W2176: .dcw "((long)((%s *)(%s) + %s))\u{0}"
+__W2177: .dcw "(%s + %s)\u{0}"
+__W2178: .dcw "(*((%s *)(%s) + %s))\u{0}"
 __W2179: .dcw "long\u{0}"
-__W2180: .dcw "+\u{0}"
-__W2181: .dcw "-\u{0}"
-__W2182: .dcw "*\u{0}"
-__W2183: .dcw "%s = rs_wmul(%s, %s);\u{a}\u{0}"
-__W2184: .dcw "%s = rs_mul_ovf_%s(%s, %s);\u{a}\u{0}"
-__W2185: .dcw "i64\u{0}"
-__W2186: .dcw "u64\u{0}"
-__W2187: .dcw "%s = (long)((unsigned long)%s %s (unsigned long)%s);\u{a}\u{0}"
-__W2188: .dcw "%s = ((%s ^ %s) & (%s ^ %s)) < 0;\u{a}\u{0}"
-__W2189: .dcw "%s = (unsigned long)%s < (unsigned long)%s;\u{a}\u{0}"
-__W2190: .dcw "%s = ((%s ^ %s) & (%s ^ %s)) < 0;\u{a}\u{0}"
-__W2191: .dcw "%s = (unsigned long)%s < (unsigned long)%s;\u{a}\u{0}"
-__W2192: .dcw "%s = %s %s %s;\u{a}\u{0}"
-__W2193: .dcw "%s = (long)((unsigned long)%s %s (unsigned long)%s);\u{a}\u{0}"
-__W2194: .dcw "%s = %s < %s || %s > %s;\u{a}\u{0}"
-__W2195: .dcw "%s = %s < 0;\u{a}\u{0}"
-__W2196: .dcw "%s = (unsigned long)%s > %s;\u{a}\u{0}"
-__W2197: .dcw "%s = %s;\u{a}\u{0}"
-__W2198: .dcw "%s.f0 = %s; %s.f1 = %s;\u{a}\u{0}"
-__W2199: .dcw "elem_alloc\u{0}"
-__W2200: .dcw "rs_alloc_bytes(%s)\u{0}"
-__W2201: .dcw "rs_alloc(%s * %d)\u{0}"
-__W2202: .dcw "elem_realloc\u{0}"
-__W2203: .dcw "rs_realloc_bytes(%s, %s, %s)\u{0}"
-__W2204: .dcw "rs_realloc(%s, %s * %d, %s * %d)\u{0}"
-__W2205: .dcw "elem_free\u{0}"
-__W2206: .dcw "%s(%s);\u{a}\u{0}"
-__W2207: .dcw "rs_free_bytes\u{0}"
-__W2208: .dcw "rs_free\u{0}"
-__W2209: .dcw "0\u{0}"
-__W2210: .dcw "elem_read\u{0}"
-__W2211: .dcw "0\u{0}"
-__W2212: .dcw "elem_write\u{0}"
-__W2213: .dcw "0\u{0}"
-__W2214: .dcw "elem_offset\u{0}"
-__W2215: .dcw "(%s + %s)\u{0}"
-__W2216: .dcw "((long)((%s *)(%s) + %s))\u{0}"
-__W2217: .dcw "elem_ref\u{0}"
-__W2218: .dcw "elem_ref_mut\u{0}"
-__W2219: .dcw "read_ref\u{0}"
-__W2220: .dcw "0\u{0}"
-__W2221: .dcw "write_ref\u{0}"
-__W2222: .dcw "0\u{0}"
-__W2223: .dcw "forget\u{0}"
-__W2224: .dcw "0\u{0}"
-__W2225: .dcw "size_of\u{0}"
-__W2226: .dcw "%d\u{0}"
-__W2227: .dcw "transmute\u{0}"
-__W2228: .dcw "rs_f64_to_bits(%s)\u{0}"
-__W2229: .dcw "rs_f64_from_bits(%s)\u{0}"
-__W2230: .dcw "slice_base\u{0}"
-__W2231: .dcw "str_base\u{0}"
-__W2232: .dcw "%s.base\u{0}"
-__W2233: .dcw "slice_len\u{0}"
-__W2234: .dcw "str_len\u{0}"
-__W2235: .dcw "%s.len\u{0}"
-__W2236: .dcw "slice_from_raw\u{0}"
-__W2237: .dcw "slice_from_raw_mut\u{0}"
-__W2238: .dcw "str_from_raw\u{0}"
-__W2239: .dcw "box_new\u{0}"
-__W2240: .dcw "long\u{0}"
-__W2241: .dcw "%s = rs_alloc(1) * 8 + 7;\u{a}\u{0}"
-__W2242: .dcw "__stb(%s, %s);\u{a}\u{0}"
-__W2243: .dcw "%s = rs_alloc(%d);\u{a}\u{0}"
-__W2244: .dcw "*(%s *)%s = %s;\u{a}\u{0}"
-__W2245: .dcw "box_deref\u{0}"
-__W2246: .dcw "box_deref_mut\u{0}"
-__W2247: .dcw "(*(struct rs_slice *)(%s))\u{0}"
-__W2248: .dcw "(*(struct rs_dyn *)(%s))\u{0}"
-__W2249: .dcw "(*(long *)(%s))\u{0}"
-__W2250: .dcw "box_drop\u{0}"
-__W2251: .dcw "long\u{0}"
-__W2252: .dcw "%s = *(long *)(%s);\u{a}\u{0}"
-__W2253: .dcw "%s(%s);\u{a}\u{0}"
-__W2254: .dcw "rs_free(%s);\u{a}\u{0}"
-__W2255: .dcw "%s / 8\u{0}"
-__W2256: .dcw "struct rs_slice\u{0}"
-__W2257: .dcw "%s = *(struct rs_slice *)(%s);\u{a}\u{0}"
-__W2258: .dcw "long\u{0}"
-__W2259: .dcw "for (%s = 0; %s < %s.len; %s++) %s((long)((%s *)(%s.base) + %s));\u{a}\u{0}"
-__W2260: .dcw "rs_free(%s.base / 8);\u{a}\u{0}"
-__W2261: .dcw "rs_free(%s.base);\u{a}\u{0}"
-__W2262: .dcw "struct rs_dyn\u{0}"
-__W2263: .dcw "%s = *(struct rs_dyn *)(%s);\u{a}\u{0}"
-__W2264: .dcw "if (((long *)%s.vt)[0]) ((long (*)(long))(((long *)%s.vt)[0]))(%s.data);\u{a}\u{0}"
-__W2265: .dcw "rs_free(%s.data);\u{a}\u{0}"
-__W2266: .dcw "0\u{0}"
-__W2267: .dcw "wrapping_add\u{0}"
-__W2268: .dcw "wrapping_sub\u{0}"
-__W2269: .dcw "wrapping_mul\u{0}"
-__W2270: .dcw "+\u{0}"
-__W2271: .dcw "-\u{0}"
-__W2272: .dcw "*\u{0}"
-__W2273: .dcw "(long)((unsigned long)%s %s (unsigned long)%s)\u{0}"
-__W2274: .dcw "add_with_overflow\u{0}"
-__W2275: .dcw "sub_with_overflow\u{0}"
-__W2276: .dcw "mul_with_overflow\u{0}"
-__W2277: .dcw "f64_to_bits\u{0}"
-__W2278: .dcw "rs_f64_to_bits(%s)\u{0}"
-__W2279: .dcw "f64_from_bits\u{0}"
-__W2280: .dcw "rs_f64_from_bits(%s)\u{0}"
-__W2281: .dcw "sqrtf64\u{0}"
-__W2282: .dcw "rs_sqrt(%s)\u{0}"
-__W2283: .dcw "floorf64\u{0}"
-__W2284: .dcw "rs_floor(%s)\u{0}"
-__W2285: .dcw "ceilf64\u{0}"
-__W2286: .dcw "rs_ceil(%s)\u{0}"
-__W2287: .dcw "fmt_f64\u{0}"
-__W2288: .dcw "rs_fmt_f64(%s, %s, %s, %s, %s)\u{0}"
-__W2289: .dcw "parse_f64\u{0}"
-__W2290: .dcw "rs_parse_f64(%s, %s, %s)\u{0}"
-__W2291: .dcw "write_bytes\u{0}"
-__W2292: .dcw "rs_write_bytes(%s, %s, %s);\u{a}\u{0}"
-__W2293: .dcw "0\u{0}"
-__W2294: .dcw "read_byte\u{0}"
-__W2295: .dcw "rs_read_byte(%s)\u{0}"
-__W2296: .dcw "exit\u{0}"
-__W2297: .dcw "rs_exit(%s);\u{a}\u{0}"
-__W2298: .dcw "abort\u{0}"
-__W2299: .dcw "rs_abort();\u{a}\u{0}"
-__W2300: .dcw "code generator: unknown intrinsic `%s`\u{0}"
-__W2301: .dcw "0\u{0}"
-__W2302: .dcw "%s = 0;\u{a}\u{0}"
-__W2303: .dcw "((%s)(%s))\u{0}"
-__W2304: .dcw "((%s)(((long *)%s.vt)[%d]))\u{0}"
-__W2305: .dcw "long\u{0}"
-__W2306: .dcw "%s.data\u{0}"
-__W2307: .dcw "%s.f%d\u{0}"
-__W2308: .dcw "code generator: no instance for `%s` (self %s)\u{0}"
-__W2309: .dcw "?\u{0}"
-__W2310: .dcw "-\u{0}"
-__W2311: .dcw "(-9223372036854775807-1)\u{0}"
-__W2312: .dcw "(%ld)\u{0}"
-__W2313: .dcw "%ld\u{0}"
-__W2314: .dcw "0\u{0}"
-__W2315: .dcw "%s\u{0}"
-__W2316: .dcw "((long)%s * 8)\u{0}"
-__W2317: .dcw "%ld\u{0}"
-__W2318: .dcw "code generator: cannot resolve an associated const\u{0}"
-__W2319: .dcw "code generator: const without a value\u{0}"
-__W2320: .dcw "code generator: const recursion\u{0}"
-__W2321: .dcw "0\u{0}"
-__W2322: .dcw "%s.tag = %d;\u{a}\u{0}"
-__W2323: .dcw "%s.%s.%s = %s;\u{a}\u{0}"
-__W2324: .dcw "%s.%s = %s;\u{a}\u{0}"
-__W2325: .dcw "(%s * 8)\u{0}"
-__W2326: .dcw "%ld\u{0}"
-__W2327: .dcw "((long)%s)\u{0}"
-__W2328: .dcw "Sh%d\u{0}"
-__W2329: .dcw ", \u{0}"
-__W2330: .dcw " a%d\u{0}"
-__W2331: .dcw "void\u{0}"
-__W2332: .dcw "static %s;\u{a}\u{0}"
-__W2333: .dcw "static %s {\u{a}    long env = 0;\u{a}    return %s(&env\u{0}"
-__W2334: .dcw ", a%d\u{0}"
-__W2335: .dcw ");\u{a}}\u{a}\u{0}"
-__W2336: .dcw "((long)%s)\u{0}"
-__W2337: .dcw "((long)%s)\u{0}"
-__W2338: .dcw "long\u{0}"
-__W2339: .dcw "%s = %s;\u{a}\u{0}"
-__W2340: .dcw "if (%s%s) {\u{a}\u{0}"
-__W2341: .dcw "\u{0}"
-__W2342: .dcw "!\u{0}"
-__W2343: .dcw "%s = %s;\u{a}\u{0}"
-__W2344: .dcw "}\u{a}\u{0}"
-__W2345: .dcw "1\u{0}"
-__W2346: .dcw "0\u{0}"
-__W2347: .dcw "code generator: operator without a callee\u{0}"
-__W2348: .dcw "(-%s)\u{0}"
-__W2349: .dcw "(-%s)\u{0}"
-__W2350: .dcw "code generator: unary operator without a callee\u{0}"
-__W2351: .dcw "if (%s) %s((long)&%s);\u{a}\u{0}"
-__W2352: .dcw "%s((long)&%s);\u{a}\u{0}"
-__W2353: .dcw "%s = 1;\u{a}\u{0}"
-__W2354: .dcw "0\u{0}"
-__W2355: .dcw "%s.f%ld\u{0}"
-__W2356: .dcw "0\u{0}"
-__W2357: .dcw "0\u{0}"
-__W2358: .dcw "0\u{0}"
-__W2359: .dcw "code generator: compound assignment without a callee\u{0}"
-__W2360: .dcw "0\u{0}"
-__W2361: .dcw "((%s)(%s))\u{0}"
-__W2362: .dcw "code generator: call without a callee\u{0}"
-__W2363: .dcw "%s = 0;\u{a}\u{0}"
-__W2364: .dcw "code generator: method call without a callee\u{0}"
-__W2365: .dcw "%s = 0;\u{a}\u{0}"
-__W2366: .dcw "%s = 1;\u{a}\u{0}"
-__W2367: .dcw "(%s && %s)\u{0}"
-__W2368: .dcw "%s.%s.%s\u{0}"
-__W2369: .dcw "%s.%s\u{0}"
-__W2370: .dcw "%s%ld.0\u{0}"
-__W2371: .dcw "-\u{0}"
-__W2372: .dcw "\u{0}"
-__W2373: .dcw "%s%s\u{0}"
-__W2374: .dcw "-\u{0}"
-__W2375: .dcw "\u{0}"
-__W2376: .dcw "%ld\u{0}"
-__W2377: .dcw "0\u{0}"
-__W2378: .dcw "0\u{0}"
-__W2379: .dcw "(%s.len == %ld && rs_cmp_bytes(%s.base, (long)%s * 8, %ld) == 0)\u{0}"
-__W2380: .dcw "%ld\u{0}"
-__W2381: .dcw "%s.base\u{0}"
-__W2382: .dcw "%s.len\u{0}"
-__W2383: .dcw "%ld\u{0}"
-__W2384: .dcw "((long)&(%s).w[0] * 8 + %s)\u{0}"
-__W2385: .dcw "(%s).e[%s]\u{0}"
-__W2386: .dcw "%d\u{0}"
-__W2387: .dcw "(%s.len - %d)\u{0}"
-__W2388: .dcw "(%s.base + %s)\u{0}"
-__W2389: .dcw "((%s *)(%s.base))[%s]\u{0}"
-__W2390: .dcw "(%s == %s)\u{0}"
-__W2391: .dcw "%s.f%d\u{0}"
-__W2392: .dcw "(%s %s %d)\u{0}"
-__W2393: .dcw ">=\u{0}"
-__W2394: .dcw "==\u{0}"
-__W2395: .dcw "(%s || %s)\u{0}"
-__W2396: .dcw "(%s.len == %s.len && rs_cmp_bytes(%s.base, %s.base, %s.len) == 0)\u{0}"
-__W2397: .dcw "(%s == %s)\u{0}"
-__W2398: .dcw "(%s.tag == %d)\u{0}"
-__W2399: .dcw "%s = %s;\u{a}\u{0}"
-__W2400: .dcw "%s.f%d\u{0}"
-__W2401: .dcw "(%s + %d)\u{0}"
-__W2402: .dcw "(%s - %d)\u{0}"
-__W2403: .dcw "((long)((%s *)(%s) + %d))\u{0}"
-__W2404: .dcw "(%s - %d)\u{0}"
-__W2405: .dcw "%s = %s;\u{a}\u{0}"
-__W2406: .dcw "else {\u{a}\u{0}"
-__W2407: .dcw "%sif (%s) {\u{a}\u{0}"
-__W2408: .dcw "\u{0}"
-__W2409: .dcw "else \u{0}"
-__W2410: .dcw "1\u{0}"
-__W2411: .dcw "}\u{a}\u{0}"
-__W2412: .dcw "if (!%s) {\u{a}\u{0}"
-__W2413: .dcw "goto %s;\u{a}}\u{a}\u{0}"
-__W2414: .dcw "if (!%s) {\u{a}\u{0}"
-__W2415: .dcw "goto %s;\u{a}}\u{a}\u{0}"
-__W2416: .dcw "code generator: break/continue outside a loop\u{0}"
-__W2417: .dcw "%s = %s;\u{a}\u{0}"
-__W2418: .dcw "if (%s) {\u{a}\u{0}"
-__W2419: .dcw "} else {\u{a}\u{0}"
-__W2420: .dcw "}\u{a}\u{0}"
-__W2421: .dcw "Le%d\u{0}"
-__W2422: .dcw "goto Lf%d;\u{a}Le%d:;\u{a}\u{0}"
-__W2423: .dcw "Lf%d:;\u{a}\u{0}"
-__W2424: .dcw "0\u{0}"
-__W2425: .dcw "if (%s) {\u{a}\u{0}"
-__W2426: .dcw "1\u{0}"
-__W2427: .dcw "Ln%d_%d\u{0}"
-__W2428: .dcw "goto Lm%d;\u{a}}\u{a}\u{0}"
-__W2429: .dcw "Ln%d_%d:;\u{a}\u{0}"
-__W2430: .dcw "Lm%d:;\u{a}\u{0}"
-__W2431: .dcw "0\u{0}"
-__W2432: .dcw "for (;;) {\u{a}\u{0}"
-__W2433: .dcw "brk%d\u{0}"
-__W2434: .dcw "cnt%d:;\u{a}}\u{a}brk%d:;\u{a}\u{0}"
-__W2435: .dcw "0\u{0}"
-__W2436: .dcw "for (;;) {\u{a}\u{0}"
-__W2437: .dcw "cnt%d:;\u{a}}\u{a}brk%d:;\u{a}\u{0}"
-__W2438: .dcw "0\u{0}"
-__W2439: .dcw "code generator: for loop without callees\u{0}"
-__W2440: .dcw "%s = %s;\u{a}\u{0}"
+__W2180: .dcw "long\u{0}"
+__W2181: .dcw "+\u{0}"
+__W2182: .dcw "-\u{0}"
+__W2183: .dcw "*\u{0}"
+__W2184: .dcw "%s = rs_wmul(%s, %s);\u{a}\u{0}"
+__W2185: .dcw "%s = rs_mul_ovf_%s(%s, %s);\u{a}\u{0}"
+__W2186: .dcw "i64\u{0}"
+__W2187: .dcw "u64\u{0}"
+__W2188: .dcw "%s = (long)((unsigned long)%s %s (unsigned long)%s);\u{a}\u{0}"
+__W2189: .dcw "%s = ((%s ^ %s) & (%s ^ %s)) < 0;\u{a}\u{0}"
+__W2190: .dcw "%s = (unsigned long)%s < (unsigned long)%s;\u{a}\u{0}"
+__W2191: .dcw "%s = ((%s ^ %s) & (%s ^ %s)) < 0;\u{a}\u{0}"
+__W2192: .dcw "%s = (unsigned long)%s < (unsigned long)%s;\u{a}\u{0}"
+__W2193: .dcw "%s = %s %s %s;\u{a}\u{0}"
+__W2194: .dcw "%s = (long)((unsigned long)%s %s (unsigned long)%s);\u{a}\u{0}"
+__W2195: .dcw "%s = %s < %s || %s > %s;\u{a}\u{0}"
+__W2196: .dcw "%s = %s < 0;\u{a}\u{0}"
+__W2197: .dcw "%s = (unsigned long)%s > %s;\u{a}\u{0}"
+__W2198: .dcw "%s = %s;\u{a}\u{0}"
+__W2199: .dcw "%s.f0 = %s; %s.f1 = %s;\u{a}\u{0}"
+__W2200: .dcw "elem_alloc\u{0}"
+__W2201: .dcw "rs_alloc_bytes(%s)\u{0}"
+__W2202: .dcw "rs_alloc(%s * %d)\u{0}"
+__W2203: .dcw "elem_realloc\u{0}"
+__W2204: .dcw "rs_realloc_bytes(%s, %s, %s)\u{0}"
+__W2205: .dcw "rs_realloc(%s, %s * %d, %s * %d)\u{0}"
+__W2206: .dcw "elem_free\u{0}"
+__W2207: .dcw "%s(%s);\u{a}\u{0}"
+__W2208: .dcw "rs_free_bytes\u{0}"
+__W2209: .dcw "rs_free\u{0}"
+__W2210: .dcw "0\u{0}"
+__W2211: .dcw "elem_read\u{0}"
+__W2212: .dcw "0\u{0}"
+__W2213: .dcw "elem_write\u{0}"
+__W2214: .dcw "0\u{0}"
+__W2215: .dcw "elem_offset\u{0}"
+__W2216: .dcw "(%s + %s)\u{0}"
+__W2217: .dcw "((long)((%s *)(%s) + %s))\u{0}"
+__W2218: .dcw "elem_ref\u{0}"
+__W2219: .dcw "elem_ref_mut\u{0}"
+__W2220: .dcw "read_ref\u{0}"
+__W2221: .dcw "0\u{0}"
+__W2222: .dcw "write_ref\u{0}"
+__W2223: .dcw "0\u{0}"
+__W2224: .dcw "forget\u{0}"
+__W2225: .dcw "0\u{0}"
+__W2226: .dcw "size_of\u{0}"
+__W2227: .dcw "%d\u{0}"
+__W2228: .dcw "transmute\u{0}"
+__W2229: .dcw "rs_f64_to_bits(%s)\u{0}"
+__W2230: .dcw "rs_f64_from_bits(%s)\u{0}"
+__W2231: .dcw "slice_base\u{0}"
+__W2232: .dcw "str_base\u{0}"
+__W2233: .dcw "%s.base\u{0}"
+__W2234: .dcw "slice_len\u{0}"
+__W2235: .dcw "str_len\u{0}"
+__W2236: .dcw "%s.len\u{0}"
+__W2237: .dcw "slice_from_raw\u{0}"
+__W2238: .dcw "slice_from_raw_mut\u{0}"
+__W2239: .dcw "str_from_raw\u{0}"
+__W2240: .dcw "box_new\u{0}"
+__W2241: .dcw "long\u{0}"
+__W2242: .dcw "%s = rs_alloc(1) * 8 + 7;\u{a}\u{0}"
+__W2243: .dcw "__stb(%s, %s);\u{a}\u{0}"
+__W2244: .dcw "%s = rs_alloc(%d);\u{a}\u{0}"
+__W2245: .dcw "*(%s *)%s = %s;\u{a}\u{0}"
+__W2246: .dcw "box_deref\u{0}"
+__W2247: .dcw "box_deref_mut\u{0}"
+__W2248: .dcw "(*(struct rs_slice *)(%s))\u{0}"
+__W2249: .dcw "(*(struct rs_dyn *)(%s))\u{0}"
+__W2250: .dcw "(*(long *)(%s))\u{0}"
+__W2251: .dcw "box_drop\u{0}"
+__W2252: .dcw "long\u{0}"
+__W2253: .dcw "%s = *(long *)(%s);\u{a}\u{0}"
+__W2254: .dcw "%s(%s);\u{a}\u{0}"
+__W2255: .dcw "rs_free(%s);\u{a}\u{0}"
+__W2256: .dcw "%s / 8\u{0}"
+__W2257: .dcw "struct rs_slice\u{0}"
+__W2258: .dcw "%s = *(struct rs_slice *)(%s);\u{a}\u{0}"
+__W2259: .dcw "long\u{0}"
+__W2260: .dcw "for (%s = 0; %s < %s.len; %s++) %s((long)((%s *)(%s.base) + %s));\u{a}\u{0}"
+__W2261: .dcw "rs_free(%s.base / 8);\u{a}\u{0}"
+__W2262: .dcw "rs_free(%s.base);\u{a}\u{0}"
+__W2263: .dcw "struct rs_dyn\u{0}"
+__W2264: .dcw "%s = *(struct rs_dyn *)(%s);\u{a}\u{0}"
+__W2265: .dcw "if (((long *)%s.vt)[0]) ((long (*)(long))(((long *)%s.vt)[0]))(%s.data);\u{a}\u{0}"
+__W2266: .dcw "rs_free(%s.data);\u{a}\u{0}"
+__W2267: .dcw "0\u{0}"
+__W2268: .dcw "wrapping_add\u{0}"
+__W2269: .dcw "wrapping_sub\u{0}"
+__W2270: .dcw "wrapping_mul\u{0}"
+__W2271: .dcw "+\u{0}"
+__W2272: .dcw "-\u{0}"
+__W2273: .dcw "*\u{0}"
+__W2274: .dcw "(long)((unsigned long)%s %s (unsigned long)%s)\u{0}"
+__W2275: .dcw "add_with_overflow\u{0}"
+__W2276: .dcw "sub_with_overflow\u{0}"
+__W2277: .dcw "mul_with_overflow\u{0}"
+__W2278: .dcw "f64_to_bits\u{0}"
+__W2279: .dcw "rs_f64_to_bits(%s)\u{0}"
+__W2280: .dcw "f64_from_bits\u{0}"
+__W2281: .dcw "rs_f64_from_bits(%s)\u{0}"
+__W2282: .dcw "sqrtf64\u{0}"
+__W2283: .dcw "rs_sqrt(%s)\u{0}"
+__W2284: .dcw "floorf64\u{0}"
+__W2285: .dcw "rs_floor(%s)\u{0}"
+__W2286: .dcw "ceilf64\u{0}"
+__W2287: .dcw "rs_ceil(%s)\u{0}"
+__W2288: .dcw "fmt_f64\u{0}"
+__W2289: .dcw "rs_fmt_f64(%s, %s, %s, %s, %s)\u{0}"
+__W2290: .dcw "parse_f64\u{0}"
+__W2291: .dcw "rs_parse_f64(%s, %s, %s)\u{0}"
+__W2292: .dcw "write_bytes\u{0}"
+__W2293: .dcw "rs_write_bytes(%s, %s, %s);\u{a}\u{0}"
+__W2294: .dcw "0\u{0}"
+__W2295: .dcw "read_byte\u{0}"
+__W2296: .dcw "rs_read_byte(%s)\u{0}"
+__W2297: .dcw "arg_count\u{0}"
+__W2298: .dcw "rs_argc\u{0}"
+__W2299: .dcw "arg_char\u{0}"
+__W2300: .dcw "rs_arg_char(%s, %s)\u{0}"
+__W2301: .dcw "exit\u{0}"
+__W2302: .dcw "rs_exit(%s);\u{a}\u{0}"
+__W2303: .dcw "abort\u{0}"
+__W2304: .dcw "rs_abort();\u{a}\u{0}"
+__W2305: .dcw "code generator: unknown intrinsic `%s`\u{0}"
+__W2306: .dcw "0\u{0}"
+__W2307: .dcw "%s = 0;\u{a}\u{0}"
+__W2308: .dcw "((%s)(%s))\u{0}"
+__W2309: .dcw "((%s)(((long *)%s.vt)[%d]))\u{0}"
+__W2310: .dcw "long\u{0}"
+__W2311: .dcw "%s.data\u{0}"
+__W2312: .dcw "%s.f%d\u{0}"
+__W2313: .dcw "code generator: no instance for `%s` (self %s)\u{0}"
+__W2314: .dcw "?\u{0}"
+__W2315: .dcw "-\u{0}"
+__W2316: .dcw "(-9223372036854775807-1)\u{0}"
+__W2317: .dcw "(%ld)\u{0}"
+__W2318: .dcw "%ld\u{0}"
+__W2319: .dcw "0\u{0}"
+__W2320: .dcw "%s\u{0}"
+__W2321: .dcw "((long)%s * 8)\u{0}"
+__W2322: .dcw "%ld\u{0}"
+__W2323: .dcw "code generator: cannot resolve an associated const\u{0}"
+__W2324: .dcw "code generator: const without a value\u{0}"
+__W2325: .dcw "code generator: const recursion\u{0}"
+__W2326: .dcw "0\u{0}"
+__W2327: .dcw "%s.tag = %d;\u{a}\u{0}"
+__W2328: .dcw "%s.%s.%s = %s;\u{a}\u{0}"
+__W2329: .dcw "%s.%s = %s;\u{a}\u{0}"
+__W2330: .dcw "(%s * 8)\u{0}"
+__W2331: .dcw "%ld\u{0}"
+__W2332: .dcw "((long)%s)\u{0}"
+__W2333: .dcw "Sh%d\u{0}"
+__W2334: .dcw ", \u{0}"
+__W2335: .dcw " a%d\u{0}"
+__W2336: .dcw "void\u{0}"
+__W2337: .dcw "static %s;\u{a}\u{0}"
+__W2338: .dcw "static %s {\u{a}    long env = 0;\u{a}    return %s(&env\u{0}"
+__W2339: .dcw ", a%d\u{0}"
+__W2340: .dcw ");\u{a}}\u{a}\u{0}"
+__W2341: .dcw "((long)%s)\u{0}"
+__W2342: .dcw "((long)%s)\u{0}"
+__W2343: .dcw "long\u{0}"
+__W2344: .dcw "%s = %s;\u{a}\u{0}"
+__W2345: .dcw "if (%s%s) {\u{a}\u{0}"
+__W2346: .dcw "\u{0}"
+__W2347: .dcw "!\u{0}"
+__W2348: .dcw "%s = %s;\u{a}\u{0}"
+__W2349: .dcw "}\u{a}\u{0}"
+__W2350: .dcw "1\u{0}"
+__W2351: .dcw "0\u{0}"
+__W2352: .dcw "code generator: operator without a callee\u{0}"
+__W2353: .dcw "(-%s)\u{0}"
+__W2354: .dcw "(-%s)\u{0}"
+__W2355: .dcw "code generator: unary operator without a callee\u{0}"
+__W2356: .dcw "if (%s) %s((long)&%s);\u{a}\u{0}"
+__W2357: .dcw "%s((long)&%s);\u{a}\u{0}"
+__W2358: .dcw "%s = 1;\u{a}\u{0}"
+__W2359: .dcw "0\u{0}"
+__W2360: .dcw "%s.f%ld\u{0}"
+__W2361: .dcw "0\u{0}"
+__W2362: .dcw "0\u{0}"
+__W2363: .dcw "0\u{0}"
+__W2364: .dcw "code generator: compound assignment without a callee\u{0}"
+__W2365: .dcw "0\u{0}"
+__W2366: .dcw "((%s)(%s))\u{0}"
+__W2367: .dcw "code generator: call without a callee\u{0}"
+__W2368: .dcw "%s = 0;\u{a}\u{0}"
+__W2369: .dcw "code generator: method call without a callee\u{0}"
+__W2370: .dcw "%s = 0;\u{a}\u{0}"
+__W2371: .dcw "%s = 1;\u{a}\u{0}"
+__W2372: .dcw "(%s && %s)\u{0}"
+__W2373: .dcw "%s.%s.%s\u{0}"
+__W2374: .dcw "%s.%s\u{0}"
+__W2375: .dcw "%s%ld.0\u{0}"
+__W2376: .dcw "-\u{0}"
+__W2377: .dcw "\u{0}"
+__W2378: .dcw "%s%s\u{0}"
+__W2379: .dcw "-\u{0}"
+__W2380: .dcw "\u{0}"
+__W2381: .dcw "%ld\u{0}"
+__W2382: .dcw "0\u{0}"
+__W2383: .dcw "0\u{0}"
+__W2384: .dcw "(%s.len == %ld && rs_cmp_bytes(%s.base, (long)%s * 8, %ld) == 0)\u{0}"
+__W2385: .dcw "%ld\u{0}"
+__W2386: .dcw "%s.base\u{0}"
+__W2387: .dcw "%s.len\u{0}"
+__W2388: .dcw "%ld\u{0}"
+__W2389: .dcw "((long)&(%s).w[0] * 8 + %s)\u{0}"
+__W2390: .dcw "(%s).e[%s]\u{0}"
+__W2391: .dcw "%d\u{0}"
+__W2392: .dcw "(%s.len - %d)\u{0}"
+__W2393: .dcw "(%s.base + %s)\u{0}"
+__W2394: .dcw "((%s *)(%s.base))[%s]\u{0}"
+__W2395: .dcw "(%s == %s)\u{0}"
+__W2396: .dcw "%s.f%d\u{0}"
+__W2397: .dcw "(%s %s %d)\u{0}"
+__W2398: .dcw ">=\u{0}"
+__W2399: .dcw "==\u{0}"
+__W2400: .dcw "(%s || %s)\u{0}"
+__W2401: .dcw "(%s.len == %s.len && rs_cmp_bytes(%s.base, %s.base, %s.len) == 0)\u{0}"
+__W2402: .dcw "(%s == %s)\u{0}"
+__W2403: .dcw "(%s.tag == %d)\u{0}"
+__W2404: .dcw "%s = %s;\u{a}\u{0}"
+__W2405: .dcw "%s.f%d\u{0}"
+__W2406: .dcw "(%s + %d)\u{0}"
+__W2407: .dcw "(%s - %d)\u{0}"
+__W2408: .dcw "((long)((%s *)(%s) + %d))\u{0}"
+__W2409: .dcw "(%s - %d)\u{0}"
+__W2410: .dcw "%s = %s;\u{a}\u{0}"
+__W2411: .dcw "else {\u{a}\u{0}"
+__W2412: .dcw "%sif (%s) {\u{a}\u{0}"
+__W2413: .dcw "\u{0}"
+__W2414: .dcw "else \u{0}"
+__W2415: .dcw "1\u{0}"
+__W2416: .dcw "}\u{a}\u{0}"
+__W2417: .dcw "if (!%s) {\u{a}\u{0}"
+__W2418: .dcw "goto %s;\u{a}}\u{a}\u{0}"
+__W2419: .dcw "if (!%s) {\u{a}\u{0}"
+__W2420: .dcw "goto %s;\u{a}}\u{a}\u{0}"
+__W2421: .dcw "code generator: break/continue outside a loop\u{0}"
+__W2422: .dcw "%s = %s;\u{a}\u{0}"
+__W2423: .dcw "if (%s) {\u{a}\u{0}"
+__W2424: .dcw "} else {\u{a}\u{0}"
+__W2425: .dcw "}\u{a}\u{0}"
+__W2426: .dcw "Le%d\u{0}"
+__W2427: .dcw "goto Lf%d;\u{a}Le%d:;\u{a}\u{0}"
+__W2428: .dcw "Lf%d:;\u{a}\u{0}"
+__W2429: .dcw "0\u{0}"
+__W2430: .dcw "if (%s) {\u{a}\u{0}"
+__W2431: .dcw "1\u{0}"
+__W2432: .dcw "Ln%d_%d\u{0}"
+__W2433: .dcw "goto Lm%d;\u{a}}\u{a}\u{0}"
+__W2434: .dcw "Ln%d_%d:;\u{a}\u{0}"
+__W2435: .dcw "Lm%d:;\u{a}\u{0}"
+__W2436: .dcw "0\u{0}"
+__W2437: .dcw "for (;;) {\u{a}\u{0}"
+__W2438: .dcw "brk%d\u{0}"
+__W2439: .dcw "cnt%d:;\u{a}}\u{a}brk%d:;\u{a}\u{0}"
+__W2440: .dcw "0\u{0}"
 __W2441: .dcw "for (;;) {\u{a}\u{0}"
-__W2442: .dcw "((long)&%s)\u{0}"
-__W2443: .dcw "if (%s.tag == 0) {\u{a}\u{0}"
-__W2444: .dcw "goto brk%d;\u{a}}\u{a}\u{0}"
-__W2445: .dcw "%s.%s.%s\u{0}"
-__W2446: .dcw "cnt%d:;\u{a}}\u{a}brk%d:;\u{a}\u{0}"
-__W2447: .dcw "0\u{0}"
-__W2448: .dcw "goto brk%d;\u{a}\u{0}"
-__W2449: .dcw "goto cnt%d;\u{a}\u{0}"
-__W2450: .dcw "0\u{0}"
-__W2451: .dcw "return %s;\u{a}\u{0}"
-__W2452: .dcw "return 0;\u{a}\u{0}"
-__W2453: .dcw "return %s;\u{a}\u{0}"
-__W2454: .dcw "0\u{0}"
-__W2455: .dcw "%s.%s.%s\u{0}"
-__W2456: .dcw "if (%s.tag == 1) {\u{a}\u{0}"
-__W2457: .dcw "%s.tag = 1;\u{a}\u{0}"
-__W2458: .dcw "%s.%s.%s = %s;\u{a}\u{0}"
-__W2459: .dcw "}\u{a}\u{0}"
+__W2442: .dcw "cnt%d:;\u{a}}\u{a}brk%d:;\u{a}\u{0}"
+__W2443: .dcw "0\u{0}"
+__W2444: .dcw "code generator: for loop without callees\u{0}"
+__W2445: .dcw "%s = %s;\u{a}\u{0}"
+__W2446: .dcw "for (;;) {\u{a}\u{0}"
+__W2447: .dcw "((long)&%s)\u{0}"
+__W2448: .dcw "if (%s.tag == 0) {\u{a}\u{0}"
+__W2449: .dcw "goto brk%d;\u{a}}\u{a}\u{0}"
+__W2450: .dcw "%s.%s.%s\u{0}"
+__W2451: .dcw "cnt%d:;\u{a}}\u{a}brk%d:;\u{a}\u{0}"
+__W2452: .dcw "0\u{0}"
+__W2453: .dcw "goto brk%d;\u{a}\u{0}"
+__W2454: .dcw "goto cnt%d;\u{a}\u{0}"
+__W2455: .dcw "0\u{0}"
+__W2456: .dcw "return %s;\u{a}\u{0}"
+__W2457: .dcw "return 0;\u{a}\u{0}"
+__W2458: .dcw "return %s;\u{a}\u{0}"
+__W2459: .dcw "0\u{0}"
 __W2460: .dcw "%s.%s.%s\u{0}"
-__W2461: .dcw "if (%s.tag == 0) {\u{a}\u{0}"
-__W2462: .dcw "%s.tag = 0;\u{a}\u{0}"
-__W2463: .dcw "}\u{a}\u{0}"
-__W2464: .dcw "%s.%s.%s\u{0}"
-__W2465: .dcw "%s = %s;\u{a}\u{0}"
-__W2466: .dcw "if (!%s) {\u{a}\u{0}"
-__W2467: .dcw "}\u{a}\u{0}"
-__W2468: .dcw "0\u{0}"
-__W2469: .dcw "brk%d:;\u{a}\u{0}"
-__W2470: .dcw "0\u{0}"
-__W2471: .dcw "0\u{0}"
-__W2472: .dcw "code generator: captured variable not found\u{0}"
-__W2473: .dcw "%s.c%d = %s;\u{a}\u{0}"
-__W2474: .dcw "code generator: unresolved path\u{0}"
-__W2475: .dcw "code generator: unknown local variable\u{0}"
-__W2476: .dcw "%ld\u{0}"
-__W2477: .dcw "0\u{0}"
-__W2478: .dcw "0\u{0}"
-__W2479: .dcw "code generator: unsupported path\u{0}"
-__W2480: .dcw "0\u{0}"
-__W2481: .dcw "0\u{0}"
+__W2461: .dcw "if (%s.tag == 1) {\u{a}\u{0}"
+__W2462: .dcw "%s.tag = 1;\u{a}\u{0}"
+__W2463: .dcw "%s.%s.%s = %s;\u{a}\u{0}"
+__W2464: .dcw "}\u{a}\u{0}"
+__W2465: .dcw "%s.%s.%s\u{0}"
+__W2466: .dcw "if (%s.tag == 0) {\u{a}\u{0}"
+__W2467: .dcw "%s.tag = 0;\u{a}\u{0}"
+__W2468: .dcw "}\u{a}\u{0}"
+__W2469: .dcw "%s.%s.%s\u{0}"
+__W2470: .dcw "%s = %s;\u{a}\u{0}"
+__W2471: .dcw "if (!%s) {\u{a}\u{0}"
+__W2472: .dcw "}\u{a}\u{0}"
+__W2473: .dcw "0\u{0}"
+__W2474: .dcw "brk%d:;\u{a}\u{0}"
+__W2475: .dcw "0\u{0}"
+__W2476: .dcw "0\u{0}"
+__W2477: .dcw "code generator: captured variable not found\u{0}"
+__W2478: .dcw "%s.c%d = %s;\u{a}\u{0}"
+__W2479: .dcw "code generator: unresolved path\u{0}"
+__W2480: .dcw "code generator: unknown local variable\u{0}"
+__W2481: .dcw "%ld\u{0}"
 __W2482: .dcw "0\u{0}"
-__W2483: .dcw "%s.f%d = %s;\u{a}\u{0}"
-__W2484: .dcw "__stb((long)&%s.w[0] * 8 + %s, %s);\u{a}\u{0}"
-__W2485: .dcw "%s.e[%s] = %s;\u{a}\u{0}"
-__W2486: .dcw "%d\u{0}"
-__W2487: .dcw "long\u{0}"
-__W2488: .dcw "for (%s = 0; %s < %ld; %s++) __stb((long)&%s.w[0] * 8 + %s, %s);\u{a}\u{0}"
-__W2489: .dcw "for (%s = 0; %s < %ld; %s++) %s.e[%s] = %s;\u{a}\u{0}"
-__W2490: .dcw "%s = %s;\u{a}\u{0}"
-__W2491: .dcw "%s.%s = %s;\u{a}\u{0}"
-__W2492: .dcw "0\u{0}"
-__W2493: .dcw "start\u{0}"
-__W2494: .dcw "end\u{0}"
-__W2495: .dcw "t%d\u{0}"
-__W2496: .dcw "0\u{0}"
-__W2497: .dcw "static %s\u{0}"
-__W2498: .dcw "%s = %s;\u{a}\u{0}"
-__W2499: .dcw "%ld.0\u{0}"
-__W2500: .dcw "(%s)\u{0}"
-__W2501: .dcw "((long)%s)\u{0}"
-__W2502: .dcw "%ld\u{0}"
-__W2503: .dcw "0\u{0}"
-__W2504: .dcw "code generator: unsupported expression %s\u{0}"
-__W2505: .dcw "0\u{0}"
-__W2506: .dcw "%s = 1;\u{a}\u{0}"
-__W2507: .dcw "%s = 1;\u{a}\u{0}"
+__W2483: .dcw "0\u{0}"
+__W2484: .dcw "code generator: unsupported path\u{0}"
+__W2485: .dcw "0\u{0}"
+__W2486: .dcw "0\u{0}"
+__W2487: .dcw "0\u{0}"
+__W2488: .dcw "%s.f%d = %s;\u{a}\u{0}"
+__W2489: .dcw "__stb((long)&%s.w[0] * 8 + %s, %s);\u{a}\u{0}"
+__W2490: .dcw "%s.e[%s] = %s;\u{a}\u{0}"
+__W2491: .dcw "%d\u{0}"
+__W2492: .dcw "long\u{0}"
+__W2493: .dcw "for (%s = 0; %s < %ld; %s++) __stb((long)&%s.w[0] * 8 + %s, %s);\u{a}\u{0}"
+__W2494: .dcw "for (%s = 0; %s < %ld; %s++) %s.e[%s] = %s;\u{a}\u{0}"
+__W2495: .dcw "%s = %s;\u{a}\u{0}"
+__W2496: .dcw "%s.%s = %s;\u{a}\u{0}"
+__W2497: .dcw "0\u{0}"
+__W2498: .dcw "start\u{0}"
+__W2499: .dcw "end\u{0}"
+__W2500: .dcw "t%d\u{0}"
+__W2501: .dcw "0\u{0}"
+__W2502: .dcw "static %s\u{0}"
+__W2503: .dcw "%s = %s;\u{a}\u{0}"
+__W2504: .dcw "%ld.0\u{0}"
+__W2505: .dcw "(%s)\u{0}"
+__W2506: .dcw "((long)%s)\u{0}"
+__W2507: .dcw "%ld\u{0}"
 __W2508: .dcw "0\u{0}"
-__W2509: .dcw "}\u{a}\u{a}\u{0}"
-__W2510: .dcw "code generator: function without a body\u{0}"
-__W2511: .dcw "/* \u{0}"
-__W2512: .dcw " */\u{a}static \u{0}"
-__W2513: .dcw "a%d\u{0}"
-__W2514: .dcw ", \u{0}"
-__W2515: .dcw "void\u{0}"
-__W2516: .dcw ") {\u{a}\u{0}"
-__W2517: .dcw "return %s;\u{a}\u{0}"
-__W2518: .dcw "static \u{0}"
-__W2519: .dcw "(long env\u{0}"
-__W2520: .dcw "c%d\u{0}"
-__W2521: .dcw "a%d\u{0}"
-__W2522: .dcw ", \u{0}"
-__W2523: .dcw ") {\u{a}\u{0}"
-__W2524: .dcw "return %s;\u{a}\u{0}"
-__W2525: .dcw "%s = %s;\u{a}\u{0}"
-__W2526: .dcw "PWD\u{0}"
-__W2527: .dcw "/\u{0}"
-__W2528: .dcw "/obj/\u{0}"
-__W2529: .dcw "obj/\u{0}"
-__W2530: .dcw "lib\u{0}"
-__W2531: .dcw "usage: rustc [--tokens | --tokens-flags | --ast | --expand | --resolve | --types] [--lib=DIR] [--no-core] prog.rs\u{a}\u{0}"
-__W2532: .dcw "================================================================================\u{a}\u{0}"
-__W2533: .dcw "CPUSim64 Rust Translator %s\u{a}\u{0}"
-__W2534: .dcw "0.1\u{0}"
-__W2535: .dcw "\u{a9}2026 Richard Lesh\u{a}\u{0}"
-__W2536: .dcw "Translates Rust source files into C for the CPUSim64 C11 compiler.\u{a}\u{0}"
+__W2509: .dcw "code generator: unsupported expression %s\u{0}"
+__W2510: .dcw "0\u{0}"
+__W2511: .dcw "%s = 1;\u{a}\u{0}"
+__W2512: .dcw "%s = 1;\u{a}\u{0}"
+__W2513: .dcw "0\u{0}"
+__W2514: .dcw "}\u{a}\u{a}\u{0}"
+__W2515: .dcw "code generator: function without a body\u{0}"
+__W2516: .dcw "/* \u{0}"
+__W2517: .dcw " */\u{a}static \u{0}"
+__W2518: .dcw "a%d\u{0}"
+__W2519: .dcw ", \u{0}"
+__W2520: .dcw "void\u{0}"
+__W2521: .dcw ") {\u{a}\u{0}"
+__W2522: .dcw "return %s;\u{a}\u{0}"
+__W2523: .dcw "static \u{0}"
+__W2524: .dcw "(long env\u{0}"
+__W2525: .dcw "c%d\u{0}"
+__W2526: .dcw "a%d\u{0}"
+__W2527: .dcw ", \u{0}"
+__W2528: .dcw ") {\u{a}\u{0}"
+__W2529: .dcw "return %s;\u{a}\u{0}"
+__W2530: .dcw "%s = %s;\u{a}\u{0}"
+__W2531: .dcw "PWD\u{0}"
+__W2532: .dcw "/\u{0}"
+__W2533: .dcw "/obj/\u{0}"
+__W2534: .dcw "obj/\u{0}"
+__W2535: .dcw "lib\u{0}"
+__W2536: .dcw "usage: rustc [--tokens | --tokens-flags | --ast | --expand | --resolve | --types] [--lib=DIR] [--no-core] prog.rs\u{a}\u{0}"
 __W2537: .dcw "================================================================================\u{a}\u{0}"
-__W2538: .dcw "Arguments:\u{0}"
-__W2539: .dcw " %s\u{0}"
-__W2540: .dcw "\u{a}\u{0}"
-__W2541: .dcw "--tokens\u{0}"
-__W2542: .dcw "--tokens-flags\u{0}"
-__W2543: .dcw "--ast\u{0}"
-__W2544: .dcw "--expand\u{0}"
-__W2545: .dcw "--resolve\u{0}"
-__W2546: .dcw "--types\u{0}"
-__W2547: .dcw "--no-core\u{0}"
-__W2548: .dcw "--lib=\u{0}"
-__W2549: .dcw "rustc: unknown option %s\u{a}\u{0}"
-__W2550: .dcw "rustc: only one source file is supported yet\u{a}\u{0}"
-__W2551: .dcw "rustc: can't open %s\u{a}\u{0}"
-__W2552: .dcw "core.rs\u{0}"
-__W2553: .dcw "collections.rs\u{0}"
-__W2554: .dcw "rc.rs\u{0}"
-__W2555: .dcw "\u{0}"
-__W2556: .dcw "/\u{0}"
-__W2557: .dcw "rb\u{0}"
-__W2558: .dcw "rustc: can't open %s\u{a}\u{0}"
-__W2559: .dcw "\u{0}"
-__W2560: .dcw "/rust_rt.c\u{0}"
-__W2561: .dcw "w\u{0}"
-__W2562: .dcw "rustc: can't write %s\u{a}\u{0}"
-__W2563: .dcw "Compiler output: %s\u{a}\u{0}"
-__W2564: .dcw "infinity\u{0}"
-__W2565: .dcw "inf\u{0}"
-__W2566: .dcw "nan\u{0}"
-__W2567: .dcw "\u{0}"
-__W2568: .dcw "(null)\u{0}"
-__W2569: .dcw "\u{0}"
-__W2570: .dcw "\u{0}"
-__W2571: .dcw "%\u{0}"
-__W2572: .dcw "0123456789ABCDEF\u{0}"
-__W2573: .dcw "0123456789abcdef\u{0}"
-__W2574: .dcw "NAN\u{0}"
-__W2575: .dcw "nan\u{0}"
-__W2576: .dcw "INF\u{0}"
-__W2577: .dcw "inf\u{0}"
-__W2578: .dcw "0123456789ABCDEF\u{0}"
-__W2579: .dcw "0123456789abcdef\u{0}"
+__W2538: .dcw "CPUSim64 Rust Translator %s\u{a}\u{0}"
+__W2539: .dcw "1.0\u{0}"
+__W2540: .dcw "\u{a9}2026 Richard Lesh\u{a}\u{0}"
+__W2541: .dcw "Translates Rust source files into C for the CPUSim64 C11 compiler.\u{a}\u{0}"
+__W2542: .dcw "================================================================================\u{a}\u{0}"
+__W2543: .dcw "Arguments:\u{0}"
+__W2544: .dcw " %s\u{0}"
+__W2545: .dcw "\u{a}\u{0}"
+__W2546: .dcw "--tokens\u{0}"
+__W2547: .dcw "--tokens-flags\u{0}"
+__W2548: .dcw "--ast\u{0}"
+__W2549: .dcw "--expand\u{0}"
+__W2550: .dcw "--resolve\u{0}"
+__W2551: .dcw "--types\u{0}"
+__W2552: .dcw "--no-core\u{0}"
+__W2553: .dcw "--lib=\u{0}"
+__W2554: .dcw "rustc: unknown option %s\u{a}\u{0}"
+__W2555: .dcw "rustc: only one source file is supported yet\u{a}\u{0}"
+__W2556: .dcw "rustc: can't open %s\u{a}\u{0}"
+__W2557: .dcw "core.rs\u{0}"
+__W2558: .dcw "collections.rs\u{0}"
+__W2559: .dcw "rc.rs\u{0}"
+__W2560: .dcw "\u{0}"
+__W2561: .dcw "/\u{0}"
+__W2562: .dcw "rb\u{0}"
+__W2563: .dcw "rustc: can't open %s\u{a}\u{0}"
+__W2564: .dcw "\u{0}"
+__W2565: .dcw "/rust_rt.c\u{0}"
+__W2566: .dcw "w\u{0}"
+__W2567: .dcw "rustc: can't write %s\u{a}\u{0}"
+__W2568: .dcw "Compiler output: %s\u{a}\u{0}"
+__W2569: .dcw "infinity\u{0}"
+__W2570: .dcw "inf\u{0}"
+__W2571: .dcw "nan\u{0}"
+__W2572: .dcw "\u{0}"
+__W2573: .dcw "(null)\u{0}"
+__W2574: .dcw "\u{0}"
+__W2575: .dcw "\u{0}"
+__W2576: .dcw "%\u{0}"
+__W2577: .dcw "0123456789ABCDEF\u{0}"
+__W2578: .dcw "0123456789abcdef\u{0}"
+__W2579: .dcw "NAN\u{0}"
+__W2580: .dcw "nan\u{0}"
+__W2581: .dcw "INF\u{0}"
+__W2582: .dcw "inf\u{0}"
+__W2583: .dcw "0123456789ABCDEF\u{0}"
+__W2584: .dcw "0123456789abcdef\u{0}"
 __K1: .dci 0x8000000000000001
 __K2: .dci 0x7fffffffffffffff
 __K3: .dci 0x8000000000000001

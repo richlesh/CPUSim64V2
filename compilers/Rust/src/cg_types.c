@@ -1750,7 +1750,8 @@ void cg_crate(FILE *out, const char *src_name, const char *rt_path) {
     mname = cg_fn_instance(mainfn, 0, 0, 0);
     if (!mname) error_at(-1, 0, "`main` has no body");
     mret = cgt_inst(mainfn->ty->ret, &cgt_empty);
-    cg_printf(CG_MAIN, "int main(void) {\n");
+    cg_printf(CG_MAIN, "int main(int argc, char **argv) {\n");
+    cg_printf(CG_MAIN, "    rs_argc = argc;\n    rs_argv = argv;\n");
     sb_init(&tail);
     cgt_main_tail(&tail, mname, mret);
     cgt_drain();

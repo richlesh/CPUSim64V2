@@ -1179,6 +1179,8 @@ static const char *ge_intrinsic(Node *at, const char *name, Type **targs, int nt
         return "0";
     }
     if (!strcmp(name, "read_byte")) return ge_snap(ty_int(IK_USIZE), S("rs_read_byte(%s)", a[0]));
+    if (!strcmp(name, "arg_count")) return ge_snap(ty_int(IK_USIZE), S("rs_argc"));
+    if (!strcmp(name, "arg_char")) return ge_snap(ty_int(IK_USIZE), S("rs_arg_char(%s, %s)", a[0], a[1]));
     if (!strcmp(name, "exit")) {
         E("rs_exit(%s);\n", a[0]);
         return GE_NEVER;
@@ -3084,5 +3086,5 @@ void cg_static_init(Sym *s, const char *gname) {
  *   rs_f64_to_bits, rs_f64_from_bits, rs_sqrt, rs_floor, rs_ceil, rs_alloc,
  *   rs_realloc, rs_free, rs_alloc_bytes, rs_realloc_bytes, rs_free_bytes,
  *   rs_cmp_bytes, rs_fmt_f64, rs_parse_f64, rs_write_bytes, rs_read_byte,
- *   rs_exit, rs_abort
+ *   rs_arg_char (and the variables rs_argc, rs_argv), rs_exit, rs_abort
  */

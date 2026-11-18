@@ -511,6 +511,10 @@ pub mod intrinsics {
         // I/O and process
         pub fn write_bytes(port: i64, base: usize, len: usize);
         pub fn read_byte(port: i64) -> i32;
+        // command line: the number of arguments (the first is the program), and
+        // codepoint j of argument i (-1 past its end)
+        pub fn arg_count() -> usize;
+        pub fn arg_char(i: usize, j: usize) -> i32;
         pub fn exit(code: i32) -> !;
         pub fn abort() -> !;
     }
@@ -1772,14 +1776,39 @@ pub mod io {
 
 pub mod env {
     use ::core::string::String;
-    // the simulator passes no command line: args() is just the program name
-    pub struct Args { done: bool }
-    pub fn args() -> Args { Args { done: false } }
+    // the command line: the program (the .o64 file the simulator runs), then its arguments
+    pub struct Args { front: usize, back: usize }
+    pub fn args() -> Args { Args { front: 0, back: ::core::intrinsics::arg_count() } }
+    fn arg(i: usize) -> String {
+        let mut s = String::new();
+        let mut j = 0usize;
+        loop {
+            let c = ::core::intrinsics::arg_char(i, j);
+            if c < 0 { break; }
+            s.push(::core::char::from_u32(c as u32).unwrap_or('\u{FFFD}'));
+            j += 1;
+        }
+        s
+    }
+    impl Args {
+        // ExactSizeIterator::len in std
+        pub fn len(&self) -> usize { self.back - self.front }
+        pub fn is_empty(&self) -> bool { self.front == self.back }
+    }
     impl ::core::iter::Iterator for Args {
         type Item = String;
         fn next(&mut self) -> ::core::option::Option<String> {
-            if self.done { ::core::option::Option::None }
-            else { self.done = true; ::core::option::Option::Some(String::from("main")) }
+            if self.front == self.back { return ::core::option::Option::None; }
+            let s = arg(self.front);
+            self.front += 1;
+            ::core::option::Option::Some(s)
+        }
+    }
+    impl ::core::iter::DoubleEndedIterator for Args {
+        fn next_back(&mut self) -> ::core::option::Option<String> {
+            if self.front == self.back { return ::core::option::Option::None; }
+            self.back -= 1;
+            ::core::option::Option::Some(arg(self.back))
         }
     }
 }

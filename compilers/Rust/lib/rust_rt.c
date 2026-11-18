@@ -235,6 +235,45 @@ RS_ATTR static long rs_read_byte(long port) {
     return 0xF0 | (cp >> 18);
 }
 
+/* ----------------------------------------------------------- command line */
+/* set by the generated main from its argc and argv (std::env::args) */
+static long rs_argc;
+static char **rs_argv;
+/* codepoint j of command line argument i; -1 past its end or for a missing argument.
+ * On CPUSim64 a char holds a whole codepoint; on the host the argument is UTF-8. */
+RS_ATTR static long rs_arg_char(long i, long j) {
+    const char *s;
+    long k;
+    if (i < 0 || i >= rs_argc || j < 0) return -1;
+    s = rs_argv[i];
+#ifdef RS_HOST
+    {
+        const unsigned char *p = (const unsigned char *)s;
+        long b, n, cp, c, m;
+        for (k = 0; *p; k++) {
+            b = *p++;
+            if (b < 0x80) { n = 0; cp = b; }
+            else if (b >= 0xC2 && b <= 0xDF) { n = 1; cp = b & 0x1F; }
+            else if (b >= 0xE0 && b <= 0xEF) { n = 2; cp = b & 0x0F; }
+            else if (b >= 0xF0 && b <= 0xF4) { n = 3; cp = b & 7; }
+            else { n = 0; cp = 0xFFFD; }
+            for (m = 0; m < n; m++) {
+                c = *p;
+                if (c < 0x80 || c > 0xBF) { cp = 0xFFFD; break; }
+                cp = (cp << 6) | (c & 0x3F);
+                p++;
+            }
+            if (k == j) return cp;
+        }
+        return -1;
+    }
+#else
+    for (k = 0; k < j; k++)
+        if (!s[k]) return -1;
+    return s[j] ? (long)s[j] : -1;
+#endif
+}
+
 /* ----------------------------------------------------------------- panics */
 RS_ATTR static void rs_err_str(const char *s) {
     while (*s) { fputc((int)*s, stderr); s++; }

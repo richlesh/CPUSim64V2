@@ -24,7 +24,7 @@
 #include <string.h>
 #include <stdarg.h>
 
-#define RUSTC_VERSION "0.1"
+#define RUSTC_VERSION "1.0"
 
 /* ------------------------------------------------------------ util.c */
 
