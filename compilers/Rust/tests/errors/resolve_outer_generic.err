@@ -1,0 +1,1 @@
+errors/resolve_outer_generic.rs:2: error: can't use generic parameters from outer item

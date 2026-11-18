@@ -1,0 +1,73 @@
+(CRATE
+  (ITEM_EXTERN_BLOCK "C"
+    (ITEM_FN puts
+      b=(T_PATH
+        a=(PATH
+          (PATH_SEG i32)))
+      (PARAM
+        a=(P_IDENT s)
+        b=(T_PTR
+          a=(T_PATH
+            a=(PATH
+              (PATH_SEG u8))))))
+    (ITEM_FN printf {variadic}
+      b=(T_PATH
+        a=(PATH
+          (PATH_SEG i32)))
+      (PARAM
+        a=(P_IDENT fmt)
+        b=(T_PTR
+          a=(T_PATH
+            a=(PATH
+              (PATH_SEG u8))))))
+    (ITEM_FN named_variadic {variadic}
+      (PARAM
+        a=(P_IDENT fmt)
+        b=(T_PTR
+          a=(T_PATH
+            a=(PATH
+              (PATH_SEG u8))))))
+    (ITEM_STATIC errno
+      a=(T_PATH
+        a=(PATH
+          (PATH_SEG i32))))
+    (ITEM_STATIC counter {mut}
+      a=(T_PATH
+        a=(PATH
+          (PATH_SEG u32))))
+    (ITEM_FN exported
+      vis=(VIS)
+      (PARAM
+        a=(P_IDENT x)
+        b=(T_PATH
+          a=(PATH
+            (PATH_SEG i32)))))
+    (ITEM_STATIC EXP
+      vis=(VIS)
+      a=(T_PATH
+        a=(PATH
+          (PATH_SEG u8))))
+    (ITEM_TYPE Opaque)
+    (ITEM_FN renamed
+      @(ATTR link_name {eq}
+        a=(E_LIT_STR "other"))))
+  (ITEM_EXTERN_BLOCK
+    (ITEM_FN bare))
+  (ITEM_EXTERN_BLOCK "C" {unsafe}
+    (ITEM_FN safe_decl))
+  (ITEM_EXTERN_BLOCK "system")
+  (ITEM_FN rust_abi "Rust" {extern}
+    c=(BLOCK))
+  (ITEM_FN unsafe_c "C" {unsafe,extern}
+    c=(BLOCK))
+  (ITEM_EXTERN_BLOCK "C"
+    @(ATTR link {delim_paren} toks:3 name = "m")
+    (ITEM_FN cos
+      b=(T_PATH
+        a=(PATH
+          (PATH_SEG f64)))
+      (PARAM
+        a=(P_IDENT x)
+        b=(T_PATH
+          a=(PATH
+            (PATH_SEG f64)))))))

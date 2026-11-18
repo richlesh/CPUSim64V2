@@ -14,7 +14,7 @@
 <body>
 <h1>CPUSim64 Instruction Set</h1>
 <p>The CPUSim64 instruction set has 32 instructions that operate on the 29 general purpose integer registers, 32 floating point registers, stack frame pointer, stack pointer, program counter and status register.  Each instruction can have multiple numbers and types of operands as described in this document.</p>
-<p>In the Operation columns below the description of the operation will use the operands in the same order that they appear in the Operands column.  The <code class="instruction">&lt;-</code> or <code class="instruction">-&gt;</code> symbols show the direction of data movement.  For all but the <code>STORE</code> instructions the direction is into the first argument.  If a register is listed such as <code>A</code> it means that the value in the register is used.  If a register is listed in square brackets such as <code>[A]</code> it means that the value of <code>A</code> is taken as an address and the contents in that address are used.  This is known as a memory reference.  You will only see this in the Register Load/Store Instructions.</p>
+<p>In the Operation columns below the description of the operation will use the operands in the same order that they appear in the Operands column.  The <code class="instruction">&lt;-</code> or <code class="instruction">-&gt;</code> symbols show the direction of data movement.  For all but the <code>STORE</code> and <code>STB</code> instructions the direction is into the first argument.  If a register is listed such as <code>A</code> it means that the value in the register is used.  If a register is listed in square brackets such as <code>[A]</code> it means that the value of <code>A</code> is taken as an address and the contents in that address are used.  This is known as a memory reference.  You will only see this in the Register Load/Store Instructions.</p>
 <p>Because some instructions operate on integer registers or floating point registers and because some instructions support integer literals of differing sizes, the following table lists the symbols used in the Operands and Operation columns</p>
 <table>
 	<caption>Register Reference Symbols</caption>
@@ -189,6 +189,32 @@
 	<tbody>
 		<tr><td>4</td><td>STORE</td><td>QC<br>QA<br>QAC<br>QCA<br>QCC<br>QAR</td>
 		<td>Q -&gt; [C]<br>Q -&gt; [A]<br>Q -&gt; [A + C]<br>Q -&gt; [C + A]<br>Q -&gt; [C + C]<br>Q -&gt; [A + R]</td></tr>
+	</tbody>
+</table>
+
+	<h3>Load Byte (Memory-to-Register)</h3>
+	<p><code>LDB</code> loads a single byte from memory into a register.  It takes the same operands as <code>LOAD</code>, but the effective address is a <em>byte</em> address.  The word address is the effective address shifted right (arithmetic) by 3 and the byte index is the low 3 bits of the effective address.  Byte index 0 is the most significant byte of the word (big-endian packing, the same as <code>.DCS</code> and <code>.DCB</code>).  The byte is zero-extended into the destination register.  The first byte of a string's data is at byte address (<em>string address</em> + 1) * 8.</p>
+<table class="instruction">
+    <colgroup><col span="3" class="instruction"><col></colgroup>
+	<thead>
+		<tr><th>Opcode</th><th>Pneumonic</th><th>Operands</th><th>Operation</th></tr>
+	</thead>
+	<tbody>
+		<tr><td>39</td><td>LDB</td><td>YC<br>YA<br>YAC<br>YCA<br>YCC<br>YAR</td>
+		<td>Y &lt;- byte at EA<br>EA = C<br>EA = A<br>EA = A + C<br>EA = C + A<br>EA = C + C<br>EA = A + R<br>where the byte is bits (56 - 8 * (EA &amp; 7)) through +7 of word [EA &gt;&gt; 3], zero-extended</td></tr>
+	</tbody>
+</table>
+
+	<h3>Store Byte (Register-to-Memory)</h3>
+	<p><code>STB</code> stores the low 8 bits of a register into a single byte of memory.  It takes the same operands as <code>STORE</code> and uses the same byte addressing as <code>LDB</code>.  The other seven bytes of the word are left untouched.  The read-modify-write of the word is atomic so threads may safely store to adjacent bytes.  Like <code>STORE</code>, it fails if the word is in read-only memory or out of bounds.</p>
+<table class="instruction">
+    <colgroup><col span="3" class="instruction"><col></colgroup>
+	<thead>
+		<tr><th>Opcode</th><th>Pneumonic</th><th>Operands</th><th>Operation</th></tr>
+	</thead>
+	<tbody>
+		<tr><td>40</td><td>STB</td><td>QC<br>QA<br>QAC<br>QCA<br>QCC<br>QAR</td>
+		<td>Low 8 bits of Q -&gt; byte at EA<br>EA = C<br>EA = A<br>EA = A + C<br>EA = C + A<br>EA = C + C<br>EA = A + R</td></tr>
 	</tbody>
 </table>
 

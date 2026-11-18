@@ -1,0 +1,318 @@
+(CRATE ->crate
+  (ITEM_STRUCT Point {named} ->Point
+    (FIELD x ->Point::x
+      a=(T_PATH ->i32
+        a=(PATH ->i32
+          (PATH_SEG i32 ->i32))))
+    (FIELD y ->Point::y
+      a=(T_PATH ->i32
+        a=(PATH ->i32
+          (PATH_SEG i32 ->i32)))))
+  (ITEM_STRUCT Wrapper {named} ->Wrapper
+    a=(GENERICS
+      (GEN_TYPE T ->T))
+    (FIELD v ->Wrapper::v
+      a=(T_PATH ->T
+        a=(PATH ->T
+          (PATH_SEG T ->T))))
+    (FIELD n ->Wrapper::n
+      a=(T_PATH ->usize
+        a=(PATH ->usize
+          (PATH_SEG usize ->usize)))))
+  (ITEM_STRUCT Pair {tuple} ->Pair
+    (FIELD ->Pair::0
+      a=(T_PATH ->i32
+        a=(PATH ->i32
+          (PATH_SEG i32 ->i32))))
+    (FIELD ->Pair::1
+      a=(T_PATH ->f64
+        a=(PATH ->f64
+          (PATH_SEG f64 ->f64)))))
+  (ITEM_STRUCT Unit ->Unit)
+  (ITEM_IMPL ->Point
+    b=(T_PATH ->Point
+      a=(PATH ->Point
+        (PATH_SEG Point ->Point)))
+    (ITEM_FN new ->Point::new
+      b=(T_PATH ->Point
+        a=(PATH ->Point
+          (PATH_SEG Point ->Point)))
+      c=(BLOCK
+        a=(E_STRUCT ->Point :Point
+          a=(PATH ->Point
+            (PATH_SEG Point ->Point))
+          (FIELD_INIT x {shorthand} ->Point::x :i32
+            a=(E_PATH ->x :i32
+              a=(PATH ->x
+                (PATH_SEG x ->x))))
+          (FIELD_INIT y {shorthand} ->Point::y :i32
+            a=(E_PATH ->y :i32
+              a=(PATH ->y
+                (PATH_SEG y ->y))))))
+      (PARAM
+        a=(P_IDENT x ->x :i32)
+        b=(T_PATH ->i32
+          a=(PATH ->i32
+            (PATH_SEG i32 ->i32))))
+      (PARAM
+        a=(P_IDENT y ->y :i32)
+        b=(T_PATH ->i32
+          a=(PATH ->i32
+            (PATH_SEG i32 ->i32)))))
+    (ITEM_FN dist2 ->Point::dist2
+      b=(T_PATH ->i32
+        a=(PATH ->i32
+          (PATH_SEG i32 ->i32)))
+      c=(BLOCK
+        a=(E_BINARY op:+ :i32
+          a=(E_BINARY op:* :i32
+            a=(E_FIELD x ->Point::x :i32
+              a=(E_PATH ->self :&Point
+                a=(PATH ->self
+                  (PATH_SEG self ->self))))
+            b=(E_FIELD x ->Point::x :i32
+              a=(E_PATH ->self :&Point
+                a=(PATH ->self
+                  (PATH_SEG self ->self)))))
+          b=(E_BINARY op:* :i32
+            a=(E_FIELD y ->Point::y :i32
+              a=(E_PATH ->self :&Point
+                a=(PATH ->self
+                  (PATH_SEG self ->self))))
+            b=(E_FIELD y ->Point::y :i32
+              a=(E_PATH ->self :&Point
+                a=(PATH ->self
+                  (PATH_SEG self ->self)))))))
+      (SELF_PARAM {ref} ->self))
+    (ITEM_FN shift ->Point::shift
+      b=(T_REF {mut}
+        a=(T_PATH ->Point
+          a=(PATH ->Point
+            (PATH_SEG Point ->Point))))
+      c=(BLOCK
+        (STMT_EXPR {semi}
+          a=(E_ASSIGN_OP op:+ :()
+            a=(E_FIELD x ->Point::x :i32
+              a=(E_PATH ->self :&mut Point
+                a=(PATH ->self
+                  (PATH_SEG self ->self))))
+            b=(E_PATH ->dx :i32
+              a=(PATH ->dx
+                (PATH_SEG dx ->dx)))))
+        a=(E_PATH ->self :&mut Point
+          a=(PATH ->self
+            (PATH_SEG self ->self))))
+      (SELF_PARAM {mut,ref} ->self)
+      (PARAM
+        a=(P_IDENT dx ->dx :i32)
+        b=(T_PATH ->i32
+          a=(PATH ->i32
+            (PATH_SEG i32 ->i32)))))
+    (ITEM_FN origin ->Point::origin
+      b=(T_PATH ->Self
+        a=(PATH ->Self
+          (PATH_SEG Self ->Self)))
+      c=(BLOCK
+        a=(E_STRUCT ->Point :Point
+          a=(PATH ->Self
+            (PATH_SEG Self ->Self))
+          (FIELD_INIT x ->Point::x :i32
+            a=(E_LIT_INT "0" #0 :i32))
+          (FIELD_INIT y ->Point::y :i32
+            a=(E_LIT_INT "0" #0 :i32))))))
+  (ITEM_IMPL ->Wrapper
+    a=(GENERICS
+      (GEN_TYPE T ->T))
+    b=(T_PATH ->Wrapper
+      a=(PATH ->Wrapper
+        (PATH_SEG Wrapper {angle} ->Wrapper
+          (T_PATH ->T
+            a=(PATH ->T
+              (PATH_SEG T ->T))))))
+    (ITEM_FN new ->Wrapper::new
+      b=(T_PATH ->Wrapper
+        a=(PATH ->Wrapper
+          (PATH_SEG Wrapper {angle} ->Wrapper
+            (T_PATH ->T
+              a=(PATH ->T
+                (PATH_SEG T ->T))))))
+      c=(BLOCK
+        a=(E_STRUCT ->Wrapper :Wrapper<T>
+          a=(PATH ->Wrapper
+            (PATH_SEG Wrapper ->Wrapper))
+          (FIELD_INIT v {shorthand} ->Wrapper::v :T
+            a=(E_PATH ->v :T
+              a=(PATH ->v
+                (PATH_SEG v ->v))))
+          (FIELD_INIT n ->Wrapper::n :usize
+            a=(E_LIT_INT "1" #1 :usize))))
+      (PARAM
+        a=(P_IDENT v ->v :T)
+        b=(T_PATH ->T
+          a=(PATH ->T
+            (PATH_SEG T ->T)))))
+    (ITEM_FN get ->Wrapper::get
+      b=(T_REF
+        a=(T_PATH ->T
+          a=(PATH ->T
+            (PATH_SEG T ->T))))
+      c=(BLOCK
+        a=(E_REF :&T
+          a=(E_FIELD v ->Wrapper::v :T
+            a=(E_PATH ->self :&Wrapper<T>
+              a=(PATH ->self
+                (PATH_SEG self ->self))))))
+      (SELF_PARAM {ref} ->self))
+    (ITEM_FN into_inner ->Wrapper::into_inner
+      b=(T_PATH ->T
+        a=(PATH ->T
+          (PATH_SEG T ->T)))
+      c=(BLOCK
+        a=(E_FIELD v ->Wrapper::v :T
+          a=(E_PATH ->self :Wrapper<T>
+            a=(PATH ->self
+              (PATH_SEG self ->self)))))
+      (SELF_PARAM ->self)))
+  (ITEM_IMPL ->Point
+    b=(T_PATH ->Point
+      a=(PATH ->Point
+        (PATH_SEG Point ->Point)))
+    c=(PATH ->core::ops::Add
+      (PATH_SEG std ->core)
+      (PATH_SEG ops ->core::ops)
+      (PATH_SEG Add ->core::ops::Add))
+    (ITEM_TYPE Output ->Point::Output
+      b=(T_PATH ->Point
+        a=(PATH ->Point
+          (PATH_SEG Point ->Point))))
+    (ITEM_FN add ->Point::add
+      b=(T_PATH ->Point
+        a=(PATH ->Point
+          (PATH_SEG Point ->Point)))
+      c=(BLOCK
+        a=(E_STRUCT ->Point :Point
+          a=(PATH ->Point
+            (PATH_SEG Point ->Point))
+          (FIELD_INIT x ->Point::x :i32
+            a=(E_BINARY op:+ :i32
+              a=(E_FIELD x ->Point::x :i32
+                a=(E_PATH ->self :Point
+                  a=(PATH ->self
+                    (PATH_SEG self ->self))))
+              b=(E_FIELD x ->Point::x :i32
+                a=(E_PATH ->o :Point
+                  a=(PATH ->o
+                    (PATH_SEG o ->o))))))
+          (FIELD_INIT y ->Point::y :i32
+            a=(E_BINARY op:+ :i32
+              a=(E_FIELD y ->Point::y :i32
+                a=(E_PATH ->self :Point
+                  a=(PATH ->self
+                    (PATH_SEG self ->self))))
+              b=(E_FIELD y ->Point::y :i32
+                a=(E_PATH ->o :Point
+                  a=(PATH ->o
+                    (PATH_SEG o ->o))))))))
+      (SELF_PARAM ->self)
+      (PARAM
+        a=(P_IDENT o ->o :Point)
+        b=(T_PATH ->Point
+          a=(PATH ->Point
+            (PATH_SEG Point ->Point))))))
+  (ITEM_FN total ->total
+    b=(T_PATH ->i32
+      a=(PATH ->i32
+        (PATH_SEG i32 ->i32)))
+    c=(BLOCK
+      (STMT_LET
+        a=(P_IDENT r {mut} ->r :Point)
+        c=(E_BINARY op:+ ->Point::add :Point
+          a=(E_PATH ->p :Point
+            a=(PATH ->p
+              (PATH_SEG p ->p)))
+          b=(E_PATH ->q :Point
+            a=(PATH ->q
+              (PATH_SEG q ->q)))))
+      (STMT_EXPR {semi}
+        a=(E_METHOD_CALL shift ->Point::shift :&mut Point
+          a=(E_METHOD_CALL shift ->Point::shift :&mut Point
+            a=(E_PATH ->r :Point
+              a=(PATH ->r
+                (PATH_SEG r ->r)))
+            (E_LIT_INT "2" #2 :i32))
+          (E_LIT_INT "3" #3 :i32)))
+      (STMT_LET
+        a=(P_IDENT w ->w :Wrapper<i32>)
+        c=(E_CALL :Wrapper<i32>
+          a=(E_PATH ->Wrapper::new :fn(i32) -> Wrapper<i32> {new::<i32>}
+            a=(PATH ->Wrapper
+              (PATH_SEG Wrapper ->Wrapper)
+              (PATH_SEG new)))
+          (E_METHOD_CALL dist2 ->Point::dist2 :i32
+            a=(E_PATH ->r :Point
+              a=(PATH ->r
+                (PATH_SEG r ->r))))))
+      (STMT_LET
+        a=(P_IDENT pair ->pair :Pair)
+        c=(E_CALL :Pair
+          a=(E_PATH ->Pair :fn(i32, f64) -> Pair {Pair}
+            a=(PATH ->Pair
+              (PATH_SEG Pair ->Pair)))
+          (E_LIT_INT "1" #1 :i32)
+          (E_LIT_FLOAT "2.5" :f64)))
+      (STMT_LET
+        a=(P_IDENT _u ->_u :Unit)
+        c=(E_PATH ->Unit :Unit
+          a=(PATH ->Unit
+            (PATH_SEG Unit ->Unit))))
+      (STMT_LET
+        a=(P_IDENT base ->base :Point)
+        c=(E_STRUCT ->Point :Point
+          a=(PATH ->Point
+            (PATH_SEG Point ->Point))
+          b=(E_CALL :Point
+            a=(E_PATH ->Point::origin :fn() -> Point {origin}
+              a=(PATH ->Point
+                (PATH_SEG Point ->Point)
+                (PATH_SEG origin))))
+          (FIELD_INIT x ->Point::x :i32
+            a=(E_LIT_INT "9" #9 :i32))))
+      a=(E_BINARY op:+ :i32
+        a=(E_BINARY op:+ :i32
+          a=(E_BINARY op:+ :i32
+            a=(E_BINARY op:+ :i32
+              a=(E_DEREF :i32
+                a=(E_METHOD_CALL get ->Wrapper::get :&i32
+                  a=(E_PATH ->w :Wrapper<i32>
+                    a=(PATH ->w
+                      (PATH_SEG w ->w)))))
+              b=(E_CAST :i32
+                a=(E_FIELD n ->Wrapper::n :usize
+                  a=(E_PATH ->w :Wrapper<i32>
+                    a=(PATH ->w
+                      (PATH_SEG w ->w))))
+                b=(T_PATH ->i32
+                  a=(PATH ->i32
+                    (PATH_SEG i32 ->i32)))))
+            b=(E_TUPLE_FIELD #0 ->Pair::0 :i32
+              a=(E_PATH ->pair :Pair
+                a=(PATH ->pair
+                  (PATH_SEG pair ->pair)))))
+          b=(E_FIELD y ->Point::y :i32
+            a=(E_PATH ->base :Point
+              a=(PATH ->base
+                (PATH_SEG base ->base)))))
+        b=(E_METHOD_CALL into_inner ->Wrapper::into_inner :i32
+          a=(E_PATH ->w :Wrapper<i32>
+            a=(PATH ->w
+              (PATH_SEG w ->w))))))
+    (PARAM
+      a=(P_IDENT p ->p :Point)
+      b=(T_PATH ->Point
+        a=(PATH ->Point
+          (PATH_SEG Point ->Point))))
+    (PARAM
+      a=(P_IDENT q ->q :Point)
+      b=(T_PATH ->Point
+        a=(PATH ->Point
+          (PATH_SEG Point ->Point))))))

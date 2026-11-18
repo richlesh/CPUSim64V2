@@ -700,7 +700,15 @@ public class AssemblerVisitor extends CPUSim64BaseVisitor<Void> implements HasLo
 
 	@Override
 	public Void visitInstrLOAD(CPUSim64Parser.InstrLOADContext ctx) {
-		var y = ctx.yOperand();
+		return assembleLoad(Opcode.LOAD.code, ctx.yOperand(), ctx.memRef());
+	}
+
+	@Override
+	public Void visitInstrLDB(CPUSim64Parser.InstrLDBContext ctx) {
+		return assembleLoad(Opcode.LDB.code, ctx.yOperand(), ctx.memRef());
+	}
+
+	private Void assembleLoad(int opc, CPUSim64Parser.YOperandContext y, CPUSim64Parser.MemRefContext mr) {
 		boolean yIsFp = y.fOperand() != null;
 		int a = yIsFp ? OT_FP : OT_REG;
 		int v0 = yIsFp ? fpIndex(y.fOperand().REG_F().getText())
@@ -709,30 +717,30 @@ public class AssemblerVisitor extends CPUSim64BaseVisitor<Void> implements HasLo
 		int b = OT_NONE, c = OT_NONE, d = OT_NONE;
 		long v1 = 0, v2 = 0, v3 = 0;
 
-		var memRef = parseMemRef(ctx.memRef());
+		var memRef = parseMemRef(mr);
 		b = memRef.getLeft().getLeft();
 		c = memRef.getRight().getLeft();
 		v1 = memRef.getLeft().getRight();
 		v2 = memRef.getRight().getRight();
 
 		if (b == OT_CONST && c == OT_NONE) {     			// Y[C]
-			addWord(LabelType.CODE, encType2RC2(Opcode.LOAD.code, a, v0, v1));
+			addWord(LabelType.CODE, encType2RC2(opc, a, v0, v1));
 		} else if (b == OT_REG && c == OT_NONE) {           // Y[A]
-			addWord(LabelType.CODE, encType0(Opcode.LOAD.code, a, b, c, d, v0, (int)v1, (int)v2, (int)v3));
+			addWord(LabelType.CODE, encType0(opc, a, b, c, d, v0, (int)v1, (int)v2, (int)v3));
 		} else if (b == OT_REG && c == OT_CONST) {      	// Y[A+C]
-			addWord(LabelType.CODE, encType3ZZC3(Opcode.LOAD.code, a, v0, b, (int)v1, (int)v2));
+			addWord(LabelType.CODE, encType3ZZC3(opc, a, v0, b, (int)v1, (int)v2));
 		} else if (b == OT_CONST && c == OT_REG) {			// Y[C+A]
-			addWord(LabelType.CODE, encType3ZZC3(Opcode.LOAD.code, a, v0, c, (int)v2, (int)v1));
+			addWord(LabelType.CODE, encType3ZZC3(opc, a, v0, c, (int)v2, (int)v1));
 		} else if (b == OT_CONST && c == OT_CONST) {  		// Y[C+C]
 			if (fitsIn(v2, C0_BITS, true)) {
-				addWord(LabelType.CODE, encType3ZZC3(Opcode.LOAD.code, a, v0, c, (int)v2, (int)v1));
+				addWord(LabelType.CODE, encType3ZZC3(opc, a, v0, c, (int)v2, (int)v1));
 			} else if (fitsIn(v1, C0_BITS, true)) {
-				addWord(LabelType.CODE, encType3ZZC3(Opcode.LOAD.code, a, v0, b, (int)v1, (int)v2));
+				addWord(LabelType.CODE, encType3ZZC3(opc, a, v0, b, (int)v1, (int)v2));
 			} else {
 				throw new AssemblerException("LOAD [C+C] requires one constant to fit in 12 bits");
 			}
 		} else if (b == OT_REG && c == OT_REG) {      		// Y[A+R]
-			addWord(LabelType.CODE, encType0(Opcode.LOAD.code, a, b, c, d, v0, (int)v1, (int)v2, (int)v3));
+			addWord(LabelType.CODE, encType0(opc, a, b, c, d, v0, (int)v1, (int)v2, (int)v3));
 		} else {
 			throw new AssemblerException("Unhandled LOAD form");
 		}
@@ -741,9 +749,17 @@ public class AssemblerVisitor extends CPUSim64BaseVisitor<Void> implements HasLo
 
 	@Override
 	public Void visitInstrSTORE(CPUSim64Parser.InstrSTOREContext ctx) {
+		return assembleStore(Opcode.STORE.code, ctx.qOperand(), ctx.memRef());
+	}
+
+	@Override
+	public Void visitInstrSTB(CPUSim64Parser.InstrSTBContext ctx) {
+		return assembleStore(Opcode.STB.code, ctx.qOperand(), ctx.memRef());
+	}
+
+	private Void assembleStore(int opc, CPUSim64Parser.QOperandContext q, CPUSim64Parser.MemRefContext mr) {
 		// Q , [addr] → Type-0
 		int a, v0;
-		var q = ctx.qOperand();
 		if (q.fOperand() != null) {
 			a = OT_FP;
 			v0 = fpIndex(q.fOperand().REG_F().getText());
@@ -758,30 +774,30 @@ public class AssemblerVisitor extends CPUSim64BaseVisitor<Void> implements HasLo
 		int b = OT_NONE, c = OT_NONE, d = OT_NONE;
 		long v1 = 0, v2 = 0, v3 = 0;
 
-		var memRef = parseMemRef(ctx.memRef());
+		var memRef = parseMemRef(mr);
 		b = memRef.getLeft().getLeft();
 		c = memRef.getRight().getLeft();
 		v1 = memRef.getLeft().getRight();
 		v2 = memRef.getRight().getRight();
 
 		if (b == OT_CONST && c == OT_NONE) {       			// [C]
-			addWord(LabelType.CODE, encType2RC2(Opcode.STORE.code, a, v0, v1));
+			addWord(LabelType.CODE, encType2RC2(opc, a, v0, v1));
 		} else if (b == OT_REG && c == OT_NONE) {           // [A]
-			addWord(LabelType.CODE, encType0(Opcode.STORE.code, a, b, c, d, v0, (int)v1, (int)v2, (int)v3));
+			addWord(LabelType.CODE, encType0(opc, a, b, c, d, v0, (int)v1, (int)v2, (int)v3));
 		} else if (b == OT_REG && c == OT_CONST) {      	// [A+C]
-			addWord(LabelType.CODE, encType3ZZC3(Opcode.STORE.code, a, v0, b, (int)v1, (int)v2));
+			addWord(LabelType.CODE, encType3ZZC3(opc, a, v0, b, (int)v1, (int)v2));
 		} else if (b == OT_CONST && c == OT_REG) {      	// [C+A]
-			addWord(LabelType.CODE, encType3ZZC3(Opcode.STORE.code, a, v0, c, (int)v2, (int)v1));
+			addWord(LabelType.CODE, encType3ZZC3(opc, a, v0, c, (int)v2, (int)v1));
 		} else if (b == OT_CONST && c == OT_CONST) {      	// [C+C]
 			if (fitsIn(v2, C0_BITS, true)) {
-				addWord(LabelType.CODE, encType3ZZC3(Opcode.STORE.code, a, v0, b, (int)v2, (int)v1));
+				addWord(LabelType.CODE, encType3ZZC3(opc, a, v0, b, (int)v2, (int)v1));
 			} else if (fitsIn(v1, C0_BITS, true)) {
-				addWord(LabelType.CODE, encType3ZZC3(Opcode.STORE.code, a, v0, b, (int)v1, (int)v2));
+				addWord(LabelType.CODE, encType3ZZC3(opc, a, v0, b, (int)v1, (int)v2));
 			} else {
 				throw new AssemblerException("LOAD [C+C] requires one constant to fit in 12 bits");
 			}
 		} else if (b == OT_REG && c == OT_REG) {      		// [A+R]
-			addWord(LabelType.CODE, encType0(Opcode.STORE.code, a, b, c, d, v0, (int)v1, (int)v2, (int)v3));
+			addWord(LabelType.CODE, encType0(opc, a, b, c, d, v0, (int)v1, (int)v2, (int)v3));
 		} else {
 			throw new AssemblerException("Unhandled LOAD form");
 		}

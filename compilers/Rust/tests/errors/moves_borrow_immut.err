@@ -1,0 +1,1 @@
+errors/moves_borrow_immut.rs:3: error: cannot borrow `v` as mutable, as it is not declared as mutable

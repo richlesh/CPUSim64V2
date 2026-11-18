@@ -1,0 +1,54 @@
+fn main() {
+    let mut s = String::from("héllo wörld");
+    s.insert(0, '>');
+    s.insert(3, 'é');
+    println!("{}", s);
+    s.insert_str(1, "[x]");
+    println!("{}", s);
+    let r = s.remove(1);
+    println!("{} {}", r, s);
+    let mut t = String::from("a1b2c3d4");
+    t.retain(|c| c.is_alphabetic());
+    println!("{}", t);
+    t.truncate(2);
+    println!("{} {}", t, t.len());
+    let p = t.pop();
+    println!("{:?} {:?}", p, t);
+    let mut e = String::new();
+    println!("{:?}", e.pop());
+    let mut u = String::from("hello world");
+    let tail = u.split_off(5);
+    println!("[{}] [{}]", u, tail);
+    let mut w = String::from("0123456789");
+    let d: String = w.drain(2..5).collect();
+    println!("{} {}", d, w);
+    let d2: String = w.drain(..2).collect();
+    println!("{} {}", d2, w);
+    w.drain(3..);
+    println!("{}", w);
+    for (i, c) in String::from("aé€z").char_indices() {
+        println!("{} {}", i, c);
+    }
+    let names = vec![String::from("ab"), String::from("cd"), String::from("ef")];
+    println!("{}", names.join("-"));
+    println!("{}", names.concat());
+    let parts = ["x", "y", "z"];
+    println!("{} {}", parts.join(", "), parts.concat());
+    let cs = ['a', 'b', 'c'];
+    let s1: String = cs.iter().collect();
+    let s2: String = vec!["p", "q"].into_iter().collect();
+    let s3: String = vec![String::from("m"), String::from("n")].into_iter().collect();
+    let s4: String = "xyz".chars().rev().collect();
+    println!("{} {} {} {}", s1, s2, s3, s4);
+    let mut ex = String::from("a");
+    ex.extend(['b', 'c'].iter());
+    ex.extend(vec!["d", "e"]);
+    ex.extend("fg".chars());
+    ex.extend(vec![String::from("h")]);
+    println!("{}", ex);
+    let mut x = String::from("abc");
+    x.insert(3, '!');
+    x.insert(0, '?');
+    println!("{}", x);
+    println!("{}", x.chars().rev().collect::<String>());
+}

@@ -1,0 +1,1 @@
+errors/resolve_not_trait.rs:2: error: expected trait, found struct `S`

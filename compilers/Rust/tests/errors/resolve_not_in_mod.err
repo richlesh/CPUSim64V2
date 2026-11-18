@@ -1,0 +1,1 @@
+errors/resolve_not_in_mod.rs:3: error: cannot find function `g` in module `m`

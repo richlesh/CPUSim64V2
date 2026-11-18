@@ -1,0 +1,558 @@
+(CRATE ->crate
+  (ITEM_FN make_counter ->make_counter
+    b=(T_PATH ->impl_free::Counter
+      a=(PATH ->impl_free::Counter
+        (PATH_SEG impl_free ->impl_free)
+        (PATH_SEG Counter ->impl_free::Counter)))
+    c=(BLOCK
+      a=(E_STRUCT ->impl_free::Counter :Counter
+        a=(PATH ->impl_free::Counter
+          (PATH_SEG impl_free ->impl_free)
+          (PATH_SEG Counter ->impl_free::Counter))
+        (FIELD_INIT n ->impl_free::Counter::n :u32
+          a=(E_LIT_INT "0" #0 :u32)))))
+  (ITEM_MOD impl_free {inline} ->impl_free
+    (ITEM_STRUCT Counter {named} ->impl_free::Counter
+      vis=(VIS)
+      (FIELD n ->impl_free::Counter::n
+        vis=(VIS)
+        a=(T_PATH ->u32
+          a=(PATH ->u32
+            (PATH_SEG u32 ->u32))))))
+  (ITEM_FN make_adder ->make_adder
+    b=(T_PATH ->core::boxed::Box
+      a=(PATH ->core::boxed::Box
+        (PATH_SEG Box {angle} ->core::boxed::Box
+          (T_DYN {dyn}
+            a=(BOUNDS
+              (BOUND_TRAIT ->core::ops::Fn
+                a=(PATH ->core::ops::Fn
+                  (PATH_SEG Fn {parens} ->core::ops::Fn
+                    a=(T_PATH ->i32
+                      a=(PATH ->i32
+                        (PATH_SEG i32 ->i32)))
+                    (T_PATH ->i32
+                      a=(PATH ->i32
+                        (PATH_SEG i32 ->i32)))))))))))
+    c=(BLOCK
+      a=(E_CALL :Box<{closure}>
+        a=(E_PATH ->Box::new :fn({closure}) -> Box<{closure}> {new::<{closure}>}
+          a=(PATH ->core::boxed::Box
+            (PATH_SEG Box ->core::boxed::Box)
+            (PATH_SEG new)))
+        (E_CLOSURE {move} :{closure}
+          (PARAM
+            a=(P_IDENT x ->x :i32))
+          b=(E_BINARY op:+ :i32
+            a=(E_PATH ->x :i32
+              a=(PATH ->x
+                (PATH_SEG x ->x)))
+            b=(E_PATH ->k :i32
+              a=(PATH ->k
+                (PATH_SEG k ->k)))))))
+    (PARAM
+      a=(P_IDENT k ->k :i32)
+      b=(T_PATH ->i32
+        a=(PATH ->i32
+          (PATH_SEG i32 ->i32)))))
+  (ITEM_FN make_multiplier ->make_multiplier
+    b=(T_PATH ->core::boxed::Box
+      a=(PATH ->core::boxed::Box
+        (PATH_SEG Box {angle} ->core::boxed::Box
+          (T_DYN {dyn}
+            a=(BOUNDS
+              (BOUND_TRAIT ->core::ops::FnMut
+                a=(PATH ->core::ops::FnMut
+                  (PATH_SEG FnMut {parens} ->core::ops::FnMut
+                    a=(T_PATH ->i32
+                      a=(PATH ->i32
+                        (PATH_SEG i32 ->i32)))
+                    (T_PATH ->i32
+                      a=(PATH ->i32
+                        (PATH_SEG i32 ->i32)))))))))))
+    c=(BLOCK
+      (STMT_LET
+        a=(P_IDENT calls {mut} ->calls :i32)
+        c=(E_LIT_INT "0" #0 :i32))
+      a=(E_CALL :Box<{closure}>
+        a=(E_PATH ->Box::new :fn({closure}) -> Box<{closure}> {new::<{closure}>}
+          a=(PATH ->core::boxed::Box
+            (PATH_SEG Box ->core::boxed::Box)
+            (PATH_SEG new)))
+        (E_CLOSURE {move} :{closure}
+          (PARAM
+            a=(P_IDENT x ->x :i32))
+          b=(BLOCK :i32
+            (STMT_EXPR {semi}
+              a=(E_ASSIGN_OP op:+ :()
+                a=(E_PATH ->calls :i32
+                  a=(PATH ->calls
+                    (PATH_SEG calls ->calls)))
+                b=(E_LIT_INT "1" #1 :i32)))
+            a=(E_BINARY op:+ :i32
+              a=(E_BINARY op:* :i32
+                a=(E_PATH ->x :i32
+                  a=(PATH ->x
+                    (PATH_SEG x ->x)))
+                b=(E_PATH ->k :i32
+                  a=(PATH ->k
+                    (PATH_SEG k ->k))))
+              b=(E_PATH ->calls :i32
+                a=(PATH ->calls
+                  (PATH_SEG calls ->calls))))))))
+    (PARAM
+      a=(P_IDENT k ->k :i32)
+      b=(T_PATH ->i32
+        a=(PATH ->i32
+          (PATH_SEG i32 ->i32)))))
+  (ITEM_FN apply_n ->apply_n
+    a=(GENERICS
+      (GEN_TYPE F ->F
+        b=(BOUNDS
+          (BOUND_TRAIT ->core::ops::FnMut
+            a=(PATH ->core::ops::FnMut
+              (PATH_SEG FnMut {parens} ->core::ops::FnMut
+                a=(T_PATH ->i32
+                  a=(PATH ->i32
+                    (PATH_SEG i32 ->i32)))))))))
+    b=(T_PATH ->core::vec::Vec
+      a=(PATH ->core::vec::Vec
+        (PATH_SEG Vec {angle} ->core::vec::Vec
+          (T_PATH ->i32
+            a=(PATH ->i32
+              (PATH_SEG i32 ->i32))))))
+    c=(BLOCK
+      (STMT_LET
+        a=(P_IDENT out {mut} ->out :Vec<i32>)
+        c=(E_CALL :Vec<i32>
+          a=(E_PATH ->Vec::new :fn() -> Vec<i32> {new::<i32>}
+            a=(PATH ->core::vec::Vec
+              (PATH_SEG Vec ->core::vec::Vec)
+              (PATH_SEG new)))))
+      (STMT_EXPR
+        a=(E_FOR :()
+          a=(P_WILD :usize)
+          b=(E_RANGE :Range<usize>
+            a=(E_LIT_INT "0" #0 :usize)
+            b=(E_PATH ->n :usize
+              a=(PATH ->n
+                (PATH_SEG n ->n))))
+          c=(BLOCK
+            (STMT_EXPR {semi}
+              a=(E_METHOD_CALL push ->Vec::push :()
+                a=(E_PATH ->out :Vec<i32>
+                  a=(PATH ->out
+                    (PATH_SEG out ->out)))
+                (E_CALL :i32
+                  a=(E_PATH ->f :F
+                    a=(PATH ->f
+                      (PATH_SEG f ->f)))))))))
+      a=(E_PATH ->out :Vec<i32>
+        a=(PATH ->out
+          (PATH_SEG out ->out))))
+    (PARAM
+      a=(P_IDENT f {mut} ->f :F)
+      b=(T_PATH ->F
+        a=(PATH ->F
+          (PATH_SEG F ->F))))
+    (PARAM
+      a=(P_IDENT n ->n :usize)
+      b=(T_PATH ->usize
+        a=(PATH ->usize
+          (PATH_SEG usize ->usize)))))
+  (ITEM_FN main ->main
+    c=(BLOCK
+      (STMT_LET
+        a=(P_IDENT c ->c :Counter)
+        c=(E_CALL :Counter
+          a=(E_PATH ->make_counter :fn() -> Counter {make_counter}
+            a=(PATH ->make_counter
+              (PATH_SEG make_counter ->make_counter)))))
+      (STMT_LET
+        a=(P_IDENT name ->name :String)
+        c=(E_CALL :String
+          a=(E_PATH ->String::from :fn(&str) -> String {from::<&str>}
+            a=(PATH ->core::string::String
+              (PATH_SEG String ->core::string::String)
+              (PATH_SEG from)))
+          (E_LIT_STR "zed" :&str)))
+      (STMT_LET
+        a=(P_IDENT greet ->greet :{closure})
+        c=(E_CLOSURE {move} :{closure}
+          b=(BLOCK :String
+            (STMT_LET
+              a=(P_IDENT __s {mut} ->__s :String)
+              c=(E_CALL :String
+                a=(E_PATH ->String::new :fn() -> String {new}
+                  a=(PATH {global} ->core::string::String
+                    (PATH_SEG core ->core)
+                    (PATH_SEG string ->core::string)
+                    (PATH_SEG String ->core::string::String)
+                    (PATH_SEG new)))))
+            (STMT_EXPR
+              a=(BLOCK :()
+                (STMT_LET
+                  a=(P_IDENT __f {mut} ->__f :Formatter)
+                  c=(E_CALL :Formatter
+                    a=(E_PATH ->Formatter::new :fn(&mut dyn Write) -> Formatter {new}
+                      a=(PATH {global} ->core::fmt::Formatter
+                        (PATH_SEG core ->core)
+                        (PATH_SEG fmt ->core::fmt)
+                        (PATH_SEG Formatter ->core::fmt::Formatter)
+                        (PATH_SEG new)))
+                    (E_REF {mut} :&mut String
+                      a=(E_PATH ->__s :String
+                        a=(PATH ->__s
+                          (PATH_SEG __s ->__s))))))
+                a=(BLOCK :()
+                  (STMT_LET
+                    a=(P_IDENT __a0 ->__a0 :&String)
+                    c=(E_REF :&String
+                      a=(E_PAREN :String
+                        a=(E_PATH ->name :String
+                          a=(PATH ->name
+                            (PATH_SEG name ->name))))))
+                  (STMT_EXPR {semi}
+                    a=(E_METHOD_CALL write_str ->Formatter::write_str :Result<(), Error>
+                      a=(E_PATH ->__f :Formatter
+                        a=(PATH ->__f
+                          (PATH_SEG __f ->__f)))
+                      (E_LIT_STR "hi " :&str)))
+                  (STMT_LET
+                    a=(P_WILD :Result<(), Error>)
+                    c=(E_CALL :Result<(), Error>
+                      a=(E_PATH ->String::fmt :fn(&String, &mut Formatter) -> Result<(), Error> {fmt}
+                        a=(PATH {global} ->core::fmt::Display
+                          (PATH_SEG core ->core)
+                          (PATH_SEG fmt ->core::fmt)
+                          (PATH_SEG Display ->core::fmt::Display)
+                          (PATH_SEG fmt)))
+                      (E_PATH ->__a0 :&String
+                        a=(PATH ->__a0
+                          (PATH_SEG __a0 ->__a0)))
+                      (E_REF {mut} :&mut Formatter
+                        a=(E_PATH ->__f :Formatter
+                          a=(PATH ->__f
+                            (PATH_SEG __f ->__f)))))))))
+            a=(E_PATH ->__s :String
+              a=(PATH ->__s
+                (PATH_SEG __s ->__s))))))
+      (STMT_LET
+        a=(P_IDENT total {mut} ->total :i32)
+        c=(E_LIT_INT "0" #0 :i32))
+      (STMT_LET
+        a=(P_IDENT add {mut} ->add :{closure})
+        c=(E_CLOSURE :{closure}
+          (PARAM
+            a=(P_IDENT x ->x :i32)
+            b=(T_PATH ->i32
+              a=(PATH ->i32
+                (PATH_SEG i32 ->i32))))
+          b=(E_ASSIGN_OP op:+ :()
+            a=(E_PATH ->total :i32
+              a=(PATH ->total
+                (PATH_SEG total ->total)))
+            b=(E_PATH ->x :i32
+              a=(PATH ->x
+                (PATH_SEG x ->x))))))
+      (STMT_EXPR {semi}
+        a=(E_CALL :()
+          a=(E_PATH ->add :{closure}
+            a=(PATH ->add
+              (PATH_SEG add ->add)))
+          (E_LIT_INT "3" #3 :i32)))
+      (STMT_EXPR {semi}
+        a=(E_CALL :()
+          a=(E_PATH ->add :{closure}
+            a=(PATH ->add
+              (PATH_SEG add ->add)))
+          (E_LIT_INT "4" #4 :i32)))
+      (STMT_LET
+        a=(P_IDENT adders ->adders :Vec<Box<dyn Fn<(i32,), Output = i32>>>)
+        b=(T_PATH ->core::vec::Vec
+          a=(PATH ->core::vec::Vec
+            (PATH_SEG Vec {angle} ->core::vec::Vec
+              (T_PATH ->core::boxed::Box
+                a=(PATH ->core::boxed::Box
+                  (PATH_SEG Box {angle} ->core::boxed::Box
+                    (T_DYN {dyn}
+                      a=(BOUNDS
+                        (BOUND_TRAIT ->core::ops::Fn
+                          a=(PATH ->core::ops::Fn
+                            (PATH_SEG Fn {parens} ->core::ops::Fn
+                              a=(T_PATH ->i32
+                                a=(PATH ->i32
+                                  (PATH_SEG i32 ->i32)))
+                              (T_PATH ->i32
+                                a=(PATH ->i32
+                                  (PATH_SEG i32 ->i32))))))))))))))
+        c=(E_CALL :Vec<Box<dyn Fn<(i32,), Output = i32>>>
+          a=(E_PATH ->Vec::from_array :fn([Box<dyn Fn<(i32,), Output = i32>>; 2]) -> Vec<Box<dyn Fn<(i32,), Output = i32>>> {from_array::<Box<dyn Fn<(i32,), Output = i32>>, 2>}
+            a=(PATH {global} ->core::vec::Vec
+              (PATH_SEG core ->core)
+              (PATH_SEG vec ->core::vec)
+              (PATH_SEG Vec ->core::vec::Vec)
+              (PATH_SEG from_array)))
+          (E_ARRAY :[Box<dyn Fn<(i32,), Output = i32>>; 2]
+            (E_CALL :Box<dyn Fn<(i32,), Output = i32>>
+              a=(E_PATH ->make_adder :fn(i32) -> Box<dyn Fn<(i32,), Output = i32>> {make_adder}
+                a=(PATH ->make_adder
+                  (PATH_SEG make_adder ->make_adder)))
+              (E_LIT_INT "1" #1 :i32))
+            (E_CALL :Box<dyn Fn<(i32,), Output = i32>>
+              a=(E_PATH ->make_adder :fn(i32) -> Box<dyn Fn<(i32,), Output = i32>> {make_adder}
+                a=(PATH ->make_adder
+                  (PATH_SEG make_adder ->make_adder)))
+              (E_LIT_INT "10" #10 :i32)))))
+      (STMT_LET
+        a=(P_IDENT results ->results :Vec<i32>)
+        b=(T_PATH ->core::vec::Vec
+          a=(PATH ->core::vec::Vec
+            (PATH_SEG Vec {angle} ->core::vec::Vec
+              (T_PATH ->i32
+                a=(PATH ->i32
+                  (PATH_SEG i32 ->i32))))))
+        c=(E_METHOD_CALL collect ->core::iter::Iterator::collect :Vec<i32>
+          a=(E_METHOD_CALL map ->core::iter::Iterator::map :Map<Iter<Box<dyn Fn<(i32,), Output = i32>>>, {closure}>
+            a=(E_METHOD_CALL iter ->Vec::iter :Iter<Box<dyn Fn<(i32,), Output = i32>>>
+              a=(E_PATH ->adders :Vec<Box<dyn Fn<(i32,), Output = i32>>>
+                a=(PATH ->adders
+                  (PATH_SEG adders ->adders))))
+            (E_CLOSURE :{closure}
+              (PARAM
+                a=(P_IDENT f ->f :&Box<dyn Fn<(i32,), Output = i32>>))
+              b=(E_CALL :i32
+                a=(E_PATH ->f :&Box<dyn Fn<(i32,), Output = i32>>
+                  a=(PATH ->f
+                    (PATH_SEG f ->f)))
+                (E_LIT_INT "5" #5 :i32))))))
+      (STMT_LET
+        a=(P_IDENT mul {mut} ->mul :Box<dyn FnMut<(i32,), Output = i32>>)
+        c=(E_CALL :Box<dyn FnMut<(i32,), Output = i32>>
+          a=(E_PATH ->make_multiplier :fn(i32) -> Box<dyn FnMut<(i32,), Output = i32>> {make_multiplier}
+            a=(PATH ->make_multiplier
+              (PATH_SEG make_multiplier ->make_multiplier)))
+          (E_LIT_INT "3" #3 :i32)))
+      (STMT_LET
+        a=(P_IDENT state {mut} ->state :i32)
+        c=(E_LIT_INT "0" #0 :i32))
+      (STMT_LET
+        a=(P_IDENT seq ->seq :Vec<i32>)
+        c=(E_CALL :Vec<i32>
+          a=(E_PATH ->apply_n :fn({closure}, usize) -> Vec<i32> {apply_n::<{closure}>}
+            a=(PATH ->apply_n
+              (PATH_SEG apply_n ->apply_n)))
+          (E_CLOSURE :{closure}
+            b=(BLOCK :i32
+              (STMT_EXPR {semi}
+                a=(E_ASSIGN_OP op:+ :()
+                  a=(E_PATH ->state :i32
+                    a=(PATH ->state
+                      (PATH_SEG state ->state)))
+                  b=(E_LIT_INT "2" #2 :i32)))
+              a=(E_PATH ->state :i32
+                a=(PATH ->state
+                  (PATH_SEG state ->state)))))
+          (E_LIT_INT "4" #4 :usize)))
+      (STMT_EXPR {semi}
+        a=(BLOCK :()
+          (STMT_LET
+            a=(P_IDENT __out {mut} ->__out :RawOut)
+            c=(E_CALL :RawOut
+              a=(E_PATH ->core::io::stdout_raw :fn() -> RawOut {stdout_raw}
+                a=(PATH {global} ->core::io::stdout_raw
+                  (PATH_SEG core ->core)
+                  (PATH_SEG io ->core::io)
+                  (PATH_SEG stdout_raw ->core::io::stdout_raw)))))
+          (STMT_LET
+            a=(P_IDENT __f {mut} ->__f :Formatter)
+            c=(E_CALL :Formatter
+              a=(E_PATH ->Formatter::new :fn(&mut dyn Write) -> Formatter {new}
+                a=(PATH {global} ->core::fmt::Formatter
+                  (PATH_SEG core ->core)
+                  (PATH_SEG fmt ->core::fmt)
+                  (PATH_SEG Formatter ->core::fmt::Formatter)
+                  (PATH_SEG new)))
+              (E_REF {mut} :&mut RawOut
+                a=(E_PATH ->__out :RawOut
+                  a=(PATH ->__out
+                    (PATH_SEG __out ->__out))))))
+          a=(BLOCK :()
+            (STMT_LET
+              a=(P_IDENT __a0 ->__a0 :&u32)
+              c=(E_REF :&u32
+                a=(E_PAREN :u32
+                  a=(E_FIELD n ->impl_free::Counter::n :u32
+                    a=(E_PATH ->c :Counter
+                      a=(PATH ->c
+                        (PATH_SEG c ->c)))))))
+            (STMT_LET
+              a=(P_IDENT __a1 ->__a1 :&String)
+              c=(E_REF :&String
+                a=(E_PAREN :String
+                  a=(E_CALL :String
+                    a=(E_PATH ->greet :{closure}
+                      a=(PATH ->greet
+                        (PATH_SEG greet ->greet)))))))
+            (STMT_LET
+              a=(P_IDENT __a2 ->__a2 :&i32)
+              c=(E_REF :&i32
+                a=(E_PAREN :i32
+                  a=(E_PATH ->total :i32
+                    a=(PATH ->total
+                      (PATH_SEG total ->total))))))
+            (STMT_LET
+              a=(P_IDENT __a3 ->__a3 :&Vec<i32>)
+              c=(E_REF :&Vec<i32>
+                a=(E_PAREN :Vec<i32>
+                  a=(E_PATH ->results :Vec<i32>
+                    a=(PATH ->results
+                      (PATH_SEG results ->results))))))
+            (STMT_LET
+              a=(P_IDENT __a4 ->__a4 :&i32)
+              c=(E_REF :&i32
+                a=(E_PAREN :i32
+                  a=(E_CALL :i32
+                    a=(E_PATH ->mul :Box<dyn FnMut<(i32,), Output = i32>>
+                      a=(PATH ->mul
+                        (PATH_SEG mul ->mul)))
+                    (E_LIT_INT "2" #2 :i32)))))
+            (STMT_LET
+              a=(P_IDENT __a5 ->__a5 :&Vec<i32>)
+              c=(E_REF :&Vec<i32>
+                a=(E_PAREN :Vec<i32>
+                  a=(E_PATH ->seq :Vec<i32>
+                    a=(PATH ->seq
+                      (PATH_SEG seq ->seq))))))
+            (STMT_LET
+              a=(P_WILD :Result<(), Error>)
+              c=(E_CALL :Result<(), Error>
+                a=(E_PATH ->u32::fmt :fn(&u32, &mut Formatter) -> Result<(), Error> {fmt}
+                  a=(PATH {global} ->core::fmt::Display
+                    (PATH_SEG core ->core)
+                    (PATH_SEG fmt ->core::fmt)
+                    (PATH_SEG Display ->core::fmt::Display)
+                    (PATH_SEG fmt)))
+                (E_PATH ->__a0 :&u32
+                  a=(PATH ->__a0
+                    (PATH_SEG __a0 ->__a0)))
+                (E_REF {mut} :&mut Formatter
+                  a=(E_PATH ->__f :Formatter
+                    a=(PATH ->__f
+                      (PATH_SEG __f ->__f))))))
+            (STMT_EXPR {semi}
+              a=(E_METHOD_CALL write_str ->Formatter::write_str :Result<(), Error>
+                a=(E_PATH ->__f :Formatter
+                  a=(PATH ->__f
+                    (PATH_SEG __f ->__f)))
+                (E_LIT_STR " " :&str)))
+            (STMT_LET
+              a=(P_WILD :Result<(), Error>)
+              c=(E_CALL :Result<(), Error>
+                a=(E_PATH ->String::fmt :fn(&String, &mut Formatter) -> Result<(), Error> {fmt}
+                  a=(PATH {global} ->core::fmt::Display
+                    (PATH_SEG core ->core)
+                    (PATH_SEG fmt ->core::fmt)
+                    (PATH_SEG Display ->core::fmt::Display)
+                    (PATH_SEG fmt)))
+                (E_PATH ->__a1 :&String
+                  a=(PATH ->__a1
+                    (PATH_SEG __a1 ->__a1)))
+                (E_REF {mut} :&mut Formatter
+                  a=(E_PATH ->__f :Formatter
+                    a=(PATH ->__f
+                      (PATH_SEG __f ->__f))))))
+            (STMT_EXPR {semi}
+              a=(E_METHOD_CALL write_str ->Formatter::write_str :Result<(), Error>
+                a=(E_PATH ->__f :Formatter
+                  a=(PATH ->__f
+                    (PATH_SEG __f ->__f)))
+                (E_LIT_STR " " :&str)))
+            (STMT_LET
+              a=(P_WILD :Result<(), Error>)
+              c=(E_CALL :Result<(), Error>
+                a=(E_PATH ->i32::fmt :fn(&i32, &mut Formatter) -> Result<(), Error> {fmt}
+                  a=(PATH {global} ->core::fmt::Display
+                    (PATH_SEG core ->core)
+                    (PATH_SEG fmt ->core::fmt)
+                    (PATH_SEG Display ->core::fmt::Display)
+                    (PATH_SEG fmt)))
+                (E_PATH ->__a2 :&i32
+                  a=(PATH ->__a2
+                    (PATH_SEG __a2 ->__a2)))
+                (E_REF {mut} :&mut Formatter
+                  a=(E_PATH ->__f :Formatter
+                    a=(PATH ->__f
+                      (PATH_SEG __f ->__f))))))
+            (STMT_EXPR {semi}
+              a=(E_METHOD_CALL write_str ->Formatter::write_str :Result<(), Error>
+                a=(E_PATH ->__f :Formatter
+                  a=(PATH ->__f
+                    (PATH_SEG __f ->__f)))
+                (E_LIT_STR " " :&str)))
+            (STMT_LET
+              a=(P_WILD :Result<(), Error>)
+              c=(E_CALL :Result<(), Error>
+                a=(E_PATH ->Vec::fmt :fn(&Vec<i32>, &mut Formatter) -> Result<(), Error> {fmt}
+                  a=(PATH {global} ->core::fmt::Debug
+                    (PATH_SEG core ->core)
+                    (PATH_SEG fmt ->core::fmt)
+                    (PATH_SEG Debug ->core::fmt::Debug)
+                    (PATH_SEG fmt)))
+                (E_PATH ->__a3 :&Vec<i32>
+                  a=(PATH ->__a3
+                    (PATH_SEG __a3 ->__a3)))
+                (E_REF {mut} :&mut Formatter
+                  a=(E_PATH ->__f :Formatter
+                    a=(PATH ->__f
+                      (PATH_SEG __f ->__f))))))
+            (STMT_EXPR {semi}
+              a=(E_METHOD_CALL write_str ->Formatter::write_str :Result<(), Error>
+                a=(E_PATH ->__f :Formatter
+                  a=(PATH ->__f
+                    (PATH_SEG __f ->__f)))
+                (E_LIT_STR " " :&str)))
+            (STMT_LET
+              a=(P_WILD :Result<(), Error>)
+              c=(E_CALL :Result<(), Error>
+                a=(E_PATH ->i32::fmt :fn(&i32, &mut Formatter) -> Result<(), Error> {fmt}
+                  a=(PATH {global} ->core::fmt::Display
+                    (PATH_SEG core ->core)
+                    (PATH_SEG fmt ->core::fmt)
+                    (PATH_SEG Display ->core::fmt::Display)
+                    (PATH_SEG fmt)))
+                (E_PATH ->__a4 :&i32
+                  a=(PATH ->__a4
+                    (PATH_SEG __a4 ->__a4)))
+                (E_REF {mut} :&mut Formatter
+                  a=(E_PATH ->__f :Formatter
+                    a=(PATH ->__f
+                      (PATH_SEG __f ->__f))))))
+            (STMT_EXPR {semi}
+              a=(E_METHOD_CALL write_str ->Formatter::write_str :Result<(), Error>
+                a=(E_PATH ->__f :Formatter
+                  a=(PATH ->__f
+                    (PATH_SEG __f ->__f)))
+                (E_LIT_STR " " :&str)))
+            (STMT_LET
+              a=(P_WILD :Result<(), Error>)
+              c=(E_CALL :Result<(), Error>
+                a=(E_PATH ->Vec::fmt :fn(&Vec<i32>, &mut Formatter) -> Result<(), Error> {fmt}
+                  a=(PATH {global} ->core::fmt::Debug
+                    (PATH_SEG core ->core)
+                    (PATH_SEG fmt ->core::fmt)
+                    (PATH_SEG Debug ->core::fmt::Debug)
+                    (PATH_SEG fmt)))
+                (E_PATH ->__a5 :&Vec<i32>
+                  a=(PATH ->__a5
+                    (PATH_SEG __a5 ->__a5)))
+                (E_REF {mut} :&mut Formatter
+                  a=(E_PATH ->__f :Formatter
+                    a=(PATH ->__f
+                      (PATH_SEG __f ->__f))))))
+            (STMT_EXPR {semi}
+              a=(E_METHOD_CALL write_str ->Formatter::write_str :Result<(), Error>
+                a=(E_PATH ->__f :Formatter
+                  a=(PATH ->__f
+                    (PATH_SEG __f ->__f)))
+                (E_LIT_STR "\n" :&str)))))))))

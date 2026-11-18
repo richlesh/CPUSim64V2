@@ -1,0 +1,1 @@
+errors/resolve_dup_variant.rs:3: error: the name `A` is defined multiple times

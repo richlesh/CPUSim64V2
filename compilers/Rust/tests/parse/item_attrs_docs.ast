@@ -1,0 +1,88 @@
+(CRATE
+  @(ATTR doc " crate doc line 1" {inner,doc,eq})
+  @(ATTR doc " crate doc line 2" {inner,doc,eq})
+  @(ATTR allow {inner,delim_paren} toks:1 unused)
+  @(ATTR feature {inner,delim_paren} toks:3 a , b)
+  @(ATTR doc {inner,eq}
+    a=(E_LIT_STR "inner eq"))
+  (ITEM_STRUCT S {named}
+    @(ATTR doc " outer doc" {doc,eq})
+    @(ATTR derive {delim_paren} toks:3 Debug , Clone)
+    @(ATTR repr {delim_paren} toks:1 C)
+    (FIELD x
+      a=(T_PATH
+        a=(PATH
+          (PATH_SEG i32)))))
+  (ITEM_FN f
+    @(ATTR doc " block doc " {doc,eq})
+    @(ATTR inline {delim_paren} toks:1 always)
+    c=(BLOCK))
+  (ITEM_MOD tests {inline}
+    @(ATTR cfg {delim_paren} toks:1 test))
+  (ITEM_MOD m
+    @(ATTR doc {eq}
+      a=(E_LIT_STR "string"))
+    @(ATTR path {eq}
+      a=(E_LIT_STR "other.rs")))
+  (ITEM_FN g
+    @(ATTR rustfmt::skip)
+    @(ATTR clippy::cognitive_complexity {eq}
+      a=(E_LIT_STR "10"))
+    c=(BLOCK))
+  (ITEM_ENUM E
+    @(ATTR cfg_attr {delim_paren} toks:8 feature = "x" , derive ( Debug ))
+    @(ATTR allow {delim_paren} toks:5 clippy :: all , unused_variables)
+    @(ATTR a {delim_paren} toks:14 b ( c , d ) , [ e ] , { f })
+    @(ATTR a {delim_bracket} toks:1 b)
+    @(ATTR a {delim_brace} toks:1 b)
+    @(ATTR empty {delim_paren})
+    (VARIANT A
+      @(ATTR doc " variant doc" {doc,eq})
+      @(ATTR default))
+    (VARIANT B {tuple}
+      @(ATTR allow {delim_paren} toks:1 x)
+      @(ATTR doc " after attr" {doc,eq})
+      (FIELD
+        @(ATTR serde {delim_paren} toks:1 skip)
+        a=(T_PATH
+          a=(PATH
+            (PATH_SEG i32))))))
+  (ITEM_FN documented
+    vis=(VIS)
+    @(ATTR doc " first" {doc,eq})
+    @(ATTR doc " second" {doc,eq})
+    c=(BLOCK))
+  (ITEM_FN attr_vis {const}
+    vis=(VIS {vis_crate})
+    @(ATTR must_use)
+    b=(T_PATH
+      a=(PATH
+        (PATH_SEG i32)))
+    c=(BLOCK
+      a=(E_LIT_INT "1" #1)))
+  (ITEM_EXTERN_CRATE foo
+    @(ATTR macro_use))
+  (ITEM_STRUCT Two
+    @(ATTR derive {delim_paren} toks:1 Clone)
+    @(ATTR derive {delim_paren} toks:1 Copy))
+  (ITEM_FN genr
+    a=(GENERICS
+      (GEN_TYPE T
+        @(ATTR may_dangle))
+      (GEN_LIFETIME 'a
+        @(ATTR a)))
+    c=(BLOCK))
+  (ITEM_FN params
+    c=(BLOCK)
+    (PARAM
+      @(ATTR allow {delim_paren} toks:1 unused)
+      a=(P_IDENT x)
+      b=(T_PATH
+        a=(PATH
+          (PATH_SEG i32))))
+    (PARAM
+      @(ATTR b)
+      a=(P_IDENT y)
+      b=(T_PATH
+        a=(PATH
+          (PATH_SEG i32))))))

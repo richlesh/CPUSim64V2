@@ -1,0 +1,1 @@
+errors/resolve_self_ty.rs:1: error: cannot find type `Self` in this scope

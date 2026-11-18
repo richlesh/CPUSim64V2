@@ -1,0 +1,344 @@
+(CRATE
+  (ITEM_MOD m {inline}
+    (ITEM_ENUM E
+      vis=(VIS)
+      (VARIANT A)
+      (VARIANT B {tuple}
+        (FIELD
+          a=(T_PATH
+            a=(PATH
+              (PATH_SEG i32)))))
+      (VARIANT C {named}
+        (FIELD v
+          a=(T_PATH
+            a=(PATH
+              (PATH_SEG i32)))))))
+  (ITEM_USE
+    a=(USE_TREE
+      a=(PATH
+        (PATH_SEG m)
+        (PATH_SEG E))))
+  (ITEM_FN leading_bar
+    b=(T_PATH
+      a=(PATH
+        (PATH_SEG i32)))
+    c=(BLOCK
+      a=(E_MATCH
+        a=(E_PATH
+          a=(PATH
+            (PATH_SEG e)))
+        (ARM
+          a=(P_OR
+            (P_PATH
+              a=(PATH
+                (PATH_SEG E)
+                (PATH_SEG A)))
+            (P_TUPLE_STRUCT
+              a=(PATH
+                (PATH_SEG E)
+                (PATH_SEG B))
+              (P_WILD)))
+          c=(E_LIT_INT "0" #0))
+        (ARM
+          a=(P_STRUCT
+            a=(PATH
+              (PATH_SEG E)
+              (PATH_SEG C))
+            (P_FIELD v
+              a=(P_OR
+                (P_LIT
+                  a=(E_LIT_INT "1" #1))
+                (P_LIT
+                  a=(E_LIT_INT "2" #2)))))
+          c=(E_LIT_INT "1" #1))
+        (ARM
+          a=(P_STRUCT {rest}
+            a=(PATH
+              (PATH_SEG E)
+              (PATH_SEG C)))
+          c=(E_LIT_INT "2" #2))))
+    (PARAM
+      a=(P_IDENT e)
+      b=(T_PATH
+        a=(PATH
+          (PATH_SEG E)))))
+  (ITEM_FN nested
+    b=(T_PATH
+      a=(PATH
+        (PATH_SEG i32)))
+    c=(BLOCK
+      a=(E_MATCH
+        a=(E_PATH
+          a=(PATH
+            (PATH_SEG x)))
+        (ARM
+          a=(P_OR
+            (P_TUPLE_STRUCT
+              a=(PATH
+                (PATH_SEG Some))
+              (P_TUPLE
+                (P_LIT
+                  a=(E_LIT_INT "0" #0))
+                (P_TUPLE_STRUCT
+                  a=(PATH
+                    (PATH_SEG Ok))
+                  (P_IDENT n))))
+            (P_TUPLE_STRUCT
+              a=(PATH
+                (PATH_SEG Some))
+              (P_TUPLE
+                (P_LIT
+                  a=(E_LIT_INT "1" #1))
+                (P_TUPLE_STRUCT
+                  a=(PATH
+                    (PATH_SEG Err))
+                  (P_IDENT n)))))
+          c=(E_PATH
+            a=(PATH
+              (PATH_SEG n))))
+        (ARM
+          a=(P_TUPLE_STRUCT
+            a=(PATH
+              (PATH_SEG Some))
+            (P_TUPLE
+              (P_IDENT a)
+              (P_OR
+                (P_TUPLE_STRUCT
+                  a=(PATH
+                    (PATH_SEG Ok))
+                  (P_WILD))
+                (P_TUPLE_STRUCT
+                  a=(PATH
+                    (PATH_SEG Err))
+                  (P_WILD)))))
+          c=(E_PATH
+            a=(PATH
+              (PATH_SEG a))))
+        (ARM
+          a=(P_IDENT None)
+          c=(E_UNARY op:-
+            a=(E_LIT_INT "1" #1)))))
+    (PARAM
+      a=(P_IDENT x)
+      b=(T_PATH
+        a=(PATH
+          (PATH_SEG Option {angle}
+            (T_TUPLE
+              (T_PATH
+                a=(PATH
+                  (PATH_SEG i32)))
+              (T_PATH
+                a=(PATH
+                  (PATH_SEG Result {angle}
+                    (T_PATH
+                      a=(PATH
+                        (PATH_SEG i32)))
+                    (T_PATH
+                      a=(PATH
+                        (PATH_SEG i32))))))))))))
+  (ITEM_FN refs
+    b=(T_PATH
+      a=(PATH
+        (PATH_SEG i32)))
+    c=(BLOCK
+      (STMT_LET
+        a=(P_IDENT s {mut})
+        c=(E_LIT_INT "0" #0))
+      (STMT_EXPR
+        a=(E_FOR
+          a=(P_REF
+            a=(P_TUPLE
+              (P_IDENT a)
+              (P_IDENT b)))
+          b=(E_METHOD_CALL iter
+            a=(E_PATH
+              a=(PATH
+                (PATH_SEG v))))
+          c=(BLOCK
+            (STMT_EXPR {semi}
+              a=(E_ASSIGN_OP op:+
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG s)))
+                b=(E_BINARY op:+
+                  a=(E_PATH
+                    a=(PATH
+                      (PATH_SEG a)))
+                  b=(E_PATH
+                    a=(PATH
+                      (PATH_SEG b)))))))))
+      (STMT_EXPR
+        a=(E_FOR
+          a=(P_REF
+            a=(P_REF
+              a=(P_TUPLE
+                (P_IDENT a)
+                (P_WILD))))
+          b=(E_METHOD_CALL iter
+            a=(E_ARRAY
+              (E_REF
+                a=(E_TUPLE
+                  (E_LIT_INT "1" #1)
+                  (E_LIT_INT "2" #2)))))
+          c=(BLOCK
+            (STMT_EXPR {semi}
+              a=(E_ASSIGN_OP op:+
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG s)))
+                b=(E_PATH
+                  a=(PATH
+                    (PATH_SEG a))))))))
+      a=(E_PATH
+        a=(PATH
+          (PATH_SEG s))))
+    (PARAM
+      a=(P_IDENT v)
+      b=(T_REF
+        a=(T_PATH
+          a=(PATH
+            (PATH_SEG Vec {angle}
+              (T_TUPLE
+                (T_PATH
+                  a=(PATH
+                    (PATH_SEG i32)))
+                (T_PATH
+                  a=(PATH
+                    (PATH_SEG i32))))))))))
+  (ITEM_FN qualified_and_global
+    c=(BLOCK
+      (STMT_LET
+        a=(P_IDENT x)
+        c=(E_LIT_INT "5" #5))
+      a=(E_MATCH
+        a=(E_PATH
+          a=(PATH
+            (PATH_SEG x)))
+        (ARM
+          a=(P_PATH
+            a=(PATH {global}
+              (PATH_SEG std)
+              (PATH_SEG i32)
+              (PATH_SEG MAX)))
+          c=(BLOCK))
+        (ARM
+          a=(P_RANGE {inclusive}
+            a=(P_PATH
+              a=(PATH
+                (PATH_SEG std)
+                (PATH_SEG i32)
+                (PATH_SEG MIN)))
+            b=(P_LIT
+              a=(E_LIT_INT "0" #0)))
+          c=(BLOCK))
+        (ARM
+          a=(P_WILD)
+          c=(BLOCK)))))
+  (ITEM_FN negatives
+    c=(BLOCK
+      (STMT_EXPR
+        a=(E_MATCH
+          a=(E_PATH
+            a=(PATH
+              (PATH_SEG x)))
+          (ARM
+            a=(P_LIT {neg}
+              a=(E_LIT_INT "1" #1))
+            c=(BLOCK))
+          (ARM
+            a=(P_RANGE {inclusive}
+              a=(P_LIT {neg}
+                a=(E_LIT_INT "10" #10))
+              b=(P_LIT {neg}
+                a=(E_LIT_INT "2" #2)))
+            c=(BLOCK))
+          (ARM
+            a=(P_RANGE {inclusive}
+              a=(P_PATH
+                a=(PATH
+                  (PATH_SEG i64)
+                  (PATH_SEG MIN)))
+              b=(P_LIT {neg}
+                a=(E_LIT_INT "11" #11)))
+            c=(BLOCK))
+          (ARM
+            a=(P_WILD)
+            c=(BLOCK))))
+      a=(E_MATCH
+        a=(E_PATH
+          a=(PATH
+            (PATH_SEG f)))
+        (ARM
+          a=(P_LIT {neg}
+            a=(E_LIT_FLOAT "1.5"))
+          c=(BLOCK))
+        (ARM
+          a=(P_WILD)
+          c=(BLOCK))))
+    (PARAM
+      a=(P_IDENT x)
+      b=(T_PATH
+        a=(PATH
+          (PATH_SEG i64))))
+    (PARAM
+      a=(P_IDENT f)
+      b=(T_PATH
+        a=(PATH
+          (PATH_SEG f64)))))
+  (ITEM_FN strings
+    c=(BLOCK
+      (STMT_EXPR
+        a=(E_MATCH
+          a=(E_PATH
+            a=(PATH
+              (PATH_SEG s)))
+          (ARM
+            a=(P_OR
+              (P_LIT
+                a=(E_LIT_STR "yes"))
+              (P_LIT
+                a=(E_LIT_STR "y")))
+            c=(BLOCK))
+          (ARM
+            a=(P_LIT
+              a=(E_LIT_STR ""))
+            c=(BLOCK))
+          (ARM
+            a=(P_WILD)
+            c=(BLOCK))))
+      (STMT_EXPR
+        a=(E_MATCH
+          a=(E_PATH
+            a=(PATH
+              (PATH_SEG b)))
+          (ARM
+            a=(P_LIT
+              a=(E_LIT_BOOL #1))
+            c=(BLOCK))
+          (ARM
+            a=(P_LIT
+              a=(E_LIT_BOOL #0))
+            c=(BLOCK))))
+      a=(E_MATCH
+        a=(E_LIT_BYTE #97)
+        (ARM
+          a=(P_RANGE {inclusive}
+            a=(P_LIT
+              a=(E_LIT_BYTE #97))
+            b=(P_LIT
+              a=(E_LIT_BYTE #122)))
+          c=(BLOCK))
+        (ARM
+          a=(P_WILD)
+          c=(BLOCK))))
+    (PARAM
+      a=(P_IDENT s)
+      b=(T_REF
+        a=(T_PATH
+          a=(PATH
+            (PATH_SEG str)))))
+    (PARAM
+      a=(P_IDENT b)
+      b=(T_PATH
+        a=(PATH
+          (PATH_SEG bool))))))

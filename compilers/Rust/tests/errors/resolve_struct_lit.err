@@ -1,0 +1,1 @@
+errors/resolve_struct_lit.rs:2: error: cannot find struct, variant or union type `Missing` in this scope

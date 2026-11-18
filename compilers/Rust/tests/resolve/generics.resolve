@@ -1,0 +1,443 @@
+(CRATE ->crate
+  (ITEM_USE
+    a=(USE_TREE
+      a=(PATH
+        (PATH_SEG std)
+        (PATH_SEG ops)
+        (PATH_SEG Add))))
+  (ITEM_TRAIT Shape ->Shape
+    (ITEM_CONST SIDES ->Shape::SIDES
+      a=(T_PATH ->i32
+        a=(PATH ->i32
+          (PATH_SEG i32 ->i32))))
+    (ITEM_TYPE Unit ->Shape::Unit)
+    (ITEM_FN area ->Shape::area
+      b=(T_PATH ->Self
+        a=(PATH ->Self
+          (PATH_SEG Self ->Self)
+          (PATH_SEG Unit)))
+      (SELF_PARAM {ref} ->self))
+    (ITEM_FN name ->Shape::name
+      b=(T_PATH ->i32
+        a=(PATH ->i32
+          (PATH_SEG i32 ->i32)))
+      c=(BLOCK
+        a=(E_PATH ->Self
+          a=(PATH ->Self
+            (PATH_SEG Self ->Self)
+            (PATH_SEG SIDES))))))
+  (ITEM_STRUCT Sq {tuple} ->Sq
+    a=(GENERICS
+      (GEN_TYPE T ->T))
+    (FIELD ->Sq::0
+      a=(T_PATH ->T
+        a=(PATH ->T
+          (PATH_SEG T ->T)))))
+  (ITEM_STRUCT Arr {named} ->Arr
+    a=(GENERICS
+      (GEN_CONST N ->N
+        a=(T_PATH ->usize
+          a=(PATH ->usize
+            (PATH_SEG usize ->usize)))))
+    (FIELD d ->Arr::d
+      a=(T_ARRAY
+        a=(T_PATH ->i32
+          a=(PATH ->i32
+            (PATH_SEG i32 ->i32)))
+        b=(E_PATH ->N
+          a=(PATH ->N
+            (PATH_SEG N ->N))))))
+  (ITEM_IMPL ->Arr
+    a=(GENERICS
+      (GEN_CONST N ->N
+        a=(T_PATH ->usize
+          a=(PATH ->usize
+            (PATH_SEG usize ->usize)))))
+    b=(T_PATH ->Arr
+      a=(PATH ->Arr
+        (PATH_SEG Arr {angle} ->Arr
+          (T_PATH ->N
+            a=(PATH ->N
+              (PATH_SEG N ->N))))))
+    (ITEM_FN len ->Arr::len
+      b=(T_PATH ->usize
+        a=(PATH ->usize
+          (PATH_SEG usize ->usize)))
+      c=(BLOCK
+        a=(E_PATH ->N
+          a=(PATH ->N
+            (PATH_SEG N ->N))))
+      (SELF_PARAM {ref} ->self))
+    (ITEM_FN new ->Arr::new
+      b=(T_PATH ->Self
+        a=(PATH ->Self
+          (PATH_SEG Self ->Self)))
+      c=(BLOCK
+        a=(E_STRUCT ->Arr
+          a=(PATH ->Arr
+            (PATH_SEG Arr ->Arr))
+          (FIELD_INIT d
+            a=(E_REPEAT
+              a=(E_LIT_INT "0" #0)
+              b=(E_PATH ->N
+                a=(PATH ->N
+                  (PATH_SEG N ->N)))))))))
+  (ITEM_IMPL ->Sq
+    a=(GENERICS
+      (GEN_TYPE T ->T
+        b=(BOUNDS
+          (BOUND_TRAIT ->core::ops::Add
+            a=(PATH ->core::ops::Add
+              (PATH_SEG Add {angle} ->core::ops::Add
+                (ASSOC_BIND Output
+                  a=(T_PATH ->T
+                    a=(PATH ->T
+                      (PATH_SEG T ->T)))))))
+          (BOUND_TRAIT ->core::marker::Copy
+            a=(PATH ->core::marker::Copy
+              (PATH_SEG Copy ->core::marker::Copy))))))
+    b=(T_PATH ->Sq
+      a=(PATH ->Sq
+        (PATH_SEG Sq {angle} ->Sq
+          (T_PATH ->T
+            a=(PATH ->T
+              (PATH_SEG T ->T))))))
+    c=(PATH ->Shape
+      (PATH_SEG Shape ->Shape))
+    d=(WHERE
+      (WHERE_TYPE
+        a=(T_PATH ->T
+          a=(PATH ->T
+            (PATH_SEG T ->T)))
+        b=(BOUNDS
+          (BOUND_TRAIT ->core::marker::Sized
+            a=(PATH ->core::marker::Sized
+              (PATH_SEG Sized ->core::marker::Sized))))))
+    (ITEM_CONST SIDES ->Sq::SIDES
+      a=(T_PATH ->i32
+        a=(PATH ->i32
+          (PATH_SEG i32 ->i32)))
+      b=(E_LIT_INT "4" #4))
+    (ITEM_TYPE Unit ->Sq::Unit
+      b=(T_PATH ->T
+        a=(PATH ->T
+          (PATH_SEG T ->T))))
+    (ITEM_FN area ->Sq::area
+      b=(T_PATH ->T
+        a=(PATH ->T
+          (PATH_SEG T ->T)))
+      c=(BLOCK
+        a=(E_BINARY op:+
+          a=(E_TUPLE_FIELD #0
+            a=(E_PATH ->self
+              a=(PATH ->self
+                (PATH_SEG self ->self))))
+          b=(E_TUPLE_FIELD #0
+            a=(E_PATH ->self
+              a=(PATH ->self
+                (PATH_SEG self ->self))))))
+      (SELF_PARAM {ref} ->self)))
+  (ITEM_TRAIT Named ->Named
+    c=(BOUNDS
+      (BOUND_TRAIT ->core::marker::Sized
+        a=(PATH ->core::marker::Sized
+          (PATH_SEG Sized ->core::marker::Sized))))
+    (ITEM_FN make ->Named::make
+      b=(T_PATH ->Self
+        a=(PATH ->Self
+          (PATH_SEG Self ->Self))))
+    (ITEM_FN dup ->Named::dup
+      b=(T_TUPLE
+        (T_PATH ->Self
+          a=(PATH ->Self
+            (PATH_SEG Self ->Self)))
+        (T_PATH ->Self
+          a=(PATH ->Self
+            (PATH_SEG Self ->Self))))
+      c=(BLOCK
+        a=(E_TUPLE
+          (E_PATH ->self
+            a=(PATH ->self
+              (PATH_SEG self ->self)))
+          (E_PATH ->self
+            a=(PATH ->self
+              (PATH_SEG self ->self)))))
+      d=(WHERE
+        (WHERE_TYPE
+          a=(T_PATH ->Self
+            a=(PATH ->Self
+              (PATH_SEG Self ->Self)))
+          b=(BOUNDS
+            (BOUND_TRAIT ->core::marker::Copy
+              a=(PATH ->core::marker::Copy
+                (PATH_SEG Copy ->core::marker::Copy))))))
+      (SELF_PARAM ->self)))
+  (ITEM_FN apply ->apply
+    a=(GENERICS
+      (GEN_TYPE F ->F
+        b=(BOUNDS
+          (BOUND_TRAIT ->core::ops::Fn
+            a=(PATH ->core::ops::Fn
+              (PATH_SEG Fn {parens} ->core::ops::Fn
+                a=(T_PATH ->i32
+                  a=(PATH ->i32
+                    (PATH_SEG i32 ->i32)))
+                (T_PATH ->i32
+                  a=(PATH ->i32
+                    (PATH_SEG i32 ->i32))))))))
+      (GEN_TYPE G ->G))
+    b=(T_PATH ->i32
+      a=(PATH ->i32
+        (PATH_SEG i32 ->i32)))
+    c=(BLOCK
+      a=(E_CALL
+        a=(E_PATH ->g
+          a=(PATH ->g
+            (PATH_SEG g ->g)))
+        (E_CALL
+          a=(E_PATH ->f
+            a=(PATH ->f
+              (PATH_SEG f ->f)))
+          (E_LIT_INT "1" #1))))
+    d=(WHERE
+      (WHERE_TYPE
+        a=(T_PATH ->G
+          a=(PATH ->G
+            (PATH_SEG G ->G)))
+        b=(BOUNDS
+          (BOUND_TRAIT ->core::ops::Fn
+            a=(PATH ->core::ops::Fn
+              (PATH_SEG Fn {parens} ->core::ops::Fn
+                a=(T_PATH ->i32
+                  a=(PATH ->i32
+                    (PATH_SEG i32 ->i32)))
+                (T_PATH ->i32
+                  a=(PATH ->i32
+                    (PATH_SEG i32 ->i32)))))))))
+    (PARAM
+      a=(P_IDENT f ->f)
+      b=(T_PATH ->F
+        a=(PATH ->F
+          (PATH_SEG F ->F))))
+    (PARAM
+      a=(P_IDENT g ->g)
+      b=(T_PATH ->G
+        a=(PATH ->G
+          (PATH_SEG G ->G)))))
+  (ITEM_FN dynamic ->dynamic
+    c=(BLOCK)
+    (PARAM
+      a=(P_IDENT x ->x)
+      b=(T_REF
+        a=(T_DYN {dyn}
+          a=(BOUNDS
+            (BOUND_TRAIT ->Shape
+              a=(PATH ->Shape
+                (PATH_SEG Shape {angle} ->Shape
+                  (ASSOC_BIND Unit
+                    a=(T_PATH ->i32
+                      a=(PATH ->i32
+                        (PATH_SEG i32 ->i32)))))))))))
+    (PARAM
+      a=(P_IDENT y ->y)
+      b=(T_IMPL
+        a=(BOUNDS
+          (BOUND_TRAIT ->core::ops::Add
+            a=(PATH ->core::ops::Add
+              (PATH_SEG Add {angle} ->core::ops::Add
+                (T_PATH ->i32
+                  a=(PATH ->i32
+                    (PATH_SEG i32 ->i32)))))))))
+    (PARAM
+      a=(P_IDENT z ->z)
+      b=(T_FN
+        b=(T_PATH ->i32
+          a=(PATH ->i32
+            (PATH_SEG i32 ->i32)))
+        (PARAM
+          b=(T_PATH ->i32
+            a=(PATH ->i32
+              (PATH_SEG i32 ->i32))))))
+    (PARAM
+      a=(P_IDENT w ->w)
+      b=(T_PTR
+        a=(T_PATH ->i32
+          a=(PATH ->i32
+            (PATH_SEG i32 ->i32)))))
+    (PARAM
+      a=(P_IDENT v ->v)
+      b=(T_ARRAY
+        a=(T_PATH ->u8
+          a=(PATH ->u8
+            (PATH_SEG u8 ->u8)))
+        b=(E_LIT_INT "4" #4)))
+    (PARAM
+      a=(P_IDENT s ->s)
+      b=(T_REF
+        a=(T_SLICE
+          a=(T_PATH ->u8
+            a=(PATH ->u8
+              (PATH_SEG u8 ->u8)))))))
+  (ITEM_FN qualified ->qualified
+    a=(GENERICS
+      (GEN_TYPE T ->T
+        b=(BOUNDS
+          (BOUND_TRAIT ->Shape
+            a=(PATH ->Shape
+              (PATH_SEG Shape ->Shape))))))
+    b=(T_PATH ->Shape
+      a=(PATH {qualified} ->Shape
+        a=(T_PATH ->T
+          a=(PATH ->T
+            (PATH_SEG T ->T)))
+        b=(PATH ->Shape
+          (PATH_SEG Shape ->Shape))
+        (PATH_SEG Unit)))
+    c=(BLOCK
+      a=(E_METHOD_CALL area
+        a=(E_PATH ->t
+          a=(PATH ->t
+            (PATH_SEG t ->t)))))
+    (PARAM
+      a=(P_IDENT t ->t)
+      b=(T_REF
+        a=(T_PATH ->T
+          a=(PATH ->T
+            (PATH_SEG T ->T))))))
+  (ITEM_FN assoc ->assoc
+    a=(GENERICS
+      (GEN_TYPE T ->T
+        b=(BOUNDS
+          (BOUND_TRAIT ->Shape
+            a=(PATH ->Shape
+              (PATH_SEG Shape ->Shape))))))
+    b=(T_PATH ->i32
+      a=(PATH ->i32
+        (PATH_SEG i32 ->i32)))
+    c=(BLOCK
+      a=(E_BINARY op:+
+        a=(E_BINARY op:+
+          a=(E_PATH ->T
+            a=(PATH ->T
+              (PATH_SEG T ->T)
+              (PATH_SEG SIDES)))
+          b=(E_PATH ->Shape
+            a=(PATH {qualified} ->Shape
+              a=(T_PATH ->T
+                a=(PATH ->T
+                  (PATH_SEG T ->T)))
+              b=(PATH ->Shape
+                (PATH_SEG Shape ->Shape))
+              (PATH_SEG SIDES))))
+        b=(E_CALL
+          a=(E_PATH ->T
+            a=(PATH ->T
+              (PATH_SEG T ->T)
+              (PATH_SEG name)))))))
+  (ITEM_FN selfy ->selfy
+    b=(T_PATH ->Sq
+      a=(PATH ->Sq
+        (PATH_SEG Sq {angle} ->Sq
+          (T_PATH ->i32
+            a=(PATH ->i32
+              (PATH_SEG i32 ->i32))))))
+    c=(BLOCK
+      (STMT_LET
+        a=(P_IDENT s ->s)
+        c=(E_CALL
+          a=(E_PATH ->Sq
+            a=(PATH ->Sq
+              (PATH_SEG Sq {turbofish,angle} ->Sq
+                (T_PATH ->i32
+                  a=(PATH ->i32
+                    (PATH_SEG i32 ->i32))))))
+          (E_LIT_INT "3" #3)))
+      a=(E_CALL
+        a=(E_PATH ->Sq
+          a=(PATH ->Sq
+            (PATH_SEG Sq ->Sq)))
+        (E_LIT_INT "4" #4))))
+  (ITEM_STRUCT Holder {named} ->Holder
+    a=(GENERICS
+      (GEN_TYPE T ->T
+        a=(T_PATH ->i32
+          a=(PATH ->i32
+            (PATH_SEG i32 ->i32)))))
+    (FIELD t ->Holder::t
+      a=(T_PATH ->T
+        a=(PATH ->T
+          (PATH_SEG T ->T)))))
+  (ITEM_FN main ->main
+    c=(BLOCK
+      (STMT_LET
+        a=(P_IDENT a ->a)
+        c=(E_CALL
+          a=(E_PATH ->Arr
+            a=(PATH ->Arr
+              (PATH_SEG Arr {turbofish,angle} ->Arr
+                (E_LIT_INT "3" #3))
+              (PATH_SEG new)))))
+      (STMT_LET
+        a=(P_IDENT n ->n)
+        c=(E_METHOD_CALL len
+          a=(E_PATH ->a
+            a=(PATH ->a
+              (PATH_SEG a ->a)))))
+      (STMT_LET
+        a=(P_IDENT k ->k)
+        c=(E_CALL
+          a=(E_PATH ->assoc
+            a=(PATH ->assoc
+              (PATH_SEG assoc {turbofish,angle} ->assoc
+                (T_PATH ->Sq
+                  a=(PATH ->Sq
+                    (PATH_SEG Sq {angle} ->Sq
+                      (T_PATH ->i32
+                        a=(PATH ->i32
+                          (PATH_SEG i32 ->i32)))))))))))
+      (STMT_LET
+        a=(P_IDENT f ->f)
+        c=(E_CALL
+          a=(E_PATH ->apply
+            a=(PATH ->apply
+              (PATH_SEG apply ->apply)))
+          (E_CLOSURE
+            (PARAM
+              a=(P_IDENT x ->x))
+            b=(E_BINARY op:+
+              a=(E_PATH ->x
+                a=(PATH ->x
+                  (PATH_SEG x ->x)))
+              b=(E_LIT_INT "1" #1)))
+          (E_CLOSURE
+            (PARAM
+              a=(P_IDENT y ->y))
+            b=(E_BINARY op:*
+              a=(E_PATH ->y
+                a=(PATH ->y
+                  (PATH_SEG y ->y)))
+              b=(E_LIT_INT "2" #2)))))
+      (STMT_LET
+        a=(P_IDENT m ->m)
+        c=(E_PATH ->Shape
+          a=(PATH {qualified} ->Shape
+            a=(T_PATH ->Sq
+              a=(PATH ->Sq
+                (PATH_SEG Sq {angle} ->Sq
+                  (T_PATH ->i32
+                    a=(PATH ->i32
+                      (PATH_SEG i32 ->i32))))))
+            b=(PATH ->Shape
+              (PATH_SEG Shape ->Shape))
+            (PATH_SEG SIDES))))
+      (STMT_LET
+        a=(P_IDENT sz ->sz)
+        c=(E_CALL
+          a=(E_PATH ->core::mem::size_of
+            a=(PATH ->core::mem::size_of
+              (PATH_SEG std ->core)
+              (PATH_SEG mem ->core::mem)
+              (PATH_SEG size_of {turbofish,angle} ->core::mem::size_of
+                (T_PATH ->u64
+                  a=(PATH ->u64
+                    (PATH_SEG u64 ->u64)))))))))))

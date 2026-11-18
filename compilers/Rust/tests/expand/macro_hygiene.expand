@@ -1,0 +1,215 @@
+(CRATE
+  (ITEM_MACRO_RULES add_one_to {delim_brace}
+    (MACRO_RULE
+      a=(MACRO_TT {delim_paren} toks:4 $ v : expr)
+      b=(MACRO_TT {delim_brace} toks:11 { let x = 1 ; $ v + x })))
+  (ITEM_MACRO_RULES swap_sum {delim_brace}
+    (MACRO_RULE
+      a=(MACRO_TT {delim_paren} toks:9 $ a : expr , $ b : expr)
+      b=(MACRO_TT {delim_brace} toks:25 { let tmp = $ a ; let ( p , q ) = ( tmp , $ b ) ; p + q })))
+  (ITEM_MACRO_RULES each {delim_brace}
+    (MACRO_RULE
+      a=(MACRO_TT {delim_paren} toks:9 $ v : expr , $ f : expr)
+      b=(MACRO_TT {delim_brace} toks:24 { let mut total = 0 ; for item in $ v { total += $ f ( item ) ; } total })))
+  (ITEM_MACRO_RULES with_closure {delim_brace}
+    (MACRO_RULE
+      a=(MACRO_TT {delim_paren} toks:4 $ n : expr)
+      b=(MACRO_TT {delim_brace} toks:24 { let base = $ n ; let add = | k : i32 | k + base ; add ( 1 ) })))
+  (ITEM_MACRO_RULES declare {delim_brace}
+    (MACRO_RULE
+      a=(MACRO_TT {delim_paren} toks:4 $ name : ident)
+      b=(MACRO_TT {delim_brace} toks:6 let $ name = 7 ;)))
+  (ITEM_MACRO_RULES max_of {delim_brace}
+    (MACRO_RULE
+      a=(MACRO_TT {delim_paren} toks:4 $ a : expr)
+      b=(MACRO_TT {delim_brace} toks:2 $ a))
+    (MACRO_RULE
+      a=(MACRO_TT {delim_paren} toks:14 $ a : expr , $ ( $ rest : expr ) , +)
+      b=(MACRO_TT {delim_brace} toks:30 { let r = max_of ! ( $ ( $ rest ) , + ) ; if $ a > r { $ a } else { r } })))
+  (ITEM_MACRO_RULES named {delim_brace}
+    (MACRO_RULE
+      a=(MACRO_TT {delim_paren} toks:0 )
+      b=(MACRO_TT {delim_brace} toks:16 { let value = 3 ; ( stringify ! ( value ) , value ) })))
+  (ITEM_FN main
+    c=(BLOCK
+      (STMT_LET
+        a=(P_IDENT x)
+        c=(E_LIT_INT "10" #10))
+      (STMT_LET
+        a=(P_IDENT a)
+        c=(BLOCK
+          (STMT_LET
+            a=(P_IDENT x__h54)
+            c=(E_LIT_INT "1" #1))
+          a=(E_BINARY op:+
+            a=(E_PATH
+              a=(PATH
+                (PATH_SEG x)))
+            b=(E_PATH
+              a=(PATH
+                (PATH_SEG x__h54))))))
+      (STMT_LET
+        a=(P_IDENT tmp)
+        c=(E_LIT_INT "5" #5))
+      (STMT_LET
+        a=(P_IDENT b)
+        c=(BLOCK
+          (STMT_LET
+            a=(P_IDENT tmp__h55)
+            c=(E_PATH
+              a=(PATH
+                (PATH_SEG tmp))))
+          (STMT_LET
+            a=(P_TUPLE
+              (P_IDENT p__h55)
+              (P_IDENT q__h55))
+            c=(E_TUPLE
+              (E_PATH
+                a=(PATH
+                  (PATH_SEG tmp__h55)))
+              (E_PAREN
+                a=(E_BINARY op:*
+                  a=(E_PATH
+                    a=(PATH
+                      (PATH_SEG tmp)))
+                  b=(E_LIT_INT "2" #2)))))
+          a=(E_BINARY op:+
+            a=(E_PATH
+              a=(PATH
+                (PATH_SEG p__h55)))
+            b=(E_PATH
+              a=(PATH
+                (PATH_SEG q__h55))))))
+      (STMT_LET
+        a=(P_IDENT item)
+        c=(E_LIT_INT "2" #2))
+      (STMT_LET
+        a=(P_IDENT total)
+        c=(BLOCK
+          (STMT_LET
+            a=(P_IDENT total__h56 {mut})
+            c=(E_LIT_INT "0" #0))
+          (STMT_EXPR
+            a=(E_FOR
+              a=(P_IDENT item__h56)
+              b=(E_PAREN
+                a=(E_CALL
+                  a=(E_PATH
+                    a=(PATH {global}
+                      (PATH_SEG core)
+                      (PATH_SEG vec)
+                      (PATH_SEG Vec)
+                      (PATH_SEG from_array)))
+                  (E_ARRAY
+                    (E_LIT_INT "1" #1)
+                    (E_LIT_INT "2" #2)
+                    (E_LIT_INT "3" #3))))
+              c=(BLOCK
+                (STMT_EXPR {semi}
+                  a=(E_ASSIGN_OP op:+
+                    a=(E_PATH
+                      a=(PATH
+                        (PATH_SEG total__h56)))
+                    b=(E_CALL
+                      a=(E_PAREN
+                        a=(E_CLOSURE
+                          (PARAM
+                            a=(P_IDENT n))
+                          b=(E_BINARY op:*
+                            a=(E_PATH
+                              a=(PATH
+                                (PATH_SEG n)))
+                            b=(E_PATH
+                              a=(PATH
+                                (PATH_SEG item))))))
+                      (E_PATH
+                        a=(PATH
+                          (PATH_SEG item__h56)))))))))
+          a=(E_PATH
+            a=(PATH
+              (PATH_SEG total__h56)))))
+      (STMT_LET
+        a=(P_IDENT base)
+        c=(E_LIT_INT "100" #100))
+      (STMT_LET
+        a=(P_IDENT c)
+        c=(BLOCK
+          (STMT_LET
+            a=(P_IDENT base__h57)
+            c=(E_PATH
+              a=(PATH
+                (PATH_SEG base))))
+          (STMT_LET
+            a=(P_IDENT add__h57)
+            c=(E_CLOSURE
+              (PARAM
+                a=(P_IDENT k__h57)
+                b=(T_PATH
+                  a=(PATH
+                    (PATH_SEG i32))))
+              b=(E_BINARY op:+
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG k__h57)))
+                b=(E_PATH
+                  a=(PATH
+                    (PATH_SEG base__h57))))))
+          a=(E_CALL
+            a=(E_PATH
+              a=(PATH
+                (PATH_SEG add__h57)))
+            (E_LIT_INT "1" #1))))
+      (STMT_LET
+        a=(P_IDENT visible)
+        c=(E_LIT_INT "7" #7))
+      (STMT_LET
+        a=(P_IDENT r)
+        c=(E_LIT_INT "3" #3))
+      (STMT_LET
+        a=(P_IDENT m)
+        c=(BLOCK
+          (STMT_LET
+            a=(P_IDENT r__h59)
+            c=(BLOCK
+              (STMT_LET
+                a=(P_IDENT r__h60)
+                c=(E_LIT_INT "4" #4))
+              a=(E_IF
+                a=(E_BINARY op:>
+                  a=(E_LIT_INT "9" #9)
+                  b=(E_PATH
+                    a=(PATH
+                      (PATH_SEG r__h60))))
+                b=(BLOCK
+                  a=(E_LIT_INT "9" #9))
+                c=(BLOCK
+                  a=(E_PATH
+                    a=(PATH
+                      (PATH_SEG r__h60)))))))
+          a=(E_IF
+            a=(E_BINARY op:>
+              a=(E_PATH
+                a=(PATH
+                  (PATH_SEG r)))
+              b=(E_PATH
+                a=(PATH
+                  (PATH_SEG r__h59))))
+            b=(BLOCK
+              a=(E_PATH
+                a=(PATH
+                  (PATH_SEG r))))
+            c=(BLOCK
+              a=(E_PATH
+                a=(PATH
+                  (PATH_SEG r__h59)))))))
+      (STMT_LET
+        a=(P_IDENT nm)
+        c=(BLOCK
+          (STMT_LET
+            a=(P_IDENT value__h62)
+            c=(E_LIT_INT "3" #3))
+          a=(E_TUPLE
+            (E_LIT_STR "value")
+            (E_PATH
+              a=(PATH
+                (PATH_SEG value__h62)))))))))

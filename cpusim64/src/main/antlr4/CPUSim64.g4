@@ -55,6 +55,8 @@ instruction
   | instrMOVE
   | instrLOAD
   | instrSTORE
+  | instrLDB
+  | instrSTB
   | instrPOP
   | instrPUSH
   | instrJUMP
@@ -129,6 +131,15 @@ instrLOAD
 /* ----- 4 STORE (reg/float/const -> memory) ----- */
 instrSTORE
   : STORE qOperand ',' memRef
+  ;
+
+/* ----- 39 LDB / 40 STB (byte forms of LOAD / STORE; effective address is a byte address) ----- */
+instrLDB
+  : LDB yOperand ',' memRef
+  ;
+
+instrSTB
+  : STB qOperand ',' memRef
   ;
 
 /* ----- 5 POP / 6 PUSH ----- */
@@ -410,6 +421,8 @@ ENDIAN   : [eE][nN][dD][iI][aA][nN] ;
 SAVE     : [sS][aA][vV][eE] ;
 RESTORE  : [rR][eE][sS][tT]([oO][rR][eE])? ;
 READONLY : [rR][eE][aA][dD][oO][nN][lL][yY] ;
+LDB      : [lL][dD][bB] ;
+STB      : [sS][tT][bB] ;
 
 /* Registers */
 REG_R : [rR] [0-9]+ ;			// r0..r28 (range-check later)

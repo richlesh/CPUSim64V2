@@ -1,0 +1,19 @@
+1:1 POUND #
+1:2 NOT !
+1:3 LBRACK [
+1:4 IDENT allow
+1:9 LPAREN (
+1:10 IDENT dead_code
+1:19 RPAREN )
+1:20 RBRACK ]
+2:1 POUND #
+2:2 LBRACK [
+2:3 IDENT derive
+2:9 LPAREN (
+2:10 IDENT Debug
+2:15 RPAREN )
+2:16 RBRACK ]
+3:1 KW struct
+3:8 IDENT S
+3:9 SEMI ;
+4:1 EOF

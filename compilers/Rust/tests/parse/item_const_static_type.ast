@@ -1,0 +1,187 @@
+(CRATE
+  (ITEM_CONST A
+    a=(T_PATH
+      a=(PATH
+        (PATH_SEG i32)))
+    b=(E_LIT_INT "1" #1))
+  (ITEM_CONST _
+    a=(T_TUPLE)
+    b=(E_TUPLE))
+  (ITEM_CONST B
+    a=(T_ARRAY
+      a=(T_PATH
+        a=(PATH
+          (PATH_SEG u8)))
+      b=(E_LIT_INT "3" #3))
+    b=(E_ARRAY
+      (E_LIT_INT "1" #1)
+      (E_LIT_INT "2" #2)
+      (E_LIT_INT "3" #3)))
+  (ITEM_CONST C
+    vis=(VIS)
+    a=(T_REF
+      a=(T_PATH
+        a=(PATH
+          (PATH_SEG str))))
+    b=(E_LIT_STR "x"))
+  (ITEM_CONST D
+    vis=(VIS {vis_crate})
+    a=(T_PATH
+      a=(PATH
+        (PATH_SEG usize)))
+    b=(E_LIT_INT "4" #4))
+  (ITEM_STATIC S
+    a=(T_PATH
+      a=(PATH
+        (PATH_SEG i32)))
+    b=(E_LIT_INT "5" #5))
+  (ITEM_STATIC M {mut}
+    a=(T_PATH
+      a=(PATH
+        (PATH_SEG u32)))
+    b=(E_LIT_INT "0" #0))
+  (ITEM_STATIC P
+    vis=(VIS)
+    a=(T_REF
+      a=(T_PATH
+        a=(PATH
+          (PATH_SEG str))))
+    b=(E_LIT_STR "p"))
+  (ITEM_STATIC ARR
+    a=(T_ARRAY
+      a=(T_PATH
+        a=(PATH
+          (PATH_SEG i32)))
+      b=(E_LIT_INT "2" #2))
+    b=(E_ARRAY
+      (E_LIT_INT "1" #1)
+      (E_LIT_INT "2" #2)))
+  (ITEM_TYPE Alias
+    b=(T_PATH
+      a=(PATH
+        (PATH_SEG i32))))
+  (ITEM_TYPE Gen
+    a=(GENERICS
+      (GEN_TYPE T))
+    b=(T_PATH
+      a=(PATH
+        (PATH_SEG Vec {angle}
+          (T_PATH
+            a=(PATH
+              (PATH_SEG T)))))))
+  (ITEM_TYPE Bounded
+    a=(GENERICS
+      (GEN_TYPE T
+        b=(BOUNDS
+          (BOUND_TRAIT
+            a=(PATH
+              (PATH_SEG Clone))))))
+    b=(T_PATH
+      a=(PATH
+        (PATH_SEG Option {angle}
+          (T_PATH
+            a=(PATH
+              (PATH_SEG T)))))))
+  (ITEM_TYPE Where
+    a=(GENERICS
+      (GEN_TYPE T))
+    b=(T_PATH
+      a=(PATH
+        (PATH_SEG Option {angle}
+          (T_PATH
+            a=(PATH
+              (PATH_SEG T))))))
+    d=(WHERE
+      (WHERE_TYPE
+        a=(T_PATH
+          a=(PATH
+            (PATH_SEG T)))
+        b=(BOUNDS
+          (BOUND_TRAIT
+            a=(PATH
+              (PATH_SEG Copy)))))))
+  (ITEM_TYPE Where2
+    a=(GENERICS
+      (GEN_TYPE T))
+    b=(T_PATH
+      a=(PATH
+        (PATH_SEG Option {angle}
+          (T_PATH
+            a=(PATH
+              (PATH_SEG T))))))
+    d=(WHERE
+      (WHERE_TYPE
+        a=(T_PATH
+          a=(PATH
+            (PATH_SEG T)))
+        b=(BOUNDS
+          (BOUND_TRAIT
+            a=(PATH
+              (PATH_SEG Copy)))))))
+  (ITEM_TYPE Pub
+    vis=(VIS)
+    b=(T_TUPLE
+      (T_PATH
+        a=(PATH
+          (PATH_SEG i32)))
+      (T_PATH
+        a=(PATH
+          (PATH_SEG i32)))))
+  (ITEM_TYPE Fnp
+    b=(T_FN
+      b=(T_PATH
+        a=(PATH
+          (PATH_SEG i32)))
+      (PARAM
+        b=(T_PATH
+          a=(PATH
+            (PATH_SEG i32))))))
+  (ITEM_TYPE Lt
+    a=(GENERICS
+      (GEN_LIFETIME 'a))
+    b=(T_REF
+      a=(T_PATH
+        a=(PATH
+          (PATH_SEG str)))
+      b=(LIFETIME 'a)))
+  (ITEM_TYPE Nested
+    b=(T_PATH
+      a=(PATH
+        (PATH_SEG Vec {angle}
+          (T_PATH
+            a=(PATH
+              (PATH_SEG Vec {angle}
+                (T_PATH
+                  a=(PATH
+                    (PATH_SEG Option {angle}
+                      (T_PATH
+                        a=(PATH
+                          (PATH_SEG i32)))))))))))))
+  (ITEM_FN f
+    c=(BLOCK
+      (ITEM_CONST INNER
+        a=(T_PATH
+          a=(PATH
+            (PATH_SEG i32)))
+        b=(E_LIT_INT "1" #1))
+      (ITEM_STATIC INNER_S
+        a=(T_PATH
+          a=(PATH
+            (PATH_SEG i32)))
+        b=(E_LIT_INT "2" #2))
+      (ITEM_TYPE Local
+        b=(T_PATH
+          a=(PATH
+            (PATH_SEG u8))))
+      (ITEM_STRUCT Local2)
+      (ITEM_FN nested
+        c=(BLOCK))
+      (ITEM_USE
+        a=(USE_TREE
+          a=(PATH
+            (PATH_SEG std)
+            (PATH_SEG fmt))))
+      (STMT_LET
+        a=(P_IDENT x)
+        c=(BLOCK {const}
+          a=(E_LIT_INT "1" #1))))))

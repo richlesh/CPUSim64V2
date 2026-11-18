@@ -1,0 +1,388 @@
+(CRATE ->crate
+  (ITEM_TRAIT Shape ->Shape
+    (ITEM_FN area ->Shape::area
+      b=(T_PATH ->f64
+        a=(PATH ->f64
+          (PATH_SEG f64 ->f64)))
+      (SELF_PARAM {ref} ->self))
+    (ITEM_FN name ->Shape::name
+      b=(T_PATH ->core::string::String
+        a=(PATH ->core::string::String
+          (PATH_SEG String ->core::string::String)))
+      c=(BLOCK
+        a=(E_CALL :String
+          a=(E_PATH ->String::new :fn() -> String {new}
+            a=(PATH ->core::string::String
+              (PATH_SEG String ->core::string::String)
+              (PATH_SEG new)))))
+      (SELF_PARAM {ref} ->self)))
+  (ITEM_TRAIT Container ->Container
+    (ITEM_TYPE Item ->Container::Item)
+    (ITEM_FN first ->Container::first
+      b=(T_PATH ->core::option::Option
+        a=(PATH ->core::option::Option
+          (PATH_SEG Option {angle} ->core::option::Option
+            (T_REF
+              a=(T_PATH ->Container::Item
+                a=(PATH ->Container::Item
+                  (PATH_SEG Self ->Self)
+                  (PATH_SEG Item ->Container::Item)))))))
+      (SELF_PARAM {ref} ->self))
+    (ITEM_FN count ->Container::count
+      b=(T_PATH ->usize
+        a=(PATH ->usize
+          (PATH_SEG usize ->usize)))
+      (SELF_PARAM {ref} ->self)))
+  (ITEM_STRUCT Circle {named} ->Circle
+    (FIELD r ->Circle::r
+      a=(T_PATH ->f64
+        a=(PATH ->f64
+          (PATH_SEG f64 ->f64)))))
+  (ITEM_STRUCT Bag {named} ->Bag
+    (FIELD items ->Bag::items
+      a=(T_PATH ->core::vec::Vec
+        a=(PATH ->core::vec::Vec
+          (PATH_SEG Vec {angle} ->core::vec::Vec
+            (T_PATH ->i32
+              a=(PATH ->i32
+                (PATH_SEG i32 ->i32))))))))
+  (ITEM_IMPL ->Circle
+    b=(T_PATH ->Circle
+      a=(PATH ->Circle
+        (PATH_SEG Circle ->Circle)))
+    c=(PATH ->Shape
+      (PATH_SEG Shape ->Shape))
+    (ITEM_FN area ->Circle::area
+      b=(T_PATH ->f64
+        a=(PATH ->f64
+          (PATH_SEG f64 ->f64)))
+      c=(BLOCK
+        a=(E_BINARY op:* :f64
+          a=(E_BINARY op:* :f64
+            a=(E_LIT_FLOAT "3.0" :f64)
+            b=(E_FIELD r ->Circle::r :f64
+              a=(E_PATH ->self :&Circle
+                a=(PATH ->self
+                  (PATH_SEG self ->self)))))
+          b=(E_FIELD r ->Circle::r :f64
+            a=(E_PATH ->self :&Circle
+              a=(PATH ->self
+                (PATH_SEG self ->self))))))
+      (SELF_PARAM {ref} ->self)))
+  (ITEM_IMPL ->Bag
+    b=(T_PATH ->Bag
+      a=(PATH ->Bag
+        (PATH_SEG Bag ->Bag)))
+    c=(PATH ->Container
+      (PATH_SEG Container ->Container))
+    (ITEM_TYPE Item ->Bag::Item
+      b=(T_PATH ->i32
+        a=(PATH ->i32
+          (PATH_SEG i32 ->i32))))
+    (ITEM_FN first ->Bag::first
+      b=(T_PATH ->core::option::Option
+        a=(PATH ->core::option::Option
+          (PATH_SEG Option {angle} ->core::option::Option
+            (T_REF
+              a=(T_PATH ->i32
+                a=(PATH ->i32
+                  (PATH_SEG i32 ->i32)))))))
+      c=(BLOCK
+        a=(E_METHOD_CALL first -><impl>::first :Option<&i32>
+          a=(E_FIELD items ->Bag::items :Vec<i32>
+            a=(E_PATH ->self :&Bag
+              a=(PATH ->self
+                (PATH_SEG self ->self))))))
+      (SELF_PARAM {ref} ->self))
+    (ITEM_FN count ->Bag::count
+      b=(T_PATH ->usize
+        a=(PATH ->usize
+          (PATH_SEG usize ->usize)))
+      c=(BLOCK
+        a=(E_METHOD_CALL len ->Vec::len :usize
+          a=(E_FIELD items ->Bag::items :Vec<i32>
+            a=(E_PATH ->self :&Bag
+              a=(PATH ->self
+                (PATH_SEG self ->self))))))
+      (SELF_PARAM {ref} ->self)))
+  (ITEM_TRAIT Named ->Named
+    (ITEM_FN id ->Named::id
+      b=(T_PATH ->u32
+        a=(PATH ->u32
+          (PATH_SEG u32 ->u32)))
+      (SELF_PARAM {ref} ->self)))
+  (ITEM_IMPL ->T
+    a=(GENERICS
+      (GEN_TYPE T ->T
+        b=(BOUNDS
+          (BOUND_TRAIT ->Shape
+            a=(PATH ->Shape
+              (PATH_SEG Shape ->Shape))))))
+    b=(T_PATH ->T
+      a=(PATH ->T
+        (PATH_SEG T ->T)))
+    c=(PATH ->Named
+      (PATH_SEG Named ->Named))
+    (ITEM_FN id ->T::id
+      b=(T_PATH ->u32
+        a=(PATH ->u32
+          (PATH_SEG u32 ->u32)))
+      c=(BLOCK
+        a=(E_LIT_INT "7" #7 :u32))
+      (SELF_PARAM {ref} ->self)))
+  (ITEM_FN largest ->largest
+    a=(GENERICS
+      (GEN_TYPE T ->T
+        b=(BOUNDS
+          (BOUND_TRAIT ->core::cmp::PartialOrd
+            a=(PATH ->core::cmp::PartialOrd
+              (PATH_SEG PartialOrd ->core::cmp::PartialOrd)))
+          (BOUND_TRAIT ->core::marker::Copy
+            a=(PATH ->core::marker::Copy
+              (PATH_SEG Copy ->core::marker::Copy))))))
+    b=(T_PATH ->T
+      a=(PATH ->T
+        (PATH_SEG T ->T)))
+    c=(BLOCK
+      (STMT_LET
+        a=(P_IDENT m {mut} ->m :T)
+        c=(E_INDEX :T
+          a=(E_PATH ->xs :&[T]
+            a=(PATH ->xs
+              (PATH_SEG xs ->xs)))
+          b=(E_LIT_INT "0" #0 :usize)))
+      (STMT_EXPR
+        a=(E_FOR :()
+          a=(P_REF :&T
+            a=(P_IDENT x ->x :T))
+          b=(E_PATH ->xs :&[T]
+            a=(PATH ->xs
+              (PATH_SEG xs ->xs)))
+          c=(BLOCK
+            a=(E_IF :()
+              a=(E_BINARY op:> ->core::cmp::PartialOrd::gt :bool
+                a=(E_PATH ->x :T
+                  a=(PATH ->x
+                    (PATH_SEG x ->x)))
+                b=(E_PATH ->m :T
+                  a=(PATH ->m
+                    (PATH_SEG m ->m))))
+              b=(BLOCK
+                (STMT_EXPR {semi}
+                  a=(E_ASSIGN :()
+                    a=(E_PATH ->m :T
+                      a=(PATH ->m
+                        (PATH_SEG m ->m)))
+                    b=(E_PATH ->x :T
+                      a=(PATH ->x
+                        (PATH_SEG x ->x))))))))))
+      a=(E_PATH ->m :T
+        a=(PATH ->m
+          (PATH_SEG m ->m))))
+    (PARAM
+      a=(P_IDENT xs ->xs :&[T])
+      b=(T_REF
+        a=(T_SLICE
+          a=(T_PATH ->T
+            a=(PATH ->T
+              (PATH_SEG T ->T)))))))
+  (ITEM_FN area_of ->area_of
+    b=(T_PATH ->f64
+      a=(PATH ->f64
+        (PATH_SEG f64 ->f64)))
+    c=(BLOCK
+      a=(E_METHOD_CALL area ->Shape::area :f64
+        a=(E_PATH ->s :&dyn Shape
+          a=(PATH ->s
+            (PATH_SEG s ->s)))))
+    (PARAM
+      a=(P_IDENT s ->s :&dyn Shape)
+      b=(T_REF
+        a=(T_DYN {dyn}
+          a=(BOUNDS
+            (BOUND_TRAIT ->Shape
+              a=(PATH ->Shape
+                (PATH_SEG Shape ->Shape))))))))
+  (ITEM_FN first_or ->first_or
+    a=(GENERICS
+      (GEN_TYPE C ->C
+        b=(BOUNDS
+          (BOUND_TRAIT ->Container
+            a=(PATH ->Container
+              (PATH_SEG Container ->Container))))))
+    b=(T_PATH ->Container::Item
+      a=(PATH ->Container::Item
+        (PATH_SEG C ->C)
+        (PATH_SEG Item ->Container::Item)))
+    c=(BLOCK
+      a=(E_MATCH :<C as Container>::Item
+        a=(E_METHOD_CALL first ->Container::first :Option<&<C as Container>::Item>
+          a=(E_PATH ->c :&C
+            a=(PATH ->c
+              (PATH_SEG c ->c))))
+        (ARM
+          a=(P_TUPLE_STRUCT ->core::option::Option::Some :Option<&<C as Container>::Item>
+            a=(PATH ->core::option::Option::Some
+              (PATH_SEG Some ->core::option::Option::Some))
+            (P_IDENT x ->x :&<C as Container>::Item))
+          c=(E_DEREF :<C as Container>::Item
+            a=(E_PATH ->x :&<C as Container>::Item
+              a=(PATH ->x
+                (PATH_SEG x ->x)))))
+        (ARM
+          a=(P_IDENT None ->core::option::Option::None :Option<&<C as Container>::Item>)
+          c=(E_PATH ->d :<C as Container>::Item
+            a=(PATH ->d
+              (PATH_SEG d ->d))))))
+    d=(WHERE
+      (WHERE_TYPE
+        a=(T_PATH ->Container::Item
+          a=(PATH ->Container::Item
+            (PATH_SEG C ->C)
+            (PATH_SEG Item ->Container::Item)))
+        b=(BOUNDS
+          (BOUND_TRAIT ->core::marker::Copy
+            a=(PATH ->core::marker::Copy
+              (PATH_SEG Copy ->core::marker::Copy))))))
+    (PARAM
+      a=(P_IDENT c ->c :&C)
+      b=(T_REF
+        a=(T_PATH ->C
+          a=(PATH ->C
+            (PATH_SEG C ->C)))))
+    (PARAM
+      a=(P_IDENT d ->d :<C as Container>::Item)
+      b=(T_PATH ->Container::Item
+        a=(PATH ->Container::Item
+          (PATH_SEG C ->C)
+          (PATH_SEG Item ->Container::Item)))))
+  (ITEM_FN run ->run
+    b=(T_PATH ->f64
+      a=(PATH ->f64
+        (PATH_SEG f64 ->f64)))
+    c=(BLOCK
+      (STMT_LET
+        a=(P_IDENT c ->c :Circle)
+        c=(E_STRUCT ->Circle :Circle
+          a=(PATH ->Circle
+            (PATH_SEG Circle ->Circle))
+          (FIELD_INIT r ->Circle::r :f64
+            a=(E_LIT_FLOAT "2.0" :f64))))
+      (STMT_LET
+        a=(P_IDENT shapes ->shapes :Vec<Box<dyn Shape>>)
+        b=(T_PATH ->core::vec::Vec
+          a=(PATH ->core::vec::Vec
+            (PATH_SEG Vec {angle} ->core::vec::Vec
+              (T_PATH ->core::boxed::Box
+                a=(PATH ->core::boxed::Box
+                  (PATH_SEG Box {angle} ->core::boxed::Box
+                    (T_DYN {dyn}
+                      a=(BOUNDS
+                        (BOUND_TRAIT ->Shape
+                          a=(PATH ->Shape
+                            (PATH_SEG Shape ->Shape)))))))))))
+        c=(E_CALL :Vec<Box<dyn Shape>>
+          a=(E_PATH ->Vec::from_array :fn([Box<dyn Shape>; 1]) -> Vec<Box<dyn Shape>> {from_array::<Box<dyn Shape>, 1>}
+            a=(PATH {global} ->core::vec::Vec
+              (PATH_SEG core ->core)
+              (PATH_SEG vec ->core::vec)
+              (PATH_SEG Vec ->core::vec::Vec)
+              (PATH_SEG from_array)))
+          (E_ARRAY :[Box<dyn Shape>; 1]
+            (E_CALL :Box<Circle>
+              a=(E_PATH ->Box::new :fn(Circle) -> Box<Circle> {new::<Circle>}
+                a=(PATH ->core::boxed::Box
+                  (PATH_SEG Box ->core::boxed::Box)
+                  (PATH_SEG new)))
+              (E_STRUCT ->Circle :Circle
+                a=(PATH ->Circle
+                  (PATH_SEG Circle ->Circle))
+                (FIELD_INIT r ->Circle::r :f64
+                  a=(E_LIT_FLOAT "1.0" :f64)))))))
+      (STMT_LET
+        a=(P_IDENT b ->b :Bag)
+        c=(E_STRUCT ->Bag :Bag
+          a=(PATH ->Bag
+            (PATH_SEG Bag ->Bag))
+          (FIELD_INIT items ->Bag::items :Vec<i32>
+            a=(E_CALL :Vec<i32>
+              a=(E_PATH ->Vec::from_array :fn([i32; 2]) -> Vec<i32> {from_array::<i32, 2>}
+                a=(PATH {global} ->core::vec::Vec
+                  (PATH_SEG core ->core)
+                  (PATH_SEG vec ->core::vec)
+                  (PATH_SEG Vec ->core::vec::Vec)
+                  (PATH_SEG from_array)))
+              (E_ARRAY :[i32; 2]
+                (E_LIT_INT "4" #4 :i32)
+                (E_LIT_INT "5" #5 :i32))))))
+      (STMT_LET
+        a=(P_IDENT k ->k :i32)
+        c=(E_BINARY op:+ :i32
+          a=(E_BINARY op:+ :i32
+            a=(E_BINARY op:+ :i32
+              a=(E_CALL :i32
+                a=(E_PATH ->first_or :fn(&Bag, i32) -> i32 {first_or::<Bag>}
+                  a=(PATH ->first_or
+                    (PATH_SEG first_or ->first_or)))
+                (E_REF :&Bag
+                  a=(E_PATH ->b :Bag
+                    a=(PATH ->b
+                      (PATH_SEG b ->b))))
+                (E_LIT_INT "0" #0 :i32))
+              b=(E_CAST :i32
+                a=(E_METHOD_CALL count ->Bag::count :usize
+                  a=(E_PATH ->b :Bag
+                    a=(PATH ->b
+                      (PATH_SEG b ->b))))
+                b=(T_PATH ->i32
+                  a=(PATH ->i32
+                    (PATH_SEG i32 ->i32)))))
+            b=(E_CALL :i32
+              a=(E_PATH ->largest :fn(&[i32]) -> i32 {largest::<i32>}
+                a=(PATH ->largest
+                  (PATH_SEG largest ->largest)))
+              (E_REF :&[i32; 3]
+                a=(E_ARRAY :[i32; 3]
+                  (E_LIT_INT "1" #1 :i32)
+                  (E_LIT_INT "5" #5 :i32)
+                  (E_LIT_INT "3" #3 :i32)))))
+          b=(E_CAST :i32
+            a=(E_METHOD_CALL id ->T::id :u32
+              a=(E_PATH ->c :Circle
+                a=(PATH ->c
+                  (PATH_SEG c ->c))))
+            b=(T_PATH ->i32
+              a=(PATH ->i32
+                (PATH_SEG i32 ->i32))))))
+      a=(E_BINARY op:+ :f64
+        a=(E_BINARY op:+ :f64
+          a=(E_BINARY op:+ :f64
+            a=(E_CALL :f64
+              a=(E_PATH ->area_of :fn(&dyn Shape) -> f64 {area_of}
+                a=(PATH ->area_of
+                  (PATH_SEG area_of ->area_of)))
+              (E_REF :&Circle
+                a=(E_PATH ->c :Circle
+                  a=(PATH ->c
+                    (PATH_SEG c ->c)))))
+            b=(E_METHOD_CALL area ->Shape::area :f64
+              a=(E_INDEX ->Vec::index :Box<dyn Shape>
+                a=(E_PATH ->shapes :Vec<Box<dyn Shape>>
+                  a=(PATH ->shapes
+                    (PATH_SEG shapes ->shapes)))
+                b=(E_LIT_INT "0" #0 :usize))))
+          b=(E_CALL :f64
+            a=(E_PATH ->largest :fn(&[f64]) -> f64 {largest::<f64>}
+              a=(PATH ->largest
+                (PATH_SEG largest ->largest)))
+            (E_REF :&[f64; 2]
+              a=(E_ARRAY :[f64; 2]
+                (E_LIT_FLOAT "1.5" :f64)
+                (E_LIT_FLOAT "0.5" :f64)))))
+        b=(E_CAST :f64
+          a=(E_PATH ->k :i32
+            a=(PATH ->k
+              (PATH_SEG k ->k)))
+          b=(T_PATH ->f64
+            a=(PATH ->f64
+              (PATH_SEG f64 ->f64))))))))

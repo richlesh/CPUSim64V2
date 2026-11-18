@@ -1,0 +1,25 @@
+1:1 STR ""
+1:4 STR "hello"
+1:12 STR "a b\tc\nd"
+1:24 STR "q\"q"
+1:31 STR "s's"
+1:38 STR "back\\slash"
+1:52 STR "nul\x00nul"
+1:63 STR "A~"
+2:1 STR "\xC3\xA9\xE2\x82\xAC\xF0\x9F\x98\x80"
+2:27 STR "\xC3\xA9\xE2\x82\xAC\xF0\x9F\x98\x80"
+3:1 STR "line one\nline two"
+5:1 STR "continued here"
+6:13 STR "crlf"
+9:1 STR "raw \\n no escapes" raw
+9:22 STR "has \"quotes\" inside" raw
+9:47 STR "has \"# inside" raw
+9:68 STR "" raw
+9:74 STR "" raw
+10:1 STR "two\nlines" raw
+12:1 BSTR "bytes\n\x00\xFF\\"
+12:22 BSTR ""
+12:26 BSTR "raw \\n bytes" raw
+12:43 BSTR "q\"q" raw
+13:1 STR "end"
+14:1 EOF

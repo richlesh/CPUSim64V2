@@ -1,0 +1,1 @@
+errors/collect_kind_mismatch.rs:4: error: item `f` is an associated const, which doesn't match its trait `T`

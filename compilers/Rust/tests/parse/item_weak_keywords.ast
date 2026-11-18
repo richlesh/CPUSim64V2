@@ -1,0 +1,66 @@
+(CRATE
+  (ITEM_UNION U {named}
+    (FIELD a
+      a=(T_PATH
+        a=(PATH
+          (PATH_SEG u32)))))
+  (ITEM_UNION PU {named}
+    vis=(VIS)
+    (FIELD a
+      a=(T_PATH
+        a=(PATH
+          (PATH_SEG u8)))))
+  (ITEM_FN f
+    c=(BLOCK
+      (STMT_LET
+        a=(P_IDENT union)
+        c=(E_LIT_INT "1" #1))
+      (STMT_LET
+        a=(P_IDENT auto)
+        c=(E_LIT_INT "2" #2))
+      (STMT_LET
+        a=(P_IDENT macro_rules)
+        c=(E_LIT_INT "3" #3))
+      (STMT_EXPR {semi}
+        a=(E_BINARY op:+
+          a=(E_PATH
+            a=(PATH
+              (PATH_SEG union)))
+          b=(E_LIT_INT "1" #1)))
+      (STMT_EXPR {semi}
+        a=(E_ASSIGN
+          a=(E_PATH
+            a=(PATH
+              (PATH_SEG auto)))
+          b=(E_LIT_INT "4" #4)))
+      (STMT_EXPR {semi}
+        a=(E_PATH
+          a=(PATH
+            (PATH_SEG union))))
+      (STMT_EXPR {semi}
+        a=(BLOCK {const}
+          a=(E_LIT_INT "5" #5)))
+      (STMT_LET
+        a=(P_IDENT c)
+        c=(BLOCK {const}
+          a=(E_LIT_INT "6" #6)))
+      (STMT_EXPR
+        a=(BLOCK {unsafe}))
+      (STMT_EXPR {semi}
+        a=(BLOCK {async}))
+      (STMT_EXPR {semi}
+        a=(BLOCK {async,move}))))
+  (ITEM_FN union
+    c=(BLOCK))
+  (ITEM_STRUCT auto)
+  (ITEM_TRAIT auto2)
+  (ITEM_TRAIT AutoT {auto})
+  (ITEM_TYPE union
+    b=(T_PATH
+      a=(PATH
+        (PATH_SEG i32))))
+  (ITEM_CONST auto
+    a=(T_PATH
+      a=(PATH
+        (PATH_SEG i32)))
+    b=(E_LIT_INT "1" #1)))

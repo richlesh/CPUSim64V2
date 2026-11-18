@@ -63,6 +63,8 @@ public enum Opcode {
 	SAVE(36),
 	RESTORE(37),
 	READONLY(38),
+	LDB(39),
+	STB(40),
 	UNDEFINED(-1);
 
 	public final int code;

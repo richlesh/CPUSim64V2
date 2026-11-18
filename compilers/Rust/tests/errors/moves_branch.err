@@ -1,0 +1,1 @@
+errors/moves_branch.rs:7: error: borrow of moved value: `s`

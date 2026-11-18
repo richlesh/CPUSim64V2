@@ -1,0 +1,51 @@
+(CRATE
+  (ITEM_MACRO_RULES square {delim_brace}
+    (MACRO_RULE
+      a=(MACRO_TT {delim_paren} toks:4 $ x : expr)
+      b=(MACRO_TT {delim_brace} toks:5 $ x * $ x)))
+  (ITEM_MACRO_RULES maxm {delim_brace}
+    (MACRO_RULE
+      a=(MACRO_TT {delim_paren} toks:4 $ x : expr)
+      b=(MACRO_TT {delim_paren} toks:2 $ x))
+    (MACRO_RULE
+      a=(MACRO_TT {delim_paren} toks:14 $ x : expr , $ ( $ rest : expr ) , +)
+      b=(MACRO_TT {delim_brace} toks:34 { let a = $ x ; let b = maxm ! ( $ ( $ rest ) , + ) ; if a > b { a } else { b } })))
+  (ITEM_MACRO_RULES make_struct {delim_brace}
+    (MACRO_RULE
+      a=(MACRO_TT {delim_paren} toks:25 $ name : ident { $ ( $ field : ident : $ ty : ty ) , * $ ( , ) ? })
+      b=(MACRO_TT {delim_brace} toks:15 struct $ name { $ ( $ field : $ ty ) , * })))
+  (ITEM_MACRO_RULES unit {delim_bracket}
+    (MACRO_RULE
+      a=(MACRO_TT {delim_paren} toks:0 )
+      b=(MACRO_TT {delim_bracket} toks:2 ( ))))
+  (ITEM_MACRO_RULES paren_form {delim_paren}
+    (MACRO_RULE
+      a=(MACRO_TT {delim_paren} toks:4 $ a : tt)
+      b=(MACRO_TT {delim_brace} toks:2 $ a)))
+  (MACRO_CALL {semi,delim_paren} toks:10 Pt { x : i32 , y : i32 }
+    a=(PATH
+      (PATH_SEG make_struct)))
+  (ITEM_FN main
+    c=(BLOCK
+      (STMT_LET
+        a=(P_IDENT a)
+        c=(MACRO_CALL {delim_paren} toks:1 3
+          a=(PATH
+            (PATH_SEG square))))
+      (STMT_LET
+        a=(P_IDENT b)
+        c=(MACRO_CALL {delim_paren} toks:5 1 , 2 , 3
+          a=(PATH
+            (PATH_SEG maxm))))
+      (STMT_LET
+        a=(P_IDENT p)
+        c=(E_STRUCT
+          a=(PATH
+            (PATH_SEG Pt))
+          (FIELD_INIT x
+            a=(E_LIT_INT "1" #1))
+          (FIELD_INIT y
+            a=(E_LIT_INT "2" #2))))
+      (MACRO_CALL {semi,delim_paren} toks:13 "{} {} {}" , a , b , p . x + p . y
+        a=(PATH
+          (PATH_SEG println))))))

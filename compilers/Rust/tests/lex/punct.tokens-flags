@@ -1,0 +1,156 @@
+1:1 LBRACE {
+1:3 RBRACE } space
+1:5 LBRACK [ space
+1:7 RBRACK ] space
+1:9 LPAREN ( space
+1:11 RPAREN ) space
+1:13 SEMI ; space
+1:15 COMMA , space
+1:17 DOT . space
+1:19 DOTDOT .. space
+1:22 DOTDOTDOT ... space
+1:26 DOTDOTEQ ..= space
+1:30 COLON : space
+1:32 PATHSEP :: space
+1:35 RARROW -> space
+1:38 FATARROW => space
+1:41 PLUS + space
+1:43 MINUS - space
+1:45 STAR * space
+1:47 SLASH / space
+1:49 PERCENT % space
+1:51 CARET ^ space
+1:53 NOT ! space
+1:55 AND & space
+1:57 OR | space
+1:59 ANDAND && space
+1:62 OROR || space
+1:65 SHL << space
+1:68 SHR >> space
+1:71 PLUSEQ += space
+1:74 MINUSEQ -= space
+1:77 STAREQ *= space
+1:80 SLASHEQ /= space
+1:83 PERCENTEQ %= space
+1:86 CARETEQ ^= space
+1:89 ANDEQ &= space
+1:92 OREQ |= space
+1:95 SHLEQ <<= space
+1:99 SHREQ >>= space
+1:103 EQ = space
+1:105 EQEQ == space
+1:108 NE != space
+1:111 GT > space
+1:113 LT < space
+1:115 GE >= space
+1:118 LE <= space
+1:121 AT @ space
+1:123 UNDERSCORE _ space
+1:125 POUND # space
+1:127 DOLLAR $ space
+1:129 QUESTION ? space
+1:131 TILDE ~ space
+2:1 IDENT a space
+2:2 PLUS +
+2:3 IDENT b
+2:5 IDENT a space
+2:6 PLUSEQ +=
+2:8 IDENT b
+2:10 IDENT a space
+2:11 MINUS - joint
+2:12 RARROW ->
+2:14 IDENT b
+2:16 IDENT a space
+2:17 LT < joint
+2:18 MINUS -
+2:19 IDENT b
+2:21 ANDAND && space
+2:23 IDENT x
+2:25 AND & space
+2:26 KW mut
+2:30 IDENT x space
+2:32 OR | space
+2:33 IDENT x
+2:34 OR |
+2:35 IDENT x
+2:37 OROR || space
+2:39 IDENT x
+2:41 IDENT vec space
+2:44 NOT !
+2:45 LBRACK [
+2:46 RBRACK ]
+2:48 IDENT Vec space
+2:51 LT <
+2:52 IDENT Vec
+2:55 LT <
+2:56 IDENT u8
+2:58 SHR >>
+2:61 IDENT a space
+2:62 SHREQ >>=
+2:65 INT 1 =1
+2:67 IDENT x space
+2:68 GE >=
+2:70 IDENT y
+2:72 IDENT x space
+2:73 FATARROW =>
+2:75 IDENT y
+3:1 INT 0 =0 space
+3:2 DOTDOT ..
+3:4 INT 10 =10
+3:7 DOTDOTEQ ..= space
+3:10 INT 5 =5
+3:12 IDENT a space
+3:13 DOTDOT ..
+3:15 IDENT b
+3:17 DOTDOT .. space
+3:21 DOTDOTDOT ... space
+3:26 DOTDOTEQ ..= space
+3:30 DOTDOT .. space
+3:33 EQ = space
+4:1 DOLLAR $ space
+4:2 KW crate
+4:7 PATHSEP ::
+4:9 IDENT x
+4:11 POUND # space
+4:12 LBRACK [
+4:13 IDENT a
+4:14 RBRACK ]
+4:16 POUND # space joint
+4:17 NOT !
+4:18 LBRACK [
+4:19 IDENT b
+4:20 RBRACK ]
+4:22 IDENT a space
+4:23 QUESTION ? joint
+4:24 DOT .
+4:25 IDENT b
+4:27 IDENT x space
+4:28 AT @
+4:29 IDENT Some
+4:33 LPAREN (
+4:34 UNDERSCORE _
+4:35 RPAREN )
+4:37 LT < space
+4:38 IDENT T
+4:40 KW as space
+4:43 IDENT Tr space
+4:45 GT > joint
+4:46 PATHSEP ::
+4:48 IDENT f
+4:50 RARROW -> space joint
+4:52 GT >
+5:1 AND & space joint
+5:2 MINUS -
+5:3 INT 1 =1
+5:5 LT < space joint
+5:6 MINUS -
+5:7 IDENT x
+5:9 EQEQ == space joint
+5:11 GT >
+5:13 NE != space joint
+5:15 NOT !
+5:17 PATHSEP :: space joint
+5:19 COLON :
+5:21 DOTDOTDOT ... space joint
+5:24 DOT .
+6:1 EOF space

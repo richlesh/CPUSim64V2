@@ -1,0 +1,1 @@
+errors/moves_assign_twice.rs:3: error: cannot assign twice to immutable variable `x`

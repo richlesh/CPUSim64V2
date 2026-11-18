@@ -1,0 +1,739 @@
+(CRATE
+  (ITEM_FN f
+    c=(BLOCK
+      (STMT_EXPR {semi}
+        a=(E_CALL
+          a=(E_PATH
+            a=(PATH {global}
+              (PATH_SEG core)
+              (PATH_SEG panicking)
+              (PATH_SEG panic_str)))
+          (E_LIT_STR "expand/panics.rs")
+          (E_LIT_INT u32 "2" #2)
+          (E_LIT_INT u32 "5" #5)
+          (E_LIT_STR "explicit panic")))
+      (STMT_EXPR {semi}
+        a=(E_CALL
+          a=(E_PATH
+            a=(PATH {global}
+              (PATH_SEG core)
+              (PATH_SEG panicking)
+              (PATH_SEG panic_str)))
+          (E_LIT_STR "expand/panics.rs")
+          (E_LIT_INT u32 "3" #3)
+          (E_LIT_INT u32 "5" #5)
+          (E_LIT_STR "plain {braces}")))
+      (STMT_EXPR {semi}
+        a=(BLOCK
+          (STMT_LET
+            a=(P_IDENT __out {mut})
+            c=(E_CALL
+              a=(E_PATH
+                a=(PATH {global}
+                  (PATH_SEG core)
+                  (PATH_SEG panicking)
+                  (PATH_SEG begin)))
+              (E_LIT_STR "expand/panics.rs")
+              (E_LIT_INT u32 "4" #4)
+              (E_LIT_INT u32 "5" #5)))
+          (STMT_LET
+            a=(P_IDENT __f {mut})
+            c=(E_CALL
+              a=(E_PATH
+                a=(PATH {global}
+                  (PATH_SEG core)
+                  (PATH_SEG fmt)
+                  (PATH_SEG Formatter)
+                  (PATH_SEG new)))
+              (E_REF {mut}
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG __out))))))
+          (STMT_EXPR
+            a=(BLOCK
+              (STMT_LET
+                a=(P_IDENT __a0)
+                c=(E_REF
+                  a=(E_PAREN
+                    a=(E_PATH
+                      a=(PATH
+                        (PATH_SEG a))))))
+              (STMT_LET
+                a=(P_IDENT __a1)
+                c=(E_REF
+                  a=(E_PAREN
+                    a=(E_LIT_INT "3" #3))))
+              (STMT_EXPR {semi}
+                a=(E_METHOD_CALL write_str
+                  a=(E_PATH
+                    a=(PATH
+                      (PATH_SEG __f)))
+                  (E_LIT_STR "value ")))
+              (STMT_LET
+                a=(P_WILD)
+                c=(E_CALL
+                  a=(E_PATH
+                    a=(PATH {global}
+                      (PATH_SEG core)
+                      (PATH_SEG fmt)
+                      (PATH_SEG Display)
+                      (PATH_SEG fmt)))
+                  (E_PATH
+                    a=(PATH
+                      (PATH_SEG __a0)))
+                  (E_REF {mut}
+                    a=(E_PATH
+                      a=(PATH
+                        (PATH_SEG __f))))))
+              (STMT_EXPR {semi}
+                a=(E_METHOD_CALL write_str
+                  a=(E_PATH
+                    a=(PATH
+                      (PATH_SEG __f)))
+                  (E_LIT_STR " ")))
+              (STMT_LET
+                a=(P_WILD)
+                c=(E_CALL
+                  a=(E_PATH
+                    a=(PATH {global}
+                      (PATH_SEG core)
+                      (PATH_SEG fmt)
+                      (PATH_SEG Display)
+                      (PATH_SEG fmt)))
+                  (E_PATH
+                    a=(PATH
+                      (PATH_SEG __a1)))
+                  (E_REF {mut}
+                    a=(E_PATH
+                      a=(PATH
+                        (PATH_SEG __f))))))))
+          a=(E_CALL
+            a=(E_PATH
+              a=(PATH {global}
+                (PATH_SEG core)
+                (PATH_SEG panicking)
+                (PATH_SEG end))))))
+      (STMT_EXPR {semi}
+        a=(E_IF
+          a=(E_UNARY op:!
+            a=(E_PAREN
+              a=(E_BINARY op:==
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG a)))
+                b=(E_LIT_INT "1" #1))))
+          b=(BLOCK
+            a=(E_CALL
+              a=(E_PATH
+                a=(PATH {global}
+                  (PATH_SEG core)
+                  (PATH_SEG panicking)
+                  (PATH_SEG panic_str)))
+              (E_LIT_STR "expand/panics.rs")
+              (E_LIT_INT u32 "5" #5)
+              (E_LIT_INT u32 "5" #5)
+              (E_LIT_STR "assertion failed: a == 1")))))
+      (STMT_EXPR {semi}
+        a=(E_IF
+          a=(E_UNARY op:!
+            a=(E_PAREN
+              a=(E_BINARY op:&&
+                a=(E_BINARY op:>
+                  a=(E_PATH
+                    a=(PATH
+                      (PATH_SEG a)))
+                  b=(E_LIT_INT "0" #0))
+                b=(E_UNARY op:!
+                  a=(E_METHOD_CALL is_empty
+                    a=(E_PATH
+                      a=(PATH
+                        (PATH_SEG v))))))))
+          b=(BLOCK
+            a=(BLOCK
+              (STMT_LET
+                a=(P_IDENT __out {mut})
+                c=(E_CALL
+                  a=(E_PATH
+                    a=(PATH {global}
+                      (PATH_SEG core)
+                      (PATH_SEG panicking)
+                      (PATH_SEG begin)))
+                  (E_LIT_STR "expand/panics.rs")
+                  (E_LIT_INT u32 "6" #6)
+                  (E_LIT_INT u32 "5" #5)))
+              (STMT_LET
+                a=(P_IDENT __f {mut})
+                c=(E_CALL
+                  a=(E_PATH
+                    a=(PATH {global}
+                      (PATH_SEG core)
+                      (PATH_SEG fmt)
+                      (PATH_SEG Formatter)
+                      (PATH_SEG new)))
+                  (E_REF {mut}
+                    a=(E_PATH
+                      a=(PATH
+                        (PATH_SEG __out))))))
+              (STMT_EXPR
+                a=(BLOCK
+                  (STMT_LET
+                    a=(P_IDENT __a0)
+                    c=(E_REF
+                      a=(E_PAREN
+                        a=(E_PATH
+                          a=(PATH
+                            (PATH_SEG a))))))
+                  (STMT_EXPR {semi}
+                    a=(E_METHOD_CALL write_str
+                      a=(E_PATH
+                        a=(PATH
+                          (PATH_SEG __f)))
+                      (E_LIT_STR "bad a: ")))
+                  (STMT_LET
+                    a=(P_WILD)
+                    c=(E_CALL
+                      a=(E_PATH
+                        a=(PATH {global}
+                          (PATH_SEG core)
+                          (PATH_SEG fmt)
+                          (PATH_SEG Display)
+                          (PATH_SEG fmt)))
+                      (E_PATH
+                        a=(PATH
+                          (PATH_SEG __a0)))
+                      (E_REF {mut}
+                        a=(E_PATH
+                          a=(PATH
+                            (PATH_SEG __f))))))))
+              a=(E_CALL
+                a=(E_PATH
+                  a=(PATH {global}
+                    (PATH_SEG core)
+                    (PATH_SEG panicking)
+                    (PATH_SEG end))))))))
+      (STMT_EXPR {semi}
+        a=(E_IF
+          a=(E_UNARY op:!
+            a=(E_PAREN
+              a=(E_BINARY op:==
+                a=(E_METHOD_CALL len
+                  a=(E_PATH
+                    a=(PATH
+                      (PATH_SEG v))))
+                b=(E_LIT_INT "3" #3))))
+          b=(BLOCK
+            a=(E_CALL
+              a=(E_PATH
+                a=(PATH {global}
+                  (PATH_SEG core)
+                  (PATH_SEG panicking)
+                  (PATH_SEG panic_str)))
+              (E_LIT_STR "expand/panics.rs")
+              (E_LIT_INT u32 "7" #7)
+              (E_LIT_INT u32 "5" #5)
+              (E_LIT_STR "assertion failed: v.len() == 3")))))
+      (STMT_EXPR {semi}
+        a=(E_MATCH
+          a=(E_TUPLE
+            (E_REF
+              a=(E_PAREN
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG a)))))
+            (E_REF
+              a=(E_PAREN
+                a=(E_LIT_INT "2" #2))))
+          (ARM
+            a=(P_TUPLE
+              (P_IDENT __l)
+              (P_IDENT __r))
+            c=(E_IF
+              a=(E_UNARY op:!
+                a=(E_PAREN
+                  a=(E_BINARY op:==
+                    a=(E_DEREF
+                      a=(E_PATH
+                        a=(PATH
+                          (PATH_SEG __l))))
+                    b=(E_DEREF
+                      a=(E_PATH
+                        a=(PATH
+                          (PATH_SEG __r)))))))
+              b=(BLOCK
+                a=(E_CALL
+                  a=(E_PATH
+                    a=(PATH {global}
+                      (PATH_SEG core)
+                      (PATH_SEG panicking)
+                      (PATH_SEG assert_failed)))
+                  (E_LIT_STR "==")
+                  (E_REF
+                    a=(E_DEREF
+                      a=(E_PATH
+                        a=(PATH
+                          (PATH_SEG __l)))))
+                  (E_REF
+                    a=(E_DEREF
+                      a=(E_PATH
+                        a=(PATH
+                          (PATH_SEG __r)))))
+                  (E_LIT_STR "expand/panics.rs")
+                  (E_LIT_INT u32 "8" #8)
+                  (E_LIT_INT u32 "5" #5)))))))
+      (STMT_EXPR {semi}
+        a=(E_MATCH
+          a=(E_TUPLE
+            (E_REF
+              a=(E_PAREN
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG a)))))
+            (E_REF
+              a=(E_PAREN
+                a=(E_LIT_INT "3" #3))))
+          (ARM
+            a=(P_TUPLE
+              (P_IDENT __l)
+              (P_IDENT __r))
+            c=(E_IF
+              a=(E_UNARY op:!
+                a=(E_PAREN
+                  a=(E_BINARY op:!=
+                    a=(E_DEREF
+                      a=(E_PATH
+                        a=(PATH
+                          (PATH_SEG __l))))
+                    b=(E_DEREF
+                      a=(E_PATH
+                        a=(PATH
+                          (PATH_SEG __r)))))))
+              b=(BLOCK
+                a=(E_CALL
+                  a=(E_PATH
+                    a=(PATH {global}
+                      (PATH_SEG core)
+                      (PATH_SEG panicking)
+                      (PATH_SEG assert_failed_msg)))
+                  (E_LIT_STR "!=")
+                  (E_REF
+                    a=(E_DEREF
+                      a=(E_PATH
+                        a=(PATH
+                          (PATH_SEG __l)))))
+                  (E_REF
+                    a=(E_DEREF
+                      a=(E_PATH
+                        a=(PATH
+                          (PATH_SEG __r)))))
+                  (E_LIT_STR "expand/panics.rs")
+                  (E_LIT_INT u32 "9" #9)
+                  (E_LIT_INT u32 "5" #5)
+                  (E_REF
+                    a=(BLOCK
+                      (STMT_LET
+                        a=(P_IDENT __s {mut})
+                        c=(E_CALL
+                          a=(E_PATH
+                            a=(PATH {global}
+                              (PATH_SEG core)
+                              (PATH_SEG string)
+                              (PATH_SEG String)
+                              (PATH_SEG new)))))
+                      (STMT_EXPR
+                        a=(BLOCK
+                          (STMT_LET
+                            a=(P_IDENT __f {mut})
+                            c=(E_CALL
+                              a=(E_PATH
+                                a=(PATH {global}
+                                  (PATH_SEG core)
+                                  (PATH_SEG fmt)
+                                  (PATH_SEG Formatter)
+                                  (PATH_SEG new)))
+                              (E_REF {mut}
+                                a=(E_PATH
+                                  a=(PATH
+                                    (PATH_SEG __s))))))
+                          a=(BLOCK
+                            (STMT_LET
+                              a=(P_IDENT __a0)
+                              c=(E_REF
+                                a=(E_PAREN
+                                  a=(E_LIT_INT "3" #3))))
+                            (STMT_EXPR {semi}
+                              a=(E_METHOD_CALL write_str
+                                a=(E_PATH
+                                  a=(PATH
+                                    (PATH_SEG __f)))
+                                (E_LIT_STR "not ")))
+                            (STMT_LET
+                              a=(P_WILD)
+                              c=(E_CALL
+                                a=(E_PATH
+                                  a=(PATH {global}
+                                    (PATH_SEG core)
+                                    (PATH_SEG fmt)
+                                    (PATH_SEG Display)
+                                    (PATH_SEG fmt)))
+                                (E_PATH
+                                  a=(PATH
+                                    (PATH_SEG __a0)))
+                                (E_REF {mut}
+                                  a=(E_PATH
+                                    a=(PATH
+                                      (PATH_SEG __f)))))))))
+                      a=(E_PATH
+                        a=(PATH
+                          (PATH_SEG __s)))))))))))
+      (STMT_EXPR {semi}
+        a=(E_IF
+          a=(E_UNARY op:!
+            a=(E_PAREN
+              a=(E_BINARY op:!=
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG a)))
+                b=(E_LIT_INT "0" #0))))
+          b=(BLOCK
+            a=(E_CALL
+              a=(E_PATH
+                a=(PATH {global}
+                  (PATH_SEG core)
+                  (PATH_SEG panicking)
+                  (PATH_SEG panic_str)))
+              (E_LIT_STR "expand/panics.rs")
+              (E_LIT_INT u32 "10" #10)
+              (E_LIT_INT u32 "5" #5)
+              (E_LIT_STR "assertion failed: a != 0")))))
+      (STMT_EXPR {semi}
+        a=(E_MATCH
+          a=(E_TUPLE
+            (E_REF
+              a=(E_PAREN
+                a=(E_BINARY op:+
+                  a=(E_PATH
+                    a=(PATH
+                      (PATH_SEG a)))
+                  b=(E_LIT_INT "1" #1))))
+            (E_REF
+              a=(E_PAREN
+                a=(E_LIT_INT "2" #2))))
+          (ARM
+            a=(P_TUPLE
+              (P_IDENT __l)
+              (P_IDENT __r))
+            c=(E_IF
+              a=(E_UNARY op:!
+                a=(E_PAREN
+                  a=(E_BINARY op:==
+                    a=(E_DEREF
+                      a=(E_PATH
+                        a=(PATH
+                          (PATH_SEG __l))))
+                    b=(E_DEREF
+                      a=(E_PATH
+                        a=(PATH
+                          (PATH_SEG __r)))))))
+              b=(BLOCK
+                a=(E_CALL
+                  a=(E_PATH
+                    a=(PATH {global}
+                      (PATH_SEG core)
+                      (PATH_SEG panicking)
+                      (PATH_SEG assert_failed)))
+                  (E_LIT_STR "==")
+                  (E_REF
+                    a=(E_DEREF
+                      a=(E_PATH
+                        a=(PATH
+                          (PATH_SEG __l)))))
+                  (E_REF
+                    a=(E_DEREF
+                      a=(E_PATH
+                        a=(PATH
+                          (PATH_SEG __r)))))
+                  (E_LIT_STR "expand/panics.rs")
+                  (E_LIT_INT u32 "11" #11)
+                  (E_LIT_INT u32 "5" #5)))))))
+      (STMT_EXPR {semi}
+        a=(E_CALL
+          a=(E_PATH
+            a=(PATH {global}
+              (PATH_SEG core)
+              (PATH_SEG panicking)
+              (PATH_SEG panic_str)))
+          (E_LIT_STR "expand/panics.rs")
+          (E_LIT_INT u32 "12" #12)
+          (E_LIT_INT u32 "5" #5)
+          (E_LIT_STR "internal error: entered unreachable code")))
+      (STMT_EXPR {semi}
+        a=(BLOCK
+          (STMT_LET
+            a=(P_IDENT __out {mut})
+            c=(E_CALL
+              a=(E_PATH
+                a=(PATH {global}
+                  (PATH_SEG core)
+                  (PATH_SEG panicking)
+                  (PATH_SEG begin)))
+              (E_LIT_STR "expand/panics.rs")
+              (E_LIT_INT u32 "13" #13)
+              (E_LIT_INT u32 "5" #5)))
+          (STMT_LET
+            a=(P_IDENT __f {mut})
+            c=(E_CALL
+              a=(E_PATH
+                a=(PATH {global}
+                  (PATH_SEG core)
+                  (PATH_SEG fmt)
+                  (PATH_SEG Formatter)
+                  (PATH_SEG new)))
+              (E_REF {mut}
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG __out))))))
+          (STMT_EXPR
+            a=(BLOCK
+              (STMT_LET
+                a=(P_IDENT __a0)
+                c=(E_REF
+                  a=(E_PAREN
+                    a=(E_PATH
+                      a=(PATH
+                        (PATH_SEG a))))))
+              (STMT_EXPR {semi}
+                a=(E_METHOD_CALL write_str
+                  a=(E_PATH
+                    a=(PATH
+                      (PATH_SEG __f)))
+                  (E_LIT_STR "internal error: entered unreachable code: state ")))
+              (STMT_LET
+                a=(P_WILD)
+                c=(E_CALL
+                  a=(E_PATH
+                    a=(PATH {global}
+                      (PATH_SEG core)
+                      (PATH_SEG fmt)
+                      (PATH_SEG Display)
+                      (PATH_SEG fmt)))
+                  (E_PATH
+                    a=(PATH
+                      (PATH_SEG __a0)))
+                  (E_REF {mut}
+                    a=(E_PATH
+                      a=(PATH
+                        (PATH_SEG __f))))))))
+          a=(E_CALL
+            a=(E_PATH
+              a=(PATH {global}
+                (PATH_SEG core)
+                (PATH_SEG panicking)
+                (PATH_SEG end))))))
+      (STMT_EXPR {semi}
+        a=(E_CALL
+          a=(E_PATH
+            a=(PATH {global}
+              (PATH_SEG core)
+              (PATH_SEG panicking)
+              (PATH_SEG panic_str)))
+          (E_LIT_STR "expand/panics.rs")
+          (E_LIT_INT u32 "14" #14)
+          (E_LIT_INT u32 "5" #5)
+          (E_LIT_STR "not yet implemented")))
+      (STMT_EXPR {semi}
+        a=(BLOCK
+          (STMT_LET
+            a=(P_IDENT __out {mut})
+            c=(E_CALL
+              a=(E_PATH
+                a=(PATH {global}
+                  (PATH_SEG core)
+                  (PATH_SEG panicking)
+                  (PATH_SEG begin)))
+              (E_LIT_STR "expand/panics.rs")
+              (E_LIT_INT u32 "15" #15)
+              (E_LIT_INT u32 "5" #5)))
+          (STMT_LET
+            a=(P_IDENT __f {mut})
+            c=(E_CALL
+              a=(E_PATH
+                a=(PATH {global}
+                  (PATH_SEG core)
+                  (PATH_SEG fmt)
+                  (PATH_SEG Formatter)
+                  (PATH_SEG new)))
+              (E_REF {mut}
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG __out))))))
+          (STMT_EXPR
+            a=(BLOCK
+              (STMT_LET
+                a=(P_IDENT __a0)
+                c=(E_REF
+                  a=(E_PAREN
+                    a=(E_PATH
+                      a=(PATH
+                        (PATH_SEG a))))))
+              (STMT_EXPR {semi}
+                a=(E_METHOD_CALL write_str
+                  a=(E_PATH
+                    a=(PATH
+                      (PATH_SEG __f)))
+                  (E_LIT_STR "not yet implemented: later ")))
+              (STMT_LET
+                a=(P_WILD)
+                c=(E_CALL
+                  a=(E_PATH
+                    a=(PATH {global}
+                      (PATH_SEG core)
+                      (PATH_SEG fmt)
+                      (PATH_SEG Display)
+                      (PATH_SEG fmt)))
+                  (E_PATH
+                    a=(PATH
+                      (PATH_SEG __a0)))
+                  (E_REF {mut}
+                    a=(E_PATH
+                      a=(PATH
+                        (PATH_SEG __f))))))))
+          a=(E_CALL
+            a=(E_PATH
+              a=(PATH {global}
+                (PATH_SEG core)
+                (PATH_SEG panicking)
+                (PATH_SEG end))))))
+      (STMT_EXPR {semi}
+        a=(E_CALL
+          a=(E_PATH
+            a=(PATH {global}
+              (PATH_SEG core)
+              (PATH_SEG panicking)
+              (PATH_SEG panic_str)))
+          (E_LIT_STR "expand/panics.rs")
+          (E_LIT_INT u32 "16" #16)
+          (E_LIT_INT u32 "5" #5)
+          (E_LIT_STR "not implemented")))
+      (STMT_EXPR {semi}
+        a=(E_CALL
+          a=(E_PATH
+            a=(PATH {global}
+              (PATH_SEG core)
+              (PATH_SEG panicking)
+              (PATH_SEG panic_str)))
+          (E_LIT_STR "expand/panics.rs")
+          (E_LIT_INT u32 "17" #17)
+          (E_LIT_INT u32 "5" #5)
+          (E_LIT_STR "not implemented: nope")))
+      (STMT_EXPR {semi}
+        a=(E_IF
+          a=(E_UNARY op:!
+            a=(E_PAREN
+              a=(E_BINARY op:==
+                a=(E_CALL
+                  a=(E_PATH
+                    a=(PATH
+                      (PATH_SEG foo)
+                      (PATH_SEG bar)))
+                  (E_LIT_INT "1" #1)
+                  (E_LIT_INT "2" #2))
+                b=(E_CALL
+                  a=(E_PATH
+                    a=(PATH
+                      (PATH_SEG Some)))
+                  (E_LIT_INT "3" #3)))))
+          b=(BLOCK
+            a=(E_CALL
+              a=(E_PATH
+                a=(PATH {global}
+                  (PATH_SEG core)
+                  (PATH_SEG panicking)
+                  (PATH_SEG panic_str)))
+              (E_LIT_STR "expand/panics.rs")
+              (E_LIT_INT u32 "18" #18)
+              (E_LIT_INT u32 "5" #5)
+              (E_LIT_STR "assertion failed: foo::bar(1, 2) == Some(3)")))))
+      (STMT_EXPR {semi}
+        a=(E_IF
+          a=(E_UNARY op:!
+            a=(E_PAREN
+              a=(E_BINARY op:<
+                a=(E_UNARY op:-
+                  a=(E_PATH
+                    a=(PATH
+                      (PATH_SEG a))))
+                b=(E_LIT_INT "0" #0))))
+          b=(BLOCK
+            a=(E_CALL
+              a=(E_PATH
+                a=(PATH {global}
+                  (PATH_SEG core)
+                  (PATH_SEG panicking)
+                  (PATH_SEG panic_str)))
+              (E_LIT_STR "expand/panics.rs")
+              (E_LIT_INT u32 "19" #19)
+              (E_LIT_INT u32 "5" #5)
+              (E_LIT_STR "assertion failed: -a < 0")))))
+      (STMT_EXPR {semi}
+        a=(E_IF
+          a=(E_UNARY op:!
+            a=(E_PAREN
+              a=(E_BINARY op:==
+                a=(E_REF
+                  a=(E_INDEX
+                    a=(E_PATH
+                      a=(PATH
+                        (PATH_SEG v)))
+                    b=(E_LIT_INT "0" #0)))
+                b=(E_REF
+                  a=(E_LIT_INT "1" #1)))))
+          b=(BLOCK
+            a=(E_CALL
+              a=(E_PATH
+                a=(PATH {global}
+                  (PATH_SEG core)
+                  (PATH_SEG panicking)
+                  (PATH_SEG panic_str)))
+              (E_LIT_STR "expand/panics.rs")
+              (E_LIT_INT u32 "20" #20)
+              (E_LIT_INT u32 "5" #5)
+              (E_LIT_STR "assertion failed: &v[0] == &1")))))
+      (STMT_EXPR {semi}
+        a=(E_IF
+          a=(E_UNARY op:!
+            a=(E_PAREN
+              a=(E_BINARY op:==
+                a=(E_CAST
+                  a=(E_PATH
+                    a=(PATH
+                      (PATH_SEG a)))
+                  b=(T_PATH
+                    a=(PATH
+                      (PATH_SEG u8))))
+                b=(E_LIT_INT "1" #1))))
+          b=(BLOCK
+            a=(E_CALL
+              a=(E_PATH
+                a=(PATH {global}
+                  (PATH_SEG core)
+                  (PATH_SEG panicking)
+                  (PATH_SEG panic_str)))
+              (E_LIT_STR "expand/panics.rs")
+              (E_LIT_INT u32 "21" #21)
+              (E_LIT_INT u32 "5" #5)
+              (E_LIT_STR "assertion failed: a as u8 == 1"))))))
+    (PARAM
+      a=(P_IDENT a)
+      b=(T_PATH
+        a=(PATH
+          (PATH_SEG i32))))
+    (PARAM
+      a=(P_IDENT v)
+      b=(T_PATH
+        a=(PATH
+          (PATH_SEG Vec {angle}
+            (T_PATH
+              a=(PATH
+                (PATH_SEG i32))))))))
+  (ITEM_FN main
+    c=(BLOCK)))

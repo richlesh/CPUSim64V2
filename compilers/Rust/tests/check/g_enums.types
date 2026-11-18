@@ -1,0 +1,392 @@
+(CRATE ->crate
+  (ITEM_ENUM Expr ->Expr
+    (VARIANT Num {tuple} ->Expr::Num
+      (FIELD ->Expr::Num::0
+        a=(T_PATH ->i64
+          a=(PATH ->i64
+            (PATH_SEG i64 ->i64)))))
+    (VARIANT Add {tuple} ->Expr::Add
+      (FIELD ->Expr::Add::0
+        a=(T_PATH ->core::boxed::Box
+          a=(PATH ->core::boxed::Box
+            (PATH_SEG Box {angle} ->core::boxed::Box
+              (T_PATH ->Expr
+                a=(PATH ->Expr
+                  (PATH_SEG Expr ->Expr)))))))
+      (FIELD ->Expr::Add::1
+        a=(T_PATH ->core::boxed::Box
+          a=(PATH ->core::boxed::Box
+            (PATH_SEG Box {angle} ->core::boxed::Box
+              (T_PATH ->Expr
+                a=(PATH ->Expr
+                  (PATH_SEG Expr ->Expr))))))))
+    (VARIANT Neg {tuple} ->Expr::Neg
+      (FIELD ->Expr::Neg::0
+        a=(T_PATH ->core::boxed::Box
+          a=(PATH ->core::boxed::Box
+            (PATH_SEG Box {angle} ->core::boxed::Box
+              (T_PATH ->Expr
+                a=(PATH ->Expr
+                  (PATH_SEG Expr ->Expr))))))))
+    (VARIANT Var {named} ->Expr::Var
+      (FIELD name ->Expr::Var::name
+        a=(T_PATH ->core::string::String
+          a=(PATH ->core::string::String
+            (PATH_SEG String ->core::string::String))))
+      (FIELD scale ->Expr::Var::scale
+        a=(T_PATH ->i64
+          a=(PATH ->i64
+            (PATH_SEG i64 ->i64))))))
+  (ITEM_ENUM Color ->Color
+    (VARIANT Red ->Color::Red)
+    (VARIANT Green ->Color::Green)
+    (VARIANT Blue ->Color::Blue))
+  (ITEM_FN eval ->eval
+    b=(T_PATH ->i64
+      a=(PATH ->i64
+        (PATH_SEG i64 ->i64)))
+    c=(BLOCK
+      a=(E_MATCH :i64
+        a=(E_PATH ->e :&Expr
+          a=(PATH ->e
+            (PATH_SEG e ->e)))
+        (ARM
+          a=(P_TUPLE_STRUCT ->Expr::Num :Expr
+            a=(PATH ->Expr::Num
+              (PATH_SEG Expr ->Expr)
+              (PATH_SEG Num ->Expr::Num))
+            (P_IDENT n ->n :i64))
+          c=(E_DEREF :i64
+            a=(E_PATH ->n :&i64
+              a=(PATH ->n
+                (PATH_SEG n ->n)))))
+        (ARM
+          a=(P_TUPLE_STRUCT ->Expr::Add :Expr
+            a=(PATH ->Expr::Add
+              (PATH_SEG Expr ->Expr)
+              (PATH_SEG Add ->Expr::Add))
+            (P_IDENT a ->a :Box<Expr>)
+            (P_IDENT b ->b :Box<Expr>))
+          c=(E_BINARY op:+ :i64
+            a=(E_CALL :i64
+              a=(E_PATH ->eval :fn(&Expr) -> i64 {eval}
+                a=(PATH ->eval
+                  (PATH_SEG eval ->eval)))
+              (E_PATH ->a :&Box<Expr>
+                a=(PATH ->a
+                  (PATH_SEG a ->a))))
+            b=(E_CALL :i64
+              a=(E_PATH ->eval :fn(&Expr) -> i64 {eval}
+                a=(PATH ->eval
+                  (PATH_SEG eval ->eval)))
+              (E_PATH ->b :&Box<Expr>
+                a=(PATH ->b
+                  (PATH_SEG b ->b))))))
+        (ARM
+          a=(P_TUPLE_STRUCT ->Expr::Neg :Expr
+            a=(PATH ->Expr::Neg
+              (PATH_SEG Expr ->Expr)
+              (PATH_SEG Neg ->Expr::Neg))
+            (P_IDENT a ->a :Box<Expr>))
+          c=(E_UNARY op:- :i64
+            a=(E_CALL :i64
+              a=(E_PATH ->eval :fn(&Expr) -> i64 {eval}
+                a=(PATH ->eval
+                  (PATH_SEG eval ->eval)))
+              (E_PATH ->a :&Box<Expr>
+                a=(PATH ->a
+                  (PATH_SEG a ->a))))))
+        (ARM
+          a=(P_STRUCT {rest} ->Expr::Var :Expr
+            a=(PATH ->Expr::Var
+              (PATH_SEG Expr ->Expr)
+              (PATH_SEG Var ->Expr::Var))
+            (P_FIELD scale {shorthand} ->Expr::Var::scale :i64
+              a=(P_IDENT scale ->scale :i64)))
+          c=(E_DEREF :i64
+            a=(E_PATH ->scale :&i64
+              a=(PATH ->scale
+                (PATH_SEG scale ->scale)))))))
+    (PARAM
+      a=(P_IDENT e ->e :&Expr)
+      b=(T_REF
+        a=(T_PATH ->Expr
+          a=(PATH ->Expr
+            (PATH_SEG Expr ->Expr))))))
+  (ITEM_FN code ->code
+    b=(T_PATH ->u8
+      a=(PATH ->u8
+        (PATH_SEG u8 ->u8)))
+    c=(BLOCK
+      a=(E_MATCH :u8
+        a=(E_PATH ->c :Color
+          a=(PATH ->c
+            (PATH_SEG c ->c)))
+        (ARM
+          a=(P_PATH ->Color::Red :Color
+            a=(PATH ->Color::Red
+              (PATH_SEG Color ->Color)
+              (PATH_SEG Red ->Color::Red)))
+          c=(E_LIT_INT "1" #1 :u8))
+        (ARM
+          a=(P_PATH ->Color::Green :Color
+            a=(PATH ->Color::Green
+              (PATH_SEG Color ->Color)
+              (PATH_SEG Green ->Color::Green)))
+          c=(E_LIT_INT "2" #2 :u8))
+        (ARM
+          a=(P_PATH ->Color::Blue :Color
+            a=(PATH ->Color::Blue
+              (PATH_SEG Color ->Color)
+              (PATH_SEG Blue ->Color::Blue)))
+          c=(E_LIT_INT "3" #3 :u8))))
+    (PARAM
+      a=(P_IDENT c ->c :Color)
+      b=(T_PATH ->Color
+        a=(PATH ->Color
+          (PATH_SEG Color ->Color)))))
+  (ITEM_FN classify ->classify
+    b=(T_PATH ->i32
+      a=(PATH ->i32
+        (PATH_SEG i32 ->i32)))
+    c=(BLOCK
+      a=(E_MATCH :i32
+        a=(E_PATH ->n :i32
+          a=(PATH ->n
+            (PATH_SEG n ->n)))
+        (ARM
+          a=(P_LIT :i32
+            a=(E_LIT_INT "0" #0 :i32))
+          c=(E_LIT_INT "0" #0 :i32))
+        (ARM
+          a=(P_OR :i32
+            (P_LIT :i32
+              a=(E_LIT_INT "1" #1 :i32))
+            (P_LIT :i32
+              a=(E_LIT_INT "2" #2 :i32)))
+          c=(E_LIT_INT "1" #1 :i32))
+        (ARM
+          a=(P_RANGE {inclusive} :i32
+            a=(P_LIT :i32
+              a=(E_LIT_INT "3" #3 :i32))
+            b=(P_LIT :i32
+              a=(E_LIT_INT "9" #9 :i32)))
+          c=(E_LIT_INT "2" #2 :i32))
+        (ARM
+          a=(P_IDENT x ->x :i32)
+          b=(E_BINARY op:< :bool
+            a=(E_PATH ->x :i32
+              a=(PATH ->x
+                (PATH_SEG x ->x)))
+            b=(E_LIT_INT "0" #0 :i32))
+          c=(E_UNARY op:- :i32
+            a=(E_LIT_INT "1" #1 :i32)))
+        (ARM
+          a=(P_WILD :i32)
+          c=(E_LIT_INT "3" #3 :i32))))
+    (PARAM
+      a=(P_IDENT n ->n :i32)
+      b=(T_PATH ->i32
+        a=(PATH ->i32
+          (PATH_SEG i32 ->i32)))))
+  (ITEM_FN opt ->opt
+    b=(T_PATH ->i32
+      a=(PATH ->i32
+        (PATH_SEG i32 ->i32)))
+    c=(BLOCK
+      (STMT_LET
+        a=(P_IDENT a ->a :i32)
+        c=(E_MATCH :i32
+          a=(E_PATH ->o :Option<i32>
+            a=(PATH ->o
+              (PATH_SEG o ->o)))
+          (ARM
+            a=(P_TUPLE_STRUCT ->core::option::Option::Some :Option<i32>
+              a=(PATH ->core::option::Option::Some
+                (PATH_SEG Some ->core::option::Option::Some))
+              (P_IDENT x ->x :i32))
+            c=(E_PATH ->x :i32
+              a=(PATH ->x
+                (PATH_SEG x ->x))))
+          (ARM
+            a=(P_IDENT None ->core::option::Option::None :Option<i32>)
+            c=(E_LIT_INT "0" #0 :i32))))
+      (STMT_LET
+        a=(P_IDENT b ->b :i32)
+        c=(E_IF :i32
+          a=(E_LET :bool
+            a=(P_TUPLE_STRUCT ->core::result::Result::Ok :Result<i32, String>
+              a=(PATH ->core::result::Result::Ok
+                (PATH_SEG Ok ->core::result::Result::Ok))
+              (P_IDENT v ->v :i32))
+            b=(E_PATH ->r :Result<i32, String>
+              a=(PATH ->r
+                (PATH_SEG r ->r))))
+          b=(BLOCK
+            a=(E_PATH ->v :i32
+              a=(PATH ->v
+                (PATH_SEG v ->v))))
+          c=(BLOCK :i32
+            a=(E_LIT_INT "0" #0 :i32))))
+      (STMT_LET
+        a=(P_IDENT t ->t :(i32, i32))
+        c=(E_TUPLE :(i32, i32)
+          (E_PATH ->a :i32
+            a=(PATH ->a
+              (PATH_SEG a ->a)))
+          (E_PATH ->b :i32
+            a=(PATH ->b
+              (PATH_SEG b ->b)))))
+      a=(E_MATCH :i32
+        a=(E_PATH ->t :(i32, i32)
+          a=(PATH ->t
+            (PATH_SEG t ->t)))
+        (ARM
+          a=(P_TUPLE :(i32, i32)
+            (P_LIT :i32
+              a=(E_LIT_INT "0" #0 :i32))
+            (P_IDENT y ->y :i32))
+          c=(E_PATH ->y :i32
+            a=(PATH ->y
+              (PATH_SEG y ->y))))
+        (ARM
+          a=(P_TUPLE :(i32, i32)
+            (P_IDENT x ->x :i32)
+            (P_LIT :i32
+              a=(E_LIT_INT "0" #0 :i32)))
+          c=(E_PATH ->x :i32
+            a=(PATH ->x
+              (PATH_SEG x ->x))))
+        (ARM
+          a=(P_TUPLE :(i32, i32)
+            (P_IDENT x ->x :i32)
+            (P_IDENT y ->y :i32))
+          c=(E_BINARY op:+ :i32
+            a=(E_PATH ->x :i32
+              a=(PATH ->x
+                (PATH_SEG x ->x)))
+            b=(E_PATH ->y :i32
+              a=(PATH ->y
+                (PATH_SEG y ->y)))))))
+    (PARAM
+      a=(P_IDENT o ->o :Option<i32>)
+      b=(T_PATH ->core::option::Option
+        a=(PATH ->core::option::Option
+          (PATH_SEG Option {angle} ->core::option::Option
+            (T_PATH ->i32
+              a=(PATH ->i32
+                (PATH_SEG i32 ->i32)))))))
+    (PARAM
+      a=(P_IDENT r ->r :Result<i32, String>)
+      b=(T_PATH ->core::result::Result
+        a=(PATH ->core::result::Result
+          (PATH_SEG Result {angle} ->core::result::Result
+            (T_PATH ->i32
+              a=(PATH ->i32
+                (PATH_SEG i32 ->i32)))
+            (T_PATH ->core::string::String
+              a=(PATH ->core::string::String
+                (PATH_SEG String ->core::string::String))))))))
+  (ITEM_FN refs ->refs
+    b=(T_PATH ->i32
+      a=(PATH ->i32
+        (PATH_SEG i32 ->i32)))
+    c=(BLOCK
+      (STMT_LET
+        a=(P_IDENT s {mut} ->s :i32)
+        c=(E_LIT_INT "0" #0 :i32))
+      (STMT_EXPR
+        a=(E_FOR :()
+          a=(P_REF :&(i32, bool)
+            a=(P_TUPLE :(i32, bool)
+              (P_IDENT n ->n :i32)
+              (P_IDENT flag ->flag :bool)))
+          b=(E_PATH ->v :&Vec<(i32, bool)>
+            a=(PATH ->v
+              (PATH_SEG v ->v)))
+          c=(BLOCK
+            a=(E_IF :()
+              a=(E_PATH ->flag :bool
+                a=(PATH ->flag
+                  (PATH_SEG flag ->flag)))
+              b=(BLOCK
+                (STMT_EXPR {semi}
+                  a=(E_ASSIGN_OP op:+ :()
+                    a=(E_PATH ->s :i32
+                      a=(PATH ->s
+                        (PATH_SEG s ->s)))
+                    b=(E_PATH ->n :i32
+                      a=(PATH ->n
+                        (PATH_SEG n ->n))))))))))
+      (STMT_EXPR
+        a=(E_FOR :()
+          a=(P_TUPLE :(i32, bool)
+            (P_IDENT n ->n :i32)
+            (P_WILD :bool))
+          b=(E_PATH ->v :&Vec<(i32, bool)>
+            a=(PATH ->v
+              (PATH_SEG v ->v)))
+          c=(BLOCK
+            (STMT_EXPR {semi}
+              a=(E_ASSIGN_OP op:+ :()
+                a=(E_PATH ->s :i32
+                  a=(PATH ->s
+                    (PATH_SEG s ->s)))
+                b=(E_DEREF :i32
+                  a=(E_PATH ->n :&i32
+                    a=(PATH ->n
+                      (PATH_SEG n ->n)))))))))
+      a=(E_PATH ->s :i32
+        a=(PATH ->s
+          (PATH_SEG s ->s))))
+    (PARAM
+      a=(P_IDENT v ->v :&Vec<(i32, bool)>)
+      b=(T_REF
+        a=(T_PATH ->core::vec::Vec
+          a=(PATH ->core::vec::Vec
+            (PATH_SEG Vec {angle} ->core::vec::Vec
+              (T_TUPLE
+                (T_PATH ->i32
+                  a=(PATH ->i32
+                    (PATH_SEG i32 ->i32)))
+                (T_PATH ->bool
+                  a=(PATH ->bool
+                    (PATH_SEG bool ->bool))))))))))
+  (ITEM_FN slices ->slices
+    b=(T_PATH ->i32
+      a=(PATH ->i32
+        (PATH_SEG i32 ->i32)))
+    c=(BLOCK
+      a=(E_MATCH :i32
+        a=(E_PATH ->v :&[i32]
+          a=(PATH ->v
+            (PATH_SEG v ->v)))
+        (ARM
+          a=(P_SLICE :[i32])
+          c=(E_LIT_INT "0" #0 :i32))
+        (ARM
+          a=(P_SLICE :[i32]
+            (P_IDENT x ->x :i32))
+          c=(E_DEREF :i32
+            a=(E_PATH ->x :&i32
+              a=(PATH ->x
+                (PATH_SEG x ->x)))))
+        (ARM
+          a=(P_SLICE :[i32]
+            (P_IDENT first ->first :i32)
+            (P_REST :[i32])
+            (P_IDENT last ->last :i32))
+          c=(E_BINARY op:+ -><impl>::add :i32
+            a=(E_PATH ->first :&i32
+              a=(PATH ->first
+                (PATH_SEG first ->first)))
+            b=(E_PATH ->last :&i32
+              a=(PATH ->last
+                (PATH_SEG last ->last)))))))
+    (PARAM
+      a=(P_IDENT v ->v :&[i32])
+      b=(T_REF
+        a=(T_SLICE
+          a=(T_PATH ->i32
+            a=(PATH ->i32
+              (PATH_SEG i32 ->i32))))))))

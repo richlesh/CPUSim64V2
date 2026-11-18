@@ -1,0 +1,29 @@
+[hello] -> [olleh] (5 bytes, 5 chars)
+   true
+   back true
+[héllo wörld] -> [dlröw olléh] (13 bytes, 11 chars)
+   true
+   back true
+[日本語のテキスト] -> [トスキテの語本日] (24 bytes, 8 chars)
+   true
+   back true
+[a😀b] -> [b😀a] (6 bytes, 3 chars)
+   true
+   back true
+[] -> [] (0 bytes, 0 chars)
+   true
+   back true
+[ñandú] -> [údnañ] (7 bytes, 5 chars)
+   true
+   back true
+fox brown quick the
+rebü looc eßörg
+true
+false
+true
+[1, 2, 3, 4]
+[97, 195, 177, 98]
+true
+añb
+87983
+語/本/日

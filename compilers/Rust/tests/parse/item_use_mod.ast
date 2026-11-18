@@ -1,0 +1,184 @@
+(CRATE
+  (ITEM_USE
+    a=(USE_TREE
+      a=(PATH
+        (PATH_SEG a))))
+  (ITEM_USE
+    a=(USE_TREE
+      a=(PATH
+        (PATH_SEG a)
+        (PATH_SEG b))))
+  (ITEM_USE
+    a=(USE_TREE as:d
+      a=(PATH
+        (PATH_SEG a)
+        (PATH_SEG b)
+        (PATH_SEG c))))
+  (ITEM_USE
+    a=(USE_TREE as:_
+      a=(PATH
+        (PATH_SEG a)
+        (PATH_SEG b))))
+  (ITEM_USE
+    a=(USE_TREE
+      a=(PATH {global}
+        (PATH_SEG a)
+        (PATH_SEG b))))
+  (ITEM_USE
+    a=(USE_TREE {glob}
+      a=(PATH
+        (PATH_SEG a))))
+  (ITEM_USE
+    a=(USE_TREE {glob}
+      a=(PATH
+        (PATH_SEG a)
+        (PATH_SEG b))))
+  (ITEM_USE
+    a=(USE_TREE {glob}
+      a=(PATH {global})))
+  (ITEM_USE
+    a=(USE_TREE {glob}))
+  (ITEM_USE
+    a=(USE_TREE {group}
+      a=(PATH
+        (PATH_SEG a))
+      (USE_TREE
+        a=(PATH
+          (PATH_SEG b)))
+      (USE_TREE
+        a=(PATH
+          (PATH_SEG c)))))
+  (ITEM_USE
+    a=(USE_TREE {group}
+      a=(PATH
+        (PATH_SEG a))
+      (USE_TREE
+        a=(PATH
+          (PATH_SEG b)))
+      (USE_TREE
+        a=(PATH
+          (PATH_SEG c)))))
+  (ITEM_USE
+    a=(USE_TREE {group}
+      a=(PATH
+        (PATH_SEG a))
+      (USE_TREE
+        a=(PATH
+          (PATH_SEG self)))
+      (USE_TREE
+        a=(PATH
+          (PATH_SEG b)
+          (PATH_SEG c)))
+      (USE_TREE {group}
+        a=(PATH
+          (PATH_SEG d))
+        (USE_TREE
+          a=(PATH
+            (PATH_SEG e)))
+        (USE_TREE as:g
+          a=(PATH
+            (PATH_SEG f))))
+      (USE_TREE {glob}
+        a=(PATH
+          (PATH_SEG h)))))
+  (ITEM_USE
+    a=(USE_TREE {group}
+      (USE_TREE
+        a=(PATH
+          (PATH_SEG a)))
+      (USE_TREE
+        a=(PATH
+          (PATH_SEG b)))))
+  (ITEM_USE
+    a=(USE_TREE {group}
+      a=(PATH {global})
+      (USE_TREE
+        a=(PATH
+          (PATH_SEG a)))
+      (USE_TREE
+        a=(PATH
+          (PATH_SEG b)))))
+  (ITEM_USE
+    a=(USE_TREE
+      a=(PATH
+        (PATH_SEG self)
+        (PATH_SEG a))))
+  (ITEM_USE
+    a=(USE_TREE
+      a=(PATH
+        (PATH_SEG super)
+        (PATH_SEG a))))
+  (ITEM_USE
+    a=(USE_TREE
+      a=(PATH
+        (PATH_SEG super)
+        (PATH_SEG super)
+        (PATH_SEG a)
+        (PATH_SEG b))))
+  (ITEM_USE
+    a=(USE_TREE
+      a=(PATH
+        (PATH_SEG crate)
+        (PATH_SEG a)
+        (PATH_SEG b))))
+  (ITEM_USE
+    a=(USE_TREE {group}
+      a=(PATH
+        (PATH_SEG crate))
+      (USE_TREE
+        a=(PATH
+          (PATH_SEG a)))
+      (USE_TREE
+        a=(PATH
+          (PATH_SEG b)))))
+  (ITEM_USE
+    a=(USE_TREE {group}
+      a=(PATH
+        (PATH_SEG a))))
+  (ITEM_USE
+    a=(USE_TREE {group}
+      a=(PATH
+        (PATH_SEG a))
+      (USE_TREE as:me
+        a=(PATH
+          (PATH_SEG self)))))
+  (ITEM_USE
+    vis=(VIS)
+    a=(USE_TREE
+      a=(PATH
+        (PATH_SEG a)
+        (PATH_SEG b))))
+  (ITEM_USE
+    vis=(VIS {vis_crate})
+    a=(USE_TREE as:c
+      a=(PATH
+        (PATH_SEG a)
+        (PATH_SEG b))))
+  (ITEM_EXTERN_CRATE foo)
+  (ITEM_EXTERN_CRATE foo as:bar)
+  (ITEM_EXTERN_CRATE self as:me)
+  (ITEM_EXTERN_CRATE foo as:_)
+  (ITEM_EXTERN_CRATE baz
+    vis=(VIS))
+  (ITEM_MOD empty {inline})
+  (ITEM_MOD outer {inline}
+    (ITEM_MOD inner {inline}
+      (ITEM_FN f
+        c=(BLOCK)))
+    (ITEM_FN g
+      vis=(VIS)
+      c=(BLOCK)))
+  (ITEM_MOD declared)
+  (ITEM_MOD public
+    vis=(VIS))
+  (ITEM_MOD in_crate {inline}
+    vis=(VIS {vis_crate})
+    (ITEM_USE
+      a=(USE_TREE {glob}
+        a=(PATH
+          (PATH_SEG super)))))
+  (ITEM_MOD with_attrs {inline}
+    @(ATTR allow {inner,delim_paren} toks:1 dead_code)
+    @(ATTR doc " inner doc" {inner,doc,eq})
+    (ITEM_STRUCT S))
+  (ITEM_MOD u {unsafe,inline}))

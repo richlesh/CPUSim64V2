@@ -1,0 +1,302 @@
+(CRATE
+  (ITEM_STRUCT Unit)
+  (ITEM_STRUCT Empty {named})
+  (ITEM_STRUCT Point {named}
+    (FIELD x
+      a=(T_PATH
+        a=(PATH
+          (PATH_SEG i32))))
+    (FIELD y
+      a=(T_PATH
+        a=(PATH
+          (PATH_SEG i32)))))
+  (ITEM_STRUCT Trailing {named}
+    (FIELD x
+      a=(T_PATH
+        a=(PATH
+          (PATH_SEG i32))))
+    (FIELD y
+      a=(T_PATH
+        a=(PATH
+          (PATH_SEG i32)))))
+  (ITEM_STRUCT Vis {named}
+    vis=(VIS)
+    (FIELD x
+      vis=(VIS)
+      a=(T_PATH
+        a=(PATH
+          (PATH_SEG i32))))
+    (FIELD y
+      vis=(VIS {vis_crate})
+      a=(T_PATH
+        a=(PATH
+          (PATH_SEG i32))))
+    (FIELD z
+      vis=(VIS {vis_super})
+      a=(T_PATH
+        a=(PATH
+          (PATH_SEG i32))))
+    (FIELD w
+      a=(T_PATH
+        a=(PATH
+          (PATH_SEG i32)))))
+  (ITEM_STRUCT Pair {tuple}
+    (FIELD
+      a=(T_PATH
+        a=(PATH
+          (PATH_SEG i32))))
+    (FIELD
+      a=(T_PATH
+        a=(PATH
+          (PATH_SEG i64)))))
+  (ITEM_STRUCT PairVis {tuple}
+    (FIELD
+      vis=(VIS)
+      a=(T_PATH
+        a=(PATH
+          (PATH_SEG i32))))
+    (FIELD
+      vis=(VIS {vis_crate})
+      a=(T_PATH
+        a=(PATH
+          (PATH_SEG T))))
+    (FIELD
+      vis=(VIS)
+      a=(T_TUPLE
+        (T_PATH
+          a=(PATH
+            (PATH_SEG A)))
+        (T_PATH
+          a=(PATH
+            (PATH_SEG B))))))
+  (ITEM_STRUCT One {tuple}
+    (FIELD
+      a=(T_PATH
+        a=(PATH
+          (PATH_SEG i32)))))
+  (ITEM_STRUCT EmptyTuple {tuple})
+  (ITEM_STRUCT Gen {named}
+    a=(GENERICS
+      (GEN_TYPE T)
+      (GEN_TYPE U
+        a=(T_PATH
+          a=(PATH
+            (PATH_SEG i32)))
+        b=(BOUNDS
+          (BOUND_TRAIT
+            a=(PATH
+              (PATH_SEG Clone))))))
+    (FIELD t
+      a=(T_PATH
+        a=(PATH
+          (PATH_SEG T))))
+    (FIELD u
+      a=(T_PATH
+        a=(PATH
+          (PATH_SEG U)))))
+  (ITEM_STRUCT GenTuple {tuple}
+    a=(GENERICS
+      (GEN_TYPE T))
+    d=(WHERE
+      (WHERE_TYPE
+        a=(T_PATH
+          a=(PATH
+            (PATH_SEG T)))
+        b=(BOUNDS
+          (BOUND_TRAIT
+            a=(PATH
+              (PATH_SEG Copy))))))
+    (FIELD
+      a=(T_PATH
+        a=(PATH
+          (PATH_SEG T))))
+    (FIELD
+      a=(T_PATH
+        a=(PATH
+          (PATH_SEG Vec {angle}
+            (T_PATH
+              a=(PATH
+                (PATH_SEG T))))))))
+  (ITEM_STRUCT GenWhere {named}
+    a=(GENERICS
+      (GEN_TYPE T))
+    d=(WHERE
+      (WHERE_TYPE
+        a=(T_PATH
+          a=(PATH
+            (PATH_SEG T)))
+        b=(BOUNDS
+          (BOUND_TRAIT
+            a=(PATH
+              (PATH_SEG Clone))))))
+    (FIELD t
+      a=(T_PATH
+        a=(PATH
+          (PATH_SEG T)))))
+  (ITEM_STRUCT GenUnit
+    a=(GENERICS
+      (GEN_TYPE T)))
+  (ITEM_STRUCT Life {named}
+    a=(GENERICS
+      (GEN_LIFETIME 'a)
+      (GEN_LIFETIME 'b
+        b=(BOUNDS
+          (BOUND_LIFETIME 'a))))
+    (FIELD r
+      a=(T_REF
+        a=(T_PATH
+          a=(PATH
+            (PATH_SEG i32)))
+        b=(LIFETIME 'a)))
+    (FIELD s
+      a=(T_REF {mut}
+        a=(T_PATH
+          a=(PATH
+            (PATH_SEG i32)))
+        b=(LIFETIME 'b))))
+  (ITEM_STRUCT Arr {named}
+    a=(GENERICS
+      (GEN_CONST N
+        a=(T_PATH
+          a=(PATH
+            (PATH_SEG usize)))))
+    (FIELD a
+      a=(T_ARRAY
+        a=(T_PATH
+          a=(PATH
+            (PATH_SEG u8)))
+        b=(E_PATH
+          a=(PATH
+            (PATH_SEG N))))))
+  (ITEM_STRUCT Attrs {named}
+    (FIELD a
+      @(ATTR allow {delim_paren} toks:1 dead_code)
+      a=(T_PATH
+        a=(PATH
+          (PATH_SEG i32))))
+    (FIELD b
+      vis=(VIS)
+      @(ATTR doc " doc on field" {doc,eq})
+      a=(T_PATH
+        a=(PATH
+          (PATH_SEG i32)))))
+  (ITEM_ENUM E
+    (VARIANT A)
+    (VARIANT B)
+    (VARIANT C))
+  (ITEM_ENUM Trail
+    (VARIANT A)
+    (VARIANT B))
+  (ITEM_ENUM Data
+    (VARIANT Unit)
+    (VARIANT Tuple {tuple}
+      (FIELD
+        a=(T_PATH
+          a=(PATH
+            (PATH_SEG i32))))
+      (FIELD
+        a=(T_PATH
+          a=(PATH
+            (PATH_SEG String)))))
+    (VARIANT Named {named}
+      (FIELD x
+        a=(T_PATH
+          a=(PATH
+            (PATH_SEG i32))))
+      (FIELD y
+        a=(T_PATH
+          a=(PATH
+            (PATH_SEG i32)))))
+    (VARIANT Empty {named})
+    (VARIANT EmptyT {tuple})
+    (VARIANT Attr {tuple}
+      @(ATTR doc {eq}
+        a=(E_LIT_STR "hidden"))
+      (FIELD
+        a=(T_PATH
+          a=(PATH
+            (PATH_SEG u8)))))
+    (VARIANT Disc
+      a=(E_LIT_INT "5" #5))
+    (VARIANT Neg
+      a=(E_UNARY op:-
+        a=(E_LIT_INT "1" #1))))
+  (ITEM_ENUM Gen2
+    a=(GENERICS
+      (GEN_TYPE T)
+      (GEN_TYPE E))
+    (VARIANT Ok {tuple}
+      (FIELD
+        a=(T_PATH
+          a=(PATH
+            (PATH_SEG T)))))
+    (VARIANT Err {tuple}
+      (FIELD
+        a=(T_PATH
+          a=(PATH
+            (PATH_SEG E))))))
+  (ITEM_ENUM WithWhere
+    a=(GENERICS
+      (GEN_TYPE T))
+    d=(WHERE
+      (WHERE_TYPE
+        a=(T_PATH
+          a=(PATH
+            (PATH_SEG T)))
+        b=(BOUNDS
+          (BOUND_TRAIT
+            a=(PATH
+              (PATH_SEG Clone))))))
+    (VARIANT V {tuple}
+      (FIELD
+        a=(T_PATH
+          a=(PATH
+            (PATH_SEG T))))))
+  (ITEM_ENUM Discr
+    (VARIANT A
+      a=(E_LIT_INT "1" #1))
+    (VARIANT B
+      a=(E_LIT_INT "2" #2))
+    (VARIANT C))
+  (ITEM_ENUM PubEnum
+    vis=(VIS)
+    (VARIANT V {tuple}
+      (FIELD
+        vis=(VIS)
+        a=(T_PATH
+          a=(PATH
+            (PATH_SEG i32))))))
+  (ITEM_UNION U {named}
+    (FIELD a
+      a=(T_PATH
+        a=(PATH
+          (PATH_SEG u32))))
+    (FIELD b
+      a=(T_PATH
+        a=(PATH
+          (PATH_SEG f32)))))
+  (ITEM_UNION Gen3 {named}
+    a=(GENERICS
+      (GEN_TYPE T
+        b=(BOUNDS
+          (BOUND_TRAIT
+            a=(PATH
+              (PATH_SEG Copy))))))
+    d=(WHERE
+      (WHERE_TYPE
+        a=(T_PATH
+          a=(PATH
+            (PATH_SEG T)))
+        b=(BOUNDS
+          (BOUND_TRAIT
+            a=(PATH
+              (PATH_SEG Sized))))))
+    (FIELD t
+      a=(T_PATH
+        a=(PATH
+          (PATH_SEG T)))))
+  (ITEM_FN uses_union_ident
+    c=(BLOCK
+      (STMT_LET
+        a=(P_IDENT union)
+        c=(E_LIT_INT "3" #3)))))

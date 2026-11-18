@@ -1,0 +1,36 @@
+Version { major: 1, minor: 2, tag: "a" }
+true false
+true false
+Some(Less)
+Mid 10
+true
+Equal
+High
+[Low, Mid, High]
+Quit
+Move { x: 1, y: -1 }
+Write("hi")
+Color(1, 2, 3)
+true
+false
+Move {
+    x: 1,
+    y: -1,
+}
+Config { name: "", retries: 0, verbose: false, ratio: 0.0, tags: [], limit: None }
+Config { name: "x", retries: 3, verbose: false, ratio: 0.0, tags: [], limit: None }
+false
+Config {
+    name: "x",
+    retries: 3,
+    verbose: false,
+    ratio: 0.0,
+    tags: [],
+    limit: None,
+}
+Id(5) Id(5) true
+Id(9)
+Unit
+Wrapper { inner: [Some(1), None] }
+true
+(Id(1), Low)

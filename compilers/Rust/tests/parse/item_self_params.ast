@@ -1,0 +1,125 @@
+(CRATE
+  (ITEM_STRUCT S)
+  (ITEM_IMPL
+    b=(T_PATH
+      a=(PATH
+        (PATH_SEG S)))
+    (ITEM_FN a
+      c=(BLOCK)
+      (SELF_PARAM))
+    (ITEM_FN b
+      c=(BLOCK)
+      (SELF_PARAM {mut}))
+    (ITEM_FN c
+      c=(BLOCK)
+      (SELF_PARAM {ref}))
+    (ITEM_FN d
+      c=(BLOCK)
+      (SELF_PARAM {mut,ref}))
+    (ITEM_FN e
+      c=(BLOCK)
+      (SELF_PARAM {ref}
+        a=(LIFETIME 'a)))
+    (ITEM_FN f
+      c=(BLOCK)
+      (SELF_PARAM {mut,ref}
+        a=(LIFETIME 'a))
+      (PARAM
+        a=(P_IDENT x)
+        b=(T_PATH
+          a=(PATH
+            (PATH_SEG i32)))))
+    (ITEM_FN g
+      c=(BLOCK)
+      (SELF_PARAM {typed}
+        b=(T_PATH
+          a=(PATH
+            (PATH_SEG Box {angle}
+              (T_PATH
+                a=(PATH
+                  (PATH_SEG Self))))))))
+    (ITEM_FN h
+      c=(BLOCK)
+      (SELF_PARAM {mut,typed}
+        b=(T_PATH
+          a=(PATH
+            (PATH_SEG Self))))
+      (PARAM
+        a=(P_IDENT y)
+        b=(T_PATH
+          a=(PATH
+            (PATH_SEG u8)))))
+    (ITEM_FN i
+      c=(BLOCK)
+      (SELF_PARAM {typed}
+        b=(T_REF
+          a=(T_PATH
+            a=(PATH
+              (PATH_SEG Self))))))
+    (ITEM_FN j
+      b=(T_PATH
+        a=(PATH
+          (PATH_SEG bool)))
+      c=(BLOCK
+        a=(E_LIT_BOOL #1))
+      (SELF_PARAM {ref})
+      (PARAM
+        a=(P_IDENT other)
+        b=(T_REF
+          a=(T_PATH
+            a=(PATH
+              (PATH_SEG Self))))))
+    (ITEM_FN k
+      c=(BLOCK)
+      (PARAM
+        a=(P_IDENT x)
+        b=(T_PATH
+          a=(PATH
+            (PATH_SEG i32))))
+      (PARAM
+        a=(P_IDENT self_like)
+        b=(T_PATH
+          a=(PATH
+            (PATH_SEG i32)))))
+    (ITEM_FN l
+      c=(BLOCK)
+      (PARAM
+        a=(P_REF {mut}
+          a=(P_IDENT x))
+        b=(T_REF {mut}
+          a=(T_PATH
+            a=(PATH
+              (PATH_SEG i32)))))))
+  (ITEM_TRAIT T
+    (ITEM_FN m
+      (SELF_PARAM {ref}))
+    (ITEM_FN n
+      b=(T_PATH
+        a=(PATH
+          (PATH_SEG Option {angle}
+            (T_PATH
+              a=(PATH
+                (PATH_SEG i32))))))
+      (SELF_PARAM {mut,ref})
+      (PARAM
+        a=(P_IDENT v)
+        b=(T_PATH
+          a=(PATH
+            (PATH_SEG Vec {angle}
+              (T_PATH
+                a=(PATH
+                  (PATH_SEG i32))))))))
+    (ITEM_FN o
+      b=(T_PATH
+        a=(PATH
+          (PATH_SEG Self)))
+      d=(WHERE
+        (WHERE_TYPE
+          a=(T_PATH
+            a=(PATH
+              (PATH_SEG Self)))
+          b=(BOUNDS
+            (BOUND_TRAIT
+              a=(PATH
+                (PATH_SEG Sized))))))
+      (SELF_PARAM))))

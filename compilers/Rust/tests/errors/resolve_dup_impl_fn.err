@@ -1,0 +1,1 @@
+errors/resolve_dup_impl_fn.rs:4: error: duplicate definitions with name `f`

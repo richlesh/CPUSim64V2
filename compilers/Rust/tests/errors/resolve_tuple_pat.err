@@ -1,0 +1,1 @@
+errors/resolve_tuple_pat.rs:3: error: let bindings cannot shadow tuple structs

@@ -1,0 +1,13 @@
+sum = 10
+path c = [4, 2, 1]
+root strong=1 weak=2
+a strong=2 weak=1
+c parent = 2
+dropped a, b handles
+children of root: 2
+drop node 1
+drop node 2
+drop node 3
+after root dropped, c parent alive = false
+end
+drop node 4

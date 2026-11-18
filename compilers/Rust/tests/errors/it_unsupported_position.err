@@ -1,0 +1,1 @@
+errors/it_unsupported_position.rs:4: error: `impl Trait` is not supported here (only in function argument and return types)

@@ -1,0 +1,52 @@
+2:1 KW let
+2:5 IDENT café
+2:10 EQ =
+2:12 INT 1 =1
+2:13 SEMI ;
+2:15 KW let
+2:19 IDENT π
+2:21 EQ =
+2:23 FLOAT 3.14 =3.14
+2:27 SEMI ;
+2:29 KW let
+2:33 IDENT 日本語
+2:37 EQ =
+2:39 STR "\xE6\x97\xA5\xE6\x9C\xAC\xE8\xAA\x9E"
+2:44 SEMI ;
+2:46 KW let
+2:50 IDENT Привет
+2:57 EQ =
+2:59 CHAR U+044F
+2:62 SEMI ;
+2:64 KW let
+2:68 IDENT naïve_x2
+2:77 EQ =
+2:79 IDENT ñ
+2:80 SEMI ;
+3:1 KW let
+3:5 IDENT r#é
+3:9 EQ =
+3:11 INT 1 =1
+3:12 SEMI ;
+4:1 KW let
+4:5 IDENT s
+4:7 EQ =
+4:9 STR "emoji \xF0\x9F\x98\x80 and \xC3\x9F and \xE2\x82\xAC and \xF0\x9D\x84\x9E"
+4:36 SEMI ;
+5:1 KW let
+5:5 IDENT t
+5:7 EQ =
+5:9 STR "raw \xF0\x9F\x98\x80" raw
+5:17 SEMI ;
+6:1 KW let
+6:5 IDENT b
+6:7 EQ =
+6:9 STR "tab\tinside"
+6:21 SEMI ;
+9:1 IDENT x
+9:3 EQ =
+9:5 CHAR U+00E9
+9:9 PLUS +
+9:11 CHAR U+1F600
+9:14 SEMI ;
+10:1 EOF

@@ -1,0 +1,1 @@
+errors/resolve_import_dup.rs:4: error: the name `f` is defined multiple times

@@ -1,0 +1,1 @@
+errors/collect_not_member.rs:5: error: method `g` is not a member of trait `T`

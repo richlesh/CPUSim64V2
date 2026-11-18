@@ -1,0 +1,1 @@
+errors/moves_index.rs:3: error: cannot move out of index of `Vec<String>`

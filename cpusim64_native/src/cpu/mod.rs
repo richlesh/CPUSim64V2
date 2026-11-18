@@ -319,6 +319,75 @@ impl Simulator {
         Ok(())
     }
 
+    /// Atomic read-modify-write of one byte (ports `memWriteByte`). `ea` is a
+    /// byte address: word = `ea >> 3`, byte index = `ea & 7` with index 0 the
+    /// most significant byte. Same access checks as `mem_write`.
+    pub fn mem_write_byte(&mut self, ea: i64, val: i64) -> CpuResult<()> {
+        let addr = ea >> 3;
+        let shift = (7 - (ea & 7) as u32) * 8;
+        let mask: i64 = 0xFFi64 << shift;
+        let bits: i64 = (val & 0xFF) << shift;
+        if addr < 0 {
+            // Shared-memory range is not supported for byte stores: the word
+            // index `addr - i64::MIN` is far beyond any allocation.
+            let r = memory::shared_mem_read(addr).and_then(|cur| {
+                memory::shared_mem_write(addr, (cur & !mask) | bits)
+            });
+            return match r {
+                Ok(()) => Ok(()),
+                Err(_) => Err(CpuException(format!(
+                    "Illegal shared memory write access of {:08x}",
+                    addr
+                ))),
+            };
+        }
+        if addr >= self.stack_base {
+            return Err(CpuException(format!(
+                "Illegal stack write access of {:08x}",
+                addr
+            )));
+        }
+        for &(lo, hi) in &self.protected_memory {
+            if addr >= lo && addr < hi {
+                return Err(CpuException(format!(
+                    "Write access violation of {:08x}",
+                    addr
+                )));
+            }
+        }
+        let illegal = || {
+            CpuException(format!("Illegal memory write access of {:08x}", addr))
+        };
+        if addr < self.heap_limit {
+            let i = addr as usize;
+            if i >= self.mem.len() {
+                return Err(illegal());
+            }
+            loop {
+                let cur = self.mem.get(i);
+                if self.mem.compare_and_set(i, cur, (cur & !mask) | bits) {
+                    break;
+                }
+            }
+        } else {
+            let idx = addr - self.heap_limit;
+            if idx < 0 || idx as usize >= self.stack.len() {
+                return Err(illegal());
+            }
+            let cur = self.stack[idx as usize];
+            self.stack[idx as usize] = (cur & !mask) | bits;
+        }
+        self.cycles += 1;
+        Ok(())
+    }
+
+    /// Reads one byte (zero-extended) at byte address `ea` (LDB).
+    pub fn mem_read_byte(&mut self, ea: i64) -> CpuResult<i64> {
+        let word = self.mem_read(ea >> 3)?;
+        let shift = (7 - (ea & 7) as u32) * 8;
+        Ok(((word as u64 >> shift) & 0xFF) as i64)
+    }
+
     pub fn protect(&mut self, addr: i64, limit: i64) -> CpuResult<()> {
         if addr < 0 || addr > self.heap_start {
             return Err(CpuException(format!("Illegal protect base addr at {}", addr)));

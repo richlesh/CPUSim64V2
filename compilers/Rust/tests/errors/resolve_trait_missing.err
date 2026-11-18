@@ -1,0 +1,1 @@
+errors/resolve_trait_missing.rs:2: error: cannot find trait `Missing` in this scope

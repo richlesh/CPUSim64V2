@@ -1,0 +1,20 @@
+strong=1 weak=0
+strong=2 name=a
+inner strong=3 ptr_eq=true
+after inner strong=2
+weak=1 upgrade=true
+strong after upgrade temp=2
+dropped a, strong=1
+drop a
+upgrade after drop: true
+10 20 true
+true
+0
+hello len=5
+get_mut shared: true
+Ok(2)
+[1, 2, 3, 4] [1, 2, 3] false
+still shared 2
+true
+end t
+drop t

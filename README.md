@@ -15,7 +15,7 @@ It includes:
 - A cycle-accurate simulation engine  
 - A native Rust reimplementation of the simulator (`cpusim64_native`) for faster, standalone execution  
 - A simple IDE with code editor, console, and integrated run/debug  
-- A pluggable compiler framework in the IDE, with a **C11 compiler written in CPUSim64 assembly** and its own C standard library (`compilers/C11`).  The C11 compiler is then used to bootstrap a **VB.NET compiler** (`compilers/VBNET`), an **MMIX translator** that runs Knuth's [MMIXAL](http://mmix.cs.hm.edu/) programs (`compilers/MMIX`), and a **C++ translator** (`compilers/C++14`) that runs C++14 (with some C++17 additions) programs through the C11 compiler.  
+- A pluggable compiler framework in the IDE, with a **C11 compiler written in CPUSim64 assembly** and its own C standard library (`compilers/C11`).  The C11 compiler is then used to bootstrap a **VB.NET compiler** (`compilers/VBNET`), an **MMIX translator** that runs Knuth's [MMIXAL](http://mmix.cs.hm.edu/) programs (`compilers/MMIX`), and a **C++ translator** (`compilers/C++14`) that runs C++14 (with some C++17 additions) programs through the C11 compiler, and a **Rust translator** (`compilers/Rust`) that runs Rust 2021 programs through the C11 compiler.  
 - A native CLI tool for command-line workflows  
 - An agentic AI assistant with RAG-based context retrieval for writing and debugging assembly code  
 - Native installers for macOS, Windows, and Linux (x64 and ARM64)  
@@ -93,7 +93,8 @@ A C compiler written entirely in CPUSim64 assembly.  It compiles a core subset o
 - `#line N "file"` renumbers the following lines (and names the file in `.source` directives and error messages), so a translator that emits C can be debugged on its own source  
 - POSIX subset `<unistd.h>` (`fork`, `getpid`, `sysconf(_SC_NPROCESSORS_ONLN)`, `sleep`, `usleep`) and `<sys/wait.h>` (`waitpid`, `wait`)  
 - CPUSim64's own `<_Thread.h>`: threads, `fork`, shared memory, atomics, spin locks and mutexes  
-- 137 regression tests: `compilers/C11/tests/run_tests.sh`; C versions of the documentation projects in `compilers/C11/projects`  
+- Byte intrinsics `__ldb(byte_addr)` / `__stb(byte_addr, v)` compile to the LDB / STB instructions (byte address = word address * 8 + index)  
+- 144 regression tests: `compilers/C11/tests/run_tests.sh`; C versions of the documentation projects in `compilers/C11/projects`  
 
 ### **MMIX Translator (`compilers/MMIX`)**
 Runs programs written in MMIXAL, the assembly language of Knuth's 64-bit MMIX computer, by translating them to CPUSim64 assembly (File → New Compiler → MMIX, or `compilers/MMIX/obj/mmixc.o64 prog.mms` on a simulator).
@@ -113,6 +114,16 @@ Runs C++ programs (File → New Compiler → C++14) by translating them to C for
 - Not supported: virtual base classes, pointers to members, user-defined literals, fold expressions  
 - Regression tests compared with g++: `compilers/C++14/tests/run_tests.sh` (`HOST=1`)  
 
+### **Rust Compiler (`compilers/Rust`)**
+Runs Rust programs (File → New Compiler → Rust) by translating them to C for the C11 compiler (`translate_to: C11`); `#line` directives make the debugger show the `.rs` lines.
+- The translator `rustc` is written in portable C (`src/`) and compiled by the C11 compiler: lexer, parser, macro expansion, name resolution, type inference with trait resolution, move and mutability checks, and C code generation  
+- Rust 2021 with structs, enums, traits and `dyn Trait`, generics (monomorphized), closures, pattern matching, `?`, `derive`, `macro_rules!`, and the usual macros and format strings  
+- Its own standard library in Rust (`lib/`): `Option`, `Result`, `Box`, `String`, `Vec`, slices, iterators, `HashMap`, `HashSet`, `BTreeMap`, `BTreeSet`, `VecDeque`, `BinaryHeap`, `Rc`, `RefCell`, `fmt`, `io`; `Arc` and `Mutex` are single-threaded stand-ins  
+- Panics and integer overflow checks behave like a rustc debug build (exit status 101); types, moves and mutability are checked, lifetimes are not  
+- `impl Trait` in argument and return position (not in `let` bindings or trait method returns)  
+- Not supported: `i128`/`u128`, `async`, procedural macros, inline `unsafe` asm, threads; `f32` is an `f64`  
+- Regression tests compared with rustc: `compilers/Rust/tests/run_tests.sh` (`HOST=1`)  
+
 
 ### **VB.NET Compiler (`compilers/VBNET`)**
 Compiles Visual Basic .NET programs (File → New Compiler → VBNET) to CPUSim64 assembly; the debugger shows the `.vb` lines.
@@ -125,7 +136,7 @@ Compiles Visual Basic .NET programs (File → New Compiler → VBNET) to CPUSim6
 
 ### **Virtual CPU**
 - Custom 64-bit RISC-style architecture  
-- Support for integer/float arithmetic, branching, memory operations, and pseudo-instructions  
+- Support for integer/float arithmetic, branching, memory operations (including byte-addressed `LDB`/`STB`), and pseudo-instructions  
 - Configurable registers, memory size, and device interfaces  
 
 ### **Assembler**
@@ -146,6 +157,7 @@ Compiles Visual Basic .NET programs (File → New Compiler → VBNET) to CPUSim6
 
 ### **Simulation Engine**
 - Cycle-accurate execution  
+- Byte-addressed memory access: `LDB` (opcode 39) loads a zero-extended byte and `STB` (opcode 40) stores the low 8 bits of a register as an atomic read-modify-write of one byte (byte address = word address × 8 + index, index 0 = most significant byte), with the same cycle costs as `LOAD` and `STORE`  
 - Memory size (`--mem=`, in 8-byte words): the Java simulator keeps memory in one Java array, so it is limited to about 2Gi words (2³¹ − 9 words, 16 GiB), and larger sizes are reduced to that; the native simulator has no such limit (see below)  
 - Random-access files: `iOPEN_RANDOM_ACCESS_FILE`, `iSEEK` and `iTELL` (with `SEEK_BEGIN`/`SEEK_END`) in both the Java and native simulators  
 - `iTIME` returns the wall-clock time in nanoseconds since the Unix epoch (UTC)  
@@ -157,7 +169,7 @@ Compiles Visual Basic .NET programs (File → New Compiler → VBNET) to CPUSim6
 
 ### **Native Rust Simulator (`cpusim64_native`)**
 - Standalone Rust port of the CPUSim64 interpreter for faster, dependency-free execution  
-- Full behavioral parity with the Java simulator: all 39 opcodes, the complete interrupt/syscall surface, endian-aware port I/O, file I/O, the Fibonacci-block heap allocator, and the fork/thread/shared-memory concurrency model  
+- Full behavioral parity with the Java simulator: all 41 opcodes, the complete interrupt/syscall surface, endian-aware port I/O, file I/O, the Fibonacci-block heap allocator, and the fork/thread/shared-memory concurrency model  
 - Byte-for-byte identical `printCPUState`, dump, and trace output — including a port of the OpenJDK Schubfach `Double.toString` algorithm so even subnormal floats format exactly like Java  
 - Reads the same gzip-compressed `.o64` object files and `.sym1` symbol maps; accepts the same CLI flags (`--debug`, `--trace`, `--verbose`, `--mem=`, `--stack=`)  
 - 64-bit memory: `--mem=` and `--stack=` take 64-bit word counts, addresses are full 64-bit values (non-negative addresses for program memory, negative ones for shared memory), and a single `malloc` block can be larger than 2³¹ words; the limit is the computer's RAM, since all of the memory is allocated at start-up (and copied by `fork`). Programs that use more than about 2Gi words run only on the native simulator. The IDE's Heap field is clamped to the computer's RAM / 8 words when the native simulator is selected (and to the Java limit otherwise, and always in the debugger, which uses the Java simulator)  
@@ -272,7 +284,7 @@ CPUSim64V2/
 │       ├── ports/                   (stdio / file / raw port handlers)
 │       └── javacompat/              (Java Formatter + Schubfach Double.toString)
 │
-├── compilers/                       (IDE compiler plug-ins: C11/, MMIX/, C++14/, VBNET/)
+├── compilers/                       (IDE compiler plug-ins: C11/, MMIX/, C++14/, Rust/, VBNET/)
 │
 ├── ide/                             (IDE Module)
 │   ├── pom.xml

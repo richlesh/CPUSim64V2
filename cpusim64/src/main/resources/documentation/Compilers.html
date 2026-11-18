@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>CPUSim64 Compilers</title>
+	<meta name="description" content="Compiler plug-in architecture and the C11, C++14, VB.NET, MMIX and Rust compilers of CPUSim64">
+	<link rel="canonical" href="https://www.lesh.cloud/cpusim64/Compilers.html">
+	<meta name="robots" content="max-image-preview:large">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="author" content="Richard Lesh">
+	<link rel="stylesheet" type="text/css" href="styles.css">
+	<style>
+		table { margin: 0 auto 1em auto; }
+		td.mono, th.mono { font-family: "JetBrains Mono", monospace; }
+		pre { overflow-x: auto; }
+	</style>
+</head>
+<body>
+<h1>CPUSim64 Compilers</h1>
+<p>The IDE can edit, compile, run and debug programs in languages other than CPUSim64 assembly. Each language is a <em>compiler plug-in</em>: a folder of files that the IDE finds at start-up and lists under <b>File &rarr; New Compiler</b>. A plug-in contains a compiler that is itself a CPUSim64 program (assembled from <code>.asm</code> files), so adding a language needs no change to the IDE.</p>
+<p>This document describes the plug-in architecture, the files a plug-in needs, and the compilers that come with CPUSim64: <a href="#C11">C11</a>, <a href="#CPP14">C++14</a>, <a href="#VBNET">VB.NET</a>, <a href="#MMIX">MMIX</a> and <a href="#Rust">Rust</a>.</p>
+
+<ul>
+	<li><a href="#architecture">Plug-in architecture</a></li>
+	<li><a href="#files">Plug-in files</a>
+		<ul>
+			<li><a href="#config">config.properties</a></li>
+			<li><a href="#sysprompt">system_prompt.md</a></li>
+			<li><a href="#readme">README.md</a></li>
+			<li><a href="#other">Other files and folders</a></li>
+		</ul></li>
+	<li><a href="#pipeline">What Run and Debug do</a></li>
+	<li><a href="#new">Writing a compiler of your own</a></li>
+	<li><a href="#C11">C11</a></li>
+	<li><a href="#CPP14">C++14</a></li>
+	<li><a href="#VBNET">VB.NET</a></li>
+	<li><a href="#MMIX">MMIX</a></li>
+	<li><a href="#Rust">Rust</a></li>
+	<li><a href="#bootstrap">How the compilers build on each other</a></li>
+</ul>
+
+<!-- ===================================================================== -->
+<h2 id="architecture">Plug-in architecture</h2>
+
+<p>The compilers live in the <code>compilers/</code> folder of the source tree. The installed application has a copy next to <code>CPUSim64IDE.jar</code>. A source checkout run from IntelliJ IDEA uses the <code>compilers</code> folder next to the <code>ide</code> folder; <code>-Dcpusim64.compilers=DIR</code> overrides it.</p>
+
+<p>The IDE does not run the compilers from that folder. It uses only the plug-ins in the user's folder:</p>
+<table>
+	<tr><th>Platform</th><th>Plug-in folder</th></tr>
+	<tr><td>macOS, Linux</td><td class="mono">~/.cpusim64/compilers</td></tr>
+	<tr><td>Windows</td><td class="mono">%USERPROFILE%\.cpusim64\compilers</td></tr>
+</table>
+<ul>
+	<li>On its first run the IDE copies the built-in plug-ins there. On later runs (after an update, for example) it copies again the files that are newer in the built-in plug-ins.</li>
+	<li>Files in the user's copy that are newer than the built-in ones (your own changes) are kept.</li>
+	<li>When a plug-in is updated, its assembled compiler in <code>obj/</code> is deleted so that it is rebuilt.</li>
+	<li><code>tests/</code>, <code>obj/</code> and <code>output/</code> folders are not copied.</li>
+	<li>The built-in folder is never used or changed. If a plug-in's folder cannot be written to, the IDE builds a copy in <code>~/.cpusim64/cache/compilers</code>.</li>
+</ul>
+
+<p>Every sub-folder that contains a <code>config.properties</code> file is a plug-in. The folder name is the plug-in's name: it is the menu item under File &rarr; New Compiler and the title of the window.</p>
+
+<pre class="listing">compilers/
+&nbsp;&nbsp;&nbsp;&nbsp;C11/
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;config.properties&nbsp;&nbsp;&nbsp;&nbsp;required
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cc.asm, ...&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;required: the compiler's assembly sources
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;system_prompt.md&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;optional: the AI Chat prompt for this language
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;README.md&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;by convention: documentation for people
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;lib/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;the language's standard library
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;obj/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;the assembled compiler (made on demand)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;tests/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;regression tests (not copied)
+&nbsp;&nbsp;&nbsp;&nbsp;C++14/ ...</pre>
+
+<h3>Two kinds of compiler</h3>
+<p>The compiler program takes the path of a source file as its argument, writes <code>&lt;source&gt;.asm</code> next to the source, and exits with 0 on success. A plug-in does this in one of two ways.</p>
+<dl>
+	<dt>Direct compiler</dt>
+	<dd>The compiler writes the CPUSim64 assembly itself. The C11 compiler is written in CPUSim64 assembly. The MMIX translator and the VB.NET compiler are written in C and compiled by the C11 compiler, then assembled like any other program.</dd>
+	<dt>Translator (<code>translate_to</code>)</dt>
+	<dd>The compiler writes source code in another language, <code>&lt;source&gt;.gen.&lt;ext&gt;</code>, and the IDE runs the plug-in named by <code>translate_to</code> on that file. The C++14 and Rust plug-ins translate to C and use the C11 compiler to finish the job. The translators emit <code>#line</code> directives, so the debugger shows the original source lines.</dd>
+</dl>
+
+<!-- ===================================================================== -->
+<h2 id="files">Plug-in files</h2>
+
+<table style="width:100%;">
+	<colgroup><col style="width:25%;"><col style="width:15%;"><col style="width:60%;"></colgroup>
+	<thead><tr><th>File or folder</th><th>Required</th><th>Purpose</th></tr></thead>
+	<tbody>
+		<tr><td><code>config.properties</code></td><td>Yes</td><td>Tells the IDE how to build and use the compiler. A folder without it is not a plug-in.</td></tr>
+		<tr><td>Compiler sources (<code>*.asm</code>, <code>*.def</code>)</td><td>Yes</td><td>The file named by <code>compiler_source</code>, and everything it <code>#include</code>s.</td></tr>
+		<tr><td><code>system_prompt.md</code></td><td>No</td><td>The system prompt of the AI Chat in this plug-in's windows.</td></tr>
+		<tr><td><code>README.md</code></td><td>No</td><td>Documentation for people. The IDE does not read it.</td></tr>
+		<tr><td><code>obj/</code></td><td>No</td><td>The assembled compiler. Created and refreshed by the IDE.</td></tr>
+	</tbody>
+</table>
+
+<h3 id="config">config.properties</h3>
+<p>A Java properties file (<code>key: value</code> or <code>key=value</code> lines). Only <code>compiler_source</code> is required.</p>
+<table style="width:100%;">
+	<colgroup><col style="width:22%;"><col style="width:18%;"><col style="width:60%;"></colgroup>
+	<thead><tr><th>Key</th><th>Default</th><th>Meaning</th></tr></thead>
+	<tbody>
+		<tr><td><code>compiler_source</code></td><td>(required)</td><td>The compiler's main <code>.asm</code> file; the <code>.asm</code> extension is optional. The IDE assembles it to <code>obj/&lt;name&gt;.o64</code> when that file is missing or older than any <code>.asm</code> or <code>.def</code> file of the plug-in.</td></tr>
+		<tr><td><code>syntax_language</code></td><td><code>text/plain</code></td><td>The RSyntaxTextArea style used to highlight the language, for example <code>text/c</code>, <code>text/cpp</code>, <code>text/vb</code>, <code>text/rust</code>.</td></tr>
+		<tr><td><code>file_extensions</code></td><td>(none)</td><td>Comma-separated source file extensions, for example <code>c,h</code>. The first is the default for Save As. The window opens only files with these extensions.</td></tr>
+		<tr><td><code>compiler_mem</code></td><td><code>16M</code></td><td>Memory, in 64-bit words, for running the compiler.</td></tr>
+		<tr><td><code>compiler_stack</code></td><td><code>256K</code></td><td>Stack, in 64-bit words, for running the compiler. Recursive-descent parsers need a deep stack.</td></tr>
+		<tr><td><code>main_function</code></td><td><code>main</code></td><td>Name of the entry function. Run and Debug are enabled for a source that defines it.</td></tr>
+		<tr><td><code>entry_label</code></td><td>(none)</td><td>For assembly-like languages: Run and Debug are enabled for a source with a line that starts with this label in column 1 (MMIX: <code>Main</code>). Used instead of <code>main_function</code>.</td></tr>
+		<tr><td><code>entry_pattern</code></td><td>(none)</td><td>A Java regular expression that a runnable source must match (VB.NET matches <code>Sub Main</code> or <code>Function Main</code>). Takes precedence over <code>entry_label</code> and <code>main_function</code>. An invalid expression is ignored.</td></tr>
+		<tr><td><code>translate_to</code></td><td>(none)</td><td>The name of another plug-in whose compiler runs on this compiler's output (see Translator above). The compiler writes <code>&lt;source&gt;.gen.&lt;ext&gt;</code>, where <code>ext</code> is the first file extension of the target plug-in; the result of the target compiler is used as <code>&lt;source&gt;.asm</code>.</td></tr>
+	</tbody>
+</table>
+
+<p>The configuration of the C++14 plug-in, a translator:</p>
+<pre class="listing">syntax_language: text/cpp
+compiler_source: cppc
+file_extensions: cpp,cc,cxx,hpp,h
+main_function: main
+translate_to: C11
+compiler_mem: 64M
+compiler_stack: 1M</pre>
+
+<h3 id="sysprompt">system_prompt.md</h3>
+<p>The AI Chat in a CPUSim64 window is told how to write CPUSim64 assembly, using the documentation in <code>doc-index.txt</code>. A compiler window is about another language, so the chat uses the plug-in's <code>system_prompt.md</code> instead. Write it as instructions to an assistant that helps a user with programs in that language. A good prompt covers:</p>
+<ul>
+	<li>what the window does (for example: translates the source to C, compiles it and runs it);</li>
+	<li>the program conventions: where execution starts, how arguments and input arrive, how the exit code is set, what the Options field takes;</li>
+	<li>the supported language and library, and what is <em>not</em> supported, so the assistant does not write code the compiler rejects;</li>
+	<li>the representation differences a user can observe (word sizes, character width, <code>sizeof</code>);</li>
+	<li>the error message format, so the assistant can interpret what is in the console.</li>
+</ul>
+<p>Without this file the plug-in works, but its chat window has no language-specific instructions.</p>
+
+<h3 id="readme">README.md</h3>
+<p>The IDE does not read <code>README.md</code>. By convention each plug-in has one that tells a developer how to use, build, test and extend the compiler: usage, supported and unsupported features, the file layout, and the build and test commands. Keep it in step with <code>system_prompt.md</code>, which carries the same facts for the AI.</p>
+
+<h3 id="other">Other files and folders</h3>
+<p>These are conventions of the bundled plug-ins; the IDE does not require them.</p>
+<table style="width:100%;">
+	<colgroup><col style="width:22%;"><col style="width:78%;"></colgroup>
+	<tbody>
+		<tr><td><code>src/</code></td><td>Source of a compiler written in C (VB.NET, MMIX, C++14, Rust).</td></tr>
+		<tr><td><code>lib/</code></td><td>The language's library. For C11 it is C source and headers; for C++14 it is C++ headers; for VB.NET it is VB source.</td></tr>
+		<tr><td><code>rt/</code></td><td>A run-time library that is part of every generated program (MMIX, VB.NET).</td></tr>
+		<tr><td><code>grammar/</code></td><td>The ANTLR grammar the hand-written parser follows, used by <code>tests/antlr_check.sh</code> to check the parser.</td></tr>
+		<tr><td><code>build.sh</code></td><td>Compiles the C sources with the C11 compiler into the compiler's <code>.asm</code>. <code>--native</code> builds a host executable for development.</td></tr>
+		<tr><td><code>tests/</code></td><td>Regression tests, run with <code>tests/run_tests.sh</code>.</td></tr>
+		<tr><td><code>projects/</code>, <code>samples/</code></td><td>The documentation projects, or sample programs, written in the language.</td></tr>
+		<tr><td><code>plan.md</code></td><td>Design notes and the task list.</td></tr>
+	</tbody>
+</table>
+
+<!-- ===================================================================== -->
+<h2 id="pipeline">What Run and Debug do</h2>
+<ol>
+	<li>The IDE saves the file and assembles the compiler into <code>obj/</code> if it is missing or out of date. Errors from this step appear in the console.</li>
+	<li>It runs the compiler on the Java or native simulator (as selected in Settings) with the source file path as its argument, using <code>compiler_mem</code> and <code>compiler_stack</code>. The compiler must write <code>&lt;source&gt;.asm</code> and exit with 0; its error messages (<code>file:line: error: message</code>) go to the console and stop the run.</li>
+	<li>For a translator, the compiler writes <code>&lt;source&gt;.gen.&lt;ext&gt;</code> and the <code>translate_to</code> plug-in compiles that.</li>
+	<li>The IDE assembles the result into <code>obj/&lt;name&gt;.o64</code> and runs it with the Args from the toolbar. A source with <code>#export</code> or <code>#extern</code> is linked with the modules it includes.</li>
+</ol>
+<p>The <b>Options</b> field of a compiler window holds extra compiler arguments: other source files of the program (relative to the source file), <code>-lstd</code> for the C11 compiler, and so on.</p>
+<p><b>Debugging.</b> If the generated assembly contains <code>.source "file", line</code> directives (the C11 compiler and the MMIX translator emit them), the debugger shows the original source file in the compiler window. The execution marker and the breakpoints use the source lines; stepping is still by CPUSim64 instruction. Without the directives the generated assembly opens in a regular window with the debugger.</p>
+<p><b>Entry point.</b> Run and Debug are enabled for a file that is a program: one that defines <code>main_function</code>, has the <code>entry_label</code> in column 1, or matches <code>entry_pattern</code>.</p>
+
+<!-- ===================================================================== -->
+<h2 id="new">Writing a compiler of your own</h2>
+<ol>
+	<li>Create <code>~/.cpusim64/compilers/&lt;name&gt;/</code>.</li>
+	<li>Add <code>config.properties</code> with at least <code>compiler_source</code>, and the compiler's <code>.asm</code> files. The compiler reads the file named by its first argument (see <code>iARGC</code>/<code>iARGS</code> in the <a href="Interrupt_Reference.html">Interrupt Reference</a>) and writes <code>&lt;source&gt;.asm</code>.</li>
+	<li>Optionally add <code>system_prompt.md</code> and <code>README.md</code>.</li>
+	<li>Open a new window. The plug-in is in File &rarr; New Compiler.</li>
+</ol>
+<p>The easiest route is to write the compiler or translator in C, as the bundled ones are, and compile it with the C11 compiler (<code>compilers/C11</code>). Set <code>translate_to: C11</code> to emit C and let the C11 compiler do code generation. Name your plug-in folder differently from the built-in ones; a built-in plug-in with the same name is updated by the IDE.</p>
+
+<!-- ===================================================================== -->
+<h2 id="C11">C11</h2>
+<p><b>Folder:</b> <code>compilers/C11</code> &nbsp; <b>Extensions:</b> <code>.c</code>, <code>.h</code> &nbsp; <b>Type:</b> direct compiler, written in CPUSim64 assembly</p>
+
+<h3>Architecture</h3>
+<p>The C11 compiler is the foundation of the other compilers. It is written entirely in CPUSim64 assembly and is the only compiler that does not depend on another one. The grammar follows the ANTLR grammars-v4 C grammar. Its pipeline is:</p>
+<pre class="listing">source &rarr; lexer &rarr; preprocessor &rarr; parser + semantic analysis &rarr; code generation per function &rarr; .asm</pre>
+<table style="width:100%;">
+	<colgroup><col style="width:30%;"><col style="width:70%;"></colgroup>
+	<thead><tr><th>File</th><th>Purpose</th></tr></thead>
+	<tbody>
+		<tr><td><code>cc.asm</code></td><td>Main program: options, one or several translation units.</td></tr>
+		<tr><td><code>lexer.asm</code>, <code>pp.asm</code></td><td>Tokens, and the token-level preprocessor.</td></tr>
+		<tr><td><code>parse_expr.asm</code>, <code>parse_decl.asm</code>, <code>parse_stmt.asm</code></td><td>Recursive-descent parser with precedence climbing for binary operators.</td></tr>
+		<tr><td><code>sema.asm</code>, <code>types.asm</code>, <code>symtab.asm</code></td><td>Type checking and implicit conversions (applied while parsing), type objects, scoped symbol table.</td></tr>
+		<tr><td><code>ast.asm</code></td><td>AST nodes and the <code>--ast</code> dumper.</td></tr>
+		<tr><td><code>codegen.asm</code>, <code>runtime_emit.asm</code></td><td>Stack-machine code generation, and the assembly run-time routines copied into a program on demand.</td></tr>
+		<tr><td><code>lib/</code></td><td>The C library, written in C.</td></tr>
+	</tbody>
+</table>
+<ul>
+	<li>The compiler stops at the first error, prints <code>file:line: error: message</code> to standard error and deletes partial output.</li>
+	<li>Values are computed into <code>r0</code> (integers, pointers, aggregate addresses) or <code>f0</code> (double). Arguments are pushed right to left, using the same convention as the assembly <code>#def_func</code>, so CPUSim64 library functions can be called directly.</li>
+	<li>A header <code>#include &lt;name.h&gt;</code> is found in <code>lib/</code>, and <code>lib/name.c</code> is appended once to the translation unit; only the functions the program uses are compiled.</li>
+	<li><code>cc main.c util.c</code> compiles each file to its own relocatable module for the CPUSim64 linker (external symbols exported, <code>static</code> ones private). <code>-lstd</code> links the library as shared modules instead of appending a copy to each file.</li>
+	<li>It emits <code>.source</code> directives, so the debugger shows the C lines. <code>#line N "file"</code> renumbers lines, which lets a translator that emits C be debugged on its own source.</li>
+	<li>Debugging dumps: <code>--pp</code> (preprocessed source), <code>--tokens</code>, <code>--ast</code>.</li>
+</ul>
+
+<h3>Language</h3>
+<ul>
+	<li><b>Types:</b> <code>char</code>, <code>short</code>, <code>int</code>, <code>long</code>, <code>long long</code>, <code>signed</code>/<code>unsigned</code>, <code>_Bool</code>, <code>double</code>, <code>void</code>, pointers, multi-dimensional arrays, <code>struct</code>, <code>union</code>, <code>enum</code>, <code>typedef</code>, function pointers; the qualifiers <code>const</code>, <code>volatile</code>, <code>restrict</code>; <code>static</code>, <code>extern</code>, <code>inline</code>.</li>
+	<li><b>C99:</b> compound literals, designated initializers, <code>//</code> comments, mixed declarations and code, declarations in <code>for</code>, variadic functions, <code>__func__</code>.</li>
+	<li><b>C11:</b> <code>_Static_assert</code>, <code>_Thread_local</code> (<code>thread_local</code>).</li>
+	<li><b>Statements and expressions:</b> all of them, including <code>switch</code>, <code>goto</code>, all operators, casts, <code>sizeof</code>, brace elision, string literal concatenation.</li>
+	<li><b>Preprocessor (built in):</b> <code>#include</code>, object-like and function-like <code>#define</code> with <code>#</code>, <code>##</code> and <code>__VA_ARGS__</code>, <code>#undef</code>, <code>#if</code>, <code>#ifdef</code>, <code>#ifndef</code>, <code>#elif</code>, <code>#else</code>, <code>#endif</code>, <code>defined</code>, <code>#error</code>, <code>#line</code>. <code>#pragma</code> and <code>#warning</code> are ignored.</li>
+	<li><b>CPUSim64 extensions:</b> the intrinsics <code>__ldb(byte_addr)</code> and <code>__stb(byte_addr, v)</code>, which compile to the LDB and STB instructions.</li>
+</ul>
+
+<h3>Library</h3>
+<p>The C library is written in C (<code>lib/</code>) and is compiled only when used.</p>
+<ul>
+	<li><b><code>&lt;stdio.h&gt;</code></b>: files in all modes (<code>r w a</code>, <code>+</code>, <code>b</code>, <code>x</code>), <code>fseek</code>/<code>ftell</code>, <code>fgetpos</code>/<code>fsetpos</code>, <code>getline</code>, <code>tmpfile</code>; the exact C99 <code>printf</code> and <code>scanf</code> families including <code>snprintf</code> and the <code>v</code> variants; floating-point output rounded half-to-even like glibc, and correctly rounded input.</li>
+	<li><b><code>&lt;stdlib.h&gt;</code></b>: <code>malloc</code> family, <code>exit</code>, <code>atexit</code>, <code>system</code>, <code>getenv</code>, <code>strto*</code>, <code>rand</code>/<code>srand</code>, <code>qsort</code>, <code>bsearch</code>, <code>div</code> family.</li>
+	<li><b><code>&lt;string.h&gt;</code></b>, <b><code>&lt;ctype.h&gt;</code></b>, <b><code>&lt;math.h&gt;</code></b> (C99 functions including <code>fma</code>, <code>cbrt</code>, <code>expm1</code>, <code>log1p</code>), <b><code>&lt;time.h&gt;</code></b> (<code>time</code> returns the real UTC wall-clock time; <code>strftime</code>, <code>timespec_get</code>), <b><code>&lt;setjmp.h&gt;</code></b>, <b><code>&lt;assert.h&gt;</code></b>, <code>&lt;stdarg.h&gt;</code>, <code>&lt;stddef.h&gt;</code>, <code>&lt;stdint.h&gt;</code>, <code>&lt;stdbool.h&gt;</code>, <code>&lt;limits.h&gt;</code>, <code>&lt;float.h&gt;</code>.</li>
+	<li><b><code>&lt;threads.h&gt;</code></b>: C11 threads, mutexes, condition variables, <code>call_once</code>, thread-specific storage. <b><code>&lt;stdatomic.h&gt;</code></b>: atomic types and operations.</li>
+	<li><b>POSIX subset:</b> <code>&lt;unistd.h&gt;</code> (<code>fork</code>, <code>getpid</code>, <code>sysconf</code>, <code>sleep</code>, <code>usleep</code>) and <code>&lt;sys/wait.h&gt;</code> (<code>waitpid</code>, <code>wait</code>).</li>
+	<li><b><code>&lt;_Thread.h&gt;</code></b>: CPUSim64's own threading header: threads, <code>fork</code>, shared memory, atomics, spin locks, mutexes.</li>
+</ul>
+
+<h3>Left out, and differences from the standard</h3>
+<ul>
+	<li><b>Not supported (reported as errors):</b> <code>float</code>, <code>long double</code>, <code>_Complex</code>, <code>_Atomic</code>, <code>_Generic</code>, bit-fields, variable length arrays, K&amp;R parameter lists, GNU extensions.</li>
+	<li><b>Every scalar is one 64-bit word.</b> <code>char</code>, <code>short</code>, <code>int</code> and <code>long</code> are all 64 bits and do not wrap at their nominal widths. <code>sizeof</code> and <code>malloc</code> count words, so <code>sizeof(char) == sizeof(int) == 1</code>. <code>CHAR_BIT</code> is 64. Programs written with <code>sizeof</code> stay correct; programs that assume 8-bit bytes or 32-bit overflow do not.</li>
+	<li><code>char</code> holds a Unicode codepoint, one per word. Text files are UTF-8 on disk. Binary streams read and write one byte per <code>char</code>, so <code>fwrite</code> of an <code>int</code> keeps only its low byte.</li>
+	<li><code>__STDC_NO_ATOMICS__</code> is defined because <code>_Atomic</code> is not supported: the <code>atomic_*</code> types are <code>volatile</code> typedefs, and <code>x++</code> on an <code>atomic_int</code> is not atomic. Only the <code>atomic_*</code> functions are.</li>
+	<li>Streams are unbuffered; <code>setvbuf</code> is accepted and has no effect. There are no locales beyond <code>"C"</code>. <code>localtime</code> equals <code>gmtime</code> (UTC only).</li>
+	<li><code>qsort</code> is a heapsort and not stable. <code>rand</code> is a deterministic 64-bit LCG, not the one in glibc.</li>
+	<li>The simulator's floating-point compare treats NaN as equal to everything; use <code>isnan()</code> instead of <code>x != x</code>. The <code>isnan</code> family are functions, not macros.</li>
+	<li>Every mutex is recursive. <code>waitpid</code> reports status 0 because the simulator does not report a child's exit status.</li>
+	<li><code>_Thread_local</code>: <code>&amp;x</code> passed to another thread points to that thread's own copy; threads created before <code>main</code> get no copy; the copies use stack space.</li>
+	<li><code>setjmp</code> may be used only where C allows it (the whole condition of an <code>if</code>, <code>switch</code> or loop, an expression statement, and similar).</li>
+	<li>As in standard C, a library function must be declared by its header; calling it without the header is an "implicit declaration" error.</li>
+</ul>
+
+<!-- ===================================================================== -->
+<h2 id="CPP14">C++14</h2>
+<p><b>Folder:</b> <code>compilers/C++14</code> &nbsp; <b>Extensions:</b> <code>.cpp</code>, <code>.cc</code>, <code>.cxx</code>, <code>.hpp</code>, <code>.h</code> &nbsp; <b>Type:</b> translator to C (<code>translate_to: C11</code>)</p>
+
+<h3>Architecture</h3>
+<p>The translator <code>cppc</code> is written in portable C and compiled by the C11 compiler. It translates <code>prog.cpp</code> into <code>prog.gen.c</code> with <code>#line</code> directives that name <code>prog.cpp</code>, and the C11 compiler turns that into assembly, so the debugger shows the C++ lines. The hand-written parser follows the ANTLR grammars-v4 CPP14 grammar (<code>tests/antlr_check.sh</code> compares them).</p>
+<table style="width:100%;">
+	<colgroup><col style="width:30%;"><col style="width:70%;"></colgroup>
+	<tbody>
+		<tr><td><code>lexer.c</code>, <code>pp.c</code>, <code>parser.c</code>, <code>ast.c</code></td><td>Tokens, preprocessor, parser, syntax tree.</td></tr>
+		<tr><td><code>types.c</code>, <code>sema.c</code></td><td>Types, name lookup, overload resolution, conversions.</td></tr>
+		<tr><td><code>tmpl.c</code></td><td>Templates: instantiation, deduction, specialization, SFINAE. Templates are checked when instantiated, not when defined.</td></tr>
+		<tr><td><code>lambda.c</code>, <code>constexpr.c</code>, <code>braced.c</code>, <code>exc.c</code></td><td>Lambdas, <code>constexpr</code> evaluation at translation time, braced initialization, exceptions and RTTI.</td></tr>
+		<tr><td><code>translate.c</code>, <code>gen.c</code></td><td>Lowering to C (vtables, constructors and destructors, name mangling) and C output.</td></tr>
+		<tr><td><code>lib/</code></td><td>The C++ standard library subset, written in C++ and translated with the program.</td></tr>
+	</tbody>
+</table>
+<p>Programs of several <code>.cpp</code> files list the other files in the Options field. The IDE translates each file (the others with <code>cppc --unit</code>), compiles the C files as modules of one program (<code>cc main.gen.c shapes.gen.c -lstd</code>) and links them. Functions defined in a class, <code>inline</code> functions, template instances and library code are compiled into every unit that uses them, with internal linkage.</p>
+
+<h3>Language</h3>
+<ul>
+	<li><b>Classes:</b> constructors and destructors, copy and move semantics, operator overloading, conversions, access control, friends, static members, nested classes, single and multiple inheritance, virtual functions, abstract classes, <code>override</code>/<code>final</code>, delegating and inheriting constructors, <code>= default</code>/<code>= delete</code>.</li>
+	<li><b>Templates:</b> function, class, member, alias and variable templates; default arguments; non-type parameters; explicit and partial specialization; argument deduction; SFINAE (<code>enable_if</code>); variadic templates (<code>sizeof...</code>, pack expansion).</li>
+	<li><b>C++11/14:</b> <code>auto</code> (also as a return type), <code>decltype</code>, range-for, <code>nullptr</code>, lambdas (captures by value and reference, init-captures, <code>mutable</code>, generic lambdas), rvalue references, <code>std::move</code>/<code>std::forward</code>, <code>std::initializer_list</code>, uniform initialization, <code>constexpr</code> functions, <code>static_assert</code>, <code>enum class</code>, placement <code>new</code>.</li>
+	<li><b>Exceptions:</b> <code>throw</code>, <code>try</code>/<code>catch</code> by type, reference and <code>...</code>, rethrow, unwinding with destructors (including partly built objects), <code>std::terminate</code> for an uncaught exception.</li>
+	<li><b>RTTI:</b> <code>typeid</code>, <code>std::type_info</code>, <code>dynamic_cast</code> for pointers and references (down and cross casts), <code>std::bad_cast</code>.</li>
+	<li><b>C++17 additions:</b> <code>if constexpr</code>, structured bindings, <code>if</code>/<code>switch</code> with an initializer, inline variables, nested namespace definitions, <code>[[nodiscard]]</code> and <code>[[maybe_unused]]</code> (accepted).</li>
+</ul>
+
+<h3>Library</h3>
+<ul>
+	<li><b>Streams and strings:</b> <code>&lt;iostream&gt;</code>, <code>&lt;iomanip&gt;</code>, <code>&lt;sstream&gt;</code>, <code>&lt;string&gt;</code>.</li>
+	<li><b>Containers:</b> <code>&lt;vector&gt;</code>, <code>&lt;array&gt;</code>, <code>&lt;list&gt;</code>, <code>&lt;map&gt;</code>, <code>&lt;set&gt;</code>, <code>&lt;unordered_map&gt;</code>, <code>&lt;unordered_set&gt;</code>, <code>&lt;stack&gt;</code>, <code>&lt;queue&gt;</code>.</li>
+	<li><b>Algorithms and utilities:</b> <code>&lt;algorithm&gt;</code>, <code>&lt;numeric&gt;</code>, <code>&lt;iterator&gt;</code>, <code>&lt;utility&gt;</code>, <code>&lt;functional&gt;</code> (<code>std::function</code>, function objects, <code>std::hash</code>), <code>&lt;memory&gt;</code> (<code>unique_ptr</code>, <code>shared_ptr</code>, <code>weak_ptr</code>), <code>&lt;type_traits&gt;</code>, <code>&lt;initializer_list&gt;</code>.</li>
+	<li><b>Errors and RTTI:</b> <code>&lt;exception&gt;</code>, <code>&lt;stdexcept&gt;</code>, <code>&lt;new&gt;</code>, <code>&lt;typeinfo&gt;</code>.</li>
+	<li><b>C headers:</b> <code>&lt;cstdio&gt;</code>, <code>&lt;cstdlib&gt;</code>, <code>&lt;cstring&gt;</code>, <code>&lt;cmath&gt;</code>, <code>&lt;cctype&gt;</code>, <code>&lt;climits&gt;</code>, <code>&lt;cstddef&gt;</code>, <code>&lt;cstdint&gt;</code>, <code>&lt;cassert&gt;</code>, <code>&lt;ctime&gt;</code>, <code>&lt;cfloat&gt;</code>, and the POSIX <code>&lt;unistd.h&gt;</code> and <code>&lt;sys/wait.h&gt;</code>.</li>
+	<li><b>Concurrency:</b> <code>&lt;thread&gt;</code>, <code>&lt;mutex&gt;</code>, <code>&lt;condition_variable&gt;</code>, <code>&lt;atomic&gt;</code>, <code>&lt;chrono&gt;</code>, built on the C library's <code>&lt;threads.h&gt;</code>, <code>&lt;stdatomic.h&gt;</code> and <code>&lt;time.h&gt;</code>.</li>
+</ul>
+
+<h3>Left out, and differences from the standard</h3>
+<ul>
+	<li><b>Not supported (reported as errors):</b> virtual base classes, pointers to members, user-defined literals (so no <code>100ms</code>), fold expressions, <code>decltype(auto)</code>, function-try-blocks, bit-fields, variable length arrays.</li>
+	<li><b>Differences from g++:</b> <code>int</code>, <code>long</code> and pointers are 64-bit words, <code>float</code> is a <code>double</code>, <code>char</code> holds a Unicode codepoint, <code>sizeof</code> counts words, and <code>type_info::name()</code> returns the C++ spelling of the type, not a mangled name.</li>
+	<li><b>Threads:</b> <code>std::thread</code> and <code>std::call_once</code> take the callable and arguments by value (a reference parameter needs <code>std::ref</code>); member function pointers cannot be thread targets; locking a <code>std::mutex</code> twice in one thread does not deadlock; <code>std::system_error</code> is never thrown (misuse calls <code>std::terminate</code>); <code>std::atomic&lt;T&gt;</code> works for integers, <code>bool</code> and pointers only, and every <code>memory_order</code> is accepted and ignored. A thread must not use the address of a local of a function that may return first.</li>
+	<li><b>Missing library parts:</b> <code>std::future</code>/<code>std::async</code>, <code>shared_mutex</code>, <code>condition_variable_any</code>, locales. The <code>&lt;thread.h&gt;</code> wrapper for CPUSim64's <code>&lt;_Thread.h&gt;</code> still works but is deprecated.</li>
+</ul>
+
+<!-- ===================================================================== -->
+<h2 id="VBNET">VB.NET</h2>
+<p><b>Folder:</b> <code>compilers/VBNET</code> &nbsp; <b>Extension:</b> <code>.vb</code> &nbsp; <b>Type:</b> direct compiler, written in C</p>
+
+<h3>Architecture</h3>
+<p>The compiler <code>vbc</code> is written in the C subset that the C11 compiler accepts and is itself a CPUSim64 program (<code>vbc.asm</code>). It follows the Visual Basic Language Specification version 11 (dotnet/vblang) and its grammar (<code>grammar/vb.g4</code>), plus interpolated strings, <code>?.</code>, <code>NameOf</code>, <code>&amp;B</code> literals, digit separators and multi-line strings. Run and Debug are enabled for a file with <code>Sub Main</code> or <code>Function Main</code> (<code>entry_pattern</code>). It needs about 4M words of memory; the plug-in gives it 16M.</p>
+<table style="width:100%;">
+	<colgroup><col style="width:34%;"><col style="width:66%;"></colgroup>
+	<tbody>
+		<tr><td><code>src/lexer.c</code>, <code>parser.c</code>, <code>ast.c</code></td><td>Logical lines and <code>#If</code> conditional compilation; recursive-descent parser following <code>vb.g4</code> (checked against ANTLR with <code>tests/antlr_check.sh</code>).</td></tr>
+		<tr><td><code>src/types.c</code>, <code>sema_*.c</code></td><td>Types, symbols and semantic analysis. Separate files for generics (monomorphization), lambdas, delegates and anonymous types, and query expressions.</td></tr>
+		<tr><td><code>src/codegen.c</code>, <code>codegen_stmt.c</code></td><td>Code generation. Only methods that can run are generated, so the library costs a program only what it uses.</td></tr>
+		<tr><td><code>rt/</code></td><td>Run-time library in C, compiled by the C11 compiler: memory manager and garbage collector, strings, formatting, I/O, threads.</td></tr>
+		<tr><td><code>lib/</code></td><td>.NET library written in VB: <code>System.vb</code>, <code>Collections.vb</code>, <code>Linq.vb</code>, <code>Threading.vb</code>. It is part of every program that uses it.</td></tr>
+	</tbody>
+</table>
+<ul>
+	<li>Every value is one 64-bit word. <code>Integer</code>, <code>Short</code>, <code>Byte</code> and the others are checked against their ranges, and arithmetic is overflow-checked. <code>Single</code> values are rounded to 32 bits. <code>Char</code> is a Unicode codepoint; <code>String</code> is an object of codepoints.</li>
+	<li>Objects have two header words (a type descriptor and the garbage collector's word). Structures are values in boxes that are copied. Virtual methods use vtables and interfaces use itables. Generics are instantiated per set of type arguments. A lambda is a method whose <code>Me</code> is an environment object of the captured variables.</li>
+	<li>Exceptions use a chain of handler records; <code>Finally</code> runs on every exit. Run-time errors are catchable .NET exceptions. An unhandled one prints <code>Unhandled exception. System.OverflowException: ...</code> and ends with exit code 1.</li>
+	<li>A mark-and-sweep garbage collector (precise for the heap, conservative for the stack) runs when the allocation since the last collection exceeds the live data.</li>
+	<li>Errors are reported as <code>file:line: error: message</code>, mostly with Microsoft's messages. Compilation stops at the first error.</li>
+	<li>Options: <code>--define=NAME[=VALUE]</code>, <code>--tokens</code>, <code>--syntax</code>, <code>--ast</code>, <code>--parse-only</code>, <code>--gc-stress</code>, <code>--rt=DIR</code>, <code>--lib=DIR</code>.</li>
+</ul>
+
+<h3>Language</h3>
+<ul>
+	<li>Modules, classes, structures, interfaces, enums, delegates, namespaces, <code>Imports</code>, <code>Partial</code> classes, programs of several files (the others in Options).</li>
+	<li>Fields, constants, methods (<code>ByRef</code>, <code>Optional</code>, <code>ParamArray</code>, named arguments, overloading), constructors, properties (indexed, <code>Default</code>, auto-implemented), events (<code>RaiseEvent</code>, <code>AddHandler</code>, <code>Handles</code>, <code>WithEvents</code>), operator and conversion operators.</li>
+	<li>Inheritance (<code>Overridable</code>, <code>Overrides</code>, <code>MustOverride</code>, <code>MyBase</code>), interface implementation, <code>TypeOf</code>, <code>DirectCast</code>, <code>TryCast</code>, <code>CType</code>.</li>
+	<li>Generic types and methods with constraints and type inference.</li>
+	<li>All statements except <code>On Error</code>/<code>Resume</code>: <code>If</code>, <code>Select Case</code>, loops, <code>Exit</code>, <code>Continue</code>, <code>GoTo</code>, <code>Try</code>/<code>Catch</code>/<code>When</code>/<code>Finally</code>, <code>Throw</code>, <code>Using</code>, <code>With</code>, <code>SyncLock</code>, <code>ReDim</code>, <code>Static</code> locals.</li>
+	<li>Lambdas and closures, <code>AddressOf</code>, extension methods, nullable values (<code>Integer?</code>), <code>?.</code>, anonymous types, object and collection initializers, local type inference, LINQ (methods and query expressions).</li>
+	<li><code>Option Strict</code>, <code>Explicit</code>, <code>Infer</code> and <code>Compare</code>.</li>
+</ul>
+
+<h3>Library</h3>
+<ul>
+	<li><code>Console</code>, <code>Math</code>, <code>Convert</code>, <code>String</code> and <code>Char</code> methods, <code>Parse</code>/<code>TryParse</code>, <code>Environment</code>, <code>GC</code>, .NET format strings (invariant culture), and the <code>Microsoft.VisualBasic</code> functions (<code>Len</code>, <code>Mid</code>, <code>InStr</code>, <code>Val</code>, <code>Format</code>, <code>Rnd</code>, <code>vbCrLf</code>, ...).</li>
+	<li><code>System.Exception</code> and the standard exception classes.</li>
+	<li><code>List</code>, <code>Dictionary</code>, <code>HashSet</code>, <code>Stack</code>, <code>Queue</code>, <code>KeyValuePair</code>, <code>StringBuilder</code>, <code>Random</code> (the .NET generator, so seeded sequences match), <code>Array</code>, <code>Tuple</code>, <code>Nullable</code>.</li>
+	<li><code>Action</code>, <code>Func</code>, <code>Predicate</code>, <code>Comparison</code>, <code>EventHandler</code>; <code>System.Linq.Enumerable</code> with the query operators and aggregates.</li>
+	<li><code>File</code>, <code>StreamReader</code>, <code>StreamWriter</code>.</li>
+	<li><code>System.Threading</code>: <code>Thread</code>, <code>Interlocked</code>, <code>Monitor</code> (<code>Enter</code>, <code>Exit</code>, <code>TryEnter</code>), <code>SyncLock</code>, <code>Environment.ProcessorCount</code>. Console output is thread-safe.</li>
+	<li><code>CPUSim64.Process.Fork()</code>, <code>Wait(pid)</code> and <code>WaitAll()</code> (not a .NET API): processes with a copy of the memory, as the simulator's <code>iFORK</code> makes them.</li>
+</ul>
+
+<h3>Left out, and differences from the standard</h3>
+<ul>
+	<li><b>Not supported (reported as errors, "... not supported yet"):</b> <code>Async</code>/<code>Await</code>, <code>Iterator</code>/<code>Yield</code>, late binding, <code>On Error</code>, <code>Decimal</code> and <code>Date</code>, XML literals, reflection (<code>GetType</code>), <code>My</code>, arithmetic on nullable values, Custom events, variance, <code>ThreadPool</code> and <code>Task</code>, <code>Monitor.Wait</code>/<code>Pulse</code>.</li>
+	<li><code>New Object()</code> and <code>New String(c, n)</code> are not supported. Lock an object of a class of your own; use <code>StrDup(n, c)</code>.</li>
+	<li>The library is a subset of the .NET Framework and the culture is invariant; there is no .NET assembly loading, no <code>System.IO</code> beyond <code>File</code> and the stream reader and writer, and no networking, GUI or database classes.</li>
+	<li>While other threads run, the garbage collector waits; it runs again when they have ended.</li>
+	<li>The expected output of the tests was worked out from the .NET documentation, since no .NET was available to compare with.</li>
+</ul>
+
+<!-- ===================================================================== -->
+<h2 id="MMIX">MMIX</h2>
+<p><b>Folder:</b> <code>compilers/MMIX</code> &nbsp; <b>Extension:</b> <code>.mms</code> &nbsp; <b>Type:</b> translator, written in C</p>
+
+<h3>Architecture</h3>
+<p>This plug-in runs programs written in MMIXAL, the assembly language of Donald Knuth's 64-bit MMIX computer (<i>The Art of Computer Programming</i>), by translating them to CPUSim64 assembly. The translator <code>mmixc</code> is written in portable C and compiled by the C11 compiler. Run and Debug are enabled for a file with the label <code>Main</code> in column 1 (<code>entry_label</code>).</p>
+<ul>
+	<li><code>src/mmixal.c</code> is the assembler front end. It assembles exactly as Knuth's <code>mmixal</code> does (<code>PREFIX</code>, <code>GREG</code>, local labels, future references, the same error messages).</li>
+	<li><code>src/gen.c</code> writes the CPUSim64 program. Each MMIX instruction becomes a short sequence labelled <code>M_&lt;address&gt;</code>, with <code>.source</code> directives so the debugger shows the <code>.mms</code> lines and takes breakpoints in them.</li>
+	<li>The local registers are a window of the register stack (<code>r27</code> points to <code>$0</code>, <code>r26</code> is <code>rL</code>); the global and special registers are arrays in the run-time library.</li>
+	<li>MMIX memory is a block of the CPUSim64 heap that holds the four segments; each MMIX octabyte is one 64-bit word, big-endian. An address outside the allocated segments stops the program. Indirect jumps use a jump table with one entry per tetrabyte of code.</li>
+	<li><code>rt/mmix_rt.c</code> is the run-time library: start-up, multiplication and division, bit-matrix and saturating operations, a port of Knuth's <code>mmix-arith</code> for floating point (so results, rounding and flags are those of the real <code>mmix</code>), exceptions and trips, <code>TRAP</code> and <code>SAVE</code>/<code>UNSAVE</code>. <code>rt/mmix_io.asm</code> has the functions that need CPUSim64 instructions or interrupts.</li>
+</ul>
+<p>Options: <code>--data=N</code>, <code>--pool=N</code>, <code>--stack=N</code> (segment sizes in bytes, suffixes <code>K</code>, <code>M</code>; defaults 1M, 512K, 512K), <code>--rt=DIR</code>, <code>--dump</code>. The program receives <code>$0</code> = argc and <code>$1</code> = argv, and its exit code is <code>$255</code> at <code>TRAP 0,Halt,0</code>.</p>
+<p><b>Several files.</b> The files listed in Options are treated as if concatenated after the main file, as Knuth intended for sharing code in MMIXAL. The location counter, symbols and local labels carry over, but each file starts with <code>PREFIX :</code> and its own line numbers, so errors name the right file and line. A library file starts with <code>PREFIX Name:</code>, and the program refers to its symbols as <code>Name:symbol</code>.</p>
+
+<h3>Language</h3>
+<ul>
+	<li>All user-mode instructions: integer, logic, shifts, the conditional set and zero-or-set families, branches, loads and stores of every size, <code>CSWAP</code>, <code>GETA</code>, <code>GO</code>.</li>
+	<li>The register stack: <code>PUSHJ</code>, <code>PUSHGO</code>, <code>POP</code>, <code>SAVE</code>, <code>UNSAVE</code>, <code>GET</code>/<code>PUT</code> with the rules for <code>rL</code>.</li>
+	<li>Every floating-point instruction with the four rounding modes, short floats, the epsilon comparisons (<code>rE</code>), the arithmetic flags and trips (<code>rA</code>, handlers at <code>#10</code> to <code>#80</code>, <code>TRIP</code> to location 0, <code>RESUME</code>).</li>
+	<li>The MMIXware simulator's system calls: <code>Halt</code>, <code>Fopen</code>, <code>Fclose</code>, <code>Fread</code>, <code>Fgets</code>, <code>Fgetws</code>, <code>Fwrite</code>, <code>Fputs</code>, <code>Fputws</code>, <code>Fseek</code>, <code>Ftell</code>. <code>StdIn</code>, <code>StdOut</code> and <code>StdErr</code> are the console.</li>
+</ul>
+
+<h3>Left out, and differences from the real MMIX</h3>
+<ul>
+	<li><b>Kernel features:</b> virtual memory, <code>LDVTS</code>, interrupts, the timer and privileged special registers are not supported. They are reported at run time on standard error.</li>
+	<li>Also not supported: <code>PUT rG</code> with a different value; <code>RESUME</code> with an instruction to execute in <code>rX</code>; programs that execute data or code they stored themselves; jumps outside the text segment.</li>
+	<li>An illegal instruction stops the program with exit code 1 (the real <code>mmix</code> stops and reports it on standard output). The exit code is <code>$255</code>, where the real <code>mmix</code> returns its low 8 bits.</li>
+	<li>A label may be used before it is defined only where <code>mmixal</code> allows it. There is no linker and no <code>include</code>; share code by listing files in Options.</li>
+	<li>The tests compare with the real <code>mmixal</code> and <code>mmix</code> (<code>tests/run_tests.sh</code>, and the randomised <code>tests/random_diff.sh</code>), which must be installed to regenerate the expected files.</li>
+	<li>The MMIX versions of the documentation projects leave out the ones that use threads or processes.</li>
+</ul>
+
+<!-- ===================================================================== -->
+<h2 id="Rust">Rust</h2>
+<p><b>Folder:</b> <code>compilers/Rust</code> &nbsp; <b>Extension:</b> <code>.rs</code> &nbsp; <b>Type:</b> translator to C (<code>translate_to: C11</code>)</p>
+
+<h3>Architecture</h3>
+<p>The Rust plug-in follows the design of the C++14 plug-in. The translator <code>rustc</code> is written in portable C and compiled by the C11 compiler. It translates <code>prog.rs</code> into <code>prog.gen.c</code> with <code>#line</code> directives that name <code>prog.rs</code>; the C11 compiler does the rest, so the debugger shows the Rust lines. The translator is one translation unit (<code>src/rustc.c</code> includes the other files). Errors are reported as <code>file:line: error: message</code>. The stages are listed in <code>plan.md</code>.</p>
+<table style="width:100%;">
+	<colgroup><col style="width:30%;"><col style="width:70%;"></colgroup>
+	<tbody>
+		<tr><td><code>lexer.c</code>, <code>parse_*.c</code>, <code>ast.c</code></td><td>Tokens, parser (it follows the ANTLR Rust grammars in <code>grammar/</code>), syntax tree.</td></tr>
+		<tr><td><code>expand.c</code></td><td>Built-in macros, <code>macro_rules!</code> and <code>derive</code>.</td></tr>
+		<tr><td><code>resolve.c</code>, <code>collect.c</code></td><td>Modules, <code>use</code>, name resolution, items, impls and traits.</td></tr>
+		<tr><td><code>check.c</code>, <code>types.c</code>, <code>moves.c</code></td><td>Type inference with trait bounds, method lookup, move and mutability checks.</td></tr>
+		<tr><td><code>cg_types.c</code>, <code>cg_expr.c</code></td><td>Monomorphization and C output (enums, <code>match</code>, closures, vtables, drops, <code>#line</code>).</td></tr>
+		<tr><td><code>lib/</code></td><td>The standard library written in Rust (<code>core.rs</code>, <code>collections.rs</code>, <code>rc.rs</code>) and the C runtime <code>rust_rt.c</code>. <code>std</code> and <code>alloc</code> are aliases of the crate <code>core</code>.</td></tr>
+	</tbody>
+</table>
+<p>Every scalar is one 64-bit word. <code>u8</code> data in strings, arrays and <code>Vec&lt;u8&gt;</code> is packed 8 bytes per word and accessed with the LDB and STB byte instructions; <code>&amp;str</code> is a (byte address, byte length) pair. Generics are monomorphized.</p>
+
+<h3>Language</h3>
+<ul>
+	<li><b>Items:</b> functions, structs (named, tuple, unit), enums with data, <code>impl</code> blocks, traits (default methods, associated types and constants, <code>dyn Trait</code> through vtables), generics by monomorphization with bounds and <code>where</code> clauses, modules in one file, <code>const</code>, <code>static</code>, type aliases, operator overloading, <code>Drop</code>.</li>
+	<li><b>Expressions:</b> <code>let</code> with patterns (and <code>let ... else</code>), <code>if</code>/<code>if let</code>/<code>while let</code>, <code>match</code> with guards, ranges and slice patterns, labeled <code>loop</code>/<code>while</code>/<code>for</code>, ranges, closures (<code>Fn</code>, <code>FnMut</code>, <code>FnOnce</code>, boxed), references and slices, <code>?</code>.</li>
+	<li><b>Derives:</b> <code>Debug</code>, <code>Clone</code>, <code>Copy</code>, <code>PartialEq</code>, <code>Eq</code>, <code>PartialOrd</code>, <code>Ord</code>, <code>Default</code>, <code>Hash</code>.</li>
+	<li><b>Macros:</b> <code>println!</code>, <code>print!</code>, <code>eprintln!</code>, <code>format!</code>, <code>write!</code>, <code>writeln!</code>, <code>panic!</code>, <code>assert!</code>, <code>assert_eq!</code>, <code>assert_ne!</code>, <code>vec!</code>, <code>matches!</code>, <code>dbg!</code>, <code>unreachable!</code>, <code>todo!</code>, and your own <code>macro_rules!</code>. Format strings support positional, named and inline arguments, width, precision, fill, alignment, <code>{:?}</code>, <code>{:#?}</code> and the <code>x X o b e E</code> types.</li>
+</ul>
+
+<h3>Library</h3>
+<p>The library is Rust source in <code>lib/</code>, translated with the program: <code>Option</code>, <code>Result</code>, <code>Box</code>, <code>String</code> and <code>&amp;str</code>, <code>Vec</code>, slices, iterators with the usual adapters, <code>fmt</code>, <code>io</code> (<code>stdin</code>, <code>read_line</code>, <code>lines</code>, <code>Write</code>), <code>mem</code>, <code>cmp</code>, integer, <code>f64</code> and <code>char</code> methods, <code>Error</code> with <code>Box&lt;dyn Error&gt;</code>; <code>HashMap</code>, <code>HashSet</code>, <code>BTreeMap</code>, <code>BTreeSet</code>, <code>VecDeque</code>, <code>BinaryHeap</code>; <code>Rc</code>, <code>Weak</code>, <code>Cell</code>, <code>RefCell</code>, and single-threaded stand-ins for <code>Arc</code> and <code>Mutex</code>.</p>
+
+<h3>Checks, panics and debugging</h3>
+<ul>
+	<li>The translator checks types, trait bounds, moves and mutability.</li>
+	<li>Panics behave like the debug build of <code>rustc</code>: integer overflow, division by zero, index out of bounds, <code>unwrap</code>/<code>expect</code> failures and <code>panic!</code> print a message to stderr and end the program with status 101 (no unwinding, no destructors).</li>
+	<li><code>rustc --tokens</code>, <code>--ast</code>, <code>--expand</code>, <code>--resolve</code> and <code>--types</code> print the intermediate stages.</li>
+	<li><code>tests/run_tests.sh</code> runs the lexer, parser, expansion, resolution, type and error tests and 78 programs whose output, exit status and panic message are compared with rustc 1.97.</li>
+</ul>
+
+<h3>Left out, and differences from the standard</h3>
+<ul>
+	<li><b>Not supported:</b> <code>impl Trait</code> outside argument and return position, <code>i128</code>/<code>u128</code>, <code>async</code>/<code>await</code>, procedural macros, inline <code>unsafe</code> assembly, <code>std::thread</code>.</li>
+	<li><code>f32</code> is not a separate type; it is an <code>f64</code>.</li>
+	<li><b>Borrow checking:</b> moves and mutability are checked, but lifetimes are not, so some programs that <code>rustc</code> rejects will be accepted.</li>
+	<li><code>Arc</code> and <code>Mutex</code> are single-threaded; <code>env::args()</code> gives only the program name; <code>HashMap</code> has no hasher parameter; <code>Rc</code> works only for sized types.</li>
+	<li>The <code>f64</code> functions <code>sin</code>, <code>exp</code>, <code>ln</code> and similar are within a few ulp of libm, not bit for bit.</li>
+	<li>As in the other plug-ins, <code>char</code> and integer types are word-sized in the generated C, and <code>size_of</code> counts 8 bytes per word.</li>
+</ul>
+<p>See <code>compilers/Rust/README.md</code> for details and <code>plan.md</code> for the state of each stage.</p>
+
+<!-- ===================================================================== -->
+<h2 id="bootstrap">How the compilers build on each other</h2>
+<pre class="listing">C11 compiler (CPUSim64 assembly)
+&nbsp;&nbsp;&nbsp;&nbsp;compiles the C source of:
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;vbc   (VB.NET compiler)       &rarr; VB.NET programs
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mmixc (MMIX translator)       &rarr; MMIXAL programs
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cppc  (C++ translator)        &rarr; C, then the C11 compiler again
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;rustc (Rust translator)       &rarr; C, then the C11 compiler again</pre>
+<p>Each of these compilers is built with its plug-in's <code>build.sh</code>, which runs the C11 compiler on the C sources and writes the compiler's <code>.asm</code> file. The generated <code>.asm</code> files are committed because the IDE assembles them. With <code>build.sh --native</code> the same C sources are built with the host C compiler, which is faster for development and lets the tests compare the translators' output with <code>g++</code> or the real <code>mmix</code>.</p>
+
+<p>See also the <a href="Programmer_Guide.html">Programmer Guide</a> for the assembly language the compilers generate, the <a href="Directive_Reference.html">Directive Reference</a> for <code>#export</code>, <code>#extern</code> and the linker, and the <a href="Interrupt_Reference.html">Interrupt Reference</a> for the system interface that the run-time libraries use.</p>
+
+<footer>
+<address>&copy;2026 <a href="http://www.lesh.cloud/">Richard Lesh</a>.  All rights reserved.</address>
+</footer>
+</body>
+</html>

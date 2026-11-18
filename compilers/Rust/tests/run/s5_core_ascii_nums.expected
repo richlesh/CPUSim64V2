@@ -1,0 +1,43 @@
+97 true true false false false true 65 97
+90 true true false false true false 90 122
+53 false true true false false false 53 53
+32 false false false true false false 32 32
+10 false false false true false false 10 10
+35 false false false false false false 35 35
+200 false false false false false false 200 200
+true false
+'a' true true false false false true A a
+'Z' true true false false true false Z z
+'5' false true true false false false 5 5
+' ' false false false true false false    
+'\t' false false false true false false 	 	
+'#' false false false false false false # #
+'é' false false false false false false é é
+true
+Some(5) None
+Some(-5) None
+Some(0) None
+Some(81) None
+Some(128) None
+-5 -2147483648
+31 32
+3 32
+7 0
+63 4
+0 15
+Ok(255) Ok(-5)
+Err(ParseIntError { kind: PosOverflow }) Err(ParseIntError { kind: InvalidDigit })
+Ok(511) Err(ParseIntError { kind: Empty })
+Ok(65535)
+255 -17
+9223372036854775807 18446744073709551615
+6 49
+2 3
+7 7
+None 255
+1
+    42|42    |  42  |000042
+THE QUICK
+the quick
+true
+[65, 98]

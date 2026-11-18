@@ -6,3 +6,4 @@ Interrupt_Reference.html
 Library_Reference.html
 Programmer_Guide.html
 Cycle_Timing_Model.html
+Compilers.html

@@ -1,0 +1,1 @@
+non-exhaustive patterns: `10_u8..=u8::MAX` not covered

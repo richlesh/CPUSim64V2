@@ -1,0 +1,1 @@
+errors/collect_copy_field.rs:3: error: the trait `Copy` cannot be implemented for this type

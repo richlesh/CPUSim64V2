@@ -1,0 +1,1 @@
+errors/check_nonexhaustive_tuple.rs:3: error: non-exhaustive patterns: `(false, i32::MIN..=-1_i32)`

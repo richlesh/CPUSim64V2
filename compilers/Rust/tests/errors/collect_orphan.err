@@ -1,0 +1,1 @@
+errors/collect_orphan.rs:3: error: only traits defined in the current crate can be implemented for types defined outside of the crate

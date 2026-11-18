@@ -1,0 +1,293 @@
+(CRATE
+  (ITEM_STRUCT P {named}
+    (FIELD a
+      a=(T_PATH
+        a=(PATH
+          (PATH_SEG i32))))
+    (FIELD b
+      a=(T_PATH
+        a=(PATH
+          (PATH_SEG i32)))))
+  (ITEM_FN main
+    c=(BLOCK
+      (STMT_LET
+        a=(P_IDENT f)
+        c=(E_CLOSURE
+          (PARAM
+            a=(P_IDENT a))
+          (PARAM
+            a=(P_IDENT b)
+            b=(T_PATH
+              a=(PATH
+                (PATH_SEG i32))))
+          b=(E_BINARY op:+
+            a=(E_PATH
+              a=(PATH
+                (PATH_SEG a)))
+            b=(E_PATH
+              a=(PATH
+                (PATH_SEG b))))))
+      (STMT_LET
+        a=(P_IDENT g)
+        c=(E_CLOSURE
+          b=(E_LIT_INT "1" #1)))
+      (STMT_LET
+        a=(P_IDENT h)
+        c=(E_CLOSURE {move}
+          b=(E_PATH
+            a=(PATH
+              (PATH_SEG x)))))
+      (STMT_LET
+        a=(P_IDENT i)
+        c=(E_CLOSURE
+          (PARAM
+            a=(P_IDENT x)
+            b=(T_PATH
+              a=(PATH
+                (PATH_SEG i32))))
+          a=(T_PATH
+            a=(PATH
+              (PATH_SEG i32)))
+          b=(BLOCK
+            a=(E_BINARY op:+
+              a=(E_PATH
+                a=(PATH
+                  (PATH_SEG x)))
+              b=(E_LIT_INT "1" #1)))))
+      (STMT_LET
+        a=(P_IDENT j)
+        c=(E_CLOSURE
+          a=(T_TUPLE)
+          b=(BLOCK)))
+      (STMT_LET
+        a=(P_IDENT k)
+        c=(E_CLOSURE
+          (PARAM
+            a=(P_REF
+              a=(P_IDENT x)))
+          b=(E_DEREF
+            a=(E_PATH
+              a=(PATH
+                (PATH_SEG x))))))
+      (STMT_LET
+        a=(P_IDENT l)
+        c=(E_CLOSURE
+          (PARAM
+            a=(P_TUPLE
+              (P_IDENT a)
+              (P_IDENT b)))
+          b=(E_BINARY op:*
+            a=(E_PATH
+              a=(PATH
+                (PATH_SEG a)))
+            b=(E_PATH
+              a=(PATH
+                (PATH_SEG b))))))
+      (STMT_LET
+        a=(P_IDENT m)
+        c=(E_CLOSURE
+          (PARAM
+            a=(P_IDENT a))
+          b=(E_CLOSURE
+            (PARAM
+              a=(P_IDENT b))
+            b=(E_BINARY op:+
+              a=(E_PATH
+                a=(PATH
+                  (PATH_SEG a)))
+              b=(E_PATH
+                a=(PATH
+                  (PATH_SEG b)))))))
+      (STMT_LET
+        a=(P_IDENT p)
+        c=(E_STRUCT
+          a=(PATH
+            (PATH_SEG P))
+          (FIELD_INIT a
+            a=(E_LIT_INT "1" #1))
+          (FIELD_INIT b
+            a=(E_LIT_INT "2" #2))))
+      (STMT_LET
+        a=(P_IDENT q)
+        c=(E_STRUCT
+          a=(PATH
+            (PATH_SEG P))
+          (FIELD_INIT a {shorthand}
+            a=(E_PATH
+              a=(PATH
+                (PATH_SEG a))))
+          (FIELD_INIT b {shorthand}
+            a=(E_PATH
+              a=(PATH
+                (PATH_SEG b))))))
+      (STMT_LET
+        a=(P_IDENT r)
+        c=(E_STRUCT
+          a=(PATH
+            (PATH_SEG P))
+          b=(E_PATH
+            a=(PATH
+              (PATH_SEG base)))
+          (FIELD_INIT a
+            a=(E_LIT_INT "1" #1))))
+      (STMT_LET
+        a=(P_IDENT s)
+        c=(E_STRUCT
+          a=(PATH
+            (PATH_SEG P))
+          b=(E_CALL
+            a=(E_PATH
+              a=(PATH
+                (PATH_SEG Default)
+                (PATH_SEG default))))
+          (FIELD_INIT b
+            a=(E_LIT_INT "2" #2))))
+      (STMT_LET
+        a=(P_IDENT t)
+        c=(E_STRUCT
+          a=(PATH
+            (PATH_SEG path)
+            (PATH_SEG to)
+            (PATH_SEG P))
+          (FIELD_INIT a
+            a=(E_LIT_INT "1" #1))
+          (FIELD_INIT b
+            a=(E_CALL
+              a=(E_PATH
+                a=(PATH
+                  (PATH_SEG f)))
+              (E_STRUCT
+                a=(PATH
+                  (PATH_SEG P))
+                (FIELD_INIT a
+                  a=(E_LIT_INT "1" #1))
+                (FIELD_INIT b
+                  a=(E_LIT_INT "2" #2)))))))
+      (STMT_LET
+        a=(P_IDENT u)
+        c=(E_STRUCT
+          a=(PATH
+            (PATH_SEG Tup))
+          (FIELD_INIT 0
+            a=(E_LIT_INT "1" #1))
+          (FIELD_INIT 1
+            a=(E_LIT_INT "2" #2))))
+      (STMT_EXPR
+        a=(E_IF
+          a=(E_BINARY op:==
+            a=(E_PATH
+              a=(PATH
+                (PATH_SEG x)))
+            b=(E_PAREN
+              a=(E_STRUCT
+                a=(PATH
+                  (PATH_SEG P))
+                (FIELD_INIT a
+                  a=(E_LIT_INT "1" #1))
+                (FIELD_INIT b
+                  a=(E_LIT_INT "2" #2)))))
+          b=(BLOCK)))
+      (STMT_EXPR
+        a=(E_IF
+          a=(E_BINARY op:==
+            a=(E_PATH
+              a=(PATH
+                (PATH_SEG x)))
+            b=(E_CALL
+              a=(E_PATH
+                a=(PATH
+                  (PATH_SEG f)))
+              (E_STRUCT
+                a=(PATH
+                  (PATH_SEG P))
+                (FIELD_INIT a
+                  a=(E_LIT_INT "1" #1))
+                (FIELD_INIT b
+                  a=(E_LIT_INT "2" #2)))))
+          b=(BLOCK)))
+      (STMT_EXPR
+        a=(E_WHILE
+          a=(E_LET
+            a=(P_TUPLE_STRUCT
+              a=(PATH
+                (PATH_SEG Some))
+              (P_STRUCT
+                a=(PATH
+                  (PATH_SEG P))
+                (P_FIELD a {shorthand}
+                  a=(P_IDENT a))
+                (P_FIELD b {shorthand}
+                  a=(P_IDENT b))))
+            b=(E_METHOD_CALL next
+              a=(E_PATH
+                a=(PATH
+                  (PATH_SEG it)))))
+          b=(BLOCK)))
+      (STMT_EXPR
+        a=(E_FOR
+          a=(P_IDENT p)
+          b=(E_ARRAY
+            (E_STRUCT
+              a=(PATH
+                (PATH_SEG P))
+              (FIELD_INIT a
+                a=(E_LIT_INT "1" #1))
+              (FIELD_INIT b
+                a=(E_LIT_INT "2" #2))))
+          c=(BLOCK)))
+      (STMT_EXPR
+        a=(E_MATCH
+          a=(E_PAREN
+            a=(E_STRUCT
+              a=(PATH
+                (PATH_SEG P))
+              (FIELD_INIT a
+                a=(E_LIT_INT "1" #1))
+              (FIELD_INIT b
+                a=(E_LIT_INT "2" #2))))
+          (ARM
+            a=(P_WILD)
+            c=(BLOCK))))
+      (STMT_LET
+        a=(P_IDENT v)
+        c=(BLOCK {async}
+          a=(E_LIT_INT "1" #1)))
+      (STMT_LET
+        a=(P_IDENT w)
+        c=(BLOCK {async,move}
+          a=(E_LIT_INT "2" #2)))
+      (STMT_LET
+        a=(P_IDENT x)
+        c=(BLOCK {unsafe}
+          a=(E_DEREF
+            a=(E_PATH
+              a=(PATH
+                (PATH_SEG p))))))
+      (STMT_LET
+        a=(P_IDENT y)
+        c=(E_CALL
+          a=(E_PATH
+            a=(PATH
+              (PATH_SEG f)))
+          (E_CLOSURE
+            (PARAM
+              a=(P_IDENT x))
+            b=(E_PATH
+              a=(PATH
+                (PATH_SEG x))))
+          (E_LIT_INT "3" #3)))
+      (STMT_LET
+        a=(P_IDENT z)
+        c=(E_METHOD_CALL map
+          a=(E_PATH
+            a=(PATH
+              (PATH_SEG x)))
+          (E_CLOSURE
+            (PARAM
+              a=(P_IDENT v))
+            b=(BLOCK
+              a=(E_BINARY op:+
+                a=(E_PATH
+                  a=(PATH
+                    (PATH_SEG v)))
+                b=(E_LIT_INT "1" #1)))))))))

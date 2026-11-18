@@ -1,0 +1,1 @@
+errors/collect_supertrait.rs:4: error: the trait bound `S: Base` is not satisfied

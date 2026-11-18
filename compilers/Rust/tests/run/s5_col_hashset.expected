@@ -1,0 +1,32 @@
+true true
+false 2
+true false
+true false
+{3} false
+[1, 2, 3, 4, 5, 6, 7, 8]
+[4, 5, 6]
+[1, 2, 3]
+[7, 8]
+[1, 2, 3, 7, 8]
+8
+true true false
+true
+8 3
+["a", "b", "c", "d", "e"] 5
+true false
+Some("b")
+Some("c")
+4
+{"only"}
+{
+    "only",
+}
+true
+false
+[6, 100, 200, 300]
+606
+[300, 200, 100, 6]
+43
+21
+2
+{}

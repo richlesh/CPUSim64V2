@@ -1,0 +1,19 @@
+3:13 IDENT a
+3:54 IDENT b
+4:1 DOC outer " outer line doc"
+6:1 DOC inner " inner line doc"
+7:1 DOC outer " outer block doc\n * second line "
+9:1 DOC inner " inner block doc "
+10:6 IDENT c
+10:14 IDENT d
+11:1 KW fn
+11:18 IDENT f
+11:19 LPAREN (
+11:20 RPAREN )
+11:22 LBRACE {
+11:23 RBRACE }
+12:1 DOC outer " doc with unicode \xC3\xA9 \xF0\x9F\x98\x80 and CRLF-free text"
+13:1 IDENT x
+13:26 IDENT y
+16:13 IDENT z
+17:1 EOF

@@ -1,0 +1,1 @@
+errors/collect_missing_type.rs:3: error: not all trait items implemented, missing: `Out`
