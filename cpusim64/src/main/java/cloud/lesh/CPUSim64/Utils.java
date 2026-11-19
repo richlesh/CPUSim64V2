@@ -260,10 +260,13 @@ public class Utils {
 	}
 
 	/**
-	 * Parses a string representing an integer with an optional SI suffix
-	 * (K, M, G, T, P, E) and returns the corresponding {@code int} value.
+	 * Parses a string representing an integer with an optional suffix and returns
+	 * the corresponding {@code int} value. Suffixes are case-insensitive: decimal SI
+	 * (K, M, G, T, P, E = 10^3 .. 10^18) or binary IEC (Ki, Mi, Gi, Ti, Pi, Ei =
+	 * 2^10 .. 2^60).
 	 * <p>
-	 * Examples: {@code "1K"} → 1000, {@code "2.5M"} → 2500000, {@code "42"} → 42.
+	 * Examples: {@code "1K"} → 1000, {@code "2.5M"} → 2500000, {@code "42"} → 42,
+	 * {@code "16Mi"} → 16777216.
 	 *
 	 * @param s the string to parse; must not be {@code null} or empty
 	 * @return the parsed integer value
@@ -279,24 +282,20 @@ public class Utils {
 		if (s.isEmpty())
 			throw new IllegalArgumentException("empty input");
 
-		// Separate numeric part and suffix
-		int len = s.length();
-		char last = s.charAt(len - 1);
-
-		double multiplier = 1.0;
-		String numberPart = s;
-
-		switch (Character.toUpperCase(last)) {
-			case 'K': multiplier = 1e3;  numberPart = s.substring(0, len - 1); break;
-			case 'M': multiplier = 1e6;  numberPart = s.substring(0, len - 1); break;
-			case 'G': multiplier = 1e9;  numberPart = s.substring(0, len - 1); break;
-			case 'T': multiplier = 1e12; numberPart = s.substring(0, len - 1); break;
-			case 'P': multiplier = 1e15; numberPart = s.substring(0, len - 1); break;
-			case 'E': multiplier = 1e18; numberPart = s.substring(0, len - 1); break;
-			default:
-				// No suffix → plain number
-				break;
+		// A trailing 'i' after a prefix letter makes the suffix binary (Ki, Mi, ...)
+		String body = s;
+		boolean binary = false;
+		if (s.length() >= 2 && Character.toUpperCase(s.charAt(s.length() - 1)) == 'I'
+				&& "KMGTPE".indexOf(Character.toUpperCase(s.charAt(s.length() - 2))) >= 0) {
+			body = s.substring(0, s.length() - 1);
+			binary = true;
 		}
+
+		// Separate numeric part and suffix
+		int len = body.length();
+		int power = "KMGTPE".indexOf(Character.toUpperCase(body.charAt(len - 1))) + 1;
+		String numberPart = power > 0 ? body.substring(0, len - 1) : body;
+		double multiplier = binary ? (double) (1L << (10 * power)) : Math.pow(10, 3 * power);
 
 		double value;
 		value = Double.parseDouble(numberPart.trim());

@@ -1,5 +1,15 @@
 find . -iname \*.o64 -exec rm "{}" \;
+find . -iname \*.ro64 -exec rm "{}" \;
 find . -iname \*.pp.asm -exec rm "{}" \;
 find . -iname \*.sym\* -exec rm "{}" \;
+find . -iname \*.srcmap -exec rm "{}" \;
 find . -iname \*~.\* -exec rm "{}" \;
 find . -iname \*~\ \* -exec rm "{}" \;
+find . -iname \*\ 2.\* -exec rm "{}" \;
+find . -iname \*\ 3.\* -exec rm "{}" \;
+find . -iname \*\ 4.\* -exec rm "{}" \;
+find . -iname \*\ 5.\* -exec rm "{}" \;
+find . -iname \*\ 6.\* -exec rm "{}" \;
+find . -iname \*\ 7.\* -exec rm "{}" \;
+find . -iname \*\ 8.\* -exec rm "{}" \;
+find . -iname \*\ 9.\* -exec rm "{}" \;
