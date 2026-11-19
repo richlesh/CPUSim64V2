@@ -28,6 +28,13 @@ pub const SR_Z: i64 = 1 << 1; // zero
 pub const SR_S: i64 = 1 << 2; // signed (negative)
 pub const SR_O: i64 = 1 << 3; // overflow
 
+/// Control register 0: base word address of the 256-entry interrupt vector table.
+pub const CR_IVT_BASE: i64 = 0;
+/// Entries in the vector table (INT 1..255 index it; entry 0 is the exit hook).
+pub const IVT_ENTRIES: i64 = 256;
+/// Cycles charged for the 3-word frame of an INT (3 pushes + 3 pops).
+pub const INT_FRAME_CYCLES: i64 = 6;
+
 /// A simulated CPU fault (ports `Simulator.CPUException`). The message is
 /// prefixed with the PC by the thrower where Java does so.
 #[derive(Debug, Clone)]
@@ -57,6 +64,8 @@ pub struct Simulator {
     pub r: [i64; GPR_COUNT],
     pub f: [f64; FPR_COUNT],
     pub sr: i64,
+    /// Control register 0 (hidden state like `sr`): interrupt vector table base, 0 = none.
+    pub ivt_base: i64,
 
     // Memory.
     pub mem: Arc<SharedMem>,
@@ -119,6 +128,7 @@ impl Simulator {
             r: [0; GPR_COUNT],
             f: [0.0; FPR_COUNT],
             sr: SR_Z,
+            ivt_base: 0,
             mem,
             stack: vec![0; stack_size],
             heap_start,

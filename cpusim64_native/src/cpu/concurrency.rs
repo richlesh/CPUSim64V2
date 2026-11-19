@@ -85,6 +85,7 @@ impl Simulator {
             r: self.r,
             f: self.f,
             sr: self.sr,
+            ivt_base: self.ivt_base,
             mem: self.mem.clone(), // shared heap
             stack: vec![0; self.stack_size as usize],
             heap_start: self.heap_start,
@@ -260,6 +261,7 @@ impl Simulator {
             r: self.r,
             f: self.f,
             sr: self.sr,
+            ivt_base: self.ivt_base,
             mem: self.mem.deep_copy(), // process = copy-on-write heap
             stack: self.stack.clone(),
             heap_start: self.heap_start,

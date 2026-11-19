@@ -20,43 +20,43 @@
 #define	__PI				3.14159265358979323846
 #define	__NATURAL_LOG_BASE	2.71828182845904523536
 
-#define	iPI			100
-#define	iE			101
+#define	iPI			-100
+#define	iE			-101
 
-#define iABS_FP		102
-#define iABS		103
-#define iCEIL		104
-#define iFLOOR		105
-#define iROUND		106
+#define iABS_FP		-102
+#define iABS		-103
+#define iCEIL		-104
+#define iFLOOR		-105
+#define iROUND		-106
 
-#define iSQRT		107
-#define iEXP		108
-#define iLOG		109
-#define iPOW		110
+#define iSQRT		-107
+#define iEXP		-108
+#define iLOG		-109
+#define iPOW		-110
 
-#define iREMAINDER	111
-#define iMAX_FP		112
-#define iMIN_FP		113
-#define iMAX		114
-#define iMIN		115
-#define iRANDOM		116
-#define iRAND		117
+#define iREMAINDER	-111
+#define iMAX_FP		-112
+#define iMIN_FP		-113
+#define iMAX		-114
+#define iMIN		-115
+#define iRANDOM		-116
+#define iRAND		-117
 
-#define iTO_DEGREES	118
-#define iTO_RADIANS	119
-#define iSIN		120
-#define iCOS		121
-#define iTAN		122
-#define iASIN		123
-#define iACOS		124
-#define iATAN		125
-#define iATAN2		126
-#define iSINH		127
-#define iCOSH		128
-#define iTANH		129
-#define iASINH		130
-#define iACOSH		131
-#define iATANH		132
+#define iTO_DEGREES	-118
+#define iTO_RADIANS	-119
+#define iSIN		-120
+#define iCOS		-121
+#define iTAN		-122
+#define iASIN		-123
+#define iACOS		-124
+#define iATAN		-125
+#define iATAN2		-126
+#define iSINH		-127
+#define iCOSH		-128
+#define iTANH		-129
+#define iASINH		-130
+#define iACOSH		-131
+#define iATANH		-132
 
 #def_macro	MIN_MACRO(a, b)
 	cmp		${a}, ${b}

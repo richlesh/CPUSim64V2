@@ -1,11 +1,6 @@
-RUN=../../../../../../run.sh
+#!/usr/bin/env bash
 
-rm *.o64
-rm *.sym*
-rm *.srcmap
-rm *.out
-rm -r obj
-rm -r output
+RUN=../../../../../../bin/run.sh
 
 echo Base64.asm
 $RUN Base64 e data/Lincoln.txt Base64.cipher > /dev/null
@@ -149,4 +144,4 @@ mv *.out output
 mv *.cipher output
 mv *.pgm output
 
-rm -r obj
+exit

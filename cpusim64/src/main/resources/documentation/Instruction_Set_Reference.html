@@ -218,6 +218,42 @@
 	</tbody>
 </table>
 
+	<h3>Load Control Register</h3>
+	<p><code>LDCR</code> copies a control register into a general register and sets the status flags from the value, as <code>MOVE</code> does.  Control register 0 holds the base address of the interrupt vector table (0 means there is no table).  Reading an undefined control register is an error.  See <a href="Architecture.html#interrupts">Vectored Interrupts</a>.</p>
+<table class="instruction">
+    <colgroup><col span="3" class="instruction"><col></colgroup>
+	<thead>
+		<tr><th>Opcode</th><th>Pneumonic</th><th>Operands</th><th>Operation</th></tr>
+	</thead>
+	<tbody>
+		<tr><td>41</td><td>LDCR</td><td>RC</td><td>R &lt;- control register C</td></tr>
+	</tbody>
+</table>
+
+	<h3>Store Control Register</h3>
+	<p><code>STCR</code> writes a general register to a control register.  Writing control register 0 installs the interrupt vector table: the value must be 0 (no table) or a word address in heap-range memory with room for all 256 entries (<code>0 &lt;= base &lt;= heap limit - 256</code>).  Writing an undefined control register is an error.  There are no privilege checks.</p>
+<table class="instruction">
+    <colgroup><col span="3" class="instruction"><col></colgroup>
+	<thead>
+		<tr><th>Opcode</th><th>Pneumonic</th><th>Operands</th><th>Operation</th></tr>
+	</thead>
+	<tbody>
+		<tr><td>42</td><td>STCR</td><td>CR</td><td>control register C &lt;- R</td></tr>
+	</tbody>
+</table>
+
+	<h3>Interrupt Return</h3>
+	<p><code>IRET</code> returns from an interrupt handler entered through the vector table.  It restores the stack pointer from <code>SF</code>, then pops <code>SF</code>, <code>SR</code> and <code>PC</code>, so the program resumes after the <code>INTERRUPT</code> with the flags it had before it.</p>
+<table class="instruction">
+    <colgroup><col span="3" class="instruction"><col></colgroup>
+	<thead>
+		<tr><th>Opcode</th><th>Pneumonic</th><th>Operands</th><th>Operation</th></tr>
+	</thead>
+	<tbody>
+		<tr><td>43</td><td>IRET</td><td>N</td><td>SP = SF; SP = SP + 1; SF &lt;- [SP]; SP = SP + 1; SR &lt;- [SP]; SP = SP + 1; PC &lt;- [SP]</td></tr>
+	</tbody>
+</table>
+
 	<h3>Pop</h3>
 	<p>This instruction moves the <code>SP</code> register up by one and then pulls the value now pointed to by the <code>SP</code>.</p>
 <table class="instruction">
@@ -284,7 +320,7 @@ SF &lt;- SP</pre>
 </table>
 
 	<h3>Interrupt</h3>
-	<p>The <code>INTERRUPT</code> instruction invokes the software interrupt specified by its integer argument.  This effectively calls the operating system function associated with the interrupt and then returns.</p>
+	<p>The <code>INTERRUPT</code> instruction (<code>INT</code>) invokes the software interrupt specified by its integer argument and then continues with the next instruction.  A negative argument <code>-n</code> always runs built-in service <code>n</code>.  A positive argument <code>n</code> in the range 1 to 255 calls the handler installed in entry <code>n</code> of the interrupt vector table, or runs built-in service <code>n</code> when that entry is empty or no table is installed.  Positive numbers above 255 run the built-in service of the same number.  <code>INT 0</code> does nothing.  Every <code>INT</code> that is not skipped by its condition leaves <code>PC</code> at the next instruction and <code>SP</code>, <code>SF</code> and <code>SR</code> as they were.  See <a href="Architecture.html#interrupts">Vectored Interrupts</a>.</p>
 <table class="instruction">
     <colgroup><col span="3" class="instruction"><col></colgroup>
 	<thead>

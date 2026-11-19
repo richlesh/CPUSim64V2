@@ -23,6 +23,7 @@
 <p>The CPUSim64 comes with many functions defined as part of its operating system.  These functions are accessed via software interrupts.  To access the defines that give symbolic names to the interrupt values you must include the appropriate system include file.</p>
 <p>Input to interrupt functions is passed through known registers, specifically r1, r2, r3 for integers and f1 and f2 for floating point. Output is in either <code>r0</code> or <code>f0</code> if the function returns a value.</p>
 <p class="note">When invoking interrupts, there is no guarantee that the input registers will not be modified.</p>
+<p>The numbers listed below are the built-in services.  <code>INT -n</code> always runs built-in service <code>n</code>.  <code>INT n</code> for <code>n</code> from 1 to 255 runs the same service unless the program has installed its own handler for <code>n</code> in the interrupt vector table, and numbers above 255 always run the built-in service.  See <a href="Architecture.html#interrupts">Vectored Interrupts</a>.  Every <code>INT</code> costs 6 cycles for its frame; <code>iSAVE</code>, <code>iRESTORE</code> and the stack-argument services such as <code>iPRINTF</code> see the caller&rsquo;s <code>SP</code> and <code>SF</code>.</p>
 
 	<h3>&lt;system/io.def&gt;</h3>
 	<p></p>

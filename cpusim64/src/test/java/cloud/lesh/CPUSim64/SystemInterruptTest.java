@@ -523,7 +523,7 @@ public class SystemInterruptTest extends BaseTest {
 
 		// diff.assertDiff(1, sim.getPID());
 		diff.assertDiff(3, Runtime.getRuntime().availableProcessors());
-		diff.assertDiff(4, 114);
+		diff.assertDiff(4, 90);			// 6 INTs so far, 6 cycles each (frame push/pop) and no extra
 		assertTrue(500000000 < diff.getReg(5));
 		assertTrue(lines.length >= 6);
 	}

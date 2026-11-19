@@ -3,7 +3,7 @@
 SCRIPT_PATH="$(realpath "${BASH_SOURCE[0]}")"
 SCRIPT_DIR="$(dirname "$SCRIPT_PATH")"
 # the jar (not a copy such as "cpusim64-2.12.0 2.jar" that iCloud or Finder makes)
-for j in "$SCRIPT_DIR"/lib/cpusim64-*.jar; do case "${j##*/}" in *" "*) ;; *) CLASSPATH="$j" ;; esac; done
+for j in "$SCRIPT_DIR"/cpusim64-*.jar; do case "${j##*/}" in *" "*) ;; *) CLASSPATH="$j" ;; esac; done
 
 # Relocatable modules and linking: assemble.sh -r name [-o out] [options]
 #                                   assemble.sh -o out a b ... [options]
@@ -74,6 +74,8 @@ if [[ -e "$OBJ_DIR/${BASE_NAME}.o64" ]]; then
 	rm "$OBJ_DIR/${BASE_NAME}.o64"
 	rm "$OBJ_DIR/${BASE_NAME}.sym*"
 	rm "$OBJ_DIR/${BASE_NAME}.srcmap"
+	rm "$OBJ_DIR/${BASE_NAME}.ro64"
+	rm "$OBJ_DIR/${BASE_NAME}.rel"
 fi
 
 # Also clean up any old files in the source directory
@@ -81,6 +83,8 @@ if [[ -e "$1.o64" ]]; then
 	rm "$1.o64"
 	rm "$1.sym*"
 	rm "$1.srcmap"
+	rm "$1.ro64"
+	rm "$1.rel"
 fi
 
 if grep -qi '^[[:space:]]*__MAIN__:' "$1.asm"; then
@@ -106,4 +110,10 @@ if [[ -e "$1.sym2" ]]; then
 fi
 if [[ -e "$1.srcmap" ]]; then
 	mv "$1.srcmap" "$OBJ_DIR/${BASE_NAME}.srcmap"
+fi
+if [[ -e "$1.ro64" ]]; then
+	mv "$1.ro64" "$OBJ_DIR/${BASE_NAME}.ro64"
+fi
+if [[ -e "$1.rel" ]]; then
+	mv "$1.rel" "$OBJ_DIR/${BASE_NAME}.rel"
 fi

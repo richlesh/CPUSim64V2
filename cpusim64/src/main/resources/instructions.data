@@ -14,9 +14,9 @@ call:0
 call0:0
 call1:1
 return:0
-interrupt:10
+interrupt:0
 interrupt0:0
-interrupt1:10
+interrupt1:0
 stop:0
 negate:0
 fnegate:0
@@ -50,3 +50,6 @@ endian:0
 readonly:0
 ldb:1
 stb:0
+ldcr:0
+stcr:0
+iret:0

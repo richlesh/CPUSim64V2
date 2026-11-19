@@ -21,23 +21,35 @@ pub fn format_si(value: u64) -> String {
     format!("{s}{}", UNITS[i])
 }
 
-/// Ports `Utils.decodeSI`: parse an integer with an optional SI suffix
-/// (K/M/G/T/P/E, case-insensitive). Returns the value as i64 (the Java
+/// Ports `Utils.decodeSI`: parse an integer with an optional suffix, case-
+/// insensitive: decimal SI K/M/G/T/P/E (10^3 .. 10^18) or binary IEC
+/// Ki/Mi/Gi/Ti/Pi/Ei (2^10 .. 2^60). Returns the value as i64 (the Java
 /// version is limited to `int`; the native simulator allows 64-bit sizes).
 pub fn decode_si(s: &str) -> Result<i64, String> {
     let s = s.trim();
     if s.is_empty() {
         return Err("empty input".to_string());
     }
-    let last = s.chars().last().unwrap();
-    let (multiplier, number_part) = match last.to_ascii_uppercase() {
-        'K' => (1e3, &s[..s.len() - 1]),
-        'M' => (1e6, &s[..s.len() - 1]),
-        'G' => (1e9, &s[..s.len() - 1]),
-        'T' => (1e12, &s[..s.len() - 1]),
-        'P' => (1e15, &s[..s.len() - 1]),
-        'E' => (1e18, &s[..s.len() - 1]),
-        _ => (1.0, s),
+    // Suffix letter and the text before the suffix; a trailing 'i' makes it binary.
+    let (binary, body) = match s.strip_suffix(['i', 'I']) {
+        Some(rest) if rest.ends_with(|c: char| "KMGTPEkmgtpe".contains(c)) => (true, rest),
+        _ => (false, s),
+    };
+    let last = body.chars().last().unwrap_or(' ');
+    let power: i32 = match last.to_ascii_uppercase() {
+        'K' => 1,
+        'M' => 2,
+        'G' => 3,
+        'T' => 4,
+        'P' => 5,
+        'E' => 6,
+        _ => 0,
+    };
+    let number_part = if power > 0 { &body[..body.len() - 1] } else { body };
+    let multiplier = if binary {
+        (1u64 << (10 * power)) as f64
+    } else {
+        10f64.powi(3 * power)
     };
     let value: f64 = number_part
         .trim()
@@ -166,6 +178,22 @@ mod tests {
         assert_eq!(decode_si("4G").unwrap(), 4_000_000_000);
         assert_eq!(decode_si("3000000000").unwrap(), 3_000_000_000);
         assert!(decode_si("10E").is_err());
+    }
+
+    #[test]
+    fn decode_si_binary_suffixes() {
+        assert_eq!(decode_si("1Ki").unwrap(), 1024);
+        assert_eq!(decode_si("8ki").unwrap(), 8192);
+        assert_eq!(decode_si("16Mi").unwrap(), 16 * 1024 * 1024);
+        assert_eq!(decode_si("0.5Mi").unwrap(), 512 * 1024);
+        assert_eq!(decode_si("2GI").unwrap(), 2 * (1i64 << 30));
+        assert_eq!(decode_si("3Ti").unwrap(), 3 * (1i64 << 40));
+        assert_eq!(decode_si("1Pi").unwrap(), 1i64 << 50);
+        assert_eq!(decode_si("4Ei").unwrap(), 1i64 << 62);
+        assert!(decode_si("8Ei").is_err()); // 2^63 does not fit in i64
+        assert!(decode_si("i").is_err());
+        assert!(decode_si("5i").is_err()); // 'i' alone is not a suffix
+        assert!(decode_si("Ki").is_err());
     }
 
     #[test]

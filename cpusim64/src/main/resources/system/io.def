@@ -18,46 +18,46 @@
 #ifndef _IO_DEF
 #define _IO_DEF
 
-#define	iPUT_NL				200
-#define	iPUT_INT			201
-#define	iPUT_DEC			202
-#define	iPUT_HEX			203
-#define	iPUT_FP				204
-#define	iPUTS				205
-#define iPUT_LINE			206
+#define	iPUT_NL				-200
+#define	iPUT_INT			-201
+#define	iPUT_DEC			-202
+#define	iPUT_HEX			-203
+#define	iPUT_FP				-204
+#define	iPUTS				-205
+#define iPUT_LINE			-206
 
-#define	iGET_INT			207
-#define	iGET_DEC			208
-#define	iGET_HEX			209
-#define	iGET_FP				210
-#define	iGETS				211
-#define iGET_LINE			212
+#define	iGET_INT			-207
+#define	iGET_DEC			-208
+#define	iGET_HEX			-209
+#define	iGET_FP				-210
+#define	iGETS				-211
+#define iGET_LINE			-212
 
-#define	iPRINTF				213
-#define	iCOND_PRINTF		214
+#define	iPRINTF				-213
+#define	iCOND_PRINTF		-214
 
-#define	iOPEN_FILE_READ			220
-#define	iOPEN_FILE_WRITE		221
-#define	iOPEN_FILE_APPEND		222
-#define	iOPEN_RAW_FILE_READ		223
-#define	iOPEN_RAW_FILE_WRITE	224
-#define	iOPEN_RAW_FILE_APPEND	225
-#define	iCLOSE_FILE				226
-#define	iFLUSH					227
-#define	iDELETE_FILE			228
-#define	iMAKE_DIR				229
-#define	iDELETE_DIR				230
-#define	iIS_DIR					231
-#define	iIS_FILE				232
-#define	iFILE_EXISTS			233
-#define	iFILES					234
-#define	iTEMP_DIR				235
-#define	iTEMP_FILE				236
-#define	iFEOF					237
-#define	iFERROR					238
-#define	iOPEN_RANDOM_ACCESS_FILE	239
-#define	iSEEK					240
-#define	iTELL					241
+#define	iOPEN_FILE_READ			-220
+#define	iOPEN_FILE_WRITE		-221
+#define	iOPEN_FILE_APPEND		-222
+#define	iOPEN_RAW_FILE_READ		-223
+#define	iOPEN_RAW_FILE_WRITE	-224
+#define	iOPEN_RAW_FILE_APPEND	-225
+#define	iCLOSE_FILE				-226
+#define	iFLUSH					-227
+#define	iDELETE_FILE			-228
+#define	iMAKE_DIR				-229
+#define	iDELETE_DIR				-230
+#define	iIS_DIR					-231
+#define	iIS_FILE				-232
+#define	iFILE_EXISTS			-233
+#define	iFILES					-234
+#define	iTEMP_DIR				-235
+#define	iTEMP_FILE				-236
+#define	iFEOF					-237
+#define	iFERROR					-238
+#define	iOPEN_RANDOM_ACCESS_FILE	-239
+#define	iSEEK					-240
+#define	iTELL					-241
 
 #define	CHAR	0
 #define	BYTE	1
